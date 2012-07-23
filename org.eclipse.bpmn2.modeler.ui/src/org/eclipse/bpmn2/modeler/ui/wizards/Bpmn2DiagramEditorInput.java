@@ -26,7 +26,7 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 	private String targetNamespace;
 
 	Bpmn2DiagramEditorInput(URI diagramUri, TransactionalEditingDomain domain, String providerId) {
-		super(diagramUri, providerId);
+		super(diagramUri, domain, providerId);
 		this.domain = domain;
 	}
 

@@ -56,22 +56,15 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
-import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.gef.ContextMenuProvider;
-import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFPaletteRoot;
-import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -163,6 +156,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		
 		try {
 			Bpmn2DiagramType diagramType = Bpmn2DiagramType.NONE;
 			String targetNamespace = null;
@@ -201,11 +195,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		addSelectionListener();
 		addFileChangeListener();
 	}
-	
-	@Override
-	protected DefaultUpdateBehavior createUpdateBehavior() {
-		return new BPMN2EditorUpdateBehavior(this);
-	}
 
 	public Bpmn2Preferences getPreferences() {
 		if (preferences==null) {
@@ -239,7 +228,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	private void getModelPathFromInput(DiagramEditorInput input) {
-		URI uri = input.getUri();
+		URI uri = input.getDiagram().eResource().getURI();
 		String uriString = uri.trimFragment().toPlatformString(true);
 		modelFile = BPMN2DiagramCreator.getModelFile(new Path(uriString));
 	}
@@ -265,10 +254,10 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return input;
 	}
 
-	private void saveModelFile() {
+	@Override
+	public void doSave(IProgressMonitor monitor) {
 		modelHandler.save();
 		((BasicCommandStack) getEditingDomain().getCommandStack()).saveIsDone();
-		updateDirtyState();
 	}
 
 	@Override
@@ -297,7 +286,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				if (modelFile.exists()) {
 					bpmnResource.load(null);
 				} else {
-					saveModelFile();
+					doSave(null);
 				}
 			} catch (IOException e) {
 				Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
@@ -327,7 +316,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (diagramType != Bpmn2DiagramType.NONE) {
 			BPMNDiagram bpmnDiagram = modelHandler.createDiagramType(diagramType, targetNamespace);
 			featureProvider.link(diagram, bpmnDiagram);
-			saveModelFile();
+			BPMN2Editor.this.doSave(null);
 		}
 		
 		DIImport di = new DIImport();
