@@ -28,6 +28,7 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -84,7 +85,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart {
 
 	@Override
 	protected IEditorSite createSite(IEditorPart editor) {
-		return new MultiPageEditorSite(this, editor) {
+		IEditorSite site = new MultiPageEditorSite(this, editor) {
 			@Override
 			protected void handleSelectionChanged(SelectionChangedEvent event) {
 				ISelectionProvider parentProvider = getMultiPageEditor().getSite()
@@ -93,6 +94,9 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart {
 					SelectionChangedEvent newEvent = getNewEvent(parentProvider, event);
 					MultiPageSelectionProvider prov = (MultiPageSelectionProvider) parentProvider;
 					prov.fireSelectionChanged(newEvent);
+					// looks like a postSelectionListener was added in eclipse 3.7.
+					// selections do not work without this:
+					handlePostSelectionChanged(event);
 				}
 			}
 			
@@ -174,6 +178,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart {
 				return pictogramElement;
 			}
 		};
+		return site;
 	}
 
 	@Override
