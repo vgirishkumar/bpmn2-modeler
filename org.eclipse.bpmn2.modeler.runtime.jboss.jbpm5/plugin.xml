@@ -122,7 +122,21 @@
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.FormalExpression"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.FormalExpression"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.FormalExpressionPropertyAdapter">
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmFormalExpressionPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.GlobalType"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGlobalTypePropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.Property"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Property"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmPropertyPropertiesAdapter">
 		</propertyExtension>
 		
 		<featureContainer
@@ -1078,6 +1092,11 @@
 			<disable object="UserTask" feature="properties"/>
 			<disable object="UserTask" feature="renderings"/>
 			<disable object="UserTask" feature="startQuantity"/>
+			
+			<enable object="GlobalType"/>
+			<enable object="ImportType"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 		</modelEnablement>
 		
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="brms">
@@ -1115,6 +1134,11 @@
 			<disable object="SendTask"/>
 			<disable object="Task" feature="extensionValues"/>
 			<disable object="UserTask" feature="extensionValues"/>
+			
+			<enable object="GlobalType"/>
+			<enable object="ImportType"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 		</modelEnablement>
 		
 	</extension>
