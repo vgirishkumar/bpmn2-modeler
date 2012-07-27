@@ -32,14 +32,14 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
  * @author Bob Brodt
  *
  */
-public class ObjectDescriptor {
+public class ObjectDescriptor<T extends EObject> {
 
-	protected EObject object;
+	protected T object;
 	protected String label;
-	protected String text;
+	protected String name;
 	protected AdapterFactory adapterFactory;
 	
-	public ObjectDescriptor(AdapterFactory adapterFactory, EObject object) {
+	public ObjectDescriptor(AdapterFactory adapterFactory, T object) {
 		this.object = object;
 	}
 	
@@ -48,52 +48,59 @@ public class ObjectDescriptor {
 	}
 	
 	public String getLabel(Object context) {
+		EObject object = (context instanceof EObject) ?
+				(EObject)context :
+				this.object;
+		EClass eclass = (object instanceof EClass) ?
+				(EClass)object :
+				object.eClass();
 		if (label==null) {
-			label = ModelUtil.toDisplayName(object.eClass().getName());
+			label = ModelUtil.toDisplayName(eclass.getName());
 		}
 		return label;
 	}
 	
-	public void setText(String text) {
-		this.text = text;
+	public void setDisplayName(String name) {
+		this.name = name;
 	}
 	
-	public String getText(Object context) {
-		if (text==null) {
-			EObject object = context instanceof EObject ? (EObject)context : this.object;
+	public String getDisplayName(Object context) {
+		if (name==null) {
+			T object = adopt(context);
+			
 			// derive text from feature's value: default behavior is
 			// to use the "name" attribute if there is one;
 			// if not, use the "id" attribute;
 			// fallback is to use the feature's toString()
 			String text = ModelUtil.toDisplayName(object.eClass().getName());
-			Object name = null;
+			Object value = null;
 			EStructuralFeature f = null;
 			f = object.eClass().getEStructuralFeature("name");
 			if (f!=null) {
-				name = object.eGet(f);
-				if (name==null || name.toString().isEmpty())
-					name = null;
+				value = object.eGet(f);
+				if (value==null || value.toString().isEmpty())
+					value = null;
 			}
-			if (name==null) {
+			if (value==null) {
 				f = object.eClass().getEStructuralFeature("id");
 				if (f!=null) {
-					name = object.eGet(f);
-					if (name==null || name.toString().isEmpty())
-						name = null;
+					value = object.eGet(f);
+					if (value==null || value.toString().isEmpty())
+						value = null;
 				}
 			}
-			if (name==null)
-				name = "Unnamed " + text;
-			return (String)name;
+			if (value==null)
+				value = "Unnamed " + text;
+			return (String)value;
 		}
-		return text;
+		return name;
 	}
 
 	protected IItemPropertyDescriptor getPropertyDescriptor(EStructuralFeature feature) {
 		return getPropertyDescriptor(object, feature);
 	}
 
-	protected IItemPropertyDescriptor getPropertyDescriptor(EObject object, EStructuralFeature feature) {
+	protected IItemPropertyDescriptor getPropertyDescriptor(T object, EStructuralFeature feature) {
 		ItemProviderAdapter adapter = null;
 		for (Adapter a : object.eAdapters()) {
 			if (a instanceof ItemProviderAdapter) {
@@ -106,11 +113,11 @@ public class ObjectDescriptor {
 		return null;
 	}
 	
-	protected EObject clone(EObject oldObject) {
-		EObject newObject = null;
+	protected EObject clone(T oldObject) {
+		T newObject = null;
 		if (oldObject!=null) {
 			EClass eClass = oldObject.eClass();
-			newObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
+			newObject = (T) eClass.getEPackage().getEFactoryInstance().create(eClass);
 			for (EStructuralFeature f : eClass.getEAllAttributes()) {
 				newObject.eSet(f, oldObject.eGet(f));
 			}
@@ -127,7 +134,7 @@ public class ObjectDescriptor {
 				// IDs are allowed to be different
 				if ("id".equals(f.getName()))
 					continue;
-				Object v1 = ((EObject)obj).eGet(f);
+				Object v1 = ((T)obj).eGet(f);
 				Object v2 = object.eGet(f);
 				// both null? equal!
 				if (v1==null && v2==null)
@@ -151,7 +158,7 @@ public class ObjectDescriptor {
 					}
 					else if (v1 instanceof EObject && v2 instanceof EObject) {
 						// for all other EObjects, do a deep compare...
-						ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt((EObject)v1, ExtendedPropertiesAdapter.class);
+						ExtendedPropertiesAdapter<T> adapter = (ExtendedPropertiesAdapter<T>) AdapterUtil.adapt((EObject)v1, ExtendedPropertiesAdapter.class);
 						if (adapter!=null) {
 							if (adapter.getObjectDescriptor().equals(v2))
 								continue;
@@ -164,10 +171,22 @@ public class ObjectDescriptor {
 		}
 		return super.equals(obj);
 	}
+	
+	/**
+	 * Many methods accept java Objects as a context variable. In many cases (especially the
+	 * default implementations) the context object must have the same type as the specialized
+	 * class. 
+	 * 
+	 * @param context
+	 * @return the context variable if it has the same type as this.object, or this.object if not.
+	 */
+	protected T adopt(Object context) {
+		return (this.object.getClass().isInstance(context)) ? (T)context : this.object;
+	}
 
-	public TransactionalEditingDomain getEditingDomain(Object object) {
-		EObject eObject = (EObject) object;
-		EditingDomain result = AdapterFactoryEditingDomain.getEditingDomainFor(eObject);
+	public TransactionalEditingDomain getEditingDomain(Object context) {
+		T object = adopt(context);
+		EditingDomain result = AdapterFactoryEditingDomain.getEditingDomainFor(object);
 		if (result == null) {
 			if (adapterFactory instanceof IEditingDomainProvider) {
 				result = ((IEditingDomainProvider) adapterFactory).getEditingDomain();

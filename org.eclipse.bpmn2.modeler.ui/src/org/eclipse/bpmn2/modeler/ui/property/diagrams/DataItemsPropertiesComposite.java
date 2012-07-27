@@ -13,25 +13,23 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.ui.property.DefaultPropertiesComposite;
+import org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite;
+import org.eclipse.bpmn2.modeler.ui.property.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2TableComposite;
-import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.swt.widgets.Composite;
 
 /**
  * @author Bob Brodt
  *
  */
-public class DataItemsPropertiesComposite extends DefaultPropertiesComposite {
+public class DataItemsPropertiesComposite extends DefaultDetailComposite {
 
 	public DataItemsPropertiesComposite(Composite parent, int style) {
 		super(parent, style);
@@ -74,50 +72,30 @@ public class DataItemsPropertiesComposite extends DefaultPropertiesComposite {
 			for (RootElement re : definitions.getRootElements()) {
 				if (re instanceof Process) {
 					Process process = (Process)re;
-					EStructuralFeature feature = process.eClass().getEStructuralFeature("properties");
-					if (modelEnablement.isEnabled(process.eClass(), feature)) {
-						PropertiesTable propertiesTable = new PropertiesTable(this); 
-						propertiesTable.bindList(process, feature);
-						propertiesTable.setTitle("Properties for "+PropertyUtil.getDisplayName(process));
-					}
-					AbstractBpmn2TableComposite table = bindList(process, "resources");
+					AbstractListComposite table;
+					
+					table = bindList(process,"properties");
 					if (table!=null)
-						table.setTitle("Resources for "+PropertyUtil.getDisplayName(process));
+					table = bindList(process, "resources");
+					if (table!=null)
+						table.setTitle("Resources for "+PropertyUtil.getLongDisplayName(process));
 				}
 			}
 		}
 		super.createBindings(be);
 	}
 	
-	public class PropertiesTable extends AbstractBpmn2TableComposite {
-
-		public PropertiesTable(Composite parent) {
-			super(parent, AbstractBpmn2TableComposite.DEFAULT_STYLE);
-		}
-		
-		@Override
-		protected EObject addListItem(EObject object, EStructuralFeature feature) {
-			Process process = (Process)object;
-			// generate a unique parameter name
-			String base = "processVar";
-			int suffix = 1;
-			String name = base + suffix;
-			for (;;) {
-				boolean found = false;
-				for (Property p : process.getProperties()) {
-					if (name.equals(p.getName())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					break;
-				name = base + ++suffix;
+	@Override
+	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
+		if (listItemClass!=null && listItemClass.getName().equals("ItemDefinition")) {
+			if (modelEnablement.isEnabled(object.eClass(), feature) || modelEnablement.isEnabled(listItemClass)) {
+				AbstractListComposite table = super.bindList(object, feature, listItemClass);
+				return table;
 			}
-			Property prop  = (Property)super.addListItem(object, feature);
-			prop.setName(name);
-			return prop;
+			return null;
 		}
+		else
+			return super.bindList(object, feature, listItemClass);
 	}
 
 }

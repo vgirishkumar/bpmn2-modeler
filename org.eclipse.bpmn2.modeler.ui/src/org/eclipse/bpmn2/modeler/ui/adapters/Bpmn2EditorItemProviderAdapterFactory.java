@@ -13,7 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters;
 
+import java.util.Hashtable;
+
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.CallConversation;
@@ -98,6 +101,9 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
  * This class adds a name-value map to the Bpmn2ItemProviderAdapterFactory.
@@ -113,9 +119,10 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 	@Override
 	public Adapter adaptNew(Notifier object, Object type) {
 		if (type == ExtendedPropertiesAdapter.class && object instanceof EObject) {
-			Adapter adapter = bpmn2ModelSwitch.doSwitch((EObject) object);
-			if (!(object instanceof EClass))
+		    Adapter adapter = bpmn2ModelSwitch.doSwitch((EObject) object);
+		    if (adapter!=null && !(object instanceof EClass)) {
 				((EObject)object).eAdapters().add(adapter);
+		    }
 			return adapter;
 		}
 		return super.adaptNew(object, type);
@@ -134,7 +141,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
     public class Bpmn2ExtendedPropertiesSwitch extends Bpmn2Switch<ExtendedPropertiesAdapter> {
 
     	private AdapterFactory adapterFactory;
-    	
+        
     	public Bpmn2ExtendedPropertiesSwitch(AdapterFactory adapterFactory) {
     		super();
     		this.adapterFactory = adapterFactory;
@@ -146,13 +153,38 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
     		}
     	}
     	
+        /* (non-Javadoc)
+         * @see org.eclipse.bpmn2.util.Bpmn2Switch#defaultCase(org.eclipse.emf.ecore.EObject)
+         * 
+         * The default case for this switch is to search the current target runtime plugin for
+         * ExtendedPropertiesAdapters that can handle the given EObject.
+         * 
+         * If the given EObject is actually an EClass, then a dummy EObject is constructed and cached
+         * for use by the adapter. This could cause problems if the adapter is used for anything other
+         * than providing simple static information (labels, etc.)
+         *  
+         * For an example usage of this, see the org.eclipse.bpmn2.modeler.ui.util.PropertyUtil#getLabel(Object)
+         * call in the List Composite, to fetch section titles and table column headers from the adapter:
+         * @see org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite#bindList(EObject,EStructuralFeature)
+         * 
+         * If no adapter is found for the given EObject, a generic one is constructed and returned.
+         */
         @Override
 		public ExtendedPropertiesAdapter defaultCase(EObject object) {
         	ExtendedPropertiesAdapter adapter = null;
-        	if (object instanceof EClass)
+        	if (object instanceof EClass) {
+        		// this is an EClass: search the current target runtime for an adapter that
+        		// can handle this thing.
         	    adapter = getTargetRuntimeAdapter((EClass)object);
+        	    if (adapter==null) {
+        	    	// if none is found, create a dummy EObject and cache it
+   		    		object = ModelUtil.getDummyObject((EClass)object);
+   		    		adapter = doSwitch(object);
+        	    }
+        	}
         	else
         		adapter = getTargetRuntimeAdapter(object);
+        	
         	if (adapter==null) {
 	        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
 	        	adapter.setObjectDescriptor(new ObjectDescriptor(adapterFactory, object) {
@@ -168,14 +200,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 					}
 	
 					@Override
-					public String getText(Object context) {
+					public String getDisplayName(Object context) {
 						EObject object = this.object;
 						if (context instanceof EObject)
 							object = (EObject)context;
 						if (ModelUtil.isStringWrapper(object)) {
 							return ModelUtil.getStringWrapperValue(object);
 						}
-						return super.getText(context);
+						return super.getDisplayName(context);
 					}
 	        	});
         	}
@@ -184,6 +216,8 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EClass eclass) {
             PropertyExtensionDescriptor ped = TargetRuntime.getCurrentRuntime().getPropertyExtension(eclass.getInstanceClass());
+            if (ped==null && TargetRuntime.getCurrentRuntime() != TargetRuntime.getDefaultRuntime())
+            	ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(eclass.getInstanceClass());
             if (ped!=null)
                 return ped.getAdapter(adapterFactory,eclass);
             return null;
@@ -191,6 +225,8 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 
         private ExtendedPropertiesAdapter getTargetRuntimeAdapter(EObject object) {
 			PropertyExtensionDescriptor ped = TargetRuntime.getCurrentRuntime().getPropertyExtension(object.getClass());
+            if (ped==null && TargetRuntime.getCurrentRuntime() != TargetRuntime.getDefaultRuntime())
+                ped = TargetRuntime.getDefaultRuntime().getPropertyExtension(object.getClass());
 			if (ped!=null)
 				return ped.getAdapter(adapterFactory,object);
 			return null;

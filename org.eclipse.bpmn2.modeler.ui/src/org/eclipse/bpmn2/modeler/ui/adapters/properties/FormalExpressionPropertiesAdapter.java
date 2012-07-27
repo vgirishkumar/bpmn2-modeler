@@ -14,36 +14,34 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
  *
  */
-public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter {
+public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter<FormalExpression> {
 
 	/**
 	 * @param adapterFactory
 	 * @param object
 	 */
-	public FormalExpressionPropertiesAdapter(AdapterFactory adapterFactory, EObject object) {
+	public FormalExpressionPropertiesAdapter(AdapterFactory adapterFactory, FormalExpression object) {
 		super(adapterFactory, object);
 
     	final EStructuralFeature body = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
     	setFeatureDescriptor(body,
-			new FeatureDescriptor(adapterFactory,object,body) {
+			new FeatureDescriptor<FormalExpression>(adapterFactory,object,body) {
 				@Override
 				public String getLabel(Object context) {
-					EObject object = this.object;
-					if (context instanceof EObject)
-						object = (EObject)context;
-					if (object.eContainer() instanceof SequenceFlow)
+					FormalExpression expression = adopt(context);
+					if (expression.eContainer() instanceof SequenceFlow)
 						return "Constraint";
 					return super.getLabel(context);
 				}
@@ -55,10 +53,10 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 				}
 			}
     	);
-		setObjectDescriptor(new ObjectDescriptor(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<FormalExpression>(adapterFactory, object) {
 			@Override
-			public String getText(Object context) {
-				return getFeatureDescriptor(body).getText(context);
+			public String getDisplayName(Object context) {
+				return getFeatureDescriptor(body).getDisplayName(context);
 			}
 		});
 	}

@@ -36,13 +36,13 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
  * @author Bob Brodt
  *
  */
-public class FeatureDescriptor extends ObjectDescriptor {
+public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 
 	protected EStructuralFeature feature;
 	protected int multiline = 0; // -1 = false, +1 = true, 0 = unset
 	protected Hashtable<String, Object> choiceOfValues; // for static lists
 	
-	public FeatureDescriptor(AdapterFactory adapterFactory, EObject object, EStructuralFeature feature) {
+	public FeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
 		super(adapterFactory, object);
 		this.feature = feature;
 	}
@@ -62,12 +62,14 @@ public class FeatureDescriptor extends ObjectDescriptor {
 		return label;
 	}
 	
-	public void setText(String text) {
-		this.text = text;
+	@Override
+	public void setDisplayName(String text) {
+		this.name = text;
 	}
 	
-	public String getText(Object context) {
-		if (text==null) {
+	@Override
+	public String getDisplayName(Object context) {
+		if (name==null) {
 			String t = null;
 			// derive text from feature's value: default behavior is
 			// to use the "name" attribute if there is one;
@@ -78,7 +80,7 @@ public class FeatureDescriptor extends ObjectDescriptor {
 			if (feature!=null) {
 				Object value = object.eGet(feature); 
 				if (value instanceof EObject) {
-					o = (EObject)object.eGet(feature);
+					o = (EObject)value;
 				}
 				else if (value!=null)
 					t = value.toString();
@@ -99,9 +101,9 @@ public class FeatureDescriptor extends ObjectDescriptor {
 						t = id.toString();
 				}
 			}
-			return t == null ? "" : t;
+			return t == null ? ModelUtil.getLabel(object) : t;
 		}
-		return text == null ? "" : text;
+		return name == null ? "" : name;
 	}
 
 	public void setChoiceOfValues(Hashtable<String, Object> choiceOfValues) {
@@ -119,7 +121,7 @@ public class FeatureDescriptor extends ObjectDescriptor {
 			while (iter.hasNext()) {
 				Object value = iter.next();
 				if (value!=null) {
-					String text = getValueText(value);
+					String text = getChoiceString(value);
 					while (choiceOfValues.containsKey(text))
 						text += " ";
 					choiceOfValues.put(text, value);
@@ -128,6 +130,16 @@ public class FeatureDescriptor extends ObjectDescriptor {
 		}
 	}
 	
+	/**
+	 * Returns a list of name-value pairs for display in a combo box or selection list.
+	 * The String is what gets displayed in the selection list, while the Object is
+	 * implementation-specific: this can be a reference to an element, string or whatever.
+	 * The implementation is responsible for interpreting this value by overriding the
+	 * setValue() method, and must update the object feature accordingly.
+	 * 
+	 * @param context
+	 * @return
+	 */
 	public Hashtable<String, Object> getChoiceOfValues(Object context) {
 		EObject object = context instanceof EObject ? (EObject)context : this.object;
 		if (choiceOfValues==null) {
@@ -156,7 +168,7 @@ public class FeatureDescriptor extends ObjectDescriptor {
 				while (iter.hasNext()) {
 					Object value = iter.next();
 					if (value!=null) {
-						String text = getValueText(value);
+						String text = getChoiceString(value);
 						if (text==null)
 							text = "";
 						while (choices.containsKey(text))
@@ -171,12 +183,12 @@ public class FeatureDescriptor extends ObjectDescriptor {
 	}
 	
 	// copied from PropertyUtil in UI plugin
-	public String getValueText(Object value) {
+	public String getChoiceString(Object value) {
 		if (value instanceof EObject) {
 			EObject eObject = (EObject)value;
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eObject, ExtendedPropertiesAdapter.class);
 			if (adapter!=null)
-				return adapter.getObjectDescriptor().getText(eObject);
+				return adapter.getObjectDescriptor().getDisplayName(eObject);
 			return ModelUtil.toDisplayName( eObject.eClass().getName() );
 		}
 		return value.toString();
@@ -200,7 +212,7 @@ public class FeatureDescriptor extends ObjectDescriptor {
 	}		
 	
 	public EObject createObject(Object context, EClass eclass) {
-		EObject object = context instanceof EObject ? (EObject)context : this.object;
+		T object = adopt(context);
 		EObject newObject = null;
 		try {
 			if (eclass==null)
@@ -239,7 +251,7 @@ public class FeatureDescriptor extends ObjectDescriptor {
 	}
 	
 	public void setValue(Object context, final Object value) {
-		final EObject object = context instanceof EObject ? (EObject)context : this.object;
+		final T object = adopt(context);
 		
 		if (object.eGet(feature) instanceof EObjectEList) {
 			// the feature is a reference list - user must have meant to insert
@@ -248,11 +260,13 @@ public class FeatureDescriptor extends ObjectDescriptor {
 			TransactionalEditingDomain editingDomain = getEditingDomain(object);
 			if (editingDomain == null) {
 				list.add(value);
+				insertRootElementIfNeeded(value);
 			} else {
 				editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 					@Override
 					protected void doExecute() {
 						list.add(value);
+						insertRootElementIfNeeded(value);
 					}
 				});
 			}
@@ -266,31 +280,13 @@ public class FeatureDescriptor extends ObjectDescriptor {
 				TransactionalEditingDomain editingDomain = getEditingDomain(object);
 				if (editingDomain == null) {
 					object.eSet(feature, value);
+					insertRootElementIfNeeded(value);
 				} else {
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
 							object.eSet(feature, value);
-							Object o = object.eGet(feature);
-							System.out.println(o);
-						}
-					});
-				}
-			}
-		}
-		
-		if (value instanceof RootElement && ((RootElement)value).eContainer()==null) {
-			// stuff all root elements into Definitions.rootElements
-			final Definitions definitions = ModelUtil.getDefinitions(object);
-			if (definitions!=null) {
-				TransactionalEditingDomain editingDomain = getEditingDomain(object);
-				if (editingDomain == null) {
-					definitions.getRootElements().add((RootElement)value);
-				} else {
-					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-						@Override
-						protected void doExecute() {
-							definitions.getRootElements().add((RootElement)value);
+							insertRootElementIfNeeded(value);
 						}
 					});
 				}
@@ -298,4 +294,13 @@ public class FeatureDescriptor extends ObjectDescriptor {
 		}
 	}
 
+	private void insertRootElementIfNeeded(Object value) {
+		if (value instanceof RootElement && ((RootElement)value).eContainer()==null) {
+			// stuff all root elements into Definitions.rootElements
+			final Definitions definitions = ModelUtil.getDefinitions(object);
+			if (definitions!=null) {
+				definitions.getRootElements().add((RootElement)value);
+			}
+		}
+	}
 }

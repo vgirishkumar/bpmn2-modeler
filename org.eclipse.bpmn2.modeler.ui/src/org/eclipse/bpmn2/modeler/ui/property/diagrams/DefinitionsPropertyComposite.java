@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.impl.DefinitionsImpl;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
-import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertiesComposite;
 import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2TableComposite;
-import org.eclipse.bpmn2.modeler.ui.property.DefaultPropertiesComposite;
+import org.eclipse.bpmn2.modeler.ui.property.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite;
+import org.eclipse.bpmn2.modeler.ui.property.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.property.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.NamespacesEditingDialog;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ObjectEditor;
@@ -37,14 +37,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
+public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 
 	public DefinitionsPropertyComposite(Composite parent, int style) {
 		super(parent, style);
 	}
 
 	private AbstractPropertiesProvider propertiesProvider;
-	private NamespacesTable namespacesTable;
+	private NamespaceListComposite namespacesTable;
 	
 	/**
 	 * @param section
@@ -83,24 +83,25 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		if (namespacesTable!=null)
 			namespacesTable.dispose();
 		
-		namespacesTable = new NamespacesTable(propertySection);
-		DefinitionsImpl definitions = (DefinitionsImpl)getEObject();
+		namespacesTable = new NamespaceListComposite(propertySection);
+		DefinitionsImpl definitions = (DefinitionsImpl)getBusinessObject();
 		DocumentRoot root = (DocumentRoot) definitions.eContainer();
 		namespacesTable.bindList(root, Bpmn2Package.eINSTANCE.getDocumentRoot_XMLNSPrefixMap());
 		namespacesTable.setTitle("Namespaces");
 	}
 
 	@Override
-	protected AbstractBpmn2TableComposite bindList(EObject object, EStructuralFeature feature) {
+	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature) {
 		if (modelEnablement.isEnabled(object.eClass(), feature)) {
 			if ("imports".equals(feature.getName())) {
-				ImportsTable importsTable = new ImportsTable(propertySection);
-				importsTable.bind();
+				ImportListComposite importsTable = new ImportListComposite(propertySection);
+				EStructuralFeature importsFeature = object.eClass().getEStructuralFeature("imports");
+				importsTable.bindList(object, importsFeature);
 				return importsTable;
 			}
 			else if ("relationships".equals(feature.getName())) {
-				AbstractBpmn2TableComposite table = new AbstractBpmn2TableComposite(propertySection, AbstractBpmn2TableComposite.DEFAULT_STYLE);
-				table.bindList(getEObject(), feature);
+				DefaultListComposite table = new DefaultListComposite(propertySection);
+				table.bindList(getBusinessObject(), feature);
 				return table;
 			}
 			else {
@@ -110,9 +111,9 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		return null;
 	}
 
-	public class NamespacesTable extends AbstractBpmn2TableComposite {
+	public class NamespaceListComposite extends DefaultListComposite {
 		
-		public NamespacesTable(AbstractBpmn2PropertySection section) {
+		public NamespaceListComposite(AbstractBpmn2PropertySection section) {
 			super(section, ADD_BUTTON | REMOVE_BUTTON | SHOW_DETAILS);
 		}
 
@@ -143,14 +144,14 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		}
 
 		@Override
-		public AbstractBpmn2PropertiesComposite createDetailComposite(final Composite parent, Class eClass) {
+		public AbstractDetailComposite createDetailComposite(final Composite parent, Class eClass) {
 			detailSection.setText("Namespace Details");
-			AbstractBpmn2PropertiesComposite composite = new DefaultPropertiesComposite(parent, SWT.NONE) {
+			AbstractDetailComposite composite = new DefaultDetailComposite(parent, SWT.NONE) {
 				
 				@Override
 				protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 					if (attribute.getName().equals("key")) {
-						ObjectEditor editor = new TextAndButtonObjectEditor(this,be,attribute) {
+						ObjectEditor editor = new TextAndButtonObjectEditor(this,businessObject,attribute) {
 
 							@Override
 							protected void buttonClicked() {
@@ -182,14 +183,14 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 									});
 									return true;
 								}
-								text.setText(PropertyUtil.getText(object, feature));
+								text.setText(PropertyUtil.getDisplayName(object, feature));
 								return false;
 							}
 						};
 						editor.createControl(parent,"Prefix",SWT.NONE);
 					}
 					else {
-						ObjectEditor editor = new TextObjectEditor(this,be,attribute);
+						ObjectEditor editor = new TextObjectEditor(this,businessObject,attribute);
 						editor.createControl(parent,"Namespace",SWT.NONE);
 					}
 				}
@@ -271,25 +272,16 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		}
 	}
 	
-	public class ImportsTable extends AbstractBpmn2TableComposite {
+	public class ImportListComposite extends DefaultListComposite {
 
 		/**
 		 * @param parent
 		 * @param style
 		 */
-		public ImportsTable(AbstractBpmn2PropertySection section) {
-			super(section, DEFAULT_STYLE);
+		public ImportListComposite(AbstractBpmn2PropertySection section) {
+			super(section);
 		}
 
-
-		public void bind() {
-			DefinitionsImpl definitions = (DefinitionsImpl)getEObject();
-			EStructuralFeature imports = definitions.eClass().getEStructuralFeature("imports");
-			
-			super.bindList(definitions, imports);
-		}
-
-		
 		@Override
 		public AbstractTableColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 			if (columnProvider==null) {
@@ -358,19 +350,19 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		}
 	}
 	
-	public class ImportPropertiesComposite extends DefaultPropertiesComposite {
+	public class ImportDetailComposite extends DefaultDetailComposite {
 
 		private Text text;
 		private Button button;
 		
-		public ImportPropertiesComposite(Composite parent, int style) {
+		public ImportDetailComposite(Composite parent, int style) {
 			super(parent, style);
 		}
 
 		/**
 		 * @param section
 		 */
-		public ImportPropertiesComposite(AbstractBpmn2PropertySection section) {
+		public ImportDetailComposite(AbstractBpmn2PropertySection section) {
 			super(section);
 		}
 		
@@ -426,7 +418,7 @@ public class DefinitionsPropertyComposite extends DefaultPropertiesComposite  {
 		}
 		
 		private String getNamespacePrefix() {
-			Import imp = (Import)be;
+			Import imp = (Import)businessObject;
 			String prefix = NamespaceUtil.getPrefixForNamespace(imp.eResource(), imp.getNamespace());
 			if (prefix==null)
 				prefix = "";

@@ -25,8 +25,6 @@ import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 
@@ -174,7 +172,7 @@ public class JbpmModelUtil {
 			stringValue = ((ImportType)value).getName();
 		}
 		else if (value instanceof ItemDefinition) {
-			stringValue = PropertyUtil.getText((ItemDefinition)value);
+			stringValue = PropertyUtil.getDisplayName((ItemDefinition)value);
 		}
 		return stringValue;
 	}
@@ -185,7 +183,7 @@ public class JbpmModelUtil {
 	 * 
 	 * NOTE: This method will create an ItemDefinition if it does not already exist.
 	 * 
-	 * @param object - a context EObject used to search for ItemDefinitions, and to create
+	 * @param businessObject - a context EObject used to search for ItemDefinitions, and to create
 	 *                 new ItemDefinitions if necessary.
 	 * @param value - one of the Object values in the map returned by collectAllDataTypes().
 	 * @return an ItemDefinition for the data type

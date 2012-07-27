@@ -31,19 +31,19 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  * @author Bob Brodt
  *
  */
-public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapter {
+public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapter<DataInput> {
 
 	/**
 	 * @param adapterFactory
 	 * @param object
 	 */
-	public DataInputPropertiesAdapter(AdapterFactory adapterFactory, EObject object) {
+	public DataInputPropertiesAdapter(AdapterFactory adapterFactory, DataInput object) {
 		super(adapterFactory, object);
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getDataInput_Name();
-		final FeatureDescriptor fd = new FeatureDescriptor(adapterFactory,object, f) {
+		final FeatureDescriptor<DataInput> fd = new FeatureDescriptor<DataInput>(adapterFactory,object, f) {
 
 			@Override
-			public void setText(String text) {
+			public void setDisplayName(String text) {
 				int i = text.lastIndexOf("/");
 				if (i>=0)
 					text = text.substring(i+1);
@@ -52,8 +52,8 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 			}
 
 			@Override
-			public String getValueText(Object context) {
-				DataInput dataInput = (DataInput)(context instanceof DataInput ? context : this.object);
+			public String getChoiceString(Object context) {
+				DataInput dataInput = adopt(context);
 				String text = dataInput.getName();
 				if (text==null || text.isEmpty())
 					text = dataInput.getId();
@@ -66,7 +66,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 							break;
 					}
 					if (container instanceof Activity || container instanceof Process) {
-						text = PropertyUtil.getText(container) + "/" + text;
+						text = PropertyUtil.getDisplayName(container) + "/" + text;
 					}
 					container = container.eContainer();
 				}
@@ -76,17 +76,17 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 		};
 		setFeatureDescriptor(f, fd);
 		
-		setObjectDescriptor(new ObjectDescriptor(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<DataInput>(adapterFactory, object) {
 
 			@Override
-			public void setText(String text) {
-				fd.setText(text);
+			public void setDisplayName(String text) {
+				fd.setDisplayName(text);
 				ModelUtil.setID(object);
 			}
 
 			@Override
-			public String getText(Object context) {
-				return fd.getValueText(context);
+			public String getDisplayName(Object context) {
+				return fd.getChoiceString(context);
 			}
 		});
 	}

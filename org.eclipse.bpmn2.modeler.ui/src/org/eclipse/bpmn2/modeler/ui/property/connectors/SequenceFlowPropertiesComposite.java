@@ -74,7 +74,7 @@ public class SequenceFlowPropertiesComposite extends ExpressionPropertiesComposi
 								
 								setDefault(sequenceFlow,null);
 							}
-							setEObject(be);
+							setBusinessObject(be);
 						}
 					});
 				}
@@ -107,7 +107,7 @@ public class SequenceFlowPropertiesComposite extends ExpressionPropertiesComposi
 			if (exp != null) {
 				addRemoveConditionButton.setText("Remove Condition");
 				setDefaultFlowCheckbox.setVisible(false);
-				this.be = exp;
+				this.businessObject = exp;
 				super.createBindings(exp);
 			}
 			else {
@@ -118,7 +118,7 @@ public class SequenceFlowPropertiesComposite extends ExpressionPropertiesComposi
 					String objectName = flowNode.getName();
 					if (objectName!=null && objectName.isEmpty())
 						objectName = null;
-					String typeName = PropertyUtil.getText(flowNode);
+					String typeName = PropertyUtil.getDisplayName(flowNode);
 					if (allowDefault(sequenceFlow)) {
 						setDefaultFlowCheckbox.setVisible(true);
 						setDefaultFlowCheckbox.setSelection( getDefault(sequenceFlow) == sequenceFlow );
