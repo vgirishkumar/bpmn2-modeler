@@ -20,16 +20,14 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
@@ -49,43 +47,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	
     	setFeatureDescriptor(ref,
-			new RootElementRefFeatureDescriptor<T>(adapterFactory,object,ref) {
-				@Override
-				public String getLabel(Object context) {
-					EObject object = this.object;
-					if (context instanceof EObject)
-						object = (EObject)context;
-					ItemDefinition itemDefinition = null;
-					if (object instanceof ItemDefinition)
-						itemDefinition = (ItemDefinition) object;
-					else if (object instanceof ItemAwareElement)
-						itemDefinition = (ItemDefinition) object.eGet(feature);
-					if (itemDefinition!=null) {
-						ExtendedPropertiesAdapter<ItemDefinition> adapter =
-								(ExtendedPropertiesAdapter<ItemDefinition>) AdapterUtil.adapt(itemDefinition, ExtendedPropertiesAdapter.class);
-						return adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef()).getLabel(itemDefinition);
-					}
-					return ModelUtil.getLabel(object) + " Type";
-				}
-
-				@Override
-				public String getDisplayName(Object context) {
-					EObject object = this.object;
-					if (context instanceof EObject)
-						object = (EObject)context;
-					ItemDefinition itemDefinition = null;
-					if (object instanceof ItemDefinition)
-						itemDefinition = (ItemDefinition) object;
-					else if (object instanceof ItemAwareElement)
-						itemDefinition = (ItemDefinition) object.eGet(feature);
-					if (itemDefinition!=null) {
-						ExtendedPropertiesAdapter<ItemDefinition> adapter =
-								(ExtendedPropertiesAdapter<ItemDefinition>) AdapterUtil.adapt(itemDefinition, ExtendedPropertiesAdapter.class);
-						return adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef()).getDisplayName(itemDefinition);
-					}
-					return super.getDisplayName(context);
-				}
-    		}
+			new ItemAwareElementFeatureDescriptor<T>(adapterFactory, object, ref)
     	);
     	
     	ref = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
@@ -105,7 +67,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 						if (value != oldValue) {
 							// if this DataState belongs to some other ItemAwareElement, make a copy
 							final DataState newValue = (DataState)(((DataState)value).eContainer()!=null ?
-								clone((T) value) : value);
+								EcoreUtil.copy((DataState) value) : value);
 							TransactionalEditingDomain editingDomain = getEditingDomain(element);
 							if (editingDomain == null) {
 								element.eSet(feature, value);
@@ -132,8 +94,8 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 							String label = s.getName();
 							if (label==null || label.isEmpty())
 								label = "ID: " + s.getId();
-							else
-								label += " (ID: " +  s.getId() + ")";
+//							else
+//								label += " (ID: " +  s.getId() + ")";
 							choices.put(label,s);
 						}
 					} catch (IOException e) {

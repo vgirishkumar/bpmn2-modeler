@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.Display;
 public class DataItemsPropertySection extends DefaultPropertySection {
 	
 	static {
-		PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionPropertiesComposite.class);
-		// Will this work? Make it so!
+		PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionDetailComposite.class);
+		PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionListComposite.class);
 		PropertiesCompositeFactory.register(Property.class, PropertyListComposite.class);
 	}
 
@@ -40,7 +40,7 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new DataItemsPropertiesComposite(this);
+		return new DataItemsDetailComposite(this);
 	}
 
 	@Override
@@ -60,18 +60,18 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 		return null;
 	}
 
-	public class ItemDefinitionPropertiesComposite extends DefaultDetailComposite {
+	public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 
 		private AbstractPropertiesProvider propertiesProvider;
 
-		public ItemDefinitionPropertiesComposite(Composite parent, int style) {
+		public ItemDefinitionDetailComposite(Composite parent, int style) {
 			super(parent, style);
 		}
 
 		/**
 		 * @param section
 		 */
-		public ItemDefinitionPropertiesComposite(AbstractBpmn2PropertySection section) {
+		public ItemDefinitionDetailComposite(AbstractBpmn2PropertySection section) {
 			super(section);
 		}
 
@@ -82,7 +82,9 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 					String[] properties = new String[] {
 							"itemKind",
 							"isCollection",
-							"structureRef"
+							"structureRef",
+							// this thing is transient so it won't be serialized; no point in allowing user to set it
+							// "import"
 					};
 					
 					@Override
@@ -121,6 +123,8 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 					editor.createControl(parent,label);
 				}
 			}
+			else
+				super.bindAttribute(parent, object, attribute, label);
 		}
 		
 		@Override

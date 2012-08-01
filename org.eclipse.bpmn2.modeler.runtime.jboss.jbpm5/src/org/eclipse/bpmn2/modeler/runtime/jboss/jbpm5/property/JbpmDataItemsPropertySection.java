@@ -23,6 +23,9 @@ import org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.ui.property.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.ui.property.TableColumn;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.PropertyListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
@@ -44,23 +47,23 @@ import org.eclipse.swt.widgets.Composite;
 public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 
 	static {
-		// register the DataStorePropertiesComposite for rendering DataStore objects
-		PropertiesCompositeFactory.register(GlobalType.class, GlobalTypePropertiesComposite.class);
+		// register the DataStoreDetailComposite for rendering DataStore objects
+		PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
 		PropertiesCompositeFactory.register(Property.class, JbpmPropertyListComposite.class);
 	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new JbpmDataItemsPropertiesComposite(this);
+		return new JbpmDataItemsDetailComposite(this);
 	}
 
-	public class GlobalTypePropertiesComposite extends DefaultDetailComposite {
+	public class GlobalTypeDetailComposite extends DefaultDetailComposite {
 
-		public GlobalTypePropertiesComposite(Composite parent, int style) {
+		public GlobalTypeDetailComposite(Composite parent, int style) {
 			super(parent, style);
 		}
 
-		public GlobalTypePropertiesComposite(AbstractBpmn2PropertySection section) {
+		public GlobalTypeDetailComposite(AbstractBpmn2PropertySection section) {
 			super(section);
 		}
 		
@@ -113,25 +116,31 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 
 		public JbpmPropertyListComposite(AbstractBpmn2PropertySection section) {
 			super(section);
-			// TODO Auto-generated constructor stub
 		}
 
 		public JbpmPropertyListComposite(Composite parent, int style) {
 			super(parent, style);
-			// TODO Auto-generated constructor stub
 		}
 
 		public JbpmPropertyListComposite(Composite parent) {
 			super(parent);
-			// TODO Auto-generated constructor stub
 		}
-
+		
+		public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
+			if (columnProvider==null) {
+				columnProvider = new ListCompositeColumnProvider(this,true);
+				columnProvider.add(new TableColumn(object, PACKAGE.getBaseElement_Id()));
+				columnProvider.add(new TableColumn(object, PACKAGE.getItemAwareElement_ItemSubjectRef()));
+			}
+			return columnProvider;
+		}
+		
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
 			Property prop  = (Property)super.addListItem(object, feature);
 			String label = PropertyUtil.getLongDisplayName(prop.eContainer());
 			prop.setId( prop.getName() );
-			prop.setName(label + " Variable");
+			prop.setName(null);
 			return prop;
 		}
 	}
