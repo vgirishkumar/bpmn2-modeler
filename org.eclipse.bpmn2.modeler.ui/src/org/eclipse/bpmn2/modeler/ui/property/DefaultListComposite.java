@@ -1,6 +1,5 @@
 package org.eclipse.bpmn2.modeler.ui.property;
 
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.common.util.EList;

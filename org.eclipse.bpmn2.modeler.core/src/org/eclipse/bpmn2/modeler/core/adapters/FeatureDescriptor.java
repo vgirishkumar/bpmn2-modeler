@@ -27,6 +27,7 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectEList;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -214,22 +215,23 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}		
 	
 	public EObject createFeature(Object context, EClass eclass) {
+		return createFeature(object.eResource(),context,eclass);
+	}
+	
+	public EObject createFeature(Resource resource, Object context, EClass eclass) {
 		T object = adopt(context);
 		EObject newFeature = null;
 		try {
 			if (eclass==null)
 				eclass = (EClass)feature.getEType();
 			
-			ModelHandler mh = ModelHandler.getInstance(object);
-			if (mh!=null) {
-				newFeature = mh.createStandby(object, feature, eclass);
+			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+			if (adapter!=null) {
+				newFeature = adapter.getObjectDescriptor().createObject(resource, eclass);
+				object.eAdapters().add(new InsertionAdapter(object, feature, newFeature));
 			}
-			else {
-				// object is not yet added to a Resource so use an insertion adapter
-				// to add it later
-				newFeature = ModelHandler.createStandby(null, object, feature, eclass);
-			}
-		} catch (IOException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return newFeature;
