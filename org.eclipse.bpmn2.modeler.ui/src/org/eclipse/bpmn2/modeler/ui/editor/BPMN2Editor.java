@@ -55,19 +55,28 @@ import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
+import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFPaletteRoot;
+import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -106,7 +115,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private IFile modelFile;
 	private IFile diagramFile;
 	
-	private IFileChangeListener fileChangeListener;
 	private IWorkbenchListener workbenchListener;
 	private IPartListener2 selectionListener;
 	private boolean workbenchShutdown = false;
@@ -165,7 +173,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		
 		try {
 			Bpmn2DiagramType diagramType = Bpmn2DiagramType.NONE;
 			String targetNamespace = null;
@@ -202,7 +209,11 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		super.init(site, input);
 		addSelectionListener();
-		addFileChangeListener();
+	}
+	
+	@Override
+	protected DefaultUpdateBehavior createUpdateBehavior() {
+		return new BPMN2EditorUpdateBehavior(this);
 	}
 
 	public Bpmn2Preferences getPreferences() {
@@ -237,7 +248,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	private void getModelPathFromInput(DiagramEditorInput input) {
-		URI uri = input.getDiagram().eResource().getURI();
+		URI uri = input.getUri();
 		String uriString = uri.trimFragment().toPlatformString(true);
 		modelFile = BPMN2DiagramCreator.getModelFile(new Path(uriString));
 	}
@@ -263,10 +274,10 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return input;
 	}
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
+	private void saveModelFile() {
 		modelHandler.save();
 		((BasicCommandStack) getEditingDomain().getCommandStack()).saveIsDone();
+		updateDirtyState();
 	}
 
 	@Override
@@ -295,7 +306,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				if (modelFile.exists()) {
 					bpmnResource.load(null);
 				} else {
-					doSave(null);
+					saveModelFile();
 				}
 			} catch (IOException e) {
 				Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
@@ -325,7 +336,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (diagramType != Bpmn2DiagramType.NONE) {
 			BPMNDiagram bpmnDiagram = modelHandler.createDiagramType(diagramType, targetNamespace);
 			featureProvider.link(diagram, bpmnDiagram);
-			BPMN2Editor.this.doSave(null);
+			saveModelFile();
 		}
 		
 		DIImport di = new DIImport();
@@ -391,8 +402,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				public void partBroughtToTop(IWorkbenchPartReference partRef) {
 					IWorkbenchPart part = partRef.getPart(false);
 					if (part instanceof BPMN2MultiPageEditor) {
-						BPMN2MultiPageEditor ed = (BPMN2MultiPageEditor)part;
-						setActiveEditor(ed.designEditor);
+						BPMN2MultiPageEditor mpe = (BPMN2MultiPageEditor)part;
+						setActiveEditor(mpe.designEditor);
 					}
 				}
 
@@ -432,50 +443,15 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 	}
 
-	private void addFileChangeListener() {
-		if (fileChangeListener==null) {
-			fileChangeListener = new IFileChangeListener() {
-				public void deleted(IPath filePath) {
-					// close the editor if either the dummy diagramfile (in the .bpmn2 folder)
-					// or the model file is deleted
-					if (modelFile.getFullPath().equals(filePath) || diagramFile.getFullPath().equals(filePath)) {
-						// Close the editor.
-						Display display = getSite().getShell().getDisplay();
-						display.asyncExec(new Runnable() {
-							public void run() {
-								boolean closeEditor = getSite().getPage().closeEditor(BPMN2Editor.this, false);
-								if (!closeEditor){
-									// If close editor fails, try again with explicit editorpart 
-									// of the old file
-									IFile oldFile = ResourcesPlugin.getWorkspace().getRoot().getFile(modelFile.getFullPath());
-									IEditorPart editorPart = ResourceUtil.findEditor(getSite().getPage(), oldFile);
-									getSite().getPage().closeEditor(editorPart, false);
-								}
-							}
-						});
-					}
-				}
-				public void moved(IPath oldFilePath, IPath newFilePath) {
-					// handle file move/rename after the fact (i.e. newFile now exists, old file does not)
-					if (modelFile.getFullPath().equals(oldFilePath) || diagramFile.getFullPath().equals(oldFilePath)) {
-						// same behavior as Graphiti
-						// TODO: if Graphiti behavior changes so that it can handle file rename/move
-						// then we need to change this as well.
-						deleted(oldFilePath);
-					}
-				}
-			};
-			Activator.getDefault().getResourceChangeListener().addListener(fileChangeListener);
-		}
+	public void setEditorTitle(final String title) {
+		Display display = getSite().getShell().getDisplay();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				setPartName(title);
+			}
+		});
 	}
 
-	private void removeFileChangeListener() {
-		if (fileChangeListener!=null) {
-			Activator.getDefault().getResourceChangeListener().removeListener(fileChangeListener);
-			fileChangeListener = null;
-		}
-	}
-	
 	public BPMN2EditingDomainListener getEditingDomainListener() {
 		if (editingDomainListener==null) {
 			TransactionalEditingDomainImpl editingDomain = (TransactionalEditingDomainImpl)getEditingDomain();
@@ -504,17 +480,16 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			instances += refs.length;
 		}
 		ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
-		getPreferences().getInstance(modelHandler.getResource()).getGlobalPreferences().removePropertyChangeListener(this);
+		getPreferences().getGlobalPreferences().removePropertyChangeListener(this);
 		
 		getResourceSet().eAdapters().remove(getEditorAdapter());
 		removeSelectionListener();
-		removeFileChangeListener();
 		if (instances==0)
 			setActiveEditor(null);
 		
 		super.dispose();
-		ModelHandlerLocator.releaseModel(modelUri);
-		// get rid of temp files and folders, button only if the workbench is being shut down.
+		ModelHandlerLocator.remove(modelUri);
+		// get rid of temp files and folders, but NOT if the workbench is being shut down.
 		// when the workbench is restarted, we need to have those temp files around!
 		if (!workbenchShutdown)
 			BPMN2DiagramCreator.dispose(diagramFile);
@@ -594,13 +569,75 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 	}
 
+	public void closeEditor() {
+		Display display = getSite().getShell().getDisplay();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				boolean closed = getSite().getPage().closeEditor(BPMN2Editor.this, false);
+				if (!closed){
+					// If close editor fails, try again with explicit editorpart 
+					// of the old file
+					IFile oldFile = ResourcesPlugin.getWorkspace().getRoot().getFile(modelFile.getFullPath());
+					IEditorPart editorPart = ResourceUtil.findEditor(getSite().getPage(), oldFile);
+					closed = getSite().getPage().closeEditor(editorPart, false);
+				}
+			}
+		});
+	}
+
 	// Show error dialog and log the error
 	private void showErrorDialogWithLogging(Exception e) {
 		Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 		ErrorUtils.showErrorWithLogging(status);
 	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// WorkspaceSynchronizer handlers called from delegate
+	////////////////////////////////////////////////////////////////////////////////
 	
+	public boolean handleResourceChanged(Resource resource) {
+		return true;
+	}
+
+	public boolean handleResourceDeleted(Resource resource) {
+		closeEditor();
+		return true;
+	}
+
+	public boolean handleResourceMoved(Resource resource, URI newURI) {
+		URI oldURI = resource.getURI();
+		resource.setURI(newURI);
+		
+		IFile file = WorkspaceSynchronizer.getUnderlyingFile(resource);
+		if (modelUri.equals(oldURI)) {
+			ModelHandlerLocator.remove(modelUri);
+			modelUri = newURI;
+			modelFile = file;
+			if (preferences!=null) {
+				preferences.getGlobalPreferences().removePropertyChangeListener(this);
+				preferences.dispose();
+				preferences = null;
+			}
+			targetRuntime = null;
+			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, (Bpmn2ResourceImpl)resource);
+			ModelHandlerLocator.put(diagramUri, modelHandler);
+
+			setEditorTitle(file.getFullPath().removeFileExtension().lastSegment());
+		}
+		else if (diagramUri.equals(oldURI)) {
+			ModelHandlerLocator.remove(diagramUri);
+			diagramUri = newURI;
+			ModelHandlerLocator.put(diagramUri, modelHandler);
+			diagramFile = file;
+		}
+
+		return true;
+	}
 	
+	////////////////////////////////////////////////////////////////////////////////
+	// Other handlers
+	////////////////////////////////////////////////////////////////////////////////
+
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		// Graphiti understands multipage editors
