@@ -94,11 +94,28 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 	
 	public AbstractBpmn2PropertySection getPropertySection() {
-		return propertySection;
+		if (propertySection!=null)
+			return propertySection;
+		Composite parent = getParent();
+		while (parent!=null && !(parent instanceof ListAndDetailCompositeBase))
+			parent = parent.getParent();
+		if (parent instanceof ListAndDetailCompositeBase)
+			return propertySection = ((ListAndDetailCompositeBase)parent).getPropertySection();
+		return null;
 	}
-	
+
+	protected void redrawPage() {
+		if (getPropertySection()!=null) {
+			getParent().layout();
+			getPropertySection().layout();
+		}
+		else {
+			PropertyUtil.recursivelayout(getParent());
+		}
+	}
+
 	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
-		return propertySection.getTabbedPropertySheetPage();
+		return getPropertySection().getTabbedPropertySheetPage();
 	}
 
 	public FormToolkit getToolkit() {
@@ -112,14 +129,14 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	public BPMN2Editor getDiagramEditor() {
 		if (bpmn2Editor!=null)
 			return bpmn2Editor;
-		if (propertySection!=null)
+		if (getPropertySection()!=null)
 			return (BPMN2Editor)propertySection.getDiagramEditor();
 		Composite parent = getParent();
 		while (parent!=null && !(parent instanceof ListAndDetailCompositeBase))
 			parent = parent.getParent();
 		if (parent instanceof ListAndDetailCompositeBase)
-			return ((ListAndDetailCompositeBase)parent).getDiagramEditor();
-		return BPMN2Editor.getActiveEditor();
+			return bpmn2Editor = ((ListAndDetailCompositeBase)parent).getDiagramEditor();
+		return bpmn2Editor = BPMN2Editor.getActiveEditor();
 	}
 	
 	public ModelEnablementDescriptor getModelEnablement(EObject object) {
@@ -159,6 +176,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 
 	@Override
 	public void resourceSetChanged(ResourceSetChangeEvent event) {
+//		setBusinessObject(getBusinessObject());
 	}
 
 	@Override
