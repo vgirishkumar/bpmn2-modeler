@@ -70,7 +70,6 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
@@ -124,6 +123,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
+	private WorkspaceSynchronizer workspaceSynchronizer;
 
 	protected BPMN2EditorAdapter editorAdapter;
 
@@ -210,11 +210,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		super.init(site, input);
 		addSelectionListener();
 	}
-	
-	@Override
-	protected DefaultUpdateBehavior createUpdateBehavior() {
-		return new BPMN2EditorUpdateBehavior(this);
-	}
 
 	public Bpmn2Preferences getPreferences() {
 		if (preferences==null) {
@@ -248,7 +243,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	private void getModelPathFromInput(DiagramEditorInput input) {
-		URI uri = input.getUri();
+		URI uri = input.getDiagram().eResource().getURI();
 		String uriString = uri.trimFragment().toPlatformString(true);
 		modelFile = BPMN2DiagramCreator.getModelFile(new Path(uriString));
 	}
@@ -277,7 +272,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private void saveModelFile() {
 		modelHandler.save();
 		((BasicCommandStack) getEditingDomain().getCommandStack()).saveIsDone();
-		updateDirtyState();
+		firePropertyChange(IEditorPart.PROP_DIRTY);
 	}
 
 	@Override
@@ -322,6 +317,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 		basicCommandStack.saveIsDone();
 		basicCommandStack.flush();
+
+		workspaceSynchronizer = new WorkspaceSynchronizer(getEditingDomain(),
+				new BPMN2EditorWorkspaceSynchronizerDelegate(this));
 	}
 	
 	private void importDiagram() {
@@ -486,6 +484,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		removeSelectionListener();
 		if (instances==0)
 			setActiveEditor(null);
+		workspaceSynchronizer.dispose();
 		
 		super.dispose();
 		ModelHandlerLocator.remove(modelUri);
@@ -610,30 +609,18 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		IFile file = WorkspaceSynchronizer.getUnderlyingFile(resource);
 		if (modelUri.equals(oldURI)) {
-			ModelHandlerLocator.remove(modelUri);
-			modelUri = newURI;
-			modelFile = file;
-			if (preferences!=null) {
-				preferences.getGlobalPreferences().removePropertyChangeListener(this);
-				preferences.dispose();
-				preferences = null;
-			}
-			targetRuntime = null;
-			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, (Bpmn2ResourceImpl)resource);
-			ModelHandlerLocator.put(diagramUri, modelHandler);
-
-			setEditorTitle(file.getFullPath().removeFileExtension().lastSegment());
+			// Screw it! I can't get this to work for Graphiti 0.8.2
+			// the workspace sync support is not in there yet (was added at 0.9.0)
+			// so the behavior is to simply close the editor....for now
+			closeEditor();
 		}
 		else if (diagramUri.equals(oldURI)) {
-			ModelHandlerLocator.remove(diagramUri);
-			diagramUri = newURI;
-			ModelHandlerLocator.put(diagramUri, modelHandler);
-			diagramFile = file;
+			closeEditor();
 		}
 
 		return true;
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////////////
 	// Other handlers
 	////////////////////////////////////////////////////////////////////////////////
@@ -680,5 +667,5 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				}
 			});
 		}
-	}
+	}	
 }
