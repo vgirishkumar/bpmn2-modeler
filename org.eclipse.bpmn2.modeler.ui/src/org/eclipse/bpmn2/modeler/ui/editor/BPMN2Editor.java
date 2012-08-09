@@ -13,7 +13,6 @@
 package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -40,10 +39,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -60,10 +61,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
-import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
-import org.eclipse.gef.ContextMenuProvider;
-import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -71,11 +68,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFPaletteRoot;
-import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -86,7 +80,6 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -114,6 +107,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private IFile modelFile;
 	private IFile diagramFile;
 	
+	private IFileChangeListener fileChangeListener;
 	private IWorkbenchListener workbenchListener;
 	private IPartListener2 selectionListener;
 	private boolean workbenchShutdown = false;
@@ -123,7 +117,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
-	private WorkspaceSynchronizer workspaceSynchronizer;
 
 	protected BPMN2EditorAdapter editorAdapter;
 
@@ -209,6 +202,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		super.init(site, input);
 		addSelectionListener();
+		addFileChangeListener();
 	}
 
 	public Bpmn2Preferences getPreferences() {
@@ -317,9 +311,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 		basicCommandStack.saveIsDone();
 		basicCommandStack.flush();
-
-		workspaceSynchronizer = new WorkspaceSynchronizer(getEditingDomain(),
-				new BPMN2EditorWorkspaceSynchronizerDelegate(this));
 	}
 	
 	private void importDiagram() {
@@ -449,7 +440,36 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		});
 	}
+	
+	private void addFileChangeListener() {
+		if (fileChangeListener==null) {
+			fileChangeListener = new IFileChangeListener() {
+				public void deleted(IPath filePath) {
+					// close the editor if either the dummy diagramfile (in the .bpmn2 folder)
+					// or the model file is deleted
+					if (modelFile.getFullPath().equals(filePath) || diagramFile.getFullPath().equals(filePath)) {
+						// Close the editor.
+						closeEditor();
+					}
+				}
+				public void moved(IPath oldFilePath, IPath newFilePath) {
+					// handle file move/rename after the fact (i.e. newFile now exists, old file does not)
+					if (modelFile.getFullPath().equals(oldFilePath) || diagramFile.getFullPath().equals(oldFilePath)) {
+						reopenEditor(newFilePath);
+					}
+				}
+			};
+			Activator.getDefault().getResourceChangeListener().addListener(fileChangeListener);
+		}
+	}
 
+	private void removeFileChangeListener() {
+		if (fileChangeListener!=null) {
+			Activator.getDefault().getResourceChangeListener().removeListener(fileChangeListener);
+			fileChangeListener = null;
+		}
+	}
+	
 	public BPMN2EditingDomainListener getEditingDomainListener() {
 		if (editingDomainListener==null) {
 			TransactionalEditingDomainImpl editingDomain = (TransactionalEditingDomainImpl)getEditingDomain();
@@ -482,9 +502,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		getResourceSet().eAdapters().remove(getEditorAdapter());
 		removeSelectionListener();
+		removeFileChangeListener();
 		if (instances==0)
 			setActiveEditor(null);
-		workspaceSynchronizer.dispose();
 		
 		super.dispose();
 		ModelHandlerLocator.remove(modelUri);
@@ -583,42 +603,36 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		});
 	}
+	
+	protected void reopenEditor(final IPath newFilePath) {
+		Display display = getSite().getShell().getDisplay();
+		display.syncExec(new Runnable() {
+			public void run() {
+				boolean closed = getSite().getPage().closeEditor(BPMN2Editor.this, false);
+				if (!closed){
+					// If close editor fails, try again with explicit editorpart 
+					// of the old file
+					IFile oldFile = ResourcesPlugin.getWorkspace().getRoot().getFile(modelFile.getFullPath());
+					IEditorPart editorPart = ResourceUtil.findEditor(getSite().getPage(), oldFile);
+					closed = getSite().getPage().closeEditor(editorPart, false);
+				}
+				if (closed) {
+					IFile renamedFile = ResourcesPlugin.getWorkspace().getRoot().getFile(newFilePath);
+					try {
+						getSite().getPage().openEditor(new FileEditorInput(renamedFile), EDITOR_ID);
+					} catch (PartInitException e) {
+						Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+						ErrorUtils.showErrorWithLogging(status);
+					}
+				}
+			}
+		});
+	}
 
 	// Show error dialog and log the error
 	private void showErrorDialogWithLogging(Exception e) {
 		Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 		ErrorUtils.showErrorWithLogging(status);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	// WorkspaceSynchronizer handlers called from delegate
-	////////////////////////////////////////////////////////////////////////////////
-	
-	public boolean handleResourceChanged(Resource resource) {
-		return true;
-	}
-
-	public boolean handleResourceDeleted(Resource resource) {
-		closeEditor();
-		return true;
-	}
-
-	public boolean handleResourceMoved(Resource resource, URI newURI) {
-		URI oldURI = resource.getURI();
-		resource.setURI(newURI);
-		
-		IFile file = WorkspaceSynchronizer.getUnderlyingFile(resource);
-		if (modelUri.equals(oldURI)) {
-			// Screw it! I can't get this to work for Graphiti 0.8.2
-			// the workspace sync support is not in there yet (was added at 0.9.0)
-			// so the behavior is to simply close the editor....for now
-			closeEditor();
-		}
-		else if (diagramUri.equals(oldURI)) {
-			closeEditor();
-		}
-
-		return true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
