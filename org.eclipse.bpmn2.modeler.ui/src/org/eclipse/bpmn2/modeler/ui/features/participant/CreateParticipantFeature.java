@@ -26,14 +26,12 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 
-public class CreateParticipantFeature extends AbstractBpmn2CreateFeature {
-	
-	private static int index = 1;
+public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Participant> {
 	
 	public CreateParticipantFeature(IFeatureProvider fp) {
 	    super(fp, "Pool", "Container for partitioning a set of activities");
@@ -46,12 +44,10 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature {
 
 	@Override
     public Object[] create(ICreateContext context) {
-		Participant participant = null;
-		
+		Participant participant = createBusinessObject(context);
         BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
         Definitions definitions = ModelUtil.getDefinitions(bpmnDiagram);
-        participant = (Participant) PropertyUtil.createObject(definitions.eResource(), Bpmn2Package.eINSTANCE.getParticipant());
-        participant.setName("Pool nr " + index++);
+
         // add the Pool to the first Choreography or Collaboration we find.
         // TODO: when multipage editor is working, this will be the specific Choreography or
         // Collaboration that is being rendered on the current page.
@@ -90,7 +86,19 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature {
 	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getBusinessObjectClass()
 	 */
 	@Override
-	public Class getBusinessObjectClass() {
-		return Participant.class;
+	public EClass getBusinessObjectClass() {
+		return Bpmn2Package.eINSTANCE.getParticipant();
+	}
+
+	@Override
+	public Participant createBusinessObject(ICreateContext context) {
+        BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
+        Definitions definitions = ModelUtil.getDefinitions(bpmnDiagram);
+        Participant bo = (Participant) ModelUtil.createObject(definitions.eResource(), Bpmn2Package.eINSTANCE.getParticipant());
+        ModelUtil.setID(bo,definitions.eResource());
+        bo.setName( ModelUtil.toDisplayName(bo.getId()) );
+		putBusinessObject(context, bo);
+
+        return bo;
 	}
 }
