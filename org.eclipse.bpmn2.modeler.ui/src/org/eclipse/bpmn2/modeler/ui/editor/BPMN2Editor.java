@@ -18,6 +18,7 @@ import java.util.Iterator;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
@@ -26,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -90,7 +92,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
  * 
@@ -120,24 +124,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
 
-	protected BPMN2EditorAdapter editorAdapter;
-
-	protected class BPMN2EditorAdapter implements Adapter {
-		public Notifier getTarget() { return null; }
-		public void setTarget(Notifier newTarget) { }
-		public boolean isAdapterForType(Object type) { return (type == BPMN2EditorAdapter.class); }
-		public void notifyChanged(Notification notification) { }
-		public BPMN2Editor getBPMN2Editor() { return BPMN2Editor.this; }
-	}
-
-	/**
-	 * Given a ResourceSet, this helper identifies the BPELEditor (if any) that created it
-	 */
-	public static BPMN2Editor getEditor(EObject object) {
-		if (object!=null && object.eResource()!=null)
-			return getEditor(object.eResource().getResourceSet());
-		return null;
-	}
+	protected DiagramEditorAdapter editorAdapter;
 	
 	public static BPMN2Editor getActiveEditor() {
 		return activeEditor;
@@ -151,18 +138,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 	}
 
-	public static BPMN2Editor getEditor(ResourceSet resourceSet) {
-	    Iterator<Adapter> it = resourceSet.eAdapters().iterator();
-	    while (it.hasNext()) {
-	        Object next = it.next();
-	        if (next instanceof BPMN2EditorAdapter) {
-	            return ((BPMN2EditorAdapter)next).getBPMN2Editor();
-	        }
-	    }
-	    return null;
-	}
-	
-	protected BPMN2EditorAdapter getEditorAdapter() {
+	protected DiagramEditorAdapter getEditorAdapter() {
 		return editorAdapter;
 	}
 
@@ -293,7 +269,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
 
 			resourceSet.setURIConverter(new ProxyURIConverterImplExtension());
-			resourceSet.eAdapters().add(editorAdapter = new BPMN2EditorAdapter());
+			resourceSet.eAdapters().add(editorAdapter = new DiagramEditorAdapter(this));
 
 			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, bpmnResource);
 			ModelHandlerLocator.put(diagramUri, modelHandler);
@@ -505,6 +481,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			return getTargetRuntime();
 		if (required==Bpmn2Preferences.class)
 			return getPreferences();
+		if (required == IPropertySheetPage.class) {
+			return new Bpmn2TabbedPropertySheetPage(this);
+		}
 		return super.getAdapter(required);
 	}
 
@@ -701,5 +680,5 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				}
 			});
 		}
-	}	
+	}
 }
