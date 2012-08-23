@@ -37,6 +37,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
+import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IFileChangeListener;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
@@ -589,6 +590,16 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	public ModelHandler getModelHandler() {
 		return modelHandler;
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		super.doSave(monitor);
+
+		Resource resource = getResourceSet().getResource(modelUri, false);
+		
+		if (BPMN2ProjectValidator.validateOnSave(resource, monitor))
+			loadMarkers();
 	}
 
 	@Override

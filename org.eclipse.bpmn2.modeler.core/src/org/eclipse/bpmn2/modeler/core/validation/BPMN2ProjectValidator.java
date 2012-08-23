@@ -13,7 +13,7 @@ package org.eclipse.bpmn2.modeler.core.validation;
 import java.io.IOException;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.core.resources.IBuildConfiguration;
+//import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -93,18 +93,19 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			IProject project = file.getProject();
 			if (project!=null) {
-				try {
-					IBuildConfiguration config = project.getActiveBuildConfig();
-					if (config==null || config.getName()==null || config.getName().isEmpty())
-						needValidation = true;
-					IBuildConfiguration[] configs = project.getBuildConfigs();
-					for (IBuildConfiguration c : configs) {
-						System.out.println(c.getName());
-					}
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					IBuildConfiguration config = project.getActiveBuildConfig();
+//					if (config==null || config.getName()==null || config.getName().isEmpty())
+//						needValidation = true;
+//					IBuildConfiguration[] configs = project.getBuildConfigs();
+//					for (IBuildConfiguration c : configs) {
+//						System.out.println(c.getName());
+//					}
+//				} catch (CoreException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				needValidation = true;
 			}
 		}
 		
