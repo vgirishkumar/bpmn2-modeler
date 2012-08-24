@@ -462,8 +462,10 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		                if (ga == null) {
 		                    ga = pe.getGraphicsAlgorithm();
 		                }
-		                decorator.setX(ga.getWidth() - 10);
-		                decorator.setY(ga.getHeight() - 10);
+		                // bug in Graphiti 0.8.2 clips decorators to figure bounds,
+		                // so need to move decorator inside a little.
+		                decorator.setX(ga.getWidth() - 14);
+		                decorator.setY(ga.getHeight() - 14);
 		                decorator.setMessage(status.getMessage());
 		                decorators.add(decorator);
 		            }
