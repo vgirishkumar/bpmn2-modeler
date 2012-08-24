@@ -49,6 +49,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -137,6 +138,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private IFileChangeListener fileChangeListener;
 	private IWorkbenchListener workbenchListener;
 	private IPartListener2 selectionListener;
+    private IResourceChangeListener markerChangeListener;
 	private boolean workbenchShutdown = false;
 	private static BPMN2Editor activeEditor;
 	private static ITabDescriptorProvider tabDescriptorProvider;
@@ -203,6 +205,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		super.init(site, input);
 		addSelectionListener();
 		addFileChangeListener();
+		addMarkerChangeListener();
 	}
 
 	public Bpmn2Preferences getPreferences() {
@@ -489,6 +492,20 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (selectionListener!=null) {
 			getSite().getPage().removePartListener(selectionListener);
 			selectionListener = null;
+		}
+	}
+
+	private void addMarkerChangeListener() {
+		if (markerChangeListener==null) {
+			markerChangeListener = new BPMN2MarkerChangeListener(this);
+	        modelFile.getWorkspace().addResourceChangeListener(markerChangeListener, IResourceChangeEvent.POST_BUILD);
+		}
+	}
+	
+	private void removeMarkerChangeListener() {
+		if (markerChangeListener!=null) {
+	        modelFile.getWorkspace().removeResourceChangeListener(markerChangeListener);
+			markerChangeListener = null;
 		}
 	}
 
