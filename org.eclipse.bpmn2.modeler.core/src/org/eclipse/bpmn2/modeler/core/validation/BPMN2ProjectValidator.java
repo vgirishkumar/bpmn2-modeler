@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.core.resources.IBuildConfiguration;
+//import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -108,16 +108,19 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 			needValidation = true;
 		}
 		if (!needValidation) {
-			if (project!=null) {
-				try {
-					// TODO: if there is no project builder, force validation
-					IBuildConfiguration config = project.getActiveBuildConfig();
-					if (config==null || config.getName()==null || config.getName().isEmpty())
-						needValidation = true;
-				} catch (CoreException e) {
-					e.printStackTrace();
-				}
-			}
+// FIXME: IBuildConfiguration not available in eclipse 3.6
+//			if (project!=null) {
+//				
+//				try {
+//					// TODO: if there is no project builder, force validation
+//					IBuildConfiguration config = project.getActiveBuildConfig();
+//					if (config==null || config.getName()==null || config.getName().isEmpty())
+//						needValidation = true;
+//				} catch (CoreException e) {
+//					e.printStackTrace();
+//				}
+//			}
+			needValidation = true;
 		}
 		
 		if (needValidation) {
