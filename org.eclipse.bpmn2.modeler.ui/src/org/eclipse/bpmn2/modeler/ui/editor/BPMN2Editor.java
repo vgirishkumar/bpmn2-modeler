@@ -26,6 +26,10 @@ import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -37,7 +41,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
-import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IFileChangeListener;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
@@ -117,13 +120,19 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
 import org.eclipse.wst.validation.ValidationState;
-import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 /**
  * 
  */
 @SuppressWarnings("restriction")
 public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListener, IGotoMarker {
+
+	// Register the Default List and Detail Composites as fallback for rendering EObject
+	static {
+		PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class);
+		PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class);
+		PropertiesCompositeFactory.register(EObject.class, DefaultDialogComposite.class);
+	}
 
 	public static final String EDITOR_ID = "org.eclipse.bpmn2.modeler.ui.bpmn2editor";
 	public static final String CONTRIBUTOR_ID = "org.eclipse.bpmn2.modeler.ui.PropertyContributor";
@@ -407,23 +416,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
         } catch (CoreException e) {
             Activator.logStatus(e.getStatus());
         }
-        
-		IWorkbenchPage page = getEditorSite().getPage();
-		String viewID = "org.eclipse.ui.views.PropertySheet";
-		try {
-			IViewReference[] views = page.getViewReferences();
-			for (IViewReference v : views) {
-				if (viewID.equals(v.getId())) {
-					PropertySheet ps = (PropertySheet)v.getView(true);
-					IPage pp = ps.getCurrentPage();
-					if (pp instanceof Bpmn2TabbedPropertySheetPage) {
-						((Bpmn2TabbedPropertySheetPage)pp).refresh();
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-		}
     }
     
     private EObject getTargetObject(IMarker marker) {
@@ -614,6 +606,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (!workbenchShutdown)
 			BPMN2DiagramCreator.dispose(diagramFile);
 		removeWorkbenchListener();
+		removeMarkerChangeListener();
 		getPreferences().dispose();
 	}
 
@@ -634,9 +627,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		super.doSave(monitor);
 
 		Resource resource = getResourceSet().getResource(modelUri, false);
-		
-		if (BPMN2ProjectValidator.validateOnSave(resource, monitor))
-			loadMarkers();
+		BPMN2ProjectValidator.validateOnSave(resource, monitor);
 	}
 
 	@Override
@@ -700,8 +691,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 
 	public void closeEditor() {
-		Display display = getSite().getShell().getDisplay();
-		display.asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				boolean closed = getSite().getPage().closeEditor(BPMN2Editor.this, false);
 				if (!closed){
