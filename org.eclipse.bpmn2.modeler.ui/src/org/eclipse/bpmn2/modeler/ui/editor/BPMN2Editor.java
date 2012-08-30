@@ -346,11 +346,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			saveModelFile();
 		}
 		
-		DIImport di = new DIImport();
-		di.setDiagram(diagram);
-		di.setDomain(getEditingDomain());
+		DIImport di = new DIImport(this);
 		di.setModelHandler(modelHandler);
-		di.setFeatureProvider(featureProvider);
+
 		di.generateFromDI();
 
 		// this needs to happen AFTER the diagram has been imported because we need
@@ -500,7 +498,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			markerChangeListener = null;
 		}
 	}
-
+	
 	public void setEditorTitle(final String title) {
 		Display display = getSite().getShell().getDisplay();
 		display.asyncExec(new Runnable() {

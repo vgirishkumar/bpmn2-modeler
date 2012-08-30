@@ -16,6 +16,7 @@ import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCom
 import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.IS_LOOP_OR_MULTI_INSTANCE;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -88,19 +89,20 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		decorateActivityRectangle(rect);
 		peService.setPropertyValue(rectShape, IS_ACTIVITY, Boolean.toString(true));
 
-		ContainerShape markerContainer = peService.createContainerShape(containerShape, false);
-		Rectangle markerInvisibleRect = gaService.createInvisibleRectangle(markerContainer);
-		int h = 10;
-		y = height - h - 3 - getMarkerContainerOffset();
-		gaService.setLocationAndSize(markerInvisibleRect, 0, y, invisibleRect.getWidth(), h);
-		peService.setPropertyValue(markerContainer, GraphicsUtil.ACTIVITY_MARKER_CONTAINER, Boolean.toString(true));
+//		ContainerShape markerContainer = peService.createContainerShape(containerShape, false);
+//		Rectangle markerInvisibleRect = gaService.createInvisibleRectangle(markerContainer);
+//		int h = 10;
+//		y = height - h - 3 - getMarkerContainerOffset();
+//		gaService.setLocationAndSize(markerInvisibleRect, 0, y, invisibleRect.getWidth(), h);
+//		peService.setPropertyValue(markerContainer, GraphicsUtil.ACTIVITY_MARKER_CONTAINER, Boolean.toString(true));
 
 		hook(activity, containerShape, context, width, height); // hook for subclasses to inject extra code
 
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
-		createDIShape(containerShape, activity);
+		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		createDIShape(containerShape, activity, !isImport);
 
 		Graphiti.getPeService().setPropertyValue(containerShape, IS_COMPENSATE_PROPERTY, Boolean.toString(false));
 		Graphiti.getPeService().setPropertyValue(containerShape, IS_LOOP_OR_MULTI_INSTANCE,
