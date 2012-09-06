@@ -12,22 +12,23 @@
  ******************************************************************************/
 
 
-package org.eclipse.bpmn2.modeler.ui.property.tasks;
+package org.eclipse.bpmn2.modeler.ui.property.artifact;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
-public class SubProcessDetailComposite extends ActivityDetailComposite {
+public class CategoryDetailComposite extends DefaultDetailComposite {
 
-	public SubProcessDetailComposite(Composite parent, int style) {
+	public CategoryDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
 
 	/**
 	 * @param section
 	 */
-	public SubProcessDetailComposite(AbstractBpmn2PropertySection section) {
+	public CategoryDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
 
@@ -37,19 +38,8 @@ public class SubProcessDetailComposite extends ActivityDetailComposite {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
 						"anyAttribute",
-						"calledElementRef", // only used in CallActivity
-						"startQuantity",
-						"completionQuantity",
-						"completionCondition",
-						"isForCompensation",
-						"triggeredByEvent",
-						"cancelRemainingInstances",
-						"loopCharacteristics",
-						"boundaryEventDefs",
-						"method",
-						"ordering",
-						"protocol",
-						"properties",
+						"name",
+						"categoryValue",
 				};
 				
 				@Override

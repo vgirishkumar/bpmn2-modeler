@@ -115,7 +115,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		while (parent!=null && !(parent instanceof ListAndDetailCompositeBase))
 			parent = parent.getParent();
 		if (parent instanceof ListAndDetailCompositeBase)
-			return propertySection = ((ListAndDetailCompositeBase)parent).getPropertySection();
+			return ((ListAndDetailCompositeBase)parent).getPropertySection();
 		return null;
 	}
 
@@ -145,7 +145,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		if (diagramEditor!=null)
 			return diagramEditor;
 		if (getPropertySection()!=null)
-			return (DiagramEditor)propertySection.getDiagramEditor();
+			return (DiagramEditor)getPropertySection().getDiagramEditor();
 		Composite parent = getParent();
 		while (parent!=null && !(parent instanceof ListAndDetailCompositeBase))
 			parent = parent.getParent();
@@ -256,7 +256,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	// it will not receive notification of model changes inside a txn.
 	// So, while this works in the Property Sheet pages, things like
 	// the ObjectEditingDialog (which makes changes in the current txn)
-	// will not cause other widgets in the dialog to be notified.
+	// will not cause other widgets in the dialog to businessObject notified.
 	@Override
 	public void resourceSetChanged(ResourceSetChangeEvent event) {
 		final List<Notification> notifications = new ArrayList<Notification>();

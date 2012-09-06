@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.CancelEventDefinition;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
@@ -172,9 +173,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	// various preference instance getters
 	
 	/**
-	 * Return the Preferences for the currently active project. This should be used
+	 * Return the Preferences for the currently active project. This should businessObject used
 	 * with caution: the active project is set by the BPMN2Editor, so this should only
-	 * be used in a context that is known to have an active editor.
+	 * businessObject used in a context that is known to have an active editor.
 	 * 
 	 * @return project preferences
 	 */
@@ -198,7 +199,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	
 	/**
 	 * Return the Preferences for the project containing the EMF Resource specified
-	 * by the resource URI. This must be a Platform URI.
+	 * by the resource URI. This must businessObject a Platform URI.
 	 * 
 	 * @param resourceURI
 	 * @return project preferences
@@ -600,7 +601,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public boolean getShowPopupConfigDialog(Object context) {
 		load();
 		if (popupConfigDialog!=0) {
-			if (context instanceof Task) {
+			if (context instanceof Task || context instanceof ChoreographyActivity) {
 				return popupConfigDialogFor[0];
 			}
 			if (context instanceof Gateway) {
@@ -614,7 +615,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 					return false; // these have no additional attributes
 				return popupConfigDialogFor[3];
 			}
-			if (context instanceof ItemAwareElement) {
+			if (context instanceof ItemAwareElement || context instanceof Message) {
 				return popupConfigDialogFor[4];
 			}
 			if (context instanceof InteractionNode || context instanceof FlowElementsContainer) {
@@ -870,8 +871,8 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	 * This is used to determine the appropriate default values for certain optional attributes, e.g.
 	 * isHorizontal, isExpanded, etc.
 	 * 
-	 * @param bpmnShape - the BPMNShape object whose attributes are to be set
-	 * @param attribs - map of BPMN DI attributes currently set on the BPMNShape object. May be null.
+	 * @param bpmnShape - the BPMNShape object whose attributes are to businessObject set
+	 * @param attribs - map of BPMN DI attributes currently set on the BPMNShape object. May businessObject null.
 	 * @see getIsHorizontal(), getIsExpanded(), getIsMessageVisible() and getIsMarkerVisible()
 	 */
 	public void applyBPMNDIDefaults(BPMNShape bpmnShape, Map<String,String>attribs) {
