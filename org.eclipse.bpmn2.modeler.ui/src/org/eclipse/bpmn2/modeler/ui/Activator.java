@@ -218,6 +218,10 @@ public class Activator extends AbstractUIPlugin {
 		return getImageRegistry().get(id);
 	}
 
+	
+    public ImageDescriptor getImageDescriptor(String id) {
+		return getImageRegistry().getDescriptor(id);
+    }
 
 	/**
 	 * Installs the IResourceChangeListener for this Plugin. Also

@@ -138,6 +138,7 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.MultiInstanceLoopCharacterist
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorOutlinePage;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
 import org.eclipse.bpmn2.modeler.ui.wizards.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -196,6 +197,7 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
 
@@ -720,6 +722,13 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (required == IPropertySheetPage.class) {
 			return new Bpmn2TabbedPropertySheetPage(this);
 		}
+		if (required == IContentOutlinePage.class) {
+			if (getDiagramTypeProvider() != null) {
+				BPMN2EditorOutlinePage outlinePage = new BPMN2EditorOutlinePage(this);
+				return outlinePage;
+			}
+		}
+		
 		return super.getAdapter(required);
 	}
 
