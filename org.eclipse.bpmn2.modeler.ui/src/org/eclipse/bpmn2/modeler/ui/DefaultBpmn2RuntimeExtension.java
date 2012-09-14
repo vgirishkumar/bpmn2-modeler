@@ -14,8 +14,10 @@ package org.eclipse.bpmn2.modeler.ui;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 
 
 public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
@@ -25,7 +27,7 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public boolean isContentForRuntime(IFile file) {
+	public boolean isContentForRuntime(IEditorInput input) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -48,12 +50,12 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(DiagramEditor editor) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public Composite getPreferencesComposite(Composite parent, Bpmn2Preferences preferences) {
 		return null;
-	}		
+	}
 }

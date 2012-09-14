@@ -40,6 +40,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeat
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
+import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -47,10 +48,15 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.xml.sax.InputSource;
 
 @SuppressWarnings("restriction")
@@ -69,9 +75,9 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#isContentForRuntime(org.eclipse.core.resources.IFile)
 	 */
 	@Override
-	public boolean isContentForRuntime(IFile file) {
+	public boolean isContentForRuntime(IEditorInput input) {
 		try {
-			InputSource source = new InputSource(file.getContents());
+			InputSource source = new InputSource( FileService.getInputContents(input) );
 			parser = new RootElementParser();
 			parser.parse(source);
 		} catch (AcceptedException e) {
@@ -107,9 +113,18 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	/** 
 	 * Initialize in this case finds all the *.wid/*.conf files in the project
 	 * and creates CustomTaskDescriptors for each task included
-	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize()
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize(DiagramEditor)
 	 */
-	public void initialize() {
+	public void initialize(DiagramEditor editor) {
+		ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
+		if (sel instanceof IStructuredSelection) {
+			Object o = ((IStructuredSelection)sel).getFirstElement();
+			// TODO: if selection came from a Guvnor Repository view, this will be a
+			// org.guvnor.tools.views.model.TreeObject - figure out how to add this dependency.
+			// In this case we may want to explicitly make the editor read-only
+			System.out.println(o);
+		}
+
 		IProject project = Bpmn2Preferences.getActiveProject();
 		if (project != null) {
 			getWorkItemDefinitions();

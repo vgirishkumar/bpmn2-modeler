@@ -90,7 +90,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		rs.setURIConverter(new ProxyURIConverterImplExtension());
 
 		Resource resource = rs.createResource(
-                URI.createPlatformResourceURI(modelFile.getFullPath().toString(), false),
+                URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true),
                 Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
         try {
             resource.load(null);
@@ -268,7 +268,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 	
     protected TargetRuntime getTargetRuntime() {
 		if (targetRuntime==null)
-			targetRuntime = getPreferences().getRuntime(modelFile);
+			targetRuntime = getPreferences().getRuntime();
 		return targetRuntime;
 	}
 

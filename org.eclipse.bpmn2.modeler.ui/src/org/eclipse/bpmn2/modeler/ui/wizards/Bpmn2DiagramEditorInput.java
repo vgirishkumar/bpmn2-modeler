@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.wizards;
 
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -24,12 +25,17 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 	private final TransactionalEditingDomain domain;
 	private Bpmn2DiagramType initialDiagramType = Bpmn2DiagramType.NONE;
 	private String targetNamespace;
-
-	Bpmn2DiagramEditorInput(URI diagramUri, TransactionalEditingDomain domain, String providerId) {
-		super(diagramUri, domain, providerId);
+	private BPMNDiagram bpmnDiagram;
+	private URI modelUri;
+	private URI diagramUri;
+	
+	Bpmn2DiagramEditorInput(URI modelUri, URI diagramUri, TransactionalEditingDomain domain, String providerId) {
+		super(diagramUri.appendFragment("/0"), domain, providerId);
 		this.domain = domain;
+		this.modelUri = modelUri;
+		this.diagramUri = diagramUri;
 	}
-
+	
 	public Bpmn2DiagramType getInitialDiagramType() {
 		return initialDiagramType;
 	}
@@ -46,6 +52,30 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 		this.targetNamespace = targetNamespace;
 	}
 
+	public URI  getModelUri() {
+		return modelUri;
+	}
+	
+	public URI getUri() {
+		return diagramUri;
+	}
+	
+	public String getToolTipText() {
+		return modelUri.toPlatformString(true);
+	}
+	
+	public String getName() {
+		return URI.decode(modelUri.trimFileExtension().lastSegment());
+	}
+	
+	public void updateUri(URI diagramFileUri) {
+		if (diagramFileUri.isPlatformResource()) {
+			modelUri = diagramFileUri;
+		}
+//		else
+//			super.updateUri(diagramFileUri);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		boolean superEquals = super.equals(obj);
@@ -70,15 +100,11 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 		return false;
 	}
 
-	@Override
-	public Object getAdapter(Class adapter) {
-//		if (adapter.equals(TransactionalEditingDomain.class)) {
-//			return new Bpmn2TransactionalEditingDomain();
-//		}
-		return super.getAdapter(adapter);
+	public BPMNDiagram getBpmnDiagram() {
+		return bpmnDiagram;
 	}
 
-//	public class Bpmn2TransactionalEditingDomain implements TransactionalEditingDomain {
-//		
-//	}
+	public void setBpmnDiagram(BPMNDiagram bpmnDiagram) {
+		this.bpmnDiagram = bpmnDiagram;
+	}
 }
