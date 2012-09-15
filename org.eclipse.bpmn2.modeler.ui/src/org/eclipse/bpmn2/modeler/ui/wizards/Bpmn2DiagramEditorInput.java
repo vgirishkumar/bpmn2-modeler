@@ -27,13 +27,11 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 	private String targetNamespace;
 	private BPMNDiagram bpmnDiagram;
 	private URI modelUri;
-	private URI diagramUri;
 	
 	Bpmn2DiagramEditorInput(URI modelUri, URI diagramUri, TransactionalEditingDomain domain, String providerId) {
 		super(diagramUri.appendFragment("/0"), domain, providerId);
 		this.domain = domain;
 		this.modelUri = modelUri;
-		this.diagramUri = diagramUri;
 	}
 	
 	public Bpmn2DiagramType getInitialDiagramType() {
@@ -54,10 +52,6 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 
 	public URI  getModelUri() {
 		return modelUri;
-	}
-	
-	public URI getUri() {
-		return diagramUri;
 	}
 	
 	public String getToolTipText() {
