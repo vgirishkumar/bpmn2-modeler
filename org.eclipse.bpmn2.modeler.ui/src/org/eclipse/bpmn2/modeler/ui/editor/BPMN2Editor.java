@@ -309,6 +309,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
+//	private Hashtable<BPMNDiagram, GraphicalViewer> mapDiagramToViewer = new Hashtable<BPMNDiagram, GraphicalViewer>();
 
 	protected DiagramEditorAdapter editorAdapter;
 	protected BPMN2MultiPageEditor multipageEditor;
