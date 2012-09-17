@@ -38,7 +38,7 @@ public interface OnExitScriptType extends EObject {
 	 * @see #setScript(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getOnExitScriptType_Script()
 	 * @model required="true"
-	 *        extendedMetaData="kind='element' name='script' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='element' name='script'"
 	 * @generated
 	 */
 	String getScript();
@@ -65,7 +65,7 @@ public interface OnExitScriptType extends EObject {
 	 * @see #setScriptFormat(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getOnExitScriptType_ScriptFormat()
 	 * @model required="true"
-	 *        extendedMetaData="kind='attribute' name='scriptFormat' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='attribute' name='scriptFormat'"
 	 * @generated
 	 */
 	String getScriptFormat();
