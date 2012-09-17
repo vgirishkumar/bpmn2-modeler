@@ -161,6 +161,10 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	// handles changes to the bpmn file
+	private BPMN2ResourceChangeListener resourceChangeListener;
+	private ISaveParticipant saveParticipant;
+    
 	static {
 		TargetRuntime.getAllRuntimes();
 	}
