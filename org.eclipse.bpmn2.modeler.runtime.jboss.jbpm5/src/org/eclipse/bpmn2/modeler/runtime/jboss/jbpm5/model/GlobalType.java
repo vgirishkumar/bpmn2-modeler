@@ -22,7 +22,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType()
- * @model extendedMetaData="name='global_._type' kind='element' namespace='##targetNamespace'"
+ * @model extendedMetaData="name='global_._type' kind='element'"
  * @generated
  */
 public interface GlobalType extends EObject {
@@ -38,7 +38,7 @@ public interface GlobalType extends EObject {
 	 * @see #setIdentifier(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType_Identifier()
 	 * @model required="true"
-	 *        extendedMetaData="kind='attribute' name='identifier' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='attribute' name='identifier'"
 	 * @generated
 	 */
 	String getIdentifier();
@@ -65,7 +65,7 @@ public interface GlobalType extends EObject {
 	 * @see #setType(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType_Type()
 	 * @model required="true"
-	 *        extendedMetaData="kind='attribute' name='type' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='attribute' name='type'"
 	 * @generated
 	 */
 	String getType();

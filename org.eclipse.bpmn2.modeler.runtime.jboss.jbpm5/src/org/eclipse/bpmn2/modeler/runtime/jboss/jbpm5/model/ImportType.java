@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getImportType()
- * @model extendedMetaData="name='import_._type' kind='element' namespace='##targetNamespace'"
+ * @model extendedMetaData="name='import_._type' kind='element'"
  * @generated
  */
 public interface ImportType extends EObject {
