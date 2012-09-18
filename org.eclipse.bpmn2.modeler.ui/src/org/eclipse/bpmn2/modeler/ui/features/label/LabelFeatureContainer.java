@@ -47,6 +47,7 @@ public class LabelFeatureContainer implements FeatureContainer {
 			IPictogramElementContext peContext = (IPictogramElementContext) context;
 			BaseElement o = BusinessObjectUtil.getFirstElementOfType(peContext.getPictogramElement(), BaseElement.class);
 			if (o != null && (o instanceof Gateway || o instanceof Event)) {
+				// TODO: what's going on here? is this dead code?
 				if (peContext.getPictogramElement() instanceof ContainerShape) {
 					ContainerShape container = (ContainerShape) peContext.getPictogramElement();
 					if (container.getChildren().size() == 1) {

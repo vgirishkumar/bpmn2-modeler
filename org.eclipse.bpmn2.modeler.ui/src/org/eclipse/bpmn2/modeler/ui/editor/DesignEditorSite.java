@@ -50,11 +50,15 @@ public class DesignEditorSite extends MultiPageEditorSite {
 		// one currently being displayed - this event can happen after a page switch.
 		Diagram currentDiagram = bpmn2Editor.getDiagramTypeProvider().getDiagram();
 		PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(event.getSelection());
-		Diagram peDiagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
-		
-		if (currentDiagram != peDiagram)
-			return;
-		
+		try {
+			Diagram peDiagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
+			if (currentDiagram != peDiagram)
+				return;
+		}
+		catch (Exception e) {
+			// if PictogramElements were deleted, there will be an NPE when searching for
+			// the PEs parent diagram
+		}
 		if (parentProvider instanceof MultiPageSelectionProvider) {
 			SelectionChangedEvent newEvent = getNewEvent(parentProvider, event);
 			MultiPageSelectionProvider prov = (MultiPageSelectionProvider) parentProvider;

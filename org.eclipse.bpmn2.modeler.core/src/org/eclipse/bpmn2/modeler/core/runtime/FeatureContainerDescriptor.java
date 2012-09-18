@@ -40,7 +40,7 @@ public class FeatureContainerDescriptor extends BaseRuntimeDescriptor {
 	public Class getType() {
 		ClassLoader cl = this.getRuntime().getRuntimeExtension().getClass().getClassLoader();
 		try {
-			return Class.forName(containerClassName, true, cl);
+			return Class.forName(type, true, cl);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,11 +51,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.xml.sax.InputSource;
@@ -130,16 +133,15 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			getWorkItemDefinitions();
 			workItemDefinitions.clear();
 			try {
-				WIDResourceVisitor visitor = new WIDResourceVisitor();
+				final WIDResourceVisitor visitor = new WIDResourceVisitor();
 				project.accept(visitor, IResource.DEPTH_INFINITE, false);
-				if (visitor.getWIDResources().size() > 0) {
-					Iterator<IResource> resourceIter = visitor.getWIDResources().iterator();
-					while (resourceIter.hasNext()) {
-						IResource resource = resourceIter.next();
+				if (visitor.getWIDFiles().size() > 0) {
+					Iterator<IFile> fileIter = visitor.getWIDFiles().iterator();
+					while (fileIter.hasNext()) {
+						IFile file = fileIter.next();
 						HashMap<String, WorkItemDefinition> widMap = 
 								new LinkedHashMap<String, WorkItemDefinition>();
-						String content = getFile(resource);
-						WIDHandler.evaluateWorkDefinitions(widMap, content);
+						WIDHandler.evaluateWorkDefinitions(widMap, file);
 						workItemDefinitions.addAll(widMap.values());
 					}
 				}
@@ -148,10 +150,25 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 				
 					java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 					while(widIterator.hasNext()) {
-						WorkItemDefinition wid = widIterator.next();
-						CustomTaskDescriptor ctd = convertWIDtoCT(wid);
+						final WorkItemDefinition wid = widIterator.next();
+						final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
 						if (ctd != null) {
-							if (!TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId()))
+							if (TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId())) {
+								Display.getDefault().asyncExec( new Runnable() {
+									@Override
+									public void run() {
+										MessageDialog.openError(Display.getDefault().getActiveShell(),
+												"Duplicate Custom Task",
+												"A Custom Task with id '"+
+												ctd.getId()+
+												"' was already defined.\n"+
+												"The new Custom Task defined in the file: "+
+												wid.getDefinitionFile().getFullPath().toString()+"\n"+
+												"will be ignored.");
+									}
+								});
+							}
+							else
 								TargetRuntime.getCurrentRuntime().addCustomTask(ctd);
 						}
 					}
@@ -375,36 +392,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			ct.getProperties().add(prop);
 		}
 	}
-	
-	/*
-	 * Get the contents of the file
-	 * @param resource
-	 * @return
-	 */
-	private String getFile( IResource resource ) {
-		String filepath = null;
-		if (resource != null) {
-			IPath path = resource.getLocation().makeAbsolute();
-			filepath = path.toOSString();
-		}
-
-		StringBuilder text = new StringBuilder();
-	    String NL = System.getProperty("line.separator");
-	    Scanner scanner = null;
-	    try {
-	    	scanner = new Scanner(new FileInputStream(filepath), "UTF-8");
-	    	while (scanner.hasNextLine()){
-	    		text.append(scanner.nextLine() + NL);
-	    	}
-	    	return text.toString();
-	    } catch (FileNotFoundException e) {
-	    	e.printStackTrace();
-	    } finally {
-	    	if (scanner != null)
-	    		scanner.close();
-	    }	
-	    return null;
-	}
 
 	/*
 	 * Class: Visits each file in the project to see if it's a *.conf/*.wid
@@ -413,21 +400,21 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 */
 	private class WIDResourceVisitor implements IResourceVisitor {
 		
-		private ArrayList<IResource> widResources = new ArrayList<IResource>();
+		private ArrayList<IFile> widFiles = new ArrayList<IFile>();
 		
 		public boolean visit (IResource resource) throws CoreException {
 			if (resource.getType() == IResource.FILE) {
 				if ("conf".equalsIgnoreCase(((IFile)resource).getFileExtension()) ||
 						"wid".equalsIgnoreCase(((IFile)resource).getFileExtension())) {
-					widResources.add(resource);
+					widFiles.add((IFile)resource);
 					return true;
 				}
 			}
 			return true;
 		}
 		
-		public ArrayList<IResource> getWIDResources() {
-			return widResources;
+		public ArrayList<IFile> getWIDFiles() {
+			return widFiles;
 		}
 	}
 	

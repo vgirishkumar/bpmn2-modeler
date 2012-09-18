@@ -12,6 +12,8 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid;
 
 import java.util.LinkedHashMap;
 
+import org.eclipse.core.resources.IFile;
+
 /**
  * @author bfitzpat
  *
@@ -37,6 +39,7 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 	private String widEclipseCustomEditor;
 	private LinkedHashMap<String, String> widParameters;
 	private LinkedHashMap<String, String> widResults;
+	private IFile file;
 
 	@Override
 	public String getName() {
@@ -58,6 +61,14 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 		if (this.widParameters == null) 
 			this.widParameters = new LinkedHashMap<String, String>();
 		return this.widParameters;
+	}
+	
+	public IFile getDefinitionFile() {
+		return file;
+	}
+	
+	public void setDefinitionFile(IFile file) {
+		this.file = file;
 	}
 
 	@Override

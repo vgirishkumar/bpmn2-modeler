@@ -226,13 +226,6 @@ public class GraphicsUtil {
 				0, 0,
 				textWidth + TEXT_PADDING, textHeight + TEXT_PADDING);
 	}
-
-	public static void prepareAddContext(IAddContext context, int width, int height) {
-		context.putProperty(ContextConstants.LABEL_CONTEXT, true);
-		context.putProperty(ContextConstants.WIDTH, width);
-		context.putProperty(ContextConstants.HEIGHT, height);
-		context.putProperty(ContextConstants.BUSINESS_OBJECT, context.getNewObject());
-	}
 	
 	private static float calculateRatio(float x, float y) {
 		return x / y;

@@ -24,6 +24,20 @@
 			resourceFactory="org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceFactoryImpl">
 		</model>
 
+		<featureContainer
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			type="org.eclipse.bpmn2.SequenceFlow"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleSequenceFlowFeatureContainer">
+		</featureContainer>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.runtime.example.sequenceFlow.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.sequenceflow.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleSequenceFlowPropertySection"
+			type="org.eclipse.bpmn2.SequenceFlow"
+			label="Custom Sequence Flow">
+		</propertyTab>
+
 		<customTask
 			description="This task represents a risk that can occur in the connected Elements."
 			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"

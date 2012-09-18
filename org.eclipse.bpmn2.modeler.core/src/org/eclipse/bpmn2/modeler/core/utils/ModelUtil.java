@@ -873,7 +873,7 @@ public class ModelUtil {
 		return new ArrayList<ExtensionAttributeValue>();
 	}
 	
-	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, EObject value) {
+	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
