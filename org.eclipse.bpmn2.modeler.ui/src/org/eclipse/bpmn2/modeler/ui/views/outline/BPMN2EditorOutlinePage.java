@@ -44,6 +44,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
@@ -141,14 +142,15 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	@Override
 	public void init(IPageSite pageSite) {
 		super.init(pageSite);
+		// TODO: implement editing actions in Outline
 		IActionBars actionBars = pageSite.getActionBars();
-		registerGlobalActionHandler(actionBars, ActionFactory.UNDO.getId());
-		registerGlobalActionHandler(actionBars, ActionFactory.REDO.getId());
-		registerGlobalActionHandler(actionBars, ActionFactory.COPY.getId());
-		registerGlobalActionHandler(actionBars, ActionFactory.PASTE.getId());
-		registerGlobalActionHandler(actionBars, ActionFactory.PRINT.getId());
-		registerGlobalActionHandler(actionBars, ActionFactory.SAVE_AS.getId());
-		actionBars.updateActionBars();
+//		registerGlobalActionHandler(actionBars, ActionFactory.UNDO.getId());
+//		registerGlobalActionHandler(actionBars, ActionFactory.REDO.getId());
+//		registerGlobalActionHandler(actionBars, ActionFactory.COPY.getId());
+//		registerGlobalActionHandler(actionBars, ActionFactory.PASTE.getId());
+//		registerGlobalActionHandler(actionBars, ActionFactory.PRINT.getId());
+//		registerGlobalActionHandler(actionBars, ActionFactory.SAVE_AS.getId());
+//		actionBars.updateActionBars();
 	}
 	
 	/**
@@ -174,6 +176,15 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		diagramEditor.addPropertyListener(this);
 	}
 
+	private void removeKeyListeners(Tree tree) {
+		for (Listener l : tree.getListeners(SWT.KeyUp)) {
+			tree.removeListener(SWT.KeyUp, l);
+		}
+		for (Listener l : tree.getListeners(SWT.KeyDown)) {
+			tree.removeListener(SWT.KeyDown, l);
+		}
+	}
+	
 	/**
 	 * Deregisters all 'listeners' of the main-editor.
 	 */
@@ -231,6 +242,9 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 			showInterchangeModelOutlineAction.setChecked(false);
 			showOverviewAction.setChecked(false);
 			pageBook.showPage(businessModelOutline);
+			// TODO: remove this later when edit support is added to Outline view
+			removeKeyListeners(businessModelOutline);
+
 		} else if (id == ID_INTERCHANGE_MODEL_OUTLINE) {
 			if (interchangeModelEditPartFactory==null)
 				interchangeModelEditPartFactory = new BPMNDiagramTreeEditPartFactory(ID_INTERCHANGE_MODEL_OUTLINE);
@@ -243,6 +257,9 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 			showInterchangeModelOutlineAction.setChecked(true);
 			showOverviewAction.setChecked(false);
 			pageBook.showPage(interchangeModelOutline);
+			// TODO: remove this later when edit support is added to Outline view
+			removeKeyListeners(interchangeModelOutline);
+
 		} else if (id == ID_THUMBNAIL) {
 			if (thumbnail == null)
 				createThumbnailViewer();

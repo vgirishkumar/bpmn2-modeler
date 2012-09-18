@@ -10,7 +10,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 
 /**
  * @author bfitzpat
@@ -30,10 +38,51 @@ public class WIDHandler {
      * @throws WIDException
      */
     public static void evaluateWorkDefinitions(
-    		Map<String, WorkItemDefinition> widDefinitions, String content) throws WIDException {
-    	 processWorkDefinitionsContent(widDefinitions, content);
+    		Map<String, WorkItemDefinition> widDefinitions, IFile file) throws WIDException {
+		String content = getFile(file);
+		processWorkDefinitionsContent(widDefinitions, content);
+		Iterator<WorkItemDefinition> iter = widDefinitions.values().iterator();
+		while (iter.hasNext()) {
+			WorkItemDefinitionImpl wid = (WorkItemDefinitionImpl)iter.next();
+			wid.setDefinitionFile(file);
+		}
     }
-     
+    
+    public static void evaluateWorkDefinitions(
+    		Map<String, WorkItemDefinition> widDefinitions, String content) throws WIDException {
+		processWorkDefinitionsContent(widDefinitions, content);
+    }
+	
+	/*
+	 * Get the contents of the file
+	 * @param resource
+	 * @return
+	 */
+	private static String getFile( IFile resource ) {
+		String filepath = null;
+		if (resource != null) {
+			IPath path = resource.getLocation().makeAbsolute();
+			filepath = path.toOSString();
+		}
+
+		StringBuilder text = new StringBuilder();
+	    String NL = System.getProperty("line.separator");
+	    Scanner scanner = null;
+	    try {
+	    	scanner = new Scanner(new FileInputStream(filepath), "UTF-8");
+	    	while (scanner.hasNextLine()){
+	    		text.append(scanner.nextLine() + NL);
+	    	}
+	    	return text.toString();
+	    } catch (FileNotFoundException e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	if (scanner != null)
+	    		scanner.close();
+	    }	
+	    return null;
+	}
+
     /*
      * Actually does the work to parse the content using RegEx and brute force 
      * @param widDefinitions

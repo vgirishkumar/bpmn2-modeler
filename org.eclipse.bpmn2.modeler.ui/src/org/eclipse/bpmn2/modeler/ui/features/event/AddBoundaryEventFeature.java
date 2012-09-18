@@ -108,10 +108,10 @@ public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<Boundar
 				UpdateBoundaryEventFeature.BOUNDARY_EVENT_MARKER,
 				AbstractUpdateEventFeature.getEventDefinitionsValue(event));
 
-		link(containerShape, event);
+//		link(containerShape, event);
 		
 		this.prepareAddContext(context, gatewayWidth, gatewayHeight);
-		this.getFeatureProvider().getAddFeature(context).add(context);
+//		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		updatePictogramElement(containerShape);
 		

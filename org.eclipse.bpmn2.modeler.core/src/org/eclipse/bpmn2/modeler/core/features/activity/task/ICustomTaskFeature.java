@@ -21,6 +21,8 @@ public interface ICustomTaskFeature {
 
 	public final static String CUSTOM_TASK_ID = "custom.task.id";
 
+	public String getDescription();
+	
 	public abstract void setId(String id);
 
 	public abstract String getId();

@@ -1322,13 +1322,22 @@ public interface SampleModelPackage extends EPackage {
 	int DOCUMENT_ROOT__SAMPLE_CUSTOM_TASK_ID = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Sample Custom Flow Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DOCUMENT_ROOT__SAMPLE_CUSTOM_FLOW_VALUE = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Document Root</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT_FEATURE_COUNT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 1;
+	int DOCUMENT_ROOT_FEATURE_COUNT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 2;
 
 
 	/**
@@ -1351,6 +1360,17 @@ public interface SampleModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getDocumentRoot_SampleCustomTaskId();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.example.SampleModel.DocumentRoot#getSampleCustomFlowValue <em>Sample Custom Flow Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Sample Custom Flow Value</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleModel.DocumentRoot#getSampleCustomFlowValue()
+	 * @see #getDocumentRoot()
+	 * @generated
+	 */
+	EAttribute getDocumentRoot_SampleCustomFlowValue();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1391,6 +1411,14 @@ public interface SampleModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute DOCUMENT_ROOT__SAMPLE_CUSTOM_TASK_ID = eINSTANCE.getDocumentRoot_SampleCustomTaskId();
+
+		/**
+		 * The meta object literal for the '<em><b>Sample Custom Flow Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute DOCUMENT_ROOT__SAMPLE_CUSTOM_FLOW_VALUE = eINSTANCE.getDocumentRoot_SampleCustomFlowValue();
 
 	}
 

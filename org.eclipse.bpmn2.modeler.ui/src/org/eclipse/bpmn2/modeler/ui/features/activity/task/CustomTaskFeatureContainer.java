@@ -31,6 +31,12 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 	protected String id;
 	protected CustomTaskDescriptor customTaskDescriptor;
 	
+	public String getDescription() {
+		if (customTaskDescriptor!=null)
+			return customTaskDescriptor.getDescription();
+		return "Custom Task";
+	}
+
 	/* (non-Javadoc)
 	 * Determine if the context applies to this modelObject and return the Task object. Return null otherwise.
 	 * @param context - the Graphiti context.
@@ -147,7 +153,7 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 			// for this custom modelObject, instead of the generic "Task" feature control
 			BPMNFeatureProvider bfp = (BPMNFeatureProvider)fp;
 			try {
-				bfp.addFeatureContainer(this);
+				bfp.addFeatureContainer(id,this);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

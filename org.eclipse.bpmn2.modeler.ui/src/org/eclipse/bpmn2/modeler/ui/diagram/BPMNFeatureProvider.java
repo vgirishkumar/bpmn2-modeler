@@ -14,8 +14,61 @@ package org.eclipse.bpmn2.modeler.ui.diagram;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.AdHocSubProcess;
+import org.eclipse.bpmn2.Association;
+import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.BusinessRuleTask;
+import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.CancelEventDefinition;
+import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ComplexGateway;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.Conversation;
+import org.eclipse.bpmn2.ConversationLink;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataOutputAssociation;
+import org.eclipse.bpmn2.DataStoreReference;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.EscalationEventDefinition;
+import org.eclipse.bpmn2.EventBasedGateway;
+import org.eclipse.bpmn2.ExclusiveGateway;
+import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.InclusiveGateway;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LinkEventDefinition;
+import org.eclipse.bpmn2.ManualTask;
+import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.MessageFlow;
+import org.eclipse.bpmn2.ParallelGateway;
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.ScriptTask;
+import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.ServiceTask;
+import org.eclipse.bpmn2.SignalEventDefinition;
+import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.TerminateEventDefinition;
+import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
@@ -134,156 +187,141 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
  */
 public class BPMNFeatureProvider extends DefaultFeatureProvider {
 
-	private List<FeatureContainer> containers;
-
+	private Hashtable<Class,FeatureContainer> containers;
+	private Hashtable<String,CustomTaskFeatureContainer> customTaskContainers;
 	private ICreateFeature[] createFeatures;
-
 	private ICreateConnectionFeature[] createConnectionFeatures;
+	private HashMap<Class,IFeature> mapBusinessObjectClassToCreateFeature = new HashMap<Class,IFeature>();
 
 	public BPMNFeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
-
-		containers = new ArrayList<FeatureContainer>();
-		containers.add(new LabelFeatureContainer());
-		containers.add(new GroupFeatureContainer());
-		containers.add(new DataObjectFeatureContainer());
-		containers.add(new DataObjectReferenceFeatureContainer());
-		containers.add(new DataStoreReferenceFeatureContainer());
-		containers.add(new DataInputFeatureContainer());
-		containers.add(new DataOutputFeatureContainer());
-		containers.add(new MessageFeatureContainer());
-		containers.add(new StartEventFeatureContainer());
-		containers.add(new EndEventFeatureContainer());
-		containers.add(new IntermediateCatchEventFeatureContainer());
-		containers.add(new IntermediateThrowEventFeatureContainer());
-		containers.add(new BoundaryEventFeatureContainer());
-		containers.add(new TaskFeatureContainer());
-		containers.add(new ScriptTaskFeatureContainer());
-		containers.add(new ServiceTaskFeatureContainer());
-		containers.add(new UserTaskFeatureContainer());
-		containers.add(new ManualTaskFeatureContainer());
-		containers.add(new BusinessRuleTaskFeatureContainer());
-		containers.add(new SendTaskFeatureContainer());
-		containers.add(new ReceiveTaskFeatureContainer());
-		containers.add(new ChoreographyTaskFeatureContainer());
-		containers.add(new ExclusiveGatewayFeatureContainer());
-		containers.add(new InclusiveGatewayFeatureContainer());
-		containers.add(new ParallelGatewayFeatureContainer());
-		containers.add(new EventBasedGatewayFeatureContainer());
-		containers.add(new ComplexGatewayFeatureContainer());
-		containers.add(new AdHocSubProcessFeatureContainer());
-		containers.add(new CallActivityFeatureContainer());
-		containers.add(new TransactionFeatureContainer());
-		containers.add(new SubProcessFeatureContainer());
-		containers.add(new ConditionalEventDefinitionContainer());
-		containers.add(new MessageEventDefinitionContainer());
-		containers.add(new TimerEventDefinitionContainer());
-		containers.add(new SignalEventDefinitionContainer());
-		containers.add(new EscalationEventDefinitionContainer());
-		containers.add(new CompensateEventDefinitionContainer());
-		containers.add(new LinkEventDefinitionContainer());
-		containers.add(new ErrorEventDefinitionContainer());
-		containers.add(new CancelEventDefinitionContainer());
-		containers.add(new TerminateEventDefinitionFeatureContainer());
-		containers.add(new SequenceFlowFeatureContainer());
-		containers.add(new MessageFlowFeatureContainer());
-		containers.add(new AssociationFeatureContainer());
-		containers.add(new ConversationFeatureContainer());
-		containers.add(new ConversationLinkFeatureContainer());
-		containers.add(new DataInputAssociationFeatureContainer());
-		containers.add(new DataOutputAssociationFeatureContainer());
-		containers.add(new SubChoreographyFeatureContainer());
-		containers.add(new CallChoreographyFeatureContainer());
-		containers.add(new ParticipantFeatureContainer());
-		containers.add(new LaneFeatureContainer());
-		containers.add(new TextAnnotationFeatureContainer());
-		containers.add(new ChoreographyMessageLinkFeatureContainer());
-		containers.add(new LabelFeatureContainer());
-
 		updateFeatureLists();
 	}
 	
-	HashMap<Class,IFeature> mapBusinessObjectClassToCreateFeature = new HashMap<Class,IFeature>();
+	private void initializeFeatureContainers() {
+		containers = new Hashtable<Class,FeatureContainer>();
+		containers.put(LabelFeatureContainer.class,new LabelFeatureContainer());
+		containers.put(Group.class,new GroupFeatureContainer());
+		containers.put(DataObject.class,new DataObjectFeatureContainer());
+		containers.put(DataObjectReference.class,new DataObjectReferenceFeatureContainer());
+		containers.put(DataStoreReference.class,new DataStoreReferenceFeatureContainer());
+		containers.put(DataInput.class,new DataInputFeatureContainer());
+		containers.put(DataOutput.class,new DataOutputFeatureContainer());
+		containers.put(Message.class,new MessageFeatureContainer());
+		containers.put(StartEvent.class,new StartEventFeatureContainer());
+		containers.put(EndEvent.class,new EndEventFeatureContainer());
+		containers.put(IntermediateCatchEvent.class,new IntermediateCatchEventFeatureContainer());
+		containers.put(IntermediateThrowEvent.class,new IntermediateThrowEventFeatureContainer());
+		containers.put(BoundaryEvent.class,new BoundaryEventFeatureContainer());
+		containers.put(Task.class,new TaskFeatureContainer());
+		containers.put(ScriptTask.class,new ScriptTaskFeatureContainer());
+		containers.put(ServiceTask.class,new ServiceTaskFeatureContainer());
+		containers.put(UserTask.class,new UserTaskFeatureContainer());
+		containers.put(ManualTask.class,new ManualTaskFeatureContainer());
+		containers.put(BusinessRuleTask.class,new BusinessRuleTaskFeatureContainer());
+		containers.put(SendTask.class,new SendTaskFeatureContainer());
+		containers.put(ReceiveTask.class,new ReceiveTaskFeatureContainer());
+		containers.put(ChoreographyTask.class,new ChoreographyTaskFeatureContainer());
+		containers.put(ExclusiveGateway.class,new ExclusiveGatewayFeatureContainer());
+		containers.put(InclusiveGateway.class,new InclusiveGatewayFeatureContainer());
+		containers.put(ParallelGateway.class,new ParallelGatewayFeatureContainer());
+		containers.put(EventBasedGateway.class,new EventBasedGatewayFeatureContainer());
+		containers.put(ComplexGateway.class,new ComplexGatewayFeatureContainer());
+		containers.put(AdHocSubProcess.class,new AdHocSubProcessFeatureContainer());
+		containers.put(CallActivity.class,new CallActivityFeatureContainer());
+		containers.put(Transaction.class,new TransactionFeatureContainer());
+		containers.put(SubProcess.class,new SubProcessFeatureContainer());
+		containers.put(ConditionalEventDefinition.class,new ConditionalEventDefinitionContainer());
+		containers.put(MessageEventDefinition.class,new MessageEventDefinitionContainer());
+		containers.put(TimerEventDefinition.class,new TimerEventDefinitionContainer());
+		containers.put(SignalEventDefinition.class,new SignalEventDefinitionContainer());
+		containers.put(EscalationEventDefinition.class,new EscalationEventDefinitionContainer());
+		containers.put(CompensateEventDefinition.class,new CompensateEventDefinitionContainer());
+		containers.put(LinkEventDefinition.class,new LinkEventDefinitionContainer());
+		containers.put(ErrorEventDefinition.class,new ErrorEventDefinitionContainer());
+		containers.put(CancelEventDefinition.class,new CancelEventDefinitionContainer());
+		containers.put(TerminateEventDefinition.class,new TerminateEventDefinitionFeatureContainer());
+		containers.put(SequenceFlow.class,new SequenceFlowFeatureContainer());
+		containers.put(MessageFlow.class,new MessageFlowFeatureContainer());
+		containers.put(Association.class,new AssociationFeatureContainer());
+		containers.put(Conversation.class,new ConversationFeatureContainer());
+		containers.put(ConversationLink.class,new ConversationLinkFeatureContainer());
+		containers.put(DataInputAssociation.class,new DataInputAssociationFeatureContainer());
+		containers.put(DataOutputAssociation.class,new DataOutputAssociationFeatureContainer());
+		containers.put(SubChoreography.class,new SubChoreographyFeatureContainer());
+		containers.put(CallChoreography.class,new CallChoreographyFeatureContainer());
+		containers.put(Participant.class,new ParticipantFeatureContainer());
+		containers.put(Lane.class,new LaneFeatureContainer());
+		containers.put(TextAnnotation.class,new TextAnnotationFeatureContainer());
+		// these have no BPMN2 element equivalents
+		containers.put(ChoreographyMessageLinkFeatureContainer.class,new ChoreographyMessageLinkFeatureContainer());
+		containers.put(LabelFeatureContainer.class,new LabelFeatureContainer());
+	}
 
-	public void addFeatureContainer(FeatureContainer fc) throws Exception {
+	public void addFeatureContainer(String id, CustomTaskFeatureContainer fc) throws Exception {
 		
-		boolean canAdd = true;
-		
-		if (fc instanceof CustomTaskFeatureContainer) {
-			ICustomTaskFeature ctfc = (ICustomTaskFeature)fc;
-			for (FeatureContainer container : containers) {
-				if (container instanceof CustomTaskFeatureContainer) {
-					// don't add duplicates
-					String oldId = ((ICustomTaskFeature)container).getId();
-					String newId = ctfc.getId();
-					if (oldId!=null && newId!=null) {
-						if (oldId.equals(newId)) {
-							if (container.getClass()==fc.getClass())
-								return;
-							canAdd = false;
-							break;
-						}
-					}
-					else if (oldId==newId) {
-						canAdd = false;
-						break;
-					}
-				}
-			}
+		if (customTaskContainers==null) {
+			customTaskContainers = new Hashtable<String,CustomTaskFeatureContainer>();
 		}
-		else {
-			for (FeatureContainer container : containers) {
-				if (container.getClass().isInstance(fc)) {
-					canAdd = false;
-					break;
-				}
-			}
-		}
-		if (canAdd) {
-			containers.add(fc);
-			updateFeatureLists();
-		}
-		else
-			throw new Exception("Attempt to add a Custom Feature with a duplicate ID "+fc.getClass().getName());
+		customTaskContainers.put(id,fc);
+		updateFeatureLists();
 	}
 	
 	private void updateFeatureLists() {
+
+		initializeFeatureContainers();
 		
-		List<ICreateFeature> createFeaturesList = new ArrayList<ICreateFeature>();
-
-		for (FeatureContainer container : containers) {
-			ICreateFeature createFeature = container.getCreateFeature(this);
-			if (createFeature != null) {
-				createFeaturesList.add(createFeature);
-			}
-		}
-
+		// Collect all of the <featureContainer> extensions defined by the current TargetRuntime
+		// and replace the ones in our list of FeatureContainers
 		BPMN2Editor editor = BPMN2Editor.getActiveEditor(); //(BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
 		for (FeatureContainerDescriptor fcd : rt.getFeatureContainers()) {
 			FeatureContainer container = fcd.getFeatureContainer();
-			ICreateFeature createFeature = container.getCreateFeature(this);
-			if (createFeature != null) {
-				createFeaturesList.add(createFeature);
+			if (container instanceof ConnectionFeatureContainer) {
+				ICreateConnectionFeature createConnectionFeature = ((ConnectionFeatureContainer)container)
+						.getCreateConnectionFeature(this);
+				if (createConnectionFeature!=null) {
+					containers.put(fcd.getType(), container);
+				}
+			}
+			else {
+				ICreateFeature createFeature = container.getCreateFeature(this);
+				if (createFeature != null) {
+					containers.put(fcd.getType(), container);
+				}
 			}
 		}
 
-		createFeatures = createFeaturesList.toArray(new ICreateFeature[createFeaturesList.size()]);
-
+		// build the list of CreateFeatures from our new list of all FeatureContainers
+		List<ICreateFeature> createFeaturesList = new ArrayList<ICreateFeature>();
 		List<ICreateConnectionFeature> createConnectionFeatureList = new ArrayList<ICreateConnectionFeature>();
 
-		for (FeatureContainer c : containers) {
-			if (c instanceof ConnectionFeatureContainer) {
-				ConnectionFeatureContainer connectionFeatureContainer = (ConnectionFeatureContainer) c;
+		for (FeatureContainer fc : containers.values()) {
+			if (fc instanceof ConnectionFeatureContainer) {
+				ConnectionFeatureContainer connectionFeatureContainer = (ConnectionFeatureContainer) fc;
 				ICreateConnectionFeature createConnectionFeature = connectionFeatureContainer
 						.getCreateConnectionFeature(this);
-				if (createConnectionFeature == null) {
-					continue;
+				if (createConnectionFeature != null) {
+					createConnectionFeatureList.add(createConnectionFeature);
 				}
-				createConnectionFeatureList.add(createConnectionFeature);
+			}
+			else {
+				ICreateFeature createFeature = fc.getCreateFeature(this);
+				if (createFeature != null) {
+					createFeaturesList.add(createFeature);
+				}
 			}
 		}
-
+		if (customTaskContainers!=null) {
+			for (FeatureContainer fc : customTaskContainers.values()) {
+				ICreateFeature createFeature = fc.getCreateFeature(this);
+				if (createFeature != null) {
+					createFeaturesList.add(createFeature);
+				}
+			}
+		}
+		
+		createFeatures = createFeaturesList.toArray(new ICreateFeature[createFeaturesList.size()]);
 		createConnectionFeatures = createConnectionFeatureList
 				.toArray(new ICreateConnectionFeature[createConnectionFeatureList.size()]);
 		
@@ -316,23 +354,26 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		}
 		return null;
 	}
+	
 	public FeatureContainer getFeatureContainer(IContext context) {
+		
+		// The special LabelFeatureContainer is used to add labels to figures that were
+		// added within the given IContext
+		Object property = context.getProperty(ContextConstants.LABEL_CONTEXT);
+		if ( property!=null && (Boolean)property )
+			return containers.get(LabelFeatureContainer.class);
 		
 		EObject object = getApplyObject(context);
 		if (object!=null) {
-			if (context.getProperty(ContextConstants.LABEL_CONTEXT) == null
-					|| !((Boolean) context.getProperty(ContextConstants.LABEL_CONTEXT)))
-			{
-				BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
-				TargetRuntime rt = editor.getTargetRuntime();
-				FeatureContainerDescriptor fcd = rt.getFeatureContainer(object.eClass());
-				if (fcd!=null)
-					return fcd.getFeatureContainer();
-			}
+			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
+			TargetRuntime rt = editor.getTargetRuntime();
+			FeatureContainerDescriptor fcd = rt.getFeatureContainer(object.eClass());
+			if (fcd!=null)
+				return fcd.getFeatureContainer();
 		}
 		
 		Object id = CustomTaskFeatureContainer.getId(context); 
-		for (FeatureContainer container : containers) {
+		for (FeatureContainer container : containers.values()) {
 			if (id!=null && !(container instanceof CustomTaskFeatureContainer))
 				continue;
 			Object o = container.getApplyObject(context);
@@ -453,7 +494,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IReconnectionContext context) {
-		for (FeatureContainer container : containers) {
+		for (FeatureContainer container : containers.values()) {
 			Object o = container.getApplyObject(context);
 			if (o != null && container.canApplyTo(o) && container instanceof ConnectionFeatureContainer) {
 				IReconnectionFeature feature = ((ConnectionFeatureContainer)container).getReconnectionFeature(this);
@@ -516,7 +557,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 				}
 			}
 		}
-		for (FeatureContainer fc : containers) {
+		for (FeatureContainer fc : containers.values()) {
 			Object o = fc.getApplyObject(context);
 			if (o!=null && fc.canApplyTo(o)) {
 				ICustomFeature[] cfa = fc.getCustomFeatures(this);
@@ -545,7 +586,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		if (pe!=null) {
 			String id = Graphiti.getPeService().getPropertyValue(pe,ICustomTaskFeature.CUSTOM_TASK_ID);
 			if (id!=null) {
-				for (FeatureContainer container : containers) {
+				for (FeatureContainer container : containers.values()) {
 					if (container instanceof CustomTaskFeatureContainer) {
 						CustomTaskFeatureContainer ctf = (CustomTaskFeatureContainer)container;
 						if (id.equals(ctf.getId())) {

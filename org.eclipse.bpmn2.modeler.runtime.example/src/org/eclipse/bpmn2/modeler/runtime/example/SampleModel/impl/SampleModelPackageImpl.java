@@ -128,6 +128,15 @@ public class SampleModelPackageImpl extends EPackageImpl implements SampleModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getDocumentRoot_SampleCustomFlowValue() {
+		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public SampleModelFactory getSampleModelFactory() {
 		return (SampleModelFactory)getEFactoryInstance();
 	}
@@ -153,6 +162,7 @@ public class SampleModelPackageImpl extends EPackageImpl implements SampleModelP
 		// Create classes and their features
 		documentRootEClass = createEClass(DOCUMENT_ROOT);
 		createEAttribute(documentRootEClass, DOCUMENT_ROOT__SAMPLE_CUSTOM_TASK_ID);
+		createEAttribute(documentRootEClass, DOCUMENT_ROOT__SAMPLE_CUSTOM_FLOW_VALUE);
 	}
 
 	/**
@@ -191,6 +201,7 @@ public class SampleModelPackageImpl extends EPackageImpl implements SampleModelP
 		// Initialize classes and features; add operations and parameters
 		initEClass(documentRootEClass, DocumentRoot.class, "DocumentRoot", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDocumentRoot_SampleCustomTaskId(), ecorePackage.getEString(), "sampleCustomTaskId", null, 0, 1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDocumentRoot_SampleCustomFlowValue(), ecorePackage.getEString(), "sampleCustomFlowValue", null, 0, 1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
@@ -221,7 +232,15 @@ public class SampleModelPackageImpl extends EPackageImpl implements SampleModelP
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
-			 "name", "sampleCustomTaskId",
+			 "name", "taskId",
+			 "namespace", "##targetNamespace"
+		   });		
+		addAnnotation
+		  (getDocumentRoot_SampleCustomFlowValue(), 
+		   source, 
+		   new String[] {
+			 "kind", "attribute",
+			 "name", "flowValue",
 			 "namespace", "##targetNamespace"
 		   });
 	}

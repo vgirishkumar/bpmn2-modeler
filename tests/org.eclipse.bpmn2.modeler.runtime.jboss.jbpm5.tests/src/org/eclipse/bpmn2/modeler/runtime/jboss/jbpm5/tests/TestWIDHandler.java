@@ -136,7 +136,7 @@ public class TestWIDHandler {
 		System.out.println("testFail: no wid");
 		HashMap<String, WorkItemDefinition> widMap = new HashMap<String, WorkItemDefinition>();
 		try {
-			WIDHandler.evaluateWorkDefinitions(widMap, null);
+			WIDHandler.evaluateWorkDefinitions(widMap, (String)null);
 		} catch (WIDException e) {
 			Assert.assertTrue(e != null);
 		}

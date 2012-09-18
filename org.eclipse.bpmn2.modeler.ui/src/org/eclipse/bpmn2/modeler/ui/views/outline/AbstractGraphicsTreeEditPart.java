@@ -1,18 +1,11 @@
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
-import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
@@ -21,7 +14,6 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -64,7 +56,18 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 	public Object getBpmnModel() {
 		return super.getModel();
 	}
-
+	
+	protected void refreshChildren() {
+		if (children!=null) {
+			for (Object child : children) {
+				if (child instanceof AbstractGraphicsTreeEditPart) {
+					((AbstractGraphicsTreeEditPart)child).refreshChildren();
+				}
+			}
+		}
+		super.refreshChildren();
+	}
+	
 	/**
 	 * This method is called from refreshVisuals(), to display the image of the
 	 * TreeItem.

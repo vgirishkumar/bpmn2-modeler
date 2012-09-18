@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.runtime.example.SampleModel;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.example.SampleModel.DocumentRoot#getSampleCustomTaskId <em>Sample Custom Task Id</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.example.SampleModel.DocumentRoot#getSampleCustomFlowValue <em>Sample Custom Flow Value</em>}</li>
  * </ul>
  * </p>
  *
@@ -35,7 +36,7 @@ public interface DocumentRoot extends org.eclipse.bpmn2.DocumentRoot {
 	 * @return the value of the '<em>Sample Custom Task Id</em>' attribute.
 	 * @see #setSampleCustomTaskId(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleModel.SampleModelPackage#getDocumentRoot_SampleCustomTaskId()
-	 * @model extendedMetaData="kind='attribute' name='sampleCustomTaskId' namespace='##targetNamespace'"
+	 * @model extendedMetaData="kind='attribute' name='taskId' namespace='##targetNamespace'"
 	 * @generated
 	 */
 	String getSampleCustomTaskId();
@@ -49,5 +50,31 @@ public interface DocumentRoot extends org.eclipse.bpmn2.DocumentRoot {
 	 * @generated
 	 */
 	void setSampleCustomTaskId(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Sample Custom Flow Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Sample Custom Flow Value</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Sample Custom Flow Value</em>' attribute.
+	 * @see #setSampleCustomFlowValue(String)
+	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleModel.SampleModelPackage#getDocumentRoot_SampleCustomFlowValue()
+	 * @model extendedMetaData="kind='attribute' name='flowValue' namespace='##targetNamespace'"
+	 * @generated
+	 */
+	String getSampleCustomFlowValue();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.example.SampleModel.DocumentRoot#getSampleCustomFlowValue <em>Sample Custom Flow Value</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Sample Custom Flow Value</em>' attribute.
+	 * @see #getSampleCustomFlowValue()
+	 * @generated
+	 */
+	void setSampleCustomFlowValue(String value);
 
 } // DocumentRoot

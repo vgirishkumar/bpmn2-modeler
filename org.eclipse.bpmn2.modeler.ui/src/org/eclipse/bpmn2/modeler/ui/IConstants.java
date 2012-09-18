@@ -88,6 +88,7 @@ public interface IConstants {
 	public final String ICON_INCLUSIVEGATEWAY = "16/InclusiveGateway.png";
 	public final String ICON_INTERMEDIATECATCHEVENT = "16/IntermediateCatchEvent.png";
 	public final String ICON_INTERMEDIATETHROWEVENT = "16/IntermediateThrowEvent.png";
+	public final String ICON_ITEMDEFINITION = "16/ItemDefinition.png";
 	public final String ICON_LANE = "16/Lane.png";
 	public final String ICON_LINK = "16/Link.png";
 	public final String ICON_MANUALTASK = "16/ManualTask.png";

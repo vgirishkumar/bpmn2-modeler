@@ -35,15 +35,6 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 
 public abstract class AbstractEventFeatureContainer extends BaseElementFeatureContainer {
-	
-	@Override
-	public Object getApplyObject(IContext context) {
-		if (context.getProperty(ContextConstants.LABEL_CONTEXT) == null
-				|| !((Boolean) context.getProperty(ContextConstants.LABEL_CONTEXT))) {
-			return super.getApplyObject(context);
-		}
-		return null;
-	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
