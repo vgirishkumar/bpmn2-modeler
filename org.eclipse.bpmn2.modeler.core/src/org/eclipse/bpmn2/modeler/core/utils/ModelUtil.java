@@ -66,7 +66,9 @@ import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Composite;
@@ -486,37 +488,46 @@ public class ModelUtil {
 		}
 		return Bpmn2DiagramType.NONE;
 	}
+
+	public static DiagramEditor getDiagramEditor(EObject object) {
+		Resource res = getResource(object);
+		if (res != null) {
+			for (Adapter a : res.getResourceSet().eAdapters()) {
+				if (a instanceof DiagramEditorAdapter) {
+					return ((DiagramEditorAdapter)a).getDiagramEditor();
+				}
+			}
+		}
+		return null;
+	}
 	
 	public static Bpmn2DiagramType getDiagramType(EObject object) {
-		if (object!=null && getResource(object)!=null) {
-			Definitions defs = getDefinitions(object);
-			if (defs.getDiagrams().size()>=1) {
-				BPMNDiagram diagram = defs.getDiagrams().get(0);
-				BPMNPlane plane = diagram.getPlane();
-				if (plane!=null) {
-					BaseElement be = plane.getBpmnElement();
-					if (be instanceof Process) {
-						for (RootElement re : defs.getRootElements()) {
-							if (re instanceof Choreography) {
-								for (Participant p : ((Choreography)re).getParticipants()) {
-									if (p.getProcessRef() == be)
-										return Bpmn2DiagramType.CHOREOGRAPHY;
-								}
-							}
-							else if (re instanceof Collaboration) {
-								for (Participant p : ((Collaboration)re).getParticipants()) {
-									if (p.getProcessRef() == be)
-										return Bpmn2DiagramType.COLLABORATION;
-								}
-							}
-						}
-						return Bpmn2DiagramType.PROCESS;
-					}
-					else if (be instanceof Choreography)
-						return Bpmn2DiagramType.CHOREOGRAPHY;
-					else if (be instanceof Collaboration)
-						return Bpmn2DiagramType.COLLABORATION;
-				}
+		if (object instanceof BPMNDiagram)
+			return getDiagramType((BPMNDiagram)object);
+		DiagramEditor editor = getDiagramEditor(object);
+		if (editor!=null) {
+			Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
+			if (diagram!=null) {
+				object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
+				if (object instanceof BPMNDiagram)
+					return getDiagramType((BPMNDiagram)object);
+			}
+		}
+		return null;
+	}
+
+	public static Bpmn2DiagramType getDiagramType(BPMNDiagram diagram) {
+		if (diagram!=null && getResource(diagram)!=null) {
+			BPMNPlane plane = diagram.getPlane();
+			if (plane!=null) {
+				BaseElement be = plane.getBpmnElement();
+				if (be instanceof Choreography)
+					return Bpmn2DiagramType.CHOREOGRAPHY;
+				else if (be instanceof Collaboration)
+					return Bpmn2DiagramType.COLLABORATION;
+				else
+					// everything else (like SubProcess, etc.) belongs to a Process diagram
+					return Bpmn2DiagramType.PROCESS;
 			}
 		}
 		return Bpmn2DiagramType.NONE;
@@ -587,12 +598,18 @@ public class ModelUtil {
 	}
 
 	public static EAttribute createDynamicAttribute(EPackage pkg, EObject object, String name, String type) {
-		EClass docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
-		for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
-			if (f.getName().equals(name)) {
-				if (f instanceof EAttribute)
-					return (EAttribute)f;
-				return null;
+		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot");
+		if (docRoot==null) {
+			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
+			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
+		}
+		if (docRoot!=null) {
+			for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
+				if (f.getName().equals(name)) {
+					if (f instanceof EAttribute)
+						return (EAttribute)f;
+					return null;
+				}
 			}
 		}
 		if (type==null)
@@ -606,6 +623,8 @@ public class ModelUtil {
 		
 		docRoot.getEStructuralFeatures().add(attr);
 		ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
+		if (docRoot!=null)
+			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 
 		return attr;
 	}
@@ -673,23 +692,26 @@ public class ModelUtil {
 	}
 	
 	public static Resource getResource(EObject object) {
-		Resource resource = object.eResource();
-		if (resource==null) {
-			InsertionAdapter insertionAdapter = AdapterUtil.adapt(object, InsertionAdapter.class);
-			if (insertionAdapter!=null)
-				resource = insertionAdapter.getResource();
-			// TODO: can we use any of the referenced objects to find a Resource?
-//			if (resource==null) {
-//				EClass eclass = object.eClass();
-//				for (EReference ref : eclass.getEAllReferences()) {
-//					Object value = object.eGet(ref);
-//					if (value instanceof EObject) {
-//						resource = getResource((EObject) value);
-//						if (resource!=null)
-//							return resource;
+		Resource resource = null;
+		if (object!=null) {
+			resource = object.eResource();
+			if (resource==null) {
+				InsertionAdapter insertionAdapter = AdapterUtil.adapt(object, InsertionAdapter.class);
+				if (insertionAdapter!=null)
+					resource = insertionAdapter.getResource();
+				// TODO: can we use any of the referenced objects to find a Resource?
+//				if (resource==null) {
+//					EClass eclass = object.eClass();
+//					for (EReference ref : eclass.getEAllReferences()) {
+//						Object value = object.eGet(ref);
+//						if (value instanceof EObject) {
+//							resource = getResource((EObject) value);
+//							if (resource!=null)
+//								return resource;
+//						}
 //					}
 //				}
-//			}
+			}
 		}
 		return resource;
 	}

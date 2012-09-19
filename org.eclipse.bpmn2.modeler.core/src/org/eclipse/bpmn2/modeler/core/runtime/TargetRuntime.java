@@ -234,6 +234,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							ct.featureContainer = (ICustomTaskFeature) e.createExecutableExtension("featureContainer");
 							ct.featureContainer.setCustomTaskDescriptor(ct);
 							ct.featureContainer.setId(id);
+							ct.setPermanent(true);
 							getModelExtensionProperties(ct,e);
 							currentRuntime.addCustomTask(ct);
 						}
@@ -347,6 +348,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			} catch (Exception ex) {
 				Activator.logError(ex);
 			}
+			
+			currentRuntime = getDefaultRuntime();
 		}
 		return targetRuntimes;
 	}

@@ -398,18 +398,19 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
 		
-		if (feature==null) {
-			// determine the type of feature, either an EAttribute or an EReference,
-			// from the give Property's characteristics
-			Class type = EAttribute.class;
-			// if the Property has a "ref" or if its value is a Property
-			// then this must be an EReference
-			if (property.ref!=null || firstValue instanceof Property)
-				type = EReference.class;
-			// get the feature from the runtime package or from Bpmn2Package,
-			// wherever it's found first
-			feature = getFeature(type,property.name);
-		}
+		// TODO: fix this
+//		if (feature==null) {
+//			// determine the type of feature, either an EAttribute or an EReference,
+//			// from the give Property's characteristics
+//			Class type = EAttribute.class;
+//			// if the Property has a "ref" or if its value is a Property
+//			// then this must be an EReference
+//			if (property.ref!=null || firstValue instanceof Property)
+//				type = EReference.class;
+//			// get the feature from the runtime package or from Bpmn2Package,
+//			// wherever it's found first
+//			feature = getFeature(type,property.name);
+//		}
 
 		if (feature==null) {
 			EPackage pkg = getEPackage();

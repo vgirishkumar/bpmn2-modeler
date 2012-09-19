@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeature;
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
 	protected ICustomTaskFeature featureContainer;
+	protected boolean permanent;
 	
 	public CustomTaskDescriptor(String id, String name) {
 		super(id,name);
@@ -28,5 +29,13 @@ public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
 	public void setFeatureContainer(ICustomTaskFeature featureContainer) {
 		this.featureContainer = featureContainer;
+	}
+	
+	public boolean isPermanent() {
+		return permanent;
+	}
+
+	public void setPermanent(boolean permanent) {
+		this.permanent = permanent;
 	}
 }
