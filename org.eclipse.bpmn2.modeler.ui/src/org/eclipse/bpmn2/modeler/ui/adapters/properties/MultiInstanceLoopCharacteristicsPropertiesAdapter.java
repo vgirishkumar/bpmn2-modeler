@@ -68,7 +68,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 			MultiInstanceLoopCharacteristics loopCharacteristics = adopt(context);
 			
 			EObject container = loopCharacteristics.eContainer();
-			while (container!=null) {
+			if (container!=null) {
 				if (container instanceof Activity || container instanceof Process) {
 					List properties = null;
 					if (feature.getName().equals("inputDataItem")) {
@@ -91,7 +91,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 						}
 					}
 				}
-				container = container.eContainer();
+//				container = container.eContainer();
 			}
 			super.setChoiceOfValues(values);
 			return super.getChoiceOfValues(context);

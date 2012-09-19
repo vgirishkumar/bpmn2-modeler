@@ -177,6 +177,22 @@
 		</propertyTab>
 
 		<propertyTab
+			id="org.eclipse.bpmn2.modeler.dataInput.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataInputPropertySection"
+			type="org.eclipse.bpmn2.DataInput"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Data Input">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.dataOutput.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataOutputPropertySection"
+			type="org.eclipse.bpmn2.DataOutput"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Data Output">
+		</propertyTab>
+
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.datastore.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"

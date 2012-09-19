@@ -40,6 +40,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.emf.ecore.EClass;
@@ -81,7 +82,7 @@ import org.eclipse.ui.forms.widgets.Section;
  *    o Copy the Data Association “sourceRef” value into the “targetRef.” Only one
  *      sourceRef parameter is allowed in this case.					
  */
-public class DataAssociationDetailComposite extends DefaultDetailComposite {
+public class DataAssociationDetailComposite extends ItemAwareElementDetailComposite {
 	
 	public enum MapType {
 		None,
@@ -114,29 +115,10 @@ public class DataAssociationDetailComposite extends DefaultDetailComposite {
 	protected boolean transformationWidgetsShowing = false;
 	protected boolean advancedMappingWidgetsShowing = false;
 	
-	public class DataInputOutputDetailComposite extends DefaultDetailComposite {
+	public class DataInputOutputDetailComposite extends ItemAwareElementDetailComposite {
 
 		public DataInputOutputDetailComposite(Composite parent, int style) {
 			super(parent, style);
-		}
-
-		@Override
-		public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
-			if (propertiesProvider==null) {
-				propertiesProvider = new AbstractPropertiesProvider(object) {
-					String[] properties = new String[] {
-							"name",
-							"isCollection",
-							"dataState"
-					};
-					
-					@Override
-					public String[] getProperties() {
-						return properties; 
-					}
-				};
-			}
-			return propertiesProvider;
 		}
 		
 		public Composite getAttributesParent() {
@@ -202,6 +184,10 @@ public class DataAssociationDetailComposite extends DefaultDetailComposite {
 					associations = activity.getDataInputAssociations();
 				else
 					associations = activity.getDataOutputAssociations();
+			}
+			else {
+				super.createBindings(be);
+				return;
 			}
 			DataInputOutputDetailComposite details = new DataInputOutputDetailComposite(this,SWT.NONE);
 			details.setBusinessObject(be);
