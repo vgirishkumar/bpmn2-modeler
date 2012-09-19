@@ -381,6 +381,12 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 				return container;
 			}
 		}
+		// last chance: check custom task feature containers
+		if (id!=null && customTaskContainers!=null) {
+			FeatureContainer container = customTaskContainers.get(id);
+			if (container!=null && container.getApplyObject(context)!=null)
+				return container;
+		}
 		return null;
 	}
 
