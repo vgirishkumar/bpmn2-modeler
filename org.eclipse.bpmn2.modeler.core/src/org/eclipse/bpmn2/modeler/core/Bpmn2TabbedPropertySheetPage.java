@@ -28,8 +28,8 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage {
 			Object elem = ss.getFirstElement();
 			if (!(elem instanceof AbstractEditPart))
 				return;
+			super.selectionChanged(part, selection);
 		}
-		super.selectionChanged(part, selection);
 	}
 
 	public DiagramEditor getDiagramEditor() {
