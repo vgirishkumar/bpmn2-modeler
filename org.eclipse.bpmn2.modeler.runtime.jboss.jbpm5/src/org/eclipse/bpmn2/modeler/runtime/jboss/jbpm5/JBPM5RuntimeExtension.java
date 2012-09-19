@@ -146,7 +146,12 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 					}
 				}
 				if (!workItemDefinitions.isEmpty()) {
-					TargetRuntime.getCurrentRuntime().getCustomTasks().clear();
+					List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
+					for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTasks()) {
+						if (!d.isPermanent())
+							removed.add(d);
+					}
+					TargetRuntime.getCurrentRuntime().getCustomTasks().removeAll(removed);
 				
 					java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 					while(widIterator.hasNext()) {

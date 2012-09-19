@@ -30,6 +30,12 @@
 			class="org.eclipse.bpmn2.modeler.runtime.example.SampleSequenceFlowFeatureContainer">
 		</featureContainer>
 
+		<featureContainer
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			type="org.eclipse.bpmn2.Task"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleTaskFeatureContainer">
+		</featureContainer>
+
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.runtime.example.sequenceFlow.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.sequenceflow.tab"

@@ -166,6 +166,7 @@ public class DesignEditor extends BPMN2Editor {
 		tabFolder.setSelection(0);
 		tabFolder.getItem(0).getControl().setVisible(true);
 		tabFolder.getItem(0).setData(bpmnDiagram);
+		updatePalette();
 	}
 	
 	public void selectBpmnDiagram(BPMNDiagram bpmnDiagram) {

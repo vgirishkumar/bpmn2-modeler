@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.diagram;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
@@ -25,6 +26,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -92,21 +95,24 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 		Diagram diagram = getDiagramTypeProvider().getDiagram();
 		Object object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
-		modelEnablements = editor.getTargetRuntime().getModelEnablements((EObject)object);
-		featureProvider = (BPMNFeatureProvider)getFeatureProvider();
 		
 		List<IPaletteCompartmentEntry> palette = new ArrayList<IPaletteCompartmentEntry>();
 
-		// add compartments from super class
-		createConnectors(palette);
-		createTasksCompartments(palette);
-		createGatewaysCompartments(palette);
-		createEventsCompartments(palette);
-		createEventDefinitionsCompartments(palette);
-		createDataCompartments(palette);
-		createOtherCompartments(palette);
-		createCustomTasks(palette);
-
+		if (object!=null) {
+			modelEnablements = editor.getTargetRuntime().getModelEnablements((EObject)object);
+			featureProvider = (BPMNFeatureProvider)getFeatureProvider();
+			
+			// add compartments from super class
+			createConnectors(palette);
+			createTasksCompartments(palette);
+			createGatewaysCompartments(palette);
+			createEventsCompartments(palette);
+			createEventDefinitionsCompartments(palette);
+			createDataCompartments(palette);
+			createOtherCompartments(palette);
+			createCustomTasks(palette);
+		}
+		
 		return palette.toArray(new IPaletteCompartmentEntry[palette.size()]);
 	}
 
@@ -199,8 +205,16 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createCustomTasks(List<IPaletteCompartmentEntry> ret) {
+
+		// Custom Tasks will only appear in Process diagrams.
 		PaletteCompartmentEntry compartmentEntry = null;
 		BPMN2Editor editor = (BPMN2Editor) getDiagramTypeProvider().getDiagramEditor();
+		Diagram diagram = getDiagramTypeProvider().getDiagram();
+		// We already know this link is valid or we wouldn't be here:
+		BPMNDiagram bpmnDiagram = (BPMNDiagram)Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
+		if (ModelUtil.getDiagramType(bpmnDiagram) != Bpmn2DiagramType.PROCESS) {
+			return;
+		}
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {

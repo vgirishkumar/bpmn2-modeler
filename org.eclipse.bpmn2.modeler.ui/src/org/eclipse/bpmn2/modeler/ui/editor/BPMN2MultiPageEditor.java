@@ -355,7 +355,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 	}
 	
 	private void updateTabs() {
-		if (!tabFolder.isLayoutDeferred()) {
+		if (!tabFolder.getLayoutDeferred()) {
 			if (tabFolder.getItemCount()==1) {
 				tabFolder.setTabHeight(0);
 			}
