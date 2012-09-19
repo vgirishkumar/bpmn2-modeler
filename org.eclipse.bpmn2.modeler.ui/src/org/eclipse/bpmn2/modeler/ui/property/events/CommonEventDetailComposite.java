@@ -105,6 +105,9 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 					return outputTable;
 				}
 			}
+			if ("properties".equals(feature.getName())) {
+				return super.bindList(object, feature, listItemClass);
+			}
 			return null;
 		}
 		return super.bindList(object, feature, listItemClass);
