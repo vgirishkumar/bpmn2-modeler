@@ -218,6 +218,11 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			details.setBusinessObject(be);
 			sectionTitle = "Data Output Mapping Details";
 		}
+		else {
+			super.createBindings(be);
+			return;
+		}
+		
 		
 		// set section title
 		if (getParent() instanceof Section) {

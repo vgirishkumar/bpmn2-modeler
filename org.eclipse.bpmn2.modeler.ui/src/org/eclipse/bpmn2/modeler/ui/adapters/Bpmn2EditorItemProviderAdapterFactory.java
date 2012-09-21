@@ -36,6 +36,7 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
@@ -45,6 +46,7 @@ import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
@@ -86,6 +88,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.EventDefinitionPropertie
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FlowElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ImportPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.InputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemAwareElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionPropertiesAdapter;
@@ -95,6 +98,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.MessageFlowPropertiesAda
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.MessagePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.MultiInstanceLoopCharacteristicsPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.OperationPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.OutputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ParticipantPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ProcessPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.PropertyPropertiesAdapter;
@@ -602,6 +606,23 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
         	return new LinkEventDefinitionPropertiesAdapter(adapterFactory,object);
+		}
+//
+
+		@Override
+		public ExtendedPropertiesAdapter caseInputSet(InputSet object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new InputSetPropertiesAdapter(adapterFactory,object);
+		}
+
+		@Override
+		public ExtendedPropertiesAdapter caseOutputSet(OutputSet object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new OutputSetPropertiesAdapter(adapterFactory,object);
 		}
 
     };

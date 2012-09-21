@@ -66,7 +66,7 @@ public class TextObjectEditor extends ObjectEditor {
 		text = getToolkit().createText(composite, "", style);
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 		if (multiLine) {
-			data.heightHint = 100;
+			data.heightHint = 40;
 		}
 		text.setLayoutData(data);
 

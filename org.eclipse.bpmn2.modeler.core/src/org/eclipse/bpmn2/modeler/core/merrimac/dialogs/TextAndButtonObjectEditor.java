@@ -21,7 +21,9 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -32,7 +34,13 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 
-	protected Button button;
+	protected static int ID_DEFAULT_BUTTON = 0;
+	protected static int ID_ADD_BUTTON = 1;
+	protected static int ID_REMOVE_BUTTON = 2;
+	
+	protected Button defaultButton;
+	protected Button addButton;
+	protected Button removeButton;
 
 	/**
 	 * @param parent
@@ -52,13 +60,31 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 
 		// we assume that the "Edit" button will handle editing of this read-only text field
 		text.setEditable(false);
-		GridData data = (GridData)text.getLayoutData();
-		data.horizontalSpan = 1;
-		
-		button = getToolkit().createButton(composite, null, SWT.PUSH);
-		button.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
-		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		GridData textLayoutData = (GridData)text.getLayoutData();
+		textLayoutData.horizontalSpan = 1;
+		boolean multiLine = ((style & SWT.MULTI) != 0);
 
+		Composite buttons = new Composite(composite,SWT.NONE);
+		buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		buttons.setLayout(new FillLayout((style & SWT.MULTI)!=0 ? SWT.VERTICAL : SWT.HORIZONTAL));
+
+		if (canAdd()) {
+			addButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+			addButton.setImage( Activator.getDefault().getImage(IConstants.ICON_ADD_20));
+			if (multiLine)
+				textLayoutData.heightHint += 25;
+		}
+		
+		if (canRemove()) {
+			removeButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+			removeButton.setImage( Activator.getDefault().getImage(IConstants.ICON_REMOVE_20));
+			if (multiLine)
+				textLayoutData.heightHint += 25;
+		}
+		
+		defaultButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+		defaultButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
+		
 		updateText();
 
 		SelectionAdapter editListener = new SelectionAdapter() {
@@ -66,16 +92,34 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				buttonClicked();
+				int id = ID_DEFAULT_BUTTON;
+				if (e.widget == addButton)
+					id = ID_ADD_BUTTON;
+				else if (e.widget == removeButton)
+					id = ID_REMOVE_BUTTON;
+				buttonClicked(id);
 			}
 		};
-		button.addSelectionListener(editListener);
+		defaultButton.addSelectionListener(editListener);
+		if (canAdd())
+			addButton.addSelectionListener(editListener);
+		if (canRemove())
+			removeButton.addSelectionListener(editListener);
 
 		return text;
+	}
+	
+	protected boolean canAdd() {
+		return false;
+	}
+	
+	protected boolean canRemove() {
+		return false;
 	}
 
 	/**
 	 * The implementation must override this to handle the "Edit..." button click.
+	 * @param buttonId TODO
 	 */
-	protected abstract void buttonClicked(); 
+	protected abstract void buttonClicked(int buttonId); 
 }

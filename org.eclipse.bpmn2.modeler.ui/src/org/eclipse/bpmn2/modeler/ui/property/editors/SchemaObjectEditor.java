@@ -75,7 +75,7 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 		text.setEditable(true);
 		// and change the "Edit" button to a "Browse" to make it clear that
 		// an XML type can be selected from the imports 
-		button.setText("Browse...");
+		defaultButton.setText("Browse...");
 		return text;
 	}
 
@@ -83,7 +83,7 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.editors.TextAndButtonObjectEditor#buttonClicked()
 	 */
 	@Override
-	protected void buttonClicked() {
+	protected void buttonClicked(int buttonId) {
 		SchemaSelectionDialog dialog = new SchemaSelectionDialog(parent.getShell(), object);
 
 		if (dialog.open() == Window.OK) {

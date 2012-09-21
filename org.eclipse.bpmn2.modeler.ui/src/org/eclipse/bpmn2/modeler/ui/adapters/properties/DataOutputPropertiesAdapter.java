@@ -85,7 +85,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 
 			@Override
 			public String getDisplayName(Object context) {
-				return fd.getDisplayName(context);
+				return fd.getChoiceString(context);
 			}
 		});
 	}

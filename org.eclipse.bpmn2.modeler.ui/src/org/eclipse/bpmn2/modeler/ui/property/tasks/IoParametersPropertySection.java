@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.property.tasks;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
@@ -47,6 +48,13 @@ public class IoParametersPropertySection extends AbstractBpmn2PropertySection {
 		if (super.appliesTo(part, selection)) {
 			ModelEnablementDescriptor modelEnablement = getModelEnablement(selection);
 			EObject selectionBO = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+			if (selectionBO instanceof SubProcess) {
+				// Section 10, P211 of the BPMN 2.0 spec:
+				// "Embedded SubProcesses MUST NOT define Data Inputs and Data Outputs directly,
+				// however they MAY define them indirectly via MultiInstanceLoopCharacteristics."
+				return false;
+			}
+			
 			EStructuralFeature feature = selectionBO.eClass().getEStructuralFeature("ioSpecification");
 			if (feature != null) {
 				if (!modelEnablement.isEnabled(selectionBO.eClass(), feature))

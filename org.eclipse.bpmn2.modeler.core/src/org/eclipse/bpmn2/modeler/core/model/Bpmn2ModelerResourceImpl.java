@@ -36,8 +36,10 @@ import java.util.Map;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -71,6 +73,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
@@ -106,7 +109,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		this.xmlHelper = new Bpmn2ModelerXmlHelper(this);
         this.uriHandler = new FragmentQNameURIHandler(xmlHelper);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
-        this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, true);
+        this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, false);
+        this.getDefaultLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, true);
+        
         this.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
 
         // some interesting things to play with:
@@ -614,6 +619,29 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			super(resource);
 		}
 		
+
+		public void setValue(EObject object, EStructuralFeature feature,
+				Object value, int position) {
+			// fix some kind of bug which causes duplicate entries in objects that have
+			// mutual reference lists.
+			if (	object!=null
+					&& feature!=null
+					&& object.eClass()!=null
+					&& feature == object.eClass().getEStructuralFeature(feature.getFeatureID())
+			) {
+				Object v = object.eGet(feature);
+				if (v instanceof EObjectWithInverseEList) {
+					EObjectWithInverseEList list = (EObjectWithInverseEList)v;
+					if (list.contains(value)) {
+						// it's already in there!
+						return;
+					}
+				}
+			}
+
+			super.setValue(object, feature, value, position);
+		}
+
     	@Override
 		public EStructuralFeature getFeature(EClass eClass, String namespaceURI, String name, boolean isElement) {
     		// This fixes https://bugs.eclipse.org/bugs/show_bug.cgi?id=378296

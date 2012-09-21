@@ -168,7 +168,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 						ObjectEditor editor = new TextAndButtonObjectEditor(this,businessObject,attribute) {
 
 							@Override
-							protected void buttonClicked() {
+							protected void buttonClicked(int buttonId) {
 								Map.Entry<String, String> entry = (Map.Entry<String, String>)object;
 								DocumentRoot root = (DocumentRoot)object.eContainer();
 								Map<String, String> map = (Map<String, String>)root.getXMLNSPrefixMap();
@@ -374,7 +374,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			TextAndButtonObjectEditor editor = new TextAndButtonObjectEditor(this,be,null) {
 
 				@Override
-				protected void buttonClicked() {
+				protected void buttonClicked(int buttonId) {
 					IInputValidator validator = new IInputValidator() {
 
 						@Override
