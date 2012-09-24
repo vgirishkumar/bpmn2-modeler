@@ -173,7 +173,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			
 			if (loopCharacteristics != null) {
 				loopCharacteristicsComposite = PropertiesCompositeFactory.createDetailComposite(
-						loopCharacteristics.eClass().getInstanceClass(), this, SWT.NONE);
+						loopCharacteristics.eClass().getInstanceClass(), composite, SWT.NONE);
 				loopCharacteristicsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 				loopCharacteristicsComposite.setBusinessObject(loopCharacteristics);
 				loopCharacteristicsComposite.setTitle(loopCharacteristics instanceof StandardLoopCharacteristics ?

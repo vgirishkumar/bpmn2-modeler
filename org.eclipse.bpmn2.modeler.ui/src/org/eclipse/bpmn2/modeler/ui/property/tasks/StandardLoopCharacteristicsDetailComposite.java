@@ -2,8 +2,11 @@ package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -15,102 +18,56 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-public class StandardLoopCharacteristicsDetailComposite extends
-		DefaultDetailComposite {
+public class StandardLoopCharacteristicsDetailComposite extends DefaultDetailComposite {
 
-	private Button addRemoveLoopConditionExpressionButton;
-	private Button addRemoveLoopMaximumExpressionButton;
-
-	public StandardLoopCharacteristicsDetailComposite(Composite parent,
-			int style) {
+	AbstractDetailComposite loopConditionComposite = null;
+	AbstractDetailComposite loopMaximumComposite = null;
+	
+	public StandardLoopCharacteristicsDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
 
-	public StandardLoopCharacteristicsDetailComposite(
-			AbstractBpmn2PropertySection section) {
+	public StandardLoopCharacteristicsDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
 
 	@Override
-	public void cleanBindings() {
+	protected void cleanBindings() {
 		super.cleanBindings();
-		addRemoveLoopConditionExpressionButton = null;
-		addRemoveLoopMaximumExpressionButton = null;
+		loopConditionComposite = null;
+		loopMaximumComposite = null;
 	}
 
+	public Composite getAttributesParent() {
+		return super.getAttributesParent();
+	}
+	
 	public void createBindings(EObject be) {
+		getAttributesParent();
+		
 		bindAttribute(be,"testBefore");
 		
 		if (be instanceof StandardLoopCharacteristics) {
 			
-			final StandardLoopCharacteristics standardLoop = (StandardLoopCharacteristics) be;
-				
-			addRemoveLoopConditionExpressionButton = new Button(this, SWT.PUSH);
-			addRemoveLoopConditionExpressionButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-			addRemoveLoopConditionExpressionButton.addSelectionListener(new SelectionAdapter() {
-				
-				public void widgetSelected(SelectionEvent e) {
-					@SuppressWarnings("restriction")
-					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							if (standardLoop.getLoopCondition() !=null)
-								standardLoop.setLoopCondition(null);
-							else {
-								Expression exp = FACTORY.createFormalExpression();
-								standardLoop.setLoopCondition(exp);
-								ModelUtil.setID(exp);
-							}
-							setBusinessObject(standardLoop);
-						}
-					});
-				}
-			});
-
-			addRemoveLoopMaximumExpressionButton = new Button(this, SWT.PUSH);
-			addRemoveLoopMaximumExpressionButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-			addRemoveLoopMaximumExpressionButton.addSelectionListener(new SelectionAdapter() {
-				
-				public void widgetSelected(SelectionEvent e) {
-					@SuppressWarnings("restriction")
-					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							if (standardLoop.getLoopMaximum() !=null)
-								standardLoop.setLoopMaximum(null);
-							else {
-								Expression exp = FACTORY.createFormalExpression();
-								standardLoop.setLoopMaximum(exp);
-								ModelUtil.setID(exp);
-							}
-							setBusinessObject(standardLoop);
-						}
-					});
-				}
-			});
-
-			Expression loopexp = (Expression) standardLoop.getLoopCondition();
-			Expression maxexp = (Expression) standardLoop.getLoopMaximum();
-
-			if (loopexp != null) {
-				addRemoveLoopConditionExpressionButton.setText("Remove Loop Condition");
-				this.businessObject = loopexp;
-				super.createBindings(loopexp);
+			final StandardLoopCharacteristics lc = (StandardLoopCharacteristics) be;
+			
+			Expression loopConditionExpression = lc.getLoopCondition();
+			if (loopConditionExpression==null) {
+				loopConditionExpression = FACTORY.createFormalExpression();
+				InsertionAdapter.add(lc, PACKAGE.getStandardLoopCharacteristics_LoopCondition(), loopConditionExpression);
 			}
-			else {
-				addRemoveLoopConditionExpressionButton.setText("Add Loop Condition");
+			loopConditionComposite = PropertiesCompositeFactory.createDetailComposite(Expression.class, getAttributesParent(), SWT.NONE);
+			loopConditionComposite.setBusinessObject(loopConditionExpression);
+			loopConditionComposite.setTitle("Loop Condition");
+			
+			Expression loopMaximumExpression = lc.getLoopMaximum();
+			if (loopMaximumExpression==null) {
+				loopMaximumExpression = FACTORY.createFormalExpression();
+				InsertionAdapter.add(lc, PACKAGE.getStandardLoopCharacteristics_LoopMaximum(), loopMaximumExpression);
 			}
-
-			if (maxexp != null) {
-				addRemoveLoopMaximumExpressionButton.setText("Remove Loop Maximum");
-				this.businessObject = maxexp;
-				super.createBindings(maxexp);
-			}
-			else {
-				addRemoveLoopMaximumExpressionButton.setText("Add Loop Maximum");
-			}
+			loopMaximumComposite = PropertiesCompositeFactory.createDetailComposite(Expression.class, getAttributesParent(), SWT.NONE);
+			loopMaximumComposite.setBusinessObject(loopMaximumExpression);
+			loopMaximumComposite.setTitle("Loop Maximum");
 		}
 	}
 }

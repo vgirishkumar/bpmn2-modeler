@@ -158,4 +158,11 @@ public class IntObjectEditor extends ObjectEditor {
 			updateText();
 		}
 	}
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		text.setVisible(visible);
+		GridData data = (GridData)text.getLayoutData();
+		data.exclude = !visible;
+	}
 }

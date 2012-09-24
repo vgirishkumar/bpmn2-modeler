@@ -593,10 +593,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				if (!updatingWidgets && transformation==null) {
 					transformation = FACTORY.createFormalExpression();
 					InsertionAdapter.add(association, PACKAGE.getDataAssociation_Transformation(), transformation);
-//					transformation = modelHandler.createStandby(
-//							association,
-//							PACKAGE.getDataAssociation_Transformation(),
-//							FormalExpression.class);
 				}
 				if (transformationDetailsComposite==null) {
 					transformationDetailsComposite = PropertiesCompositeFactory.createDetailComposite(
@@ -604,7 +600,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				transformationDetailsComposite.setBusinessObject(transformation);
 				transformationDetailsComposite.setTitle("Transformation");
-//				transformationDetailsComposite.redrawPage();
 	
 			}
 			else {
@@ -676,7 +671,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				expressionDetailsComposite.setBusinessObject(expression);//association.getexpression());
 				expressionDetailsComposite.setTitle("Expression");
-//				expressionDetailsComposite.redrawPage();
 			}
 			else {
 				if (expressionComposite!=null) {
@@ -716,10 +710,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				if (!updatingWidgets && transformation==null) {
 					transformation = FACTORY.createFormalExpression();
 					InsertionAdapter.add(association, PACKAGE.getDataAssociation_Transformation(), transformation);
-//					transformation = modelHandler.createStandby(
-//							association,
-//							PACKAGE.getDataAssociation_Transformation(),
-//							FormalExpression.class);
 				}
 	
 				if (transformationDetailsComposite==null) {
@@ -728,7 +718,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				transformationDetailsComposite.setBusinessObject(transformation);//association.getTransformation());
 				transformationDetailsComposite.setTitle("Transformation");
-//				transformationDetailsComposite.redrawPage();
 				
 				if (assignmentsTable!=null)
 					assignmentsTable.dispose();

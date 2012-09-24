@@ -207,4 +207,14 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	public void notifyChanged(Notification notification) {
 		updateLabelDecorator();
 	}
+	
+	public void setVisible(boolean visible) {
+		label.setVisible(visible);
+		GridData data = (GridData)label.getLayoutData();
+		data.exclude = !visible;
+	}
+	
+	public boolean isVisible() {
+		return label.isVisible();
+	}
 }

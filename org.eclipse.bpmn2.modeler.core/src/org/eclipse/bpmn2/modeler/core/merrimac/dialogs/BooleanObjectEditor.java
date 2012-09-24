@@ -108,4 +108,11 @@ public class BooleanObjectEditor extends ObjectEditor {
 			button.setSelection((Boolean) object.eGet(feature));
 		}
 	}
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		button.setVisible(visible);
+		GridData data = (GridData)button.getLayoutData();
+		data.exclude = !visible;
+	}
 }
