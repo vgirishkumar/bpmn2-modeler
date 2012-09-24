@@ -42,7 +42,7 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	public FeatureEditingDialog(DiagramEditor editor, EObject object, EStructuralFeature feature) {
 		super(editor, object, (EClass)feature.getEType());
 		this.feature = feature;
-		this.newObject = null;
+		this.newObject = (EObject) object.eGet(feature);
 	}
 
 	protected Composite createDialogContent(Composite parent) {

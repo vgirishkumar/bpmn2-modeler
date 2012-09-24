@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -174,12 +175,13 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 		parameter = (ItemAwareElement)be;
 		
+		Activity activity = null;
 		List<? extends DataAssociation> associations = null;
 		EObject container = be.eContainer();
-		if (container instanceof InputOutputSpecification) {
+		if (container instanceof InputOutputSpecification || container instanceof MultiInstanceLoopCharacteristics) {
 			EObject containerContainer = container.eContainer();
 			if (containerContainer instanceof Activity) {
-				Activity activity = (Activity)containerContainer;
+				activity = (Activity)containerContainer;
 				if (isInput)
 					associations = activity.getDataInputAssociations();
 				else
@@ -210,8 +212,8 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			CatchEvent catchEvent = (CatchEvent)container;
 			associations = catchEvent.getDataOutputAssociation();
 			if (associations.size()==0) {
-				association = FACTORY.createDataInputAssociation();
-				association.setTargetRef((ItemAwareElement) be);
+				association = FACTORY.createDataOutputAssociation();
+				association.getSourceRef().add((ItemAwareElement) be);
 				InsertionAdapter.add(catchEvent, PACKAGE.getCatchEvent_DataOutputAssociation(), association);
 			}
 			DataInputOutputDetailComposite details = new DataInputOutputDetailComposite(this,SWT.NONE);
@@ -247,6 +249,19 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 					}
 					if (association!=null)
 						break;
+				}
+			}
+			if (association==null && activity!=null) {
+				// create a new DataAssociation
+				if (isInput) {
+					association = FACTORY.createDataInputAssociation();
+					association.setTargetRef((ItemAwareElement) be);
+					InsertionAdapter.add(activity, PACKAGE.getActivity_DataInputAssociations(), association);
+				}
+				else {
+					association = FACTORY.createDataOutputAssociation();
+					association.getSourceRef().add((ItemAwareElement) be);
+					InsertionAdapter.add(activity, PACKAGE.getActivity_DataOutputAssociations(), association);
 				}
 			}
 		}
@@ -564,7 +579,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		if (show != transformationWidgetsShowing) {
 			if (show) {
 				if (transformationComposite==null) {
-					transformationComposite = toolkit.createComposite(this, SWT.BORDER);
+					transformationComposite = toolkit.createComposite(this, SWT.NONE);
 					transformationComposite.setLayout(new GridLayout(1,false));
 					transformationComposite.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,true,3,1));
 				}
@@ -687,7 +702,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		if (show != advancedMappingWidgetsShowing) {
 			if (show) {
 				if (transformationComposite==null) {
-					transformationComposite = toolkit.createComposite(this, SWT.BORDER);
+					transformationComposite = toolkit.createComposite(this, SWT.NONE);
 					transformationComposite.setLayout(new GridLayout(1,false));
 					transformationComposite.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,true,3,1));
 				}
