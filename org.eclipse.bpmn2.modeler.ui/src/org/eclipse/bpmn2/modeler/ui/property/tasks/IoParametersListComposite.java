@@ -35,7 +35,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 	boolean isInput;
 	
 	public IoParametersListComposite(IoParametersDetailComposite detailComposite, EObject container, InputOutputSpecification ioSpecification, EStructuralFeature ioFeature) {
-		super(detailComposite, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|SHOW_DETAILS);
+		super(detailComposite, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);
 		this.ioFeature = ioFeature;
 		this.ioSpecification = ioSpecification;
 		isInput = ("dataInputs".equals(ioFeature.getName()));

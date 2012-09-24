@@ -33,8 +33,10 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class IoParametersDetailComposite extends AbstractDetailComposite {
 
-	AbstractListComposite inputTable;
-	AbstractListComposite outputTable;
+	AbstractListComposite inputSetsTable;
+	AbstractListComposite dataInputsTable;
+	AbstractListComposite outputSetsTable;
+	AbstractListComposite dataOutputsTable;
 	
 	public IoParametersDetailComposite(Composite parent, int style) {
 		super(parent, style);
@@ -50,8 +52,10 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 	@Override
 	public void cleanBindings() {
 		super.cleanBindings();
-		inputTable = null;
-		outputTable = null;
+		inputSetsTable = null;
+		dataInputsTable = null;
+		outputSetsTable = null;
+		dataOutputsTable = null;
 	}
 
 	/*
@@ -72,15 +76,26 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 				InsertionAdapter.add(be, ioSpecificationFeature, ioSpecification);
 			}
 
-			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs");
-			inputTable = new IoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
-			inputTable.bindList(ioSpecification, dataInputsFeature);
-			inputTable.setTitle("Input Parameters");
+			EStructuralFeature inputSetsFeature = getFeature(ioSpecification, "inputSets");
+			inputSetsTable = new IoSetsListComposite(this, be, ioSpecification, inputSetsFeature);
+			inputSetsTable.bindList(ioSpecification, inputSetsFeature);
+			inputSetsTable.setTitle("Input Sets");
 
+			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs");
+			dataInputsTable = new IoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
+			dataInputsTable.bindList(ioSpecification, dataInputsFeature);
+			dataInputsTable.setTitle("Input Parameters");
+
+
+			EStructuralFeature outputSetsFeature = getFeature(ioSpecification, "outputSets");
+			outputSetsTable = new IoSetsListComposite(this, be, ioSpecification, outputSetsFeature);
+			outputSetsTable.bindList(ioSpecification, outputSetsFeature);
+			outputSetsTable.setTitle("Output Sets");
+			
 			EStructuralFeature dataOutputsFeature = getFeature(ioSpecification, "dataOutputs");
-			outputTable = new IoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
-			outputTable.bindList(ioSpecification, dataOutputsFeature);
-			outputTable.setTitle("Output Parameters");
+			dataOutputsTable = new IoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
+			dataOutputsTable.bindList(ioSpecification, dataOutputsFeature);
+			dataOutputsTable.setTitle("Output Parameters");
 		}
 		else {
 			// the control is a ThrowEvent

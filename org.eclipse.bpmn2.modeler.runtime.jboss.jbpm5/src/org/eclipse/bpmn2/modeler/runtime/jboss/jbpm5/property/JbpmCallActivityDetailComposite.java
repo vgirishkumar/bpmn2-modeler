@@ -56,7 +56,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 				ObjectEditor editor = new TextAndButtonObjectEditor(this,object,reference) {
 
 					@Override
-					protected void buttonClicked() {
+					protected void buttonClicked(int buttonId) {
 						IInputValidator validator = new IInputValidator() {
 
 							@Override

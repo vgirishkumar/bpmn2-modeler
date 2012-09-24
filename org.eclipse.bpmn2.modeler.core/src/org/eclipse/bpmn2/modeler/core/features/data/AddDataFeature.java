@@ -12,12 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.data;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -28,8 +29,6 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -45,11 +44,17 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		boolean intoDiagram = context.getTargetContainer().equals(getDiagram());
+		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
+		boolean intoDiagram = containerBO instanceof BPMNDiagram;
+		if (intoDiagram) {
+			// SubProcess are not allowed to define their own DataInputs or DataOutputs
+			BPMNDiagram bpmnDiagram = (BPMNDiagram) containerBO;
+			if (bpmnDiagram.getPlane().getBpmnElement() instanceof SubProcess)
+				intoDiagram = false;
+		}
 		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
 		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
-		boolean intoSubProcess = FeatureSupport.isTargetSubProcess(context);
-		return intoDiagram || intoLane || intoParticipant || intoSubProcess;
+		return intoDiagram || intoLane || intoParticipant;
 	}
 
 	@Override

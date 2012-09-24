@@ -68,30 +68,30 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 			MultiInstanceLoopCharacteristics loopCharacteristics = adopt(context);
 			
 			EObject container = loopCharacteristics.eContainer();
-			while (container!=null) {
+			if (container!=null) {
 				if (container instanceof Activity || container instanceof Process) {
-					List properties = null;
+					List dataInputsOrOutputs = null;
 					if (feature.getName().equals("inputDataItem")) {
 						EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification");
 						if (f!=null) {
 							InputOutputSpecification ioSpecification = (InputOutputSpecification)container.eGet(f);
 							if (ioSpecification!=null)
-								properties = ioSpecification.getDataInputs();
+								dataInputsOrOutputs = ioSpecification.getDataInputs();
 						}
 					}
 					else {
 						EStructuralFeature f = container.eClass().getEStructuralFeature("properties");
 						if (f!=null)
-							properties = (List)container.eGet(f);
+							dataInputsOrOutputs = (List)container.eGet(f);
 					}
 					
-					if (properties!=null) {
-						for (Object p : properties) {
+					if (dataInputsOrOutputs!=null) {
+						for (Object p : dataInputsOrOutputs) {
 							values.put( getChoiceString(p), p);
 						}
 					}
 				}
-				container = container.eContainer();
+//				container = container.eContainer();
 			}
 			super.setChoiceOfValues(values);
 			return super.getChoiceOfValues(context);

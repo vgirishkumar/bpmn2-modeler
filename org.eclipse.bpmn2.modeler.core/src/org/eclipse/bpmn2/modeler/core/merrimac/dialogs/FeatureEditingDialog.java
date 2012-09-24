@@ -38,7 +38,13 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		this.feature = feature;
 		this.newObject = value;
 	}
-	
+
+	public FeatureEditingDialog(DiagramEditor editor, EObject object, EStructuralFeature feature) {
+		super(editor, object, (EClass)feature.getEType());
+		this.feature = feature;
+		this.newObject = (EObject) object.eGet(feature);
+	}
+
 	protected Composite createDialogContent(Composite parent) {
 		if (newObject==null) {
 			// create the new object
@@ -73,15 +79,22 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		}
 		return result[0];
 	}
+
+	@Override
+	protected String getPreferenceKey() {
+		return super.getPreferenceKey() + "." + feature.getName();
+	}
 	
-	public void aboutToOpen() {
-		String title;
+	@Override
+	protected String getTitle() {
 		if (createNew)
 			title = "Create New " + ModelUtil.getLabel(newObject);
 		else
 			title = "Edit " + ModelUtil.getLabel(newObject);
-		getShell().setText(title);
-		
+		return title;
+	}
+	
+	public void aboutToOpen() {
 		dialogContent.setData(newObject);
 	}
 	

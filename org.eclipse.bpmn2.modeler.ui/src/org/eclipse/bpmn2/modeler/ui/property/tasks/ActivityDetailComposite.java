@@ -37,9 +37,9 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ActivityDetailComposite extends DefaultDetailComposite {
 
+	private Button noneButton;
 	private Button addStandardLoopButton;
 	private Button addMultiLoopButton;
-	private Button removeLoopButton;
 	protected AbstractDetailComposite loopCharacteristicsComposite;
 	
 	public ActivityDetailComposite(Composite parent, int style) {
@@ -56,6 +56,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	@Override
 	public void cleanBindings() {
 		super.cleanBindings();
+		noneButton = null;
 		addStandardLoopButton = null;
 		addMultiLoopButton = null;
 		loopCharacteristicsComposite = null;
@@ -98,17 +99,22 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			final Activity activity = (Activity) businessObject;
 			LoopCharacteristics loopCharacteristics = (LoopCharacteristics) activity.getLoopCharacteristics();
 				
-			if (loopCharacteristics != null) {
-				loopCharacteristicsComposite = PropertiesCompositeFactory.createDetailComposite(LoopCharacteristics.class, this, SWT.NONE);
-				loopCharacteristicsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+			Composite composite = getAttributesParent();
 
-				loopCharacteristicsComposite.setBusinessObject(loopCharacteristics);
-
-				removeLoopButton = toolkit.createButton(loopCharacteristicsComposite.getAttributesParent(), "Remove Loop Characteristics", SWT.PUSH);
-				removeLoopButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-				removeLoopButton.addSelectionListener(new SelectionAdapter() {
-					
-					public void widgetSelected(SelectionEvent e) {
+			createLabel(composite, "Loop Characteristics");
+			
+			Composite buttonComposite = toolkit.createComposite(composite);
+			buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+			FillLayout layout = new FillLayout();
+			layout.marginWidth = 20;
+			buttonComposite.setLayout(layout);
+			
+			noneButton = toolkit.createButton(buttonComposite, "None", SWT.RADIO);
+			noneButton.setSelection(loopCharacteristics == null);
+			noneButton.addSelectionListener(new SelectionAdapter() {
+				
+				public void widgetSelected(SelectionEvent e) {
+					if (noneButton.getSelection()) {
 						@SuppressWarnings("restriction")
 						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
@@ -120,72 +126,68 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 							}
 						});
 					}
-				});
+				}
+			});
+			
+			addStandardLoopButton = toolkit.createButton(buttonComposite, "Standard", SWT.RADIO);
+			addStandardLoopButton.setSelection(loopCharacteristics instanceof StandardLoopCharacteristics);
+			addStandardLoopButton.addSelectionListener(new SelectionAdapter() {
 				
+				public void widgetSelected(SelectionEvent e) {
+					if (addStandardLoopButton.getSelection()) {
+						@SuppressWarnings("restriction")
+						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								StandardLoopCharacteristics loopChar = FACTORY.createStandardLoopCharacteristics();
+								activity.setLoopCharacteristics(loopChar);
+								ModelUtil.setID(loopChar);
+								setBusinessObject(activity);
+							}
+						});
+					}
+				}
+			});
+
+			addMultiLoopButton = toolkit.createButton(buttonComposite, "Multi-Instance", SWT.RADIO);
+			addMultiLoopButton.setSelection(loopCharacteristics instanceof MultiInstanceLoopCharacteristics);
+			addMultiLoopButton.addSelectionListener(new SelectionAdapter() {
+				
+				public void widgetSelected(SelectionEvent e) {
+					if (addMultiLoopButton.getSelection()) {
+						@SuppressWarnings("restriction")
+						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								MultiInstanceLoopCharacteristics loopChar = FACTORY.createMultiInstanceLoopCharacteristics();
+								activity.setLoopCharacteristics(loopChar);
+								ModelUtil.setID(loopChar);
+								setBusinessObject(activity);
+							}
+						});
+					}
+				}
+			});
+			
+			if (loopCharacteristics != null) {
+				loopCharacteristicsComposite = PropertiesCompositeFactory.createDetailComposite(
+						loopCharacteristics.eClass().getInstanceClass(), this, SWT.NONE);
+				loopCharacteristicsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+				loopCharacteristicsComposite.setBusinessObject(loopCharacteristics);
 				loopCharacteristicsComposite.setTitle(loopCharacteristics instanceof StandardLoopCharacteristics ?
 						"Standard Loop Characteristics" : "Multi-Instance Loop Characteristics");
 			}
-			else {
-				Composite composite = getAttributesParent();
-
-				createLabel(composite, "Loop Characteristics");
-				
-				Composite buttonComposite = toolkit.createComposite(composite);
-				buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-				FillLayout layout = new FillLayout();
-				layout.marginWidth = 20;
-				buttonComposite.setLayout(layout);
-				
-				Button noneButton = toolkit.createButton(buttonComposite, "None", SWT.RADIO);
-				noneButton.setSelection(true);
-				
-				addStandardLoopButton = toolkit.createButton(buttonComposite, "Standard", SWT.RADIO);
-				if (!isModelObjectEnabled(PACKAGE.getStandardLoopCharacteristics()))
-					addStandardLoopButton.setVisible(false);
-				addStandardLoopButton.addSelectionListener(new SelectionAdapter() {
-					
-					public void widgetSelected(SelectionEvent e) {
-						if (addStandardLoopButton.getSelection()) {
-							@SuppressWarnings("restriction")
-							TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-							domain.getCommandStack().execute(new RecordingCommand(domain) {
-								@Override
-								protected void doExecute() {
-									StandardLoopCharacteristics loopChar = FACTORY.createStandardLoopCharacteristics();
-									activity.setLoopCharacteristics(loopChar);
-									ModelUtil.setID(loopChar);
-									setBusinessObject(activity);
-								}
-							});
-						}
-					}
-				});
-	
-				addMultiLoopButton = toolkit.createButton(buttonComposite, "Multi-Instance", SWT.RADIO);
-				if (!isModelObjectEnabled(PACKAGE.getMultiInstanceLoopCharacteristics()))
-					addMultiLoopButton.setVisible(false);
-				addMultiLoopButton.addSelectionListener(new SelectionAdapter() {
-					
-					public void widgetSelected(SelectionEvent e) {
-						if (addMultiLoopButton.getSelection()) {
-							@SuppressWarnings("restriction")
-							TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-							domain.getCommandStack().execute(new RecordingCommand(domain) {
-								@Override
-								protected void doExecute() {
-									MultiInstanceLoopCharacteristics loopChar = FACTORY.createMultiInstanceLoopCharacteristics();
-									activity.setLoopCharacteristics(loopChar);
-									ModelUtil.setID(loopChar);
-									setBusinessObject(activity);
-								}
-							});
-						}
-					}
-				});
+			else if (loopCharacteristicsComposite!=null) {
+				loopCharacteristicsComposite.dispose();
+				loopCharacteristicsComposite = null;
 			}
-			redrawPage();
+
 		}
 		else
 			super.bindReference(parent, object, reference);
+		
+		redrawPage();
 	}
 }

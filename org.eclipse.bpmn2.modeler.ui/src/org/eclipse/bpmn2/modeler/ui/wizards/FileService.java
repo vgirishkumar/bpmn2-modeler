@@ -263,6 +263,8 @@ public class FileService {
 	
 	public static String createTempName(String name) {
 		String tempDir = System.getProperty("java.io.tmpdir");
+		if (!tempDir.endsWith(File.separator))
+			tempDir += File.separator;
 		String tempName = tempDir + name + "." + EcoreUtil.generateUUID();
 		return tempName;
 	}
