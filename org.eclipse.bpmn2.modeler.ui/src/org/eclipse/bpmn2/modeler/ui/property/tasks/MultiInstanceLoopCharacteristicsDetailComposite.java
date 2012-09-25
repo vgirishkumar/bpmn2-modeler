@@ -1,10 +1,18 @@
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import java.util.List;
+
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -215,6 +223,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			if (buttonId==ID_DEFAULT_BUTTON) {
 				FeatureEditingDialog dlg = new FeatureEditingDialog(getDiagramEditor(), object, feature);
 				dlg.open();
+				updateText();
 			}
 			else if (buttonId==ID_REMOVE_BUTTON) {
 				final EObject value = (EObject) object.eGet(feature);
@@ -235,7 +244,92 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		protected boolean updateObject(final Object result) {
 			return true;
 		}
-
+		
+		protected void updateText() {
+			// update the read-only text for this DataInput or DataOutput editor:
+			// this will be in the form "InputOutputParameterName" -> "MappedObject"
+			// the MappedObject will be found in the Data Input/Output object's parent
+			// dataInputAssociations or dataOutputAssociations list
+			// @see also DataAssociationDetailComposite which does something similar
+			BaseElement dataIoObject = (BaseElement) object.eGet(feature);
+			String newText = "";
+			if (dataIoObject!=null) {
+				boolean isInput = (dataIoObject instanceof DataInput);
+				DataAssociation association = null;
+				EObject container = dataIoObject.eContainer();
+				while (container!=null && association==null) {
+					EStructuralFeature f;
+					List<? extends DataAssociation> associations = null;
+					if (container instanceof Activity) {
+						if (isInput) {
+							f = container.eClass().getEStructuralFeature("dataInputAssociations");
+							if (f!=null)
+								associations = (List<DataAssociation>)container.eGet(f);
+						}
+						else {
+							f = container.eClass().getEStructuralFeature("dataOutputAssociations");
+							if (f!=null)
+								associations = (List<DataAssociation>)container.eGet(f);
+						}
+					}
+					else if (container instanceof ThrowEvent && isInput) {
+						associations = ((ThrowEvent)container).getDataInputAssociation();
+					}
+					else if (container instanceof CatchEvent && !isInput) {
+						associations = ((CatchEvent)container).getDataOutputAssociation();
+					}
+					if (associations!=null) {
+						for (DataAssociation a : associations) {
+							if (isInput) {
+								if (a.getTargetRef() == dataIoObject) {
+									association = a;
+									break;
+								}
+							}
+							else
+							{
+								for (ItemAwareElement e : a.getSourceRef()) {
+									if (e == dataIoObject) {
+										association = a;
+										break;
+									}
+								}
+								if (association!=null)
+									break;
+							}
+						}
+					}
+					container = container.eContainer();
+				}
+	
+				newText = ModelUtil.getName(dataIoObject);
+				String mappedTo = null;
+				if (association!=null) {
+					if (isInput) {
+						if (association.getSourceRef().size()>0)
+							mappedTo = ModelUtil.getDisplayName(association.getSourceRef().get(0));
+						else if (association.getAssignment().size()>0)
+							mappedTo = "[Expression]";
+						else if (association.getTransformation()!=null)
+							mappedTo = "[Transformation]";
+					}
+					else {
+						if (association.getTargetRef()!=null)
+							mappedTo = ModelUtil.getDisplayName(association.getTargetRef());
+						else if (association.getAssignment().size()>0)
+							mappedTo = "[Expression]";
+						else if (association.getTransformation()!=null)
+							mappedTo = "[Transformation]";
+					}
+				}
+				if (mappedTo!=null)
+					newText += " -> " + mappedTo;
+			}
+			
+			if (!text.getText().equals(newText)) {
+				setText(newText);
+			}
+		}
 		@Override
 		protected boolean canRemove() {
 			return true;
