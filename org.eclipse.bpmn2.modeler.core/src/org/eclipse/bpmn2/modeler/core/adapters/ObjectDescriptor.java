@@ -182,7 +182,9 @@ public class ObjectDescriptor<T extends EObject> {
 	 * @return the context variable if it has the same type as this.object, or this.object if not.
 	 */
 	protected T adopt(Object context) {
-		return (this.object.getClass().isInstance(context)) ? (T)context : this.object;
+		T result = (this.object.getClass().isInstance(context)) ? (T)context : this.object;
+		InsertionAdapter.executeIfNeeded(result);
+		return result;
 	}
 
 	public TransactionalEditingDomain getEditingDomain(Object context) {
