@@ -57,9 +57,11 @@ import org.eclipse.swt.widgets.Control;
 public class ComboObjectEditor extends MultivalueObjectEditor {
 
 	protected ComboViewer comboViewer;
+	private Composite buttons = null;
 	private boolean ignoreComboSelections;
 	private boolean keyPressed = false;
 	private Button editButton = null;
+	private Button createButton = null;
 	
 	/**
 	 * @param parent
@@ -129,14 +131,14 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			});
 		}
 
-		Composite buttons = null;
+		buttons = null;
 		if (canEdit || canCreateNew) {
 			buttons =  getToolkit().createComposite(composite);
 			buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 			buttons.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 			if (canCreateNew) {
-				Button createButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+				createButton = getToolkit().createButton(buttons, null, SWT.PUSH);
 				createButton.setImage( Activator.getDefault().getImage(IConstants.ICON_ADD_20));
 				createButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
@@ -304,6 +306,18 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				fillCombo();
 				break;
 			}
+		}
+	}
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		comboViewer.getCombo().setVisible(visible);
+		GridData data = (GridData)comboViewer.getCombo().getLayoutData();
+		data.exclude = !visible;
+		if (buttons!=null) {
+			buttons.setVisible(visible);
+			data = (GridData)buttons.getLayoutData();
+			data.exclude = !visible;
 		}
 	}
 }

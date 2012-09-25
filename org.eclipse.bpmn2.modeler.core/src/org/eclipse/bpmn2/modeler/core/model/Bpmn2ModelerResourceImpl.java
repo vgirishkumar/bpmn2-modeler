@@ -35,6 +35,8 @@ import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemDefinition;
@@ -317,6 +319,28 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             if (o instanceof Bounds) {
             	return true;
             }
+            
+            // empty Expressions should not be saved
+            if (f!=null && f.getEType() == Bpmn2Package.eINSTANCE.getExpression()) {
+            	Expression expression = (Expression)o.eGet(f);
+            	if (expression==null)
+            		return false;
+            	if (expression instanceof FormalExpression) {
+	            	FormalExpression formalExpression = (FormalExpression)expression;
+	            	if (
+	            			(formalExpression.getBody()==null || formalExpression.getBody().isEmpty()) &&
+	            			(formalExpression.getLanguage()==null || formalExpression.getLanguage().isEmpty()) &&
+	            			formalExpression.getEvaluatesToTypeRef()==null) {
+	            		return false;
+	            	}
+            	}
+            }
+            
+            // don't serialize the "body" attribute of FormalExpressions because the expression text
+            // is already in the CDATA section of the <bpmn2:expression> element. This would cause
+            // the expression text to be duplicated on deserialization.
+			if (Bpmn2Package.eINSTANCE.getFormalExpression_Body().equals(f))
+				return false;
             
             return super.shouldSaveFeature(o, f);
         }

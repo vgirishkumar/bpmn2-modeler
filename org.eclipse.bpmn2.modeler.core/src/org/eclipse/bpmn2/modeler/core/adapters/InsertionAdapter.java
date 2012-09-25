@@ -214,7 +214,7 @@ public class InsertionAdapter extends EContentAdapter {
 		}
 		TransactionalEditingDomainImpl domain = (TransactionalEditingDomainImpl)
 				TransactionUtil.getEditingDomain(resource);
-		if (domain.getActiveTransaction().isActive())
+		if (domain.getActiveTransaction()!=null && domain.getActiveTransaction().isActive())
 			return null;
 		return domain;
 	}

@@ -1006,20 +1006,22 @@ public class ModelUtil {
 	public static boolean setValue(TransactionalEditingDomain domain, final EObject object, final EStructuralFeature feature, final Object value) {
 		ExtendedPropertiesAdapter adapter = AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		Object oldValue = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
-		boolean valueChanged = (value != oldValue);
-		if (value!=null && oldValue!=null)
-			valueChanged = !value.equals(oldValue);
+		final Object newValue = (feature instanceof EReference && !(value instanceof EObject)) ? null : value;
+		
+		boolean valueChanged = (newValue != oldValue);
+		if (newValue!=null && oldValue!=null)
+			valueChanged = !newValue.equals(oldValue);
 		
 		if (valueChanged) {
 			try {
-				if (value instanceof EObject) {
+				if (newValue instanceof EObject) {
 					// make sure the new object is added to its control first
 					// so that it inherits the control's Resource and EditingDomain
 					// before we try to change its value.
-					InsertionAdapter.executeIfNeeded((EObject)value);
+					InsertionAdapter.executeIfNeeded((EObject)newValue);
 				}
 				
-				if (value==null){ // DO NOT use isEmpty() because this erases an object's anyAttribute feature!
+				if (newValue==null){ // DO NOT use isEmpty() because this erases an object's anyAttribute feature!
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
@@ -1028,7 +1030,7 @@ public class ModelUtil {
 					});
 				}
 				else if (adapter!=null) { 			// use the Extended Properties adapter if there is one
-					adapter.getFeatureDescriptor(feature).setValue(value);
+					adapter.getFeatureDescriptor(feature).setValue(newValue);
 				}
 				else {
 					// fallback is to set the new value here using good ol' EObject.eSet()
@@ -1036,10 +1038,10 @@ public class ModelUtil {
 						@Override
 						protected void doExecute() {
 							if (object.eGet(feature) instanceof List) {
-								((List)object.eGet(feature)).add(value);
+								((List)object.eGet(feature)).add(newValue);
 							}
 							else
-								object.eSet(feature, value);
+								object.eSet(feature, newValue);
 						}
 					});
 				}

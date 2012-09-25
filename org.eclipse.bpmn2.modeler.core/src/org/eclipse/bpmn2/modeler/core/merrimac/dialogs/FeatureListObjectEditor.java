@@ -53,6 +53,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 
 	Text text;
 	List<EObject> references;
+	Composite buttons;
 	Button editButton;
 	
 	/**
@@ -81,7 +82,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		boolean canCreateNew = ModelUtil.canCreateNew(object,feature);
 
 		if (canEdit || canCreateNew) {
-			Composite buttons =  getToolkit().createComposite(composite);
+			buttons =  getToolkit().createComposite(composite);
 			buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 			buttons.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -176,6 +177,18 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 				this.feature == notification.getFeature()) {
 			super.notifyChanged(notification);
 			updateTextField();
+		}
+	}
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		text.setVisible(visible);
+		GridData data = (GridData)text.getLayoutData();
+		data.exclude = !visible;
+		if (buttons!=null) {
+			buttons.setVisible(visible);
+			data = (GridData)buttons.getLayoutData();
+			data.exclude = !visible;
 		}
 	}
 }

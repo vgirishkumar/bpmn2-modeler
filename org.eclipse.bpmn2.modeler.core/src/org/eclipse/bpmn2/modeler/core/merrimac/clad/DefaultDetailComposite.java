@@ -16,7 +16,11 @@ package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.impl.Bpmn2PackageImpl;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -24,6 +28,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 public class DefaultDetailComposite extends AbstractDetailComposite {
@@ -215,6 +220,29 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		}
 	}
 
+	
+	protected void bindReference(Composite parent, EObject object, EReference reference) {
+		if (isModelObjectEnabled(object.eClass(), reference)) {
+			if (parent==null)
+				parent = getAttributesParent();
+			
+			String displayName = ModelUtil.getLabel(object, reference);
+
+			if (reference.getEType() == PACKAGE.getExpression()) {
+				FormalExpression expression = (FormalExpression)object.eGet(reference);
+				if (expression==null) {
+					expression = FACTORY.createFormalExpression();
+					InsertionAdapter.add(object, reference, expression);
+				}
+				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, getAttributesParent(), SWT.BORDER);
+				composite.setBusinessObject(expression);
+				composite.setTitle(displayName);
+			}
+			else
+				super.bindReference(parent, object, reference);
+		}
+	}
+	
 	/**
 	 * Provider class for the Default Properties sheet tab.
 	 * This simply returns a list of properties, containment ELists and references

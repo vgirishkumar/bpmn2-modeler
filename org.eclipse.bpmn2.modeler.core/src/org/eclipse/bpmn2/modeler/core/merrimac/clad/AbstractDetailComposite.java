@@ -16,10 +16,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
@@ -36,8 +33,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
@@ -59,7 +54,6 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 /**
  * This is a base class for all Property Sheet Sections. The Composite is used to render
@@ -454,7 +448,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			
 			String displayName = ModelUtil.getLabel(object, reference);
 
-			ObjectEditor editor;
+			ObjectEditor editor = null;
 			if (ModelUtil.isMultiChoice(object, reference)) {
 				if (reference.isMany()) {
 					editor = new FeatureListObjectEditor(this,object,reference);
@@ -468,7 +462,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			else {
 				editor = new TextObjectEditor(this,object,reference);
 			}
-			editor.createControl(parent,displayName);
+			if (editor!=null)
+				editor.createControl(parent,displayName);
 		}
 	}
 
@@ -485,7 +480,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 	
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
-
 		AbstractListComposite tableComposite = null;
 		if (isModelObjectEnabled(object.eClass(), feature) || isModelObjectEnabled(listItemClass)) {
 			Class clazz = (listItemClass!=null) ?
@@ -498,6 +492,20 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				tableComposite = PropertiesCompositeFactory.createListComposite(clazz, this, AbstractListComposite.DEFAULT_STYLE);
 			}
 			
+			tableComposite.setListItemClass(listItemClass);
+			tableComposite.bindList(object, feature);
+		}
+		return tableComposite;
+	}
+	
+	protected AbstractListComposite bindList(Composite parent, EObject object, EStructuralFeature feature, EClass listItemClass) {
+
+		AbstractListComposite tableComposite = null;
+		if (isModelObjectEnabled(object.eClass(), feature) || isModelObjectEnabled(listItemClass)) {
+			Class clazz = (listItemClass!=null) ?
+					listItemClass.getInstanceClass() :
+					feature.getEType().getInstanceClass();
+			tableComposite = PropertiesCompositeFactory.createListComposite(clazz, parent, AbstractListComposite.DEFAULT_STYLE);
 			tableComposite.setListItemClass(listItemClass);
 			tableComposite.bindList(object, feature);
 		}
