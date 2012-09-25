@@ -2,12 +2,15 @@ package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureEditingDialog;
@@ -24,15 +27,16 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDetailComposite {
 
-	ObjectEditor noneBehaviorEditor;
-	ObjectEditor oneBehaviorEditor;
+	ObjectEditor noneBehaviorEventEditor;
+	ObjectEditor oneBehaviorEventEditor;
 	AbstractListComposite complexBehaviorList;
-	
+
 	public MultiInstanceLoopCharacteristicsDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
@@ -47,17 +51,17 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
 						"anyAttribute",
-						"isSequential", // attr
-						"inputDataItem", // ref
-						"outputDataItem", // ref
-						"completionCondition", // ref
-						"loopCardinality", // ref
-						"loopDataInputRef", // ref
-						"loopDataOutputRef", // ref
-						"behavior", // attr
-						"noneBehaviorEventRef", // ref
-						"oneBehaviorEventRef", // ref
-						"complexBehaviorDefinition", // list
+						"isSequential",
+						"inputDataItem",
+						"outputDataItem",
+						"loopDataInputRef",
+						"loopDataOutputRef",
+						"completionCondition",
+						"loopCardinality",
+						"behavior",
+						"noneBehaviorEventRef",
+						"oneBehaviorEventRef",
+						"complexBehaviorDefinition",
 				};
 				
 				@Override
@@ -67,6 +71,14 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			};
 		}
 		return propertiesProvider;
+	}
+
+	@Override
+	protected void cleanBindings() {
+		super.cleanBindings();
+		noneBehaviorEventEditor = null;
+		oneBehaviorEventEditor = null;
+		complexBehaviorList = null;
 	}
 
 	public void createBindings(EObject be) {
@@ -80,57 +92,64 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 				@Override
 				protected boolean updateObject(Object result) {
 					MultiInstanceLoopCharacteristics lc = (MultiInstanceLoopCharacteristics)object;
-					boolean update = super.updateObject(result);
-					if (update) {
+					boolean updated = super.updateObject(result);
+					if (updated) {
 						switch (lc.getBehavior()) {
 						case ALL:
-							if (noneBehaviorEditor!=null) {
-								noneBehaviorEditor.setVisible(false);
+							if (noneBehaviorEventEditor!=null) {
+								noneBehaviorEventEditor.setVisible(false);
 							}
-							if (oneBehaviorEditor!=null) {
-								oneBehaviorEditor.setVisible(false);
+							if (oneBehaviorEventEditor!=null) {
+								oneBehaviorEventEditor.setVisible(false);
 							}
 							if (complexBehaviorList!=null) {
 								complexBehaviorList.setVisible(false);
 							}
 							break;
 						case NONE:
-							if (noneBehaviorEditor!=null) {
-								noneBehaviorEditor.setVisible(true);
+							if (noneBehaviorEventEditor!=null) {
+								noneBehaviorEventEditor.setVisible(true);
 							}
-							if (oneBehaviorEditor!=null) {
-								oneBehaviorEditor.setVisible(false);
+							if (oneBehaviorEventEditor!=null) {
+								oneBehaviorEventEditor.setVisible(false);
 							}
 							if (complexBehaviorList!=null) {
 								complexBehaviorList.setVisible(false);
 							}
 							break;
 						case ONE:
-							if (noneBehaviorEditor!=null) {
-								noneBehaviorEditor.setVisible(false);
+							if (noneBehaviorEventEditor!=null) {
+								noneBehaviorEventEditor.setVisible(false);
 							}
-							if (oneBehaviorEditor!=null) {
-								oneBehaviorEditor.setVisible(true);
+							if (oneBehaviorEventEditor!=null) {
+								oneBehaviorEventEditor.setVisible(true);
 							}
 							if (complexBehaviorList!=null) {
 								complexBehaviorList.setVisible(false);
 							}
 							break;
 						case COMPLEX:
-							if (noneBehaviorEditor!=null) {
-								noneBehaviorEditor.setVisible(false);
+							if (noneBehaviorEventEditor!=null) {
+								noneBehaviorEventEditor.setVisible(false);
 							}
-							if (oneBehaviorEditor!=null) {
-								oneBehaviorEditor.setVisible(false);
+							if (oneBehaviorEventEditor!=null) {
+								oneBehaviorEventEditor.setVisible(false);
 							}
 							if (complexBehaviorList!=null) {
 								complexBehaviorList.setVisible(true);
 							}
 							break;
 						}
-						redrawPage();
+						Display.getDefault().asyncExec( new Runnable() {
+
+							@Override
+							public void run() {
+								redrawPage();
+							}
+							
+						});
 					}
-					return update;
+					return updated;
 				}
 			};
 			editor.createControl(parent,label);
@@ -143,32 +162,32 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		MultiInstanceLoopCharacteristics lc = (MultiInstanceLoopCharacteristics)object;
 		EStructuralFeature f;
 
-		if (reference.getName().equals("inputDataItem")) {
+		if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem()) {
 			f = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_InputDataItem();
 			if (isModelObjectEnabled(lc.eClass(), f)) {
 				DataIoObjectEditor inputDataItemEditor = new DataIoObjectEditor(lc,f);
 				inputDataItemEditor.createControl(getAttributesParent(), "Input Paramter");
 			}
 		}
-		else if (reference.getName().equals("outputDataItem")) {
+		else if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_OutputDataItem()) {
 			f = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_OutputDataItem();
 			if (isModelObjectEnabled(lc.eClass(), f)) {
 				DataIoObjectEditor outputDataItemEditor = new DataIoObjectEditor(lc,f);
 				outputDataItemEditor.createControl(getAttributesParent(), "Output Paramter");
 			}
 		}
-		else if (reference.getName().equals("noneBehaviorEventRef")) {
+		else if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_NoneBehaviorEventRef()) {
 			String displayName = ModelUtil.getLabel(object, reference);
-			noneBehaviorEditor = new ComboObjectEditor(this,object,reference);
-			noneBehaviorEditor.createControl(parent,displayName);
-			noneBehaviorEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.NONE );
+			noneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
+			noneBehaviorEventEditor.createControl(parent,displayName);
+			noneBehaviorEventEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.NONE );
 				
 		}		
-		else if (reference.getName().equals("oneBehaviorEventRef")) {
+		else if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_OneBehaviorEventRef()) {
 			String displayName = ModelUtil.getLabel(object, reference);
-			oneBehaviorEditor = new ComboObjectEditor(this,object,reference);
-			oneBehaviorEditor.createControl(parent,displayName);
-			oneBehaviorEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.ONE );
+			oneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
+			oneBehaviorEventEditor.createControl(parent,displayName);
+			oneBehaviorEventEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.ONE );
 		}		
 		else
 			super.bindReference(parent, object, reference);
@@ -177,7 +196,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
 		MultiInstanceLoopCharacteristics lc = (MultiInstanceLoopCharacteristics)object;
 		if (feature.getName().equals("complexBehaviorDefinition")) {
-			complexBehaviorList = super.bindList(object, feature, listItemClass);
+			complexBehaviorList = super.bindList(getAttributesParent(), object, feature, listItemClass);
 			complexBehaviorList.setVisible( lc.getBehavior() == MultiInstanceBehavior.COMPLEX );
 			return complexBehaviorList;
 		}

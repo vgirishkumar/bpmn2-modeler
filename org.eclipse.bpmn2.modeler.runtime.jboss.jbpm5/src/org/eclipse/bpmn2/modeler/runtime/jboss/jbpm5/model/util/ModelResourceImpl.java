@@ -32,7 +32,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -93,8 +92,6 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 			@Override
 			protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
 				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
-					return false;
-				if (Bpmn2Package.eINSTANCE.getFormalExpression_Body().equals(f))
 					return false;
 				return super.shouldSaveFeature(o, f);
 			}

@@ -18,9 +18,12 @@ import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -39,6 +42,24 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     	setFeatureDescriptor(body,
 			new FeatureDescriptor<FormalExpression>(adapterFactory,object,body) {
     		
+    			@Override
+    			
+    			public void setValue(Object context, final Object value) {
+    				final FormalExpression formalExpression = adopt(context);
+    				InsertionAdapter.executeIfNeeded(formalExpression);
+    				TransactionalEditingDomain editingDomain = getEditingDomain(formalExpression);
+					if (editingDomain == null) {
+	    				formalExpression.setBody(value.toString());
+					} else {
+						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+							@Override
+							protected void doExecute() {
+			    				formalExpression.setBody(value.toString());
+							}
+						});
+					}
+    			}
+    			
 	    		@Override
 	    		public String getDisplayName(Object context) {
 					FormalExpression expression = adopt(context);
