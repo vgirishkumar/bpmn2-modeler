@@ -29,6 +29,9 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.ITextContentDescriber;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.xml.sax.InputSource;
 
 public class BPMN2ContentDescriber implements ITextContentDescriber {
@@ -43,7 +46,23 @@ public class BPMN2ContentDescriber implements ITextContentDescriber {
 
 	@Override
 	public int describe(Reader contents, IContentDescription description) throws IOException {
-		return doDescribe(contents) == null ? INVALID : VALID;
+		if (doDescribe(contents) == null) {
+			final Display display = PlatformUI.getWorkbench().getDisplay();
+			display.asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					MessageDialog.openError(display.getActiveShell(),
+							"Unsupported Content Type",
+							"This file is not recognized by the BPMN2 Modeler as a valid BPMN2 file.\n"+
+							"It may become corrupted if modified."
+							);
+				}
+				
+			});
+			return INVALID;
+		}
+		return VALID;
 	}
 
 	@Override
