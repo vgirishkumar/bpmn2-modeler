@@ -250,6 +250,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		String rid = TargetRuntime.getFirstNonDefaultId();
 		globalPreferences.setDefault(PREF_TARGET_RUNTIME, rid);
 		globalPreferences.setDefault(PREF_SHOW_ADVANCED_PROPERTIES, false);
+		globalPreferences.setDefault(PREF_CHECK_PROJECT_NATURE, true);
 		globalPreferences.setDefault(PREF_SHOW_DESCRIPTIONS, true);
 		globalPreferences.setDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.DEFAULT_TRUE.name());
 		globalPreferences.setDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
@@ -337,6 +338,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public boolean hasProjectPreference(String key) {
 		if (projectPreferences!=null) {
 			try {
+				projectPreferences.sync();
 				String[] keys;
 				keys = projectPreferences.keys();
 				for (String k : keys) {
@@ -380,7 +382,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
-			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, true);
+			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);

@@ -90,6 +90,12 @@ public class Bpmn2HomePreferencePage
 				getFieldEditorParent());
 		addField(showIds);
 
+		BooleanFieldEditor checkProjectNature = new BooleanFieldEditor(
+				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE,
+				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE_LABEL,
+				getFieldEditorParent());
+		addField(checkProjectNature);
+
 		Group group = new Group(getFieldEditorParent(), SWT.BORDER);
 		group.setLayout(new GridLayout(3,false));
 		group.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
