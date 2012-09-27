@@ -165,6 +165,11 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				.node(PROJECT_PREFERENCES_ID);
 		if (projectPreferences instanceof ProjectPreferences)
 			((ProjectPreferences)projectPreferences).addPreferenceChangeListener(this);
+			try {
+				projectPreferences.sync();
+			}
+			catch (Exception e) {
+			}
 		}		
 		globalPreferences = Activator.getDefault().getPreferenceStore();
 		globalPreferences.addPropertyChangeListener(this);
@@ -338,7 +343,6 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public boolean hasProjectPreference(String key) {
 		if (projectPreferences!=null) {
 			try {
-				projectPreferences.sync();
 				String[] keys;
 				keys = projectPreferences.keys();
 				for (String k : keys) {
@@ -437,6 +441,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		
 		if (projectPreferences!=null)
 			projectPreferences.flush();
+
 		dirty = false;
 	}
 	
@@ -726,10 +731,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalBoolean(String key, boolean value) {
-		if (value!=globalPreferences.getBoolean(key)) {
-			projectPreferences.putBoolean(key, value);
-			dirty = true;
-		}
+		projectPreferences.putBoolean(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 	
 	public int getInt(String key, int defaultValue) {
@@ -748,10 +752,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalInt(String key, int value) {
-		if (value!=globalPreferences.getInt(key)) {
-			projectPreferences.putInt(key, value);
-			dirty = true;
-		}
+		projectPreferences.putInt(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 	
 	public String getString(String key, String defaultValue) {
@@ -770,10 +773,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalString(String key, String value) {
-		if (value!=globalPreferences.getString(key)) {
-			projectPreferences.put(key, value);
-			dirty = true;
-		}
+		projectPreferences.put(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 
 	public BPMNDIAttributeDefault getBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault defaultValue) {
@@ -795,10 +797,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault value) {
-		if (value!=BPMNDIAttributeDefault.valueOf(globalPreferences.getString(key))) {
-			projectPreferences.put(key, value.name());
-			dirty = true;
-		}
+		projectPreferences.put(key, value.name());
+		saveProjectPreferences();
+		dirty = true;
 	}
 
 	public static String[] getBPMNDIAttributeDefaultChoices() {
@@ -1052,5 +1053,14 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		}
 		if (type==IResourceChangeEvent.PRE_DELETE)
 			dispose();
+	}
+
+	private void saveProjectPreferences() {
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
