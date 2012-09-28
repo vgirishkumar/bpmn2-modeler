@@ -63,7 +63,7 @@ public class ShapeStyle {
 		if (font==null || font.isEmpty())
 			font = DEFAULT_FONT_STRING;
 		textFont = stringToFont(font);
-		defaultSize = true;
+		defaultSize = false;
 	}
 	
 	protected ShapeStyle(String s) {
@@ -83,7 +83,7 @@ public class ShapeStyle {
 		if (a.length>6)
 			defaultSize = stringToBoolean(a[6]);
 		else
-			defaultSize = true;
+			defaultSize = false;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {

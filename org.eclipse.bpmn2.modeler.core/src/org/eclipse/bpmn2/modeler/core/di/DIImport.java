@@ -130,6 +130,9 @@ public class DIImport {
 					d.setPlane(plane);
 
 					modelHandler.getDefinitions().getDiagrams().add(d);
+					
+					// don't forget to add the new Diagram to our list for processing
+					bpmnDiagrams.add(d);
 				}
 				featureProvider.link(diagram, bpmnDiagrams.get(0));
 

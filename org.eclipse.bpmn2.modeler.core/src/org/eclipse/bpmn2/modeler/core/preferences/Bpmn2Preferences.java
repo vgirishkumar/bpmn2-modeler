@@ -60,10 +60,12 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChange
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -165,6 +167,11 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				.node(PROJECT_PREFERENCES_ID);
 		if (projectPreferences instanceof ProjectPreferences)
 			((ProjectPreferences)projectPreferences).addPreferenceChangeListener(this);
+			try {
+				projectPreferences.sync();
+			}
+			catch (Exception e) {
+			}
 		}		
 		globalPreferences = Activator.getDefault().getPreferenceStore();
 		globalPreferences.addPropertyChangeListener(this);
@@ -250,6 +257,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		String rid = TargetRuntime.getFirstNonDefaultId();
 		globalPreferences.setDefault(PREF_TARGET_RUNTIME, rid);
 		globalPreferences.setDefault(PREF_SHOW_ADVANCED_PROPERTIES, false);
+		globalPreferences.setDefault(PREF_CHECK_PROJECT_NATURE, true);
 		globalPreferences.setDefault(PREF_SHOW_DESCRIPTIONS, true);
 		globalPreferences.setDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.DEFAULT_TRUE.name());
 		globalPreferences.setDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
@@ -380,7 +388,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
-			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, true);
+			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
@@ -407,7 +415,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			if (projectPreferences!=null)
 				projectPreferences.putBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, overrideModelEnablements);
 
-			setString(PREF_TARGET_RUNTIME,targetRuntime.getId());
+			setString(PREF_TARGET_RUNTIME,getRuntime().getId());
 			setBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
 			setBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
 			setBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
@@ -435,6 +443,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		
 		if (projectPreferences!=null)
 			projectPreferences.flush();
+
 		dirty = false;
 	}
 	
@@ -510,6 +519,27 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	
 	public TargetRuntime getRuntime() {
 		load();
+		if (targetRuntime==null) {
+			targetRuntime = TargetRuntime.getDefaultRuntime();
+			Display.getDefault().asyncExec( new Runnable() {
+				@Override
+				public void run() {
+					String id = getString(PREF_TARGET_RUNTIME,TargetRuntime.getFirstNonDefaultId());
+					if (id==null || id.isEmpty())
+						id = TargetRuntime.getFirstNonDefaultId();
+
+					targetRuntime = TargetRuntime.getDefaultRuntime();
+					MessageDialog.openError(
+							Display.getDefault().getActiveShell(),
+							"Unsupported Target Runtime",
+							"The Target Runtime plugin for id '"+id+"'"+
+							"\ncould not be loaded, using "+targetRuntime.getDescription()+" instead."
+					);
+				}
+				
+			});
+					
+		}
 		return targetRuntime;
 	}
 
@@ -724,10 +754,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalBoolean(String key, boolean value) {
-		if (value!=globalPreferences.getBoolean(key)) {
-			projectPreferences.putBoolean(key, value);
-			dirty = true;
-		}
+		projectPreferences.putBoolean(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 	
 	public int getInt(String key, int defaultValue) {
@@ -746,10 +775,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalInt(String key, int value) {
-		if (value!=globalPreferences.getInt(key)) {
-			projectPreferences.putInt(key, value);
-			dirty = true;
-		}
+		projectPreferences.putInt(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 	
 	public String getString(String key, String defaultValue) {
@@ -768,10 +796,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalString(String key, String value) {
-		if (value!=globalPreferences.getString(key)) {
-			projectPreferences.put(key, value);
-			dirty = true;
-		}
+		projectPreferences.put(key, value);
+		saveProjectPreferences();
+		dirty = true;
 	}
 
 	public BPMNDIAttributeDefault getBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault defaultValue) {
@@ -793,10 +820,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	}
 
 	private void overrideGlobalBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault value) {
-		if (value!=BPMNDIAttributeDefault.valueOf(globalPreferences.getString(key))) {
-			projectPreferences.put(key, value.name());
-			dirty = true;
-		}
+		projectPreferences.put(key, value.name());
+		saveProjectPreferences();
+		dirty = true;
 	}
 
 	public static String[] getBPMNDIAttributeDefaultChoices() {
@@ -1050,5 +1076,14 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		}
 		if (type==IResourceChangeEvent.PRE_DELETE)
 			dispose();
+	}
+
+	private void saveProjectPreferences() {
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
