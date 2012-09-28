@@ -41,6 +41,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeat
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
+import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension.RootElementParser;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -65,11 +66,8 @@ import org.xml.sax.InputSource;
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 
-	private static final String BPMN2_NAMESPACE = "http://www.omg.org/spec/BPMN/20100524/MODEL"; //$NON-NLS-1$
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
-	private static final String ROOT_ELEMENT = "definitions"; //$NON-NLS-1$
 
-	private RootElementParser parser;
 	private List<WorkItemDefinition> workItemDefinitions;
 	
 	/* (non-Javadoc)
@@ -79,18 +77,10 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 */
 	@Override
 	public boolean isContentForRuntime(IEditorInput input) {
-		try {
-			InputSource source = new InputSource( FileService.getInputContents(input) );
-			parser = new RootElementParser();
-			parser.parse(source);
-		} catch (AcceptedException e) {
-			return true;
-		} catch (Exception e) {
-		} finally {
-			parser = null;
-		}
-
-		return false;
+		InputSource source = new InputSource( FileService.getInputContents(input) );
+		RootElementParser parser = new RootElementParser(DROOLS_NAMESPACE);
+		parser.parse(source);
+		return parser.getResult();
 	}
 
 	public String getTargetNamespace(Bpmn2DiagramType diagramType){
@@ -450,43 +440,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 		public ArrayList<IResource> getIconResources() {
 			return iconResources;
 		}
-	}
-
-	private class RootElementParser extends SAXParser {
-		@Override
-		public void startElement(QName qName, XMLAttributes attributes, Augmentations augmentations)
-				throws XNIException {
-
-			super.startElement(qName, attributes, augmentations);
-
-			// search the "definitions" for a drools namespace
-			if (ROOT_ELEMENT.equals(qName.localpart)) {
-				Enumeration<?> e = fNamespaceContext.getAllPrefixes();
-				while (e.hasMoreElements()) {
-					String prefix = (String)e.nextElement();
-					String namespace = fNamespaceContext.getURI(prefix);
-					if (DROOLS_NAMESPACE.equals(namespace))
-						throw new AcceptedException(qName.localpart);
-				}
-				throw new RejectedException();
-			} else {
-				throw new RejectedException();
-			}
-		}
-	}
-
-	private class AcceptedException extends RuntimeException {
-		public String acceptedRootElement;
-
-		public AcceptedException(String acceptedRootElement) {
-			this.acceptedRootElement = acceptedRootElement;
-		}
-
-		private static final long serialVersionUID = 1L;
-	}
-
-	private class RejectedException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
 	}
 
 	@Override
