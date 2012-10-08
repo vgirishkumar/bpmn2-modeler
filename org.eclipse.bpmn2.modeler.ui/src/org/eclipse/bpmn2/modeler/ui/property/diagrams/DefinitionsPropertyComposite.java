@@ -425,4 +425,9 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			return prefix;
 		}
 	}
+
+	@Override
+	public boolean needRefresh(EObject be) {
+		return true;
+	}
 }

@@ -21,7 +21,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 
 public final class ProxyURIConverterImplExtension extends ExtensibleURIConverterImpl {
-	private static final String DIR_NAME = "cache/";
+	private static final String DIR_NAME = "cache/"; //$NON-NLS-1$
 	
 	/**
 	 * We provide local copies for some files from the web. Local copy names are requested url without starting
@@ -61,14 +61,14 @@ public final class ProxyURIConverterImplExtension extends ExtensibleURIConverter
 	}
 
 	private InputStream getInputStreamForUri(URI uri) throws IOException {
-		if (uri.toString().startsWith("http://")) {
+		if (uri.toString().startsWith("http://")) { //$NON-NLS-1$
 			return checkForLocalCopy(uri);
 		}
 		return null;
 	}
 
 	private InputStream checkForLocalCopy(URI uri) throws IOException {
-		String fileName = uri.toString().substring(7).replace("/", "_");
+		String fileName = uri.toString().substring(7).replace("/", "_"); //$NON-NLS-1$ //$NON-NLS-2$
 		URL entry = Activator.getDefault().getBundle().getEntry(DIR_NAME + fileName);
 
 		if (entry != null) {
