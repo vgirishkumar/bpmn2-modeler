@@ -38,4 +38,9 @@ public class ProcessDiagramPropertyComposite extends DefaultDetailComposite {
 		}
 		return propertiesProvider;
 	}
+
+	@Override
+	public boolean needRefresh(EObject be) {
+		return true;
+	}
 }

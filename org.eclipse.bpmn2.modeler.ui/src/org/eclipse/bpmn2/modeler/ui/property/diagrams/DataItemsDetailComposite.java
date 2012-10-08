@@ -16,9 +16,11 @@ package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -72,8 +74,14 @@ public class DataItemsDetailComposite extends DefaultDetailComposite {
 			}
 			return null;
 		}
-		else
-			return super.bindList(object, feature, listItemClass);
+		BPMNDiagram bpmnDiagram = ((BPMN2Editor)getDiagramEditor()).getBpmnDiagram();
+		if (bpmnDiagram.getPlane().getBpmnElement() != object)
+			return null;
+		return super.bindList(object, feature, listItemClass);
 	}
 
+	@Override
+	public boolean needRefresh(EObject be) {
+		return true;
+	}
 }

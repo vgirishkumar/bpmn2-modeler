@@ -881,6 +881,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		// create a new Graphiti Diagram if needed
 		Diagram diagram = DIUtils.getOrCreateDiagram(this, bpmnDiagram);
 		
+		// clear current selection to avoid confusing the GraphicalViewer
+		selectPictogramElements(new PictogramElement[] {});
+
 		// Tell the DTP about the new Diagram
 		getDiagramTypeProvider().resourceReloaded(diagram);
 //		getRefreshBehavior().initRefresh();

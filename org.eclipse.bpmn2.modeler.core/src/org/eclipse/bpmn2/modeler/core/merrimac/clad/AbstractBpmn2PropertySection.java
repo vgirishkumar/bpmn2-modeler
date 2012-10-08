@@ -211,7 +211,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 			if (be!=null) {
 				AbstractDetailComposite sectionRoot = getSectionRoot();
 				if (sectionRoot!=null) {
-					if (sectionRoot.getBusinessObject() != be) {
+					if (sectionRoot.needRefresh(be)) {
 						sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
 						if (!parent.isLayoutDeferred())
 							parent.setLayoutDeferred(true);

@@ -537,4 +537,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			}
 		});
 	}
+	
+	public boolean needRefresh(EObject be) {
+		return getBusinessObject() != be;
+	}
 }

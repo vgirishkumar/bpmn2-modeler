@@ -613,5 +613,83 @@
 		<style object="UserTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 
 	</extension>
+	
+	<!-- menu commands -->
+  <extension
+        point="org.eclipse.ui.commands">
+        <category
+              id="org.eclipse.bpmn2.modeler.command.category"
+              name="BPMN2 Modeler Category">
+        </category>
+     <command
+           id="org.eclipse.bpmn2.modeler.command.createProcess"
+           categoryId="org.eclipse.bpmn2.modeler.command.category"
+           name="Create Process"/>
+     <command
+           id="org.eclipse.bpmn2.modeler.command.createChoreography"
+           categoryId="org.eclipse.bpmn2.modeler.command.category"
+           name="Create Choreography">
+     </command>
+     <command
+           id="org.eclipse.bpmn2.modeler.command.createCollaboration"
+           categoryId="org.eclipse.bpmn2.modeler.command.category"
+           name="Create Collaboration">
+     </command>
+  </extension>
 
+	<!-- menu handlers -->
+	<extension
+	        point="org.eclipse.ui.handlers">
+	     <handler
+	        class="org.eclipse.bpmn2.modeler.ui.commands.CreateDiagramCommand"
+	        commandId="org.eclipse.bpmn2.modeler.command.createProcess">
+	     </handler>
+	     <handler
+	        class="org.eclipse.bpmn2.modeler.ui.commands.CreateDiagramCommand"
+	        commandId="org.eclipse.bpmn2.modeler.command.createChoreography">
+	     </handler>
+	     <handler
+	        class="org.eclipse.bpmn2.modeler.ui.commands.CreateDiagramCommand"
+	        commandId="org.eclipse.bpmn2.modeler.command.createCollaboration">
+	     </handler>
+	</extension> 
+	
+	<!-- menu -->
+	<extension 
+	  id="org.eclipse.bpmn2.modeler.diagram.menu.extension"
+	  point="org.eclipse.ui.menus">
+	 <menuContribution
+	    locationURI= "menu:org.eclipse.ui.main.menu?after=File">
+	    <menu
+	       id="org.eclipse.bpmn2.modeler.diagram.menu"
+	       label="Diagram">
+        <visibleWhen>
+           <with
+                 variable="activeEditorId">
+              <equals
+                    value="org.eclipse.bpmn2.modeler.ui.bpmn2editor">
+              </equals>
+           </with>
+        </visibleWhen>
+	    </menu>
+	 </menuContribution>
+	<menuContribution
+	    locationURI= "menu:org.eclipse.bpmn2.modeler.diagram.menu?after=additions">
+	    <command
+	       commandId="org.eclipse.bpmn2.modeler.command.createProcess"
+	       id= "createProcess"
+	       label= "Create Process Diagram">
+	    </command>
+	    <command
+	       commandId="org.eclipse.bpmn2.modeler.command.createChoreography"
+	       id= "createChoreography"
+	       label= "Create Choreography Diagram">
+	    </command>
+	    <command
+	       commandId="org.eclipse.bpmn2.modeler.command.createCollaboration"
+	       id= "createCollaboration"
+	       label= "Create Collaboration Diagram">
+	    </command>
+	</menuContribution>
+</extension>
 </plugin>
