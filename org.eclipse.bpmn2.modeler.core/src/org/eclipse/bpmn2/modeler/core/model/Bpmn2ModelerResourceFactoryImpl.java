@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011, 2012 Red Hat, Inc.
  *  All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,20 +10,6 @@
  *
  * @author Bob Brodt
  ******************************************************************************/
-/**
- * <copyright>
- * 
- * Copyright (c) 2010 SAP AG.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *    Reiner Hille-Doering (SAP AG) - initial API and implementation and/or initial documentation
- * 
- * </copyright>
- */
 package org.eclipse.bpmn2.modeler.core.model;
 
 import java.util.ArrayList;

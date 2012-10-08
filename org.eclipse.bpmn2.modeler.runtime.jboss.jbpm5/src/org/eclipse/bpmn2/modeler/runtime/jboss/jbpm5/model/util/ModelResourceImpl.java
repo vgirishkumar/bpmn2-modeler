@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011, 2012 Red Hat, Inc.
  *  All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,12 +10,6 @@
  *
  * @author Bob Brodt
  ******************************************************************************/
-/**
- * <copyright>
- * </copyright>
- *
- * $Id$
- */
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util;
 
 import java.util.ArrayList;

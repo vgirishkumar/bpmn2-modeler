@@ -1,9 +1,3 @@
-/**
- * <copyright>
- * </copyright>
- *
- * $Id$
- */
 package org.eclipse.bpmn2.modeler.runtime.example.SampleModel;
 
 

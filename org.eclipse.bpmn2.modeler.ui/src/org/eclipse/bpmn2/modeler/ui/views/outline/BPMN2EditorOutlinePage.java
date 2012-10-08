@@ -1,19 +1,14 @@
-package org.eclipse.bpmn2.modeler.ui.views.outline;
 /*******************************************************************************
- * <copyright>
+ * Copyright (c) 2011, 2012 Red Hat, Inc. 
+ * All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
  *
- * Copyright (c) 2005, 2010 SAP AG.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SAP AG - initial API, implementation and documentation
- *
- * </copyright>
- *
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
+package org.eclipse.bpmn2.modeler.ui.views.outline;
 
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.Activator;
@@ -60,8 +55,6 @@ import org.eclipse.ui.part.PageBook;
  * overwrite this outline page (and dependent classes), to change the
  * default-behaviour.
  */
-// The generic outline uses internal functionality of Graphiti. For concrete
-// tool implementations this should not be necessary
 @SuppressWarnings("restriction")
 public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPropertyListener {
 
