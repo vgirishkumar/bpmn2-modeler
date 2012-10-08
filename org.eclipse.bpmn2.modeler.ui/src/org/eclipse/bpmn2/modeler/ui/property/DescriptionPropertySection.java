@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
@@ -53,6 +54,8 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 
 	public class DescriptionPropertyComposite extends AbstractDetailComposite {
 
+		StyledText descriptionText;
+		
 		/**
 		 * @param section
 		 */
@@ -62,6 +65,16 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 		
 		public DescriptionPropertyComposite(Composite parent, int style) {
 			super(parent,style);
+		}
+
+		@Override
+		protected void cleanBindings() {
+			super.cleanBindings();
+			if (descriptionText!=null) {
+				if (!descriptionText.isDisposed())
+					descriptionText.dispose();
+				descriptionText = null;
+			}
 		}
 
 		/*
@@ -92,7 +105,7 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 				String description = getDescription(be);
 	
 				if (description != null) {
-					createDescription(this, description);
+					descriptionText = createDescription(this, description);
 				}
 			}
 		}
