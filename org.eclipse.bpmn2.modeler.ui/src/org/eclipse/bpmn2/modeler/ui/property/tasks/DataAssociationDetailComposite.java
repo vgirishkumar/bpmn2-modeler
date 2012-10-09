@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011, 2012 Red Hat, Inc.
  *  All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -64,18 +64,18 @@ import org.eclipse.ui.forms.widgets.Section;
  * current scope, e.g., a Data Object, a Property, or an Expression.
  * 
  * The execution of any Data Associations MUST follow these semantics:
- *  o If the Data Association specifies a “transformation” Expression,
+ *  o If the Data Association specifies a ï¿½transformationï¿½ Expression,
  *    this expression is evaluated and the result is copied to the targetRef.
  *    This operation replaces completely the previous value of the targetRef parameter.
- *  o For each “assignment” parameter specified:
- *    o Evaluate the Assignment’s “from” expression and obtain the *source value*.
- *    o Evaluate the Assignment’s “to” expression and obtain the *target parameter*.
+ *  o For each ï¿½assignmentï¿½ parameter specified:
+ *    o Evaluate the Assignmentï¿½s ï¿½fromï¿½ expression and obtain the *source value*.
+ *    o Evaluate the Assignmentï¿½s ï¿½toï¿½ expression and obtain the *target parameter*.
  *      The *target parameter* can be any parameter in the context or a sub-parameter of
  *      it (e.g., a DataObject or a sub-parameter of it).
  *    o Copy the *source value* to the *target parameter*.
- *  o If no “transformation” Expression nor any “assignment” elements are defined
+ *  o If no ï¿½transformationï¿½ Expression nor any ï¿½assignmentï¿½ elements are defined
  *    in the Data Association:
- *    o Copy the Data Association “sourceRef” value into the “targetRef.” Only one
+ *    o Copy the Data Association ï¿½sourceRefï¿½ value into the ï¿½targetRef.ï¿½ Only one
  *      sourceRef parameter is allowed in this case.					
  */
 public class DataAssociationDetailComposite extends ItemAwareElementDetailComposite {
