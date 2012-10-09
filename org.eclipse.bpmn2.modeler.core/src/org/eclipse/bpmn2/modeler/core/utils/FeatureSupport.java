@@ -21,17 +21,24 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -86,6 +93,21 @@ public class FeatureSupport {
 	public static Participant getTargetParticipant(ITargetContext context) {
 		PictogramElement element = context.getTargetContainer();
 		return BusinessObjectUtil.getFirstElementOfType(element, Participant.class);
+	}
+
+	public static SubProcess getTargetSubProcess(ITargetContext context) {
+		PictogramElement element = context.getTargetContainer();
+		return BusinessObjectUtil.getFirstElementOfType(element, SubProcess.class);
+	}
+
+	public static boolean isTargetFlowElementsContainer(ITargetContext context) {
+		return BusinessObjectUtil.containsElementOfType(context.getTargetContainer(),
+				FlowElementsContainer.class);
+	}
+
+	public static FlowElementsContainer getTargetFlowElementsContainer(ITargetContext context) {
+		PictogramElement element = context.getTargetContainer();
+		return BusinessObjectUtil.getFirstElementOfType(element, FlowElementsContainer.class);
 	}
 	
 	public static boolean isLaneOnTop(Lane lane) {
@@ -670,4 +692,37 @@ public class FeatureSupport {
 		return result;
 	}
 
+	/**
+	 * Check if the given BaseElement has 
+	 * @param baseElement
+	 * @return
+	 */
+	public static boolean hasBpmnDiagram(BaseElement baseElement) {
+		BaseElement process = null;
+		if (baseElement instanceof Participant) {
+			process = ((Participant)baseElement).getProcessRef();
+		}
+		else if (baseElement instanceof CallActivity) {
+			CallableElement ce = ((CallActivity)baseElement).getCalledElementRef();
+			if (ce instanceof Process)
+				process = (Process)ce;
+		}
+		
+		if (process!=null) {
+			baseElement = process;
+		}
+		
+		try {
+			Definitions definitions = ModelUtil.getDefinitions(baseElement);
+			for (BPMNDiagram d : definitions.getDiagrams()) {
+				if (d.getPlane().getBpmnElement() == baseElement)
+					return true;
+			}
+		}
+		catch (Exception e){
+		}
+		
+		return false;
+		
+	}
 }
