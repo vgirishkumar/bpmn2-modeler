@@ -13,10 +13,14 @@
 package org.eclipse.bpmn2.modeler.ui.features.flow;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.InteractionNode;
+import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -38,6 +42,7 @@ import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
@@ -116,6 +121,27 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 		public CreateMessageFlowFeature(IFeatureProvider fp) {
 			super(fp, "Message Flow", "Represents message between two participants");
+		}
+
+		@Override
+		public boolean isAvailable(IContext context) {
+			if (context instanceof ICreateConnectionContext) {
+				ICreateConnectionContext ccc = (ICreateConnectionContext) context;
+				if (ccc.getSourcePictogramElement() != null) {
+					Object obj = BusinessObjectUtil.getFirstElementOfType(
+							ccc.getSourcePictogramElement(), BaseElement.class);
+					if (obj instanceof EndEvent) {
+						List<EventDefinition> eventDefinitions = ((EndEvent) obj)
+								.getEventDefinitions();
+						for (EventDefinition eventDefinition : eventDefinitions) {
+							if (eventDefinition instanceof MessageEventDefinition) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return super.isAvailable(context);
 		}
 
 		@Override
