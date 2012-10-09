@@ -42,24 +42,11 @@ public class DeleteParticipantFeature extends DefaultDeleteBPMNShapeFeature {
 
 	@Override
 	public void delete(IDeleteContext context) {
-		Participant participant = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), Participant.class);
-		Definitions defs = ModelUtil.getDefinitions(participant);
-		Process process = participant.getProcessRef();
-		if (process!=null) {
-			BPMNDiagram bpmnDiagram = null;
-			if (defs!=null) {
-				for (BPMNDiagram d : defs.getDiagrams()) {
-					BPMNPlane plane = d.getPlane();
-					if (plane.getBpmnElement() == process) {
-						bpmnDiagram = d;
-						break;
-					}
-				}
-			}
-			deleteBusinessObject(process);
-			if (bpmnDiagram!=null)
-				deleteBusinessObject(bpmnDiagram);
-		}
+		// DO NOT delete the pool's process (if it owns one) nor its
+		// BPMNDiagram page. This leaves the process available for re-use
+		// by some other participant. If the user wants to delete the
+		// process page, it must be done either with the "Blackbox"
+		// feature, or by navigating to the page and deleting it.
 		super.delete(context);
 	}
 

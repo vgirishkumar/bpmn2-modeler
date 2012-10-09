@@ -16,6 +16,9 @@ import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCom
 import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.IS_LOOP_OR_MULTI_INSTANCE;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
@@ -50,9 +53,21 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		boolean intoDiagram = context.getTargetContainer().equals(getDiagram());
 		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
 		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
-		boolean intoSubProcess = FeatureSupport.isTargetSubProcess(context);
-				
-		return intoDiagram || intoLane || intoParticipant || intoSubProcess;
+		boolean intoFlowElementContainer = FeatureSupport.isTargetFlowElementsContainer(context);
+		if (intoParticipant) {
+			// don't allow flow elements to be added to a Pool if it is a "whitebox"
+			// (i.e. if it has its own BPMNDiagram page.) Flow elements should be added
+			// to the Process page instead.
+			Participant participant = FeatureSupport.getTargetParticipant(context);
+			if (FeatureSupport.hasBpmnDiagram(participant))
+				return false;
+		}
+		else if (intoFlowElementContainer) {
+			FlowElementsContainer flowElementsContainer = FeatureSupport.getTargetFlowElementsContainer(context);
+			if (FeatureSupport.hasBpmnDiagram(flowElementsContainer))
+				return false;
+		}
+		return intoDiagram || intoLane || intoParticipant || intoFlowElementContainer;
 	}
 
 	@Override
