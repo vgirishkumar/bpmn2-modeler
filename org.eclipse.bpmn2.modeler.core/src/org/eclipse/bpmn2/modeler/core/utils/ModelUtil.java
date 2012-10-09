@@ -593,6 +593,10 @@ public class ModelUtil {
 		
 		// this featuremap can only hold attributes, not elements
 		EStructuralFeature attr = ExtendedMetaData.INSTANCE.demandFeature(namespace, name, false);
+		String type = "E" + value.getClass().getSimpleName();
+		EDataType eDataType = (EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
+		if (eDataType!=null)
+			attr.setEType(eDataType);
 		anyMap.add( FeatureMapUtil.createEntry(attr, value) );
 		return attr;
 	}
