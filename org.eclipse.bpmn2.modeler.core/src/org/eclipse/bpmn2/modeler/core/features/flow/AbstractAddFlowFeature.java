@@ -12,7 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.flow;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
@@ -44,8 +49,24 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		return context instanceof IAddConnectionContext
-				&& getBoClass().isAssignableFrom(getBusinessObject(context).getClass());
+		if (context instanceof IAddConnectionContext) {
+			IAddConnectionContext acc = (IAddConnectionContext) context;
+			if (acc.getSourceAnchor() != null) {
+				Object obj = BusinessObjectUtil.getFirstElementOfType(
+						acc.getSourceAnchor().getParent(), BaseElement.class);
+				if (obj instanceof EndEvent) {
+					List<EventDefinition> eventDefinitions = ((EndEvent) obj).getEventDefinitions();
+					for (EventDefinition eventDefinition : eventDefinitions) {
+						if (eventDefinition instanceof MessageEventDefinition) {
+							return true;
+						}
+					}
+					return false;
+				}
+			}
+			return getBoClass().isAssignableFrom(getBusinessObject(context).getClass());
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)
