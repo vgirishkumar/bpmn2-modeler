@@ -47,6 +47,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -580,24 +581,46 @@ public class ModelUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, Object value) {
+		EStructuralFeature attr = null;
 		EStructuralFeature anyAttribute = childObject.eClass().getEStructuralFeature(Bpmn2Package.BASE_ELEMENT__ANY_ATTRIBUTE);
 		List<BasicFeatureMap.Entry> anyMap = (List<BasicFeatureMap.Entry>)childObject.eGet(anyAttribute);
 		for (BasicFeatureMap.Entry fe : anyMap) {
 			if (fe.getEStructuralFeature() instanceof EAttributeImpl) {
 				EAttributeImpl a = (EAttributeImpl) fe.getEStructuralFeature();
 				if (namespace.equals(a.getExtendedMetaData().getNamespace()) && name.equals(a.getName())) {
-					return a;
+					attr = a;
+					break;
 				}
 			}
 		}
 		
 		// this featuremap can only hold attributes, not elements
-		EStructuralFeature attr = ExtendedMetaData.INSTANCE.demandFeature(namespace, name, false);
 		String type = "E" + value.getClass().getSimpleName();
 		EDataType eDataType = (EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
-		if (eDataType!=null)
-			attr.setEType(eDataType);
-		anyMap.add( FeatureMapUtil.createEntry(attr, value) );
+		if (eDataType!=null) {
+			if (attr==null) {
+				attr = ExtendedMetaData.INSTANCE.demandFeature(namespace, name, false);
+				attr.setEType(eDataType);
+				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
+			}
+			else {
+				EClassifier dt = attr.getEType();
+				if (dt==null || !eDataType.getInstanceClass().isAssignableFrom(dt.getInstanceClass()))
+					throw new IllegalArgumentException(
+							"The attribute "+
+							childObject.eClass().getName()+"."+attr.getName()+
+							" of type "+attr.getEType().getName()+
+							" is not assignment compatible with value '"+value.toString()+"'");
+				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
+			}
+		}
+		else if (attr==null) {
+			attr = ExtendedMetaData.INSTANCE.demandFeature(namespace, name, false);
+			anyMap.add( FeatureMapUtil.createEntry(attr, value) );
+		}
+		else {
+			anyMap.add( FeatureMapUtil.createEntry(attr, value) );
+		}
 		return attr;
 	}
 

@@ -71,6 +71,8 @@
 			<disable object="all"/>
 			<enable object="default" feature="Process"/>
 			<enable object="Task"/>
+			<enable object="Task" feature="flag"/>
+			<enable object="Task" feature="cost"/>
 		</modelEnablement>
 
 	</extension>
