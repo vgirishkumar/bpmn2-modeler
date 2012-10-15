@@ -52,6 +52,8 @@ public class SampleTaskFeatureContainer extends TaskFeatureContainer {
 				Task task = super.createBusinessObject(context);
 				EStructuralFeature attr = SampleModelPackage.eINSTANCE.getDocumentRoot_SampleCustomTaskId();
 				task.eSet(attr, "task.id");
+				ModelUtil.addAnyAttribute(task, SampleModelPackage.eNS_URI, "cost", new Double(1.23));
+				ModelUtil.addAnyAttribute(task, SampleModelPackage.eNS_URI, "flag", new Boolean(true));
 				return task;
 			}
 			
