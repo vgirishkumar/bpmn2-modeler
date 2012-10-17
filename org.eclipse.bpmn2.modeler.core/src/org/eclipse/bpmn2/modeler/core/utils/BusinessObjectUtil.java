@@ -12,19 +12,24 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutputAssociation;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gef.EditPart;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -106,31 +111,35 @@ public class BusinessObjectUtil {
 		PictogramElement foundElem = null;
 
 		IPeService peService = Graphiti.getPeService();
-		Collection<PictogramElement> elements = peService.getAllContainedPictogramElements(diagram);
-		for (PictogramElement pe : elements) {
-			BaseElement be = getFirstElementOfType(pe, e.getClass());
-			if (be != null && be.equals(e)) {
-				foundElem = pe;
-				break;
+		for (Diagram d : getAllDiagrams(diagram)) {
+			Collection<PictogramElement> elements = peService.getAllContainedPictogramElements(d);
+			for (PictogramElement pe : elements) {
+				BaseElement be = getFirstElementOfType(pe, e.getClass());
+				if (be != null && be.equals(e)) {
+					foundElem = pe;
+					break;
+				}
 			}
 		}
 
 		return foundElem;
 	}
-
+	
 	public static PictogramElement getPictogramElementFromDiagram(Diagram diagram, BPMNShape bpmnShape) {
 		PictogramElement foundElem = null;
 
 		IPeService peService = Graphiti.getPeService();
-		Collection<PictogramElement> elements = peService.getAllContainedPictogramElements(diagram);
-		for (PictogramElement pe : elements) {
-			BPMNShape s = getFirstElementOfType(pe, BPMNShape.class);
-			if (s != null && s.equals(bpmnShape)) {
-				foundElem = pe;
-				break;
+		for (Diagram d : getAllDiagrams(diagram)) {
+			Collection<PictogramElement> elements = peService.getAllContainedPictogramElements(d);
+			for (PictogramElement pe : elements) {
+				BPMNShape s = getFirstElementOfType(pe, BPMNShape.class);
+				if (s != null && s.equals(bpmnShape)) {
+					foundElem = pe;
+					break;
+				}
 			}
 		}
-
+		
 		return foundElem;
 	}
 
@@ -195,5 +204,19 @@ public class BusinessObjectUtil {
 				be == DataInputAssociation.class ||
 				be == DataOutputAssociation.class ||
 				be == Conversation.class;
+	}
+
+	public static List<Diagram> getAllDiagrams(Diagram diagram) {
+		List<Diagram> list = new ArrayList<Diagram>();
+		list.add(diagram);
+		
+		Resource resource = diagram.eResource();
+		for (EObject o : resource.getContents()) {
+			if (o instanceof Diagram && o!=diagram) {
+				list.add((Diagram)o);
+			}
+		}
+		
+		return list;
 	}
 }
