@@ -11,6 +11,7 @@
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.ui.util.ListMap;
@@ -47,6 +48,9 @@ public class BPMN2DefinitionsTreeContentProvider extends ModelTreeContentProvide
 			return new Object[] { result } ;
 		}
 		
+		if (inputElement instanceof DocumentRoot) {
+			inputElement = ((DocumentRoot)inputElement).getDefinitions();
+		}
 		
 		if (inputElement instanceof Definitions) {									
 			

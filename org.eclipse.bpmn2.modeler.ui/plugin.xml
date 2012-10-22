@@ -422,6 +422,8 @@
 			<!-- process -->
 			<enable object="Process"/>
 			<enable object="SubProcess"/>
+			<enable object="Transaction"/>
+			<enable object="AdHocSubProcess"/>
 
 			<!-- gateways -->
 			<enable object="ExclusiveGateway"/>

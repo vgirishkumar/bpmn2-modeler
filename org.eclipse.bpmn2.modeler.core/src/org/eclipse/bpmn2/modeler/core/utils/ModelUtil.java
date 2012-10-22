@@ -1030,9 +1030,14 @@ public class ModelUtil {
 		return null;
 	}
 
-	public static boolean setValue(TransactionalEditingDomain domain, final EObject object, final EStructuralFeature feature, final Object value) {
+	public static boolean setValue(TransactionalEditingDomain domain, final EObject object, final EStructuralFeature feature, Object value) {
 		ExtendedPropertiesAdapter adapter = AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		Object oldValue = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
+		if (isStringWrapper(oldValue)) {
+			oldValue = getStringWrapperValue(oldValue);
+			if (value instanceof String)
+				value = ModelUtil.createStringWrapper((String)value);
+		}
 		final Object newValue = (feature instanceof EReference && !(value instanceof EObject)) ? null : value;
 		
 		boolean valueChanged = (newValue != oldValue);

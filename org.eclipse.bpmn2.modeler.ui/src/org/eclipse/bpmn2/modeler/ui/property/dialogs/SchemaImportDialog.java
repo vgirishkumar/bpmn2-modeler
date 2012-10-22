@@ -1063,21 +1063,21 @@ public class SchemaImportDialog extends SelectionStatusDialog {
 			fTreeViewer.setContentProvider(fTreeContentProvider);
 		fResourceKind = "xml";
 
-		String[] wsdl_FILTER_EXTENSIONS = {
+		String[] xml_FILTER_EXTENSIONS = {
 				"*.xml",
 				"*.xsd",
 				"*.wsdl",
 				"*.*"
 		};
-		FILTER_EXTENSIONS = wsdl_FILTER_EXTENSIONS;
+		FILTER_EXTENSIONS = xml_FILTER_EXTENSIONS;
 
-		String[] wsdl_FILTER_NAMES = {
+		String[] xml_FILTER_NAMES = {
 				"XML Files",
 				"XML Schema Files",
 				"WSDL Definition Files",
 				"All"
 		};
-		FILTER_NAMES = wsdl_FILTER_NAMES;
+		FILTER_NAMES = xml_FILTER_NAMES;
 
 		resourceFilter = ".xml";
 		if (fResourceComposite!=null)

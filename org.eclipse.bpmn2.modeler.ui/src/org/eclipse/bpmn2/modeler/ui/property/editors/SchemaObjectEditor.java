@@ -15,7 +15,9 @@ package org.eclipse.bpmn2.modeler.ui.property.editors;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -172,6 +174,10 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				if (prefix!=null)
 					value = prefix + ":";
 				value += "schema";
+			}
+			if (result instanceof Process) {
+				Process process = (Process)result;
+				process.getSupportedInterfaceRefs();
 			}
 			if (value.isEmpty()) {
 				MessageDialog.openWarning(parent.getShell(), "Invalid Selection","The selection, "+

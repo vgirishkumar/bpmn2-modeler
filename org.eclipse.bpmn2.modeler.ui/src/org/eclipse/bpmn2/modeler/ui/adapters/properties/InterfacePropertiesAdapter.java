@@ -13,17 +13,32 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.wsdl.Fault;
+import org.eclipse.wst.wsdl.Input;
+import org.eclipse.wst.wsdl.Message;
+import org.eclipse.wst.wsdl.Operation;
+import org.eclipse.wst.wsdl.Output;
+import org.eclipse.wst.wsdl.Part;
+import org.eclipse.wst.wsdl.PortType;
+import org.eclipse.xsd.XSDAttributeDeclaration;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
 
 /**
  * @author Bob Brodt
@@ -66,12 +81,33 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 	    		@Override
 	    		public Object getValue(Object context) {
 					final Interface iface = adopt(context);
-					return iface.getImplementationRef();
+					if (iface.getImplementationRef()!=null)
+						return iface.getImplementationRef();
+					return ModelUtil.createStringWrapper("");
 	    		}
 
 	    		@Override
 	    		public void setValue(Object context, Object value) {
-					if (value instanceof String) {
+	    			Interface object = adopt(context);
+	    			Resource resource = ModelUtil.getResource(object);
+	    			
+	    			if (value instanceof PortType) {
+	    				PortType portType = (PortType)value;
+	    				QName qname = portType.getQName();
+	    				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
+	    				if (prefix==null)
+	    					prefix = NamespaceUtil.addNamespace(resource, qname.getNamespaceURI());
+	    				if (prefix!=null)
+	    					value = prefix + ":";
+	    				value += qname.getLocalPart();
+	    			}
+	    			else if (value instanceof Process) {
+	    				Process process = (Process)value;
+	    				if (process.getSupportedInterfaceRefs().size()>0)
+	    					value = process.getSupportedInterfaceRefs().get(0).getImplementationRef();
+	    			}
+
+	    			if (value instanceof String) {
 						value = ModelUtil.createStringWrapper((String)value);
 	    			}
 	    			else if (!ModelUtil.isStringWrapper(value)) {
