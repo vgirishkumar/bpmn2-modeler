@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.property.providers.BPMN2DefinitionsTreeContentProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.ModelTreeLabelProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.ServiceTreeContentProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.TreeNode;
@@ -224,11 +225,14 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 
 	void attemptLoad() {
 		String path = null;
-		if ("xsd".equals(importType)) {
+		if ("xsd".equals(importType) || "xml".equals(importType)) {
 			treeContentProvider = new VariableTypeTreeContentProvider(true, true);
 			path = importLocation;
 		} else if ("wsdl".equals(importType)) {
 			treeContentProvider = new ServiceTreeContentProvider(true);
+			path = importLocation;
+		} else if ("bpmn".equals(importType)) {
+			treeContentProvider = new BPMN2DefinitionsTreeContentProvider(true);
 			path = importLocation;
 		} else {
 			treeContentProvider = null;
@@ -316,6 +320,7 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 			tree.getVerticalBar().setSelection(0);
 			updateStatus(new Status(IStatus.OK, Activator.getDefault().PLUGIN_ID, 0,
 					"Loaded "+importLocation, null));
+			updateOK(false);
 		}
 	}
 
@@ -341,6 +346,9 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 				return "wsdl";
 			if ("http://www.w3.org/2001/XMLSchema".equals(type))
 				return "xsd";
+			if ("http://www.omg.org/spec/BPMN/20100524/MODEL".equals(type))
+				return "bpmn";
+			return "xml";
 		}
 		return null;
 	}

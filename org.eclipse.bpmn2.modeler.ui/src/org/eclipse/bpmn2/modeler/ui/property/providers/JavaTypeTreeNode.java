@@ -60,14 +60,18 @@ public class JavaTypeTreeNode extends TreeNode {
 	@Override
 	public Object[] getChildren() {
 		List<JavaMemberTreeNode> kids = new ArrayList<JavaMemberTreeNode>();
-		Class c = (Class)modelObject;
-		for (Field f : c.getDeclaredFields()) {
-			if ((Modifier.PUBLIC & f.getModifiers()) != 0)
-				kids.add(new JavaMemberTreeNode(f,isCondensed));
+		try {
+			Class c = (Class)modelObject;
+			for (Field f : c.getDeclaredFields()) {
+				if ((Modifier.PUBLIC & f.getModifiers()) != 0)
+					kids.add(new JavaMemberTreeNode(f,isCondensed));
+			}
+			for (Method m : c.getDeclaredMethods()) {
+				if ((Modifier.PUBLIC & m.getModifiers()) != 0)
+					kids.add(new JavaMemberTreeNode(m,isCondensed));
+			}
 		}
-		for (Method m : c.getDeclaredMethods()) {
-			if ((Modifier.PUBLIC & m.getModifiers()) != 0)
-				kids.add(new JavaMemberTreeNode(m,isCondensed));
+		catch (Exception e) {
 		}
 		return kids.toArray(new Object[kids.size()]);
 	}
