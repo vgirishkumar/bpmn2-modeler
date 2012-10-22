@@ -97,9 +97,11 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 	    				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
 	    				if (prefix==null)
 	    					prefix = NamespaceUtil.addNamespace(resource, qname.getNamespaceURI());
+	    				String str = "";
 	    				if (prefix!=null)
-	    					value = prefix + ":";
-	    				value += qname.getLocalPart();
+	    					str = prefix + ":";
+	    				str += qname.getLocalPart();
+	    				value = str;
 	    			}
 	    			else if (value instanceof Process) {
 	    				Process process = (Process)value;
