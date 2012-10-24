@@ -405,6 +405,12 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 					return true;
 				}
 			}
+			else if (resource.getType() == IResource.FOLDER) {
+				// skip over "bin" and "target" folders
+				String name = resource.getName();
+				if ("bin".equals(name) || "target".equals(name))
+					return false;
+			}
 			return true;
 		}
 		

@@ -476,6 +476,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			throws CoreException {
 		
 		modelUri = FileService.getInputUri(input);
+		if (modelUri==null)
+			throw new PartInitException("Can't create BPMN2Editor Input");
 		input = BPMN2DiagramCreator.createDiagram(modelUri, diagramType,targetNamespace,this);
 		diagramUri = ((Bpmn2DiagramEditorInput)input).getUri();
 
