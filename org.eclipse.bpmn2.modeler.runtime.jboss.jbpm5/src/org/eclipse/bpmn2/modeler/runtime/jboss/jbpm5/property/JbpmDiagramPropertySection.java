@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -42,8 +43,8 @@ public class JbpmDiagramPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof BPMNDiagram)
 			return be;
 		return null;

@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 
 public class JbpmIoParametersPropertySection extends IoParametersPropertySection {
 	static {
@@ -27,8 +28,8 @@ public class JbpmIoParametersPropertySection extends IoParametersPropertySection
 	}
 	
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof ScriptTask)
 			return null;
 		return be;

@@ -262,6 +262,9 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			
 			// add all other possible selections
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(oldValue, ExtendedPropertiesAdapter.class);
+			if (ModelUtil.isStringWrapper(oldValue))
+				oldValue = ModelUtil.getStringWrapperValue(oldValue);
+
 			StructuredSelection currentSelection = null;
 			for (Entry<String, Object> entry : choices.entrySet()) {
 				comboViewer.add(entry.getKey());

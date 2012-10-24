@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -41,23 +42,8 @@ public class PropertyLabelProvider extends LabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		EObject be = BusinessObjectUtil.getBusinessObjectForSelection((ISelection)element);
-        DiagramEditor editor = ModelUtil.getEditor( be );
-        
-        if (editor!=null) {
-		    BPMNFeatureProvider fp = (BPMNFeatureProvider)editor.getDiagramTypeProvider().getFeatureProvider();
-			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection((ISelection)element);
-		    IFeature cf = fp.getCreateFeatureForPictogramElement(pe);
-			if (cf instanceof AbstractBpmn2CreateFeature) {
-				return GraphitiUi.getImageService().getImageForId(
-						((AbstractBpmn2CreateFeature)cf).getCreateImageId());
-			}
-			if (cf instanceof AbstractCreateFlowFeature) {
-				return GraphitiUi.getImageService().getImageForId(
-						((AbstractCreateFlowFeature)cf).getCreateImageId());
-			}
-        }
-		return super.getImage(element);
+		EObject o = BusinessObjectUtil.getBusinessObjectForSelection((ISelection)element);
+		return PropertyUtil.getImage(o);
 	}
 
 	@Override

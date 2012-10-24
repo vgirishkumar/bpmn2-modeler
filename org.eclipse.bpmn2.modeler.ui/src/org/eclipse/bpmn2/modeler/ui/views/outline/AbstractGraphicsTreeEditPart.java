@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
@@ -90,15 +91,7 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 	@Override
 	protected Image getImage() {
 		EObject o = (EObject)getBpmnModel();
-		String field = "ICON_" + o.eClass().getName().toUpperCase();
-		Field f;
-		try {
-			f = IConstants.class.getField(field);
-			if (f!=null)
-				return Activator.getDefault().getImage((String)f.get(null));
-		} catch (Exception e) {
-		}
-		return null;
+		return PropertyUtil.getImage(o);
 	}
 
 	/**

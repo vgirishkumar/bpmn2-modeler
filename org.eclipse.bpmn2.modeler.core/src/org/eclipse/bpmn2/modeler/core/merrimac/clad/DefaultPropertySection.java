@@ -47,7 +47,6 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 			String[] properties = null;
 			@Override
 			public String[] getProperties() {
-				// TODO Auto-generated method stub
 				return properties;
 			}
 			
@@ -60,20 +59,6 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-//		BPMN2Editor editor = (BPMN2Editor)part;
-//		EObject object = getBusinessObjectForSelection();
-//		DefaultDetailComposite composite = new DefaultDetailComposite();
-//		AbstractPropertiesProvider provider = composite.getPropertiesProvider(object);
-//		ModelEnablementDescriptor modelEnablement = editor.getTargetRuntime().getModelEnablements(object);
-//		String className = object.eClass().getName();
-//		if (modelEnablement.isEnabled(className)) {
-//			String[] properties = provider.getProperties();
-//			for (String featureName : properties) {
-//				if (modelEnablement.isEnabled(className, featureName))
-//					return true;
-//			}
-//		}
-//		return false;
 		if (appliesToClass==null)
 			return super.appliesTo(part, selection);
 		
@@ -94,6 +79,10 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 				}
 			}
 		}
+		EObject eObj = this.getBusinessObjectForSelection(selection);
+		if (eObj!=null)
+			return appliesToClass.isInstance(eObj);
+		
 		return false;
 	}
 	

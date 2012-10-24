@@ -14,9 +14,9 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.MessageFlow;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 
@@ -38,15 +38,20 @@ public class MessageFlowPropertiesAdapter extends ExtendedPropertiesAdapter<Mess
 			public String getDisplayName(Object context) {
 				final MessageFlow flow = adopt(context);
 				String text = "";
-				if (flow.getMessageRef()!=null) {
-					text += ChoreographyUtil.getMessageFlowName(flow);
-				}
-				
-				if (flow.getSourceRef() instanceof Participant) {
-					text += " "+((Participant)flow.getSourceRef()).getName()+"->";
+				if (flow.getName()!=null)
+					text = flow.getName();
+				else {
+					if (flow.getMessageRef()!=null) {
+						text += ChoreographyUtil.getMessageFlowName(flow);
+					}
 					
-					if (flow.getTargetRef() instanceof Participant) {
-						text += ((Participant)flow.getTargetRef()).getName();
+					if (flow.getSourceRef() != null) {
+						text += "(" + ModelUtil.getDisplayName(flow.getSourceRef())+"->";
+						
+						if (flow.getTargetRef() != null) {
+							text += ModelUtil.getDisplayName(flow.getTargetRef());
+						}
+						text += ")";
 					}
 				}
 				return text;

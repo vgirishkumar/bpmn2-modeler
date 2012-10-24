@@ -408,6 +408,80 @@
 		</propertyTab>
 
 		<propertyTab
+			id="org.eclipse.bpmn2.modeler.itemDefinition.tab"
+			class="default"
+			features="itemKind structureRef isCollection import"
+			type="org.eclipse.bpmn2.ItemDefinition"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Item Definition">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.error.tab"
+			class="default"
+			features="errorCode structureRef"
+			type="org.eclipse.bpmn2.Error"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Error">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.escalation.tab"
+			class="default"
+			features="escalationCode structureRef"
+			type="org.eclipse.bpmn2.Escalation"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Escalation">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.escalation.tab"
+			class="default"
+			features="escalationCode structureRef"
+			type="org.eclipse.bpmn2.Escalation"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Escalation">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.partnerEntity.tab"
+			class="default"
+			features="participantRef"
+			type="org.eclipse.bpmn2.PartnerEntity"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Partner">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.partnerRole.tab"
+			class="default"
+			features="participantRef"
+			type="org.eclipse.bpmn2.PartnerRole"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Partner Role">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.resource.tab"
+			class="default"
+			features="resourceParameters"
+			type="org.eclipse.bpmn2.Resource"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Resource">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.signal.tab"
+			class="default"
+			features="structureRef"
+			type="org.eclipse.bpmn2.Signal"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Signal">
+		</propertyTab>
+
+		<!-- -->
+		
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.advanced.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.AdvancedPropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -435,7 +509,10 @@
 			<!-- tasks -->
 			<enable object="BusinessRuleTask"/>
 			<enable object="CallActivity"/>
+			<enable object="ManualTask"/>
+			<enable object="ReceiveTask"/>
 			<enable object="ScriptTask"/>
+			<enable object="SendTask"/>
 			<enable object="ServiceTask"/>
 			<enable object="Task"/>
 			<enable object="UserTask"/>
@@ -517,8 +594,27 @@
 			<disable object="ParticipantMultiplicity"/>
 		</modelEnablement>
 
+		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Collaboration">
+			<disable object="all"/>
+			<!-- copy the enablements from "Process" diagram type -->
+			<enable object="default" feature="Process"/>
+			
+			<!-- and then change these objects -->
+			<disable object="DataObjectReference"/>
+			<enable object="Participant"/>
+			<enable object="Lane"/>
+			<enable object="MessageFlow"/>
+			<enable object="Conversation"/>
+			<enable object="SubConversation"/>
+			<enable object="CallConversation"/>
+			<enable object="ConversationLink"/>
+		</modelEnablement>
+
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Choreography">
 			<disable object="all"/>
+			<!-- copy the enablements from "Collaboration" diagram type -->
+			<enable object="default" feature="Collaboration"/>
+
 			<enable object="Definitions"/>
 			<enable object="Group"/>
 
@@ -556,22 +652,6 @@
 			<disable object="ConversationNode"/>
 			<disable object="ExtensionAttributeDefinition"/>
 			<disable object="MessageFlowAssociation"/>
-		</modelEnablement>
-
-		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Collaboration">
-			<disable object="all"/>
-			<!-- copy the enablements from "Process" diagram type -->
-			<enable object="default" feature="Process"/>
-			
-			<!-- and then change these objects -->
-			<disable object="DataObjectReference"/>
-			<enable object="Participant"/>
-			<enable object="Lane"/>
-			<enable object="MessageFlow"/>
-			<enable object="Conversation"/>
-			<enable object="SubConversation"/>
-			<enable object="CallConversation"/>
-			<enable object="ConversationLink"/>
 		</modelEnablement>
 
 		<style object="AdHocSubProcess" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>

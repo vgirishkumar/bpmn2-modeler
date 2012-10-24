@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite.AbstractPropertiesProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -47,8 +48,8 @@ public class DataStorePropertySection extends AbstractBpmn2PropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject bo = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject bo = super.getBusinessObjectForSelection(selection);
 		if (bo instanceof DataStoreReference) {
 			return ((DataStoreReference) bo).getDataStoreRef();
 		} else if (bo instanceof DataStore) {

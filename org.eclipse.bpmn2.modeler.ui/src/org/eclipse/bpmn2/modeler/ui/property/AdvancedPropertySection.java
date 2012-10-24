@@ -46,12 +46,12 @@ public class AdvancedPropertySection extends AbstractBpmn2PropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class,true);
-		if (be==null) {
-			// maybe it's the Diagram (editor canvas)?
-			be = BusinessObjectUtil.getFirstElementOfType(pe, BPMNDiagram.class);
-		}
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
+//		if (be==null) {
+//			// maybe it's the Diagram (editor canvas)?
+//			be = BusinessObjectUtil.getFirstElementOfType(pe, BPMNDiagram.class);
+//		}
 		if (be instanceof BPMNDiagramImpl) {
 			try {
 				be = ModelHandlerLocator.getModelHandler(be.eResource()).getDefinitions();

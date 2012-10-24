@@ -43,8 +43,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				String className = e.getAttribute("class");
 				if ("default".equals(className)) {
 					sectionClass = new DefaultPropertySection();
-					String[] properties = e.getAttribute("features").split(" ");
-					((DefaultPropertySection)sectionClass).setProperties(properties);
+					if (e.getAttribute("features")!=null) {
+						String[] properties = e.getAttribute("features").split(" ");
+						((DefaultPropertySection)sectionClass).setProperties(properties);
+					}
 				}
 				else {
 					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class");

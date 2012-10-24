@@ -69,8 +69,8 @@ public class JbpmCustomTaskPropertySection extends AbstractBpmn2PropertySection 
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof Task)
 			return be;
 		return null;
