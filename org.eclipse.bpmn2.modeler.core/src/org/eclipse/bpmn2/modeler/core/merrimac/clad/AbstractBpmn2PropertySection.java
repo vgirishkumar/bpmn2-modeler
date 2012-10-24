@@ -12,15 +12,19 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.EditPart;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -32,6 +36,9 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.IContributedContentsView;
+import org.eclipse.ui.part.IPage;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
 public abstract class AbstractBpmn2PropertySection extends GFPropertySection implements IBpmn2PropertySection {
@@ -169,19 +176,16 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	
 	public abstract AbstractDetailComposite createSectionRoot(Composite parent, int style);
 
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		return BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
-	}
+//	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
+//		return BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
+//	}
 	
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
 		return BusinessObjectUtil.getBusinessObjectForSelection(selection);
 	}
 	
 	protected EObject getBusinessObjectForSelection() {
-		PictogramElement pe = getSelectedPictogramElement();
-		if (pe != null)
-			return getBusinessObjectForPictogramElement(pe);
-		return null;
+		return getBusinessObjectForSelection(getSelection());
 	}
 	
 	/* (non-Javadoc)
@@ -205,22 +209,20 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	@Override
 	public void refresh() {
-		PictogramElement pe = getSelectedPictogramElement();
-		if (pe != null) {
-			final EObject be = getBusinessObjectForPictogramElement(pe);
-			if (be!=null) {
-				AbstractDetailComposite sectionRoot = getSectionRoot();
-				if (sectionRoot!=null) {
-					if (sectionRoot.needRefresh(be)) {
-						sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
-						if (!parent.isLayoutDeferred())
-							parent.setLayoutDeferred(true);
-						sectionRoot.setBusinessObject(be);
-						if (parent.isLayoutDeferred())
-							parent.setLayoutDeferred(false);
-					}
-					sectionRoot.refresh();
+		EObject be = getBusinessObjectForSelection();
+		
+		if (be!=null) {
+			AbstractDetailComposite sectionRoot = getSectionRoot();
+			if (sectionRoot!=null) {
+				if (sectionRoot.needRefresh(be)) {
+					sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
+					if (!parent.isLayoutDeferred())
+						parent.setLayoutDeferred(true);
+					sectionRoot.setBusinessObject(be);
+					if (parent.isLayoutDeferred())
+						parent.setLayoutDeferred(false);
 				}
+				sectionRoot.refresh();
 			}
 		}
 	}
@@ -255,15 +257,21 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (part instanceof ContentOutline) {
+			ContentOutline outline = (ContentOutline)part;
+			IContributedContentsView v = (IContributedContentsView)outline.getAdapter(IContributedContentsView.class);
+			if (v!=null)
+				part = v.getContributingPart();
+		}
 		editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
+		
 		if (editor!=null) {
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
-			EObject selectionBO = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+			EObject selectionBO = getBusinessObjectForSelection(selection);
 			ModelEnablementDescriptor modelEnablement = getModelEnablement(selection);
 			
 			if (selectionBO!=null && modelEnablement.isEnabled(selectionBO.eClass())) {
-				EObject thisBO = getBusinessObjectForPictogramElement(pe);
-				return thisBO!=null;			
+				return true;			
 			}
 		}
 		return false;

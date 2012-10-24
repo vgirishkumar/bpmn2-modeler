@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 
 public class DataItemsPropertySection extends DefaultPropertySection {
 
@@ -36,8 +37,8 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof BPMNDiagram) {
 //			EList<EObject> contents = be.eResource().getContents();
 //			if (!contents.isEmpty() && contents.get(0) instanceof DocumentRoot) {

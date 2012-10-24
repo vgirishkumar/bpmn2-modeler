@@ -50,6 +50,9 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 				Collaboration collaboration = (Collaboration)elem;
 				retList.addAll(collaboration.getParticipants());
 				retList.addAll(collaboration.getConversations());
+				retList.addAll(collaboration.getConversationLinks());
+				retList.addAll(collaboration.getMessageFlows());
+				retList.addAll(collaboration.getArtifacts());
 			}
 		}
 		return retList;

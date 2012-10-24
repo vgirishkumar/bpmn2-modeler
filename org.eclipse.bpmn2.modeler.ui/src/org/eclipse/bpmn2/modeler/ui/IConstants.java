@@ -117,6 +117,9 @@ public interface IConstants {
 	public final String ICON_PROCESS = "16/Process.png";
 	public final String ICON_COLLABORATION = "16/Collaboration.png";
 	public final String ICON_CHOREOGRAPHY = "16/Choreography.png";
+	public final String ICON_INTERFACE = "16/Interface.png";
+	public final String ICON_PARTNERROLE = "16/PartnerRole.png";
+	public final String ICON_PARTNERENTITY = "16/PartnerEntity.png";
 
 	public final String ICON_BUSINESS_MODEL = "20/BusinessModel.png";
 	public final String ICON_INTERCHANGE_MODEL = "20/InterchangeModel.png";

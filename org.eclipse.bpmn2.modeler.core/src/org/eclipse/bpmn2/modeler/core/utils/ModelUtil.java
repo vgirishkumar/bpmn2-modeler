@@ -999,8 +999,12 @@ public class ModelUtil {
 		if (object instanceof EObject) {
 			EObject eObject = (EObject)object;
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eObject, ExtendedPropertiesAdapter.class);
-			if (adapter!=null)
-				return adapter.getObjectDescriptor().getDisplayName(eObject);
+			if (adapter!=null) {
+				String text = adapter.getObjectDescriptor().getDisplayName(eObject);
+				if (text!=null && !text.isEmpty()) {
+					return text;
+				}
+			}
 			return getLongDisplayName(eObject);
 		}
 		return object==null ? null : object.toString();

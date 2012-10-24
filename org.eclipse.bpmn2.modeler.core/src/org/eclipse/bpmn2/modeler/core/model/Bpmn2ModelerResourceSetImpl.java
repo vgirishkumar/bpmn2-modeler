@@ -69,13 +69,21 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 	public EObject getEObject(URI uri, boolean loadOnDemand) {
 		EObject o = null;
 		if (uri!=null) {
-			if (uri.fragment()!=null) {
+			// bug fix for EditUIMarkerHelper#getTargetObjects() which decodes the URI,
+			// and causes all kinds of problems with demand resource load processing.
+			URI newUri;
+			String uriString = uri.toString();
+			if (uriString==null)
+				newUri = uri;
+			else
+				newUri = URI.createURI(uriString, true);
+			if (newUri.fragment()!=null) {
 				setDefaultTimeoutProperties();
-				o = super.getEObject(uri, loadOnDemand);
+				o = super.getEObject(newUri, loadOnDemand);
 				restoreTimeoutProperties();
 			}
 			else
-				o = super.getEObject(uri, loadOnDemand);
+				o = super.getEObject(newUri, loadOnDemand);
 		}
 		return o;
 	}

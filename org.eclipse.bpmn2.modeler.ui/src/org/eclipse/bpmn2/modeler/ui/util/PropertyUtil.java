@@ -12,7 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.util;
 
+import java.lang.reflect.Field;
+
+import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -81,5 +87,17 @@ public class PropertyUtil {
 				dump((Composite)k, indent+1);
 			}
 		}
+	}
+	
+	public static Image getImage(EObject element) {
+		String field = "ICON_" + element.eClass().getName().toUpperCase();
+		Field f;
+		try {
+			f = IConstants.class.getField(field);
+			if (f!=null)
+				return Activator.getDefault().getImage((String)f.get(null));
+		} catch (Exception e) {
+		}
+		return null;
 	}
 }

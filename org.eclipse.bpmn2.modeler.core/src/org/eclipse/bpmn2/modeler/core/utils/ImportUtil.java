@@ -16,6 +16,8 @@ package org.eclipse.bpmn2.modeler.core.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.wsdl.extensions.schema.Schema;
+
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
@@ -38,6 +40,7 @@ import org.eclipse.wst.wsdl.Message;
 import org.eclipse.wst.wsdl.Operation;
 import org.eclipse.wst.wsdl.Output;
 import org.eclipse.wst.wsdl.PortType;
+import org.eclipse.wst.wsdl.Types;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDSchema;
 
@@ -113,7 +116,7 @@ public class ImportUtil {
 				imp.setLocation(clazz.getName());
 				imp.setNamespace("http://" + clazz.getPackage().getName());
 			}
-			else if (importObject instanceof org.eclipse.bpmn2.Definitions) {
+			else if (importObject instanceof Definitions) {
 				// BPMN 2.0 Diagram file
 				Definitions defs = (Definitions)importObject;
 				
@@ -141,9 +144,26 @@ public class ImportUtil {
 				if (importObject instanceof org.eclipse.wst.wsdl.Definition) {
 					// WSDL Definition
 					Definition wsdlDefinition = (Definition)importObject;
-		
-					for (Binding b :(List<Binding>)wsdlDefinition.getEBindings()) {
-						createInterface(definitions, imp,  b.getEPortType());
+
+					// WSDL Bindings are optional, instead create a new
+					// BPMN2 Interface for each PortType found in the WSDL.
+//					for (Binding b : (List<Binding>)wsdlDefinition.getEBindings()) {
+//						createInterface(definitions, imp,  b.getEPortType());
+//					}
+					for (PortType pt : (List<PortType>)wsdlDefinition.getEPortTypes()) {
+						createInterface(definitions, imp,  pt);
+					}
+
+					// create XSD types (if any) defined in the WSDL
+					Types t = wsdlDefinition.getETypes();
+					for (Object s : t.getSchemas()) {
+						if (s instanceof XSDSchema) {
+							XSDSchema schema = (XSDSchema)s;
+
+							for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
+								createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
+							}
+						}
 					}
 				}
 				else if (importObject instanceof XSDSchema){
@@ -158,7 +178,7 @@ public class ImportUtil {
 
 					createItemDefinition(definitions, imp, clazz);
 				}
-				else if (importObject instanceof org.eclipse.bpmn2.Definitions) {
+				else if (importObject instanceof Definitions) {
 					// what to do here?
 				}
 			}

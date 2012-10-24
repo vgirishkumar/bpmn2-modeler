@@ -53,6 +53,32 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 			}
 
 			@Override
+			public String getDisplayName(Object context) {
+				String text = "";
+				T flowElement = adopt(context); 
+				EStructuralFeature f = flowElement.eClass().getEStructuralFeature("name");
+				if (f!=null) {
+					String name = (String)flowElement.eGet(f);
+					if (name!=null && !name.isEmpty())
+						text = name;
+				}
+				f = flowElement.eClass().getEStructuralFeature("id");
+				if (f!=null) {
+					Object id = flowElement.eGet(f);
+					if (id!=null && !id.toString().isEmpty()) {
+						String className = flowElement.eClass().getName();
+						String idString = id.toString();
+						if (!idString.contains(className)) {
+							text = ModelUtil.toDisplayName(className) + " '" + id + "'";
+						}
+						else
+							text = idString;
+					}
+				}
+				return text;
+			}
+			
+			@Override
 			public String getChoiceString(Object context) {
 				T flowElement = adopt(context);
 				String text = flowElement.getName();

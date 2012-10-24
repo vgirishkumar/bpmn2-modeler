@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
 public class BoundaryEventPropertySection extends AbstractBpmn2PropertySection {
@@ -35,8 +36,8 @@ public class BoundaryEventPropertySection extends AbstractBpmn2PropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject be = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof BoundaryEvent)
 			return be;
 		return null;

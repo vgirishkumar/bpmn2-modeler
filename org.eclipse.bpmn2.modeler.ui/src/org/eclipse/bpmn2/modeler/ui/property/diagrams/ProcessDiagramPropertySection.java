@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
 public class ProcessDiagramPropertySection extends AbstractBpmn2PropertySection {
@@ -40,8 +41,8 @@ public class ProcessDiagramPropertySection extends AbstractBpmn2PropertySection 
 	}
 
 	@Override
-	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-		EObject bo = super.getBusinessObjectForPictogramElement(pe);
+	protected EObject getBusinessObjectForSelection(ISelection selection) {
+		EObject bo = super.getBusinessObjectForSelection(selection);
 		if (bo instanceof Participant) {
 			return ((Participant) bo).getProcessRef();
 		} else if (bo instanceof BPMNDiagram) {
