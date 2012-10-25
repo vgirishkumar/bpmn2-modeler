@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.xerces.parsers.SAXParser;
 import org.apache.xerces.xni.Augmentations;
@@ -29,6 +31,12 @@ import org.xml.sax.InputSource;
 
 public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
+	private static final String targetNamespace = "http://sample.bpmn2.org/bpmn2/sample";
+	private static final String typeLanguage = "http://www.w3.org/2001/XMLSchema";
+	private static final String[] expressionLanguages = new String[] {
+		"http://www.w3.org/1999/XPath", "XPath"
+	};
+	
 	public DefaultBpmn2RuntimeExtension() {
 	}
 
@@ -51,7 +59,17 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 			type = "/choreography";
 			break;
 		}
-		return "http://sample.bpmn2.org/bpmn2/sample" + type;
+		return targetNamespace + type;
+	}
+
+	@Override
+	public String getTypeLanguage() {
+		return typeLanguage;
+	}
+
+	@Override
+	public String[] getExpressionLanguages() {
+		return expressionLanguages;
 	}
 
 	@Override

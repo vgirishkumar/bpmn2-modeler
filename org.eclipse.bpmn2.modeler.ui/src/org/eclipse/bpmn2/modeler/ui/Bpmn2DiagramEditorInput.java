@@ -10,7 +10,7 @@
  *
  * @author Innar Made
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.wizards;
+package org.eclipse.bpmn2.modeler.ui;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -18,19 +18,24 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
+import org.eclipse.graphiti.ui.editor.DiagramEditorInputFactory;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.FileEditorInput;
 
 public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 
-	private final TransactionalEditingDomain domain;
+	/**
+	 * The memento key for the stored {@link URI} BPMN2 file string
+	 */
+	public static final String KEY_MODEL_URI = "org.eclipse.bpmn2.modeler.uri"; //$NON-NLS-1$
+
 	private Bpmn2DiagramType initialDiagramType = Bpmn2DiagramType.NONE;
 	private String targetNamespace;
 	private BPMNDiagram bpmnDiagram;
 	private URI modelUri;
 	
-	Bpmn2DiagramEditorInput(URI modelUri, URI diagramUri, TransactionalEditingDomain domain, String providerId) {
+	public Bpmn2DiagramEditorInput(URI modelUri, URI diagramUri, String providerId) {
 		super(diagramUri, providerId);
-		this.domain = domain;
 		this.modelUri = modelUri;
 	}
 	
@@ -83,13 +88,8 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 
 			String path = ((FileEditorInput) obj).getFile().getFullPath().toString();
 			URI platformUri = URI.createPlatformResourceURI(path, true);
-
-			for (Resource resource : domain.getResourceSet().getResources()) {
-				if (resource.getURI().equals(platformUri)) {
-					return true;
-				}
-			}
-
+			if (platformUri.equals(modelUri))
+				return true;
 		}
 		return false;
 	}
@@ -100,5 +100,22 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 
 	public void setBpmnDiagram(BPMNDiagram bpmnDiagram) {
 		this.bpmnDiagram = bpmnDiagram;
+	}
+	
+	@Override
+	public String getFactoryId() {
+		return Bpmn2DiagramEditorInputFactory.class.getName();
+	}
+
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+		
+		// Do not store anything for deleted objects
+		boolean exists = exists();
+		if (!exists) {
+			return;
+		}
+		// Store object name, URI and diagram type provider ID
+		memento.putString(KEY_MODEL_URI, this.modelUri.toString());
 	}
 }

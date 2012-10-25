@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.resources.IFile;

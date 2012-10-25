@@ -37,6 +37,15 @@
 		</content-type>
 	</extension>
 
+	<extension
+			point="org.eclipse.ui.elementFactories"
+			id=".Bpmn2DiagramEditorInputFactory"
+			name="Bpmn2DiagramEditorInputFactory">
+		<factory
+				class="org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInputFactory"
+				id=   "org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInputFactory"/>
+	</extension>
+
 	<!-- Preference Pages -->
 	
    <extension

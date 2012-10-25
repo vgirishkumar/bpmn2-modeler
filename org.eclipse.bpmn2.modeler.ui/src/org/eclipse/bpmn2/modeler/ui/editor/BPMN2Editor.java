@@ -96,6 +96,7 @@ import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
@@ -141,7 +142,6 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDe
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorOutlinePage;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
-import org.eclipse.bpmn2.modeler.ui.wizards.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.core.resources.IFile;

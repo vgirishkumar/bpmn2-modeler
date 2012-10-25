@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.wizards;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -58,7 +59,7 @@ public class BPMN2DiagramCreator {
 		TransactionalEditingDomain domain = FileService.createEmfFileForDiagram(diagramUri, diagram, diagramEditor);
 
 		String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId(diagram.getDiagramTypeId());
-		final Bpmn2DiagramEditorInput editorInput = new Bpmn2DiagramEditorInput(modelUri, diagramUri, domain, providerId);
+		final Bpmn2DiagramEditorInput editorInput = new Bpmn2DiagramEditorInput(modelUri, diagramUri, providerId);
 		editorInput.setInitialDiagramType(diagramType);
 		editorInput.setTargetNamespace(targetNamespace);
 
