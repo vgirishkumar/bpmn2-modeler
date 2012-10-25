@@ -12,25 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Scanner;
 
-import org.apache.xerces.parsers.SAXParser;
-import org.apache.xerces.xni.Augmentations;
-import org.apache.xerces.xni.QName;
-import org.apache.xerces.xni.XMLAttributes;
-import org.apache.xerces.xni.XNIException;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -48,7 +38,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
@@ -60,14 +49,17 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.xml.sax.InputSource;
 
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
-
+	private static final String typeLanguage = "http://www.java.com/javaTypes";
+	private static final String [] expressionLanguages = new String[] {
+		"http://www.mvel.org/2.0", "mvel",
+		"http://www.java.com/java", "java"
+	};
 	private List<WorkItemDefinition> workItemDefinitions;
 	
 	/* (non-Javadoc)
@@ -86,7 +78,17 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	public String getTargetNamespace(Bpmn2DiagramType diagramType){
 		return DROOLS_NAMESPACE;
 	}
-	
+
+	@Override
+	public String getTypeLanguage() {
+		return typeLanguage;
+	}
+
+	@Override
+	public String[] getExpressionLanguages() {
+		return expressionLanguages;
+	}
+
 	public List<WorkItemDefinition> getWorkItemDefinitions() {
 		if (workItemDefinitions==null)
 			workItemDefinitions = new ArrayList<WorkItemDefinition>();
@@ -404,6 +406,12 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 					widFiles.add((IFile)resource);
 					return true;
 				}
+			}
+			else if (resource.getType() == IResource.FOLDER) {
+				// skip over "bin" and "target" folders
+				String name = resource.getName();
+				if ("bin".equals(name) || "target".equals(name))
+					return false;
 			}
 			return true;
 		}

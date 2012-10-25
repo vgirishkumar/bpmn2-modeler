@@ -491,7 +491,10 @@ public class ModelUtil {
 	}
 
 	public static DiagramEditor getDiagramEditor(EObject object) {
-		Resource res = getResource(object);
+		return getDiagramEditor(getResource(object));
+	}
+	
+	public static DiagramEditor getDiagramEditor(Resource res) {
 		if (res != null) {
 			for (Adapter a : res.getResourceSet().eAdapters()) {
 				if (a instanceof DiagramEditorAdapter) {

@@ -14,25 +14,33 @@
 package org.eclipse.bpmn2.modeler.runtime.example;
 
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
 
 /**
  * @author Bob Brodt
  *
  */
+
 public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
+	
+	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.runtime.example";
+	private static final String typeLanguage = "http://www.w3.org/2001/XMLSchema";
+	private static final String[] expressionLanguages = new String[] {
+		"http://www.w3.org/1999/XPath", "XPath",
+		"http://www.mvel.org/2.0", "mvel",
+		"http://www.java.com/java", "java"
+	};
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTargetNamespace(org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType)
 	 */
 	@Override
 	public String getTargetNamespace(Bpmn2DiagramType diagramType) {
-		return "http://org.eclipse.bpmn2.modeler.runtime.example";
+		return targetNamespace;
 	}
 
 	/* (non-Javadoc)
@@ -40,6 +48,16 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	 */
 	@Override
 	public void initialize(DiagramEditor editor) {
+	}
+
+	@Override
+	public String getTypeLanguage() {
+		return typeLanguage;
+	}
+
+	@Override
+	public String[] getExpressionLanguages() {
+		return expressionLanguages;
 	}
 
 	/* (non-Javadoc)

@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.Escalation;
@@ -80,6 +81,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertie
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataObjectReferencePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataOutputPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DefinitionsPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ErrorEventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ErrorPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.EscalationEventDefinitionPropertiesAdapter;
@@ -623,6 +625,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
         	return new OutputSetPropertiesAdapter(adapterFactory,object);
+		}
+
+		@Override
+		public ExtendedPropertiesAdapter caseDefinitions(Definitions object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new DefinitionsPropertiesAdapter(adapterFactory,object);
 		}
 
     };
