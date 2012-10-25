@@ -1,12 +1,21 @@
 package org.eclipse.bpmn2.modeler.ui;
 
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.emf.workspace.IWorkspaceCommandStack;
+import org.eclipse.emf.workspace.WorkspaceEditingDomainFactory;
+import org.eclipse.graphiti.ui.editor.DiagramEditorFactory;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.graphiti.ui.editor.DiagramEditorInputFactory;
+import org.eclipse.graphiti.ui.internal.editor.GFWorkspaceCommandStackImpl;
 import org.eclipse.ui.IMemento;
 
-public class Bpmn2DiagramEditorInputFactory extends DiagramEditorInputFactory {
+public class Bpmn2DiagramEditorInputFactory extends DiagramEditorFactory {
 
 	public IAdaptable createElement(IMemento memento) {
 		// get diagram URI
@@ -23,6 +32,17 @@ public class Bpmn2DiagramEditorInputFactory extends DiagramEditorInputFactory {
 		final String providerID = memento.getString(DiagramEditorInput.KEY_PROVIDER_ID);
 		URI modelUri = URI.createURI(modelUriString);
 		URI diagramUri = URI.createURI(diagramUriString);
-		return new Bpmn2DiagramEditorInput(modelUri, diagramUri, providerID);
+		TransactionalEditingDomain domain = createResourceSetAndEditingDomain();
+		return new Bpmn2DiagramEditorInput(modelUri, diagramUri, domain, providerID);
+	}
+	
+	public static TransactionalEditingDomain createResourceSetAndEditingDomain() {
+		final ResourceSet resourceSet = new Bpmn2ModelerResourceSetImpl();
+		final IWorkspaceCommandStack workspaceCommandStack = new GFWorkspaceCommandStackImpl(new DefaultOperationHistory());
+
+		final TransactionalEditingDomainImpl editingDomain = new TransactionalEditingDomainImpl(new ComposedAdapterFactory(
+				ComposedAdapterFactory.Descriptor.Registry.INSTANCE), workspaceCommandStack, resourceSet);
+		WorkspaceEditingDomainFactory.INSTANCE.mapResourceSet(editingDomain);
+		return editingDomain;
 	}
 }

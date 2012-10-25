@@ -31,6 +31,7 @@ import java.util.Set;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
+import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInputFactory;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.resources.IFile;
@@ -69,18 +70,6 @@ import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 
 public class FileService {
-
-	public static class MyDiagramEditorFactory extends DiagramEditorFactory {
-		public static TransactionalEditingDomain createResourceSetAndEditingDomain() {
-			final ResourceSet resourceSet = new Bpmn2ModelerResourceSetImpl();
-			final IWorkspaceCommandStack workspaceCommandStack = new GFWorkspaceCommandStackImpl(new DefaultOperationHistory());
-
-			final TransactionalEditingDomainImpl editingDomain = new TransactionalEditingDomainImpl(new ComposedAdapterFactory(
-					ComposedAdapterFactory.Descriptor.Registry.INSTANCE), workspaceCommandStack, resourceSet);
-			WorkspaceEditingDomainFactory.INSTANCE.mapResourceSet(editingDomain);
-			return editingDomain;
-		}
-	}
 	
 	public static TransactionalEditingDomain createEmfFileForDiagram(URI diagramResourceUri, final Diagram diagram, BPMN2Editor diagramEditor) {
 
@@ -88,7 +77,7 @@ public class FileService {
 		TransactionalEditingDomain editingDomain = null;
 		
 		// Create a resource set and EditingDomain
-		editingDomain = MyDiagramEditorFactory.createResourceSetAndEditingDomain();
+		editingDomain = Bpmn2DiagramEditorInputFactory.createResourceSetAndEditingDomain();
 		resourceSet = editingDomain.getResourceSet();
 		
 		// Create a resource for this file.
