@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui;
 import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.apache.xerces.parsers.SAXParser;
 import org.apache.xerces.xni.Augmentations;
@@ -21,8 +19,8 @@ import org.apache.xerces.xni.QName;
 import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XNIException;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -32,9 +30,11 @@ import org.xml.sax.InputSource;
 public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	private static final String targetNamespace = "http://sample.bpmn2.org/bpmn2/sample";
-	private static final String typeLanguage = "http://www.w3.org/2001/XMLSchema";
+	private static final String[] typeLanguages = new String[] {
+		"http://www.w3.org/2001/XMLSchema", "XML Schema",
+	};
 	private static final String[] expressionLanguages = new String[] {
-		"http://www.w3.org/1999/XPath", "XPath"
+		"http://www.w3.org/1999/XPath", "XPath",
 	};
 	
 	public DefaultBpmn2RuntimeExtension() {
@@ -63,8 +63,8 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public String getTypeLanguage() {
-		return typeLanguage;
+	public String[] getTypeLanguages() {
+		return typeLanguages;
 	}
 
 	@Override

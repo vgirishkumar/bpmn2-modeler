@@ -35,6 +35,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
+import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -77,6 +78,10 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 			link(multipleShape, eventDefinitions.toArray(new EventDefinition[size]));
 		} else {
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
+			if (addedShape==null) {
+				addedShape = Graphiti.getPeService().createShape(container, false);
+				GraphicsUtil.createEventNotAllowed(addedShape);
+			}
 			link(addedShape, eventDef);
 		}
 	}

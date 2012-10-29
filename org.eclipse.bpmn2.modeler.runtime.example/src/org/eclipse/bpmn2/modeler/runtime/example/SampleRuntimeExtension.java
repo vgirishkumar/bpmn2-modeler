@@ -28,11 +28,14 @@ import org.eclipse.ui.IEditorInput;
 public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	
 	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.runtime.example";
-	private static final String typeLanguage = "http://www.w3.org/2001/XMLSchema";
+	private static final String[] typeLanguages = new String[] {
+		"http://www.w3.org/2001/XMLSchema", "XML Schema",
+		"http://www.java.com/javaTypes", "Java",
+	};
 	private static final String[] expressionLanguages = new String[] {
 		"http://www.w3.org/1999/XPath", "XPath",
 		"http://www.mvel.org/2.0", "mvel",
-		"http://www.java.com/java", "java"
+		"http://www.java.com/java", "java",
 	};
 
 	/* (non-Javadoc)
@@ -51,8 +54,8 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public String getTypeLanguage() {
-		return typeLanguage;
+	public String[] getTypeLanguages() {
+		return typeLanguages;
 	}
 
 	@Override

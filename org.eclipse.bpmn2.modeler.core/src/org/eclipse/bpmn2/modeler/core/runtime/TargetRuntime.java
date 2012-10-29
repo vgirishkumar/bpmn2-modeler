@@ -310,20 +310,22 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 						rt.modelDescriptor = getDefaultRuntime().getModelDescriptor(); 
 					}
 					// add customTask and modelExtension features to modelEnablements
-					// these are enabled by default and can't be disabled.
 					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
-						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-							for (Property p : med.getProperties()) {
-								me.setEnabled(med.getType(), p.name, true);
-							}
-						}
-						for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
-							// the tool palette checks for enablement of this custom task ID
-							me.setEnabled(ct.getId(), true);
-							for (Property p : ct.getProperties()) {
-								me.setEnabled(ct.getType(), p.name, true);
-							}
-						}
+//						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+//							for (Property p : med.getProperties()) {
+//								me.setEnabled(med.getType(), p.name, true);
+//								EClassifier eClass = ModelUtil.getEClassifierFromString(med.getEPackage(), med.getType());
+//								ModelUtil.createDynamicAttribute(med.getEPackage(),
+//										eClass, p.name, p.type);
+//							}
+//						}
+//						for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
+//							// the tool palette checks for enablement of this custom task ID
+//							me.setEnabled(ct.getId(), true);
+//							for (Property p : ct.getProperties()) {
+//								me.setEnabled(ct.getType(), p.name, true);
+//							}
+//						}
 					
 					// DEBUG:
 //						System.out.println("Runtime: '"+rt.getName()+

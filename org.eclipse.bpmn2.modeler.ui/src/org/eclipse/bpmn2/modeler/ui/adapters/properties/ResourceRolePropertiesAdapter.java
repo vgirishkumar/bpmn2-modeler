@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
@@ -56,12 +57,17 @@ public class ResourceRolePropertiesAdapter extends ExtendedPropertiesAdapter<Res
 				@Override
 				public void setValue(Object context, Object value) {
 					final ResourceRole rr = adopt(context);
-					ResourceAssignmentExpression rae = rr.getResourceAssignmentExpression();
-					if (rae!=null) {
-						ExtendedPropertiesAdapter<ResourceAssignmentExpression> adapter =
-								(ExtendedPropertiesAdapter<ResourceAssignmentExpression>) AdapterUtil.adapt(rae, ExtendedPropertiesAdapter.class);
-				    	EStructuralFeature raeFeature = Bpmn2Package.eINSTANCE.getResourceAssignmentExpression_Expression();
-						adapter.getFeatureDescriptor(raeFeature).setValue(rae, value);
+					if (value instanceof FormalExpression) {
+						ResourceAssignmentExpression rae = rr.getResourceAssignmentExpression();
+						if (rae!=null) {
+							ExtendedPropertiesAdapter<ResourceAssignmentExpression> adapter =
+									(ExtendedPropertiesAdapter<ResourceAssignmentExpression>) AdapterUtil.adapt(rae, ExtendedPropertiesAdapter.class);
+					    	EStructuralFeature raeFeature = Bpmn2Package.eINSTANCE.getResourceAssignmentExpression_Expression();
+							adapter.getFeatureDescriptor(raeFeature).setValue(rae, value);
+						}
+					}
+					else if (value instanceof ResourceAssignmentExpression) {
+						rr.setResourceAssignmentExpression((ResourceAssignmentExpression)value);
 					}
 				}
     		}

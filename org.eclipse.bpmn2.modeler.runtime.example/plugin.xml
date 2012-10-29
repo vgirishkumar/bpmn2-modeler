@@ -53,6 +53,8 @@
 			type="Task">
 			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.riskTask"/>
 			<property name="name" value="Risk Task"/>
+			<property name="evaluate" value="true" type="EBoolean"/>
+			<property name="cost" value="0" type="EInt"/>
 		</customTask>
 
 		<customTask
@@ -64,15 +66,29 @@
 			type="Task">
 			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigationTask"/>
 			<property name="name" value="Mitigation Task"/>
+			<property name="evaluate" value="true" type="EBoolean"/>
+			<property name="benefit" value="0" type="EInt"/>
 		</customTask>
-
-		<!-- need to explicitly enable display of custom attributes in the property sheet -->
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.Task"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			name="Task Extensions"
+			type="Task">
+			<property name="execute" type="EBoolean"/>
+			<property name="evaluate" value="true" type="EBoolean"/>
+		</modelExtension>
+		
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process">
 			<disable object="all"/>
-			<enable object="default" feature="Process"/>
-			<enable object="Task"/>
-			<enable object="Task" feature="flag"/>
+			<enable object="Task" feature="id"/>
+			<enable object="Task" feature="anyAttribute"/>
+			<enable object="Task" feature="execute"/>
+			<enable object="Task" feature="evaluate"/>
 			<enable object="Task" feature="cost"/>
+			<enable object="Task" feature="benefit"/>
+			<disable object="Task" feature="sampleCustomTaskId"/>
+			<enable object="SequenceFlow" feature="anyAttribute"/>
 		</modelEnablement>
 
 	</extension>

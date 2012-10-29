@@ -77,25 +77,32 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 			}
 
 			EStructuralFeature inputSetsFeature = getFeature(ioSpecification, "inputSets");
-			inputSetsTable = new IoSetsListComposite(this, be, ioSpecification, inputSetsFeature);
-			inputSetsTable.bindList(ioSpecification, inputSetsFeature);
-			inputSetsTable.setTitle("Input Sets");
-
+			if (isModelObjectEnabled(ioSpecification.eClass(),inputSetsFeature)) {
+				inputSetsTable = new IoSetsListComposite(this, be, ioSpecification, inputSetsFeature);
+				inputSetsTable.bindList(ioSpecification, inputSetsFeature);
+				inputSetsTable.setTitle("Input Sets");
+			}
+			
 			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs");
-			dataInputsTable = new IoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
-			dataInputsTable.bindList(ioSpecification, dataInputsFeature);
-			dataInputsTable.setTitle("Input Parameters");
-
+			if (isModelObjectEnabled(ioSpecification.eClass(),dataInputsFeature)) {
+				dataInputsTable = new IoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
+				dataInputsTable.bindList(ioSpecification, dataInputsFeature);
+				dataInputsTable.setTitle("Input Parameters");
+			}
 
 			EStructuralFeature outputSetsFeature = getFeature(ioSpecification, "outputSets");
-			outputSetsTable = new IoSetsListComposite(this, be, ioSpecification, outputSetsFeature);
-			outputSetsTable.bindList(ioSpecification, outputSetsFeature);
-			outputSetsTable.setTitle("Output Sets");
+			if (isModelObjectEnabled(ioSpecification.eClass(),outputSetsFeature)) {
+				outputSetsTable = new IoSetsListComposite(this, be, ioSpecification, outputSetsFeature);
+				outputSetsTable.bindList(ioSpecification, outputSetsFeature);
+				outputSetsTable.setTitle("Output Sets");
+			}
 			
 			EStructuralFeature dataOutputsFeature = getFeature(ioSpecification, "dataOutputs");
-			dataOutputsTable = new IoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
-			dataOutputsTable.bindList(ioSpecification, dataOutputsFeature);
-			dataOutputsTable.setTitle("Output Parameters");
+			if (isModelObjectEnabled(ioSpecification.eClass(),dataOutputsFeature)) {
+				dataOutputsTable = new IoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
+				dataOutputsTable.bindList(ioSpecification, dataOutputsFeature);
+				dataOutputsTable.setTitle("Output Parameters");
+			}
 		}
 		else {
 			// the control is a ThrowEvent

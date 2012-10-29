@@ -379,21 +379,14 @@
 -->
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.definitions"
-			runtimeId="org.jboss.runtime.jbpm5"
-			name="Definitions Extensions"
-			type="Definitions">
-			<property name="expressionLanguage" value="http://www.mvel.org/2.0"/>
-			<property name="typeLanguage" value="http://www.java.com/javaTypes"/>
-		</modelExtension>
-		
-		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.process"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="Process Extensions"
 			type="Process">
-			<property name="version" value="1"/>
+			<property name="version" value="1" type="EInt"/>
 			<property name="packageName" value="defaultPackage"/>
+			<property name="adHoc" value="false" type="EBoolean"/>
+			<property name="isExecutable" value="true" type="EBoolean"/>
 		</modelExtension>
 		
 		<modelExtension
@@ -401,7 +394,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="SequenceFlow Extensions"
 			type="SequenceFlow">
-			<property name="priority" value="1"/>
+			<property name="priority" value="1" type="EInt"/>
 		</modelExtension>
 		
 		<modelExtension
@@ -463,6 +456,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="UserTask Extensions"
 			type="UserTask">
+			
 			<property name="ioSpecification">
 				<value>
 					<property name="dataInputs">
@@ -495,6 +489,11 @@
 							<property name="name" value="Content"/>
 						</value>
 					</property>
+					<property name="dataInputs">
+						<value>
+							<property name="name" value="Locale"/>
+						</value>
+					</property>
 
 					<property name="inputSets">
 						<value>
@@ -504,6 +503,7 @@
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#3"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#4"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#5"/>
+							<property name="dataInputRefs" ref="ioSpecification/dataInputs#6"/>
 						</value>
 					</property>
 				</value>
@@ -536,6 +536,11 @@
 			<property name="dataInputAssociations">
 				<value>
 					<property name="targetRef" ref="ioSpecification/dataInputs#5"/>
+				</value>
+			</property>
+			<property name="dataInputAssociations">
+				<value>
+					<property name="targetRef" ref="ioSpecification/dataInputs#6"/>
 				</value>
 			</property>
 		</modelExtension>
@@ -766,10 +771,10 @@
 			<disable object="InclusiveGateway" feature="lanes"/>
 			<disable object="InclusiveGateway" feature="monitoring"/>
 			<disable object="InclusiveGateway" feature="outgoing"/>
-			<enable object="InputSet"/>
-			<disable object="InputSet" feature="documentation"/>
-			<disable object="InputSet" feature="extensionDefinitions"/>
-			<disable object="InputSet" feature="id"/>
+			<disable object="InputSet"/>
+			<enable object="InputOutputSpecification"/>
+			<disable object="InputOutputSpecification" feature="inputSets"/>
+			<disable object="InputOutputSpecification" feature="OutputSets"/>
 			<enable object="IntermediateCatchEvent"/>
 			<disable object="IntermediateCatchEvent" feature="anyAttribute"/>
 			<disable object="IntermediateCatchEvent" feature="auditing"/>
@@ -890,10 +895,7 @@
 			<disable object="MultiInstanceLoopCharacteristics" feature="noneBehaviorEventRef"/>
 			<disable object="MultiInstanceLoopCharacteristics" feature="oneBehaviorEventRef"/>
 			<disable object="MultiInstanceLoopCharacteristics" feature="outputDataItem"/>
-			<enable object="OutputSet"/>
-			<disable object="OutputSet" feature="documentation"/>
-			<disable object="OutputSet" feature="extensionDefinitions"/>
-			<disable object="OutputSet" feature="id"/>
+			<disable object="OutputSet"/>
 			<enable object="ParallelGateway"/>
 			<disable object="ParallelGateway" feature="anyAttribute"/>
 			<disable object="ParallelGateway" feature="auditing"/>
@@ -917,13 +919,13 @@
 			<disable object="Process" feature="ioBinding"/>
 			<disable object="Process" feature="ioSpecification"/>
 			<disable object="Process" feature="isClosed"/>
-			<disable object="Process" feature="isExecutable"/>
 			<disable object="Process" feature="laneSets"/>
 			<disable object="Process" feature="monitoring"/>
 			<disable object="Process" feature="processType"/>
 			<disable object="Process" feature="resources"/>
 			<disable object="Process" feature="supportedInterfaceRefs"/>
 			<disable object="Process" feature="supports"/>
+			<enable object="Process" feature="adHoc"/>
 			<enable object="Property"/>
 			<disable object="Property" feature="anyAttribute"/>
 			<disable object="Property" feature="dataState"/>
@@ -1136,7 +1138,6 @@
 			<disable object="TimerEventDefinition" feature="id"/>
 			<disable object="TimerEventDefinition" feature="timeDate"/>
 			<enable object="UserTask"/>
-			<disable object="UserTask" feature="anyAttribute"/>
 			<disable object="UserTask" feature="auditing"/>
 			<disable object="UserTask" feature="boundaryEventRefs"/>
 			<disable object="UserTask" feature="categoryValueRef"/>

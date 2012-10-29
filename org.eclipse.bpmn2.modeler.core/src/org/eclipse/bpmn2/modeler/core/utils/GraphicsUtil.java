@@ -743,6 +743,34 @@ public class GraphicsUtil {
 		return ellipse;
 	}
 
+	public static Ellipse createEventNotAllowed(Shape shape) {
+		final int eventHeight = shape.getContainer().getGraphicsAlgorithm().getHeight();
+		final int eventWidth = shape.getContainer().getGraphicsAlgorithm().getWidth();
+		
+		final float heightRatio = calculateRatio(eventHeight, Float.valueOf(EVENT_SIZE));
+		final float widthRatio = calculateRatio(eventWidth, Float.valueOf(EVENT_SIZE));
+		
+		Ellipse ellipse = gaService.createEllipse(shape);
+		gaService.setLocationAndSize(ellipse,
+				generateRatioPointValue(6, widthRatio), generateRatioPointValue(6, heightRatio),
+				eventWidth - generateRatioPointValue(12, widthRatio), eventHeight - generateRatioPointValue(12, heightRatio));
+		ellipse.setLineWidth(2);
+		ellipse.setFilled(false);
+		ellipse.setForeground(manageColor(shape, IColorConstant.RED));
+
+		
+		int[] points = {
+				generateRatioPointValue(8, widthRatio), generateRatioPointValue(12, heightRatio),
+				generateRatioPointValue(28, widthRatio), generateRatioPointValue(24, heightRatio),
+		};
+
+		shape = Graphiti.getPeService().createShape(shape.getContainer(), false);
+		Polyline polygon = gaService.createPolyline(shape, points);
+		polygon.setLineWidth(2);
+		polygon.setForeground(manageColor(shape, IColorConstant.RED));
+		return ellipse;
+	}
+
 	public static Polygon createEventParallelMultiple(Shape shape) {
 		int r = EVENT_SIZE / 2;
 		int a = 3;

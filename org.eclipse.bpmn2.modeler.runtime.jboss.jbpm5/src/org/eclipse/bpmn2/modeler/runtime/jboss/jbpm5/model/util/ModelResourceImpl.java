@@ -126,27 +126,6 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
             super(xmiResource, helper, options);
         }
 
-		@Override
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-			for (int i=0; i<attributes.getLength(); ++i ) {
-				String n = attributes.getQName(i);
-				if (n.startsWith("xmlns:")) {
-					String v = attributes.getValue(i);
-					if (ModelPackage.eINSTANCE.getNsURI().equals(v)) {
-						Bpmn2ModelerFactory.setEnableModelExtensions(false);
-						break;
-					}
-				}
-			}
-			super.startElement(uri, localName, qName, attributes);
-		}
-
-		@Override
-		public void endDocument() {
-			super.endDocument();
-			Bpmn2ModelerFactory.setEnableModelExtensions(true);
-		}
-
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void processElement(String name, String prefix, String localName) {

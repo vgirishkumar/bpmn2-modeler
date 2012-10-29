@@ -222,10 +222,15 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		if (feature instanceof EAttribute)
 			return true;
 
-		List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
-		for (EStructuralFeature f : anyAttributes) {
-			if (f.getName().equals(feature.getName()))
-				return true;
+		if (feature != null) {
+			List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
+			for (EStructuralFeature f : anyAttributes) {
+				if (f.getName().equals(feature.getName())) {
+					if (f instanceof EAttribute)
+						return true;
+					break;
+				}
+			}
 		}
 		
 		return false;
@@ -251,11 +256,17 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	 * @return
 	 */
 	protected boolean isReference(EObject object, EStructuralFeature feature) {
-		if (feature!=null) {
-			Object list = object.eGet(feature);
-			if (list instanceof EList && !(list instanceof EObjectContainmentEList))
-				return true;
+		if (feature != null) {
+			List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
+			for (EStructuralFeature f : anyAttributes) {
+				if (f.getName().equals(feature.getName())) {
+					if (f instanceof EReference)
+						return true;
+					break;
+				}
+			}
 		}
+
 		return (feature instanceof EReference);
 	}
 
@@ -399,14 +410,30 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					style |= SWT.MULTI;
 				ObjectEditor editor = new TextObjectEditor(this,object,attribute,style);
 				editor.createControl(parent,label);
-			} else if (boolean.class.equals(eTypeClass)) {
+			} else if (Boolean.class.equals(eTypeClass) ||
+					boolean.class.equals(eTypeClass)
+			) {
 				ObjectEditor editor = new BooleanObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 			} else if (int.class.equals(eTypeClass) ||
+					Short.class.equals(eTypeClass) ||
 					Integer.class.equals(eTypeClass) ||
-					BigInteger.class.equals(eTypeClass) ) {
+					BigInteger.class.equals(eTypeClass) ||
+					short.class.equals(eTypeClass) ||
+					int.class.equals(eTypeClass) ||
+					long.class.equals(eTypeClass)
+			) {
 				ObjectEditor editor = new IntObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
+			} else if (int.class.equals(eTypeClass) ||
+					Float.class.equals(eTypeClass) ||
+					Double.class.equals(eTypeClass) ||
+					float.class.equals(eTypeClass) ||
+					double.class.equals(eTypeClass)
+			) {
+				// TODO: implement me!
+//				ObjectEditor editor = new FloatObjectEditor(this,object,attribute);
+//				editor.createControl(parent,label);
 			} else if ("anyAttribute".equals(attribute.getName()) ||
 					object.eGet(attribute) instanceof FeatureMap) {
 				List<Entry> basicList = ((BasicFeatureMap) object.eGet(attribute)).basicList();

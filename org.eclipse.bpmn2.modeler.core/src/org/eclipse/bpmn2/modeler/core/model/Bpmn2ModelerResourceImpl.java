@@ -37,6 +37,8 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -55,11 +57,15 @@ import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
@@ -185,6 +191,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		
 		public Bpmn2ModelerXmlHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 			super(xmiResource, helper, options);
+		}
+
+		@Override
+		public void startDocument() {
+			super.startDocument();
+			Bpmn2ModelerFactory.setEnableModelExtensions(false);
+		}
+
+		@Override
+		public void endDocument() {
+			super.endDocument();
+			Bpmn2ModelerFactory.setEnableModelExtensions(true);
 		}
 
 		@Override
@@ -648,7 +666,36 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 				}
 			}
-
+			
+			// check if we need to change the attribute's data type:
+			if (feature instanceof EAttribute) {
+				// and only if the attribute's data type is "Object"
+				EClassifier t = feature.getEType();
+				if (t!=null && t.getInstanceClass() == Object.class) {
+					// search for the attribute in the target runtime's Model Extensions by name
+					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+					String className = object.eClass().getName();
+					String featureName = feature.getName();
+					for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+						if (med.getType().equals(className)) {
+							for (Property p : med.getProperties()) {
+								if (p.name.equals(featureName)) {
+									String type = p.type;
+									if (type==null)
+										type = "EString";
+									EClassifier eClassifier = ModelUtil.getEClassifierFromString(
+											rt.getModelDescriptor().getEPackage(),type);
+									if (eClassifier instanceof EDataType) {
+										feature.setEType(eClassifier);
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
 			super.setValue(object, feature, value, position);
 		}
 

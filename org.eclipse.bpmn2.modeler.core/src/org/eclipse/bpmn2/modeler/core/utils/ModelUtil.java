@@ -33,6 +33,8 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
+import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
@@ -71,9 +73,11 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.xsd.XSDAttributeDeclaration;
 import org.eclipse.xsd.XSDElementDeclaration;
 
@@ -283,6 +287,14 @@ public class ModelUtil {
 			}
 		}
 		return id;
+	}
+	
+	public static String getID(EObject obj) {
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		if (feature!=null) {
+			return (String)obj.eGet(feature);
+		}
+		return null;
 	}
 
 	public static int getIDNumber(String id) {
@@ -577,11 +589,17 @@ public class ModelUtil {
 		return null;
 	}
 	
+	/**
+	 * @deprecated use {@link createDynamicAttribute()} instead.  
+	 */
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature addAnyAttribute(EObject childObject, String name, Object value) {
 		return addAnyAttribute(childObject, childObject.eClass().getEPackage().getNsURI(), name, value);
 	}
 	
+	/**
+	 * @deprecated use {@link createDynamicAttribute()} instead.  
+	 */
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, Object value) {
 		EStructuralFeature attr = null;
@@ -628,6 +646,8 @@ public class ModelUtil {
 	}
 
 	public static EAttribute createDynamicAttribute(EPackage pkg, EObject object, String name, String type) {
+		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
+		EAttribute attr = null;
 		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot");
 		if (docRoot==null) {
 			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
@@ -636,50 +656,120 @@ public class ModelUtil {
 		if (docRoot!=null) {
 			for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
 				if (f.getName().equals(name)) {
-					if (f instanceof EAttribute)
-						return (EAttribute)f;
+					if (f instanceof EAttribute) {
+						attr = (EAttribute)f;
+						break;
+					}
 					return null;
 				}
 			}
 		}
+		
 		if (type==null)
 			type = "EString";
 		
-		EDataType eDataType = (EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
-		EAttribute attr = EcorePackage.eINSTANCE.getEcoreFactory().createEAttribute();
-		attr.setName(name);
-		attr.setEType(eDataType);
-		ExtendedMetaData.INSTANCE.setFeatureKind(attr,ExtendedMetaData.ATTRIBUTE_FEATURE);
-		
-		docRoot.getEStructuralFeatures().add(attr);
-		ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
-		if (docRoot!=null)
-			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
+		EClassifier eClassifier = getEClassifierFromString(pkg,type);
+		if (eClassifier==null || !(eClassifier instanceof EDataType)) {
+			String message = "The model extension attribute '"+
+					name+"' for type '"+eClass.getName()+
+					"' can not be created because '"+
+					type+"' is not a known data type.";
 
+			MessageDialog.openError(Display.getDefault().getActiveShell(),
+					"Internal Error",
+					message);
+			throw new IllegalArgumentException(message);
+		}
+
+		if (attr==null) {
+			attr = EcorePackage.eINSTANCE.getEcoreFactory().createEAttribute();
+			attr.setName(name);
+			attr.setEType(eClassifier);
+			ExtendedMetaData.INSTANCE.setFeatureKind(attr,ExtendedMetaData.ATTRIBUTE_FEATURE);
+			
+			docRoot.getEStructuralFeatures().add(attr);
+			ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
+			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
+		}
+
+		 // force this feature to be serialized regardless of whether its value is the default value
+		attr.setUnsettable(true); 
+		
 		return attr;
 	}
 	
-	public static EReference createDynamicReference(EPackage pkg, EObject object, String name, EObject value) {
+	public static EReference createDynamicReference(EPackage pkg, EObject object, String name, String type) {
+		EReference ref = null;
 		EClass docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
-		for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
-			if (f.getName().equals(name)) {
-				if (f instanceof EReference)
-					return (EReference)f;
-				return null;
+		if (docRoot==null) {
+			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
+			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
+		}
+		if (docRoot!=null) {
+			for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
+				if (f.getName().equals(name)) {
+					if (f instanceof EReference) {
+						ref = (EReference)f;
+						break;
+					}
+					return null;
+				}
 			}
 		}
-		EReference ref = EcorePackage.eINSTANCE.getEcoreFactory().createEReference();
-		ref.setName(name);
-		EClass eClass = value.eClass();
-		ref.setEType(eClass);
-		ExtendedMetaData.INSTANCE.setFeatureKind(ref,ExtendedMetaData.ELEMENT_FEATURE);
+
+		EClassifier eClassifier = getEClassifierFromString(pkg,type);
+		if (eClassifier==null || !(eClassifier instanceof EClass)) {
+			String message = "The model extension reference '"+
+					name+"' for object '"+object.eClass().getName()+
+					"' can not be created because '"+
+					type+"' is not a known object type.";
+
+			MessageDialog.openError(Display.getDefault().getActiveShell(),
+					"Internal Error",
+					message);
+			throw new IllegalArgumentException(message);
+		}
 		
-		docRoot.getEStructuralFeatures().add(ref);
-		ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
+		if (ref==null) {
+			ref = EcorePackage.eINSTANCE.getEcoreFactory().createEReference();
+			ref.setName(name);
+			ref.setEType(eClassifier);
+			ExtendedMetaData.INSTANCE.setFeatureKind(ref,ExtendedMetaData.ATTRIBUTE_FEATURE);
+			
+			docRoot.getEStructuralFeatures().add(ref);
+			ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
+			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
+		}
 
 		return ref;
 	}
 
+	public static EClassifier getEClassifierFromString(EPackage pkg, String type) {
+		EClassifier eClassifier = null;
+		if (type==null) {
+			return EcorePackage.eINSTANCE.getEObject();
+		}
+		if (pkg!=null) {
+			eClassifier = pkg.getEClassifier(type);
+			if (eClassifier!=null)
+				return eClassifier;
+		}
+		
+		eClassifier = EcorePackage.eINSTANCE.getEClassifier(type);
+		if (eClassifier!=null)
+			return eClassifier;
+		
+		eClassifier = Bpmn2Package.eINSTANCE.getEClassifier(type);
+		if (eClassifier!=null)
+			return eClassifier;
+		
+		eClassifier = BpmnDiPackage.eINSTANCE.getEClassifier(type);
+		if (eClassifier!=null)
+			return eClassifier;
+		
+		return null;
+	}
+	
 	public static EObject createStringWrapper(String value) {
 		DynamicEObjectImpl de = new DynamicEObjectImpl();
 		de.eSetClass(EcorePackage.eINSTANCE.getEObject());

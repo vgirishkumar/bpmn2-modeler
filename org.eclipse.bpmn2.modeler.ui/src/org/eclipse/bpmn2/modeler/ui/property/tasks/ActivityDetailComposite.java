@@ -95,6 +95,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
 		if ("loopCharacteristics".equals(reference.getName())) {
+			if (!isModelObjectEnabled(object.eClass(), reference))
+				return;
 
 			final Activity activity = (Activity) businessObject;
 			LoopCharacteristics loopCharacteristics = (LoopCharacteristics) activity.getLoopCharacteristics();
