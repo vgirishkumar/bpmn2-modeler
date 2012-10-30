@@ -70,6 +70,19 @@
 			<property name="benefit" value="0" type="EInt"/>
 		</customTask>
 		
+		<!-- not implemented yet
+		<customTask
+			description="This task attempts to minimize the impact of risk."
+			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.runtime.example.mitigationAnnotation"
+			name="Mitigation Annotation"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			type="TextAnnotation">
+			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigationAnnotation"/>
+			<property name="name" value="Mitigation Annotation"/>
+		</customTask>
+		-->
+		
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.Task"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"

@@ -54,6 +54,8 @@ import org.xml.sax.InputSource;
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 
+	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5";
+	
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
 	private static final String[] typeLanguages = new String[] {
 		"http://www.java.com/javaTypes", "Java",

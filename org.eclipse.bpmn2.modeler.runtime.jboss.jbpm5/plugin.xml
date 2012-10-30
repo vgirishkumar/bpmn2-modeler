@@ -415,43 +415,6 @@
 		</modelExtension>
 
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.Task"
-			runtimeId="org.jboss.runtime.jbpm5"
-			name="Task Extensions"
-			type="Task">
-			<!-- onEntryScript and onExitScript are actually lists which may be initially empty
-			<property name="extensionValues">
-				<value>
-					<property name="value">
-						<value>
-							<property name="DocumentRoot.onEntryScript">
-								<value>
-									<property name="script" value=""/>
-									<property name="scriptFormat" value=""/>
-								</value>
-							</property>
-						</value>
-					</property>
-				</value>
-			</property>			
-			<property name="extensionValues">
-				<value>
-					<property name="value">
-						<value>
-							<property name="DocumentRoot.onExitScript">
-								<value>
-									<property name="script" value=""/>
-									<property name="scriptFormat" value=""/>
-								</value>
-							</property>
-						</value>
-					</property>
-				</value>
-			</property>
-			-->
-		</modelExtension>
-
-		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.UserTask"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="UserTask Extensions"
@@ -1334,6 +1297,20 @@
       <binding
             context="org.eclipse.bpmn2.modeler.core.validationContext"
             category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.bpmn2.wizardCategory"
+            name="BPMN2">
+      </category>
+      <wizard
+            category="org.eclipse.bpmn2.wizardCategory"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wizards.NewJbpmProcessWizard"
+            icon="icons/wizard.gif"
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wizards.NewJbpmProcessWizard"
+            name="jBPM Process Diagram">
+      </wizard>
    </extension>
 	
 </plugin>

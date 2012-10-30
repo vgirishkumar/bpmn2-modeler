@@ -41,6 +41,7 @@ public class TextAnnotationDetailComposite extends DefaultDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
+						"anyAttribute",
 						"textFormat",
 						"text",
 				};
