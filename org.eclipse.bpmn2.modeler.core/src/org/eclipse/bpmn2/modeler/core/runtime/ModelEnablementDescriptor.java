@@ -222,7 +222,7 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 		else if ("default".equals(className)) {
 			// select the set of enablements from the default runtime
 			// an optional featureName is used to specify a ModelEnablement type
-			TargetRuntime rt = getRuntime(); //TargetRuntime.getDefaultRuntime();
+			TargetRuntime rt = TargetRuntime.getDefaultRuntime();
 			String type = getType();
 			String profile = null;
 			if (featureName!=null) {

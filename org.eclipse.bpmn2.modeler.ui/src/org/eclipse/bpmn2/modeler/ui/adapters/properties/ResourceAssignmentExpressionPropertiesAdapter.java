@@ -55,21 +55,38 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 
 				@Override
 				public void setValue(Object context, Object value) {
-					final ResourceAssignmentExpression expression = adopt(context);
-					if (!(expression.getExpression() instanceof FormalExpression)) {
-						final FormalExpression e = Bpmn2ModelerFactory.create(FormalExpression.class);
-						e.setBody((String) value);
-						TransactionalEditingDomain editingDomain = getEditingDomain(expression);
-						if (editingDomain == null) {
-							expression.eSet(feature, e);
-						} else {
-							editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-								@Override
-								protected void doExecute() {
-									expression.eSet(feature, e);
-									ModelUtil.setID(e);
-								}
-							});
+					final ResourceAssignmentExpression rae = adopt(context);
+					if (!(rae.getExpression() instanceof FormalExpression)) {
+						if (value instanceof String) {
+							final FormalExpression e = Bpmn2ModelerFactory.create(FormalExpression.class);
+							e.setBody((String) value);
+							TransactionalEditingDomain editingDomain = getEditingDomain(rae);
+							if (editingDomain == null) {
+								rae.eSet(feature, e);
+							} else {
+								editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+									@Override
+									protected void doExecute() {
+										rae.eSet(feature, e);
+										ModelUtil.setID(e);
+									}
+								});
+							}
+						}
+						else if (value instanceof FormalExpression) {
+							final FormalExpression e = (FormalExpression)value;
+							TransactionalEditingDomain editingDomain = getEditingDomain(rae);
+							if (editingDomain == null) {
+								rae.eSet(feature, e);
+							} else {
+								editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+									@Override
+									protected void doExecute() {
+										rae.eSet(feature, e);
+										ModelUtil.setID(e);
+									}
+								});
+							}
 						}
 					}
 				}

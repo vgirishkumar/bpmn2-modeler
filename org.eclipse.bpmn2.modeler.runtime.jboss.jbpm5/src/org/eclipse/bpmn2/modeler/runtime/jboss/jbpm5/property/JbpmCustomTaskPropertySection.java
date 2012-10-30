@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -54,12 +55,12 @@ public class JbpmCustomTaskPropertySection extends AbstractBpmn2PropertySection 
 			EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 			ModelEnablementDescriptor modelEnablement = editor.getTargetRuntime().getModelEnablements(object);
 			
-			if (object instanceof Task) {
+			if (object.eClass() == Bpmn2Package.eINSTANCE.getTask()) {
 				if (modelEnablement.isEnabled(object.eClass()))
 				{
 					List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
 					for (EStructuralFeature f : features) {
-						if ("taskName".equals(f.getName()))
+						if ("displayName".equals(f.getName()))
 							return true;
 					}
 				}

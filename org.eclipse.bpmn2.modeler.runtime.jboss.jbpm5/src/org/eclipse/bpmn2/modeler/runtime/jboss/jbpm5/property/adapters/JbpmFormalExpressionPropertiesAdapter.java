@@ -38,47 +38,12 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 		super(adapterFactory, object);
 
     	final EStructuralFeature language = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
-    	FeatureDescriptor<FormalExpression> fd = new FeatureDescriptor<FormalExpression>(adapterFactory,object,language) {
-			@Override
-			public String getLabel(Object context) {
-				return "Script Language";
-			}
-		};
-		Hashtable<String, Object> choiceOfValues = new Hashtable<String, Object>();
-		choiceOfValues.put("Java", "http://www.java.com/java");
-		choiceOfValues.put("MVEL", "http://www.mvel.org/2.0");
-		if (object.eContainer() instanceof SequenceFlow)
-			choiceOfValues.put("Rule", "http://www.jboss.org/drools/rule");
-    	fd.setChoiceOfValues(choiceOfValues);
-    	setFeatureDescriptor(language,fd);
+    	FeatureDescriptor<FormalExpression> fd = super.getFeatureDescriptor(language);
     	
-    	final EStructuralFeature body = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
-    	setFeatureDescriptor(body,
-			new FeatureDescriptor<FormalExpression>(adapterFactory,object,body) {
-    		
-	    		@Override
-	    		public String getDisplayName(Object context) {
-					FormalExpression expression = adopt(context);
-					if (expression.getBody()==null)
-						return "";
-					return expression.getBody();
-	    		}
-	    		
-				@Override
-				public String getLabel(Object context) {
-					EObject expression = adopt(context);
-					if (expression.eContainer() instanceof SequenceFlow)
-						return "Constraint";
-					return "Script";
-				}
-
-				@Override
-				public boolean isMultiLine(Object context) {
-					// formal expression body is always a multiline text field
-					return true;
-				}
-			}
-    	);
+    	Hashtable<String, Object> choiceOfValues = fd.getChoiceOfValues(object);
+		if (!(object.eContainer() instanceof SequenceFlow))
+			choiceOfValues.remove("Rule");
+    	fd.setChoiceOfValues(choiceOfValues);
 	}
 
 }

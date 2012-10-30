@@ -22,6 +22,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -162,7 +163,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		if (container!=null)
 			containingResource = container.eResource();
 		modelObject = createObject(getType());
-		populateObject(modelObject);
+		populateObject(modelObject, true);
 		return modelObject;
 	}
 	
@@ -287,23 +288,23 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object - the object to initialize
 	 * @param values - list of Property values
 	 */
-	public void populateObjectFromValues(EObject object, List<Object> values) {
+	public void populateObjectFromValues(EObject object, List<Object> values, boolean all) {
 		
 		for (Object value : values) {
 			if (value instanceof Property)
-				populateObject(object,(Property)value);
+				populateObject(object,(Property)value, all);
 		}
 	}
 	
-	public EObject populateObject(EObject object, Resource resource) {
+	public EObject populateObject(EObject object, Resource resource, boolean all) {
 		containingResource = resource;
 		modelObject = object;
-		populateObject(modelObject);
+		populateObject(modelObject, all);
 		return modelObject;
 	}
 
-	public void populateObject(EObject object) {
-		populateObject(object, getProperties());
+	public void populateObject(EObject object, boolean all) {
+		populateObject(object, getProperties(), all);
 	}
 	
 	/**
@@ -312,10 +313,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object - the object to initialize
 	 * @param values - list of Property objects
 	 */
-	public void populateObject(EObject object, List<Property> properties) {
+	public void populateObject(EObject object, List<Property> properties, boolean all) {
 		
 		for (Property prop : properties) {
-			populateObject(object,prop);
+			populateObject(object,prop, all);
 		}
 	}
 	
@@ -390,35 +391,29 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object
 	 * @param property
 	 */
-	public void populateObject(EObject object, Property property) {
+	public void populateObject(EObject object, Property property, boolean all) {
 
 		EObject childObject = null;
 		EStructuralFeature childFeature = null;
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(property.name);
 		
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
-		
-		// TODO: fix this
-//		if (feature==null) {
-//			// determine the type of feature, either an EAttribute or an EReference,
-//			// from the give Property's characteristics
-//			Class type = EAttribute.class;
-//			// if the Property has a "ref" or if its value is a Property
-//			// then this must be an EReference
-//			if (property.ref!=null || firstValue instanceof Property)
-//				type = EReference.class;
-//			// get the feature from the runtime package or from Bpmn2Package,
-//			// wherever it's found first
-//			feature = getFeature(type,property.name);
-//		}
 
 		if (feature==null) {
 			EPackage pkg = getEPackage();
-			feature = ModelUtil.createDynamicAttribute(pkg, object, property.name, property.type);
+			// if the Property has a "ref" or if its value is a Property
+			// then this must be an EReference
+			EClassifier eClass = ModelUtil.getEClassifierFromString(
+					pkg,property.type==null ? "EString" : property.type);
+			if (property.ref!=null || firstValue instanceof Property) {
+				feature = ModelUtil.createDynamicReference(pkg, object, property.name, property.type);
+			}
+			else
+				feature = ModelUtil.createDynamicAttribute(pkg, object, property.name, property.type);
 		}
 		
 		if (feature instanceof EAttribute) {
-			if ( feature.getEType().getInstanceClass() == FeatureMap.Entry.class ) {
+			if ( all && feature.getEType().getInstanceClass() == FeatureMap.Entry.class ) {
 				// special handling for FeatureMaps
 				for (Object value : property.getValues()) {
 					if (value instanceof Property) {
@@ -432,7 +427,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 							childObject = createObject(((EReference) childFeature).getEReferenceType());
 							FeatureMap.Entry entry = new SimpleFeatureMapEntry((Internal)childFeature, childObject);
 							setValue(object, feature, entry);
-							populateObjectFromValues(childObject,p.getValues());
+							populateObjectFromValues(childObject,p.getValues(), all);
 						}
 					}
 				}
@@ -440,7 +435,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 			else
 				setValue(object, feature, firstValue);
 		}
-		else if (feature instanceof EReference) {
+		else if (all && feature instanceof EReference) {
 			EReference ref = (EReference)feature;
 			if (property.ref!=null) {
 				// navigate down the newly created custom task to find the object reference
@@ -458,12 +453,11 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				}
 				setValue(object, feature, childObject);
 			}
-			else
+			else if (firstValue instanceof Property)
 			{
 				childObject = createObject(ref.getEReferenceType());
-				object.eResource();
 				setValue(object, feature, childObject);
-				populateObjectFromValues(childObject,property.getValues());
+				populateObjectFromValues(childObject,property.getValues(), all);
 			}
 		}
 	}

@@ -54,11 +54,16 @@ import org.xml.sax.InputSource;
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 
+	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5";
+	
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
-	private static final String typeLanguage = "http://www.java.com/javaTypes";
+	private static final String[] typeLanguages = new String[] {
+		"http://www.java.com/javaTypes", "Java",
+	};
 	private static final String [] expressionLanguages = new String[] {
 		"http://www.mvel.org/2.0", "mvel",
-		"http://www.java.com/java", "java"
+		"http://www.java.com/java", "java",
+		"http://www.jboss.org/drools/rule", "Rule",
 	};
 	private List<WorkItemDefinition> workItemDefinitions;
 	
@@ -80,8 +85,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public String getTypeLanguage() {
-		return typeLanguage;
+	public String[] getTypeLanguages() {
+		return typeLanguages;
 	}
 
 	@Override

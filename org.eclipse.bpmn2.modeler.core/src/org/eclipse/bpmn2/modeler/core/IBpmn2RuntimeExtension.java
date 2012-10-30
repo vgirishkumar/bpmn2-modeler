@@ -12,15 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core;
 
-import java.util.Hashtable;
-import java.util.List;
-
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 
 public interface IBpmn2RuntimeExtension {
 
@@ -43,13 +39,16 @@ public interface IBpmn2RuntimeExtension {
 	public String getTargetNamespace(Bpmn2DiagramType diagramType);
 	
 	/**
-	 * Return the default data type supported by this runtime. This is the data type assumed for
-	 * ItemDefinitions that do not reference an Import. ItemDefinitions can override this data
-	 * type by referencing an Import where the structure as well as the type URI are defined.
+	 * Return the default data types supported by this runtime. The first entry in the array
+	 * is used as the default data type assumed for ItemDefinitions that do not reference an
+	 * Import element. ItemDefinitions can override this data type by referencing an Import
+	 * where the structure as well as the type URI are defined.
 	 * 
-	 * @return the data type language URI
+	 * @return an array of String pairs for the list of supported type languages;
+	 * the first string is the type language URI, the second string is a descriptive
+	 * name used in the UI.
 	 */
-	public String getTypeLanguage();
+	public String[] getTypeLanguages();
 	
 	/**
 	 * Return a string array of expression languages supported by this runtime. The first

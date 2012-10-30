@@ -48,7 +48,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			public Definitions createObject(Resource resource, Object context) {
 				Definitions definitions = Bpmn2Factory.eINSTANCE.createDefinitions();
 				IBpmn2RuntimeExtension rte = TargetRuntime.getCurrentRuntime().getRuntimeExtension();
-				definitions.setTypeLanguage(rte.getTypeLanguage());
+				definitions.setTypeLanguage(rte.getTypeLanguages()[0]);
 				definitions.setExpressionLanguage(rte.getExpressionLanguages()[0]);
 				return definitions;
 			}

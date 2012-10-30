@@ -183,7 +183,7 @@ public class ObjectDescriptor<T extends EObject> {
 	 */
 	protected T adopt(Object context) {
 		T result = (this.object.getClass().isInstance(context)) ? (T)context : this.object;
-		InsertionAdapter.executeIfNeeded(result);
+//		InsertionAdapter.executeIfNeeded(result);
 		return result;
 	}
 

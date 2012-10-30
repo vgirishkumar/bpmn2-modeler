@@ -56,7 +56,7 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 	@Override
 	public void createBindings(final EObject be) {
 		
-		if (be instanceof SequenceFlow) {
+		if (isModelObjectEnabled("SequenceFlow", "conditionExpression")) {
 			
 			final SequenceFlow sequenceFlow = (SequenceFlow) be;
 			

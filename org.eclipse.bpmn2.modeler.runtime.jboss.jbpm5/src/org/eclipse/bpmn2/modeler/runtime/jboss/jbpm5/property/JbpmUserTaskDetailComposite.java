@@ -64,7 +64,15 @@ public class JbpmUserTaskDetailComposite extends JbpmTaskDetailComposite {
 				else if (task.getResources().get(0) instanceof PotentialOwner){
 					owner = (PotentialOwner)task.getResources().get(0);
 					resourceAssignment = owner.getResourceAssignmentExpression();
+					if (resourceAssignment==null) {
+						resourceAssignment = FACTORY.createResourceAssignmentExpression(); 
+						InsertionAdapter.add(owner, PACKAGE.getResourceRole_ResourceAssignmentExpression(), resourceAssignment);
+					}
 					expression = (FormalExpression)resourceAssignment.getExpression();
+					if (expression==null) {
+						expression = FACTORY.createFormalExpression();
+						InsertionAdapter.add(resourceAssignment, PACKAGE.getResourceAssignmentExpression_Expression(), expression);
+					}
 				}
 				TextObjectEditor editor = new TextObjectEditor(this, expression, PACKAGE.getFormalExpression_Body());
 				editor.createControl(getAttributesParent(), "Actor", SWT.NONE);
