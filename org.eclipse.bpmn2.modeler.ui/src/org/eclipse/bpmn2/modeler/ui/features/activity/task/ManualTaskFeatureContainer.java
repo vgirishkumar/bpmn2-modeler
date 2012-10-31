@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Task;
@@ -25,9 +26,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Image;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 
@@ -47,9 +50,11 @@ public class ManualTaskFeatureContainer extends AbstractTaskFeatureContainer {
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddTaskFeature<ManualTask>(fp) {
 			@Override
-			protected void decorateActivityRectangle(RoundedRectangle rect) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, ManualTask businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
+				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(rect, ImageProvider.IMG_16_MANUAL_TASK);
+				Image img = service.createImage(ga, ImageProvider.IMG_16_MANUAL_TASK);
 				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
 			}
 		};

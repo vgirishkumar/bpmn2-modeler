@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractCreateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
@@ -31,8 +32,10 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -53,18 +56,15 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddEventFeature<EndEvent>(fp) {
-			@Override
-			protected void decorateEllipse(Ellipse e) {
-				e.setLineWidth(3);
-			}
 			
 			@Override
-			protected void hook(ContainerShape container) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, EndEvent businessObject) {
+				Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
+				e.setLineWidth(3);
 				IPeService peService = Graphiti.getPeService();
-				EndEvent event = BusinessObjectUtil.getFirstElementOfType(container, EndEvent.class);
-				peService.setPropertyValue(container,
+				peService.setPropertyValue(containerShape,
 						UpdateEndEventFeature.END_EVENT_MARKER,
-						AbstractUpdateEventFeature.getEventDefinitionsValue(event));
+						AbstractUpdateEventFeature.getEventDefinitionsValue((EndEvent)businessObject));
 			}
 		};
 	}

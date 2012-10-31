@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
@@ -222,7 +223,9 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 				if (true) {//modelEnablements.isEnabled(tc.getId())) {
 					CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
 	
-					container.setId(featureProvider, tc.getId());
+					String id = tc.getId();
+					container.setId(id);
+					featureProvider.addFeatureContainer(id, container);
 					ICreateFeature cf = container.getCreateFeature(featureProvider);
 					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
 							cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);

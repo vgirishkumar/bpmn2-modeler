@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -43,8 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinition>
-	extends AbstractAddShapeFeature
-	implements IBpmn2AddFeature<T> {
+	extends AbstractBpmn2AddFeature<T> {
 
 
 	public AbstractAddEventDefinitionFeature(IFeatureProvider fp) {
@@ -61,7 +61,7 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 	public PictogramElement add(IAddContext context) {
 		ContainerShape container = context.getTargetContainer();
 		Event event = (Event) getBusinessObjectForPictogramElement(container);
-
+ 
 		draw(event, getBusinessObject(context), container);
 		return null;
 	}

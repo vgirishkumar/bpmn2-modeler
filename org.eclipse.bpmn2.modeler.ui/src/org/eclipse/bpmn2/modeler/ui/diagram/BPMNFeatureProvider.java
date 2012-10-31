@@ -75,7 +75,7 @@ import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultRemoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.AddBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.RemoveBendpointFeature;
@@ -188,7 +188,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 public class BPMNFeatureProvider extends DefaultFeatureProvider {
 
 	private Hashtable<Class,FeatureContainer> containers;
-	private Hashtable<String,CustomTaskFeatureContainer> customTaskContainers;
+	private Hashtable<String,ICustomTaskFeatureContainer> customTaskContainers;
 	private ICreateFeature[] createFeatures;
 	private ICreateConnectionFeature[] createConnectionFeatures;
 	private HashMap<Class,IFeature> mapBusinessObjectClassToCreateFeature = new HashMap<Class,IFeature>();
@@ -257,11 +257,11 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		containers.put(ChoreographyMessageLinkFeatureContainer.class,new ChoreographyMessageLinkFeatureContainer());
 		containers.put(LabelFeatureContainer.class,new LabelFeatureContainer());
 	}
-
-	public void addFeatureContainer(String id, CustomTaskFeatureContainer fc) throws Exception {
+	
+	public void addFeatureContainer(String id, ICustomTaskFeatureContainer fc) throws Exception {
 		
 		if (customTaskContainers==null) {
-			customTaskContainers = new Hashtable<String,CustomTaskFeatureContainer>();
+			customTaskContainers = new Hashtable<String,ICustomTaskFeatureContainer>();
 		}
 		customTaskContainers.put(id,fc);
 		updateFeatureLists();
@@ -271,7 +271,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 
 		initializeFeatureContainers();
 		
-		// Collect all of the <featureContainer> extensions defined by the current TargetRuntime
+		// Collect all of the <featureContainerDelegate> extensions defined by the current TargetRuntime
 		// and replace the ones in our list of FeatureContainers
 		BPMN2Editor editor = BPMN2Editor.getActiveEditor(); //(BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
@@ -354,7 +354,11 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		}
 		return null;
 	}
-	
+
+	public FeatureContainer getFeatureContainer(Class clazz) {
+		return containers.get(clazz);
+	}
+
 	public FeatureContainer getFeatureContainer(IContext context) {
 		
 		// The special LabelFeatureContainer is used to add labels to figures that were
@@ -374,7 +378,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		
 		Object id = CustomTaskFeatureContainer.getId(context); 
 		for (FeatureContainer container : containers.values()) {
-			if (id!=null && !(container instanceof CustomTaskFeatureContainer))
+			if (id!=null && !(container instanceof ICustomTaskFeatureContainer))
 				continue;
 			Object o = container.getApplyObject(context);
 			if (o != null && container.canApplyTo(o)) {
@@ -403,7 +407,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 			TargetRuntime rt = editor.getTargetRuntime();
 			for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
 				if (id.equals(ct.getId())) {
-					CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)ct.getFeatureContainer();
+					ICustomTaskFeatureContainer container = (ICustomTaskFeatureContainer)ct.getFeatureContainer();
 					return container.getAddFeature(this);
 				}
 			}
@@ -543,7 +547,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
 		for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
-			ICustomTaskFeature ctf = ct.getFeatureContainer();
+			ICustomTaskFeatureContainer ctf = ct.getFeatureContainer();
 			if (ctf!=null) {
 				ICustomFeature[] cfa = ctf.getCustomFeatures(this);
 				if (cfa!=null) {
@@ -590,11 +594,11 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 	// TODO: move this to the adapter registry
 	public IFeature getCreateFeatureForPictogramElement(PictogramElement pe) {
 		if (pe!=null) {
-			String id = Graphiti.getPeService().getPropertyValue(pe,ICustomTaskFeature.CUSTOM_TASK_ID);
+			String id = Graphiti.getPeService().getPropertyValue(pe,ICustomTaskFeatureContainer.CUSTOM_TASK_ID);
 			if (id!=null) {
 				for (FeatureContainer container : containers.values()) {
-					if (container instanceof CustomTaskFeatureContainer) {
-						CustomTaskFeatureContainer ctf = (CustomTaskFeatureContainer)container;
+					if (container instanceof ICustomTaskFeatureContainer) {
+						ICustomTaskFeatureContainer ctf = (ICustomTaskFeatureContainer)container;
 						if (id.equals(ctf.getId())) {
 							return ctf.getCreateFeature(this);
 						}

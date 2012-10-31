@@ -42,19 +42,19 @@ public class AddTaskFeature<T extends Task> extends AbstractAddActivityFeature<T
 	}
 
 	@Override
-	protected void hook(T activity, ContainerShape container, IAddContext context, int width, int height) {
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
 		IPeService peService = Graphiti.getPeService();
 		IGaService gaService = Graphiti.getGaService();
 
-		Shape textShape = peService.createShape(container, false);
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, activity.getName());
+		Shape textShape = peService.createShape(containerShape, false);
+		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getName());
 		int padding = GraphicsUtil.TASK_IMAGE_SIZE;
-		gaService.setLocationAndSize(text, 0, padding, width, height - padding);
-		StyleUtil.applyStyle(text, activity);
+		gaService.setLocationAndSize(text, 0, padding, context.getWidth(), context.getHeight() - padding);
+		StyleUtil.applyStyle(text, businessObject);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 //		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
-		link(textShape, activity);
+		link(textShape, businessObject);
 	}
 
 	@Override

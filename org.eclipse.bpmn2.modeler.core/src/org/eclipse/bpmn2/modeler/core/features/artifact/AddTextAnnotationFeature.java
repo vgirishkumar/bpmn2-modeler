@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -51,7 +52,7 @@ public class AddTextAnnotationFeature extends AbstractAddBPMNShapeFeature<TextAn
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		TextAnnotation annotation = getBusinessObject(context);
+		TextAnnotation businessObject = getBusinessObject(context);
 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		ContainerShape containerShape = peCreateService.createContainerShape(context.getTargetContainer(), true);
@@ -73,17 +74,22 @@ public class AddTextAnnotationFeature extends AbstractAddBPMNShapeFeature<TextAn
 		gaService.setLocationAndSize(line, 0, 0, commentEdge, height);
 
 		Shape textShape = peCreateService.createShape(containerShape, false);
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, annotation.getText());
-		StyleUtil.applyStyle(text, annotation);
+		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getText());
+		StyleUtil.applyStyle(text, businessObject);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 		gaService.setLocationAndSize(text, 5, 5, width - 5, height - 5);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		createDIShape(containerShape, annotation, !isImport);
-		link(textShape, annotation);
+		createDIShape(containerShape, businessObject, !isImport);
+		link(textShape, businessObject);
 
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
+		
+		// hook for subclasses to inject extra code
+		((AddContext)context).setWidth(width);
+		((AddContext)context).setHeight(height);
+		decorateShape(context, containerShape, businessObject);
 		
 		layoutPictogramElement(containerShape);
 		return containerShape;

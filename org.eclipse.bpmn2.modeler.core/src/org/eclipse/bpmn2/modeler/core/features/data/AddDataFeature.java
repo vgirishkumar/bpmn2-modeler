@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -62,23 +63,22 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 		@SuppressWarnings("unchecked")
-		T t = getBusinessObject(context);
-
+		T businessObject = getBusinessObject(context);
+ 
 		int width = this.getWidth();
 		int height = this.getHeight();
 		int e = 10;
 		int textArea = 15;
 		
-		ContainerShape container = peService.createContainerShape(context.getTargetContainer(), true);
-		Rectangle invisibleRect = gaService.createInvisibleRectangle(container);
+		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
+		Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
 		gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height + textArea);
 
-		Shape rectShape = peService.createShape(container, false);
+		Shape rectShape = peService.createShape(containerShape, false);
 		Polygon rect = gaService.createPolygon(rectShape, new int[] { 0, 0, width - e, 0, width, e, width, height, 0,
 				height });
 		rect.setLineWidth(1);
-		StyleUtil.applyStyle(rect,t);
-		decorate(rect);
+		StyleUtil.applyStyle(rect,businessObject);
 
 		int p = width - e - 1;
 		Polyline edge = gaService.createPolyline(rect, new int[] { p, 0, p, e + 1, width, e + 1 });
@@ -87,36 +87,33 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 		if (isSupportCollectionMarkers()) {
 			int whalf = width / 2;
-			createCollectionShape(container, new int[] { whalf - 2, height - 8, whalf - 2, height });
-			createCollectionShape(container, new int[] { whalf, height - 8, whalf, height });
-			createCollectionShape(container, new int[] { whalf + 2, height - 8, whalf + 2, height });
+			createCollectionShape(containerShape, new int[] { whalf - 2, height - 8, whalf - 2, height });
+			createCollectionShape(containerShape, new int[] { whalf, height - 8, whalf, height });
+			createCollectionShape(containerShape, new int[] { whalf + 2, height - 8, whalf + 2, height });
 
 			String value = "false";
-			EStructuralFeature feature = ((EObject)t).eClass().getEStructuralFeature("isCollection");
-			if (feature!=null && t.eGet(feature)!=null)
-				value = ((Boolean)t.eGet(feature)).toString();
+			EStructuralFeature feature = ((EObject)businessObject).eClass().getEStructuralFeature("isCollection");
+			if (feature!=null && businessObject.eGet(feature)!=null)
+				value = ((Boolean)businessObject.eGet(feature)).toString();
 
-			Graphiti.getPeService().setPropertyValue(container, Properties.COLLECTION_PROPERTY, value);
+			Graphiti.getPeService().setPropertyValue(containerShape, Properties.COLLECTION_PROPERTY, value);
 		}
-		
-//		Shape textShape = peService.createShape(container, false);
-//		peService.setPropertyValue(textShape, UpdateBaseElementNameFeature.TEXT_ELEMENT, Boolean.toString(true));
-//		Text text = gaService.createDefaultText(getDiagram(), textShape, getName(t));
-//		text.setStyle(StyleUtil.getStyleForText(getDiagram()));
-//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-//		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-//		gaService.setLocationAndSize(text, 0, height, width, textArea);
-		
-		peService.createChopboxAnchor(container);
-		AnchorUtil.addFixedPointAnchors(container, invisibleRect);
+
+		peService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		createDIShape(container, t, !isImport);
-		layoutPictogramElement(container);
-		
+		createDIShape(containerShape, businessObject, !isImport);
+
+		// hook for subclasses to inject extra code
+		((AddContext)context).setWidth(width);
+		((AddContext)context).setHeight(height);
+		decorateShape(context, containerShape, businessObject);
+
+		layoutPictogramElement(containerShape);
 		this.prepareAddContext(context, width, height);
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
-		return container;
+		return containerShape;
 	}
 
 	private Shape createCollectionShape(ContainerShape container, int[] xy) {
@@ -139,9 +136,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 	@Override
 	public int getWidth() {
 		return GraphicsUtil.DATA_WIDTH;
-	}
-	
-	protected void decorate(Polygon p) {
 	}
 
 	protected boolean isSupportCollectionMarkers() {

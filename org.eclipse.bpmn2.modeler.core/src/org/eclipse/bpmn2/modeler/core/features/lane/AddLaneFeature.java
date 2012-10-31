@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
@@ -66,18 +67,18 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		Lane lane = getBusinessObject(context);
-
+		Lane businessObject = getBusinessObject(context);
+ 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 
 		ContainerShape containerShape = peCreateService.createContainerShape(context.getTargetContainer(), true);
 		Rectangle rect = gaService.createRectangle(containerShape);
-		StyleUtil.applyStyle(rect, lane);
+		StyleUtil.applyStyle(rect, businessObject);
 		
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		BPMNShape bpmnShape = createDIShape(containerShape, lane, !isImport);
+		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		
 		if (FeatureSupport.isTargetLane(context)) {
 			Lane targetLane = FeatureSupport.getTargetLane(context);
@@ -86,7 +87,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 				if (laneShape!=null)
 					bpmnShape.setIsHorizontal(laneShape.isIsHorizontal());
 			}
-			lane.getFlowNodeRefs().addAll(targetLane.getFlowNodeRefs());
+			businessObject.getFlowNodeRefs().addAll(targetLane.getFlowNodeRefs());
 			targetLane.getFlowNodeRefs().clear();
 		}
 		
@@ -100,7 +101,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 			}
 			
 			if (getNumberOfLanes(context) == 1) { // this is the first lane of the participant, move flow nodes
-				moveFlowNodes(targetProcess, lane);
+				moveFlowNodes(targetProcess, businessObject);
 			}
 		}
 
@@ -113,13 +114,13 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height); ///
 		
 		if (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context)) {
-			for (Shape s : getFlowNodeShapes(context, lane)) {
+			for (Shape s : getFlowNodeShapes(context, businessObject)) {
 				Graphiti.getPeService().sendToFront(s);
 				s.setContainer(containerShape);
 				
 				for (EObject linkedObj : s.getLink().getBusinessObjects()) {
 					if(linkedObj instanceof FlowNode) {
-						lane.getFlowNodeRefs().add((FlowNode) linkedObj);
+						businessObject.getFlowNodeRefs().add((FlowNode) linkedObj);
 					}
 				}
 			}
@@ -127,8 +128,8 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		}
 		
 		Shape textShape = peCreateService.createShape(containerShape, false);
-		Text text = gaService.createText(textShape, lane.getName());
-		StyleUtil.applyStyle(text, lane);
+		Text text = gaService.createText(textShape, businessObject.getName());
+		StyleUtil.applyStyle(text, businessObject);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 		if (horz) {
@@ -138,7 +139,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		else {
 			gaService.setLocationAndSize(text, 0, 0, width, 15);
 		}
-		link(textShape, lane);
+		link(textShape, businessObject);
 
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
@@ -152,7 +153,12 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		if (context.getTargetContainer().getContainer() != null) { // only children may be sent back
 			peService.sendToBack(context.getTargetContainer());
 		}
-		
+
+		// hook for subclasses to inject extra code
+		((AddContext)context).setWidth(width);
+		((AddContext)context).setHeight(height);
+		decorateShape(context, containerShape, businessObject);
+
 		return containerShape;
 	}
 

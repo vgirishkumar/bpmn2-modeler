@@ -52,7 +52,7 @@ public class AddGatewayFeature<T extends Gateway>
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		T addedGateway = getBusinessObject(context);
+		T businessObject = getBusinessObject(context);
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 
@@ -74,14 +74,14 @@ public class AddGatewayFeature<T extends Gateway>
 		gaService.setLocationAndSize(gatewayRect, x, y, width, height);
 
 		Shape gatewayShape = peService.createShape(containerShape, false);
-		Polygon gateway = GraphicsUtil.createGateway(gatewayShape, width, height);
-		StyleUtil.applyStyle(gateway, addedGateway);
-		gaService.setLocationAndSize(gateway, 0, 0, width, height);
+		Polygon gatewayPolygon = GraphicsUtil.createGateway(gatewayShape, width, height);
+		StyleUtil.applyStyle(gatewayPolygon, businessObject);
+		gaService.setLocationAndSize(gatewayPolygon, 0, 0, width, height);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		BPMNShape bpmnShape = createDIShape(containerShape, addedGateway, !isImport);
+		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, gateway);
+		AnchorUtil.addFixedPointAnchors(containerShape, gatewayPolygon);
 		decorateGateway(containerShape, bpmnShape);
 		
 		splitConnection(context, containerShape);

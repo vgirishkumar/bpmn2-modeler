@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 
@@ -50,10 +51,15 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 	}
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		UpdateExpandableActivityFeature updateFeature = new UpdateExpandableActivityFeature(fp);
-		multiUpdate.addUpdateFeature(updateFeature);
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
+		MultiUpdateFeature multiUpdate;
+		if (updateFeature instanceof MultiUpdateFeature)
+			multiUpdate = (MultiUpdateFeature)updateFeature;
+		else
+			multiUpdate = new MultiUpdateFeature(fp);
+		UpdateExpandableActivityFeature ueaf = new UpdateExpandableActivityFeature(fp);
+		multiUpdate.addUpdateFeature(ueaf);
 		return multiUpdate;
 	}
 

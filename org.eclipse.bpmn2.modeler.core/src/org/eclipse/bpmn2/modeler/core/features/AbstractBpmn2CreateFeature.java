@@ -56,22 +56,6 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-	 */
-	@Override
-	public boolean canCreate(ICreateContext context) {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-	 */
-	@Override
-	public Object[] create(ICreateContext context) {
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#isAvailable(org.eclipse.graphiti.features.context.IContext)
 	 */
 	@Override

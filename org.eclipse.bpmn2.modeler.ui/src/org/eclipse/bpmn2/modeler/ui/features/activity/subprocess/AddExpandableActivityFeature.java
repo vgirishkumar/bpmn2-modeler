@@ -43,16 +43,16 @@ public class AddExpandableActivityFeature<T extends Activity>
 	}
 
 	@Override
-	protected void hook(T activity, ContainerShape container, IAddContext context, int width, int height) {
-		super.hook(activity, container, context, width, height);
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
+		super.decorateShape(context, containerShape, businessObject);
 		IPeService peService = Graphiti.getPeService();
 		IGaService gaService = Graphiti.getGaService();
 
 		boolean isTriggeredByEvent = false;
 		boolean isExpanded = true;
 		
-		if (activity instanceof SubProcess) {
-			SubProcess subprocess = (SubProcess) activity;
+		if (businessObject instanceof SubProcess) {
+			SubProcess subprocess = (SubProcess) businessObject;
 			isTriggeredByEvent = subprocess.isTriggeredByEvent();
 			try {
 				BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(subprocess);
@@ -63,23 +63,23 @@ public class AddExpandableActivityFeature<T extends Activity>
 				throw new IllegalStateException("Could not get DI shape for subprocess:"+subprocess);
 			}
 		}
-		peService.setPropertyValue(container, TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
-		peService.setPropertyValue(container, IS_EXPANDED, Boolean.toString(isExpanded));
+		peService.setPropertyValue(containerShape, TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
+		peService.setPropertyValue(containerShape, IS_EXPANDED, Boolean.toString(isExpanded));
 
-		Shape textShape = peService.createShape(container, false);
-		Text text = gaService.createDefaultText(getDiagram(), textShape, activity.getName());
-		gaService.setLocationAndSize(text, 5, 5, width - 10, 15);
-		StyleUtil.applyStyle(text, activity);
+		Shape textShape = peService.createShape(containerShape, false);
+		Text text = gaService.createDefaultText(getDiagram(), textShape, businessObject.getName());
+		gaService.setLocationAndSize(text, 5, 5, context.getWidth() - 10, 15);
+		StyleUtil.applyStyle(text, businessObject);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
 //		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
-		link(textShape, activity);
+		link(textShape, businessObject);
 		
 		if (!isExpanded){
-			GraphicsUtil.showActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.showActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
 		}
 		else {
-			GraphicsUtil.hideActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
 		}
 	}
 

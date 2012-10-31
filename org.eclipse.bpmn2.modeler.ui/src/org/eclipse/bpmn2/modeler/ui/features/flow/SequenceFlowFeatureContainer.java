@@ -46,7 +46,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -79,7 +79,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddFlowFeature<MessageFlow>(fp) {
+		return new AbstractAddFlowFeature<SequenceFlow>(fp) {
 			@Override
 			protected Class<? extends BaseElement> getBoClass() {
 				return SequenceFlow.class;
@@ -108,7 +108,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			}
 
 			@Override
-			protected void hook(IAddContext context, Connection connection, BaseElement element) {
+			protected void decorateConnection(IAddConnectionContext context, Connection connection, SequenceFlow businessObject) {
 				setDefaultSequenceFlow(connection);
 				setConditionalSequenceFlow(connection);
 			}

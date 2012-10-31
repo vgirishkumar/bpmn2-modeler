@@ -62,9 +62,9 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 			@Override
 			public PictogramElement add(IAddContext context) {
-				AddConnectionContext ac = (AddConnectionContext)context;
-				Anchor sourceAnchor = ac.getSourceAnchor();
-				Anchor targetAnchor = ac.getTargetAnchor();
+				AddConnectionContext addConContext = (AddConnectionContext)context;
+				Anchor sourceAnchor = addConContext.getSourceAnchor();
+				Anchor targetAnchor = addConContext.getTargetAnchor();
 				PictogramElement source = sourceAnchor==null ? null : sourceAnchor.getParent();
 				PictogramElement target = targetAnchor==null ? null : targetAnchor.getParent();
 				boolean anchorChanged = false;
@@ -98,12 +98,12 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 				// this is silly! why are there no setters for sourceAnchor and targetAnchor in AddConnectionContext???
 				if (anchorChanged) {
 					AddConnectionContext newContext = new AddConnectionContext(sourceAnchor, targetAnchor);
-					newContext.setSize(ac.getHeight(), ac.getWidth());
-					newContext.setLocation(ac.getX(), ac.getY());
-					newContext.setNewObject(getBusinessObject(ac));
-					newContext.setTargetConnection(ac.getTargetConnection());
-					newContext.setTargetConnectionDecorator(ac.getTargetConnectionDecorator());
-					newContext.setTargetContainer(ac.getTargetContainer());
+					newContext.setSize(addConContext.getHeight(), addConContext.getWidth());
+					newContext.setLocation(addConContext.getX(), addConContext.getY());
+					newContext.setNewObject(getBusinessObject(addConContext));
+					newContext.setTargetConnection(addConContext.getTargetConnection());
+					newContext.setTargetConnectionDecorator(addConContext.getTargetConnectionDecorator());
+					newContext.setTargetContainer(addConContext.getTargetContainer());
 					
 					context = newContext;
 				}

@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
@@ -47,8 +48,10 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -118,9 +121,10 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 		if (iconPath != null && iconPath.trim().length() > 0) {
 			return new AddCustomTaskFeature(fp) {
 				@Override
-				protected void decorateActivityRectangle(RoundedRectangle rect) {
+				protected void decorateShape(IAddContext context, ContainerShape containerShape, BaseElement element) {
+					GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 					IGaService service = Graphiti.getGaService();
-					Image img = service.createImage(rect, iconPath);
+					Image img = service.createImage(ga, iconPath);
 					service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE,
 							GraphicsUtil.TASK_IMAGE_SIZE);
 				}
@@ -129,9 +133,10 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 		return new AddCustomTaskFeature(fp) {
 
 			@Override
-			protected void decorateActivityRectangle(RoundedRectangle rect) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, BaseElement element) {
+				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(rect, ImageProvider.IMG_16_USER_TASK);
+				Image img = service.createImage(ga, ImageProvider.IMG_16_USER_TASK);
 				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, 
 							GraphicsUtil.TASK_IMAGE_SIZE);
 			}

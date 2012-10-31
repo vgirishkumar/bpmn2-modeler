@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<CallChoreography> {
 
@@ -32,8 +33,9 @@ public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<C
 	}
 
 	@Override
-	protected void decorateContainerRect(RoundedRectangle containerRect) {
-		containerRect.setLineWidth(2);
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, CallChoreography businessObject) {
+		RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
+		rect.setLineWidth(2);
 	}
 
 	@Override

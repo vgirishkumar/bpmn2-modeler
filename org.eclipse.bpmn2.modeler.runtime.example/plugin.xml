@@ -9,6 +9,27 @@
 			uri="http://org.eclipse.bpmn2.modeler.runtime.example">
 		</package>
 	</extension>
+	
+	<extension point="org.eclipse.graphiti.ui.diagramTypeProviders">
+		<diagramTypeProvider
+			class="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramTypeProvider"
+			description="This is the editor for the BPMN2 diagram"
+			id="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType" name="BPMN2 Editor">
+			<diagramType
+				id="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType">
+			</diagramType>
+			<imageProvider id="org.eclipse.bpmn2.modeler.ui.ImageProvider">
+			</imageProvider>
+			<imageProvider id="org.eclipse.bpmn2.modeler.runtime.example.ImageProvider">
+			</imageProvider>
+		</diagramTypeProvider>
+	</extension>
+	
+	<extension point="org.eclipse.graphiti.ui.imageProviders">
+		<imageProvider class="org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider"
+			id="org.eclipse.bpmn2.modeler.runtime.example.ImageProvider">
+		</imageProvider>
+	</extension>
 
 	<extension
 		point="org.eclipse.bpmn2.modeler.runtime">
@@ -27,7 +48,7 @@
 		<featureContainer
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
 			type="org.eclipse.bpmn2.SequenceFlow"
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleSequenceFlowFeatureContainer">
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleAssociationFeatureContainer">
 		</featureContainer>
 
 		<featureContainer
@@ -37,21 +58,38 @@
 		</featureContainer>
 
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.runtime.example.sequenceFlow.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.sequenceflow.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleSequenceFlowPropertySection"
-			type="org.eclipse.bpmn2.SequenceFlow"
-			label="Custom Sequence Flow">
+			id="org.eclipse.bpmn2.modeler.runtime.example.association.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.assocation.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleAssociationPropertySection"
+			type="org.eclipse.bpmn2.Association"
+			label="Risk/Mitigation Association">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.runtime.example.risk.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.textAnnotation.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleRiskTaskPropertySection"
+			type="org.eclipse.bpmn2.TextAnnotation"
+			label="Risk Task">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.runtime.example.mitigation.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.textAnnotation.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.example.SampleMitigationTaskPropertySection"
+			type="org.eclipse.bpmn2.TextAnnotation"
+			label="Mitigation Task">
 		</propertyTab>
 
 		<customTask
 			description="This task represents a risk that can occur in the connected Elements."
 			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.riskTask"
+			id="org.eclipse.bpmn2.modeler.runtime.example.risk"
 			name="Risk Task"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			type="Task">
-			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.riskTask"/>
+			type="TextAnnotation">
+			<property name="icon" value="risk.png"/>
+			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.risk"/>
 			<property name="name" value="Risk Task"/>
 			<property name="evaluate" value="true" type="EBoolean"/>
 			<property name="cost" value="0" type="EInt"/>
@@ -60,48 +98,37 @@
 		<customTask
 			description="This task attempts to minimize the impact of risk."
 			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.mitigationTask"
+			id="org.eclipse.bpmn2.modeler.runtime.example.mitigation"
 			name="Mitigation Task"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			type="Task">
-			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigationTask"/>
+			type="TextAnnotation">
+			<property name="icon" value="mitigation.png"/>
+			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigation"/>
 			<property name="name" value="Mitigation Task"/>
 			<property name="evaluate" value="true" type="EBoolean"/>
 			<property name="benefit" value="0" type="EInt"/>
 		</customTask>
-		
-		<!-- not implemented yet
-		<customTask
-			description="This task attempts to minimize the impact of risk."
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.mitigationAnnotation"
-			name="Mitigation Annotation"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			type="TextAnnotation">
-			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigationAnnotation"/>
-			<property name="name" value="Mitigation Annotation"/>
-		</customTask>
-		-->
-		
+				
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.Task"
+			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.Association"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			name="Task Extensions"
-			type="Task">
-			<property name="execute" type="EBoolean"/>
-			<property name="evaluate" value="true" type="EBoolean"/>
+			name="Association Extensions"
+			type="Association">
+			<property name="affectsTaskExecution" value="false" type="EBoolean"/>
 		</modelExtension>
 		
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process">
-			<disable object="all"/>
-			<enable object="Task" feature="id"/>
-			<enable object="Task" feature="anyAttribute"/>
-			<enable object="Task" feature="execute"/>
-			<enable object="Task" feature="evaluate"/>
-			<enable object="Task" feature="cost"/>
-			<enable object="Task" feature="benefit"/>
-			<disable object="Task" feature="sampleCustomTaskId"/>
-			<enable object="SequenceFlow" feature="anyAttribute"/>
+			<disable object="default" feature="Process"/>
+			
+			<enable object="TextAnnotation"/>
+			<enable object="TextAnnotation" feature="text"/>
+			<enable object="TextAnnotation" feature="name"/>
+			<enable object="TextAnnotation" feature="evaluate"/>
+			<enable object="TextAnnotation" feature="cost"/>
+			<enable object="TextAnnotation" feature="benefit"/>
+
+			<enable object="Association" feature="anyAttribute"/>
+			<enable object="Association" feature="affectsTaskExecution"/>
 		</modelEnablement>
 
 	</extension>

@@ -27,8 +27,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class DataInputFeatureContainer extends AbstractDataFeatureContainer {
 
@@ -51,7 +54,8 @@ public class DataInputFeatureContainer extends AbstractDataFeatureContainer {
 			}
 
 			@Override
-			protected void decorate(Polygon p) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, DataInput businessObject) {
+				Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
 				Polygon arrow = GraphicsUtil.createDataArrow(p);
 				arrow.setFilled(false);
 				arrow.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
