@@ -66,11 +66,15 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		return "Custom Task";
 	}
 
+	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
+		EClass eClass = (EClass) ModelUtil.getEClassifierFromString(
+				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
+		return ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
+	}
+	
 	protected FeatureContainer getFeatureContainer(IFeatureProvider fp) {
 		if (featureContainerDelegate==null) {
-			EClass eClass = (EClass) ModelUtil.getEClassifierFromString(
-					customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
-			featureContainerDelegate = ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
+			featureContainerDelegate = createFeatureContainer(fp);
 		}
 		return featureContainerDelegate;
 	}
@@ -242,9 +246,10 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		@Override
 		public BaseElement createBusinessObject(ICreateContext context) {
 			EObject target = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(context.getTargetContainer());
-			BaseElement task = (BaseElement)customTaskDescriptor.createObject(target);
-			putBusinessObject(context, task);
-			return task;
+			BaseElement businessObject = (BaseElement)customTaskDescriptor.createObject(target);
+			putBusinessObject(context, businessObject);
+			customTaskDescriptor.populateObject(businessObject, false);
+			return businessObject;
 		}
 
 		/* (non-Javadoc)
@@ -258,6 +263,16 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		@Override
 		public Object[] create(ICreateContext context) {
 			return createFeatureDelegate.create(context);
+		}
+
+		@Override
+		public String getCreateImageId() {
+			return createFeatureDelegate.getCreateImageId();
+		}
+
+		@Override
+		public String getCreateLargeImageId() {
+			return createFeatureDelegate.getCreateLargeImageId();
 		}
 	}
 

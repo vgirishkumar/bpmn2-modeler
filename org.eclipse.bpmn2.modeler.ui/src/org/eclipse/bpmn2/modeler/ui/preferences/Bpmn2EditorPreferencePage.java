@@ -178,26 +178,26 @@ public class Bpmn2EditorPreferencePage extends PreferencePage implements IWorkbe
 	}
 	
 	private void loadStyleEditors() {
-		if (shapeStyles==null) {
+		if (shapeStyles == null) {
 			shapeStyles = new LinkedHashMap<Class, ShapeStyle>();
 			for (Class c : allElements) {
 				ShapeStyle ss = preferences.getShapeStyle(c);
 				shapeStyles.put(c, ss);
-			if (Activator.getDefault().isDebugging()) {
-				IColorConstant foreground = ss.getShapeForeground();
-				IColorConstant background = ss.getShapeBackground();
-				IColorConstant textColor = ss.getTextColor();
-				Font font = ss.getTextFont();
-				System.out.println("\t\t<style object=\""+c.getSimpleName()+"\""+
-						" foreground=\""+ShapeStyle.colorToString(foreground)+"\""+
-						" background=\""+ShapeStyle.colorToString(background)+"\""+
-						" textColor=\""+ShapeStyle.colorToString(textColor)+"\""+
-						" font=\""+ShapeStyle.fontToString(font)+"\"/>");
+				if (Activator.getDefault().isDebugging()) {
+					IColorConstant foreground = ss.getShapeForeground();
+					IColorConstant background = ss.getShapeBackground();
+					IColorConstant textColor = ss.getTextColor();
+					Font font = ss.getTextFont();
+					System.out.println("\t\t<style object=\"" + c.getSimpleName() + "\"" + " foreground=\""
+							+ ShapeStyle.colorToString(foreground) + "\"" + " background=\""
+							+ ShapeStyle.colorToString(background) + "\"" + " textColor=\""
+							+ ShapeStyle.colorToString(textColor) + "\"" + " font=\"" + ShapeStyle.fontToString(font)
+							+ "\"/>");
 				}
 			}
-	        elementsListViewer.setInput(shapeStyles);
-	        currentSelection = null;
-	        elementsListViewer.setSelection(null);
+			elementsListViewer.setInput(shapeStyles);
+			currentSelection = null;
+			elementsListViewer.setSelection(null);
 			styleEditors.setVisible(false);
 		}
 

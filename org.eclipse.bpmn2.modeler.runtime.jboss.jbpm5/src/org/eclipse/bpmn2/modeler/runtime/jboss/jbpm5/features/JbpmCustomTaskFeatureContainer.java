@@ -20,8 +20,9 @@ import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -39,6 +40,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.TaskFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -46,11 +48,11 @@ import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Image;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -59,24 +61,58 @@ import org.eclipse.graphiti.services.IGaService;
 public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 	
 	@Override
-	public Object getApplyObject(IContext context) {
-		if (context instanceof IAddContext) {
-			Object obj = ((IAddContext)context).getNewObject();
-			if (obj instanceof Task) {
-				if ( getId((Task)obj)!=null )
-					return obj;
-//				Task task = (Task)obj;
-//				EAttribute taskNameAttr = ModelPackage.eINSTANCE.getDocumentRoot_TaskName();
-//				String taskName = (String)task.eGet(taskNameAttr);
-//				String myName = (String)customTaskDescriptor.getProperty("taskName");
-//				if (taskName!=null && myName!=null && taskName.equals(myName))
-//					return obj;
+	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
+		return new TaskFeatureContainer() {
+			@Override
+			public ICreateFeature getCreateFeature(IFeatureProvider fp) {
+				return new CreateTaskFeature(fp) {
+					@Override
+					public Task createBusinessObject(ICreateContext context) {
+						Task businessObject = super.createBusinessObject(context);
+						customTaskDescriptor.populateObject(businessObject, true);
+						return businessObject;
+					}
+
+					@Override
+					public String getCreateImageId() {
+						final String iconPath = (String) customTaskDescriptor.getProperty("icon"); 
+						if (iconPath != null && iconPath.trim().length() > 0) {
+							return iconPath.trim();
+						}
+						return null;
+					}
+
+					@Override
+					public String getCreateLargeImageId() {
+						return getCreateImageId();
+					}
+				};
 			}
-		}
-		else
-			return super.getApplyObject(context);
-		
-		return null;
+			
+			@Override
+			public IAddFeature getAddFeature(IFeatureProvider fp) {
+				return new AddTaskFeature<Task>(fp) {
+					@Override
+					protected void decorateShape(IAddContext context, ContainerShape containerShape, Task businessObject) {
+						super.decorateShape(context, containerShape, businessObject);
+						final String iconPath = (String) customTaskDescriptor.getProperty("icon"); 
+						if (iconPath != null && iconPath.trim().length() > 0) {
+							GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
+							IGaService service = Graphiti.getGaService();
+							Image img = service.createImage(ga, iconPath);
+							service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE,
+									GraphicsUtil.TASK_IMAGE_SIZE);
+						}
+					}
+				};
+			}
+			
+			@Override
+			public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
+				return new ICustomFeature[] {new ConfigureWorkItemFeature(fp)};
+			}
+
+		};
 	}
 	
 	public String getId(EObject object) {
@@ -101,75 +137,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 		return null;
 	}
 
-	@Override
-	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		String iconPath = (String) customTaskDescriptor.getProperty("icon");
-		if (iconPath != null && iconPath.trim().length() > 0) {
-			return new JbpmCreateCustomTaskFeature(fp,
-					customTaskDescriptor.getName(),
-					customTaskDescriptor.getDescription(),
-					iconPath);
-		}
-		return new JbpmCreateCustomTaskFeature(fp,
-				customTaskDescriptor.getName(),
-				customTaskDescriptor.getDescription());
-	}
-
-	@Override
-	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		final String iconPath = (String) customTaskDescriptor.getProperty("icon"); 
-		if (iconPath != null && iconPath.trim().length() > 0) {
-			return new AddCustomTaskFeature(fp) {
-				@Override
-				protected void decorateShape(IAddContext context, ContainerShape containerShape, BaseElement element) {
-					GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-					IGaService service = Graphiti.getGaService();
-					Image img = service.createImage(ga, iconPath);
-					service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE,
-							GraphicsUtil.TASK_IMAGE_SIZE);
-				}
-			};
-		}
-		return new AddCustomTaskFeature(fp) {
-
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, BaseElement element) {
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_USER_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, 
-							GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
-	}
-	
-	@Override
-	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-		return new ICustomFeature[] {new DoubleClickFeature(fp)};
-	}
-
-	public class JbpmCreateCustomTaskFeature extends CreateCustomTaskFeature {
-		
-		private String imagePath = null;
-
-		public JbpmCreateCustomTaskFeature(IFeatureProvider fp, String name,
-				String description) {
-			super(fp, name, description);
-		}
-		
-		public JbpmCreateCustomTaskFeature(IFeatureProvider fp, String name,
-				String description, String imagePath) {
-			this(fp, name, description);
-			this.imagePath = imagePath;
-		}
-
-		@Override
-		public String getCreateImageId() {
-			return this.imagePath;
-		}
-	}
-
-	public class DoubleClickFeature implements ICustomFeature {
+	public class ConfigureWorkItemFeature implements ICustomFeature {
 
 		protected IFeatureProvider fp;
 		boolean hasChanges = false;
@@ -177,7 +145,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 		/**
 		 * @param fp
 		 */
-		public DoubleClickFeature(IFeatureProvider fp) {
+		public ConfigureWorkItemFeature(IFeatureProvider fp) {
 			this.fp = fp;
 		}
 

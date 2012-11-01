@@ -69,7 +69,7 @@ public class IntermediateCatchEventFeatureContainer extends AbstractEventFeature
 				IPeService peService = Graphiti.getPeService();
 				peService.setPropertyValue(containerShape,
 						UpdateIntermediateCatchEventFeature.INTERMEDIATE_CATCH_EVENT_MARKER,
-						AbstractUpdateEventFeature.getEventDefinitionsValue((IntermediateCatchEvent)containerShape));
+						AbstractUpdateEventFeature.getEventDefinitionsValue((IntermediateCatchEvent)businessObject));
 			}
 		};
 	}

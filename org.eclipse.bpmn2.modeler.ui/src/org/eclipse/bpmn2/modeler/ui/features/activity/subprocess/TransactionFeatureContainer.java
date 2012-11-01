@@ -54,6 +54,7 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, Transaction businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
 				RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 				IGaService gaService = Graphiti.getGaService();
 				RoundedRectangle innerRect = gaService.createRoundedRectangle(rect, 5, 5);

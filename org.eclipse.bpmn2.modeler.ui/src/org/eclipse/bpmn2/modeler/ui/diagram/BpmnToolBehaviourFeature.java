@@ -220,24 +220,22 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		
 		try {
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
-				if (true) {//modelEnablements.isEnabled(tc.getId())) {
-					CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
-	
-					String id = tc.getId();
-					container.setId(id);
-					featureProvider.addFeatureContainer(id, container);
-					ICreateFeature cf = container.getCreateFeature(featureProvider);
-					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
-							cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
-					
-					if (compartmentEntry==null) {
-						compartmentEntry = new PaletteCompartmentEntry("Custom Task", null);
-						compartmentEntry.setInitiallyOpen(false);
-						ret.add(compartmentEntry);
-					}
-					
-					compartmentEntry.addToolEntry(objectCreationToolEntry);
+				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
+
+				String id = tc.getId();
+				container.setId(id);
+				featureProvider.addFeatureContainer(id, container);
+				ICreateFeature cf = container.getCreateFeature(featureProvider);
+				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
+						cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				
+				if (compartmentEntry==null) {
+					compartmentEntry = new PaletteCompartmentEntry("Custom Task", null);
+					compartmentEntry.setInitiallyOpen(false);
+					ret.add(compartmentEntry);
 				}
+				
+				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
 		} catch (Exception ex) {
 			Activator.logError(ex);

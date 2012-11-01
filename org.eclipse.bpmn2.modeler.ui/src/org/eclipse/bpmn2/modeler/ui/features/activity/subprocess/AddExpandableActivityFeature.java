@@ -44,7 +44,6 @@ public class AddExpandableActivityFeature<T extends Activity>
 
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
-		super.decorateShape(context, containerShape, businessObject);
 		IPeService peService = Graphiti.getPeService();
 		IGaService gaService = Graphiti.getGaService();
 

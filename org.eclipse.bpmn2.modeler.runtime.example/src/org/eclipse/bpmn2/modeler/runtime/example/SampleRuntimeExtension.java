@@ -50,9 +50,11 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize()
+	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider#registerAvailableImages()
 	 */
 	@Override
 	public void initialize(DiagramEditor editor) {
+		SampleImageProvider.registerAvailableImages();
 	}
 
 	@Override

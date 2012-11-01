@@ -40,10 +40,8 @@ import org.eclipse.swt.widgets.Text;
  * @author Bob Brodt
  *
  */
-public class IntObjectEditor extends ObjectEditor {
+public class IntObjectEditor extends TextObjectEditor {
 
-	Text text;
-	
 	/**
 	 * @param parent
 	 * @param object
@@ -91,37 +89,23 @@ public class IntObjectEditor extends ObjectEditor {
 			public void handleValueChange(ValueChangeEvent event) {
 
 				try {
-					final int i = Integer.parseInt(text.getText());
+					final Long i = Long.parseLong(text.getText());
 					if (!object.eGet(feature).equals(i)) {
 						setFeatureValue(i);
 					}
 				} catch (NumberFormatException e) {
-					text.setText((String) object.eGet(feature));
-					Activator.logError(e);
+					setFeatureValue(0L);
 				}
 			}
 
-			@SuppressWarnings("restriction")
-			private void setFeatureValue(final int i) {
-				RecordingCommand command = new RecordingCommand(getDiagramEditor().getEditingDomain()) {
-					@Override
-					protected void doExecute() {
-						Class eTypeClass = feature.getEType().getInstanceClass();
-						if (BigInteger.class.equals(eTypeClass)) {
-							object.eSet(feature, BigInteger.valueOf((long)i));
-						}
-						else
-							object.eSet(feature, i);
-					}
-				};
-				getDiagramEditor().getEditingDomain().getCommandStack().execute(command);
-//				if (getDiagramEditor().getDiagnostics()!=null) {
-//					// revert the change and display error errorList message.
-//					text.setText((String) object.eGet(feature));
-//					ErrorUtils.showErrorMessage(getDiagramEditor().getDiagnostics().getMessage());
-//				}
-//				else
-//					ErrorUtils.showErrorMessage(null);
+			@SuppressWarnings("rawtypes")
+			private void setFeatureValue(final long i) {
+				Class eTypeClass = feature.getEType().getInstanceClass();
+				if (BigInteger.class.equals(eTypeClass)) {
+					updateObject(BigInteger.valueOf((long)i));
+				}
+				else
+					updateObject(Integer.valueOf((int)i));
 			}
 		});
 
@@ -139,30 +123,5 @@ public class IntObjectEditor extends ObjectEditor {
 		});
 
 		return text;
-	}
-	
-	private void updateText() {
-		Object value = object.eGet(feature);
-		if (value==null)
-			value = "";
-		if (!text.getText().equals(value)) {
-			text.setText(value.toString());
-		}
-	}
-	
-	@Override
-	public void notifyChanged(Notification notification) {
-		super.notifyChanged(notification);
-		if (this.object == notification.getNotifier() &&
-				this.feature == notification.getFeature()) {
-			updateText();
-		}
-	}
-	
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		text.setVisible(visible);
-		GridData data = (GridData)text.getLayoutData();
-		data.exclude = !visible;
 	}
 }

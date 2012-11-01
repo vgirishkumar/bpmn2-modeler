@@ -9,27 +9,6 @@
 			uri="http://org.eclipse.bpmn2.modeler.runtime.example">
 		</package>
 	</extension>
-	
-	<extension point="org.eclipse.graphiti.ui.diagramTypeProviders">
-		<diagramTypeProvider
-			class="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramTypeProvider"
-			description="This is the editor for the BPMN2 diagram"
-			id="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType" name="BPMN2 Editor">
-			<diagramType
-				id="org.eclipse.bpmn2.modeler.ui.diagram.MainBPMNDiagramType">
-			</diagramType>
-			<imageProvider id="org.eclipse.bpmn2.modeler.ui.ImageProvider">
-			</imageProvider>
-			<imageProvider id="org.eclipse.bpmn2.modeler.runtime.example.ImageProvider">
-			</imageProvider>
-		</diagramTypeProvider>
-	</extension>
-	
-	<extension point="org.eclipse.graphiti.ui.imageProviders">
-		<imageProvider class="org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider"
-			id="org.eclipse.bpmn2.modeler.runtime.example.ImageProvider">
-		</imageProvider>
-	</extension>
 
 	<extension
 		point="org.eclipse.bpmn2.modeler.runtime">
@@ -91,6 +70,7 @@
 			<property name="icon" value="risk.png"/>
 			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.risk"/>
 			<property name="name" value="Risk Task"/>
+			<property name="text" value="Risk Task"/>
 			<property name="evaluate" value="true" type="EBoolean"/>
 			<property name="cost" value="0" type="EInt"/>
 		</customTask>
@@ -104,6 +84,7 @@
 			type="TextAnnotation">
 			<property name="icon" value="mitigation.png"/>
 			<property name="sampleCustomTaskId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigation"/>
+			<property name="text" value="Mitigation Task"/>
 			<property name="name" value="Mitigation Task"/>
 			<property name="evaluate" value="true" type="EBoolean"/>
 			<property name="benefit" value="0" type="EInt"/>
@@ -130,7 +111,9 @@
 			<enable object="Association" feature="anyAttribute"/>
 			<enable object="Association" feature="affectsTaskExecution"/>
 		</modelEnablement>
-
+		
+		<style object="TextAnnotation" foreground="7F7F00" background="FFFF80" textColor="7F7F00" font="arial,10,-,-"/>
+		
 	</extension>
 
 </plugin>

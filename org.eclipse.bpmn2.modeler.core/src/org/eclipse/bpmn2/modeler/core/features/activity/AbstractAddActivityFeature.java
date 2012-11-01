@@ -111,15 +111,21 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 		Graphiti.getPeService().setPropertyValue(containerShape, IS_COMPENSATE_PROPERTY, Boolean.toString(false));
 		Graphiti.getPeService().setPropertyValue(containerShape, IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
+
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
 			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
 		}
-		
+
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
+
+		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
+		for (PictogramElement pe : containerShape.getChildren()) {
+			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
+		}
 
 		splitConnection(context, containerShape);
 		updatePictogramElement(containerShape);
