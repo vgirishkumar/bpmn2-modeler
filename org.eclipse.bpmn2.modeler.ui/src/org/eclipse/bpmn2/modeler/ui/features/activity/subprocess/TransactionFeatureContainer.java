@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
@@ -24,8 +25,12 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 
@@ -48,7 +53,9 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 		return new AddExpandableActivityFeature<Transaction>(fp) {
 
 			@Override
-			protected void decorateActivityRectangle(RoundedRectangle rect) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, Transaction businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
+				RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 				IGaService gaService = Graphiti.getGaService();
 				RoundedRectangle innerRect = gaService.createRoundedRectangle(rect, 5, 5);
 				innerRect.setFilled(false);
@@ -65,10 +72,15 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 	}
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		UpdateExpandableActivityFeature updateFeature = new UpdateExpandableActivityFeature(fp);
-		multiUpdate.addUpdateFeature(updateFeature);
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
+		MultiUpdateFeature multiUpdate;
+		if (updateFeature instanceof MultiUpdateFeature)
+			multiUpdate = (MultiUpdateFeature)updateFeature;
+		else
+			multiUpdate = new MultiUpdateFeature(fp);
+		UpdateExpandableActivityFeature ueaf = new UpdateExpandableActivityFeature(fp);
+		multiUpdate.addUpdateFeature(ueaf);
 		return multiUpdate;
 	}
 

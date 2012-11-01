@@ -37,6 +37,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -672,25 +673,33 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				// and only if the attribute's data type is "Object"
 				EClassifier t = feature.getEType();
 				if (t!=null && t.getInstanceClass() == Object.class) {
-					// search for the attribute in the target runtime's Model Extensions by name
+					// search for the attribute in the target runtime's Custom Task and
+					// Model Extension definitions by name
+					List<Property>properties = new ArrayList<Property>();
 					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 					String className = object.eClass().getName();
 					String featureName = feature.getName();
+					for (CustomTaskDescriptor ctd : rt.getCustomTasks()) {
+						if (className.equals(ctd.getType())) {
+							properties.addAll(ctd.getProperties());
+						}
+					}
 					for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-						if (med.getType().equals(className)) {
-							for (Property p : med.getProperties()) {
-								if (p.name.equals(featureName)) {
-									String type = p.type;
-									if (type==null)
-										type = "EString";
-									EClassifier eClassifier = ModelUtil.getEClassifierFromString(
-											rt.getModelDescriptor().getEPackage(),type);
-									if (eClassifier instanceof EDataType) {
-										feature.setEType(eClassifier);
-									}
-									break;
-								}
+						if (className.equals(med.getType())) {
+							properties.addAll(med.getProperties());
+						}
+					}
+					for (Property p : properties) {
+						if (p.name.equals(featureName)) {
+							String type = p.type;
+							if (type==null)
+								type = "EString";
+							EClassifier eClassifier = ModelUtil.getEClassifierFromString(
+									rt.getModelDescriptor().getEPackage(),type);
+							if (eClassifier instanceof EDataType) {
+								feature.setEType(eClassifier);
 							}
+							break;
 						}
 					}
 				}

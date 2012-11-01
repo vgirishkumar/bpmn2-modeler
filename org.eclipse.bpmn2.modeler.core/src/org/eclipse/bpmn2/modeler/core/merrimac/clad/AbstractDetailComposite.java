@@ -391,7 +391,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
-		if (isModelObjectEnabled(object.eClass(), attribute)) {
+		if (isModelObjectEnabled(object.eClass(), attribute) || "anyAttribute".equals(attribute.getName())) {
 
 			if (parent==null)
 				parent = getAttributesParent();

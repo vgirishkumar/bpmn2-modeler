@@ -12,22 +12,22 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
-	protected ICustomTaskFeature featureContainer;
+	protected ICustomTaskFeatureContainer featureContainer;
 	protected boolean permanent;
 	
 	public CustomTaskDescriptor(String id, String name) {
 		super(id,name);
 	}
 	
-	public ICustomTaskFeature getFeatureContainer() {
+	public ICustomTaskFeatureContainer getFeatureContainer() {
 		return featureContainer;
 	}
 
-	public void setFeatureContainer(ICustomTaskFeature featureContainer) {
+	public void setFeatureContainer(ICustomTaskFeatureContainer featureContainer) {
 		this.featureContainer = featureContainer;
 	}
 	

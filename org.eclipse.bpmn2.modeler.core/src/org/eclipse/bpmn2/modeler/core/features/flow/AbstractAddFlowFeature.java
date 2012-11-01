@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -76,8 +77,8 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 	public PictogramElement add(IAddContext context) {
 		IPeService peService = Graphiti.getPeService();
 		IGaService gaService = Graphiti.getGaService();
-
-		T element = getBusinessObject(context);
+ 
+		T businessObject = getBusinessObject(context);
 		IAddConnectionContext addConContext = (IAddConnectionContext) context;
 
 		Connection connection = peService.createFreeFormConnection(getDiagram());
@@ -96,17 +97,17 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 			connection.setEnd(anchors.getSecond());
 		}
 		
-		if (ModelUtil.hasName(element)) {
+		if (ModelUtil.hasName(businessObject)) {
 			ConnectionDecorator labelDecorator = Graphiti.getPeService().createConnectionDecorator(connection, true, 0.5, true);
-			Text text = gaService.createText(labelDecorator, ModelUtil.getName(element));
+			Text text = gaService.createText(labelDecorator, ModelUtil.getName(businessObject));
 			peService.setPropertyValue(labelDecorator, UpdateBaseElementNameFeature.TEXT_ELEMENT, Boolean.toString(true));
-			StyleUtil.applyStyle(text, element);
+			StyleUtil.applyStyle(text, businessObject);
 		}
 
-		createDIEdge(connection, element);
-		
+		createDIEdge(connection, businessObject);
 		createConnectionLine(connection);
-		hook(addConContext, connection, element);
+		
+		decorateConnection(addConContext, connection, businessObject);
 
 		return connection;
 	}
@@ -122,9 +123,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 	}
 
 	protected abstract Class<? extends BaseElement> getBoClass();
-
-	protected void hook(IAddContext context, Connection connection, BaseElement element) {
-	}
 
 	protected Polyline createConnectionLine(Connection connection) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);

@@ -54,10 +54,10 @@ public class AddParticipantFeature extends AbstractAddBPMNShapeFeature<Participa
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		Participant participant = getBusinessObject(context);
+		Participant businessObject = getBusinessObject(context);
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
-
+ 
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
@@ -66,11 +66,11 @@ public class AddParticipantFeature extends AbstractAddBPMNShapeFeature<Participa
 		int height = this.getHeight(context);
 
 		Rectangle rect = gaService.createRectangle(containerShape);
-		StyleUtil.applyStyle(rect, participant);
+		StyleUtil.applyStyle(rect, businessObject);
 		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		BPMNShape bpmnShape = createDIShape(containerShape, participant, !isImport);
+		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		boolean horz = bpmnShape.isIsHorizontal();
 		FeatureSupport.setHorizontal(containerShape, horz);
 
@@ -80,19 +80,22 @@ public class AddParticipantFeature extends AbstractAddBPMNShapeFeature<Participa
 			line = gaService.createPolyline(lineShape, new int[] { 30, 0, 30, height });
 		else
 			line = gaService.createPolyline(lineShape, new int[] { 0, 30, width, 30 });
-		StyleUtil.applyStyle(line, participant);
+		StyleUtil.applyStyle(line, businessObject);
 
 		Shape textShape = peCreateService.createShape(containerShape, false);
-		Text text = gaService.createText(textShape, participant.getName());
-		StyleUtil.applyStyle(text, participant);
+		Text text = gaService.createText(textShape, businessObject.getName());
+		StyleUtil.applyStyle(text, businessObject);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		link(textShape, participant);
+		link(textShape, businessObject);
 
-		peService.setPropertyValue(containerShape, MULTIPLICITY, Boolean.toString(participant.getParticipantMultiplicity()!=null));
+		peService.setPropertyValue(containerShape, MULTIPLICITY, Boolean.toString(businessObject.getParticipantMultiplicity()!=null));
 		
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
+		
+		decorateShape(context, containerShape, businessObject);
+
 		updatePictogramElement(containerShape);
 		layoutPictogramElement(containerShape);
 		return containerShape;

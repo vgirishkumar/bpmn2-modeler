@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
@@ -219,22 +220,22 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		
 		try {
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
-				if (true) {//modelEnablements.isEnabled(tc.getId())) {
-					CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
-	
-					container.setId(featureProvider, tc.getId());
-					ICreateFeature cf = container.getCreateFeature(featureProvider);
-					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
-							cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
-					
-					if (compartmentEntry==null) {
-						compartmentEntry = new PaletteCompartmentEntry("Custom Task", null);
-						compartmentEntry.setInitiallyOpen(false);
-						ret.add(compartmentEntry);
-					}
-					
-					compartmentEntry.addToolEntry(objectCreationToolEntry);
+				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
+
+				String id = tc.getId();
+				container.setId(id);
+				featureProvider.addFeatureContainer(id, container);
+				ICreateFeature cf = container.getCreateFeature(featureProvider);
+				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
+						cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				
+				if (compartmentEntry==null) {
+					compartmentEntry = new PaletteCompartmentEntry("Custom Task", null);
+					compartmentEntry.setInitiallyOpen(false);
+					ret.add(compartmentEntry);
 				}
+				
+				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
 		} catch (Exception ex) {
 			Activator.logError(ex);

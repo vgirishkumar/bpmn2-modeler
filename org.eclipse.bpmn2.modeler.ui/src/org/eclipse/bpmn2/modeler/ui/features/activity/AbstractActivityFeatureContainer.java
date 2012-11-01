@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
@@ -25,14 +22,13 @@ import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMul
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.CollapseFlowNodeFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.ExpandFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.ui.features.event.AppendEventFeature;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.AppendGatewayFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
@@ -41,7 +37,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 public abstract class AbstractActivityFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		UpdateActivityCompensateMarkerFeature compensateMarkerUpdateFeature = new UpdateActivityCompensateMarkerFeature(
 				fp);
 		UpdateActivityLoopAndMultiInstanceMarkerFeature loopAndMultiInstanceUpdateFeature = new UpdateActivityLoopAndMultiInstanceMarkerFeature(

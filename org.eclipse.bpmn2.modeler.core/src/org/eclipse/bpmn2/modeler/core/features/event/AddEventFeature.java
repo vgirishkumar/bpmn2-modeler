@@ -61,8 +61,8 @@ public class AddEventFeature<T extends Event>
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		T e = getBusinessObject(context);
-
+		T businessObject = getBusinessObject(context);
+ 
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 
@@ -87,14 +87,14 @@ public class AddEventFeature<T extends Event>
 		peService.setPropertyValue(ellipseShape, EVENT_ELEMENT, EVENT_CIRCLE);
 		peService.setPropertyValue(containerShape, GraphicsUtil.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
-		StyleUtil.applyStyle(ellipse, e);
-		decorateEllipse(ellipse);
+		StyleUtil.applyStyle(ellipse, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		createDIShape(containerShape, e, !isImport);
-		hook(containerShape);
+		createDIShape(containerShape, businessObject, !isImport);
+		
+		decorateShape(context, containerShape, businessObject);
 		
 		splitConnection(context, containerShape);
 		
@@ -105,12 +105,6 @@ public class AddEventFeature<T extends Event>
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		return containerShape;
-	}
-
-	protected void decorateEllipse(Ellipse ellipse) {
-	}
-
-	protected void hook(ContainerShape container) {
 	}
 
 	@Override

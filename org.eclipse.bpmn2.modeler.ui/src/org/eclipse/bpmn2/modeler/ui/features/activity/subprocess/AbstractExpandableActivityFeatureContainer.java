@@ -25,6 +25,7 @@ import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 
@@ -41,8 +42,13 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 	}
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
+		MultiUpdateFeature multiUpdate;
+		if (updateFeature instanceof MultiUpdateFeature)
+			multiUpdate = (MultiUpdateFeature)updateFeature;
+		else
+			multiUpdate = new MultiUpdateFeature(fp);
 		AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
 			@Override
 			public boolean canUpdate(IUpdateContext context) {

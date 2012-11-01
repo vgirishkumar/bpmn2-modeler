@@ -27,6 +27,8 @@ import org.eclipse.ui.IEditorInput;
 
 public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	
+	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.runtime.example";
+	
 	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.runtime.example";
 	private static final String[] typeLanguages = new String[] {
 		"http://www.w3.org/2001/XMLSchema", "XML Schema",
@@ -48,9 +50,11 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize()
+	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider#registerAvailableImages()
 	 */
 	@Override
 	public void initialize(DiagramEditor editor) {
+		SampleImageProvider.registerAvailableImages();
 	}
 
 	@Override

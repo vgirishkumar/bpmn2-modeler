@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureCon
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
@@ -32,18 +33,22 @@ import org.eclipse.graphiti.services.Graphiti;
 public abstract class AbstractTaskFeatureContainer extends AbstractActivityFeatureContainer {
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
-
-			@Override
-			public boolean canUpdate(IUpdateContext context) {
-				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-			}
-		};
-		multiUpdate.addUpdateFeature(nameUpdateFeature);
-		return multiUpdate;
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		IUpdateFeature updateFeature =  super.getUpdateFeature(fp);
+		if (updateFeature instanceof MultiUpdateFeature) {
+			MultiUpdateFeature multiUpdate = (MultiUpdateFeature)updateFeature;
+			AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
+	
+				@Override
+				public boolean canUpdate(IUpdateContext context) {
+					Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+					return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
+				}
+			};
+			multiUpdate.addUpdateFeature(nameUpdateFeature);
+			updateFeature = multiUpdate;
+		}
+		return updateFeature;
 	}
 
 	@Override

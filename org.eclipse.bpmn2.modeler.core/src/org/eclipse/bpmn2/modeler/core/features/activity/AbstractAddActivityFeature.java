@@ -18,16 +18,15 @@ import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoo
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
@@ -72,7 +71,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		T activity = getBusinessObject(context);
+		T businessObject = getBusinessObject(context);
 
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
@@ -98,47 +97,41 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 		Shape rectShape = peService.createShape(containerShape, false);
 		RoundedRectangle rect = gaService.createRoundedRectangle(rectShape, 5, 5);
-		StyleUtil.applyStyle(rect, activity);
+		StyleUtil.applyStyle(rect, businessObject);
 		gaService.setLocationAndSize(rect, 0, 0, width, height);
-		link(rectShape, activity);
-		decorateActivityRectangle(rect);
+		link(rectShape, businessObject);
+		
 		peService.setPropertyValue(rectShape, IS_ACTIVITY, Boolean.toString(true));
-
-//		ContainerShape markerContainer = peService.createContainerShape(containerShape, false);
-//		Rectangle markerInvisibleRect = gaService.createInvisibleRectangle(markerContainer);
-//		int h = 10;
-//		y = height - h - 3 - getMarkerContainerOffset();
-//		gaService.setLocationAndSize(markerInvisibleRect, 0, y, invisibleRect.getWidth(), h);
-//		peService.setPropertyValue(markerContainer, GraphicsUtil.ACTIVITY_MARKER_CONTAINER, Boolean.toString(true));
-
-		hook(activity, containerShape, context, width, height); // hook for subclasses to inject extra code
-
+		
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		createDIShape(containerShape, activity, !isImport);
+		createDIShape(containerShape, businessObject, !isImport);
 
 		Graphiti.getPeService().setPropertyValue(containerShape, IS_COMPENSATE_PROPERTY, Boolean.toString(false));
-		Graphiti.getPeService().setPropertyValue(containerShape, IS_LOOP_OR_MULTI_INSTANCE,
-		        LoopCharacteristicType.NULL.getName());
+		Graphiti.getPeService().setPropertyValue(containerShape, IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
+
+		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
+		for (PictogramElement pe : containerShape.getChildren()) {
+			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
+		}
+
+		// hook for subclasses to inject extra code
+		((AddContext)context).setWidth(width);
+		((AddContext)context).setHeight(height);
+		decorateShape(context, containerShape, businessObject);
+
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
 			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
 		}
 
 		splitConnection(context, containerShape);
-		
 		updatePictogramElement(containerShape);
 		layoutPictogramElement(containerShape);
 		
 		return containerShape;
-	}
-
-	protected void decorateActivityRectangle(RoundedRectangle rect) {
-	}
-
-	protected void hook(T activity, ContainerShape container, IAddContext context, int width, int height) {
 	}
 
 	protected int getMarkerContainerOffset() {

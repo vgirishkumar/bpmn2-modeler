@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -42,27 +43,35 @@ public class AddConversationFeature extends AbstractAddBPMNShapeFeature<Conversa
 	public PictogramElement add(IAddContext context) {
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
-		Conversation c = getBusinessObject(context);
+		Conversation businessObject = getBusinessObject(context);
 
-		int w = this.getWidth(context);
-		int h = this.getHeight(context);
+		int width = this.getWidth(context);
+		int height = this.getHeight(context);
 
 		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 		Rectangle rect = gaService.createInvisibleRectangle(containerShape);
-		gaService.setLocationAndSize(rect, context.getX(), context.getY(), w, h);
+		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 
-		int w_5th = w / 5;
-		int[] xy = { w_5th, 0, w_5th * 4, 0, w, h / 2, w_5th * 4, h, w_5th, h, 0, h / 2 };
+		int w_5th = width / 5;
+		int[] xy = { w_5th, 0, w_5th * 4, 0, width, height / 2, w_5th * 4, height, w_5th, height, 0, height / 2 };
 		Polygon hexagon = gaService.createPolygon(rect, xy);
 
-		StyleUtil.applyStyle(hexagon, c);
+		StyleUtil.applyStyle(hexagon, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
-		link(containerShape, c);
+		link(containerShape, businessObject);
+
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		createDIShape(containerShape, c, !isImport);
+
+		createDIShape(containerShape, businessObject, !isImport);
+		
+		// hook for subclasses to inject extra code
+		((AddContext)context).setWidth(width);
+		((AddContext)context).setHeight(height);
+		decorateShape(context, containerShape, businessObject);
+
 		return containerShape;
 	}
 

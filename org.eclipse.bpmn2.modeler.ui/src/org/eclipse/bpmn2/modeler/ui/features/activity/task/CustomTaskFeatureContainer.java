@@ -10,20 +10,34 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.impl.TaskImpl;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
+import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IMoveShapeFeature;
+import org.eclipse.graphiti.features.IRemoveFeature;
+import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IAreaContext;
 import org.eclipse.graphiti.features.context.IContext;
@@ -36,10 +50,15 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
-public class CustomTaskFeatureContainer extends TaskFeatureContainer implements ICustomTaskFeature {
+public class CustomTaskFeatureContainer extends TaskFeatureContainer implements ICustomTaskFeatureContainer {
 	
 	protected String id;
 	protected CustomTaskDescriptor customTaskDescriptor;
+	protected FeatureContainer featureContainerDelegate = null;
+	protected BPMNFeatureProvider fp;
+	
+	public CustomTaskFeatureContainer() {
+	}
 	
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
@@ -47,6 +66,19 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		return "Custom Task";
 	}
 
+	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
+		EClass eClass = (EClass) ModelUtil.getEClassifierFromString(
+				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
+		return ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
+	}
+	
+	protected FeatureContainer getFeatureContainer(IFeatureProvider fp) {
+		if (featureContainerDelegate==null) {
+			featureContainerDelegate = createFeatureContainer(fp);
+		}
+		return featureContainerDelegate;
+	}
+	
 	/* (non-Javadoc)
 	 * Determine if the context applies to this modelObject and return the Task object. Return null otherwise.
 	 * @param context - the Graphiti context.
@@ -71,7 +103,7 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeature#setId(java.lang.String)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer#setId(java.lang.String)
 	 */
 	@Override
 	public void setId(String id) {
@@ -137,41 +169,6 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		return null;
 	}
 	
-	/**
-	 * Set this modelObject's ID string. The ID is defined in the plugin's
-	 * extension point contribution to org.eclipse.bpmn2.modeler.rutime.
-	 * This will register the Custom Task with the BPMN Feature Provider.
-	 * 
-	 * @param fp - Feature Provider (must be a BPMNFeatureProvider)
-	 * @param id - the modelObject ID string.
-	 * @throws Exception
-	 *    Custom Task ID can not be null
-	 *    The Feature Provider is invalid (not a BPMNFeatureProvider)
-	 *    Attempt to add a Custom Feature with a duplicate ID {id}
-	 */
-	public void setId(IFeatureProvider fp, String id) throws Exception {
-		
-		// "id" is a required parameter in the extension point.
-		if (id==null || id.isEmpty()) {
-			throw new Exception("Custom Task ID can not be null");
-		}
-		this.id = id;
-		
-		if (fp instanceof BPMNFeatureProvider) {
-			// register this custom modelObject ID with the BPMNFeatureProvider;
-			// this will allow the feature provider to find the correct feature control class
-			// for this custom modelObject, instead of the generic "Task" feature control
-			BPMNFeatureProvider bfp = (BPMNFeatureProvider)fp;
-			try {
-				bfp.addFeatureContainer(id,this);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		else
-			throw new Exception("The Feature Provider is invalid (not a BPMNFeatureProvider)");
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.features.activity.task.ICustomTaskFeatureContainer#getId()
 	 */
@@ -209,14 +206,20 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 	 * PictogramElement. This is necessary because the ID must be associated with the
 	 * PE in to allow our BPMNFeatureProvider to correctly identify the Custom Task.
 	 */
-	public class CreateCustomTaskFeature extends AbstractCreateTaskFeature<Task> {
+	public class CreateCustomTaskFeature extends AbstractBpmn2CreateFeature<BaseElement> {
 
+		protected AbstractBpmn2CreateFeature<BaseElement> createFeatureDelegate;
+		
 		public CreateCustomTaskFeature(IFeatureProvider fp, String name, String description) {
 			super(fp, name, description);
+			createFeatureDelegate = (AbstractBpmn2CreateFeature)getFeatureContainer(fp).getCreateFeature(fp);
+			assert createFeatureDelegate != null;
 		}
 
 		public CreateCustomTaskFeature(IFeatureProvider fp) {
 			super(fp, customTaskDescriptor.getName(), customTaskDescriptor.getDescription());
+			createFeatureDelegate = (AbstractBpmn2CreateFeature)getFeatureContainer(fp).getCreateFeature(fp);
+			assert createFeatureDelegate != null;
 		}
 
 		@Override
@@ -237,21 +240,16 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		public boolean canCreate(ICreateContext context) {
 			// copy our ID into the CreateContext - this is where it all starts!
 			setId(context, id);
-			return super.canCreate(context);
+			return createFeatureDelegate.canCreate(context);
 		}
 
 		@Override
-		public Task createBusinessObject(ICreateContext context) {
+		public BaseElement createBusinessObject(ICreateContext context) {
 			EObject target = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(context.getTargetContainer());
-			Task task = (Task)customTaskDescriptor.createObject(target);
-			putBusinessObject(context, task);
-			return task;
-		}
-		
-		@Override
-		protected String getStencilImageId() {
-			// TODO Auto-generated method stub
-			return null;
+			BaseElement businessObject = (BaseElement)customTaskDescriptor.createObject(target);
+			putBusinessObject(context, businessObject);
+			customTaskDescriptor.populateObject(businessObject, false);
+			return businessObject;
 		}
 
 		/* (non-Javadoc)
@@ -259,26 +257,106 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		 */
 		@Override
 		public EClass getBusinessObjectClass() {
-			return Bpmn2Package.eINSTANCE.getTask();
+			return createFeatureDelegate.getBusinessObjectClass();
 		}
-		
+
+		@Override
+		public Object[] create(ICreateContext context) {
+			return createFeatureDelegate.create(context);
+		}
+
+		@Override
+		public String getCreateImageId() {
+			return createFeatureDelegate.getCreateImageId();
+		}
+
+		@Override
+		public String getCreateLargeImageId() {
+			return createFeatureDelegate.getCreateLargeImageId();
+		}
 	}
 
-	public class AddCustomTaskFeature extends AddTaskFeature<Task> {
+	public class AddCustomTaskFeature extends AbstractBpmn2AddFeature<BaseElement> {
 
+		protected AbstractBpmn2AddFeature<BaseElement> addFeatureDelegate;
+		
 		/**
 		 * @param fp
 		 */
 		public AddCustomTaskFeature(IFeatureProvider fp) {
 			super(fp);
+			addFeatureDelegate = (AbstractBpmn2AddFeature)getFeatureContainer(fp).getAddFeature(fp);
+			assert addFeatureDelegate != null;
 		}
 
 		@Override
 		public PictogramElement add(IAddContext context) {
-			PictogramElement pe = super.add(context);
+			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			Graphiti.getPeService().setPropertyValue(pe,CUSTOM_TASK_ID,getId());
 			return pe;
 		}
+
+		@Override
+		public BaseElement getBusinessObject(IAddContext context) {
+			// TODO Auto-generated method stub
+			return addFeatureDelegate.getBusinessObject(context);
+		}
+
+		@Override
+		public void putBusinessObject(IAddContext context, BaseElement businessObject) {
+			addFeatureDelegate.putBusinessObject(context, businessObject);
+		}
+
+		@Override
+		public void postExecute(IExecutionInfo executionInfo) {
+			addFeatureDelegate.postExecute(executionInfo);
+		}
+
+		@Override
+		public boolean canAdd(IAddContext context) {
+			return addFeatureDelegate.canAdd(context);
+		}
 	}
+	
+	@Override
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getUpdateFeature(fp);
+	}
+
+	@Override
+	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getDirectEditingFeature(fp);
+	}
+	
+	@Override
+	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getLayoutFeature(fp);
+	}
+
+	@Override
+	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getRemoveFeature(fp);
+	}
+
+	@Override
+	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getMoveFeature(fp);
+	}
+
+	@Override
+	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getResizeFeature(fp);
+	}
+
+	@Override
+	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getDeleteFeature(fp);
+	}
+	
+	@Override
+	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
+		return getFeatureContainer(fp).getCustomFeatures(fp);
+	}
+
 }

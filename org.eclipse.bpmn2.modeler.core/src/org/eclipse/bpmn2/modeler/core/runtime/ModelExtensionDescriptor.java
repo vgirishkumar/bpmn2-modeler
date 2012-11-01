@@ -304,6 +304,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 
 	public void populateObject(EObject object, boolean all) {
+		if (modelObject==null)
+			modelObject = object;
 		populateObject(object, getProperties(), all);
 	}
 	

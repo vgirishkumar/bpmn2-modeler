@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
@@ -31,8 +32,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 
@@ -55,7 +59,8 @@ public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 			}
 
 			@Override
-			protected void decorate(Polygon p) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, DataOutput businessObject) {
+				Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
 				Polygon arrow = GraphicsUtil.createDataArrow(p);
 				arrow.setFilled(true);
 				arrow.setBackground(manageColor(StyleUtil.CLASS_FOREGROUND));

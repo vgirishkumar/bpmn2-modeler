@@ -45,7 +45,7 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		IPeService peService = Graphiti.getPeService();
 		PictogramElement element = context.getPictogramElement();
 		String property = peService.getPropertyValue(element, getPropertyKey());
-		if(property == null) {
+		if(property == null || "null".equals(property)) {
 			return Reason.createFalseReason();
 		}
 		T activity = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());

@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.notify.Notification;
@@ -55,16 +56,16 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     	{
 	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 	    	if (rt!=null) {
-    			
-	    		if (!eClass.getName().equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
+    			String className = eClass.getName();
+	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
 	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
-	    			rt.getModelDescriptor().getEPackage().getEClassifier(eClass.getName()) != null ) {
-    				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(eClass.getName());
+	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
+    				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
 	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
     			}
 	    		
 		    	for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-		    		if (med.getType().equals(eClass.getName())) {
+		    		if (className.equals(med.getType())) {
 		    			med.populateObject(object, eResource(), enableModelExtensions);
 		    			break;
 		    		}

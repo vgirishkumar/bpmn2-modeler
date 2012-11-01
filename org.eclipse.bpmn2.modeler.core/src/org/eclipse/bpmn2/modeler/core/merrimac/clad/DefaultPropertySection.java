@@ -42,6 +42,11 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		return composite;
 	}
 
+	protected void setProperties(DefaultDetailComposite composite, String[] properties) {
+		setProperties(properties);
+		composite.setPropertiesProvider(propertiesProvider);
+	}
+	
 	public void setProperties(String[] properties) {
 		propertiesProvider = new AbstractPropertiesProvider(null) {
 			String[] properties = null;

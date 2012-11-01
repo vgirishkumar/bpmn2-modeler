@@ -40,12 +40,14 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
@@ -77,14 +79,11 @@ public class CallActivityFeatureContainer extends AbstractExpandableActivityFeat
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddExpandableActivityFeature<CallActivity>(fp) {
 			@Override
-			protected void hook(CallActivity activity, ContainerShape container, IAddContext context, int width, int height) {
-				super.hook(activity, container, context, width, height);
-				Graphiti.getPeService().setPropertyValue(container, CALL_ACTIVITY_REF_PROPERTY,
-						getCallableElementStringValue(activity.getCalledElementRef()));
-			}
-
-			@Override
-			protected void decorateActivityRectangle(RoundedRectangle rect) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, CallActivity businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
+				Graphiti.getPeService().setPropertyValue(containerShape, CALL_ACTIVITY_REF_PROPERTY,
+						getCallableElementStringValue(businessObject.getCalledElementRef()));
+				RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 				rect.setLineWidth(4);
 			}
 
@@ -125,8 +124,13 @@ public class CallActivityFeatureContainer extends AbstractExpandableActivityFeat
 	}
 
 	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
+		MultiUpdateFeature multiUpdate;
+		if (updateFeature instanceof MultiUpdateFeature)
+			multiUpdate = (MultiUpdateFeature)updateFeature;
+		else
+			multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addUpdateFeature(new UpdateCallActivityFeature(fp));
 		return multiUpdate;
 	}

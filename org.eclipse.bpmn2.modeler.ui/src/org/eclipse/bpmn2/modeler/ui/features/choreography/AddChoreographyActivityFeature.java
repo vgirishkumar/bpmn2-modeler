@@ -65,33 +65,32 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		T choreography = getBusinessObject(context);
+		T businessObject = getBusinessObject(context);
 
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 
-		ContainerShape choreographyContainer = peService.createContainerShape(context.getTargetContainer(), true);
-		RoundedRectangle containerRect = gaService.createRoundedRectangle(choreographyContainer, R, R);
+		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
+		RoundedRectangle containerRect = gaService.createRoundedRectangle(containerShape, R, R);
 		gaService.setLocationAndSize(containerRect, context.getX(), context.getY(), width, height);
-		StyleUtil.applyStyle(containerRect, choreography);
-		decorateContainerRect(containerRect);
+		StyleUtil.applyStyle(containerRect, businessObject);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		if (isImport) {
-			addedFromImport(choreography, choreographyContainer, context);
+			addedFromImport(businessObject, containerShape, context);
 		}
 
-		Shape nameShape = peService.createShape(choreographyContainer, false);
+		Shape nameShape = peService.createShape(containerShape, false);
 
 		Text text = gaService.createDefaultText(getDiagram(), nameShape);
-		text.setValue(choreography.getName());
-		StyleUtil.applyStyle(text, choreography);
+		text.setValue(businessObject.getName());
+		StyleUtil.applyStyle(text, businessObject);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 //		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
-		setTextLocation(choreographyContainer, text, width, height);
+		setTextLocation(containerShape, text, width, height);
 		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
-		GraphicsUtil.hideActivityMarker(choreographyContainer, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+		GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
 
 		// use it when property editor supports enums
 		// ContainerShape markerShape = peService.createContainerShape(choreographyContainer, false);
@@ -113,19 +112,19 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		// peService.setPropertyValue(markerShape, ChoreographyProperties.CHOREOGRAPHY_MARKER_SHAPE,
 		// Boolean.toString(true));
 
-		if (choreography instanceof ChoreographyTask) {
-			peService.setPropertyValue(choreographyContainer, MESSAGE_REF_IDS,
-					ChoreographyUtil.getMessageRefIds((ChoreographyTask) choreography));
+		if (businessObject instanceof ChoreographyTask) {
+			peService.setPropertyValue(containerShape, MESSAGE_REF_IDS,
+					ChoreographyUtil.getMessageRefIds((ChoreographyTask) businessObject));
 		}
 
-		peService.createChopboxAnchor(choreographyContainer);
-		createDIShape(choreographyContainer, choreography, !isImport);
-		AnchorUtil.addFixedPointAnchors(choreographyContainer, containerRect);
-		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),choreographyContainer);
-		return choreographyContainer;
-	}
-
-	protected void decorateContainerRect(RoundedRectangle containerRect) {
+		peService.createChopboxAnchor(containerShape);
+		createDIShape(containerShape, businessObject, !isImport);
+		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
+		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
+		
+		decorateShape(context, containerShape, businessObject);
+		
+		return containerShape;
 	}
 
 	protected void addedFromImport(T choreography, ContainerShape choreographyContainer,
