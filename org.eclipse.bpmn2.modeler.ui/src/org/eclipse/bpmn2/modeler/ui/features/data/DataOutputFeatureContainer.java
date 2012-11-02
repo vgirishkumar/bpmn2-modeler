@@ -52,26 +52,32 @@ public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddDataFeature<DataOutput>(fp) {
-			@Override
-			protected boolean isSupportCollectionMarkers() {
-				return false;
-			}
+		return new AddDataOutputFeature(fp);
+	}
 
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, DataOutput businessObject) {
-				Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
-				Polygon arrow = GraphicsUtil.createDataArrow(p);
-				arrow.setFilled(true);
-				arrow.setBackground(manageColor(StyleUtil.CLASS_FOREGROUND));
-				arrow.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-			}
+	public class AddDataOutputFeature extends AddDataFeature<DataOutput> {
+		public AddDataOutputFeature(IFeatureProvider fp) {
+			super(fp);
+		}
 
-			@Override
-			public String getName(DataOutput t) {
-				return t.getName();
-			}
-		};
+		@Override
+		protected boolean isSupportCollectionMarkers() {
+			return false;
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, DataOutput businessObject) {
+			Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
+			Polygon arrow = GraphicsUtil.createDataArrow(p);
+			arrow.setFilled(true);
+			arrow.setBackground(manageColor(StyleUtil.CLASS_FOREGROUND));
+			arrow.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+		}
+
+		@Override
+		public String getName(DataOutput t) {
+			return t.getName();
+		}
 	}
 
 	public static class CreateDataOutputFeature extends AbstractCreateDataInputOutputFeature<DataOutput> {

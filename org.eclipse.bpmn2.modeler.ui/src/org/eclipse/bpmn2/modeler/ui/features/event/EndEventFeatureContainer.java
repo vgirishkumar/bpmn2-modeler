@@ -55,18 +55,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddEventFeature<EndEvent>(fp) {
-			
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, EndEvent businessObject) {
-				Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
-				e.setLineWidth(3);
-				IPeService peService = Graphiti.getPeService();
-				peService.setPropertyValue(containerShape,
-						UpdateEndEventFeature.END_EVENT_MARKER,
-						AbstractUpdateEventFeature.getEventDefinitionsValue((EndEvent)businessObject));
-			}
-		};
+		return new AddEndEventFeature(fp);
 	}
 
 	@Override
@@ -77,6 +66,22 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 		return updateFeature;
 	}
 	
+	public class AddEndEventFeature extends AddEventFeature<EndEvent> {
+		public AddEndEventFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, EndEvent businessObject) {
+			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
+			e.setLineWidth(3);
+			IPeService peService = Graphiti.getPeService();
+			peService.setPropertyValue(containerShape,
+					UpdateEndEventFeature.END_EVENT_MARKER,
+					AbstractUpdateEventFeature.getEventDefinitionsValue((EndEvent)businessObject));
+		}
+	}
+
 	public static class CreateEndEventFeature extends AbstractCreateEventFeature<EndEvent> {
 
 		public CreateEndEventFeature(IFeatureProvider fp) {

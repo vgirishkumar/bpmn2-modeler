@@ -43,6 +43,7 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -69,54 +70,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddBPMNShapeFeature<Message>(fp) {
-
-			@Override
-			public boolean canAdd(IAddContext context) {
-				return true;
-			}
-
-			@Override
-			public PictogramElement add(IAddContext context) {
-				IGaService gaService = Graphiti.getGaService();
-				IPeService peService = Graphiti.getPeService();
-				Message msg = getBusinessObject(context);
-
-				int width = this.getWidth();
-				int height = this.getHeight();
-
-				ContainerShape container = peService.createContainerShape(context.getTargetContainer(), true);
-				Rectangle invisibleRect = gaService.createInvisibleRectangle(container);
-				gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height);
-
-				Envelope envelope = GraphicsUtil.createEnvelope(invisibleRect, 0, 0, width, height);
-				envelope.rect.setFilled(true);
-				StyleUtil.applyStyle(envelope.rect, msg);
-				envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-
-				peService.createChopboxAnchor(container);
-				AnchorUtil.addFixedPointAnchors(container, invisibleRect);
-
-				boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-				createDIShape(container, msg, !isImport);
-				layoutPictogramElement(container);
-				
-				this.prepareAddContext(context, width, height);
-				this.getFeatureProvider().getAddFeature(context).add(context);
-				
-				return container;
-			}
-
-			@Override
-			public int getHeight() {
-				return ENVELOPE_HEIGHT;
-			}
-
-			@Override
-			public int getWidth() {
-				return ENVELOPE_WIDTH;
-			}
-		};
+		return new AddMessageFeature(fp);
 	}
 
 	@Override
@@ -157,6 +111,65 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 				return false;
 			}
 		};
+	}
+
+	public class AddMessageFeature extends AbstractAddBPMNShapeFeature<Message> {
+		public AddMessageFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public boolean canAdd(IAddContext context) {
+			return true;
+		}
+
+		@Override
+		public PictogramElement add(IAddContext context) {
+			IGaService gaService = Graphiti.getGaService();
+			IPeService peService = Graphiti.getPeService();
+			Message businessObject = getBusinessObject(context);
+
+			int width = this.getWidth();
+			int height = this.getHeight();
+
+			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
+			Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
+			gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height);
+
+			Envelope envelope = GraphicsUtil.createEnvelope(invisibleRect, 0, 0, width, height);
+			envelope.rect.setFilled(true);
+			StyleUtil.applyStyle(envelope.rect, businessObject);
+			envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
+
+			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+			createDIShape(containerShape, businessObject, !isImport);
+
+			// hook for subclasses to inject extra code
+			((AddContext)context).setWidth(width);
+			((AddContext)context).setHeight(height);
+			decorateShape(context, containerShape, businessObject);
+			
+			layoutPictogramElement(containerShape);
+			
+			// change the AddContext and prepare it to add a label below the figure
+			this.prepareAddContext(context, width, height);
+			this.getFeatureProvider().getAddFeature(context).add(context);
+			
+			return containerShape;
+		}
+
+		@Override
+		public int getHeight() {
+			return ENVELOPE_HEIGHT;
+		}
+
+		@Override
+		public int getWidth() {
+			return ENVELOPE_WIDTH;
+		}
 	}
 
 	public static class CreateMessageFeature extends AbstractCreateRootElementFeature<Message> {

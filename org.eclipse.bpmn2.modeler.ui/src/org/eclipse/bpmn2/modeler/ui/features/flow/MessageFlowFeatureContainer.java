@@ -65,41 +65,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddFlowFeature<MessageFlow>(fp) {
-
-			@Override
-			protected Polyline createConnectionLine(Connection connection) {
-				IPeService peService = Graphiti.getPeService();
-				IGaService gaService = Graphiti.getGaService();
-				BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
-
-				Polyline connectionLine = super.createConnectionLine(connection);
-				connectionLine.setLineStyle(LineStyle.DASH);
-				connectionLine.setLineWidth(2);
-
-				ConnectionDecorator endDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
-				ConnectionDecorator startDecorator = peService.createConnectionDecorator(connection, false, 0, true);
-
-				int w = 5;
-				int l = 10;
-				
-				Polyline arrowhead = gaService.createPolygon(endDecorator, new int[] { -l, w, 0, 0, -l, -w, -l, w });
-				StyleUtil.applyStyle(arrowhead, be);
-				arrowhead.setBackground(manageColor(IColorConstant.WHITE));
-
-				Ellipse circle = gaService.createEllipse(startDecorator);
-				gaService.setSize(circle, 10, 10);
-				StyleUtil.applyStyle(circle, be);
-				circle.setBackground(manageColor(IColorConstant.WHITE));
-				
-				return connectionLine;
-			}
-
-			@Override
-			protected Class<? extends BaseElement> getBoClass() {
-				return MessageFlow.class;
-			}
-		};
+		return new AddMessageFlowFeature(fp);
 	}
 
 	@Override
@@ -117,6 +83,45 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		return new ReconnectMessageFlowFeature(fp);
 	}
 	
+	public class AddMessageFlowFeature extends AbstractAddFlowFeature<MessageFlow> {
+		public AddMessageFlowFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected Polyline createConnectionLine(Connection connection) {
+			IPeService peService = Graphiti.getPeService();
+			IGaService gaService = Graphiti.getGaService();
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
+
+			Polyline connectionLine = super.createConnectionLine(connection);
+			connectionLine.setLineStyle(LineStyle.DASH);
+			connectionLine.setLineWidth(2);
+
+			ConnectionDecorator endDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
+			ConnectionDecorator startDecorator = peService.createConnectionDecorator(connection, false, 0, true);
+
+			int w = 5;
+			int l = 10;
+			
+			Polyline arrowhead = gaService.createPolygon(endDecorator, new int[] { -l, w, 0, 0, -l, -w, -l, w });
+			StyleUtil.applyStyle(arrowhead, be);
+			arrowhead.setBackground(manageColor(IColorConstant.WHITE));
+
+			Ellipse circle = gaService.createEllipse(startDecorator);
+			gaService.setSize(circle, 10, 10);
+			StyleUtil.applyStyle(circle, be);
+			circle.setBackground(manageColor(IColorConstant.WHITE));
+			
+			return connectionLine;
+		}
+
+		@Override
+		protected Class<? extends BaseElement> getBoClass() {
+			return MessageFlow.class;
+		}
+	}
+
 	public static class CreateMessageFlowFeature extends AbstractCreateFlowFeature<MessageFlow, InteractionNode, InteractionNode> {
 
 		public CreateMessageFlowFeature(IFeatureProvider fp) {

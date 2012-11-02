@@ -79,10 +79,12 @@ public class AddGatewayFeature<T extends Gateway>
 		gaService.setLocationAndSize(gatewayPolygon, 0, 0, width, height);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
+		createDIShape(containerShape, businessObject, !isImport);
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, gatewayPolygon);
-		decorateGateway(containerShape, bpmnShape);
+		
+		// hook for subclasses to inject extra code
+		decorateShape(context, containerShape, businessObject);
 		
 		splitConnection(context, containerShape);
 		
@@ -93,9 +95,6 @@ public class AddGatewayFeature<T extends Gateway>
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		return containerShape;
-	}
-
-	protected void decorateGateway(ContainerShape container, BPMNShape bpmnShape) {
 	}
 
 	@Override

@@ -59,13 +59,19 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		ContainerShape container = context.getTargetContainer();
-		Event event = (Event) getBusinessObjectForPictogramElement(container);
- 
-		draw(event, getBusinessObject(context), container);
+		ContainerShape containerShape = context.getTargetContainer();
+		T businessObject = getBusinessObject(context);
+
+		// hook for subclasses to inject extra code
+		decorateShape(context, containerShape, businessObject);
 		return null;
 	}
 	
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
+		Event event = (Event) getBusinessObjectForPictogramElement(containerShape);
+		draw(event, businessObject, containerShape);
+	}
+
 	public void draw(Event event, EventDefinition eventDef, ContainerShape container) {
 
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(event);

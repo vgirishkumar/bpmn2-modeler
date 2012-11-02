@@ -36,6 +36,7 @@ import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -58,49 +59,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddBPMNShapeFeature<Group>(fp) {
-
-			@Override
-			public boolean canAdd(IAddContext context) {
-				return true;
-			}
-
-			@Override
-			public PictogramElement add(IAddContext context) {
-				IGaService gaService = Graphiti.getGaService();
-				IPeService peService = Graphiti.getPeService();
-				Group group = getBusinessObject(context);
-
-				int width = this.getWidth(context);
-				int height = this.getHeight(context);
-
-				ContainerShape container = peService.createContainerShape(context.getTargetContainer(), true);
-				RoundedRectangle rect = gaService.createRoundedRectangle(container, 5, 5);
-				rect.setFilled(false);
-				rect.setLineWidth(2);
-				rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-				rect.setLineStyle(LineStyle.DASHDOT);
-				gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
-
-				peService.createChopboxAnchor(container);
-				AnchorUtil.addFixedPointAnchors(container, rect);
-
-				link(container, group);
-				boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-				createDIShape(container, group, !isImport);
-				return container;
-			}
-
-			@Override
-			public int getHeight() {
-				return 400;
-			}
-
-			@Override
-			public int getWidth() {
-				return 400;
-			}
-		};
+		return new AddGroupFeature(fp);
 	}
 
 	@Override
@@ -126,6 +85,59 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
 		return new DefaultResizeBPMNShapeFeature(fp);
+	}
+
+	public class AddGroupFeature extends AbstractAddBPMNShapeFeature<Group> {
+		public AddGroupFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public boolean canAdd(IAddContext context) {
+			return true;
+		}
+
+		@Override
+		public PictogramElement add(IAddContext context) {
+			IGaService gaService = Graphiti.getGaService();
+			IPeService peService = Graphiti.getPeService();
+			Group businessObject = getBusinessObject(context);
+
+			int width = this.getWidth(context);
+			int height = this.getHeight(context);
+
+			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
+			RoundedRectangle rect = gaService.createRoundedRectangle(containerShape, 5, 5);
+			rect.setFilled(false);
+			rect.setLineWidth(2);
+			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+			rect.setLineStyle(LineStyle.DASHDOT);
+			gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
+
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, rect);
+
+			link(containerShape, businessObject);
+			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+			createDIShape(containerShape, businessObject, !isImport);
+			
+			// hook for subclasses to inject extra code
+			((AddContext)context).setWidth(width);
+			((AddContext)context).setHeight(height);
+			decorateShape(context, containerShape, businessObject);
+
+			return containerShape;
+		}
+
+		@Override
+		public int getHeight() {
+			return 400;
+		}
+
+		@Override
+		public int getWidth() {
+			return 400;
+		}
 	}
 
 	public static class CreateGroupFeature extends AbstractCreateArtifactFeature<Group> {

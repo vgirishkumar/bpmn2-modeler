@@ -40,18 +40,23 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddDataFeature<DataObjectReference>(fp) {
-
-			@Override
-			public String getName(DataObjectReference t) {
-				return t.getName();
-			}
-		};
+		return new AddDataObjectReferenceFeature(fp);
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return new UpdateBaseElementNameFeature(fp);
+	}
+
+	public class AddDataObjectReferenceFeature extends AddDataFeature<DataObjectReference> {
+		public AddDataObjectReferenceFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public String getName(DataObjectReference t) {
+			return t.getName();
+		}
 	}
 
 	public static class CreateDataObjectReferenceFeature extends AbstractCreateFlowElementFeature<DataObjectReference> {
