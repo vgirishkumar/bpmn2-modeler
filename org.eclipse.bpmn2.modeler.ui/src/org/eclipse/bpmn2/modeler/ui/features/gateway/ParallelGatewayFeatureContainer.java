@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
@@ -45,12 +46,18 @@ public class ParallelGatewayFeatureContainer extends AbstractGatewayFeatureConta
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddGatewayFeature<ParallelGateway>(fp) {
-			@Override
-			protected void decorateGateway(ContainerShape container, BPMNShape bpmnShape) {
-				GraphicsUtil.createGatewayCross(container);
-			}
-		};
+		return new AddParallelGatewayFeature(fp);
+	}
+
+	public class AddParallelGatewayFeature extends AddGatewayFeature<ParallelGateway> {
+		public AddParallelGatewayFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, ParallelGateway businessObject) {
+			GraphicsUtil.createGatewayCross(containerShape);
+		}
 	}
 
 	public static class CreateParallelGatewayFeature extends AbstractCreateGatewayFeature<ParallelGateway> {

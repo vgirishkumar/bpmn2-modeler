@@ -48,20 +48,7 @@ public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatu
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddFlowFeature<ConversationLink>(fp) {
-
-			@Override
-			protected Polyline createConnectionLine(Connection connection) {
-				Polyline connectionLine = super.createConnectionLine(connection);
-				connectionLine.setLineWidth(3);
-				return connectionLine;
-			}
-
-			@Override
-			protected Class<? extends BaseElement> getBoClass() {
-				return ConversationLink.class;
-			}
-		};
+		return new AddConversationLinkFeature(fp);
 	}
 
 	@Override
@@ -74,6 +61,23 @@ public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatu
 		return new ReconnectConversationLinkFeature(fp);
 	}
 
+	public class AddConversationLinkFeature extends AbstractAddFlowFeature<ConversationLink> {
+		public AddConversationLinkFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected Polyline createConnectionLine(Connection connection) {
+			Polyline connectionLine = super.createConnectionLine(connection);
+			connectionLine.setLineWidth(3);
+			return connectionLine;
+		}
+
+		@Override
+		protected Class<? extends BaseElement> getBoClass() {
+			return ConversationLink.class;
+		}
+	}
 	public static class CreateConversationLinkFeature extends AbstractCreateFlowFeature<ConversationLink, Participant, Conversation> {
 
 		public CreateConversationLinkFeature(IFeatureProvider fp) {

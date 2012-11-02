@@ -58,84 +58,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddFlowFeature<Association>(fp) {
-
-			@Override
-			public PictogramElement add(IAddContext context) {
-				AddConnectionContext addConContext = (AddConnectionContext)context;
-				Anchor sourceAnchor = addConContext.getSourceAnchor();
-				Anchor targetAnchor = addConContext.getTargetAnchor();
-				PictogramElement source = sourceAnchor==null ? null : sourceAnchor.getParent();
-				PictogramElement target = targetAnchor==null ? null : targetAnchor.getParent();
-				boolean anchorChanged = false;
-				
-				if (createContext!=null) {
-					if (source==null) {
-						source = createContext.getSourcePictogramElement();
-						sourceAnchor = createContext.getSourceAnchor();
-					}
-					if (target==null) {
-						target = createContext.getTargetPictogramElement();
-						targetAnchor = createContext.getTargetAnchor();
-					}
-				}
-				
-				if (sourceAnchor==null && source instanceof FreeFormConnection) {
-					Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-							(FreeFormConnection)source,
-							Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)source, 0.5));
-					sourceAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-					anchorChanged = true;
-				}
-				if (targetAnchor==null && target instanceof FreeFormConnection) {
-					Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-							(FreeFormConnection)target,
-							Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)target, 0.5));
-					targetAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-					anchorChanged = true;
-				}
-				
-				// this is silly! why are there no setters for sourceAnchor and targetAnchor in AddConnectionContext???
-				if (anchorChanged) {
-					AddConnectionContext newContext = new AddConnectionContext(sourceAnchor, targetAnchor);
-					newContext.setSize(addConContext.getHeight(), addConContext.getWidth());
-					newContext.setLocation(addConContext.getX(), addConContext.getY());
-					newContext.setNewObject(getBusinessObject(addConContext));
-					newContext.setTargetConnection(addConContext.getTargetConnection());
-					newContext.setTargetConnectionDecorator(addConContext.getTargetConnectionDecorator());
-					newContext.setTargetContainer(addConContext.getTargetContainer());
-					
-					context = newContext;
-				}
-				// we're done with this
-				createContext = null;
-				
-				return super.add(context);
-			}
-			
-			@Override
-			protected Polyline createConnectionLine(Connection connection) {
-				Polyline connectionLine = super.createConnectionLine(connection);
-				connectionLine.setLineWidth(2);
-				connectionLine.setLineStyle(LineStyle.DOT);
-				return connectionLine;
-			}
-			
-			@Override
-			protected Class<? extends BaseElement> getBoClass() {
-				return Association.class;
-			}
-
-			@Override
-			public int getHeight() {
-				return 0;
-			}
-
-			@Override
-			public int getWidth() {
-				return 0;
-			}
-		};
+		return new AddAssociationFeature(fp);
 	}
 
 	@Override
@@ -148,6 +71,89 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		// TODO Auto-generated method stub
 		return new ReconnectAssociationFeature(fp);
 	}
+
+	public class AddAssociationFeature extends AbstractAddFlowFeature<Association> {
+		public AddAssociationFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public PictogramElement add(IAddContext context) {
+			AddConnectionContext addConContext = (AddConnectionContext)context;
+			Anchor sourceAnchor = addConContext.getSourceAnchor();
+			Anchor targetAnchor = addConContext.getTargetAnchor();
+			PictogramElement source = sourceAnchor==null ? null : sourceAnchor.getParent();
+			PictogramElement target = targetAnchor==null ? null : targetAnchor.getParent();
+			boolean anchorChanged = false;
+			
+			if (createContext!=null) {
+				if (source==null) {
+					source = createContext.getSourcePictogramElement();
+					sourceAnchor = createContext.getSourceAnchor();
+				}
+				if (target==null) {
+					target = createContext.getTargetPictogramElement();
+					targetAnchor = createContext.getTargetAnchor();
+				}
+			}
+			
+			if (sourceAnchor==null && source instanceof FreeFormConnection) {
+				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
+						(FreeFormConnection)source,
+						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)source, 0.5));
+				sourceAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
+				anchorChanged = true;
+			}
+			if (targetAnchor==null && target instanceof FreeFormConnection) {
+				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
+						(FreeFormConnection)target,
+						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)target, 0.5));
+				targetAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
+				anchorChanged = true;
+			}
+			
+			// this is silly! why are there no setters for sourceAnchor and targetAnchor in AddConnectionContext???
+			if (anchorChanged) {
+				AddConnectionContext newContext = new AddConnectionContext(sourceAnchor, targetAnchor);
+				newContext.setSize(addConContext.getHeight(), addConContext.getWidth());
+				newContext.setLocation(addConContext.getX(), addConContext.getY());
+				newContext.setNewObject(getBusinessObject(addConContext));
+				newContext.setTargetConnection(addConContext.getTargetConnection());
+				newContext.setTargetConnectionDecorator(addConContext.getTargetConnectionDecorator());
+				newContext.setTargetContainer(addConContext.getTargetContainer());
+				
+				context = newContext;
+			}
+			// we're done with this
+			createContext = null;
+			
+			return super.add(context);
+		}
+
+		@Override
+		protected Polyline createConnectionLine(Connection connection) {
+			Polyline connectionLine = super.createConnectionLine(connection);
+			connectionLine.setLineWidth(2);
+			connectionLine.setLineStyle(LineStyle.DOT);
+			return connectionLine;
+		}
+
+		@Override
+		protected Class<? extends BaseElement> getBoClass() {
+			return Association.class;
+		}
+
+		@Override
+		public int getHeight() {
+			return 0;
+		}
+
+		@Override
+		public int getWidth() {
+			return 0;
+		}
+	}
+
 
 	public class CreateAssociationFeature extends AbstractCreateFlowFeature<Association, BaseElement, BaseElement> {
 

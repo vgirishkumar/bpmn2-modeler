@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
@@ -43,12 +44,18 @@ public class ComplexGatewayFeatureContainer extends AbstractGatewayFeatureContai
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddGatewayFeature<ComplexGateway>(fp) {
-			@Override
-			protected void decorateGateway(ContainerShape container, BPMNShape bpmnShape) {
-				GraphicsUtil.createGatewayAsterisk(container);
-			}
-		};
+		return new AddComplexGatewayFeature(fp);
+	}
+
+	public class AddComplexGatewayFeature extends AddGatewayFeature<ComplexGateway> {
+		public AddComplexGatewayFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, ComplexGateway businessObject) {
+			GraphicsUtil.createGatewayAsterisk(containerShape);
+		}
 	}
 
 	public class CreateComplexGatewayFeature extends AbstractCreateGatewayFeature<ComplexGateway> {

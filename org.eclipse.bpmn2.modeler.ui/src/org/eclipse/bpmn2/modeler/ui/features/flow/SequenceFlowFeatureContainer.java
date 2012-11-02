@@ -79,40 +79,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddFlowFeature<SequenceFlow>(fp) {
-			@Override
-			protected Class<? extends BaseElement> getBoClass() {
-				return SequenceFlow.class;
-			}
-
-			@Override
-			protected Polyline createConnectionLine(Connection connection) {
-				IPeService peService = Graphiti.getPeService();
-				IGaService gaService = Graphiti.getGaService();
-				BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
-
-				Polyline connectionLine = super.createConnectionLine(connection);
-				connectionLine.setLineStyle(LineStyle.SOLID);
-				connectionLine.setLineWidth(2);
-
-				int w = 5;
-				int l = 15;
-				
-				ConnectionDecorator decorator = peService.createConnectionDecorator(connection, false,
-						1.0, true);
-
-				Polyline arrowhead = gaService.createPolygon(decorator, new int[] { -l, w, 0, 0, -l, -w, -l, w });
-				StyleUtil.applyStyle(arrowhead, be);
-				
-				return connectionLine;
-			}
-
-			@Override
-			protected void decorateConnection(IAddConnectionContext context, Connection connection, SequenceFlow businessObject) {
-				setDefaultSequenceFlow(connection);
-				setConditionalSequenceFlow(connection);
-			}
-		};
+		return new AddSequenceFlowFeature(fp);
 	}
 
 	@Override
@@ -137,6 +104,45 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return null;
+	}
+
+	public class AddSequenceFlowFeature extends AbstractAddFlowFeature<SequenceFlow> {
+		public AddSequenceFlowFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected Class<? extends BaseElement> getBoClass() {
+			return SequenceFlow.class;
+		}
+
+		@Override
+		protected Polyline createConnectionLine(Connection connection) {
+			IPeService peService = Graphiti.getPeService();
+			IGaService gaService = Graphiti.getGaService();
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
+
+			Polyline connectionLine = super.createConnectionLine(connection);
+			connectionLine.setLineStyle(LineStyle.SOLID);
+			connectionLine.setLineWidth(2);
+
+			int w = 5;
+			int l = 15;
+			
+			ConnectionDecorator decorator = peService.createConnectionDecorator(connection, false,
+					1.0, true);
+
+			Polyline arrowhead = gaService.createPolygon(decorator, new int[] { -l, w, 0, 0, -l, -w, -l, w });
+			StyleUtil.applyStyle(arrowhead, be);
+			
+			return connectionLine;
+		}
+
+		@Override
+		protected void decorateConnection(IAddConnectionContext context, Connection connection, SequenceFlow businessObject) {
+			setDefaultSequenceFlow(connection);
+			setConditionalSequenceFlow(connection);
+		}
 	}
 
 	public static class CreateSequenceFlowFeature extends AbstractCreateFlowFeature<SequenceFlow, FlowNode, FlowNode> {

@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -40,18 +41,24 @@ public class InclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddGatewayFeature<InclusiveGateway>(fp) {
-			@Override
-			protected void decorateGateway(ContainerShape container, BPMNShape bpmnShape) {
-				Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(container);
-				ellipse.setLineWidth(3);
-			}
-		};
+		return new AddInclusiveGatewayFeature(fp);
 	}
 
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateInclusiveGatewayFeature(fp);
+	}
+
+	public class AddInclusiveGatewayFeature extends AddGatewayFeature<InclusiveGateway> {
+		public AddInclusiveGatewayFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, InclusiveGateway businessObject) {
+			Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(containerShape);
+			ellipse.setLineWidth(3);
+		}
 	}
 
 	public static class CreateInclusiveGatewayFeature extends AbstractCreateGatewayFeature<InclusiveGateway> {

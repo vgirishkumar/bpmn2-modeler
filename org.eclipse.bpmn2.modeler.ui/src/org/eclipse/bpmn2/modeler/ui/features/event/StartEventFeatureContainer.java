@@ -58,18 +58,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddEventFeature<StartEvent>(fp) {
-			
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, StartEvent businessObject) {
-				Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
-				Graphiti.getPeService().setPropertyValue(containerShape, INTERRUPTING, Boolean.toString(true));
-				IPeService peService = Graphiti.getPeService();
-				peService.setPropertyValue(containerShape,
-						UpdateStartEventFeature.START_EVENT_MARKER,
-						AbstractUpdateEventFeature.getEventDefinitionsValue((StartEvent)businessObject));
-			}
-		};
+		return new AddStartEventFeature(fp);
 	}
 
 	@Override
@@ -79,6 +68,22 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 		updateFeature.addUpdateFeature(new UpdateSubProcessEventFeature(fp));
 		updateFeature.addUpdateFeature(new UpdateStartEventFeature(fp));
 		return updateFeature;
+	}
+
+	public class AddStartEventFeature extends AddEventFeature<StartEvent> {
+		public AddStartEventFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, StartEvent businessObject) {
+			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
+			Graphiti.getPeService().setPropertyValue(containerShape, INTERRUPTING, Boolean.toString(true));
+			IPeService peService = Graphiti.getPeService();
+			peService.setPropertyValue(containerShape,
+					UpdateStartEventFeature.START_EVENT_MARKER,
+					AbstractUpdateEventFeature.getEventDefinitionsValue((StartEvent)businessObject));
+		}
 	}
 
 	public class CreateStartEventFeature extends AbstractCreateEventFeature<StartEvent> {

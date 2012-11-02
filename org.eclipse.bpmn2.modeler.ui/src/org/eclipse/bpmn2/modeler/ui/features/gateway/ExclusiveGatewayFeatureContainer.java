@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.gateway.AbstractCreateGatewayFeat
 import org.eclipse.bpmn2.modeler.core.features.gateway.AddGatewayFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.DiagonalCross;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -29,6 +30,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
@@ -41,21 +43,28 @@ public class ExclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddGatewayFeature<ExclusiveGateway>(fp) {
-			@Override
-			protected void decorateGateway(ContainerShape container, BPMNShape bpmnShape) {
-				// TODO: handle showExclusiveGatewayMarker property change event in BPMN2Editor
-				// and override the default gateway UpdateFeature to show/hide the "X" marker.
-				if (bpmnShape.isIsMarkerVisible()) {
-					GraphicsUtil.createGatewayDiagonalCross(container);
-				}
-			}
-		};
+		return new AddExclusiveGatewayFeature(fp);
 	}
 
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateExclusiveGatewayFeature(fp);
+	}
+
+	public class AddExclusiveGatewayFeature extends AddGatewayFeature<ExclusiveGateway> {
+		public AddExclusiveGatewayFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, ExclusiveGateway businessObject) {
+			// TODO: handle showExclusiveGatewayMarker property change event in BPMN2Editor
+			// and override the default gateway UpdateFeature to show/hide the "X" marker.
+			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
+			if (bpmnShape.isIsMarkerVisible()) {
+				GraphicsUtil.createGatewayDiagonalCross(containerShape);
+			}
+		}
 	}
 
 	public static class CreateExclusiveGatewayFeature extends AbstractCreateGatewayFeature<ExclusiveGateway> {
