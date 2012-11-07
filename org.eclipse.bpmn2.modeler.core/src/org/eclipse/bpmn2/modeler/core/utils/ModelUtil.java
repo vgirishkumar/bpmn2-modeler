@@ -529,7 +529,7 @@ public class ModelUtil {
 					return getDiagramType((BPMNDiagram)object);
 			}
 		}
-		return null;
+		return Bpmn2DiagramType.NONE;
 	}
 
 	public static Bpmn2DiagramType getDiagramType(BPMNDiagram diagram) {
