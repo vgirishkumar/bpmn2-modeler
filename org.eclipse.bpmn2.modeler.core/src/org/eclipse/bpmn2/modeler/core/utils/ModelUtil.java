@@ -703,7 +703,6 @@ public class ModelUtil {
 		
 		// force this feature to be serialized regardless of whether its value is the default value
 		attr.setUnsettable(true);
-		object.eSet(attr,null);
 		
 		return attr;
 	}
@@ -753,11 +752,30 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
-		object.eSet(ref,null);
 
 		return ref;
 	}
-
+	
+	public static boolean removeDynamicFeature(EPackage pkg, EObject object, String name) {
+		if (isBpmnPackage(pkg)) {
+			throw new IllegalArgumentException("Can not remove dynamic feature from "+pkg.getName());
+		}
+		
+		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute");
+		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
+			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
+			for (Entry entry : map) {
+				EStructuralFeature feature = entry.getEStructuralFeature();
+				if (feature.getName().equals(name)) {
+					map.remove(entry);
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public static EClassifier getEClassifierFromString(EPackage pkg, String type) {
 		EClassifier eClassifier = null;
 		if (type==null) {
