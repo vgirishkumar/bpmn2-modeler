@@ -700,6 +700,8 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
+		else
+			attr.setEType(eClassifier);
 		
 		// force this feature to be serialized regardless of whether its value is the default value
 		attr.setUnsettable(true);
@@ -752,6 +754,8 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
+		else
+			ref.setEType(eClassifier);
 
 		return ref;
 	}
@@ -1172,6 +1176,8 @@ public class ModelUtil {
 		boolean valueChanged = (newValue != oldValue);
 		if (newValue!=null && oldValue!=null)
 			valueChanged = !newValue.equals(oldValue);
+		if (!object.eIsSet(feature))
+			valueChanged = true;
 		
 		if (valueChanged) {
 			try {
