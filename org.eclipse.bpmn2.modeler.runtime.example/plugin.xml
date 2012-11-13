@@ -26,7 +26,7 @@
 
 		<featureContainer
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			type="org.eclipse.bpmn2.SequenceFlow"
+			type="org.eclipse.bpmn2.Association"
 			class="org.eclipse.bpmn2.modeler.runtime.example.SampleAssociationFeatureContainer">
 		</featureContainer>
 
@@ -99,7 +99,8 @@
 		</modelExtension>
 		
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process">
-			<disable object="default" feature="Process"/>
+			<disable object="all"/>
+			<enable object="default" feature="Process"/>
 			
 			<enable object="TextAnnotation"/>
 			<enable object="TextAnnotation" feature="text"/>
@@ -108,6 +109,8 @@
 			<enable object="TextAnnotation" feature="cost"/>
 			<enable object="TextAnnotation" feature="benefit"/>
 
+			<enable object="SequenceFlow"/>
+			
 			<enable object="Association" feature="anyAttribute"/>
 			<enable object="Association" feature="affectsTaskExecution"/>
 		</modelEnablement>

@@ -34,14 +34,14 @@ import org.eclipse.swt.widgets.Control;
  * @author Bob Brodt
  *
  */
-public class IntObjectEditor extends TextObjectEditor {
+public class FloatObjectEditor extends TextObjectEditor {
 
 	/**
 	 * @param parent
 	 * @param object
 	 * @param feature
 	 */
-	public IntObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+	public FloatObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
 	}
 
@@ -67,7 +67,7 @@ public class IntObjectEditor extends TextObjectEditor {
 				char[] chars = new char[string.length()];
 				string.getChars(0, chars.length, chars, 0);
 				for (int i = 0; i < chars.length; i++) {
-					if (!('0' <= chars[i] && chars[i] <= '9')) {
+					if (!('0' <= chars[i] && chars[i] <= '9') && chars[i]!='.') {
 						e.doit = false;
 						return;
 					}
@@ -83,7 +83,7 @@ public class IntObjectEditor extends TextObjectEditor {
 			public void handleValueChange(ValueChangeEvent event) {
 
 				try {
-					final Long i = Long.parseLong(text.getText());
+					final Double i = Double.parseDouble(text.getText());
 					if (!object.eGet(feature).equals(i)) {
 						setFeatureValue(i);
 					}
@@ -93,13 +93,13 @@ public class IntObjectEditor extends TextObjectEditor {
 			}
 
 			@SuppressWarnings("rawtypes")
-			private void setFeatureValue(final long i) {
+			private void setFeatureValue(final double i) {
 				Class eTypeClass = feature.getEType().getInstanceClass();
-				if (Long.class.equals(eTypeClass) || long.class.equals(eTypeClass)) {
-					updateObject(Long.valueOf((long)i));
+				if (Double.class.equals(eTypeClass) || double.class.equals(eTypeClass)) {
+					updateObject(Double.valueOf((double)i));
 				}
 				else
-					updateObject(Integer.valueOf((int)i));
+					updateObject(Float.valueOf((float)i));
 			}
 		});
 
