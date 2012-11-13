@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FloatObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
@@ -431,9 +432,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					float.class.equals(eTypeClass) ||
 					double.class.equals(eTypeClass)
 			) {
-				// TODO: implement me!
-//				ObjectEditor editor = new FloatObjectEditor(this,object,attribute);
-//				editor.createControl(parent,label);
+				ObjectEditor editor = new FloatObjectEditor(this,object,attribute);
+				editor.createControl(parent,label);
 			} else if ("anyAttribute".equals(attribute.getName()) ||
 					object.eGet(attribute) instanceof FeatureMap) {
 				List<Entry> basicList = ((BasicFeatureMap) object.eGet(attribute)).basicList();

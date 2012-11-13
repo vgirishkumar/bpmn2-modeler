@@ -43,6 +43,8 @@ import org.eclipse.bpmn2.modeler.core.adapters.INamespaceMap;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.dd.dc.DcPackage;
+import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -645,7 +647,14 @@ public class ModelUtil {
 		return attr;
 	}
 
+	public static boolean isBpmnPackage(EPackage pkg) {
+		return pkg == Bpmn2Package.eINSTANCE || pkg == BpmnDiPackage.eINSTANCE || pkg == DcPackage.eINSTANCE || pkg == DiPackage.eINSTANCE;
+	}
+	
 	public static EAttribute createDynamicAttribute(EPackage pkg, EObject object, String name, String type) {
+		if (isBpmnPackage(pkg)) {
+			throw new IllegalArgumentException("Can not add dynamic attribute to "+pkg.getName());
+		}
 		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
 		EAttribute attr = null;
 		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot");
@@ -691,14 +700,18 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
-
-		 // force this feature to be serialized regardless of whether its value is the default value
-		attr.setUnsettable(true); 
+		
+		// force this feature to be serialized regardless of whether its value is the default value
+		attr.setUnsettable(true);
+		object.eSet(attr,null);
 		
 		return attr;
 	}
 	
 	public static EReference createDynamicReference(EPackage pkg, EObject object, String name, String type) {
+		if (isBpmnPackage(pkg)) {
+			throw new IllegalArgumentException("Can not add dynamic reference to "+pkg.getName());
+		}
 		EReference ref = null;
 		EClass docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
 		if (docRoot==null) {
@@ -740,6 +753,7 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
+		object.eSet(ref,null);
 
 		return ref;
 	}
