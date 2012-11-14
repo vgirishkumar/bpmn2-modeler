@@ -312,14 +312,18 @@ public class ModelUtil {
 	public static String getName(BaseElement element) {
 		if (element != null) {
 			EStructuralFeature feature = element.eClass().getEStructuralFeature("name");
+			if (feature==null)
+				feature = getAnyAttribute(element,"name");
 			if (feature!=null && element.eGet(feature) instanceof String)
 				return (String) element.eGet(feature);
 		}
 		return null;
 	}
 
-	public static boolean hasName(EObject obj) {
+	public static boolean hasName(BaseElement obj) {
 		EStructuralFeature feature = obj.eClass().getEStructuralFeature("name");
+		if (feature==null)
+			feature = getAnyAttribute(obj,"name");
 		return feature!=null;
 	}
 /*	
