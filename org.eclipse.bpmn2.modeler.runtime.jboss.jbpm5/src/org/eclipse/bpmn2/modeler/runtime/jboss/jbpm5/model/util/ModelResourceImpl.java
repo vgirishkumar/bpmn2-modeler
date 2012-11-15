@@ -126,10 +126,27 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
             super(xmiResource, helper, options);
         }
 
+        @Override
+        protected EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement)
+        {
+        	EStructuralFeature result = null;
+		    if (object!=null && object.eClass().getEPackage() == ModelPackage.eINSTANCE) {
+		    	result = object.eClass().getEStructuralFeature(name);
+		    }
+		    if (result==null)
+		    	return super.getFeature(object, prefix, name, isElement);
+		    return result;
+        }
+        
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void processElement(String name, String prefix, String localName) {
-			
+		    EObject peekObject = objects.peekEObject();
+		    if (peekObject!=null && peekObject.eClass().getEPackage() == ModelPackage.eINSTANCE) {
+		    	prefix = helper.getPrefix(ModelPackage.eINSTANCE);
+		    }
+			if (name.equals("script"))
+				System.out.println("");
 			super.processElement(name, prefix, localName);
 			
 			// ugly hack for https://bugs.eclipse.org/bugs/show_bug.cgi?id=355686

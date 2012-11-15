@@ -730,8 +730,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		   source, 
 		   new String[] {
 			 "kind", "element",
-			 "name", "script",
-			 "namespace", "##targetNamespace"
+			 "name", "script"
 		   });		
 		addAnnotation
 		  (getOnEntryScriptType_ScriptFormat(), 
@@ -753,8 +752,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		   source, 
 		   new String[] {
 			 "kind", "element",
-			 "name", "script",
-			 "namespace", "##targetNamespace"
+			 "name", "script"
 		   });		
 		addAnnotation
 		  (getOnExitScriptType_ScriptFormat(), 
