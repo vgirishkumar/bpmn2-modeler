@@ -365,8 +365,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 					value = factory.createFromString(eDataType, (String)value);
 				}
 			}
-			
-			object.eSet(feature, value);
+			EStructuralFeature f = ModelUtil.getAnyAttribute(object, feature.getName());
+			if (f!=null) {
+				if (object.eGet(f)!=null)
+					return;
+			}
+			if (!object.eIsSet(feature))
+				object.eSet(feature, value);
 		}
 	}
 	

@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -40,6 +41,7 @@ import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
@@ -89,6 +91,12 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
 		T businessObject = (T)adapter.getObjectDescriptor().createObject(resource,eclass);
 		putBusinessObject(context, businessObject);
+		String id = (String)context.getProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID);
+		if (id!=null) {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
+	    	ctd.populateObject(businessObject, true);
+		}
 		return businessObject;
 	}
 	

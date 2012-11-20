@@ -69,7 +69,6 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 					@Override
 					public Task createBusinessObject(ICreateContext context) {
 						Task businessObject = super.createBusinessObject(context);
-						customTaskDescriptor.populateObject(businessObject, true);
 						return businessObject;
 					}
 

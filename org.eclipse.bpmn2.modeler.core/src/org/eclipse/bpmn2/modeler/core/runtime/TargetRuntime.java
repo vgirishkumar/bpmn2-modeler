@@ -435,6 +435,16 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return customTasks;
 	}
 	
+	public CustomTaskDescriptor getCustomTask( String id ) {
+		Iterator<CustomTaskDescriptor> ctIter = customTasks.iterator();
+		while (ctIter.hasNext()) {
+			CustomTaskDescriptor ctd = ctIter.next();
+			if (ctd.getId().equalsIgnoreCase(id)) 
+				return ctd;
+		}
+		return null;
+	}
+
 	public boolean customTaskExists ( String id ) {
 		Iterator<CustomTaskDescriptor> ctIter = customTasks.iterator();
 		while (ctIter.hasNext()) {
