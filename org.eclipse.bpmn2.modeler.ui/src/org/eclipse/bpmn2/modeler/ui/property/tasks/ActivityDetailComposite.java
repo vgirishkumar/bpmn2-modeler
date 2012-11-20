@@ -37,9 +37,9 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ActivityDetailComposite extends DefaultDetailComposite {
 
-	private Button noneButton;
-	private Button addStandardLoopButton;
-	private Button addMultiLoopButton;
+	protected Button noneButton;
+	protected Button addStandardLoopButton;
+	protected Button addMultiLoopButton;
 	protected AbstractDetailComposite loopCharacteristicsComposite;
 	
 	public ActivityDetailComposite(Composite parent, int style) {

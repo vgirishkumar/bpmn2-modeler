@@ -125,7 +125,6 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 					@Override
 					public TextAnnotation createBusinessObject(ICreateContext context) {
 						TextAnnotation businessObject = super.createBusinessObject(context);
-						customTaskDescriptor.populateObject(businessObject, true);
 						return businessObject;
 					}
 
