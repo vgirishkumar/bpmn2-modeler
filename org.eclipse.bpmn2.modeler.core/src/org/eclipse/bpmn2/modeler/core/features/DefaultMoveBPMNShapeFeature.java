@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BendPointLayouter;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.di.DiagramElement;
@@ -35,6 +36,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
 	int preShapeX;
 	int preShapeY;
+	BendPointLayouter bpLayouter = null;
 	
 	public DefaultMoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
@@ -50,8 +52,10 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			preShapeX = context.getShape().getGraphicsAlgorithm().getX();
 			preShapeY = context.getShape().getGraphicsAlgorithm().getY();
 		}
+		
+		bpLayouter = new BendPointLayouter(context.getShape());
 	}
-	
+
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
 		DIUtils.updateDIShape(context.getPictogramElement());
@@ -91,5 +95,6 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 		
+		bpLayouter.layout();
 	}
 }
