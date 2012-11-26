@@ -76,6 +76,16 @@
 		</propertyTab>
 
 		<propertyTab
+			id="bpmn2.jbpm.businessRuleTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
+			class="default"
+			features="anyAttribute implementation"
+			type="org.eclipse.bpmn2.BusinessRuleTask"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			label="Business Rule Task">
+		</propertyTab>
+
+		<propertyTab
 			id="bpmn2.jbpm.callActivity.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.callActivity.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCallActivityPropertySection"
@@ -574,6 +584,7 @@
 			<disable object="BoundaryEvent" feature="parallelMultiple"/>
 			<disable object="BoundaryEvent" feature="properties"/>
 			<enable object="BusinessRuleTask"/>
+			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<disable object="BusinessRuleTask" feature="auditing"/>
 			<disable object="BusinessRuleTask" feature="boundaryEventRefs"/>
 			<disable object="BusinessRuleTask" feature="categoryValueRef"/>
