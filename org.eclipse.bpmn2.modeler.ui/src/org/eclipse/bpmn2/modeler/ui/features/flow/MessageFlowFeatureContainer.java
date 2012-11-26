@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
@@ -42,6 +43,8 @@ import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IAddConnectionContext;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -86,6 +89,21 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	public class AddMessageFlowFeature extends AbstractAddFlowFeature<MessageFlow> {
 		public AddMessageFlowFeature(IFeatureProvider fp) {
 			super(fp);
+		}
+
+		@Override
+		public boolean canAdd(IAddContext context) {
+			if (context instanceof IAddConnectionContext) {
+				IAddConnectionContext acc = (IAddConnectionContext) context;
+				if (acc.getSourceAnchor() != null) {
+					Object obj = BusinessObjectUtil.getFirstElementOfType(acc.getSourceAnchor().getParent(),
+							BaseElement.class);
+					if (obj instanceof StartEvent) {
+						return false;
+					}
+				}
+			}
+			return super.canAdd(context);
 		}
 
 		@Override
@@ -143,6 +161,9 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 								return true;
 							}
 						}
+					}
+					else if (obj instanceof StartEvent){
+						return false;
 					}
 				}
 			}
