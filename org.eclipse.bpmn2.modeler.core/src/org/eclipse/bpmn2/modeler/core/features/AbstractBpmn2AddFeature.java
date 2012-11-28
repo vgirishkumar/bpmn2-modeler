@@ -7,6 +7,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -28,6 +29,8 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return
 	 */
 	protected GraphicsAlgorithmContainer getGraphicsAlgorithm(ContainerShape containerShape) {
+		if (containerShape.getGraphicsAlgorithm() instanceof RoundedRectangle)
+			return containerShape.getGraphicsAlgorithm();
 		if (containerShape.getChildren().size()>0) {
 			Shape shape = containerShape.getChildren().get(0);
 			return shape.getGraphicsAlgorithm();

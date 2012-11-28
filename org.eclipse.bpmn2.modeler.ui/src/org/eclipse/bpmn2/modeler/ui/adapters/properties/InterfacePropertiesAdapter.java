@@ -59,14 +59,17 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 				@Override
 				public String getDisplayName(Object context) {
 					final Interface iface = adopt(context);
-							
+					String text = null;
 					if (iface.getImplementationRef()!=null) {
-						String text = ModelUtil.getStringWrapperValue( iface.getImplementationRef() ); // + type;
+						text = ModelUtil.getStringWrapperValue( iface.getImplementationRef() ); // + type;
 						if (text==null)
 							return ModelUtil.getDisplayName(iface.getImplementationRef());
 						return text;
 					}
-					return "";
+					text = iface.getName();
+					if (text==null || text.isEmpty())
+						return iface.getId();
+					return text;
 				}
 				
 	    		@Override

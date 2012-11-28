@@ -87,9 +87,11 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 						return true;
 					}
 					
-					protected EObject createObject() {
+					protected EObject createObject() throws Exception {
 						String name = JbpmModelUtil.showImportDialog(object);
-						return JbpmModelUtil.addImport(name, object);
+						if (name!=null)
+							return JbpmModelUtil.addImport(name, object);
+						throw new Exception("Dialog Cancelled");
 					}
 				};
 				editor.createControl(parent,label);

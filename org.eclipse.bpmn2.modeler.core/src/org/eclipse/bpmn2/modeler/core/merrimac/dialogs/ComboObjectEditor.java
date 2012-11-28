@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectEList;
@@ -69,7 +70,11 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	 * @param feature
 	 */
 	public ComboObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
-		super(parent, object, feature);
+		this(parent, object, feature, (EClass)feature.getEType());
+	}
+
+	public ComboObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, EClass featureEType) {
+		super(parent, object, feature, featureEType);
 	}
 
 	/* (non-Javadoc)
@@ -143,9 +148,13 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				createButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						// create a new target object
-						EObject value = createObject();
-						updateObject(value);
-						fillCombo();
+						try {
+							EObject value = createObject();
+							updateObject(value);
+							fillCombo();
+						}
+						catch (Exception ex) {
+						}
 					}
 				});
 			}
@@ -163,9 +172,13 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 							}
 							if (firstElement != null && comboViewer.getData(firstElement) instanceof EObject) {
 								EObject value = (EObject) comboViewer.getData(firstElement);
-								value = editObject(value);
-								updateObject(value);
-								fillCombo();
+								try {
+									value = editObject(value);
+									updateObject(value);
+									fillCombo();
+								}
+								catch (Exception ex) {
+								}
 							}
 						}
 					}
@@ -215,21 +228,21 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		return ModelUtil.canCreateNew(object,feature);
 	}
 	
-	protected EObject createObject() {
-		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);							
+	protected EObject createObject() throws Exception {
+		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);
+		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		return null;
+		throw new Exception("Dialog Cancelled");
 	}
 	
-	protected EObject editObject(EObject value) {
+	protected EObject editObject(EObject value) throws Exception {
 		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(),
 				object, feature, value);
+		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		ISelection selection = comboViewer.getSelection();
-		String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
-		return (EObject) comboViewer.getData(firstElement);
+		throw new Exception("Dialog Cancelled");
 	}
 
 	@Override
@@ -305,7 +318,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		super.notifyChanged(notification);
 		for (String item : comboViewer.getCombo().getItems()) {
 			Object o = comboViewer.getData(item);
-			if (o == notification.getNotifier()) {
+			if (o == notification.getNotifier() || o == notification.getOldValue()) {
 				fillCombo();
 				break;
 			}

@@ -14,9 +14,13 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -28,6 +32,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public abstract class MultivalueObjectEditor extends ObjectEditor {
 
+	protected EClass featureEType;
+
 	/**
 	 * @param parent
 	 * @param object
@@ -35,6 +41,11 @@ public abstract class MultivalueObjectEditor extends ObjectEditor {
 	 */
 	public MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
+	}
+	
+	public MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, EClass featureEType) {
+		super(parent, object, feature);
+		this.featureEType = featureEType;
 	}
 	
 	/**
@@ -53,6 +64,23 @@ public abstract class MultivalueObjectEditor extends ObjectEditor {
 	 * @return
 	 */
 	protected Hashtable<String,Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
-		return ModelUtil.getChoiceOfValues(object, feature);
+		Hashtable<String,Object> choices = ModelUtil.getChoiceOfValues(object, feature);
+		if (featureEType!=null) {
+			Hashtable<String,Object> filteredChoices = new Hashtable<String,Object>();
+			for (Entry<String, Object> entry : choices.entrySet()) {
+				Object value = entry.getValue();
+				if (value instanceof EObject) {
+					if ( featureEType == ((EObject)value).eClass()) {
+						filteredChoices.put(entry.getKey(),value);
+					}
+				}
+				else {
+					filteredChoices.put(entry.getKey(),value);
+				}
+			}
+			return filteredChoices;
+		}
+		return choices;
+
 	}
 }

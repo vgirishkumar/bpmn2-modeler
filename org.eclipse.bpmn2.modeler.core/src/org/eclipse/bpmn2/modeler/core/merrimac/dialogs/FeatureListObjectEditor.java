@@ -24,21 +24,28 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.ui.celleditor.FeatureEditorDialog;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -55,6 +62,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 	List<EObject> references;
 	Composite buttons;
 	Button editButton;
+	protected IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 	
 	/**
 	 * @param parent
@@ -62,7 +70,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 	 * @param feature
 	 */
 	public FeatureListObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
-		super(parent, object, feature);
+		super(parent, object, feature, (EClass)feature.getEType());
 	}
 
 	/* (non-Javadoc)
@@ -74,6 +82,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 
 		text = getToolkit().createText(composite, "");
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		text.setEditable(false);
 
 		references = (List<EObject>) object.eGet(feature);
 		updateTextField();
@@ -88,22 +97,23 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 
 			if (canCreateNew) {
 				// TODO: this isn't working yet.
-//				Button createButton = getToolkit().createButton(buttons, "Add New...", SWT.PUSH);
-//				createButton.addSelectionListener(new SelectionAdapter() {
-//					public void widgetSelected(SelectionEvent e) {
-//						// create a new target object
-//						FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);							
-//						if ( dialog.open() == Window.OK) {
-//							updateObject(references, dialog.getNewObject());
-//							updateTextField(references, text);
-//						}
-//					}
-//				});
+				Button createButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+				createButton.setImage( Activator.getDefault().getImage(IConstants.ICON_ADD_20));
+				createButton.addSelectionListener(new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						// create a new target object
+						FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);							
+						if ( dialog.open() == Window.OK) {
+							updateEObject(dialog.getNewObject());
+							updateTextField();
+						}
+					}
+				});
 			}
 			if (canEdit) {
 				editButton = getToolkit().createButton(buttons, null, SWT.PUSH);
-				editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_ADD_20));
-
+				editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
+				
 				editButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						Hashtable<String,Object> choices = getChoiceOfValues(object,feature);
@@ -113,16 +123,64 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 						FeatureEditorDialog featureEditorDialog = new FeatureEditorDialog(parent.getShell(),
 								AdapterRegistry.getLabelProvider(), object, feature, "Select elements", values) {
 
-							@Override
-							protected Control createDialogArea(Composite parent) {
-								if (parent.getLayoutData() instanceof GridData) {
-									GridData data = (GridData)parent.getLayoutData();
-									data.widthHint = Display.getCurrent().getBounds().width / 8;
-								}
-								Composite contents = (Composite)super.createDialogArea(parent);
-								return contents;
+							protected Control createContents(Composite parent) {
+								Composite control = (Composite)super.createContents(parent);
+								setDialogSize(control);
+								return control;
 							}
 
+							@Override
+							protected void configureShell(Shell shell) {
+								// TODO Auto-generated method stub
+								super.configureShell(shell);
+							}
+
+							public void setDialogSize(final Control parent) {
+								final String key = featureEType.getName() + ".list";
+								Point p = getShell().getSize();
+								int width = preferenceStore.getInt("dialog."+key+".width");
+								if (width==0)
+									width = p.x;
+								int height = preferenceStore.getInt("dialog."+key+".height");
+								if (height==0)
+									height = p.y;
+								getShell().setSize(width,height);
+								
+								p = getShell().getLocation();
+								int x = preferenceStore.getInt("dialog."+key+".x");
+								if (x==0)
+									x = p.x;
+								int y = preferenceStore.getInt("dialog."+key+".y");
+								if (y==0)
+									y = p.y;
+								getShell().setLocation(x,y);
+
+								getShell().addControlListener(new ControlListener() {
+									public void controlMoved(ControlEvent e)
+									{
+										Point p = getShell().getLocation();
+										preferenceStore.setValue("dialog."+key+".x", p.x);
+										preferenceStore.setValue("dialog."+key+".y", p.y);
+									}
+									
+									public void controlResized(ControlEvent e)
+									{
+										Point p = getShell().getSize();
+										preferenceStore.setValue("dialog."+key+".width", p.x);
+										preferenceStore.setValue("dialog."+key+".height", p.y);
+									}
+							
+								});
+								
+								if (parent.getLayoutData() instanceof GridData) {
+									GridData data = (GridData)parent.getLayoutData();
+									// TODO: figure out why this dialog insists on resizing its shell
+									// even after we've set the shell bounds.
+									data.widthHint = width - 16;
+									data.heightHint = height - 38;
+								}
+//								getShell().pack();
+							}
 						};
 
 						if (featureEditorDialog.open() == Window.OK) {
@@ -137,6 +195,22 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		return text;
 	}
 
+	private void updateEObject(final EObject result) {
+		TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+		domain.getCommandStack().execute(new RecordingCommand(domain) {
+			@Override
+			protected void doExecute() {
+				if (result == null) {
+					references.clear();
+					return;
+				}
+				if (!references.contains(result)) {
+					references.add(result);
+				}
+			}
+		});
+	}
+	
 	private void updateEObject(final EList<EObject> result) {
 		TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 		domain.getCommandStack().execute(new RecordingCommand(domain) {
@@ -167,6 +241,9 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 				listText += AdapterRegistry.getLabelProvider().getText(references.get(references.size() - 1));
 			}
 		}
+
+		if (editButton!=null)
+			editButton.setEnabled(getChoiceOfValues(object,feature).size()>0);
 
 		text.setText(listText);
 	}

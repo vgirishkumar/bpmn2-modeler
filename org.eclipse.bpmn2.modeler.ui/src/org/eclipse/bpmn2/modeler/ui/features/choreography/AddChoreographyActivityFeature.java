@@ -87,30 +87,9 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		StyleUtil.applyStyle(text, businessObject);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-//		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
 		setTextLocation(containerShape, text, width, height);
 		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
 		GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
-
-		// use it when property editor supports enums
-		// ContainerShape markerShape = peService.createContainerShape(choreographyContainer, false);
-		// Rectangle markerRectangle = gaService.createInvisibleRectangle(markerShape);
-		// List<ContainerShape> bands = ChoreographyUtil.getParticipantBandContainerShapes(choreographyContainer);
-		// List<ContainerShape> bottomBands = ChoreographyUtil.getTopAndBottomBands(bands).getSecond();
-		// int x = (width / 2) - (MARKER_H / 2);
-		// int y = height - MARKER_H;
-		// if (!bottomBands.isEmpty()) {
-		// ContainerShape b = bottomBands.get(0);
-		// y = b.getGraphicsAlgorithm().getY() - MARKER_H;
-		// }
-		// gaService.setLocationAndSize(markerRectangle, x, y, MARKER_H, MARKER_H);
-		// ChoreographyUtil.drawChoreographyLoopType(markerShape, choreography.getLoopType());
-		//
-		// String loopType = choreography.getLoopType() == null ? "null" : choreography.getLoopType().getName();
-		// peService.setPropertyValue(choreographyContainer, ChoreographyProperties.CHOREOGRAPHY_MARKER, loopType);
-		//
-		// peService.setPropertyValue(markerShape, ChoreographyProperties.CHOREOGRAPHY_MARKER_SHAPE,
-		// Boolean.toString(true));
 
 		if (businessObject instanceof ChoreographyTask) {
 			peService.setPropertyValue(containerShape, MESSAGE_REF_IDS,

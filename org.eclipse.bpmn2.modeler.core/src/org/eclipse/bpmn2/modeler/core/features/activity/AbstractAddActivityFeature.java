@@ -43,6 +43,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	public static final String ACTIVITY_DECORATOR = "activity-decorator";
 	public static final String IS_ACTIVITY = "activity";
 
+	protected final IGaService gaService = Graphiti.getGaService();
+	protected final IPeService peService = Graphiti.getPeService();
+
 	public AbstractAddActivityFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -72,9 +75,6 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	@Override
 	public PictogramElement add(IAddContext context) {
 		T businessObject = getBusinessObject(context);
-
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
 
 		int width = context.getWidth() > 0 ? context.getWidth() : this.getWidth();
 		int height = context.getHeight() > 0 ? context.getHeight() : this.getHeight();
