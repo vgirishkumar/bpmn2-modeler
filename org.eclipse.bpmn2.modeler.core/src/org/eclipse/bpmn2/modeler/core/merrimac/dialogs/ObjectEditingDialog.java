@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ObjectEditingDialog extends AbstractObjectEditingDialog {
 
-	protected EClass eclass;
+	protected EClass featureEType;
 
 	public ObjectEditingDialog(DiagramEditor editor, EObject object) {
 		this(editor,object,object.eClass());
@@ -32,18 +32,26 @@ public class ObjectEditingDialog extends AbstractObjectEditingDialog {
 	
 	public ObjectEditingDialog(DiagramEditor editor, EObject object, EClass eclass) {
 		super(editor, object);
-		this.eclass = eclass;
+		this.featureEType = eclass;
+	}
+	
+	public void setFeatureEType(EClass eclass) {
+		this.featureEType = eclass;
+	}
+	
+	public EClass getFeatureEType() {
+		return featureEType;
 	}
 	
 	protected Composite createDialogContent(Composite parent) {
 		Composite content = PropertiesCompositeFactory.createDialogComposite(
-				eclass, parent, SWT.NONE);
+				featureEType, parent, SWT.NONE);
 		return content;
 	}
 
 	@Override
 	protected String getPreferenceKey() {
-		return eclass.getName();
+		return featureEType.getName();
 	}
 	
 	@Override

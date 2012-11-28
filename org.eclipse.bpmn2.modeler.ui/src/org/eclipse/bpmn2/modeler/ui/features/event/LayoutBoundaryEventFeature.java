@@ -53,10 +53,18 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 		switch (pos.getLineType()) {
 		case X:
 			moveX(eventGa, activityGa, pos.getLocationType());
+			if ((eventGa.getY() < activityGa.getY()) ||
+					(eventGa.getY() + eventGa.getHeight() > activityGa.getY() + activityGa.getHeight())) {
+				moveY(eventGa, activityGa, pos.getLocationType());
+			}
 			layout = true;
 			break;
 		case Y:
 			moveY(eventGa, activityGa, pos.getLocationType());
+			if ((eventGa.getX() < activityGa.getX()) || 
+					(eventGa.getX() + eventGa.getWidth() > activityGa.getX() + activityGa.getWidth())) {
+				moveX(eventGa, activityGa, pos.getLocationType());
+			}
 			layout = true;
 			break;
 		case XY:
@@ -82,8 +90,11 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 		IGaService gaService = Graphiti.getGaService();
 		if (isLeft(locType)) {
 			gaService.setLocation(ga, parentGa.getX() - (ga.getWidth() / 2), ga.getY());
-		} else {
+		} else if (isRight(locType)) {
 			gaService.setLocation(ga, parentGa.getX() + parentGa.getWidth() - (ga.getWidth() / 2), ga.getY());
+		}
+		else {
+			gaService.setLocation(ga, parentGa.getX() + parentGa.getWidth() / 2 - (ga.getWidth() / 2), ga.getY());
 		}
 	}
 
@@ -91,16 +102,27 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 		return locType == LocationType.TOP_LEFT || locType == LocationType.LEFT || locType == LocationType.BOTTOM_LEFT;
 	}
 
+	private boolean isRight(LocationType locType) {
+		return locType == LocationType.TOP_RIGHT || locType == LocationType.RIGHT || locType == LocationType.BOTTOM_RIGHT;
+	}
+
 	private void moveY(GraphicsAlgorithm ga, GraphicsAlgorithm parentGa, LocationType locType) {
 		IGaService gaService = Graphiti.getGaService();
 		if (isTop(locType)) {
 			gaService.setLocation(ga, ga.getX(), parentGa.getY() - (ga.getHeight() / 2));
-		} else {
+		} else if (isBottom(locType)) {
 			gaService.setLocation(ga, ga.getX(), parentGa.getY() + parentGa.getHeight() - (ga.getHeight() / 2));
+		}
+		else {
+			gaService.setLocation(ga, ga.getX(), parentGa.getY() + parentGa.getHeight() / 2 - (ga.getHeight() / 2));
 		}
 	}
 
 	private boolean isTop(LocationType locType) {
 		return locType == LocationType.TOP_LEFT || locType == LocationType.TOP || locType == LocationType.TOP_RIGHT;
+	}
+
+	private boolean isBottom(LocationType locType) {
+		return locType == LocationType.BOTTOM_LEFT || locType == LocationType.BOTTOM || locType == LocationType.BOTTOM_RIGHT;
 	}
 }

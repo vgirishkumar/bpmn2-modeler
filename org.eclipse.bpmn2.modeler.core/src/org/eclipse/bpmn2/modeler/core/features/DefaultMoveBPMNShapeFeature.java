@@ -95,6 +95,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 		
-		bpLayouter.layout();
+		if (bpLayouter!=null)
+			bpLayouter.layout();
 	}
 }

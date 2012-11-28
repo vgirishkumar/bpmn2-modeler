@@ -861,8 +861,8 @@ public class ModelUtil {
 					resource = insertionAdapter.getResource();
 				// TODO: can we use any of the referenced objects to find a Resource?
 //				if (resource==null) {
-//					EClass eclass = object.eClass();
-//					for (EReference ref : eclass.getEAllReferences()) {
+//					EClass featureEType = object.eClass();
+//					for (EReference ref : featureEType.getEAllReferences()) {
 //						Object value = object.eGet(ref);
 //						if (value instanceof EObject) {
 //							resource = getResource((EObject) value);
@@ -875,8 +875,13 @@ public class ModelUtil {
 		}
 		return resource;
 	}
+	
 	public static Definitions getDefinitions(EObject object) {
 		Resource resource = getResource(object);
+		return getDefinitions(resource);
+	}
+	
+	public static Definitions getDefinitions(Resource resource) {
 		if (resource!=null) {
 			Object defs = resource.getContents().get(0).eContents().get(0);
 			if (defs instanceof Definitions)
@@ -1079,7 +1084,7 @@ public class ModelUtil {
 	 * construct an ExtendedPropertiesAdapter from an EClass, however the adapter itself needs an EObject.
 	 * This method constructs and caches these dummy objects as they are needed.
 	 * 
-	 * @param eclass
+	 * @param featureEType
 	 * @return
 	 */
 	public static EObject getDummyObject(EClass eclass) {

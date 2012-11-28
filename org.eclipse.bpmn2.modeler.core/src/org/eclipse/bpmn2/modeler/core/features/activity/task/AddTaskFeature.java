@@ -43,9 +43,6 @@ public class AddTaskFeature<T extends Task> extends AbstractAddActivityFeature<T
 
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
-		IPeService peService = Graphiti.getPeService();
-		IGaService gaService = Graphiti.getGaService();
-
 		Shape textShape = peService.createShape(containerShape, false);
 		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getName());
 		int padding = GraphicsUtil.TASK_IMAGE_SIZE;

@@ -311,14 +311,14 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 					}
 					// add customTask and modelExtension features to modelEnablements
 					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
-//						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-//							for (Property p : med.getProperties()) {
-//								me.setEnabled(med.getType(), p.name, true);
-//								EClassifier eClass = ModelUtil.getEClassifierFromString(med.getEPackage(), med.getType());
-//								ModelUtil.createDynamicAttribute(med.getEPackage(),
-//										eClass, p.name, p.type);
-//							}
-//						}
+						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+							for (Property p : med.getProperties()) {
+								me.setEnabled(med.getType(), p.name, true);
+								EClassifier eClass = ModelUtil.getEClassifierFromString(med.getEPackage(), med.getType());
+								ModelUtil.createDynamicAttribute(med.getEPackage(),
+										eClass, p.name, p.type);
+							}
+						}
 //						for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
 //							// the tool palette checks for enablement of this custom task ID
 //							me.setEnabled(ct.getId(), true);

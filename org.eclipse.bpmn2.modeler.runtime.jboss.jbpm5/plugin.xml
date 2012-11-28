@@ -584,7 +584,6 @@
 			<disable object="BoundaryEvent" feature="parallelMultiple"/>
 			<disable object="BoundaryEvent" feature="properties"/>
 			<enable object="BusinessRuleTask"/>
-			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<disable object="BusinessRuleTask" feature="auditing"/>
 			<disable object="BusinessRuleTask" feature="boundaryEventRefs"/>
 			<disable object="BusinessRuleTask" feature="categoryValueRef"/>

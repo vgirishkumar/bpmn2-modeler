@@ -49,16 +49,27 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		if (newObject==null) {
 			// create the new object
 			createNew = true;
-			ModelSubclassSelectionDialog dialog = new ModelSubclassSelectionDialog(editor, object, feature);
-			if (dialog.open()==Window.OK){
-				eclass = (EClass)dialog.getResult()[0];
-				newObject = createNewObject(object, feature, eclass);
+			if (featureEType==null) {
+				ModelSubclassSelectionDialog dialog = new ModelSubclassSelectionDialog(editor, object, feature);
+				if (dialog.open()==Window.OK){
+					featureEType = (EClass)dialog.getResult()[0];
+					newObject = createNewObject(object, feature, featureEType);
+				}
+				else
+					cancel = true;
 			}
 			else
-				cancel = true;
+				newObject = createNewObject(object, feature, featureEType);
 		}
+		else if (featureEType==null) {
+			if (newObject instanceof EObject)
+				featureEType = newObject.eClass();
+			else if (feature.getEType() instanceof EClass)
+				featureEType = (EClass)feature.getEType();
+		}
+		
 		Composite content = PropertiesCompositeFactory.createDetailComposite(
-				eclass.getInstanceClass(), parent, SWT.NONE);
+				featureEType.getInstanceClass(), parent, SWT.NONE);
 		
 		return content;
 	}
@@ -70,12 +81,12 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
 				protected void doExecute() {
-					result[0] = ModelUtil.createFeature(object, feature, eclass);
+					result[0] = ModelUtil.createObject(object.eResource(),eclass);
 				}
 			});
 		}
 		else {
-			result[0] = ModelUtil.createFeature(object, feature, eclass);
+			result[0] = ModelUtil.createObject(object.eResource(),eclass);
 		}
 		return result[0];
 	}
