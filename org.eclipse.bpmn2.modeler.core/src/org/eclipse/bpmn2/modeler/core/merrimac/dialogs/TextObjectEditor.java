@@ -171,4 +171,16 @@ public class TextObjectEditor extends ObjectEditor {
 		GridData data = (GridData)text.getLayoutData();
 		data.exclude = !visible;
 	}
+	
+	public void dispose() {
+		super.dispose();
+		if (text!=null && !text.isDisposed()) {
+			text.dispose();
+			text = null;
+		}
+	}
+	
+	public Control getControl() {
+		return text;
+	}
 }

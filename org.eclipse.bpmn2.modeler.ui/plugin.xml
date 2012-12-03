@@ -601,6 +601,8 @@
 			<disable object="Participant"/>
 			<disable object="ParticipantAssociation"/>
 			<disable object="ParticipantMultiplicity"/>
+			
+			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
 		</modelEnablement>
 
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Collaboration">

@@ -159,6 +159,20 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmPropertyPropertiesAdapter">
 		</propertyExtension>
 		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.dataInputAssociation"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.DataInputAssociation"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmDataAssociationPropertiesAdapter">
+		</propertyExtension>
+		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.dataOutputAssociation"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.DataOutputAssociation"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmDataAssociationPropertiesAdapter">
+		</propertyExtension>
+		
 		<featureContainer
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.TimerEventDefinition"
@@ -674,6 +688,7 @@
 			<disable object="Definitions" feature="imports"/>
 			<disable object="Definitions" feature="relationships"/>
 			<enable object="Documentation"/>
+			<disable object="Documentation" feature="mixed"/>
 			<disable object="Documentation" feature="documentation"/>
 			<disable object="Documentation" feature="extensionDefinitions"/>
 			<disable object="Documentation" feature="id"/>
@@ -913,7 +928,6 @@
 			<disable object="Property" feature="documentation"/>
 			<disable object="Property" feature="extensionDefinitions"/>
 			<disable object="Property" feature="extensionValues"/>
-			<disable object="Property" feature="name"/>
 			<enable object="ReceiveTask"/>
 			<disable object="ReceiveTask" feature="anyAttribute"/>
 			<disable object="ReceiveTask" feature="auditing"/>

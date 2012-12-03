@@ -374,7 +374,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	protected void bindAttribute(Composite parent, EObject object, String name, String label) {
 		EStructuralFeature feature = getFeature(object,name);
 		if (isAttribute(object,feature)) {
-			bindAttribute(object,(EAttribute)feature,label);
+			bindAttribute(parent, object,(EAttribute)feature,label);
 		}
 	}
 

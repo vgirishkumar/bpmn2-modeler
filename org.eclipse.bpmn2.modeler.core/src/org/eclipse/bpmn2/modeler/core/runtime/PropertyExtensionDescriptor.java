@@ -64,11 +64,26 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 			else {
 				eclass = object.eClass();
 			}
-			ctor = adapterClass.getConstructor(AdapterFactory.class, eclass.getInstanceClass());
+			ctor = getConstructor(adapterClass, eclass);
 			return (ExtendedPropertiesAdapter)ctor.newInstance(adapterFactory, object);
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
 		return null;
+	}
+	
+	private Constructor getConstructor(Class adapterClass, EClass eclass) {
+		Constructor ctor = null;
+		try {
+			ctor = adapterClass.getConstructor(AdapterFactory.class, eclass.getInstanceClass());
+		}
+		catch (NoSuchMethodException e) {
+			for (EClass superClass : eclass.getESuperTypes()) {
+				ctor = getConstructor(adapterClass, superClass);
+				if (ctor!=null)
+					break;
+			}
+		}
+		return ctor;
 	}
 }

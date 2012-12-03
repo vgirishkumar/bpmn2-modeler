@@ -21,6 +21,7 @@ import org.apache.xerces.xni.XNIException;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -152,5 +153,11 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	public static class RejectedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
+	}
+
+	@Override
+	public void modelObjectCreated(EObject object) {
+		// TODO Auto-generated method stub
+		
 	}
 }

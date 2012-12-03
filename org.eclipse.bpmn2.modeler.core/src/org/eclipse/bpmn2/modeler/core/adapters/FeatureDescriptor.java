@@ -24,8 +24,10 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectEList;
@@ -232,11 +234,18 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				if (resource==null)
 					resource = object.eResource();
 				newFeature = adapter.getObjectDescriptor().createObject(resource, eclass);
-				if (object.eGet(feature) instanceof List) {
-					((List)object.eGet(feature)).add(newFeature);
+				// can we set the new object into the parent object?
+				if (newFeature.eContainer()!=null || // the new object is contained somewhere
+					feature instanceof EAttribute || // the new object is an attribute
+					// the feature is a containment reference which means the this.object owns it
+					(feature instanceof EReference && ((EReference)feature).isContainment()))
+				{
+					if (object.eGet(feature) instanceof List) {
+						((List)object.eGet(feature)).add(newFeature);
+					}
+					else
+						object.eSet(feature, newFeature);
 				}
-				else
-					object.eSet(feature, newFeature);
 			}
 			
 		} catch (Exception e) {

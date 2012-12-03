@@ -63,25 +63,8 @@ public class BooleanObjectEditor extends ObjectEditor {
 			@SuppressWarnings("restriction")
 			@Override
 			public void handleValueChange(ValueChangeEvent event) {
-
-				if (!object.eGet(feature).equals(button.getSelection())) {
-					TransactionalEditingDomain editingDomain = getDiagramEditor().getEditingDomain();
-					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-						@Override
-						protected void doExecute() {
-							object.eSet(feature, button.getSelection());
-						}
-					});
-					
-//					if (getDiagramEditor().getDiagnostics()!=null) {
-//						// revert the change and display error errorList message.
-//						button.setSelection((Boolean) object.eGet(feature));
-//						ErrorUtils.showErrorMessage(getDiagramEditor().getDiagnostics().getMessage());
-//					}
-//					else
-//						ErrorUtils.showErrorMessage(null);
-					button.setSelection((Boolean) object.eGet(feature));
-				}
+				updateObject(new Boolean(button.getSelection()));
+				button.setSelection((Boolean) object.eGet(feature));
 			}
 		});
 		
@@ -99,7 +82,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		
 		return button;
 	}
-
+	
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
@@ -114,5 +97,17 @@ public class BooleanObjectEditor extends ObjectEditor {
 		button.setVisible(visible);
 		GridData data = (GridData)button.getLayoutData();
 		data.exclude = !visible;
+	}
+	
+	public void dispose() {
+		super.dispose();
+		if (button!=null && !button.isDisposed()) {
+			button.dispose();
+			button = null;
+		}
+	}
+	
+	public Control getControl() {
+		return button;
 	}
 }

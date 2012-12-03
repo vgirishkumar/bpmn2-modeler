@@ -876,6 +876,19 @@ public class ModelUtil {
 		return resource;
 	}
 	
+	public static EObject getContainer(EObject object) {
+		EObject container = null;
+		if (object!=null) {
+			container = object.eContainer();
+			if (container==null) {
+				InsertionAdapter insertionAdapter = AdapterUtil.adapt(object, InsertionAdapter.class);
+				if (insertionAdapter!=null)
+					container = insertionAdapter.getObject();
+			}
+		}
+		return container;
+	}
+
 	public static Definitions getDefinitions(EObject object) {
 		Resource resource = getResource(object);
 		return getDefinitions(resource);
@@ -961,14 +974,14 @@ public class ModelUtil {
 	public static EObject findNearestAncestor(EObject object, Class[] types) {
 		EObject ancestor = null;
 		if (object!=null) {
-			ancestor = object.eContainer();
+			ancestor = getContainer(object);
 			while (ancestor!=null) {
 				Class type = ancestor.getClass();
 				for (Class t : types) {
 					if (t.isAssignableFrom(type))
 						return ancestor;
 				}
-				ancestor = ancestor.eContainer();
+				ancestor = getContainer(ancestor);
 			}
 		}
 		return ancestor;

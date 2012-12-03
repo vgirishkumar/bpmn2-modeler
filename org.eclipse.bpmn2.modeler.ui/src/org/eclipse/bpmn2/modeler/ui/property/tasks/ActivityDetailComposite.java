@@ -103,7 +103,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				
 			Composite composite = getAttributesParent();
 
-			createLabel(composite, "Loop Characteristics");
+			createLabel(composite, "Loop Characteristics:");
 			
 			Composite buttonComposite = toolkit.createComposite(composite);
 			buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));

@@ -19,7 +19,10 @@ import java.util.Map;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -87,6 +90,14 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 			protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
 				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 					return false;
+				// don't save the "name" feature of Property, DataInput or DataOutput objects.
+				// see ModelXmlHandler.processElement() for details...
+				if (o instanceof Property ||
+						o instanceof DataInput ||
+						o instanceof DataOutput) {
+					if (f.getName().equals("name"))
+						return false;
+				}
 				return super.shouldSaveFeature(o, f);
 			}
 
@@ -145,8 +156,6 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 		    if (peekObject!=null && peekObject.eClass().getEPackage() == ModelPackage.eINSTANCE) {
 		    	prefix = helper.getPrefix(ModelPackage.eINSTANCE);
 		    }
-			if (name.equals("script"))
-				System.out.println("");
 			super.processElement(name, prefix, localName);
 			
 			// ugly hack for https://bugs.eclipse.org/bugs/show_bug.cgi?id=355686
@@ -177,6 +186,28 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 								anyMap.removeAll(removed);
 						}
 					}
+					
+					// Some objects, like Property, DataInput and DataOutput use the "id" attribute instead
+					// of "name". We need to copy this "id" to "name" so that the UI can deal with them.
+					// Editorial: I don't agree with the decision to allow users to change model object IDs,
+					// since these are (theoretically) supposed to be unique; but it is what it is...
+					if (childObject instanceof Property ||
+							childObject instanceof DataInput ||
+							childObject instanceof DataOutput) {
+						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
+						if (nameFeature!=null) {
+							Object value = childObject.eGet(nameFeature);
+							if (value==null || value.toString().isEmpty()) {
+								EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id");
+								if (idFeature!=null) {
+									value = childObject.eGet(idFeature);
+									if (value!=null && !value.toString().isEmpty()) {
+										childObject.eSet(nameFeature, value);
+									}
+								}
+							}
+						}
+					}	
 				}
 				catch(Exception e) {
 				}

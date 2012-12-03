@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core;
 
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -67,4 +68,6 @@ public interface IBpmn2RuntimeExtension {
 	public void initialize(DiagramEditor editor);
 	
 	public Composite getPreferencesComposite(Composite parent, Bpmn2Preferences preferences);
+	
+	public void modelObjectCreated(EObject object);
 }

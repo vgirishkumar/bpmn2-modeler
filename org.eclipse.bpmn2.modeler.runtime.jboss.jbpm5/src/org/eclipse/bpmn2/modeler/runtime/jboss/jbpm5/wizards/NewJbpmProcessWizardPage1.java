@@ -145,6 +145,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 	 */
 
 	private void initialize() {
+		IContainer container = null;
 		if (selection != null && selection.isEmpty() == false
 				&& selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
@@ -152,7 +153,6 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 				return;
 			Object obj = ssel.getFirstElement();
 			if (obj instanceof IResource) {
-				IContainer container;
 				if (obj instanceof IContainer)
 					container = (IContainer) obj;
 				else
@@ -160,7 +160,16 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-		fileText.setText("new_process.bpmn");
+		String basename = "new_process";
+		String filename = basename + ".bpmn";
+		if (container!=null) {
+			int i = 1;
+			while (container.findMember(filename)!=null) {
+				filename = basename + "_" + i + ".bpmn";
+				++i;
+			}
+		}
+		fileText.setText(filename);
 		nameText.setText("New Process");
 		processIdText.setText("com.sample.bpmn");
 		packageText.setText("defaultPackage");
@@ -218,6 +227,10 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			String ext = fileName.substring(dotLoc + 1);
 			if (!ext.equalsIgnoreCase("bpmn") && !ext.equalsIgnoreCase("bpmn2")) {
 				updateStatus("File extension must be \"bpmn\" or \"bpmn2\"");
+				return;
+			}
+			if ( ((IContainer)container).findMember(fileName)!=null ) {
+				updateStatus("File \""+fileName+"\"already exists");
 				return;
 			}
 		}

@@ -25,7 +25,6 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.emf.transaction.RecordingCommand;
 
 public class FeatureEditingDialog extends ObjectEditingDialog {
 
@@ -45,7 +44,7 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		this.newObject = (EObject) object.eGet(feature);
 	}
 
-	protected Composite createDialogContent(Composite parent) {
+	public void create() {
 		if (newObject==null) {
 			// create the new object
 			createNew = true;
@@ -68,9 +67,12 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 				featureEType = (EClass)feature.getEType();
 		}
 		
+		super.create();
+	}
+	
+	protected Composite createDialogContent(Composite parent) {
 		Composite content = PropertiesCompositeFactory.createDetailComposite(
 				featureEType.getInstanceClass(), parent, SWT.NONE);
-		
 		return content;
 	}
 	
@@ -81,12 +83,12 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
 				protected void doExecute() {
-					result[0] = ModelUtil.createObject(object.eResource(),eclass);
+					result[0] = ModelUtil.createFeature(object, feature, eclass);
 				}
 			});
 		}
 		else {
-			result[0] = ModelUtil.createObject(object.eResource(),eclass);
+			result[0] = ModelUtil.createFeature(object, feature, eclass);
 		}
 		return result[0];
 	}

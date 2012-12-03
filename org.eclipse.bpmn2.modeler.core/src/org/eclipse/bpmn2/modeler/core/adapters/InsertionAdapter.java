@@ -253,4 +253,16 @@ public class InsertionAdapter extends EContentAdapter {
 			return object.eResource();
 		return null;
 	}
+	
+	public EObject getObject() {
+		return object;
+	}
+	
+	public EStructuralFeature getFeature() {
+		return feature;
+	}
+	
+	public EObject getValue() {
+		return value;
+	}
 }
