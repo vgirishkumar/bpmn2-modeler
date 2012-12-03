@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -89,7 +90,8 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 				public Hashtable<String, Object> getChoiceOfValues(Object context) {
 					Hashtable<String,Object> choices = new Hashtable<String,Object>();
 					try {
-						List<DataState> states = ModelHandler.getInstance(this.object).getAll(DataState.class);
+						Resource resource = ModelUtil.getResource(object);
+						List<DataState> states = ModelHandler.getAll(resource, DataState.class);
 						for (DataState s : states) {
 							String label = s.getName();
 							if (label==null || label.isEmpty())
@@ -98,7 +100,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 //								label += " (ID: " +  s.getId() + ")";
 							choices.put(label,s);
 						}
-					} catch (IOException e) {
+					} catch (Exception e) {
 					}
 					return choices;
 				}

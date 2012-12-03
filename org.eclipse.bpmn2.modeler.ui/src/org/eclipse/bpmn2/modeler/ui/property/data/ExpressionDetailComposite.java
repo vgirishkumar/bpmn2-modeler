@@ -19,8 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 
 public class ExpressionDetailComposite extends DefaultDetailComposite {
 
-	private AbstractPropertiesProvider propertiesProvider;
-
 	public ExpressionDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
@@ -37,8 +35,8 @@ public class ExpressionDetailComposite extends DefaultDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"body",
 						"language",
+						"body",
 						"evaluatesToTypeRef"
 				};
 				

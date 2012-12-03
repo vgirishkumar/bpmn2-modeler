@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -96,6 +97,14 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 						text = ModelUtil.getDisplayName(container) + "/" + text;
 					}
 					container = container.eContainer();
+				}
+
+				if (text!=null) {
+					if (flowElement instanceof ItemAwareElement) {
+						String type = ModelUtil.getDisplayName(((ItemAwareElement)flowElement).getItemSubjectRef());
+						if (type!=null)
+							text += " (" + type + ")";
+					}
 				}
 				return text;
 			}

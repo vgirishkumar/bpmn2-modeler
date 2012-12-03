@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.runtime.example;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -83,5 +84,11 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	public Composite getPreferencesComposite(Composite parent,
 			Bpmn2Preferences preferences) {
 		return null;
+	}
+
+	@Override
+	public void modelObjectCreated(EObject object) {
+		// TODO Auto-generated method stub
+		
 	}
 }

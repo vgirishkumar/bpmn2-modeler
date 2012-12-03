@@ -220,7 +220,6 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		}
 	}
 
-	
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
 		if (isModelObjectEnabled(object.eClass(), reference)) {
 			if (parent==null)

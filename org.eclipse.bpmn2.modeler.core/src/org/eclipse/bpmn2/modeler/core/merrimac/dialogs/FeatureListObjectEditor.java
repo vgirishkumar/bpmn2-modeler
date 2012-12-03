@@ -268,4 +268,24 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 			data.exclude = !visible;
 		}
 	}
+	
+	public void dispose() {
+		super.dispose();
+		if (editButton!=null && !editButton.isDisposed()) {
+			editButton.dispose();
+			editButton = null;
+		}
+		if (text!=null && !text.isDisposed()) {
+			text.dispose();
+			text = null;
+		}
+		if (buttons!=null && !buttons.isDisposed()) {
+			buttons.dispose();
+			buttons = null;
+		}
+	}
+	
+	public Control getControl() {
+		return text;
+	}
 }

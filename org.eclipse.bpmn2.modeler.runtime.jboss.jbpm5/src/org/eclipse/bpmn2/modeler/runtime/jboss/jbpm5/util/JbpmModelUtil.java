@@ -14,10 +14,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.Bpmn2Factory;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -174,6 +177,7 @@ public class JbpmModelUtil {
 	public static Hashtable<String, Object> collectAllDataTypes(EObject object) {
 
 		Hashtable<String,Object> choices = new Hashtable<String,Object>();
+		Definitions defs = ModelUtil.getDefinitions(object);
 
 		// add all native types (as defined in the DataTypeRegistry)
 		DataTypeRegistry.getFactory("dummy");
@@ -181,7 +185,28 @@ public class JbpmModelUtil {
 			DataType dt = e.getValue().createDataType();
 			if (dt instanceof EnumDataType || dt instanceof UndefinedDataType)
 				continue;
-			choices.put(dt.getStringType(),dt);
+			String dts = dt.getStringType();
+			
+			ItemDefinition itemDef = null;
+			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
+			for (ItemDefinition id : itemDefs) {
+				String ids = ModelUtil.getStringWrapperValue(id.getStructureRef());
+				if (ids==null || ids.isEmpty())
+					ids = id.getId();
+				if (ids.equals(dts)) {
+					itemDef = id;
+					break;
+				}
+			}
+			if (itemDef==null) {
+				// create a new ItemDefinition for the jBPM data type
+				itemDef = Bpmn2Factory.eINSTANCE.createItemDefinition();
+				itemDef.setItemKind(ItemKind.PHYSICAL);
+				ModelUtil.setID(itemDef,defs.eResource());
+				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
+				InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
+			}
+			choices.put(dt.getStringType(),itemDef);
 		}
 		
 		// add all imported data types
@@ -206,7 +231,6 @@ public class JbpmModelUtil {
 		}
 
 		// add all ItemDefinitions
-		Definitions defs = ModelUtil.getDefinitions(object);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
 			s = ModelUtil.getStringWrapperValue(id.getStructureRef());

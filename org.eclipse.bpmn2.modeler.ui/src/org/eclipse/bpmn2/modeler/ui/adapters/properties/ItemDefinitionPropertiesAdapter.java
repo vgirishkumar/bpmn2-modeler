@@ -54,10 +54,16 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				@Override
 				public String getDisplayName(Object context) {
 					final ItemDefinition itemDefinition = adopt(context);
+					String name = "";
 					if (itemDefinition.getStructureRef()!=null) {
-						return ModelUtil.getStringWrapperValue(itemDefinition.getStructureRef());
+						name = ModelUtil.getStringWrapperValue(itemDefinition.getStructureRef());
 					}
-					return itemDefinition.getId() + ".type";
+					else {
+						name = itemDefinition.getId() + ".type";
+					}
+					if (itemDefinition.isIsCollection())
+						name += "[]";
+					return name;
 				}
 				
 	    		@Override

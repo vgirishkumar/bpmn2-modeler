@@ -61,11 +61,6 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 						}
 					});
 				}
-
-				@Override
-				public String getDisplayName(Object context) {
-					return super.getDisplayName(context);
-				}
 				
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues(Object context) {
@@ -76,26 +71,6 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 				@Override
 				public boolean isMultiLine(Object context) {
 					return true;
-				}
-			}
-    	);
-
-    	feature = Bpmn2Package.eINSTANCE.getProperty_Name();
-    	setFeatureDescriptor(feature,
-			new FeatureDescriptor<Property>(adapterFactory,object,feature) {
-				@Override
-				public String getLabel(Object context) {
-					return "Description";
-				}
-			}
-    	);
-
-    	feature = Bpmn2Package.eINSTANCE.getBaseElement_Id();
-    	setFeatureDescriptor(feature,
-			new FeatureDescriptor<Property>(adapterFactory,object,feature) {
-				@Override
-				public String getLabel(Object context) {
-					return "Name";
 				}
 			}
     	);

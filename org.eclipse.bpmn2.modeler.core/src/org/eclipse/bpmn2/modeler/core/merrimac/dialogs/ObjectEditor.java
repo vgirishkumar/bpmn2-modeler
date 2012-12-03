@@ -212,4 +212,19 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	public boolean isVisible() {
 		return label.isVisible();
 	}
+
+	public void dispose() {
+		if (label!=null && !label.isDisposed()) {
+			label.dispose();
+			label = null;
+		}
+		if (decoration!=null) {
+			decoration.dispose();
+			decoration = null;
+		}
+	}
+	
+	public Control getControl() {
+		return label;
+	}
 }

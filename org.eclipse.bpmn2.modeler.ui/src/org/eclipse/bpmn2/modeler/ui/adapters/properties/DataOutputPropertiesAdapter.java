@@ -56,18 +56,13 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 				String text = dataOutput.getName();
 				if (text==null || text.isEmpty())
 					text = dataOutput.getId();
-				
-				EObject container = dataOutput.eContainer();
-				while (container!=null) {
-					if (container instanceof Participant) {
-						container = ((Participant)container).getProcessRef();
-						if (container==null)
-							break;
-					}
-					if (container instanceof Activity || container instanceof Process) {
-						text = ModelUtil.getDisplayName(container) + "/" + text;
-					}
-					container = container.eContainer();
+
+				if (text!=null) {
+					if (dataOutput.isIsCollection())
+						text += "[]";
+					String type = ModelUtil.getDisplayName(dataOutput.getItemSubjectRef());
+					if (type!=null)
+						text += " (" + type + ")";
 				}
 				return text;
 			}

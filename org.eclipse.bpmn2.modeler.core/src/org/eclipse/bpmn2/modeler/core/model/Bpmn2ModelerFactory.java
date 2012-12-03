@@ -70,6 +70,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		    			break;
 		    		}
 		    	}
+		    	rt.getRuntimeExtension().modelObjectCreated(object);
 	    	}
     	}
     	return object;

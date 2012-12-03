@@ -116,6 +116,22 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 	protected boolean canRemove() {
 		return false;
 	}
+	
+	public void dispose() {
+		super.dispose();
+		if (defaultButton!=null && !defaultButton.isDisposed()) {
+			defaultButton.dispose();
+			defaultButton = null;
+		}
+		if (addButton!=null && !addButton.isDisposed()) {
+			addButton.dispose();
+			addButton = null;
+		}
+		if (removeButton!=null && !removeButton.isDisposed()) {
+			removeButton.dispose();
+			removeButton = null;
+		}
+	}
 
 	/**
 	 * The implementation must override this to handle the "Edit..." button click.

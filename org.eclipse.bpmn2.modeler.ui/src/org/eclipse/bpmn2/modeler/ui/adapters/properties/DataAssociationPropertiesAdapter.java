@@ -91,13 +91,14 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			// Properties are contained in the nearest enclosing Process or Event;
 			// DataStores are contained in the DocumentRoot
 			DataAssociation association = adopt(context);
-			values.addAll( ModelUtil.collectAncestorObjects(association, "properties", new Class[] {Activity.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(association, "properties", new Class[] {Process.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(association, "properties", new Class[] {Event.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(association, "dataStore", new Class[] {DocumentRoot.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(association, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class}));
+			EObject container = ModelUtil.getContainer(association);
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) );
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) );
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) );
+			values.addAll( ModelUtil.collectAncestorObjects(container, "dataStore", new Class[] {DocumentRoot.class}) );
+			values.addAll( ModelUtil.collectAncestorObjects(container, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class}));
 			
-			Activity activity = (Activity)ModelUtil.findNearestAncestor(association.eContainer(), new Class[] {Activity.class});
+			Activity activity = (Activity)ModelUtil.findNearestAncestor(container, new Class[] {Activity.class});
 			if (activity!=null) {
 				InputOutputSpecification ioSpec = activity.getIoSpecification();
 				if (ioSpec!=null) {
@@ -106,7 +107,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				}
 			}
 			
-			CallableElement callable = (CallableElement)ModelUtil.findNearestAncestor(association.eContainer(), new Class[] {CallableElement.class});
+			CallableElement callable = (CallableElement)ModelUtil.findNearestAncestor(container, new Class[] {CallableElement.class});
 			if (callable!=null) {
 				InputOutputSpecification ioSpec = callable.getIoSpecification();
 				if (ioSpec!=null) {

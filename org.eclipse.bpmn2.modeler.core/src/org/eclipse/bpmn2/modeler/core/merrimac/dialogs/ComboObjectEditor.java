@@ -70,7 +70,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	 * @param feature
 	 */
 	public ComboObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
-		this(parent, object, feature, (EClass)feature.getEType());
+		this(parent, object, feature, null);
 	}
 
 	public ComboObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, EClass featureEType) {
@@ -95,7 +95,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		comboViewer = createComboViewer(composite,
 				AdapterRegistry.getLabelProvider(), style);
 		Combo combo = comboViewer.getCombo();
-		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, (canEdit || canCreateNew) ? 1 : 2, 1));
+		combo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, (canEdit || canCreateNew) ? 1 : 2, 1));
 		combo.addDisposeListener(new DisposeListener() {
 
 			@Override
@@ -139,7 +139,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		buttons = null;
 		if (canEdit || canCreateNew) {
 			buttons =  getToolkit().createComposite(composite);
-			buttons.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+			buttons.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 			buttons.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 			if (canCreateNew) {
@@ -185,7 +185,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				});
 			}
 		}
-		
+
 		fillCombo();
 
 		comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -307,9 +307,6 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	private ComboViewer createComboViewer(Composite parent, AdapterFactoryLabelProvider labelProvider, int style) {
 		ComboViewer comboViewer = new ComboViewer(parent, style);
 		comboViewer.setLabelProvider(labelProvider);
-
-		Combo combo = comboViewer.getCombo();
-		
 		return comboViewer;
 	}
 	
@@ -317,10 +314,12 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
 		for (String item : comboViewer.getCombo().getItems()) {
-			Object o = comboViewer.getData(item);
-			if (o == notification.getNotifier() || o == notification.getOldValue()) {
-				fillCombo();
-				break;
+			if (!item.isEmpty()) {
+				Object o = comboViewer.getData(item);
+				if (o == notification.getNotifier() || o == notification.getOldValue()) {
+					fillCombo();
+					break;
+				}
 			}
 		}
 	}
@@ -335,5 +334,29 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			data = (GridData)buttons.getLayoutData();
 			data.exclude = !visible;
 		}
+	}
+	
+	public void dispose() {
+		super.dispose();
+		if (comboViewer!=null && !comboViewer.getCombo().isDisposed()) {
+			comboViewer.getCombo().dispose();
+			comboViewer = null;
+		}
+		if (editButton!=null && !editButton.isDisposed()) {
+			editButton.dispose();
+			editButton = null;
+		}
+		if (createButton!=null && !createButton.isDisposed()) {
+			createButton.dispose();
+			createButton = null;
+		}
+		if (buttons!=null && !buttons.isDisposed()) {
+			buttons.dispose();
+			buttons = null;
+		}
+	}
+	
+	public Control getControl() {
+		return comboViewer.getCombo();
 	}
 }

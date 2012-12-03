@@ -39,6 +39,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -122,7 +127,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			// TODO: if selection came from a Guvnor Repository view, this will be a
 			// org.guvnor.tools.views.model.TreeObject - figure out how to add this dependency.
 			// In this case we may want to explicitly make the editor read-only
-			System.out.println(o);
 		}
 
 		IProject project = Bpmn2Preferences.getActiveProject();
@@ -458,6 +462,49 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override
 	public Composite getPreferencesComposite(Composite parent, Bpmn2Preferences preferences) {
 		return null;
+	}
+
+	@Override 
+	public void modelObjectCreated(final EObject object) {
+		if (object instanceof org.eclipse.bpmn2.Property || object instanceof org.eclipse.bpmn2.DataInput) {
+			object.eAdapters().add(new Adapter() {
+				@Override
+				public void notifyChanged(Notification notification) {
+					
+		            if (notification.getEventType()==Notification.SET) {
+						Object o = notification.getFeature();
+						if (o instanceof EStructuralFeature) {
+							EStructuralFeature feature = (EStructuralFeature)o;
+	                        if ("name".equals(feature.getName())) {
+								Object newValue = notification.getNewValue();
+								Object oldValue = notification.getOldValue();
+								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) {
+									EStructuralFeature id = object.eClass().getEStructuralFeature("id");
+									if (id!=null) {
+										object.eSet(id, newValue);
+									}
+								}
+							}
+						}
+		            }
+				}
+
+				@Override
+				public Notifier getTarget() {
+					return null;
+				}
+
+				@Override
+				public void setTarget(Notifier newTarget) {
+				}
+
+				@Override
+				public boolean isAdapterForType(Object type) {
+					return false;
+				}
+				
+			});
+		}
 	}
 
 }
