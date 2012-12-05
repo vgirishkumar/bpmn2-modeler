@@ -207,16 +207,20 @@ public class FileService {
 		try {
 			if (input instanceof Bpmn2DiagramEditorInput) {
 				URI uri = getInputUri(input);
-				String fileName = null;
-				if (uri.isFile())
-					fileName = uri.toFileString();
-				else if (uri.isPlatformResource())
-					fileName = uri.toPlatformString(false);
-				
-				File file = new File(fileName);
-				if (file.exists()) {
-					InputStream is = new FileInputStream(file);
-					return is;
+
+				if (uri.isFile()) {
+					File file = new File(uri.toFileString());
+
+					if (file.exists()) {
+						return new FileInputStream(file);
+					}
+				} else if (uri.isPlatformResource()) {
+					IFile file = ResourcesPlugin.getWorkspace().getRoot()
+							.getFile(new Path(uri.toPlatformString(false)));
+
+					if (file.exists()) {
+						return file.getContents();
+					}
 				}
 			} else if (input instanceof FileEditorInput) {
 				return ((FileEditorInput) input).getFile().getContents();
@@ -224,10 +228,9 @@ public class FileService {
 				return ((IStorageEditorInput) input).getStorage().getContents();
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Activator.logError(e);
 		}
-		
+
 		return null;
 	}
 	
