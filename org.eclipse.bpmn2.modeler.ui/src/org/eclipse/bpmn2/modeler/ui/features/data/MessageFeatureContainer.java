@@ -141,9 +141,6 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			StyleUtil.applyStyle(envelope.rect, businessObject);
 			envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 
-			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
-
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
 
@@ -151,6 +148,9 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			((AddContext)context).setWidth(width);
 			((AddContext)context).setHeight(height);
 			decorateShape(context, containerShape, businessObject);
+
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 			
 			layoutPictogramElement(containerShape);
 			

@@ -80,11 +80,11 @@ public class AddGatewayFeature<T extends Gateway>
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
-		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, gatewayPolygon);
 		
 		// hook for subclasses to inject extra code
 		decorateShape(context, containerShape, businessObject);
+		peService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, gatewayPolygon);
 		
 		splitConnection(context, containerShape);
 		

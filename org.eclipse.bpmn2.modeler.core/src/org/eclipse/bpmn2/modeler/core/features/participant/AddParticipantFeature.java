@@ -91,10 +91,10 @@ public class AddParticipantFeature extends AbstractAddBPMNShapeFeature<Participa
 
 		peService.setPropertyValue(containerShape, MULTIPLICITY, Boolean.toString(businessObject.getParticipantMultiplicity()!=null));
 		
+		decorateShape(context, containerShape, businessObject);
+		
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
-		
-		decorateShape(context, containerShape, businessObject);
 
 		updatePictogramElement(containerShape);
 		layoutPictogramElement(containerShape);

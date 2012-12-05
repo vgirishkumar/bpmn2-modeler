@@ -114,9 +114,6 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			rect.setLineStyle(LineStyle.DASHDOT);
 			gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 
-			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, rect);
-
 			link(containerShape, businessObject);
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
@@ -125,6 +122,9 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			((AddContext)context).setWidth(width);
 			((AddContext)context).setHeight(height);
 			decorateShape(context, containerShape, businessObject);
+
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 			return containerShape;
 		}

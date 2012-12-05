@@ -98,9 +98,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 			Graphiti.getPeService().setPropertyValue(containerShape, Properties.COLLECTION_PROPERTY, value);
 		}
-
-		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
@@ -108,6 +105,9 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		((AddContext)context).setWidth(width);
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
+
+		peService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
 		layoutPictogramElement(containerShape);
 		this.prepareAddContext(context, width, height);

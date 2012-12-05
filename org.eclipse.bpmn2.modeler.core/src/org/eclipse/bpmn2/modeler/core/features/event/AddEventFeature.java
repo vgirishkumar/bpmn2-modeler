@@ -88,14 +88,14 @@ public class AddEventFeature<T extends Event>
 		peService.setPropertyValue(containerShape, GraphicsUtil.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
 		StyleUtil.applyStyle(ellipse, businessObject);
-
-		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 		
 		decorateShape(context, containerShape, businessObject);
-		
+
+		peService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
+
 		splitConnection(context, containerShape);
 		
 		updatePictogramElement(containerShape);
