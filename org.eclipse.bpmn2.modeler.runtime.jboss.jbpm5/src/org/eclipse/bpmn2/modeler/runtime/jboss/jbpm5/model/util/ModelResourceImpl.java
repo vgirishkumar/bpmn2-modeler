@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
@@ -94,7 +95,8 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 				// see ModelXmlHandler.processElement() for details...
 				if (o instanceof Property ||
 						o instanceof DataInput ||
-						o instanceof DataOutput) {
+						o instanceof DataOutput ||
+						o instanceof Message) {
 					if (f.getName().equals("name"))
 						return false;
 				}
@@ -193,7 +195,8 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 					// since these are (theoretically) supposed to be unique; but it is what it is...
 					if (childObject instanceof Property ||
 							childObject instanceof DataInput ||
-							childObject instanceof DataOutput) {
+							childObject instanceof DataOutput ||
+							childObject instanceof Message) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
 						if (nameFeature!=null) {
 							Object value = childObject.eGet(nameFeature);

@@ -891,6 +891,8 @@
 			<disable object="MultiInstanceLoopCharacteristics" feature="noneBehaviorEventRef"/>
 			<disable object="MultiInstanceLoopCharacteristics" feature="oneBehaviorEventRef"/>
 			<disable object="MultiInstanceLoopCharacteristics" feature="outputDataItem"/>
+			<enable object="Operation"/>
+			<disable object="Operation" feature="implementationRef"/>
 			<disable object="OutputSet"/>
 			<enable object="ParallelGateway"/>
 			<disable object="ParallelGateway" feature="anyAttribute"/>

@@ -398,7 +398,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object
 	 * @param property
 	 */
-	public void populateObject(EObject object, Property property, boolean all) {
+	public EStructuralFeature populateObject(EObject object, Property property, boolean all) {
 
 		EObject childObject = null;
 		EStructuralFeature childFeature = null;
@@ -467,6 +467,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				populateObjectFromValues(childObject,property.getValues(), all);
 			}
 		}
+		return feature;
 	}
 
 	/**
