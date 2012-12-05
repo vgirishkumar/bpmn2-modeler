@@ -30,24 +30,31 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
+import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider.IconSize;
+import org.eclipse.bpmn2.modeler.runtime.example.SampleModel.SampleModelPackage;
 
 /**
  * Example implementation of a Custom Task feature container. The main things to consider
@@ -82,6 +89,23 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 			public IAddFeature getAddFeature(IFeatureProvider fp) {
 					
 				return new AddTextAnnotationFeature(fp) {
+					
+					@Override
+					public PictogramElement add(IAddContext context) {
+						PictogramElement pe = super.add(context);
+						Boolean evaluate = Boolean.FALSE;
+						TextAnnotation ta = getBusinessObject(context);
+						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
+						if (f!=null) {
+							evaluate = (Boolean)ta.eGet(f);
+						}
+						else {
+							ModelUtil.createDynamicAttribute(SampleModelPackage.eINSTANCE, ta, "evaluate", "EBoolean");
+						}
+						Graphiti.getPeService().setPropertyValue(pe, "evaluate.property", evaluate.toString());
+						return pe;
+					}
+
 					@Override
 					protected void decorateShape(IAddContext context, ContainerShape containerShape, TextAnnotation businessObject) {
 						IGaService gaService = Graphiti.getGaService();
@@ -102,7 +126,13 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 						// apply the same styling as TextAnnotation
 						StyleUtil.applyStyle(roundedRect, businessObject);
 						gaService.setLocationAndSize(roundedRect, 0, 0, width, height);
-						
+						EStructuralFeature f = ModelUtil.getAnyAttribute(businessObject, "evaluate");
+						boolean evaluate = false;
+						if (f!=null) {
+							evaluate = (Boolean)businessObject.eGet(f);
+						}
+						roundedRect.setFilled(evaluate);							
+
 						// add an image to the top-left corner of the rectangle
 						Image img = SampleImageProvider.createImage(roundedRect, customTaskDescriptor, 38, 38);
 						Graphiti.getGaService().setLocation(img, 2, 2);
@@ -137,6 +167,62 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 					public String getCreateLargeImageId() {
 						return SampleImageProvider.getImageId(customTaskDescriptor, IconSize.LARGE);
 					}
+				};
+			}
+
+			@Override
+			public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+
+				return new UpdateTextAnnotationFeature(fp) {
+					@Override
+					public IReason updateNeeded(IUpdateContext context) {
+						IReason reason = super.updateNeeded(context);
+						if (reason.toBoolean())
+							return reason;
+						
+						PictogramElement pe = context.getPictogramElement();
+						String propertyValue = Graphiti.getPeService().getPropertyValue(pe, "evaluate.property");
+
+						TextAnnotation ta = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
+						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
+						if (f!=null) {
+							Boolean objectValue = (Boolean)ta.eGet(f);
+							if (propertyValue!=null && objectValue!=null) {
+								if (Boolean.parseBoolean(propertyValue) != objectValue)
+									return Reason.createTrueReason("evalute property changed");
+							}
+						}
+						return Reason.createFalseReason("");
+					}
+
+					@Override
+					public boolean update(IUpdateContext context) {
+						super.update(context);
+						
+						ContainerShape pe = (ContainerShape)context.getPictogramElement();
+						TextAnnotation ta = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
+						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
+						Boolean objectValue;
+						if (f!=null) {
+							objectValue = (Boolean)ta.eGet(f);
+							String propertyValue;
+							Shape shape = pe.getChildren().get(0);
+							Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
+							Color color = null;
+							if (objectValue == true) {
+								color = Graphiti.getGaService().manageColor(diagram, IColorConstant.RED);
+								propertyValue = Boolean.TRUE.toString();
+							}
+							else {
+								color = Graphiti.getGaService().manageColor(diagram, IColorConstant.GREEN);
+								propertyValue = Boolean.FALSE.toString();
+							}
+							shape.getGraphicsAlgorithm().setFilled(objectValue);
+							Graphiti.getPeService().setPropertyValue(pe, "evaluate.property", propertyValue);
+						}
+						return true;
+					}
+					
 				};
 			}
 
