@@ -98,10 +98,11 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 
 		peService.createChopboxAnchor(containerShape);
 		createDIShape(containerShape, businessObject, !isImport);
-		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
-		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 		
 		decorateShape(context, containerShape, businessObject);
+		
+		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
+		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 		
 		return containerShape;
 	}

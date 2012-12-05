@@ -141,9 +141,6 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		}
 		link(textShape, businessObject);
 
-		peCreateService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
-
 		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null
 				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
 			FeatureSupport.redraw(context.getTargetContainer());
@@ -158,6 +155,9 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		((AddContext)context).setWidth(width);
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
+
+		peCreateService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
 	}

@@ -102,9 +102,6 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		link(rectShape, businessObject);
 		
 		peService.setPropertyValue(rectShape, IS_ACTIVITY, Boolean.toString(true));
-		
-		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
@@ -121,6 +118,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		((AddContext)context).setWidth(width);
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
+		
+		peService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {

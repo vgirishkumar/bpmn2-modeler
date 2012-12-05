@@ -165,9 +165,6 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			xy = new int[] { 0, 11, whalf, 0, width, 11 };
 			Polyline lineTop = gaService.createPolyline(invisibleRect, xy, bend);
 			lineTop.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-
-			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
 			
@@ -175,6 +172,9 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			((AddContext)context).setWidth(width);
 			((AddContext)context).setHeight(height);
 			decorateShape(context, containerShape, businessObject);
+
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
 			layoutPictogramElement(containerShape);
 			
@@ -298,6 +298,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 					bo.setName(result.getName() + " Ref");
 
 				bo.setDataStoreRef(result);
+				ModelUtil.setID(bo, mh.getResource());
 				putBusinessObject(context, bo);
 
 			} catch (IOException e) {

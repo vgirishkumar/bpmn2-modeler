@@ -90,10 +90,6 @@ public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<Boundar
 		circle.setStyle(StyleUtil.getStyleForClass(getDiagram()));
 		createDIShape(containerShape, businessObject, !isImport);
 
-		ChopboxAnchor anchor = peService.createChopboxAnchor(containerShape);
-		anchor.setReferencedGraphicsAlgorithm(ellipse);
-		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
-
 		Activity activity = businessObject.getAttachedToRef();
 		PictogramElement foundElem = BusinessObjectUtil.getFirstBaseElementFromDiagram(getDiagram(), activity);
 		if (foundElem != null && foundElem instanceof ContainerShape) {
@@ -111,6 +107,10 @@ public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<Boundar
 
 		// hook for subclasses to inject extra code
 		decorateShape(context, containerShape, businessObject);
+
+		ChopboxAnchor anchor = peService.createChopboxAnchor(containerShape);
+		anchor.setReferencedGraphicsAlgorithm(ellipse);
+		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
 		this.prepareAddContext(context, gatewayWidth, gatewayHeight);
 //		this.getFeatureProvider().getAddFeature(context).add(context);

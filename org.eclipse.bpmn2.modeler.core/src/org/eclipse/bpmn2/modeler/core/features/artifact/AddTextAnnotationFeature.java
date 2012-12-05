@@ -82,14 +82,14 @@ public class AddTextAnnotationFeature extends AbstractAddBPMNShapeFeature<TextAn
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 		link(textShape, businessObject);
-
-		peCreateService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 		
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
+
+		peCreateService.createChopboxAnchor(containerShape);
+		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 		
 		layoutPictogramElement(containerShape);
 		return containerShape;
