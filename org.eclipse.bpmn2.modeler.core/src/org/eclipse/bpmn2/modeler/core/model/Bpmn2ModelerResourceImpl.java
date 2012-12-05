@@ -344,7 +344,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             // don't serialize the "body" attribute of FormalExpressions because the expression text
             // is already in the CDATA section of the <bpmn2:expression> element. This would cause
             // the expression text to be duplicated on deserialization.
-			if (Bpmn2Package.eINSTANCE.getFormalExpression_Body().equals(f))
+            // Same goes for Documentation.text
+			if (Bpmn2Package.eINSTANCE.getFormalExpression_Body().equals(f) ||
+					Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 				return false;
             
             return super.shouldSaveFeature(o, f);
