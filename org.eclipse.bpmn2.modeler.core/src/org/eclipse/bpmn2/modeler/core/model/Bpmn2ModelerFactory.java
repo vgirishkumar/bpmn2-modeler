@@ -19,7 +19,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.notify.Notification;
@@ -40,6 +39,53 @@ import org.eclipse.emf.ecore.util.EcoreEMap;
  */
 public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	
+	/**
+	 * We provide our own DocumentRoot (since we can't modify the one in org.eclipse.bpmn2)
+	 * which prevents forwarding change notifications to the XML Namespace Prefix map AFTER
+	 * the document has been saved. This avoids the nasty "Cannot modify resource set without
+	 * a write transaction" error.
+	 * 
+	 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=392427
+	 */
+	public class Bpmn2ModelerDocumentRootImpl extends DocumentRootImpl {
+		
+		private boolean deliver = true;
+		
+		public Bpmn2ModelerDocumentRootImpl() {
+			super();
+		}
+		
+		public void setDeliver(boolean deliver) {
+			this.deliver = deliver;
+		}
+	    public Map<String, String> getXMLNSPrefixMap() {
+	        if (xMLNSPrefixMap == null) {
+	            xMLNSPrefixMap = new EcoreEMap<String, String>(
+	                    EcorePackage.Literals.ESTRING_TO_STRING_MAP_ENTRY,
+	                    EStringToStringMapEntryImpl.class, this,
+	                    Bpmn2Package.DOCUMENT_ROOT__XMLNS_PREFIX_MAP) {
+	                {
+	                    initializeDelegateEList();
+	                }
+
+	                @Override
+	                protected void initializeDelegateEList() {
+	                    delegateEList = new DelegateEObjectContainmentEList<Entry<String, String>>(entryClass,
+	                    		Bpmn2ModelerDocumentRootImpl.this, Bpmn2Package.DOCUMENT_ROOT__XMLNS_PREFIX_MAP) {
+	                        @Override
+	                        protected void dispatchNotification(Notification notification) {
+	                            if (deliver)
+	                            	super.dispatchNotification(notification);
+	                        }
+	                    };
+	                }
+	            };
+	        }
+	        return xMLNSPrefixMap.map();
+
+	    }
+	}
+	
 	// Allows the XML loader for a particular target runtime to temporarily disable
 	// model extensions. This prevents extensions being added multiple times by
 	// ModelExtensionDescriptor.populateObject() every time a file is loaded.
@@ -49,6 +95,12 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		return (Bpmn2ModelerFactory) Bpmn2ModelerFactory.eINSTANCE;
 	}
 	
+	@Override
+    public DocumentRoot createDocumentRoot() {
+        DocumentRootImpl documentRoot = new Bpmn2ModelerDocumentRootImpl();
+        return documentRoot;
+    }
+
 	@Override
     public EObject create(EClass eClass) {
     	EObject object = super.create(eClass);
@@ -93,10 +145,4 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		}
 		return (T)newObject;
 	}
-	
-    public DocumentRoot createDocumentRoot() {
-        DocumentRoot documentRoot = super.createDocumentRoot();
-        documentRoot.eSetDeliver(false);
-        return documentRoot;
-    }
 }
