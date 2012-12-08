@@ -13,14 +13,20 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.Hashtable;
+
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 
@@ -39,6 +45,8 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 
     	EStructuralFeature ce = Bpmn2Package.eINSTANCE.getCallActivity_CalledElementRef();
     	setProperty(ce, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(ce, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
     	setFeatureDescriptor(ce,
 			new RootElementRefFeatureDescriptor<CallActivity>(adapterFactory,object,ce) {
 				@Override
@@ -57,6 +65,32 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 						return uri.lastSegment();
 					}
 					return super.getDisplayName(context);
+				}
+				
+				@Override
+				public Hashtable<String, Object> getChoiceOfValues(Object context) {
+					final CallActivity activity = adopt(context);
+					Hashtable<String, Object> choices = super.getChoiceOfValues(activity);
+					// add processes defined in imports
+					ImportUtil importer = new ImportUtil();
+					
+					Definitions defs = ModelUtil.getDefinitions(object);
+					for (Import imp : defs.getImports()) {
+						if (ImportUtil.IMPORT_TYPE_BPMN2.equals(imp.getImportType())) {
+							// load the process file and look for <process> elements
+							Object object = importer.loadImport(imp);
+							if (object instanceof DocumentRoot) {
+								defs = ((DocumentRoot)object).getDefinitions();
+								for (RootElement elem : defs.getRootElements()) {
+									if (elem instanceof Process) {
+										String label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")";
+										choices.put(label, elem);
+									}
+								}
+							}
+						}
+					}
+					return choices;
 				}
 			}
     	);

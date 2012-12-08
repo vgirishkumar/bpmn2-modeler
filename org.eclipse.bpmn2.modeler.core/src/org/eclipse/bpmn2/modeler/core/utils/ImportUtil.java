@@ -16,8 +16,6 @@ package org.eclipse.bpmn2.modeler.core.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.wsdl.extensions.schema.Schema;
-
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
@@ -26,13 +24,17 @@ import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.wst.wsdl.Binding;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Input;
@@ -49,6 +51,74 @@ import org.eclipse.xsd.XSDSchema;
  *
  */
 public class ImportUtil {
+
+	public static final String IMPORT_TYPE_WSDL = "http://schemas.xmlsoap.org/wsdl/";
+	public static final String IMPORT_TYPE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+	public static final String IMPORT_TYPE_JAVA = "http://www.java.com/javaTypes";
+	public static final String IMPORT_TYPE_BPMN2 = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+	
+	public static final String IMPORT_KIND_WSDL = "wsdl";
+	public static final String IMPORT_KIND_XML_SCHEMA = "xsd";
+	public static final String IMPORT_KIND_JAVA = "java";
+	public static final String IMPORT_KIND_BPMN2 = "bpmn2";
+	
+	protected Bpmn2ModelerResourceSetImpl fHackedResourceSet;
+
+	public Object loadImport(Import imp) {
+		if (fHackedResourceSet==null) {
+			ResourceSet rs =  imp.eResource().getResourceSet();
+			fHackedResourceSet = ModelUtil.slightlyHackedResourceSet(rs);
+		}
+		URI uri;
+		String type = imp.getImportType();
+		String kind = null;
+		if (IMPORT_TYPE_WSDL.equals(type))
+			kind = IMPORT_KIND_WSDL;
+		else if (IMPORT_TYPE_XML_SCHEMA.equals(type))
+			kind = IMPORT_KIND_XML_SCHEMA;
+		else if (IMPORT_TYPE_JAVA.equals(type))
+			kind = IMPORT_KIND_JAVA;
+		else if (IMPORT_TYPE_BPMN2.equals(type))
+			kind = "";
+		else
+			return null;
+		uri = URI.createURI( imp.getLocation() );
+		return loadImport(uri,kind);
+	}
+	
+	protected Object loadImport(URI uri, String kind) {
+
+		Resource resource = null;
+		if (IMPORT_KIND_JAVA.equals(kind)) {
+			final String fileName = uri.lastSegment();
+			final List<Class> results = new ArrayList<Class>();
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (IProject p : projects) {
+				try {
+					if (p.isOpen() && p.hasNature(JavaCore.NATURE_ID)) {
+						final IJavaProject javaProject = JavaCore.create(p);
+						JavaProjectClassLoader cl = new JavaProjectClassLoader(javaProject);
+						results.addAll(cl.findClasses(fileName));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return results;
+		}
+		else {
+			try {
+				resource = fHackedResourceSet.getResource(uri, true, kind);
+			} catch (Throwable t) {
+				return t;
+			}
+		
+			if (resource!=null && resource.getErrors().isEmpty() && resource.isLoaded() && resource.getContents().size()>0) {
+				return resource.getContents().get(0);
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Convenience method for <code>addImport(Resource,Object)</code>
@@ -90,7 +160,7 @@ public class ImportUtil {
 				Definition wsdlDefinition = (Definition)importObject;
 	
 				imp = Bpmn2ModelerFactory.create(Import.class);
-				imp.setImportType("http://schemas.xmlsoap.org/wsdl/");
+				imp.setImportType(IMPORT_TYPE_WSDL);
 				imp.setLocation(wsdlDefinition.getLocation());
 				imp.setNamespace(wsdlDefinition.getTargetNamespace());
 			}
@@ -99,7 +169,7 @@ public class ImportUtil {
 				XSDSchema schema = (XSDSchema)importObject;
 				
 				imp = Bpmn2ModelerFactory.create(Import.class);
-				imp.setImportType("http://www.w3.org/2001/XMLSchema");
+				imp.setImportType(IMPORT_TYPE_XML_SCHEMA);
 				imp.setLocation(schema.getSchemaLocation());
 				imp.setNamespace(schema.getTargetNamespace());
 			}
@@ -112,7 +182,7 @@ public class ImportUtil {
 //				java.net.URL url = cl.getResource(name);
 //				URI uri = URI.createPlatformPluginURI(url.getPath(), true);
 				imp = Bpmn2ModelerFactory.create(Import.class);
-				imp.setImportType("http://www.java.com/javaTypes");
+				imp.setImportType(IMPORT_TYPE_JAVA);
 				imp.setLocation(clazz.getName());
 				imp.setNamespace("http://" + clazz.getPackage().getName());
 			}
@@ -121,7 +191,7 @@ public class ImportUtil {
 				Definitions defs = (Definitions)importObject;
 				
 				imp = Bpmn2ModelerFactory.create(Import.class);
-				imp.setImportType("http://www.omg.org/spec/BPMN/20100524/MODEL");
+				imp.setImportType(IMPORT_TYPE_BPMN2);
 				imp.setLocation(defs.eResource().getURI().toString());
 				imp.setNamespace(defs.getTargetNamespace());
 			}
@@ -259,7 +329,7 @@ public class ImportUtil {
 				if (!deleted)
 					deleteItemDefinition(definitions, imp, className);
 			}
-			else if ("http://www.omg.org/spec/BPMN/20100524/MODEL".equals(type)) {
+			else if (IMPORT_TYPE_BPMN2.equals(type)) {
 				
 			}
 			definitions.getImports().remove(imp);

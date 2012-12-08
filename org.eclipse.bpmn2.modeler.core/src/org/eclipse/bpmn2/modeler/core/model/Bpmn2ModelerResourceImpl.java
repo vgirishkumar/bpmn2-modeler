@@ -12,9 +12,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,8 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
-import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -36,6 +35,7 @@ import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
@@ -51,8 +51,6 @@ import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.dc.Point;
-import org.eclipse.dd.dc.impl.PointImpl;
-import org.eclipse.dd.di.DiFactory;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
@@ -66,7 +64,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
@@ -311,7 +308,23 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 			
 		}
-		
+
+        @Override
+		protected void endSave(List<? extends EObject> contents) throws IOException
+		{
+        	Bpmn2ModelerDocumentRootImpl documentRoot = null;
+        	if (contents.size()>0 && contents.get(0) instanceof Bpmn2ModelerDocumentRootImpl) {
+        		documentRoot = (Bpmn2ModelerDocumentRootImpl)contents.get(0);
+				documentRoot.setDeliver(false);
+			}
+        	
+			super.endSave(contents);
+			
+			if (documentRoot!=null) {
+				documentRoot.setDeliver(true);
+			}
+		}
+		  
         @Override
         protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
             if (o instanceof BPMNShape && f==BpmnDiPackage.eINSTANCE.getBPMNShape_IsHorizontal()) {
@@ -598,9 +611,12 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public URI deresolve(URI uri) {
 			String fragment = uri.fragment();
 			if (fragment != null && !fragment.startsWith("/")) {
-				// return just fragment (i.e. without the '#'), always assume
-				// local reference
-				return URI.createURI(fragment);
+				// return just fragment (i.e. without the '#') but only if local reference
+				URI otherURI = uri.trimFragment();
+				if (baseURI.equals(otherURI))
+					return URI.createURI(fragment);
+				else
+					return uri;
 			}
 			return super.deresolve(uri);
 		}
