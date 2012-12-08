@@ -611,9 +611,12 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public URI deresolve(URI uri) {
 			String fragment = uri.fragment();
 			if (fragment != null && !fragment.startsWith("/")) {
-				// return just fragment (i.e. without the '#'), always assume
-				// local reference
-				return URI.createURI(fragment);
+				// return just fragment (i.e. without the '#') but only if local reference
+				URI otherURI = uri.trimFragment();
+				if (baseURI.equals(otherURI))
+					return URI.createURI(fragment);
+				else
+					return uri;
 			}
 			return super.deresolve(uri);
 		}
