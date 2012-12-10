@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 public class DefaultDetailComposite extends AbstractDetailComposite {
 
 	protected final String[] EMPTY_STRING_ARRAY = new String[] {};
-	protected AbstractPropertiesProvider propertiesProvider = null;
 	
 	/**
 	 * Create the composite.
@@ -48,41 +47,6 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 	
 	public DefaultDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
-	}
-	
-	public void setPropertiesProvider(AbstractPropertiesProvider provider) {
-		propertiesProvider = provider;
-	}
-	
-	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
-		if (propertiesProvider==null) {
-			final EObject o = object;
-			return new AbstractPropertiesProvider(object) {
-				public String[] getProperties() {
-					List<String> list = new ArrayList<String>();
-					EClass c = o.eClass();
-					// add name and id attributes first (if any)
-					if (c.getEStructuralFeature("name")!=null)
-						list.add("name");
-					if (c.getEStructuralFeature("id")!=null)
-						list.add("id");
-					for (EStructuralFeature attribute : o.eClass().getEStructuralFeatures()) {
-						if (!list.contains(attribute.getName()))
-							list.add(attribute.getName());
-					}
-					// add the anyAttributes
-					List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(o);
-					for (EStructuralFeature f : anyAttributes) {
-						if (f instanceof EAttribute && !list.contains(f.getName()))
-							list.add(f.getName());
-					}
-					String a[] = new String[list.size()];
-					list.toArray(a);
-					return a;
-				}
-			};
-		}
-		return propertiesProvider;
 	}
 	
 	protected Composite bindFeature(EObject be, EStructuralFeature feature, EClass eItemClass) {
@@ -150,7 +114,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 							composite = bindProperty((EObject)o, property);
 							if (composite instanceof AbstractListComposite) {
 								((AbstractListComposite)composite).setTitle(
-										ModelUtil.getLabel((EObject)o,feature)+
+										getPropertiesProvider().getLabel((EObject)o,feature)+
 										" for "+
 										ModelUtil.getLongDisplayName((EObject)o));
 							}
@@ -215,7 +179,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		if (getDiagramEditor()!=null) {
 			if (getPropertySection()!=null) {
 				String tab = propertySection.tabbedPropertySheetPage.getSelectedTab().getLabel();
-				createLabel(this,"No "+tab+" Properties for this "+ModelUtil.getDisplayName(be));
+				createLabel(this,"No "+tab+" Properties for this "+getPropertiesProvider().getLabel(be));
 			}
 		}
 	}
@@ -225,7 +189,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = getPropertiesProvider().getLabel(object, reference);
 
 			if (reference.getEType() == PACKAGE.getExpression() || reference.getEType() == PACKAGE.getFormalExpression()) {
 				FormalExpression expression = (FormalExpression)object.eGet(reference);
@@ -239,27 +203,6 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			}
 			else
 				super.bindReference(parent, object, reference);
-		}
-	}
-	
-	/**
-	 * Provider class for the Default Properties sheet tab.
-	 * This simply returns a list of properties, containment ELists and references
-	 * to be rendered on the Default Properties tab. If the DefaultDetailComposite
-	 * is subclassed and the client does not specify an item provider, the default
-	 * behavior is to render all structural features for the business object.
-	 */
-	public static abstract class AbstractPropertiesProvider {
-		
-		EObject businessObject;
-		
-		public AbstractPropertiesProvider(EObject object) {
-			businessObject = object;
-		}
-
-		public abstract String[] getProperties();
-
-		public void setProperties(String[] properties) {
 		}
 	}
 }
