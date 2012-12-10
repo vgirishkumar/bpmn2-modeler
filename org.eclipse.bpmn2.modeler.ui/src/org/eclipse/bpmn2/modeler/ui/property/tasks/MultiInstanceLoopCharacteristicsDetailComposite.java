@@ -264,7 +264,6 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			label = toolkit.createLabel(getAttributesParent(), "Activity Execution Produces Output");
 			label.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false,false,1,1));
 			producesOutputButton = toolkit.createButton(getAttributesParent(), "", SWT.CHECK);
-			producesOutputButton.setOrientation(SWT.RIGHT_TO_LEFT);
 			producesOutputButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,2,1));
 			producesOutputButton.addSelectionListener(new SelectionAdapter() {
 				@Override
