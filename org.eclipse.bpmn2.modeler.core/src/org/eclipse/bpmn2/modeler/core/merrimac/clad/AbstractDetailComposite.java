@@ -28,7 +28,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -77,6 +76,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	protected Section attributesSection = null;
 	protected Composite attributesComposite = null;
 	protected Font descriptionFont = null;
+	protected AbstractPropertiesProvider propertiesProvider = null;
 
 	/**
 	 * Constructor for embedding this composite in an AbstractBpmn2PropertySection.
@@ -398,7 +398,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				parent = getAttributesParent();
 			
 			if (label==null)
-				label = ModelUtil.getLabel(object, attribute);
+				label = getPropertiesProvider().getLabel(object, attribute);
 			
 			Class eTypeClass = attribute.getEType().getInstanceClass();
 			if (ModelUtil.isMultiChoice(object, attribute)) {
@@ -473,7 +473,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = getPropertiesProvider().getLabel(object, reference);
 
 			ObjectEditor editor = null;
 			if (ModelUtil.isMultiChoice(object, reference)) {
@@ -567,5 +567,44 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	
 	public boolean needRefresh(EObject be) {
 		return getBusinessObject() != be;
+	}
+	
+	public void setPropertiesProvider(AbstractPropertiesProvider provider) {
+		propertiesProvider = provider;
+	}
+	
+	public AbstractPropertiesProvider getPropertiesProvider() {
+		return getPropertiesProvider(businessObject);
+	}
+	
+	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
+		if (propertiesProvider==null) {
+			final EObject o = object;
+			return new AbstractPropertiesProvider(object) {
+				public String[] getProperties() {
+					List<String> list = new ArrayList<String>();
+					EClass c = o.eClass();
+					// add name and id attributes first (if any)
+					if (c.getEStructuralFeature("name")!=null)
+						list.add("name");
+					if (c.getEStructuralFeature("id")!=null)
+						list.add("id");
+					for (EStructuralFeature attribute : o.eClass().getEStructuralFeatures()) {
+						if (!list.contains(attribute.getName()))
+							list.add(attribute.getName());
+					}
+					// add the anyAttributes
+					List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(o);
+					for (EStructuralFeature f : anyAttributes) {
+						if (f instanceof EAttribute && !list.contains(f.getName()))
+							list.add(f.getName());
+					}
+					String a[] = new String[list.size()];
+					list.toArray(a);
+					return a;
+				}
+			};
+		}
+		return propertiesProvider;
 	}
 }
