@@ -151,34 +151,46 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 		return eClass;
 	}
 	
-	public void setEnabled(String className, boolean enabled) {
-		EClass eClass = getEClass(className);
-		
-		// add an entry for the class name by itself
+	private void setEnabledSingle(EClass eClass, boolean enabled) {
+		String className = eClass.getName();
 		if (enabled) {
 			if (classes.containsKey(className))
 				return;
 			HashSet<String> features = new HashSet<String>();
 			classes.put(className, features);
-			if (eClass!=null) {
-				for (EAttribute a : eClass.getEAllAttributes()) {
-					features.add(a.getName());
-				}
-				for (EReference a : eClass.getEAllContainments()) {
-					features.add(a.getName());
-					setEnabled(a.getEReferenceType(), true);
-				}
-				for (EReference a : eClass.getEAllReferences()) {
-					features.add(a.getName());
-					setEnabled(a.getEReferenceType(), true);
-				}
-			}
 		}
 		else {
 			if (!classes.containsKey(className))
 				return;
 			classes.remove(className);
-
+		}
+	}
+	
+	public void setEnabled(String className, boolean enabled) {
+		EClass eClass = getEClass(className);
+		
+		// enable or disable the class
+		setEnabledSingle(eClass,enabled);
+		
+		if (enabled) {
+			// and enable all of its contained and referenced types
+			if (eClass!=null) {
+				HashSet<String> features = classes.get(className);
+				
+				for (EAttribute a : eClass.getEAllAttributes()) {
+					features.add(a.getName());
+				}
+				for (EReference a : eClass.getEAllContainments()) {
+					features.add(a.getName());
+					setEnabledSingle(a.getEReferenceType(), true);
+				}
+				for (EReference a : eClass.getEAllReferences()) {
+					features.add(a.getName());
+					setEnabledSingle(a.getEReferenceType(), true);
+				}
+			}
+		}
+		else {
 			// remove any reference or containment list features
 			// of this type for other elements 
 			List<String> removed = new ArrayList<String>();
