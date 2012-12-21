@@ -96,7 +96,6 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public final static String PREF_IS_MARKER_VISIBLE = "is.marker.visible";
 	public final static String PREF_IS_MARKER_VISIBLE_LABEL = "Decorate Exclusive Gateway with \"X\" marker [isMarkerVisible]";
 	
-	public final static String PREF_WSIL_URL = "wsil.url";
 	public final static String PREF_SHAPE_STYLE = "shape.style";
 
 	public final static String PREF_CONNECTION_TIMEOUT = "connection.timeout";

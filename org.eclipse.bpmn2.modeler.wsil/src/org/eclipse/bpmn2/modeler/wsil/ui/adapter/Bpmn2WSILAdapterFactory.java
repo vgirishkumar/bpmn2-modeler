@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.adapters;
+package org.eclipse.bpmn2.modeler.wsil.ui.adapter;
 
 import org.eclipse.bpel.wsil.model.inspection.util.InspectionAdapterFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterProvider;

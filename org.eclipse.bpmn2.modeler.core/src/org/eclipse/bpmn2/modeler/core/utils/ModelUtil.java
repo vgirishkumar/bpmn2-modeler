@@ -406,7 +406,7 @@ public class ModelUtil {
 	 * 
 	 * @param resourceSet
 	 * 
-	 * @return the BPELResourceSetImpl that walks around the problem indicated.
+	 * @return the BPMN2ResourceSetImpl that walks around the problem indicated.
 	 * 
 	 */
 

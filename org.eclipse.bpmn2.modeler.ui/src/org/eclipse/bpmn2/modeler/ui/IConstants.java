@@ -35,10 +35,6 @@ public interface IConstants {
 	public final String ICON_THROW_16 = "obj16/throw.gif"; //$NON-NLS-1$
 	public final String ICON_THROW_32 = "obj20/throw.png"; //$NON-NLS-1$
 
-	public final String ICON_WSIL = "obj16/wsil.gif"; //$NON-NLS-1$
-	public final String ICON_WSIL_SERVICE = "obj16/service.gif"; //$NON-NLS-1$
-	public final String ICON_WSIL_LINK = "obj16/wsil_link.gif"; //$NON-NLS-1$
-
 	public final String ICON_XSD_ATTRIBUTE_DECLARATION_16 = "obj16/XSDAttributeDeclaration.gif"; //$NON-NLS-1$
 	public final String ICON_XSD_ELEMENT_DECLARATION_16 = "obj16/XSDElementDeclaration.gif"; //$NON-NLS-1$
 	public final String ICON_XSD_COMPLEX_TYPE_DEFINITION_16 = "obj16/XSDComplexTypeDefinition.gif"; //$NON-NLS-1$

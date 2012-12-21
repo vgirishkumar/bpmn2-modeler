@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.preferences;
 
-import java.awt.Checkbox;
-import java.util.Arrays;
-
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.TristateCheckboxFieldEditor;
@@ -21,8 +18,6 @@ import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.property.providers;
+package org.eclipse.bpmn2.modeler.wsil.ui.providers;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.bpmn2.modeler.updatesite.feature"
-      label="BPMN2 Modeler Updatesite"
+      id="org.eclipse.bpmn2.modeler.wsil.feature"
+      label="WSIL Support Feature"
       version="0.2.0.qualifier"
       provider-name="Eclipse.org">
 
@@ -19,20 +19,16 @@ Red Hat, Inc. - initial API and implementation
       %license
    </license>
 
-   <includes
-         id="org.eclipse.bpmn2.modeler.feature"
-         version="0.0.0"/>
-         
-   <includes
-         id="org.eclipse.bpmn2.modeler.jboss.runtime.feature"
-         version="0.0.0"/>
-         
-   <includes
-         id="org.eclipse.bpmn2.modeler.examples.feature"
-         version="0.0.0"/>
+   <requires>
+      <import plugin="org.eclipse.bpmn2.modeler.core"/>
+      <import plugin="org.eclipse.bpmn2.modeler.ui"/>
+   </requires>
 
-   <includes
-         id="org.eclipse.bpmn2.modeler.wsil.feature"
-         version="0.0.0"/>
+   <plugin
+         id="org.eclipse.bpmn2.modeler.wsil"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
