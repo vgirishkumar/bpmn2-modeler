@@ -63,17 +63,19 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 					if (name!=null && !name.isEmpty())
 						text = name;
 				}
-				f = flowElement.eClass().getEStructuralFeature("id");
-				if (f!=null) {
-					Object id = flowElement.eGet(f);
-					if (id!=null && !id.toString().isEmpty()) {
-						String className = flowElement.eClass().getName();
-						String idString = id.toString();
-						if (!idString.contains(className)) {
-							text = ModelUtil.toDisplayName(className) + " '" + id + "'";
+				if (text.isEmpty()) {
+					f = flowElement.eClass().getEStructuralFeature("id");
+					if (f!=null) {
+						Object id = flowElement.eGet(f);
+						if (id!=null && !id.toString().isEmpty()) {
+							String className = flowElement.eClass().getName();
+							String idString = id.toString();
+							if (!idString.contains(className)) {
+								text = ModelUtil.toDisplayName(className) + " '" + id + "'";
+							}
+							else
+								text = idString;
 						}
-						else
-							text = idString;
 					}
 				}
 				return text;

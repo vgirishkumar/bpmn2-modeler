@@ -218,6 +218,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			resourceFactoryRegistry = new ResourceFactoryRegistryImpl() {
 				@Override
 				protected Resource.Factory delegatedGetFactory(URI uri, String contentTypeIdentifier) {
+					// TODO: move the code that handles the WSIL factory to the org.eclipse.bpmn2.modeler.wsil plugin
 					// patch for "wsil" and "wsdl" resources without extensions
 					final Map<String, Object> extensionToFactoryMap =
 						Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();

@@ -42,7 +42,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 
 	// extension point ID for Target Runtimes
-	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.runtime";
+	public static final String RUNTIME_EXTENSION_ID = "org.eclipse.bpmn2.modeler.runtime";
 	public static final String DEFAULT_RUNTIME_ID = "org.eclipse.bpmn2.modeler.runtime.none";
 	
 	// our cached registry of target runtimes contributed by other plugins
@@ -134,7 +134,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			ArrayList<TargetRuntime> rtList = new ArrayList<TargetRuntime>();
 			
 			IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
-					RUNTIME_ID);
+					RUNTIME_EXTENSION_ID);
 
 			try {
 				// first create all the Target Runtimes because other

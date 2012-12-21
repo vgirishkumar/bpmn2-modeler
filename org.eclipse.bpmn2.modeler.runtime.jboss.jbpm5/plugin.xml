@@ -822,6 +822,7 @@
 			<disable object="Lane" feature="extensionValues"/>
 			<disable object="Lane" feature="partitionElement"/>
 			<disable object="Lane" feature="partitionElementRef"/>
+			<disable object="Participant"/>
 			<enable object="LaneSet"/>
 			<disable object="LaneSet" feature="anyAttribute"/>
 			<disable object="LaneSet" feature="documentation"/>
@@ -1165,7 +1166,7 @@
 			<disable object="all" feature="dataState"/>
 		</modelEnablement>
 		
-		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="brms">
+		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="simple">
 			<disable object="all"/>
 			<!-- copy the enablements from "Process" diagram type -->
 			<enable object="default" feature="Process.full"/>

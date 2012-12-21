@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.eclipse.bpmn2.modeler.ui" name="BPMN2 Modeler UI contributions" schema="schema/org.eclipse.bpmn2.modeler.ui.exsd"/>
 	<extension point="org.eclipse.ui.newWizards">
 		<!-- <primaryWizard id="org.eclipse.bpmn2.modeler.ui.diagram"> </primaryWizard> -->
 		<wizard category="org.eclipse.bpmn2.wizardCategory"
@@ -58,13 +59,7 @@
             category="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2HomePreferencePage"
             class="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2EditorPreferencePage"
             id="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2EditorPreferencePage"
-            name="%PREFERENCE_PAGE_EDITOR">
-      </page>
-      <page
-            category="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2HomePreferencePage"
-            class="org.eclipse.bpmn2.modeler.ui.preferences.WSILPreferencePage"
-            id="org.eclipse.bpmn2.modeler.ui.preferences.WSILPreferencePage"
-            name="%PREFERENCE_PAGE_WSIL"/>
+            name="%PREFERENCE_PAGE_EDITOR"/>
    </extension>
 
 	<!-- Property Pages - these per-project settings override the global preferences (above)-->

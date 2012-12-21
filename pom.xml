@@ -82,6 +82,8 @@
 		<module>org.eclipse.bpmn2.modeler.feature</module>
 		<module>org.eclipse.bpmn2.modeler.jboss.runtime.feature</module>
 		<module>org.eclipse.bpmn2.modeler.examples.feature</module>
+		<module>org.eclipse.bpmn2.modeler.wsil</module>
+		<module>org.eclipse.bpmn2.modeler.wsil.feature</module>
 		<module>org.eclipse.bpmn2.modeler.updatesite.feature</module>
 	</modules>
 

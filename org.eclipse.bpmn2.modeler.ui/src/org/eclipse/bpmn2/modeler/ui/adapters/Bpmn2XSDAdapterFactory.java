@@ -47,7 +47,7 @@ public class Bpmn2XSDAdapterFactory extends XSDAdapterFactory {
 	/**
 	 * Get the instance of the factory.
 	 * 
-	 * @return an instance of this WSIL UI factory
+	 * @return an instance of this XSD UI factory
 	 */
 	
 	public static Bpmn2XSDAdapterFactory getInstance() {

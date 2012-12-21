@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.preferences;
+package org.eclipse.bpmn2.modeler.wsil.ui.preferences;
 
 
 import java.io.File;
@@ -26,10 +26,9 @@ import org.eclipse.bpel.wsil.model.inspection.WSILDocument;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.ColumnTableProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.bpmn2.modeler.ui.Messages;
-import org.eclipse.bpmn2.modeler.ui.property.providers.WSILContentProvider;
+import org.eclipse.bpmn2.modeler.wsil.Messages;
+import org.eclipse.bpmn2.modeler.wsil.ui.providers.WSILContentProvider;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -77,6 +76,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 @SuppressWarnings({"nls","boxing","unchecked"})
 
 public class WSILPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+	public final static String PREF_WSIL_URL = "wsil.url";
 
 	Bpmn2ModelerResourceSetImpl resourceSet = new Bpmn2ModelerResourceSetImpl();
 		
@@ -435,7 +435,7 @@ public class WSILPreferencePage extends PreferencePage implements IWorkbenchPref
 	private void initializeValues() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
-		wsilURL.setText(store.getString(Bpmn2Preferences.PREF_WSIL_URL));
+		wsilURL.setText(store.getString(PREF_WSIL_URL));
 		
 		attemptLoad (wsilURL.getText() );
 	}
@@ -448,7 +448,7 @@ public class WSILPreferencePage extends PreferencePage implements IWorkbenchPref
 	private void storeValues() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
-		store.setValue(Bpmn2Preferences.PREF_WSIL_URL, wsilURL.getText());	
+		store.setValue(PREF_WSIL_URL, wsilURL.getText());	
 
 		if (fWsilDocument != null) {
 			
