@@ -49,6 +49,12 @@ public class DesignEditorSite extends MultiPageEditorSite {
 			SelectionChangedEvent newEvent = getNewEvent(parentProvider, event);
 			MultiPageSelectionProvider prov = (MultiPageSelectionProvider) parentProvider;
 			prov.fireSelectionChanged(newEvent);
+			// A change in org.eclipse.ui.part.MultiPageEditorSite for eclipse 3.7.2
+			// fixes a bug that prevented the PostSelection handler from being called.
+			// The PostSelection handler is what causes the PropertySheet's selection
+			// handler to be called.
+			// For 3.6.2 we will just call the handler ourselves here. 
+			handlePostSelectionChanged(event);
 		}
 	}
 
