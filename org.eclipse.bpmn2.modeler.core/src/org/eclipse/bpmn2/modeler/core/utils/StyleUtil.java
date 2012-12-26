@@ -109,6 +109,9 @@ public class StyleUtil {
 					Font f = ss.getTextFont();
 					((AbstractText)ga).setFont(gaService.manageFont(diagram, f.getName(), f.getSize(), f.isItalic(), f.isBold()));
 				}
+				else
+					ga.setLineWidth(2);
+
 				if (ga.getForeground()==null)
 					ga.setForeground(gaService.manageColor(diagram, foreground));
 				// by default the fill color for connection decorators is the
