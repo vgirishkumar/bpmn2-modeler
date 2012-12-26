@@ -19,6 +19,8 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
@@ -89,23 +91,18 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 			public IAddFeature getAddFeature(IFeatureProvider fp) {
 					
 				return new AddTextAnnotationFeature(fp) {
-					
-					@Override
-					public PictogramElement add(IAddContext context) {
-						PictogramElement pe = super.add(context);
-						Boolean evaluate = Boolean.FALSE;
-						TextAnnotation ta = getBusinessObject(context);
-						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
-						if (f!=null) {
-							evaluate = (Boolean)ta.eGet(f);
-						}
-						else {
-							ModelUtil.createDynamicAttribute(SampleModelPackage.eINSTANCE, ta, "evaluate", "EBoolean");
-						}
-						Graphiti.getPeService().setPropertyValue(pe, "evaluate.property", evaluate.toString());
-						return pe;
-					}
 
+					/* (non-Javadoc)
+					 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#decorateShape(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.graphiti.mm.pictograms.ContainerShape, org.eclipse.bpmn2.BaseElement)
+					 * 
+					 * This implementation of TextAnnotation's decorateShape() method changes the appearance of
+					 * the figure by removing the large "[" shape and replacing it with a rounded rectangle,
+					 * similar to a Task figure. It also adds an image in the top-left corner of the
+					 * rectangle; the image is determined by the string value of the extension attribute "icon"
+					 * (see the SampleImageProvider class for details of exactly how and where this happens).
+					 * Finally, the fill gradient color of the figure is set according to the value
+					 * of the boolean extension attribute "evaluate" (see setFillColor(), below).
+					 */
 					@Override
 					protected void decorateShape(IAddContext context, ContainerShape containerShape, TextAnnotation businessObject) {
 						IGaService gaService = Graphiti.getGaService();
@@ -126,12 +123,8 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 						// apply the same styling as TextAnnotation
 						StyleUtil.applyStyle(roundedRect, businessObject);
 						gaService.setLocationAndSize(roundedRect, 0, 0, width, height);
-						EStructuralFeature f = ModelUtil.getAnyAttribute(businessObject, "evaluate");
-						boolean evaluate = false;
-						if (f!=null) {
-							evaluate = (Boolean)businessObject.eGet(f);
-						}
-						roundedRect.setFilled(evaluate);							
+						// set fill color based on the "evaluate" extension attribute
+						setFillColor(containerShape);
 
 						// add an image to the top-left corner of the rectangle
 						Image img = SampleImageProvider.createImage(roundedRect, customTaskDescriptor, 38, 38);
@@ -174,6 +167,14 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 			public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 
 				return new UpdateTextAnnotationFeature(fp) {
+
+					/* (non-Javadoc)
+					 * @see org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+					 * 
+					 * This override compares the ContainerShape's "evaluate.property" string property
+					 * with the boolean extension attribute "evaluate" in the TextAnnotation object,
+					 * and returns true if they differ, false if the same.
+					 */
 					@Override
 					public IReason updateNeeded(IUpdateContext context) {
 						IReason reason = super.updateNeeded(context);
@@ -183,43 +184,27 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 						PictogramElement pe = context.getPictogramElement();
 						String propertyValue = Graphiti.getPeService().getPropertyValue(pe, "evaluate.property");
 
+						if (propertyValue==null || propertyValue.isEmpty())
+							propertyValue = "false";
+						
+						Boolean attributeValue;
 						TextAnnotation ta = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
 						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
 						if (f!=null) {
-							Boolean objectValue = (Boolean)ta.eGet(f);
-							if (propertyValue!=null && objectValue!=null) {
-								if (Boolean.parseBoolean(propertyValue) != objectValue)
-									return Reason.createTrueReason("evalute property changed");
-							}
+							attributeValue = (Boolean)ta.eGet(f);
 						}
+						else {
+							attributeValue = Boolean.FALSE;
+						}
+						if (Boolean.parseBoolean(propertyValue) != attributeValue)
+							return Reason.createTrueReason("evalute property changed");
 						return Reason.createFalseReason("");
 					}
 
 					@Override
 					public boolean update(IUpdateContext context) {
 						super.update(context);
-						
-						ContainerShape pe = (ContainerShape)context.getPictogramElement();
-						TextAnnotation ta = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
-						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
-						Boolean objectValue;
-						if (f!=null) {
-							objectValue = (Boolean)ta.eGet(f);
-							String propertyValue;
-							Shape shape = pe.getChildren().get(0);
-							Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
-							Color color = null;
-							if (objectValue == true) {
-								color = Graphiti.getGaService().manageColor(diagram, IColorConstant.RED);
-								propertyValue = Boolean.TRUE.toString();
-							}
-							else {
-								color = Graphiti.getGaService().manageColor(diagram, IColorConstant.GREEN);
-								propertyValue = Boolean.FALSE.toString();
-							}
-							shape.getGraphicsAlgorithm().setFilled(objectValue);
-							Graphiti.getPeService().setPropertyValue(pe, "evaluate.property", propertyValue);
-						}
+						setFillColor((ContainerShape)context.getPictogramElement());
 						return true;
 					}
 					
@@ -234,6 +219,46 @@ public class SampleCustomTaskFeatureContainer extends CustomTaskFeatureContainer
 			@Override
 			public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
 				return null;
+			}
+			
+			/**
+			 * Common method used to set the fill color for Mitigation and Risk CustomTask figures.
+			 * This method is called by both the CreateFeature and the UpdateFeature.
+			 * The fill color is set according to the current value of the boolean extension attribute
+			 * "evaluate". If this attribute does not exist, it is created and set to its default value (false).
+			 * The fill color is set to LIGHT_GREEN if "evaluate" is true and LIGHT_GRAY if it is false.
+			 * 
+			 * Finally, a string property in the given ContainerShape (named "evaluate.property")
+			 * is set to the current value of "evaluate". This is later used to determine if the
+			 * attribute value has changed and needs to be updated. See UpdateTextAnnotationFeature#updateNeeded()
+			 * above, for details.
+			 *
+			 * @param containerShape - the ContainerShape that corresponds to this Risk or Mitigation.
+			 */
+			private void setFillColor(ContainerShape containerShape) {
+				TextAnnotation ta = BusinessObjectUtil.getFirstElementOfType(containerShape, TextAnnotation.class);
+				if (ta!=null) {
+					EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
+					if (f==null) {
+						f = ModelUtil.createDynamicAttribute(SampleModelPackage.eINSTANCE, ta, "evaluate", "EBoolean");
+						ta.eSet(f, Boolean.FALSE);
+					}
+					Boolean attributeValue;
+					attributeValue = (Boolean)ta.eGet(f);
+					String propertyValue;
+					Shape shape = containerShape.getChildren().get(0);
+					ShapeStyle ss = new ShapeStyle();
+					if (attributeValue == true) {
+						propertyValue = Boolean.TRUE.toString();
+						ss.setDefaultColors(IColorConstant.LIGHT_GREEN);
+					}
+					else {
+						propertyValue = Boolean.FALSE.toString();
+						ss.setDefaultColors(IColorConstant.LIGHT_GRAY);
+					}
+					StyleUtil.applyStyle(shape.getGraphicsAlgorithm(), ta, ss);
+					Graphiti.getPeService().setPropertyValue(containerShape, "evaluate.property", propertyValue);
+				}
 			}
 		};
 	}

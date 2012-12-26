@@ -90,13 +90,26 @@ public class StyleUtil {
 	}
 	
 	public static void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
+		applyStyle(ga, be, null);
+	}
+	
+	public static void applyStyle(GraphicsAlgorithm ga, BaseElement be, ShapeStyle ss) {
 		if (be!=null) {
 			IGaService gaService = Graphiti.getGaService();
 			IPeService peService = Graphiti.getPeService();
 
 			Diagram diagram = findDiagram(ga);
-			Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
-			ShapeStyle ss = pref.getShapeStyle(be);
+			String id = null;
+			
+			if (ss==null) {
+				Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
+				ss = pref.getShapeStyle(be);
+				id = Bpmn2Preferences.getShapeStyleId(be);
+			}
+			else {
+				id = ss.toString();
+			}
+			
 			IColorConstant foreground = ga instanceof AbstractText ? ss.getTextColor() : ss.getShapeForeground();
 			IColorConstant background = ss.getShapeBackground();
 
@@ -120,8 +133,6 @@ public class StyleUtil {
 					ga.setBackground(gaService.manageColor(diagram, foreground));
 			}
 			else {
-				String id = Bpmn2Preferences.getShapeStyleId(be);
-				
 				// Style only used for drawing gradients
 				Style s = findStyle(diagram, id);
 				if(s == null) {
@@ -145,7 +156,7 @@ public class StyleUtil {
 					// fill with gradient
 					ga.setFilled(true);
 					s.setFilled(true);
-					AdaptedGradientColoredAreas gradient = getStyleAdaptions(be);
+					AdaptedGradientColoredAreas gradient = getStyleAdaptations(ss, id);
 					gaService.setRenderingStyle(s, gradient);
 					ga.setStyle(s);
 				}
@@ -169,19 +180,28 @@ public class StyleUtil {
 			}
 		}
 	}
-
+	
+	/**
+	 * @param be
+	 * @return
+	 * @deprecated
+	 */
 	public static AdaptedGradientColoredAreas getStyleAdaptions(BaseElement be) {
+		Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
+		return getStyleAdaptations(pref.getShapeStyle(be), Bpmn2Preferences.getShapeStyleId(be));
+	}
+	
+	public static AdaptedGradientColoredAreas getStyleAdaptations(ShapeStyle ss, String id) {
 		final AdaptedGradientColoredAreas agca = StylesFactory.eINSTANCE.createAdaptedGradientColoredAreas();
 
-		String id = Bpmn2Preferences.getShapeStyleId(be);
 		agca.setDefinedStyleId(id); //STYLE_ID);
 		agca.setGradientType(IGradientType.VERTICAL);
 		agca.getAdaptedGradientColoredAreas().add(IPredefinedRenderingStyle.STYLE_ADAPTATION_DEFAULT,
-				getPreferenceDefaultAreas(be));
+				getPreferenceDefaultAreas(ss));
 		agca.getAdaptedGradientColoredAreas().add(IPredefinedRenderingStyle.STYLE_ADAPTATION_PRIMARY_SELECTED,
-				getPreferencePrimarySelectedAreas(be));
+				getPreferencePrimarySelectedAreas(ss));
 		agca.getAdaptedGradientColoredAreas().add(IPredefinedRenderingStyle.STYLE_ADAPTATION_SECONDARY_SELECTED,
-				getPreferenceSecondarySelectedAreas(be));
+				getPreferenceSecondarySelectedAreas(ss));
 		return agca;
 	}
 	
@@ -199,13 +219,10 @@ public class StyleUtil {
 		return new ColorConstant(r, g, b);
 	}
 	
-	private static GradientColoredAreas getPreferenceDefaultAreas(BaseElement be) {
+	private static GradientColoredAreas getPreferenceDefaultAreas(ShapeStyle ss) {
 		final GradientColoredAreas gradientColoredAreas = StylesFactory.eINSTANCE.createGradientColoredAreas();
 		gradientColoredAreas.setStyleAdaption(IPredefinedRenderingStyle.STYLE_ADAPTATION_DEFAULT);
 		final EList<GradientColoredArea> gcas = gradientColoredAreas.getGradientColor();
-
-		Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
-		ShapeStyle ss = pref.getShapeStyle(be);
 		IColorConstant c1 = shiftColor(ss.getShapeBackground(), -8);
 		IColorConstant c2 = shiftColor(ss.getShapeBackground(), 64);
 
@@ -214,13 +231,11 @@ public class StyleUtil {
 				c2, 0, LocationType.LOCATION_TYPE_ABSOLUTE_END);
 		return gradientColoredAreas;
 	}
-	private static GradientColoredAreas getPreferencePrimarySelectedAreas(BaseElement be) {
+	
+	private static GradientColoredAreas getPreferencePrimarySelectedAreas(ShapeStyle ss) {
 		final GradientColoredAreas gradientColoredAreas = StylesFactory.eINSTANCE.createGradientColoredAreas();
 		gradientColoredAreas.setStyleAdaption(IPredefinedRenderingStyle.STYLE_ADAPTATION_PRIMARY_SELECTED);
 		final EList<GradientColoredArea> gcas = gradientColoredAreas.getGradientColor();
-
-		Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
-		ShapeStyle ss = pref.getShapeStyle(be);
 		IColorConstant c1 = shiftColor(ss.getShapePrimarySelectedColor(), -64);
 		IColorConstant c2 = shiftColor(ss.getShapePrimarySelectedColor(), 64);
 
@@ -230,13 +245,10 @@ public class StyleUtil {
 		return gradientColoredAreas;
 	}
 
-	private static GradientColoredAreas getPreferenceSecondarySelectedAreas(BaseElement be) {
+	private static GradientColoredAreas getPreferenceSecondarySelectedAreas(ShapeStyle ss) {
 		final GradientColoredAreas gradientColoredAreas = StylesFactory.eINSTANCE.createGradientColoredAreas();
 		gradientColoredAreas.setStyleAdaption(IPredefinedRenderingStyle.STYLE_ADAPTATION_SECONDARY_SELECTED);
 		final EList<GradientColoredArea> gcas = gradientColoredAreas.getGradientColor();
-
-		Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
-		ShapeStyle ss = pref.getShapeStyle(be);
 		IColorConstant c1 = shiftColor(ss.getShapeSecondarySelectedColor(), -64);
 		IColorConstant c2 = shiftColor(ss.getShapeSecondarySelectedColor(), 64);
 
