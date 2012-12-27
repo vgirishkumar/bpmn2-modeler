@@ -13,6 +13,8 @@
 package org.eclipse.bpmn2.modeler.ui.features.flow;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.AssociationDirection;
@@ -67,6 +69,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	// the value can be one of the AssociationDirection enumerations (a null
 	// or empty string is the same as "None")
 	public static final String ASSOCIATION_DIRECTION = "association.direction";
+	public static final String ARROWHEAD_DECORATOR = "arrowhead.decorator";
 	
 	protected CreateConnectionContext createContext;
 	
@@ -305,27 +308,52 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			oldDirection = AssociationDirection.NONE.toString();
 
 		if (!oldDirection.equals(newDirection)) {
-			int w = 7;
-			int l = 13;
-
-			connection.getConnectionDecorators().clear();
-			if (newDirection.equals(AssociationDirection.NONE.toString())) {
-				// nothing to do here
+			ConnectionDecorator sourceDecorator = null;
+			ConnectionDecorator targetDecorator = null;
+			for (ConnectionDecorator d : connection.getConnectionDecorators()) {
+				String s = peService.getPropertyValue(d, ARROWHEAD_DECORATOR);
+				if (s!=null) {
+					if (s.equals("source"))
+						sourceDecorator = d;
+					else if (s.equals("target"))
+						targetDecorator = d;
+				}
 			}
-			else if (newDirection.equals(AssociationDirection.ONE.toString())) {
-				ConnectionDecorator decorator = peService.createConnectionDecorator(connection, false, 1.0, true);
-				Polyline arrowhead = gaService.createPolyline(decorator, new int[] { -l, w, 0, 0, -l, -w });
-				StyleUtil.applyStyle(arrowhead, businessObject);
+			
+			boolean needSource = false;
+			boolean needTarget = false;
+			if (newDirection.equals(AssociationDirection.ONE.toString())) {
+				needTarget = true;
+			}
+			else if (newDirection.equals(AssociationDirection.BOTH.toString())) {
+				needSource = needTarget = true;
+			}
+			
+			final int w = 7;
+			final int l = 13;
+			if (needSource) {
+				if (sourceDecorator==null) {
+					sourceDecorator = peService.createConnectionDecorator(connection, false, 0.0, true);
+					Polyline arrowhead = gaService.createPolyline(sourceDecorator, new int[] { -l, w, 0, 0, -l, -w });
+					StyleUtil.applyStyle(arrowhead, businessObject);
+					peService.setPropertyValue(sourceDecorator, ARROWHEAD_DECORATOR, "source");
+				}
 			}
 			else {
-				// both
-				ConnectionDecorator decorator = peService.createConnectionDecorator(connection, false, 1.0, true);
-				Polyline arrowhead = gaService.createPolyline(decorator, new int[] { -l, w, 0, 0, -l, -w });
-				StyleUtil.applyStyle(arrowhead, businessObject);
-				
-				decorator = peService.createConnectionDecorator(connection, false, 0.0, true);
-				arrowhead = gaService.createPolyline(decorator, new int[] { -l, w, 0, 0, -l, -w });
-				StyleUtil.applyStyle(arrowhead, businessObject);
+				if (sourceDecorator!=null)
+					connection.getConnectionDecorators().remove(sourceDecorator);				
+			}
+			if (needTarget) {
+				if (targetDecorator==null) {
+					targetDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
+					Polyline arrowhead = gaService.createPolyline(targetDecorator, new int[] { -l, w, 0, 0, -l, -w });
+					StyleUtil.applyStyle(arrowhead, businessObject);
+					peService.setPropertyValue(targetDecorator, ARROWHEAD_DECORATOR, "target");
+				}
+			}
+			else {
+				if (targetDecorator!=null)
+					connection.getConnectionDecorators().remove(targetDecorator);				
 			}
 		
 			// update the property value in the Connection PictogramElement
