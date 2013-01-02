@@ -63,6 +63,7 @@
 							<tasks>
 								<!-- called AFTER generating update site + zip to add in extra content -->
 								<ant antfile="build.xml">
+									<property name="platform-version-name" value="${platform-version-name}" />
 								</ant>
 							</tasks>
 						</configuration>
