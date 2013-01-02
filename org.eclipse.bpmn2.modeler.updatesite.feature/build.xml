@@ -67,7 +67,7 @@
 &lt;/repository>
 </echo>
 				<zip destfile="${update.site.source.dir}/content.jar" basedir="${update.site.source.dir}" includes="content.xml" />
-<!--				<delete file="${update.site.source.dir}/content.xml" /> -->
+				<delete file="${update.site.source.dir}/content.xml" />
 			</then>
 		</if>
 	</target>
