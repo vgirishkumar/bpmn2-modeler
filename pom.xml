@@ -44,6 +44,7 @@
 			<properties>
 				<eclipse-site>http://download.eclipse.org/releases/helios</eclipse-site>
 				<platform-version>[3.6,3.7)</platform-version>
+				<platform-version-name>helios</platform-version-name>
 			</properties>
 		</profile>
 		<profile>
@@ -57,6 +58,7 @@
 			<properties>
 				<eclipse-site>http://download.eclipse.org/releases/indigo</eclipse-site>
 				<platform-version>[3.7,3.8)</platform-version>
+				<platform-version-name>indigo</platform-version-name>
 			</properties>
 		</profile>
 		<profile>
@@ -70,6 +72,21 @@
 			<properties>
 				<eclipse-site>http://download.eclipse.org/releases/juno</eclipse-site>
 				<platform-version>[4.2,4.3)</platform-version>
+				<platform-version-name>juno</platform-version-name>
+			</properties>
+		</profile>
+		<profile>
+			<id>platform-kepler</id>
+			<activation>
+				<property>
+					<name>platform-version-name</name>
+					<value>kepler</value>
+				</property>
+			</activation>
+			<properties>
+				<eclipse-site>http://download.eclipse.org/releases/kepler</eclipse-site>
+				<platform-version>[4.3,4.4)</platform-version>
+				<platform-version-name>kepler</platform-version-name>
 			</properties>
 		</profile>
 	</profiles>
