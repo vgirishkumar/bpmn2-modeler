@@ -22,6 +22,9 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -197,13 +200,22 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
 				dataObject.setName("Create a new Data Object");
 				Object container = getBusinessObjectForPictogramElement(context.getTargetContainer());
+				Object containerBO = container;
+				if (container instanceof BPMNDiagram) {
+					containerBO = ((BPMNDiagram)container).getPlane().getBpmnElement();
+				}
+				if (container instanceof Lane) {
+					EObject laneSet = ((Lane)container).eContainer();
+					if (laneSet instanceof LaneSet)
+						containerBO = laneSet.eContainer();
+				}
 
 				List<DataObject> dataObjectList = new ArrayList<DataObject>();
 				dataObjectList.add(dataObject);
 				TreeIterator<EObject> iter = mh.getDefinitions().eAllContents();
 				while (iter.hasNext()) {
 					EObject obj = iter.next();
-					if (obj instanceof DataObject)
+					if (obj instanceof DataObject && obj.eContainer() == containerBO)
 						dataObjectList.add((DataObject) obj);
 				}
 

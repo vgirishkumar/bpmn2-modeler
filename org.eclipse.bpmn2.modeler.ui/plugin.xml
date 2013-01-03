@@ -570,6 +570,7 @@
 			<enable object="DataStore"/>
 			<enable object="DataStoreReference"/>
 			<enable object="DataObjectReference"/>
+			<enable object="DataObject"/>
 			<enable object="Group"/>
 			<enable object="Category"/>
 			<enable object="CategoryValue"/>
@@ -607,6 +608,7 @@
 			
 			<!-- and then change these objects -->
 			<disable object="DataObjectReference"/>
+			<disable object="DataObject"/>
 			<enable object="Participant"/>
 			<enable object="Lane"/>
 			<enable object="MessageFlow"/>
