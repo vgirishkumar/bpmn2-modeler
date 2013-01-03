@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.di;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,8 +27,13 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.ItemAwareElement;
@@ -409,10 +416,14 @@ public class DIImport {
 
 		if (bpmnElement instanceof Lane) {
 			handleLane((Lane)bpmnElement, context, shape);
-		} else if (bpmnElement instanceof FlowNode) {
-			handleFlowNode((FlowNode) bpmnElement, context, shape);
+		} else if (bpmnElement instanceof FlowNode ||
+				bpmnElement instanceof DataObject ||
+				bpmnElement instanceof DataObjectReference) {
+			handleFlowElement((FlowElement) bpmnElement, context, shape);
 		} else if (bpmnElement instanceof Participant) {
 			handleParticipant((Participant) bpmnElement, context, shape);
+		} else if (bpmnElement instanceof DataInput || bpmnElement instanceof DataOutput) {
+			handleItemAwareElement((ItemAwareElement)bpmnElement, context, shape);
 		} else {
 			context.setTargetContainer(diagram);
 			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
@@ -510,25 +521,44 @@ public class DIImport {
 		}
 	}
 
-	private void handleFlowNode(FlowNode node, AddContext context, BPMNShape shape) {
+	private void handleFlowElement(FlowElement element, AddContext context, BPMNShape shape) {
 		ContainerShape target = diagram;
 		int x = (int) shape.getBounds().getX();
 		int y = (int) shape.getBounds().getY();
 
 		// find a correct container element
-		List<Lane> lanes = node.getLanes();
-		EObject parent = node.eContainer();
+		List<Lane> lanes;
+		if (element instanceof FlowNode)
+			lanes = ((FlowNode)element).getLanes();
+		else {
+			lanes = new ArrayList<Lane>();
+			if (element instanceof DataObject || element instanceof DataObjectReference) {
+				int w = (int) shape.getBounds().getWidth();
+				int h = (int) shape.getBounds().getHeight();
+				// if this Data Object is contained within a Lane, make the Lane the target container
+				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
+					if (entry.getKey() instanceof Lane) {
+						ContainerShape laneShape = (ContainerShape)entry.getValue();
+						if (GraphicsUtil.intersects(laneShape, x, y, w, h)) {
+							lanes.add((Lane)entry.getKey());
+							break;
+						}
+					}
+				}
+			}
+		}
+		EObject parent = element.eContainer();
 		if (	(parent instanceof SubProcess
 				|| parent instanceof Process
 				|| parent instanceof SubChoreography)
 				&& lanes.isEmpty()
 		) {
-			ContainerShape containerShape = (ContainerShape) elements.get(node.eContainer());
+			ContainerShape containerShape = (ContainerShape) elements.get(element.eContainer());
 			if (containerShape != null) {
 				// add the FlowNode to its parent SubProcess, Process or SubChoreography
 				// but only if the node is on the same BPMNDiagram as its parent container
 				BPMNDiagram parentDiagram = DIUtils.findBPMNDiagram(editor, (BaseElement)parent, false);
-				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(editor, node, false);
+				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(editor, element, false);
 				if (parentDiagram == childDiagram) {
 					target = containerShape;
 					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(target);
@@ -553,6 +583,31 @@ public class DIImport {
 		context.setLocation(x, y);
 	}
 
+	private void handleItemAwareElement(ItemAwareElement element, AddContext context, BPMNShape shape) {
+		ContainerShape target = diagram;
+		int x = (int) shape.getBounds().getX();
+		int y = (int) shape.getBounds().getY();
+		int w = (int) shape.getBounds().getWidth();
+		int h = (int) shape.getBounds().getHeight();
+
+		// find a correct container element
+		// if this Data Object is contained within a Lane, make the Lane the target container
+		for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
+			if (entry.getKey() instanceof Lane) {
+				ContainerShape laneShape = (ContainerShape)entry.getValue();
+				if (GraphicsUtil.intersects(laneShape, x, y, w, h)) {
+					target = (ContainerShape) laneShape;
+					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(target);
+					x -= loc.getX();
+					y -= loc.getY();
+					break;
+				}
+			}
+		}
+		context.setTargetContainer(target);
+		context.setLocation(x, y);
+	}
+	
 	/**
 	 * Find a Graphiti feature for given edge and generate necessary connections and bendpoints.
 	 * 
