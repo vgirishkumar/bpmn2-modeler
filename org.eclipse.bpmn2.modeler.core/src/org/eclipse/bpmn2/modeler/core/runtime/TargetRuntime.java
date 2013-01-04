@@ -231,6 +231,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							CustomTaskDescriptor ct = new CustomTaskDescriptor(id,name);
 							ct.type = e.getAttribute("type");
 							ct.description = e.getAttribute("description");
+							ct.category = e.getAttribute("category");
 							ct.featureContainer = (ICustomTaskFeatureContainer) e.createExecutableExtension("featureContainer");
 							ct.featureContainer.setCustomTaskDescriptor(ct);
 							ct.featureContainer.setId(id);
