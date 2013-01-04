@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.diagram;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -219,6 +220,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {
+			Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
 				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
 
@@ -229,10 +231,16 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
 						cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 				
+				String category = tc.getCategory();
+				if (category==null || category.isEmpty())
+					category = "Custom Tasks";
+				
+				compartmentEntry = categories.get(category);
 				if (compartmentEntry==null) {
-					compartmentEntry = new PaletteCompartmentEntry("Custom Task", null);
+					compartmentEntry = new PaletteCompartmentEntry(category, null);
 					compartmentEntry.setInitiallyOpen(false);
 					ret.add(compartmentEntry);
+					categories.put(category, compartmentEntry);
 				}
 				
 				compartmentEntry.addToolEntry(objectCreationToolEntry);

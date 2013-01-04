@@ -297,6 +297,13 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="category" type="string">
+            <annotation>
+               <documentation>
+                  The Toolpalette Drawer name for this Custom Task
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

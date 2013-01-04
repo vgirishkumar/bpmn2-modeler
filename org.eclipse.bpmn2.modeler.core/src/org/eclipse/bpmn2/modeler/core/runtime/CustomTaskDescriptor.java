@@ -17,6 +17,16 @@ import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureC
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
 	protected ICustomTaskFeatureContainer featureContainer;
+	protected String category;
+	
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	protected boolean permanent;
 	
 	public CustomTaskDescriptor(String id, String name) {
