@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.gateway;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
@@ -98,7 +98,7 @@ public abstract class AbstractGatewayFeatureContainer extends BaseElementFeature
 		return thisFeatures;
 	}
 
-	private class UpdateAbstractGatewayFeature extends UpdateBaseElementNameFeature {
+	private class UpdateAbstractGatewayFeature extends UpdateLabelFeature {
 
 		public UpdateAbstractGatewayFeature(IFeatureProvider fp) {
 			super(fp);

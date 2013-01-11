@@ -22,7 +22,8 @@ import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.RemoveLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -98,7 +99,7 @@ public class LabelFeatureContainer implements FeatureContainer {
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateBaseElementNameFeature(fp);
+		return new UpdateLabelFeature(fp);
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class LabelFeatureContainer implements FeatureContainer {
 
 	@Override
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
-		return null;
+		return new RemoveLabelFeature(fp);
 	}
 
 	@Override

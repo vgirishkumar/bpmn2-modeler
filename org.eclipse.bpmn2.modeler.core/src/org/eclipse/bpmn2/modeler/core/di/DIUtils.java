@@ -67,12 +67,6 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 public class DIUtils {
 
 	public static void updateDIShape(PictogramElement element) {
-		
-		PictogramLink link = element.getLink();
-		if (link == null) {
-			return;
-		}
-
 		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(element, BPMNShape.class);
 		if (bpmnShape == null) {
 			return;
@@ -378,5 +372,66 @@ public class DIUtils {
         definitions.getDiagrams().add(bpmnDiagram);
 
 		return bpmnDiagram;
+	}
+	
+	/**
+	 * Returns a list of all PictogramElements that reference the given BaseElement in all Graphiti Diagrams
+	 * contained in all Resources of the given ResourceSet
+	 * 
+	 * @param resourceSet
+	 * @param baseElement
+	 * @return
+	 */
+	public static List<PictogramElement> getPictogramElements(ResourceSet resourceSet, BaseElement baseElement) {
+		List<PictogramElement> elements = new ArrayList<PictogramElement>();
+		for (Resource r : resourceSet.getResources()) {
+			for (EObject o : r.getContents()) {
+				if (o instanceof Diagram) {
+					Diagram diagram = (Diagram)o;
+					elements.addAll( Graphiti.getLinkService().getPictogramElements(diagram, baseElement) );
+				}
+			}
+		}
+		return elements;
+	}
+	
+	/**
+	 * Convenience method to return only the Graphiti ContainerShapes that reference the given BaseElement
+	 * in all Diagrams of the given ResourceSet
+	 * 
+	 * @param resourceSet
+	 * @param baseElement
+	 * @return
+	 */
+	public static List<ContainerShape> getContainerShapes(ResourceSet resourceSet, BaseElement baseElement) {
+		List<ContainerShape> shapes = new ArrayList<ContainerShape>();
+		List<PictogramElement> pes = DIUtils.getPictogramElements(resourceSet, baseElement);
+		for (PictogramElement pe : pes) {
+			if (pe instanceof ContainerShape) {
+				if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) != null)
+					shapes.add((ContainerShape)pe);
+			}
+		}
+		return shapes;
+	}
+	
+	/**
+	 * Convenience method to return only the Graphiti Connections that reference the given BaseElement
+	 * in all Diagrams of the given ResourceSet
+	 * 
+	 * @param resourceSet
+	 * @param baseElement
+	 * @return
+	 */
+	public static List<Connection> getConnections(ResourceSet resourceSet, BaseElement baseElement) {
+		List<Connection> connections = new ArrayList<Connection>();
+		List<PictogramElement> pes = DIUtils.getPictogramElements(resourceSet, baseElement);
+		for (PictogramElement pe : pes) {
+			if (pe instanceof Connection) {
+				if (BusinessObjectUtil.getFirstElementOfType(pe, BPMNEdge.class) != null)
+					connections.add((Connection)pe);
+			}
+		}
+		return connections;
 	}
 }

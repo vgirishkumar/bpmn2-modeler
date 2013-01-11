@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.data;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -45,7 +45,7 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateBaseElementNameFeature(fp);
+		return new UpdateLabelFeature(fp);
 	}
 
 	public class AddDataObjectReferenceFeature extends AddDataFeature<DataObjectReference> {

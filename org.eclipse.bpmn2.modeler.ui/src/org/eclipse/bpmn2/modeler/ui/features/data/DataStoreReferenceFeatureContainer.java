@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -86,7 +86,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateBaseElementNameFeature(fp);
+		return new UpdateLabelFeature(fp);
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			layoutPictogramElement(containerShape);
 			
 			// change the AddContext and prepare it to add a label below the figure
-			this.prepareAddContext(context, width, height);
+			this.prepareAddContext(context, containerShape, width, height);
 			this.getFeatureProvider().getAddFeature(context).add(context);
 			
 			return containerShape;

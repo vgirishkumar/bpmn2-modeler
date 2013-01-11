@@ -73,6 +73,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -842,8 +843,8 @@ public class ModelUtil {
 		return wrapper instanceof DynamicEObjectImpl;
 	}
 	
-	public static boolean isElementSelected(PictogramElement[] elements, PictogramElement element) {
-		for (PictogramElement search : elements) {
+	public static boolean isElementSelected(IDiagramEditor editor, PictogramElement element) {
+		for (PictogramElement search : editor.getSelectedPictogramElements()) {
 			if (search.equals(element)) {
 				return true;
 			}
@@ -1211,12 +1212,7 @@ public class ModelUtil {
 				}
 				
 				if (newValue==null){ // DO NOT use isEmpty() because this erases an object's anyAttribute feature!
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							object.eUnset(feature);
-						}
-					});
+					adapter.getFeatureDescriptor(feature).unset();
 				}
 				else if (adapter!=null) { 			// use the Extended Properties adapter if there is one
 					adapter.getFeatureDescriptor(feature).setValue(newValue);

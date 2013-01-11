@@ -15,8 +15,8 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
@@ -31,8 +31,13 @@ public class MessageEventDefinitionPropertiesAdapter extends EventDefinitionProp
 	public MessageEventDefinitionPropertiesAdapter(AdapterFactory adapterFactory, MessageEventDefinition object) {
 		super(adapterFactory, object);
 		
-    	setProperty(Bpmn2Package.eINSTANCE.getMessageEventDefinition_OperationRef(), UI_CAN_CREATE_NEW, Boolean.FALSE);
-    	setProperty(Bpmn2Package.eINSTANCE.getMessageEventDefinition_OperationRef(), UI_CAN_EDIT, Boolean.FALSE);
-	}
+    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getMessageEventDefinition_OperationRef();
+    	setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
+    	setProperty(ref, UI_CAN_EDIT, Boolean.FALSE);
+    	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<MessageEventDefinition>(adapterFactory,object,ref));
+    	
+    	ref = Bpmn2Package.eINSTANCE.getMessageEventDefinition_MessageRef();
+    	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<MessageEventDefinition>(adapterFactory,object,ref));
+    }
 
 }

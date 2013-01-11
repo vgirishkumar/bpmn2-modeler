@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -47,7 +47,7 @@ public abstract class AbstractDataFeatureContainer extends BaseElementFeatureCon
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateBaseElementNameFeature(fp);
+		return new UpdateLabelFeature(fp);
 	}
 
 	@Override

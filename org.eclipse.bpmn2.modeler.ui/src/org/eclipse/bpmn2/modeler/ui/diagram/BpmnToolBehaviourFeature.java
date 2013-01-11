@@ -65,6 +65,7 @@ import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -410,8 +411,10 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 				}
 			}
 			else if (context instanceof UpdateContext) {
-				editor.setPictogramElementForSelection(
-						((UpdateContext)context).getPictogramElement());
+				PictogramElement pe = ((UpdateContext)context).getPictogramElement();
+				if (!(pe instanceof Connection)) {
+					editor.setPictogramElementForSelection(pe);
+				}
 				editor.refresh();
 			}
 		}

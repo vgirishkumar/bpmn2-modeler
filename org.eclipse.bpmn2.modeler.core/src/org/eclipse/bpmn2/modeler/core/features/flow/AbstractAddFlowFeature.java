@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -32,6 +32,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -79,17 +80,40 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		IGaService gaService = Graphiti.getGaService();
  
 		T businessObject = getBusinessObject(context);
-		IAddConnectionContext addConContext = (IAddConnectionContext) context;
+		IAddConnectionContext addContext = (IAddConnectionContext) context;
+		AnchorContainer sourceContainer = addContext.getSourceAnchor().getParent();
+		AnchorContainer targetContainer = addContext.getTargetAnchor().getParent();
 
 		Connection connection = peService.createFreeFormConnection(getDiagram());
-
+		
+		if (AnchorUtil.useAdHocAnchors(sourceContainer, connection)) {
+			Point p = (Point)addContext.getProperty(AnchorUtil.CONNECTION_SOURCE_LOCATION);
+			if (p!=null) {
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
+						AnchorUtil.pointToString(p));
+			}
+		}
+		
+		if (AnchorUtil.useAdHocAnchors(targetContainer, connection)) {
+			// Fetch the source and target locations of the connection copied from the
+			// CreateConnectionContext and copy them as String properties to the Connection
+			// @see AbstractCreateFlowFeature.create()
+			Point p = (Point)addContext.getProperty(AnchorUtil.CONNECTION_TARGET_LOCATION);
+			if (p!=null) {
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+						AnchorUtil.pointToString(p));
+			}
+		}
+		
+		if (addContext.getProperty(AnchorUtil.CONNECTION_CREATED)!=null) {
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_CREATED, "true");
+		}
+		
 		Object importProp = context.getProperty(DIImport.IMPORT_PROPERTY);
 		if (importProp != null && (Boolean) importProp) {
-			connection.setStart(addConContext.getSourceAnchor());
-			connection.setEnd(addConContext.getTargetAnchor());
+			connection.setStart(addContext.getSourceAnchor());
+			connection.setEnd(addContext.getTargetAnchor());
 		} else {
-			AnchorContainer sourceContainer = (AnchorContainer) addConContext.getSourceAnchor().eContainer();
-			AnchorContainer targetContainer = (AnchorContainer) addConContext.getTargetAnchor().eContainer();
 			Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
 					sourceContainer, targetContainer, connection);
 
@@ -100,14 +124,14 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		if (ModelUtil.hasName(businessObject)) {
 			ConnectionDecorator labelDecorator = Graphiti.getPeService().createConnectionDecorator(connection, true, 0.5, true);
 			Text text = gaService.createText(labelDecorator, ModelUtil.getName(businessObject));
-			peService.setPropertyValue(labelDecorator, UpdateBaseElementNameFeature.TEXT_ELEMENT, Boolean.toString(true));
+			peService.setPropertyValue(labelDecorator, UpdateLabelFeature.TEXT_ELEMENT, Boolean.toString(true));
 			StyleUtil.applyStyle(text, businessObject);
 		}
 
 		createDIEdge(connection, businessObject);
 		createConnectionLine(connection);
 		
-		decorateConnection(addConContext, connection, businessObject);
+		decorateConnection(addContext, connection, businessObject);
 
 		return connection;
 	}

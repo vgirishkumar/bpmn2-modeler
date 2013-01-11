@@ -28,7 +28,7 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.Properties;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -79,7 +79,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addUpdateFeature(new UpdateMarkersFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateBaseElementNameFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 
