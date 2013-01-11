@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import static org.eclipse.bpmn2.modeler.core.utils.FeatureSupport.getChildElementOfType;
+
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -61,35 +63,26 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		DIUtils.updateDIShape(context.getPictogramElement());
 
 		Shape shape = context.getShape();
-		Object[] node = getAllBusinessObjectsForPictogramElement(shape);
-		
-		for (Object object : node) {
-			List<PictogramElement> picElements = Graphiti.getLinkService().getPictogramElements(getDiagram(), (EObject) object);
-			for (PictogramElement element : picElements){
-				if (element!=shape &&
-						Graphiti.getPeService().getPropertyValue(element, GraphicsUtil.LABEL_PROPERTY) != null){
-					try{
-						ContainerShape container = (ContainerShape) element;
-						// only align when not selected, the move feature of the label will do the job when selected
-						if (!ModelUtil.isElementSelected(getDiagramEditor().getSelectedPictogramElements(), element)) {
-							GraphicsUtil.alignWithShape(
-									(AbstractText) container.getChildren().get(0).getGraphicsAlgorithm(), 
-									container,
-									shape.getGraphicsAlgorithm().getWidth(),
-									shape.getGraphicsAlgorithm().getHeight(),
-									shape.getGraphicsAlgorithm().getX(),
-									shape.getGraphicsAlgorithm().getY(),
-									preShapeX,
-									preShapeY
-							);
-						}
-					}
-					catch(Exception e){
-						new RuntimeException("Composition of label container is not as expected");
-					}
-				}
+		// if this shape has a label, align the label so that it is centered below its owner
+		for (EObject o : shape.getLink().getBusinessObjects()) {
+			if (o instanceof Shape && Graphiti.getPeService().getPropertyValue((Shape)o, GraphicsUtil.LABEL_PROPERTY) != null) {
+				// this is it!
+				ContainerShape textContainerShape = (ContainerShape)o;
+				GraphicsUtil.alignWithShape(
+						(AbstractText) textContainerShape.getChildren().get(0).getGraphicsAlgorithm(), 
+						textContainerShape,
+						shape.getGraphicsAlgorithm().getWidth(),
+						shape.getGraphicsAlgorithm().getHeight(),
+						shape.getGraphicsAlgorithm().getX(),
+						shape.getGraphicsAlgorithm().getY(),
+						preShapeX,
+						preShapeY
+				);
+				break;
 			}
-			
+		}
+		Object[] node = getAllBusinessObjectsForPictogramElement(shape);
+		for (Object object : node) {
 			if (object instanceof BPMNShape || object instanceof BPMNEdge) {
 				AnchorUtil.reConnect((DiagramElement) object, getDiagram());
 			}

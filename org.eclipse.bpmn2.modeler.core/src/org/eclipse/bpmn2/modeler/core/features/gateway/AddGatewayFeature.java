@@ -91,7 +91,7 @@ public class AddGatewayFeature<T extends Gateway>
 		layoutPictogramElement(containerShape);
 		
 		// Use context for labeling! 
-		this.prepareAddContext(context, width, height);
+		this.prepareAddContext(context, containerShape, width, height);
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		return containerShape;

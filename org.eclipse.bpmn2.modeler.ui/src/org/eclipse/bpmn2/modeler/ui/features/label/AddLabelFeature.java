@@ -15,7 +15,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -62,11 +62,13 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 		
 		BaseElement baseElement = (BaseElement) context.getProperty(ContextConstants.BUSINESS_OBJECT);
 		
-		final ContainerShape textContainerShape = peService.createContainerShape(getTargetContainer(context), true);
+		ContainerShape targetContainer = getTargetContainer(context);
+		PictogramElement labelOwner = (PictogramElement) context.getProperty(ContextConstants.LABEL_OWNER);
+		final ContainerShape textContainerShape = peService.createContainerShape(targetContainer, true);
 		gaService.createInvisibleRectangle(textContainerShape);
 		
 		Shape textShape = peService.createShape(textContainerShape, false);
-		peService.setPropertyValue(textShape, UpdateBaseElementNameFeature.TEXT_ELEMENT, Boolean.toString(true));
+		peService.setPropertyValue(textShape, UpdateLabelFeature.TEXT_ELEMENT, Boolean.toString(true));
 		String name = ModelUtil.getDisplayName(baseElement);
 		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
 		StyleUtil.applyStyle(text, baseElement);
@@ -81,7 +83,15 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 		
 		GraphicsUtil.alignWithShape(text, textContainerShape, width, height, x, y, 0, 0);
 		
-		this.link(textContainerShape, baseElement);
+		// if this label has an owner, link the two to each other
+		if (labelOwner!=null) {
+			link(labelOwner, new Object[] {textContainerShape});
+			link(textContainerShape, new Object[] {baseElement, labelOwner});
+		}
+		else {
+			link(textContainerShape, baseElement);
+		}
+		
 		Graphiti.getPeService().setPropertyValue(textContainerShape, GraphicsUtil.LABEL_PROPERTY, "true");
 		
 		updatePictogramElement(textContainerShape);

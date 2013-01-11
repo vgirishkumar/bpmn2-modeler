@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -101,7 +101,7 @@ public class AddEventFeature<T extends Event>
 		updatePictogramElement(containerShape);
 		layoutPictogramElement(containerShape);
 		
-		this.prepareAddContext(context, width, height);
+		this.prepareAddContext(context, containerShape, width, height);
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		return containerShape;

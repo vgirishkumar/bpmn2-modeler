@@ -234,8 +234,7 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.messageFlow.tab"
-			class="default"
-			features="messageRef"
+			class="org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowPropertySection"
 			type="org.eclipse.bpmn2.MessageFlow"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Message Flow">

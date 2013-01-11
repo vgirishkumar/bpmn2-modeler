@@ -43,7 +43,9 @@ public class PropertyLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		EObject o = BusinessObjectUtil.getBusinessObjectForSelection((ISelection)element);
-		return PropertyUtil.getImage(o);
+		if (o!=null)
+			return PropertyUtil.getImage(o);
+		return null;
 	}
 
 	@Override

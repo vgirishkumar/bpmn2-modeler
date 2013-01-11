@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -57,6 +57,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	public static final int ENVELOPE_WIDTH = 30;
 	public static final int ENVELOPE_HEIGHT = 20;
+	public static final String IS_REFERENCE = "is.reference";
 
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -78,7 +79,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		// because ChoreographyTasks have an associated Message visual,
 		// we need to allow these to update themselves also.
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateBaseElementNameFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageFlowFeature(fp));
 		return multiUpdate;
 	}
@@ -141,9 +142,14 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			StyleUtil.applyStyle(envelope.rect, businessObject);
 			envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 
-			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
-			createDIShape(containerShape, businessObject, !isImport);
-
+			if (context.getProperty(IS_REFERENCE)==null) {
+				boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+				createDIShape(containerShape, businessObject, !isImport);
+			}
+			else {
+				link(containerShape, businessObject);
+			}
+			
 			// hook for subclasses to inject extra code
 			((AddContext)context).setWidth(width);
 			((AddContext)context).setHeight(height);
@@ -155,7 +161,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			layoutPictogramElement(containerShape);
 			
 			// change the AddContext and prepare it to add a label below the figure
-			this.prepareAddContext(context, width, height);
+			this.prepareAddContext(context, containerShape, width, height);
 			this.getFeatureProvider().getAddFeature(context).add(context);
 			
 			return containerShape;

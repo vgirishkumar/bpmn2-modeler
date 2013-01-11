@@ -50,5 +50,4 @@ public interface FeatureContainer {
 	IDeleteFeature getDeleteFeature(IFeatureProvider fp);
 	
 	ICustomFeature[] getCustomFeatures(IFeatureProvider fp);
-
 }

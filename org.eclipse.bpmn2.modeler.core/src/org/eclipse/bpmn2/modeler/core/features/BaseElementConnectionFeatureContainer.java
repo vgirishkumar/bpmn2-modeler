@@ -28,13 +28,15 @@ public abstract class BaseElementConnectionFeatureContainer extends ConnectionFe
 	public Object getApplyObject(IContext context) {
 		if (context instanceof IAddContext) {
 			return ((IAddContext) context).getNewObject();
-		} else if (context instanceof IPictogramElementContext) {
+		}
+		else if (context instanceof IPictogramElementContext) {
 			return BusinessObjectUtil.getFirstElementOfType(
 					(((IPictogramElementContext) context).getPictogramElement()), BaseElement.class);
-		} else if (context instanceof IReconnectionContext) {
+		}
+		else if (context instanceof IReconnectionContext) {
 			IReconnectionContext rc = (IReconnectionContext)context;
 			return BusinessObjectUtil.getFirstElementOfType(rc.getConnection(), BaseElement.class);
-		}
+		}		
 		return null;
 	}
 

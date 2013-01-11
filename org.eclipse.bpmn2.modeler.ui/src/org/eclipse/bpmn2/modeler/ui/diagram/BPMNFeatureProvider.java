@@ -539,6 +539,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		return new DefaultRemoveBPMNShapeFeature(this);
 	}
 
+
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		ILinkService ls = Graphiti.getLinkService();
@@ -625,5 +626,18 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 	
 	public IFeature getCreateFeatureForBusinessObject(Class clazz) {
 		return mapBusinessObjectClassToCreateFeature.get(clazz);
+	}
+	
+	public void link(PictogramElement element, Object[] objects) {
+		if (element.getLink()==null) {
+			super.link(element, objects);
+		}
+		else {
+			for (Object o : objects) {
+				if (o instanceof EObject && !element.getLink().getBusinessObjects().contains(o)) {
+					element.getLink().getBusinessObjects().add((EObject) o);
+				}
+			}
+		}
 	}
 }

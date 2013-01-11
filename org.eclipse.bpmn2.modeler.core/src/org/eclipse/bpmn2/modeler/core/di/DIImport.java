@@ -73,10 +73,12 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -193,8 +195,9 @@ public class DIImport {
 //		}
 
 		for (BaseElement be : elements.keySet()) {
+			PictogramElement pe = elements.get(be);
+
 			if (be instanceof SubProcess) { // we need the layout to hide children if collapsed
-				PictogramElement pe = elements.get(be);
 				LayoutContext context = new LayoutContext(pe);
 				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
 				if (feature==null) {
@@ -204,11 +207,18 @@ public class DIImport {
 					feature.layout(context);
 			}
 			else if (be instanceof FlowNode) {
-				PictogramElement pe = elements.get(be);
 				LayoutContext context = new LayoutContext(pe);
 				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
 				if (feature!=null && feature.canLayout(context))
 					feature.layout(context);
+			}
+
+			if (pe instanceof Connection) {
+				UpdateContext context = new UpdateContext(pe);
+				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
+				if (feature.updateNeeded(context).toBoolean()) {
+					feature.update(context);
+				}
 			}
 		}
 	}
@@ -553,7 +563,19 @@ public class DIImport {
 				|| parent instanceof SubChoreography)
 				&& lanes.isEmpty()
 		) {
-			ContainerShape containerShape = (ContainerShape) elements.get(element.eContainer());
+			ContainerShape containerShape = (ContainerShape) elements.get(parent);
+			if (containerShape==null) {
+				// Maybe this is a Process that is referenced by a Pool
+				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
+					if (entry.getKey() instanceof Participant) {
+						Participant p = (Participant)entry.getKey();
+						if (p.getProcessRef() == parent) {
+							containerShape = (ContainerShape)entry.getValue();
+							break;
+						}
+					}
+				}
+			}
 			if (containerShape != null) {
 				// add the FlowNode to its parent SubProcess, Process or SubChoreography
 				// but only if the node is on the same BPMNDiagram as its parent container
@@ -700,10 +722,10 @@ public class DIImport {
 		}
 	}
 
-	private Connection createConnectionAndSetBendpoints(BPMNEdge bpmnEdge, PictogramElement sourceElement,
-			PictogramElement targetElement) {
-		FixPointAnchor sourceAnchor = createAnchor(sourceElement);
-		FixPointAnchor targetAnchor = createAnchor(targetElement);
+	private Connection createConnectionAndSetBendpoints(BPMNEdge bpmnEdge, PictogramElement sourcePE,
+			PictogramElement targetPE) {
+		FixPointAnchor sourceAnchor = createAnchor(sourcePE);
+		FixPointAnchor targetAnchor = createAnchor(targetPE);
 
 		AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
 		context.setNewObject(bpmnEdge.getBpmnElement());
@@ -719,8 +741,17 @@ public class DIImport {
 				List<Point> waypoint = bpmnEdge.getWaypoint();
 				int size = waypoint.size() - 1;
 
-				setAnchorLocation(sourceElement, sourceAnchor, waypoint.get(0));
-				setAnchorLocation(targetElement, targetAnchor, waypoint.get(size));
+				setAnchorLocation(sourcePE, sourceAnchor, waypoint.get(0));
+				if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
+							AnchorUtil.pointToString(sourceAnchor.getLocation()));
+				}
+				
+				setAnchorLocation(targetPE, targetAnchor, waypoint.get(size));
+				if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+							AnchorUtil.pointToString(targetAnchor.getLocation()));
+				}
 
 				for (int i = 1; i < size; i++) {
 					DIUtils.addBendPoint(freeForm, waypoint.get(i));

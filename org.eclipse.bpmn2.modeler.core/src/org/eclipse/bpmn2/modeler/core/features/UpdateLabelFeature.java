@@ -31,11 +31,11 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 
-public class UpdateBaseElementNameFeature extends AbstractUpdateFeature {
+public class UpdateLabelFeature extends AbstractUpdateFeature {
 
 	public static final String TEXT_ELEMENT = "baseelement.text";
 
-	public UpdateBaseElementNameFeature(IFeatureProvider fp) {
+	public UpdateLabelFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 

@@ -14,10 +14,8 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;

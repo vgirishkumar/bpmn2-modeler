@@ -49,7 +49,7 @@ public abstract class BaseElementFeatureContainer implements FeatureContainer {
 
 	@Override
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
-		return null;
+		return new RemoveLabelFeature(fp);
 	}
 	
 	@Override

@@ -29,7 +29,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateBaseElementNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
@@ -92,7 +92,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addUpdateFeature(new UpdateDefaultSequenceFlowFeature(fp));
 		multiUpdate.addUpdateFeature(new UpdateConditionalSequenceFlowFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateBaseElementNameFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 

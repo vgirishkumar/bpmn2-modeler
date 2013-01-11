@@ -112,7 +112,7 @@ public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<Boundar
 		anchor.setReferencedGraphicsAlgorithm(ellipse);
 		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
-		this.prepareAddContext(context, gatewayWidth, gatewayHeight);
+		this.prepareAddContext(context, containerShape, gatewayWidth, gatewayHeight);
 //		this.getFeatureProvider().getAddFeature(context).add(context);
 		
 		updatePictogramElement(containerShape);

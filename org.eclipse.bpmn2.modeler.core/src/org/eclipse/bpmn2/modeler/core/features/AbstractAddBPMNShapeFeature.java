@@ -59,6 +59,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
@@ -95,7 +96,7 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 		else {
 			link(shape, new Object[] { elem, bpmnShape });
 		}
-		if (applyDefaults)
+		if (applyDefaults && bpmnShape!=null)
 			Bpmn2Preferences.getInstance(bpmnShape.eResource()).applyBPMNDIDefaults(bpmnShape, null);
 		return bpmnShape;
 	}
@@ -163,11 +164,12 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 		return edge;
 	}
 	
-	protected void prepareAddContext(IAddContext context, int width, int height) {
+	protected void prepareAddContext(IAddContext context, PictogramElement labelOwner, int width, int height) {
 		context.putProperty(ContextConstants.LABEL_CONTEXT, true);
 		context.putProperty(ContextConstants.WIDTH, width);
 		context.putProperty(ContextConstants.HEIGHT, height);
 		context.putProperty(ContextConstants.BUSINESS_OBJECT, getBusinessObject(context));
+		context.putProperty(ContextConstants.LABEL_OWNER, labelOwner);
 	}
 	
 	protected void adjustLocation(IAddContext context, int width, int height) {

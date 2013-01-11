@@ -315,6 +315,15 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		}
 	}
 
+	public void unset() {
+		unset(object);
+	}
+	
+	public void unset(Object context) {
+		final T object = adopt(context);
+		setValue(object, feature.getDefaultValue());
+	}
+	
 	private void insertRootElementIfNeeded(Object value) {
 		if (value instanceof RootElement && ((RootElement)value).eContainer()==null) {
 			// stuff all root elements into Definitions.rootElements

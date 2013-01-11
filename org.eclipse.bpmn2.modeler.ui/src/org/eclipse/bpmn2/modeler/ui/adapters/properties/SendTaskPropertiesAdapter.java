@@ -13,10 +13,29 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.Hashtable;
+import java.util.List;
+
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MessageFlow;
+import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * @author Bob Brodt
@@ -32,10 +51,82 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 		super(adapterFactory, object);
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getSendTask_MessageRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<SendTask>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,ref) {
+
+    		public void setValue(Object context, final Object value) {
+    			if (value instanceof Message || value==null) {
+	    			final SendTask object = adopt(context);
+	    			final Message message = (Message)value; 
+					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
+					if (editingDomain == null) {
+						setMessageRef(object, message);
+					} else {
+						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+							@Override
+							protected void doExecute() {
+								setMessageRef(object, message);
+							}
+						});
+					}
+    			}
+    		}
+    		
+    	});
 
     	ref = Bpmn2Package.eINSTANCE.getSendTask_OperationRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<SendTask>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,ref) {
+    		
+    		public void setValue(Object context, final Object value) {
+    			if (value instanceof Operation || value==null) {
+	    			final SendTask object = adopt(context);
+	    			final Operation operation = (Operation)value; 
+					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
+					if (editingDomain == null) {
+						setOperationRef(object, operation);
+					} else {
+						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+							@Override
+							protected void doExecute() {
+								setOperationRef(object, operation);
+							}
+						});
+					}
+    			}
+    		}
+   		
+    	});
+	}
+	
+	private void setMessageRef(SendTask sendTask, Message message) {
+		ResourceSet resourceSet = sendTask.eResource().getResourceSet();
+		
+		// first change the MessageRef on the SendTask
+		sendTask.setMessageRef(message);
+		
+		// If there are any OUTGOING Message Flows attached to this SendTask figure,
+		// make sure the MessageFlow.messageRef is the same as ours
+		List<ContainerShape> shapes = DIUtils.getContainerShapes(resourceSet, sendTask);
+		for (ContainerShape shape : shapes) {
+			for (Anchor a : shape.getAnchors()) {
+				for (Connection c : a.getOutgoingConnections()) {
+					Object o = BusinessObjectUtil.getFirstBaseElement(c);
+					if (o instanceof MessageFlow) {
+						((MessageFlow)o).setMessageRef(message);
+					}
+					// also set the "messageRef" on the target of this Message Flow
+					// (the target should be a ReceiveTask)
+					o = BusinessObjectUtil.getFirstBaseElement(c.getEnd().getParent());
+					if (o instanceof ReceiveTask) {
+						((ReceiveTask)o).setMessageRef(message);
+					}
+				}
+			}
+		}
 	}
 
+	private void setOperationRef(SendTask sendTask, Operation operation) {
+		sendTask.setOperationRef(operation);
+		Message message = operation==null ? null : operation.getOutMessageRef();
+		setMessageRef(sendTask, message);
+	}
 }
