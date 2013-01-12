@@ -36,6 +36,31 @@ public class SyntaxCheckerUtils {
 		return false;
 	}
 
+	public static final String toNCName(String name) {
+		if (name==null || name.isEmpty())
+			return "_";
+		
+		StringBuffer ncname = new StringBuffer();
+		int nameLength = name.length();
+
+		// Check first character
+		char c = name.charAt(0);
+
+		if (c == '_' || isLetter(c))
+			ncname.append(c);
+		else
+			ncname.append('_');
+		// Check the rest of the characters
+		for (int i = 1; i < nameLength; i++) {
+			c = name.charAt(i);
+			if (!isNCNameChar(c)) {
+				c = '_';
+			}
+			ncname.append(c);
+		}
+		return ncname.toString();
+	}
+	
 	public static final boolean isNCNameChar(char c) {
 		return _isAsciiBaseChar(c) || _isAsciiDigit(c) || c == '.' || c == '-' || c == '_' || _isNonAsciiBaseChar(c)
 				|| _isNonAsciiDigit(c) || isIdeographic(c) || isCombiningChar(c) || isExtender(c);
