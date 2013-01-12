@@ -8,7 +8,7 @@
 
 	<groupId>org.eclipse.bpmn2.modeler</groupId>
 	<artifactId>org.eclipse.bpmn2.modeler.parent</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.2.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>BPMN2 Modeler Parent</name>
@@ -137,8 +137,44 @@
 		</repository>
 
 		<repository>
-			<id>eclipse-graphiti</id>
+			<id>eclipse-graphiti-helios</id>
+			<url>http://download.eclipse.org/graphiti/updates/0.8.2</url>
+			<layout>p2</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>eclipse-graphiti-indigo</id>
 			<url>http://download.eclipse.org/graphiti/updates/0.9.0</url>
+			<layout>p2</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>eclipse-graphiti-juno</id>
+			<url>http://download.eclipse.org/graphiti/updates/0.9.1</url>
+			<layout>p2</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>eclipse-graphiti-kepler</id>
+			<url>http://download.eclipse.org/graphiti/updates/0.10.1</url>
 			<layout>p2</layout>
 			<snapshots>
 				<enabled>true</enabled>
