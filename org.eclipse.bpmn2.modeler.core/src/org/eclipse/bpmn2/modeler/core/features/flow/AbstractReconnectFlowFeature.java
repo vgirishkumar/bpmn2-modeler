@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features.flow;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.features.ReconnectBaseElementFeature;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -29,6 +30,12 @@ public abstract class AbstractReconnectFlowFeature extends ReconnectBaseElementF
 	protected abstract Class<? extends EObject> getTargetClass();
 	protected abstract Class<? extends EObject> getSourceClass();
 	
+
+	@Override
+	public void postReconnect(IReconnectionContext context) {
+		super.postReconnect(context);
+		AnchorUtil.updateConnection(getFeatureProvider(), context.getConnection());
+	}
 
 	@Override
 	public boolean canReconnect(IReconnectionContext context) {

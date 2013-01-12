@@ -31,11 +31,13 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddBendpointFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IRemoveBendpointFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddBendpointContext;
 import org.eclipse.graphiti.features.context.IRemoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
 import org.eclipse.graphiti.features.context.impl.RemoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
@@ -967,5 +969,13 @@ public class AnchorUtil {
 			return (FreeFormConnection)connectionPointShape.getLink().getBusinessObjects().get(0); 
 		}
 		return null;
+	}
+
+	public static void updateConnection(IFeatureProvider fp, Connection connection) {
+		UpdateContext updateContext = new UpdateContext(connection);
+		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext);
+		if (updateFeature.updateNeeded(updateContext).toBoolean()) {
+			updateFeature.update(updateContext);
+		}
 	}
 }

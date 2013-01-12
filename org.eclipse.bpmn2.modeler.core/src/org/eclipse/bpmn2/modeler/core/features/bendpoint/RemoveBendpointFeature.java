@@ -43,8 +43,8 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 	@Override
 	public void removeBendpoint(IRemoveBendpointContext context) {
 	    super.removeBendpoint(context);
+		FreeFormConnection connection = context.getConnection();
 	    try {
-			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
 			ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
 			BPMNEdge edge = (BPMNEdge) modelHandler.findDIElement(element);
@@ -52,5 +52,7 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
+	    
+		AnchorUtil.updateConnection(getFeatureProvider(), connection);
 	}
 }
