@@ -83,6 +83,8 @@ public abstract class AbstractCreateFlowFeature<
 		addContext.putProperty(AnchorUtil.CONNECTION_SOURCE_LOCATION, p);
 		
 		loc = context.getTargetLocation();
+		if (loc==null)
+			loc = peService.getLocationRelativeToDiagram(context.getTargetAnchor());
 		shapeLoc = peService.getLocationRelativeToDiagram((Shape)context.getTargetAnchor().getParent());
 		p = gaService.createPoint(
 				loc.getX() - shapeLoc.getX(),
