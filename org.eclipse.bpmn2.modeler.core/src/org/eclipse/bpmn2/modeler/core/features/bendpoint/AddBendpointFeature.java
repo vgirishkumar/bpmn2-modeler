@@ -53,6 +53,8 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 			} else if (index == connection.getBendpoints().size()) {
 				AnchorUtil.reConnect((DiagramElement) edge.getTargetElement(), getDiagram());
 			}
+			
+			AnchorUtil.updateConnection(getFeatureProvider(), connection);
 
 		} catch (Exception e) {
 			Activator.logError(e);

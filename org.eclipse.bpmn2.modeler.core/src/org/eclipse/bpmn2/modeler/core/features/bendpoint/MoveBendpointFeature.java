@@ -56,6 +56,9 @@ public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 			} else if (index == connection.getBendpoints().size()) {
 				AnchorUtil.reConnect((DiagramElement) edge.getTargetElement(), getDiagram());
 			}
+			
+			AnchorUtil.updateConnection(getFeatureProvider(), connection);
+			
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
