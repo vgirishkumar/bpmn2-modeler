@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BPMN2 Editor UI
 Bundle-SymbolicName: org.eclipse.bpmn2.modeler.ui;singleton:=true
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.2.1.qualifier
 Bundle-Activator: org.eclipse.bpmn2.modeler.ui.Activator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.osgi,
- org.eclipse.graphiti;bundle-version="0.8.2",
- org.eclipse.graphiti.ui;bundle-version="0.8.2",
+ org.eclipse.graphiti;bundle-version="[0.8.2,0.10.0]",
+ org.eclipse.graphiti.ui;bundle-version="[0.8.2,0.10.0]",
  org.eclipse.bpmn2.modeler.core,
  org.eclipse.emf.transaction;bundle-version="1.4.0",
  org.eclipse.ui.views.properties.tabbed,
