@@ -98,10 +98,11 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	public IRemoveFeature getRemoveFeature(final IFeatureProvider fp) {
 		return new DefaultRemoveFeature(fp) {
 
-			public void remove(IRemoveContext context) {
+			@Override
+			public void postRemove(IRemoveContext context) {
+				super.postRemove(context);
 				Connection connection = (Connection) context.getPictogramElement();
 				removeMessageDecorator(fp, connection);
-				super.remove(context);
 			}
 		};
 	}
@@ -238,10 +239,12 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		if (decorator!=null) {
 			ILocation loc = peService.getConnectionMidpoint(connection, 0.25);
 			PictogramElement messageShape = (PictogramElement) decorator.getLink().getBusinessObjects().get(1);
-			int w = MessageFeatureContainer.ENVELOPE_WIDTH;
-			int h = MessageFeatureContainer.ENVELOPE_HEIGHT;
+			int w = MessageFeatureContainer.ENVELOPE_WIDTH / 2;
+			int h = MessageFeatureContainer.ENVELOPE_HEIGHT / 2;
+			int x = loc.getX() - w;
+			int y = loc.getY() - h;
 			ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)messageShape);
-			return shapeLoc.getX() + w/2 != loc.getX() || shapeLoc.getY() + h/2 != loc.getY();
+			return x != shapeLoc.getX() || y != shapeLoc.getY();
 		}
 		return false;
 	}
@@ -252,10 +255,10 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			// calculate new location: this will be 1/4 of the distance from start of the connection line
 			ILocation loc = peService.getConnectionMidpoint(connection, 0.25);
 			Shape messageShape = (Shape) decorator.getLink().getBusinessObjects().get(1);
-			int w = MessageFeatureContainer.ENVELOPE_WIDTH;
-			int h = MessageFeatureContainer.ENVELOPE_HEIGHT;
-			int x = loc.getX() - w/2;
-			int y = loc.getY() - h/2;
+			int w = MessageFeatureContainer.ENVELOPE_WIDTH / 2;
+			int h = MessageFeatureContainer.ENVELOPE_HEIGHT / 2;
+			int x = loc.getX() - w;
+			int y = loc.getY() - h;
 			MoveShapeContext moveContext = new MoveShapeContext(messageShape);
 			moveContext.setX(x);
 			moveContext.setY(y);

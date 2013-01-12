@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
@@ -484,13 +485,16 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	                        if ("name".equals(feature.getName())) {
 								Object newValue = notification.getNewValue();
 								Object oldValue = notification.getOldValue();
-								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) {
+								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
+								{
+									newValue = SyntaxCheckerUtils.toNCName((String)newValue);
 									EStructuralFeature id = object.eClass().getEStructuralFeature("id");
 									if (id!=null) {
 										boolean deliver = object.eDeliver();
 										if (deliver)
 											object.eSetDeliver(false);
 										object.eSet(id, newValue);
+										object.eSet(feature, newValue);
 										if (deliver)
 											object.eSetDeliver(true);
 									}
@@ -499,13 +503,15 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	                        else if ("id".equals(feature.getName())) {
 								Object newValue = notification.getNewValue();
 								Object oldValue = notification.getOldValue();
-								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) {
-									EStructuralFeature id = object.eClass().getEStructuralFeature("name");
-									if (id!=null) {
+								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) 
+								{
+									newValue = SyntaxCheckerUtils.toNCName((String)newValue);
+									EStructuralFeature name = object.eClass().getEStructuralFeature("name");
+									if (name!=null) {
 										boolean deliver = object.eDeliver();
 										if (deliver)
 											object.eSetDeliver(false);
-										object.eSet(id, newValue);
+										object.eSet(name, newValue);
 										if (deliver)
 											object.eSetDeliver(true);
 									}
