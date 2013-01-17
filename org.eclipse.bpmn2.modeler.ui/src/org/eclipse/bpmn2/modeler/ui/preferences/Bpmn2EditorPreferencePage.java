@@ -18,10 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
 import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
@@ -48,6 +48,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FontDialog;
@@ -74,6 +75,7 @@ public class Bpmn2EditorPreferencePage extends PreferencePage implements IWorkbe
 	Button defaultSize;
 	FontControl textFont;
 	ColorControl textColor;
+	Combo routingStyle;
 
 	public Bpmn2EditorPreferencePage() {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
@@ -159,6 +161,17 @@ public class Bpmn2EditorPreferencePage extends PreferencePage implements IWorkbe
 		gd.verticalIndent = 10;
 		defaultSize.setLayoutData(gd);
 		
+        Composite routingStyleComposite = new Composite(styleEditors, SWT.NONE);
+        routingStyleComposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,1,1));
+        layout = new GridLayout(2,false);
+        routingStyleComposite.setLayout(layout);
+
+        Label routingStyleLabel = new Label(routingStyleComposite, SWT.LEFT);
+		routingStyleLabel.setText("Routing Style:");
+		routingStyleLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		routingStyle = new Combo(routingStyleComposite, SWT.READ_ONLY);
+		routingStyle.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+
 		loadStyleEditors();
 
         return container;
@@ -174,6 +187,12 @@ public class Bpmn2EditorPreferencePage extends PreferencePage implements IWorkbe
 			ss.setDefaultSize(defaultSize.getSelection());
 			ss.setTextFont(textFont.getSelectedFont());
 			ss.setTextColor(textColor.getSelectedColor());
+			RoutingStyle rs = ss.getRoutingStyle();
+			int i = routingStyle.getSelectionIndex();
+			if (i>=0) {
+				rs = RoutingStyle.values()[i];
+			}
+			ss.setRoutingStyle(rs);
 		}
 	}
 	
@@ -214,18 +233,30 @@ public class Bpmn2EditorPreferencePage extends PreferencePage implements IWorkbe
 			textFont.setSelectedFont(ss.getTextFont());
 			textColor.setSelectedColor(ss.getTextColor());
 
-			boolean visible = true;
+			boolean isShape = true;
 			if (FeatureMap.CONNECTORS.contains(c)) {
-				visible = false;
+				isShape = false;
 			}
-			shapeBackground.setVisible(visible);
-			((GridData)shapeBackground.getLayoutData()).exclude = !visible;
-			shapePrimarySelectedColor.setVisible(visible);
-			((GridData)shapePrimarySelectedColor.getLayoutData()).exclude = !visible;
-			shapeSecondarySelectedColor.setVisible(visible);
-			((GridData)shapeSecondarySelectedColor.getLayoutData()).exclude = !visible;
-			defaultSize.setVisible(visible);
-			((GridData)defaultSize.getLayoutData()).exclude = !visible;
+			shapeBackground.setVisible(isShape);
+			((GridData)shapeBackground.getLayoutData()).exclude = !isShape;
+			shapePrimarySelectedColor.setVisible(isShape);
+			((GridData)shapePrimarySelectedColor.getLayoutData()).exclude = !isShape;
+			shapeSecondarySelectedColor.setVisible(isShape);
+			((GridData)shapeSecondarySelectedColor.getLayoutData()).exclude = !isShape;
+			defaultSize.setVisible(isShape);
+			((GridData)defaultSize.getLayoutData()).exclude = !isShape;
+			routingStyle.setVisible(!isShape);
+			((GridData)routingStyle.getLayoutData()).exclude = isShape;
+			if (!isShape) {
+				routingStyle.removeAll();
+				int i = 0;
+				for (RoutingStyle rs : RoutingStyle.values()) {
+					routingStyle.add(rs.name());
+					if (ss.getRoutingStyle() == rs)
+						routingStyle.select(i);
+					++i;
+				}
+			}
 			container.layout();
 		}
 	}

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.features.label;
+package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataInput;
@@ -22,8 +22,6 @@ import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.RemoveLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;

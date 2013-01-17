@@ -138,6 +138,13 @@
 			label="Event">
 		</propertyTab>
 		
+		<propertyTab
+			id="org.jboss.runtime.jbpm5.simulation.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.SimulationPropertySection"
+			type="org.eclipse.bpmn2.BaseElement"
+			label="Simulation">
+		</propertyTab>
+		
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.FormalExpression"
 			runtimeId="org.jboss.runtime.jbpm5"

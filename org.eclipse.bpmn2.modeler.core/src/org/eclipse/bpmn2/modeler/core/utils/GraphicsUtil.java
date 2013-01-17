@@ -24,12 +24,10 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.Gateway;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
@@ -40,7 +38,8 @@ import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -72,7 +71,7 @@ public class GraphicsUtil {
 	
 	// TODO: Determine all cases to make a line break! The following implementation are the easy once.
 	private static final String LINE_BREAK = "\n";
-	
+
 	public static class SizeTemplate{
 		
 		private Size eventSize = new Size(GraphicsUtil.EVENT_SIZE, GraphicsUtil.EVENT_SIZE);
@@ -1172,6 +1171,15 @@ public class GraphicsUtil {
 		return null;
 	}
 	
+	public static boolean contains(Shape shape, Point point) {
+		IDimension size = calculateSize(shape);
+		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);
+		int x = point.getX();
+		int y = point.getY();
+		return x>=loc.getX() && x<=loc.getX() + size.getWidth() &&
+				y>=loc.getY() && y<loc.getY() + size.getHeight();
+	}
+	
 	public static boolean intersects(Shape shape1, Shape shape2) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		ILocation loc2 = layoutService.getLocationRelativeToDiagram(shape2);
@@ -1208,5 +1216,77 @@ public class GraphicsUtil {
 	
 	public static Color clone(Color c) {
 		return c;
+	}
+
+	public static boolean pointsEqual(Point p1, Point p2) {
+		return p1.getX()==p2.getX() && p1.getY()==p2.getY();
+	}
+	
+	public static Point createPoint(Point p) {
+		return gaService.createPoint(p.getX(), p.getY());
+	}
+	
+	public static Point createPoint(int x, int y) {
+		return gaService.createPoint(x, y);
+	}
+
+	public static Point createPoint(Anchor a) {
+		return createPoint(peService.getLocationRelativeToDiagram(a));
+	}
+
+	public static Point createPoint(AnchorContainer ac) {
+		if (ac instanceof Shape)
+			return createPoint(peService.getLocationRelativeToDiagram((Shape)ac));
+		return null;
+	}
+
+	public static Point createPoint(ILocation loc) {
+		return createPoint(loc.getX(), loc.getY());
+	}
+
+	public static Point getMidpoint(Point p1, Point p2) {
+		int dx = p2.getX() - p1.getX();
+		int dy = p2.getY() - p1.getY();
+		int x = p1.getX() + dx/2;
+		int y = p1.getY() + dy/2;
+		return createPoint(x,y);
+	}
+
+	public static double getLength(ILocation start, ILocation end) {
+		double a = (double)(start.getX() - end.getX());
+		double b = (double)(start.getY() - end.getY());
+		return Math.sqrt(a*a + b*b);
+	}
+
+	public static double getLength(Point p1, Point p2) {
+		double a = (double)(p1.getX() - p2.getX());
+		double b = (double)(p1.getY() - p2.getY());
+		return Math.sqrt(a*a + b*b);
+	}
+	
+	public static IDimension calculateSize(AnchorContainer shape) {
+		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+		if (ga!=null)
+			return gaService.calculateSize(ga);
+		
+		IDimension dim = null;
+		if (shape instanceof ContainerShape) {
+			ContainerShape cs = (ContainerShape)shape;
+			for (Shape s : cs.getChildren()) {
+				ga = s.getGraphicsAlgorithm();
+				if (ga!=null) {
+					IDimension d = gaService.calculateSize(ga);
+					if (dim==null)
+						dim = d;
+					else {
+						if (d.getWidth() > dim.getWidth())
+							dim.setWidth(d.getWidth());
+						if (d.getHeight() > dim.getHeight())
+							dim.setHeight(d.getHeight());
+					}
+				}
+			}
+		}
+		return dim;
 	}
 }

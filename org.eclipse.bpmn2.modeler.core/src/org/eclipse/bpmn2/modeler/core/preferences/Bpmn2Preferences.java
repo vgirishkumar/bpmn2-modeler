@@ -723,6 +723,16 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		}
 	}
 	
+	// this is temporary until the connection routing has been proven reliable
+	static boolean enableConnectionRouting = true;
+	public boolean getEnableConnectionRouting() {
+		return enableConnectionRouting;
+	}
+	
+	public void setEnableConnectionRouting(boolean enable) {
+		this.enableConnectionRouting = enable;
+	}
+	
 	@Override
 	public void preferenceChange(PreferenceChangeEvent event) {
 		reload();

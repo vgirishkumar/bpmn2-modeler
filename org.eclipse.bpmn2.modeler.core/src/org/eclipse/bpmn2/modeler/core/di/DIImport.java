@@ -724,8 +724,9 @@ public class DIImport {
 
 	private Connection createConnectionAndSetBendpoints(BPMNEdge bpmnEdge, PictogramElement sourcePE,
 			PictogramElement targetPE) {
-		FixPointAnchor sourceAnchor = createAnchor(sourcePE);
-		FixPointAnchor targetAnchor = createAnchor(targetPE);
+
+		FixPointAnchor sourceAnchor = createAnchor(sourcePE, bpmnEdge, true);
+		FixPointAnchor targetAnchor = createAnchor(targetPE, bpmnEdge, false);
 
 		AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
 		context.setNewObject(bpmnEdge.getBpmnElement());
@@ -734,29 +735,22 @@ public class DIImport {
 		if (addFeature != null && addFeature.canAdd(context)) {
 			context.putProperty(IMPORT_PROPERTY, true);
 			Connection connection = (Connection) addFeature.add(context);
+			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
+						AnchorUtil.pointToString(sourceAnchor.getLocation()));
+			}
+			if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+						AnchorUtil.pointToString(targetAnchor.getLocation()));
+			}
 
 			if (connection instanceof FreeFormConnectionImpl) {
-				FreeFormConnectionImpl freeForm = (FreeFormConnectionImpl) connection;
-
-				List<Point> waypoint = bpmnEdge.getWaypoint();
-				int size = waypoint.size() - 1;
-
-				setAnchorLocation(sourcePE, sourceAnchor, waypoint.get(0));
-				if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
-							AnchorUtil.pointToString(sourceAnchor.getLocation()));
-				}
-				
-				setAnchorLocation(targetPE, targetAnchor, waypoint.get(size));
-				if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
-							AnchorUtil.pointToString(targetAnchor.getLocation()));
-				}
-
-				for (int i = 1; i < size; i++) {
-					DIUtils.addBendPoint(freeForm, waypoint.get(i));
+				List<Point> waypoints = bpmnEdge.getWaypoint();
+				for (int i=1; i<waypoints.size()-1; ++i) {
+					DIUtils.addBendPoint((FreeFormConnection)connection, waypoints.get(i));
 				}
 			}
+			
 			featureProvider.link(connection, new Object[] { bpmnEdge.getBpmnElement(), bpmnEdge });
 			return connection;
 		} else {
@@ -766,21 +760,42 @@ public class DIImport {
 		return null;
 	}
 
-	private FixPointAnchor createAnchor(PictogramElement elem) {
+	private FixPointAnchor createAnchor(PictogramElement pictogramElement, BPMNEdge bpmnEdge, boolean isSource) {
 		FixPointAnchor sa;
 		
-		if (elem instanceof FreeFormConnection) {
+		if (pictogramElement instanceof FreeFormConnection) {
 			Shape connectionPointShape = AnchorUtil.createConnectionPoint(featureProvider,
-					(FreeFormConnection)elem,
-					Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)elem, 0.5));
+					(FreeFormConnection)pictogramElement,
+					Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)pictogramElement, 0.5));
 			sa = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
 		}
 		else
 		{
-			sa = peService.createFixPointAnchor((AnchorContainer) elem);
-			sa.setReferencedGraphicsAlgorithm(elem.getGraphicsAlgorithm());
-			Rectangle rect = gaService.createInvisibleRectangle(sa);
-			gaService.setSize(rect, 1, 1);
+			BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(pictogramElement);
+			BaseElement flowElement = bpmnEdge.getBpmnElement();
+			Point waypoint = null;
+			if (isSource) {
+				waypoint = bpmnEdge.getWaypoint().get(0);
+			}
+			else {
+				waypoint = bpmnEdge.getWaypoint().get(bpmnEdge.getWaypoint().size()-1);
+				
+			}
+			
+			int x = (int)waypoint.getX();
+			int y = (int)waypoint.getY();
+			org.eclipse.graphiti.mm.algorithms.styles.Point anchorPoint = gaService.createPoint(x,y);
+			
+			if (AnchorUtil.useAdHocAnchors(baseElement, flowElement)) {
+				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram((Shape)pictogramElement);
+				anchorPoint.setX(x - loc.getX());
+				anchorPoint.setY(y - loc.getY());
+				sa = AnchorUtil.createAdHocAnchor((AnchorContainer)pictogramElement, anchorPoint);
+				setAnchorLocation(pictogramElement, sa, waypoint);
+			}
+			else {
+				sa = AnchorUtil.findNearestAnchor((AnchorContainer)pictogramElement, anchorPoint);
+			}
 		}
 		return sa;
 	}

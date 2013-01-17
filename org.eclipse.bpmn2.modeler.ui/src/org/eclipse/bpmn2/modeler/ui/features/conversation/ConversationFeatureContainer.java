@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.conversation.AddConversationFeature;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
@@ -58,7 +59,7 @@ public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return null;
+		return new DefaultLayoutBPMNConnectionFeature(fp);
 	}
 
 	@Override

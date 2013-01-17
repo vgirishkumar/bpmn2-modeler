@@ -8,10 +8,8 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.features.label;
+package org.eclipse.bpmn2.modeler.core.features.label;
 
-import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
@@ -43,10 +41,11 @@ public class LayoutLabelFeature extends AbstractLayoutFeature {
 
 	@Override
 	public boolean layout(ILayoutContext context) {
-		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
-		SubProcess subProcess = BusinessObjectUtil.getFirstElementOfType(containerShape, SubProcess.class);
-		if (subProcess!=null) {
+		PictogramElement pictogramElement = context.getPictogramElement();
+		SubProcess subProcess = BusinessObjectUtil.getFirstElementOfType(pictogramElement, SubProcess.class);
+		if (subProcess!=null && pictogramElement instanceof ContainerShape) {
 			try {
+				ContainerShape containerShape = (ContainerShape)pictogramElement;
 				BPMNShape shape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(subProcess);
 				
 				if (shape.isIsExpanded()) {
@@ -99,5 +98,4 @@ public class LayoutLabelFeature extends AbstractLayoutFeature {
 		}
 		return true;
 	}
-
 }
