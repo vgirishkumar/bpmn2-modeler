@@ -30,13 +30,6 @@ public abstract class AbstractReconnectFlowFeature extends ReconnectBaseElementF
 	protected abstract Class<? extends EObject> getTargetClass();
 	protected abstract Class<? extends EObject> getSourceClass();
 	
-
-	@Override
-	public void postReconnect(IReconnectionContext context) {
-		super.postReconnect(context);
-		AnchorUtil.updateConnection(getFeatureProvider(), context.getConnection());
-	}
-
 	@Override
 	public boolean canReconnect(IReconnectionContext context) {
 		if (super.canReconnect(context)) {

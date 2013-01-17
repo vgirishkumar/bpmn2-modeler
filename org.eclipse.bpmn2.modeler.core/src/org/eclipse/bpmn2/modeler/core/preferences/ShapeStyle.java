@@ -32,12 +32,14 @@ public class ShapeStyle {
 
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-";
+	public static enum RoutingStyle { Direct, Manhattan};
 	IColorConstant shapeBackground;
 	IColorConstant shapePrimarySelectedColor;
 	IColorConstant shapeSecondarySelectedColor;
 	IColorConstant shapeForeground;
 	Font textFont;
 	IColorConstant textColor;
+	RoutingStyle routingStyle = RoutingStyle.Direct;
 	boolean defaultSize;
 	boolean dirty;
 
@@ -84,6 +86,16 @@ public class ShapeStyle {
 			defaultSize = stringToBoolean(a[6]);
 		else
 			defaultSize = false;
+		if (a.length>7) {
+			try {
+				routingStyle = RoutingStyle.valueOf(a[7]);
+			}
+			catch (Exception e) {
+				routingStyle = RoutingStyle.Direct;
+			}
+		}
+		else
+			routingStyle = RoutingStyle.Direct;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {
@@ -167,6 +179,18 @@ public class ShapeStyle {
 			setDirty(true);
 		}
 	}
+
+	public RoutingStyle getRoutingStyle() {
+		return routingStyle;
+	}
+
+	public void setRoutingStyle(RoutingStyle routingStyle) {
+		if (this.routingStyle != routingStyle) {
+			this.routingStyle = routingStyle;
+			setDirty(true);
+		}
+	}
+
 	
 	public boolean isDefaultSize() {
 		return defaultSize;
@@ -267,7 +291,8 @@ public class ShapeStyle {
 				colorToString(sp.shapeForeground) + ";" +
 				fontToString(sp.textFont) + ";" +
 				colorToString(sp.textColor) + ";" +
-				booleanToString(sp.defaultSize)
+				booleanToString(sp.defaultSize) + ";" +
+				sp.routingStyle.name()
 				);
 	}
 	

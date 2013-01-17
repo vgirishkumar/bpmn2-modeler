@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
@@ -29,6 +30,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -58,36 +60,40 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 			Tuple<FixPointAnchor, FixPointAnchor> anchors = null;
 			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
 				target = (AnchorContainer) context.getTargetPictogramElement();
-				if (peService.getPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION)!=null) {
-					if (AnchorUtil.useAdHocAnchors(target, connection)) {
-						ILocation targetLoc = context.getTargetLocation();
-						ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)target);
-						Point p = gaService.createPoint(targetLoc.getX() - shapeLoc.getX(), targetLoc.getY() - shapeLoc.getY());
-						peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
-								AnchorUtil.pointToString(p));
-					}
-					else {
-						peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
-					}
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+				if (AnchorUtil.useAdHocAnchors(target, connection)) {
+					ILocation targetLoc = context.getTargetLocation();
+					ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)target);
+					Point p = gaService.createPoint(targetLoc.getX() - shapeLoc.getX(), targetLoc.getY() - shapeLoc.getY());
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+							AnchorUtil.pointToString(p));
 				}
+				else {
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
+				}
+				if (connection instanceof FreeFormConnection && ((FreeFormConnection)connection).getBendpoints().size()>0) {
+					int i = ((FreeFormConnection)connection).getBendpoints().size()-1;
+					Graphiti.getPeService().setPropertyValue(connection, MoveBendpointFeature.MOVABLE_BENDPOINT, ""+i);
+				}
+
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
 				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 				newAnchor = anchors.getSecond();
 			}
 			else {
 				source = (AnchorContainer) context.getTargetPictogramElement();
-				if (peService.getPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION)!=null) {
-					if (AnchorUtil.useAdHocAnchors(source, connection)) {
-						ILocation sourceLoc = context.getTargetLocation();
-						ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)source);
-						Point p = gaService.createPoint(sourceLoc.getX() - shapeLoc.getX(), sourceLoc.getY() - shapeLoc.getY());
-						peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
-					}
-					else {
-						peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
-					}
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
+				if (AnchorUtil.useAdHocAnchors(source, connection)) {
+					ILocation sourceLoc = context.getTargetLocation();
+					ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)source);
+					Point p = gaService.createPoint(sourceLoc.getX() - shapeLoc.getX(), sourceLoc.getY() - shapeLoc.getY());
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
 				}
+				else {
+					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+				}
+				if (connection instanceof FreeFormConnection && ((FreeFormConnection)connection).getBendpoints().size()>0) {
+					Graphiti.getPeService().setPropertyValue(connection, MoveBendpointFeature.MOVABLE_BENDPOINT, "0");
+				}
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
 				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 				newAnchor = anchors.getFirst();
 			}
@@ -127,6 +133,8 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
 			}
 			
+			AnchorUtil.updateConnection(getFeatureProvider(), connection);
+
 			DIUtils.updateDIEdge(context.getConnection());
 		}
 		

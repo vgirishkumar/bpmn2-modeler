@@ -94,6 +94,8 @@ public abstract class AbstractCreateFlowFeature<
 
 		Connection connection = (Connection) getFeatureProvider().addIfPossible(addContext);
 		ModelUtil.setID(bo);
+		
+		AnchorUtil.updateConnection(getFeatureProvider(), connection);
 
 		changesDone = true;
 		return connection;

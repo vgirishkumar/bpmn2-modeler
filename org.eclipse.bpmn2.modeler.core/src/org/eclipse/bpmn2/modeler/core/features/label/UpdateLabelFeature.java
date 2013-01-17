@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features;
+package org.eclipse.bpmn2.modeler.core.features.label;
 
 import static org.eclipse.bpmn2.modeler.core.utils.FeatureSupport.getChildElementOfType;
 

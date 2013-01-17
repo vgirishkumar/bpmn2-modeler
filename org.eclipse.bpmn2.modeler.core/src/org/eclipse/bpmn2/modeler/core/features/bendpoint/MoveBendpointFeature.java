@@ -26,9 +26,12 @@ import org.eclipse.graphiti.features.context.IMoveBendpointContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveBendpointFeature;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 
 public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 
+	public static final String MOVABLE_BENDPOINT = "movable.bendpoint";
+	
 	public MoveBendpointFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -56,12 +59,40 @@ public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 			} else if (index == connection.getBendpoints().size()) {
 				AnchorUtil.reConnect((DiagramElement) edge.getTargetElement(), getDiagram());
 			}
-			
+
+			setMovableBendpointIndex(connection, context.getBendpointIndex());
+
 			AnchorUtil.updateConnection(getFeatureProvider(), connection);
 			
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
 		return moved;
+	}
+	
+	public static void setMovableBendpoint(FreeFormConnection connection, org.eclipse.graphiti.mm.algorithms.styles.Point point) {
+		int index = -1;
+		if (point!=null) {
+			index = connection.getBendpoints().indexOf(point);
+		}
+		setMovableBendpointIndex(connection, index);
+	}
+	
+	private static void setMovableBendpointIndex(FreeFormConnection connection, int index) {
+		if (index>=0)
+			Graphiti.getPeService().setPropertyValue(connection, MOVABLE_BENDPOINT, ""+index);
+		else
+			Graphiti.getPeService().removeProperty(connection, MoveBendpointFeature.MOVABLE_BENDPOINT);
+	}
+	
+	public static org.eclipse.graphiti.mm.algorithms.styles.Point getMovableBendpoint(FreeFormConnection connection) {
+		try {
+			int index = Integer.parseInt(Graphiti.getPeService().getPropertyValue(connection,
+					MoveBendpointFeature.MOVABLE_BENDPOINT));
+			return connection.getBendpoints().get(index);
+		}
+		catch (Exception e) {
+		}
+		return null;
 	}
 }

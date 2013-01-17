@@ -69,7 +69,9 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
@@ -80,6 +82,7 @@ import org.eclipse.bpmn2.modeler.core.features.bendpoint.AddBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.RemoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.FeatureContainerDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -138,7 +141,6 @@ import org.eclipse.bpmn2.modeler.ui.features.gateway.EventBasedGatewayFeatureCon
 import org.eclipse.bpmn2.modeler.ui.features.gateway.ExclusiveGatewayFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.InclusiveGatewayFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.ParallelGatewayFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.lane.LaneFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.participant.ParticipantFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
@@ -253,6 +255,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		containers.put(Participant.class,new ParticipantFeatureContainer());
 		containers.put(Lane.class,new LaneFeatureContainer());
 		containers.put(TextAnnotation.class,new TextAnnotationFeatureContainer());
+		containers.put(BPMNDiagram.class,new BPMNDiagramFeatureContainer());
 		// these have no BPMN2 element equivalents
 		containers.put(ChoreographyMessageLinkFeatureContainer.class,new ChoreographyMessageLinkFeatureContainer());
 		containers.put(LabelFeatureContainer.class,new LabelFeatureContainer());

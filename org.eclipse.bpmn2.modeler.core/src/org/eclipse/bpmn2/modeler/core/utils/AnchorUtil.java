@@ -14,10 +14,10 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Participant;
@@ -30,11 +30,13 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddBendpointFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IRemoveBendpointFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddBendpointContext;
 import org.eclipse.graphiti.features.context.IRemoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.RemoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.RemoveContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
@@ -74,19 +76,24 @@ public class AnchorUtil {
 	private static final ICreateService createService = Graphiti.getCreateService();
 	private static final ILayoutService layoutService = Graphiti.getLayoutService();
 	
+	public static class AnchorTuple {
+		public FixPointAnchor sourceAnchor;
+		public FixPointAnchor targetAnchor;
+	}
+
 	public enum AnchorLocation {
-		TOP("anchor.top"), BOTTOM("anchor.bottom"), LEFT("anchor.left"), RIGHT("anchor.right");
-
+		TOP("anchor.top"), BOTTOM("anchor.bottom"), LEFT("anchor.left"), RIGHT("anchor.right"), CENTER("anchor.center");
+	
 		private final String key;
-
+	
 		private AnchorLocation(String key) {
 			this.key = key;
 		}
-
+	
 		public String getKey() {
 			return key;
 		}
-
+	
 		public static AnchorLocation getLocation(String key) {
 			for (AnchorLocation l : values()) {
 				if (l.getKey().equals(key)) {
@@ -97,129 +104,10 @@ public class AnchorUtil {
 		}
 	}
 
-	public static class AnchorTuple {
-		public FixPointAnchor sourceAnchor;
-		public FixPointAnchor targetAnchor;
-	}
-
 	public static class BoundaryAnchor {
 		public FixPointAnchor anchor;
 		public AnchorLocation locationType;
 		public ILocation location;
-	}
-
-	/**
-	 * A Layouter for relocating connection bendpoints after a shape has been moved or resized.
-	 */
-	public static class BendPointLayouter {
-		Hashtable<FreeFormConnection, Tuple<ILocation, ILocation>> oldLocations;
-		Shape shape;
-		IPeService peService = Graphiti.getPeService();
-		
-		public BendPointLayouter(Shape shape) {
-			this.shape = shape;
-			// TODO: this has been disabled until we can figure out a better algorithm
-//			oldLocations = calculateLocations(shape);
-		}
-		
-		private Hashtable<FreeFormConnection, Tuple<ILocation, ILocation>> calculateLocations(Shape shape)
-		{
-			Hashtable<FreeFormConnection, Tuple<ILocation, ILocation>> locations =
-					new Hashtable<FreeFormConnection, Tuple<ILocation, ILocation>>();
-
-			for (Anchor a : shape.getAnchors()) {
-				for (Connection c : a.getIncomingConnections()) {
-					if (c instanceof FreeFormConnection && !locations.contains(c)) {
-						ILocation start = peService.getLocationRelativeToDiagram(c.getStart());
-						ILocation end = peService.getLocationRelativeToDiagram(c.getEnd());
-						locations.put((FreeFormConnection)c, new Tuple(start,end));
-					}
-				}
-				for (Connection c : a.getOutgoingConnections()) {
-					if (c instanceof FreeFormConnection && !locations.contains(c)) {
-						ILocation start = peService.getLocationRelativeToDiagram(c.getStart());
-						ILocation end = peService.getLocationRelativeToDiagram(c.getEnd());
-						locations.put((FreeFormConnection)c, new Tuple(start,end));
-					}
-				}
-			}
-			
-			return locations;
-		}
-		
-		public void layout() {
-			// TODO: this has been disabled until we can figure out a better algorithm
-//			Hashtable<FreeFormConnection, Tuple<ILocation, ILocation>> newLocations = calculateLocations(shape);
-//			for (Entry<FreeFormConnection, Tuple<ILocation, ILocation>> entry : oldLocations.entrySet()) {
-//				FreeFormConnection connection = entry.getKey();
-//				ILocation oldStartLoc = entry.getValue().getFirst();
-//				ILocation oldEndLoc = entry.getValue().getSecond();
-//				Tuple<ILocation, ILocation> newLoc = newLocations.get(connection);
-//				if (newLoc==null)
-//					continue;
-//				
-//				// check for loop connections
-//				Anchor start = connection.getStart();
-//				Anchor end = connection.getEnd();
-//				if (start.eContainer() == end.eContainer())
-//					continue;
-//				
-//				ILocation newStartLoc = newLoc.getFirst();
-//				ILocation newEndLoc = newLoc.getSecond();
-//				if (oldStartLoc.equals(newStartLoc) && oldEndLoc.equals(newEndLoc))
-//					continue;
-//				
-//				List<Point> points = connection.getBendpoints();
-//				List<Point> tempPoints = new ArrayList<Point>();
-//				
-//				tempPoints.add(Graphiti.getCreateService().createPoint(oldStartLoc.getX(),oldStartLoc.getY()));
-//				tempPoints.addAll(points);
-//				tempPoints.add(Graphiti.getCreateService().createPoint(oldEndLoc.getX(),oldEndLoc.getY()));
-//				
-//				boolean startMoved = true;
-//				int deltaX = newStartLoc.getX() - oldStartLoc.getX();
-//				int deltaY = newStartLoc.getY() - oldStartLoc.getY();
-//				if (deltaX==0 && deltaY==0) {
-//					deltaX = newEndLoc.getX() - oldEndLoc.getX();
-//					deltaY = newEndLoc.getY() - oldEndLoc.getY();
-//					startMoved = false;
-//				}
-//				
-//				int size = tempPoints.size();
-//				for (int i = 1; i < size-1; i++) {
-//					Point prevPoint = tempPoints.get(i-1);
-//					Point point = tempPoints.get(i);
-//					int x = point.getX();
-//					int y = point.getY();
-//					Point nextPoint = tempPoints.get(i+1);
-//					int dx = deltaX;
-//					int dy = deltaY;
-//					if (startMoved) {
-//						if (i==size-2) {
-//							if (Math.abs(point.getX() - nextPoint.getX()) < 10) {
-//								dx = 0;
-//							}
-//							if (Math.abs(point.getY() - nextPoint.getY()) < 10) {
-//								dy = 0;
-//							}
-//						}
-//					}
-//					else {
-//						if (i==1) {
-//							if (Math.abs(prevPoint.getX() - point.getX()) < 10) {
-//								dx = 0;
-//							}
-//							if (Math.abs(prevPoint.getY() - point.getY()) < 10) {
-//								dy = 0;
-//							}
-//						}
-//					}
-//					points.set(i-1, Graphiti.getGaCreateService().createPoint(x + dx, y + dy));
-//				}
-//				BPMNEdge edge = BusinessObjectUtil.getFirstElementOfType(connection, BPMNEdge.class);
-//				updateEdge(edge,connection.getParent());
-//			}
-		}
 	}
 	
 	public static Point stringToPoint(String s) {
@@ -238,7 +126,7 @@ public class AnchorUtil {
 		return loc.getX() + "," + loc.getY();
 	}
 	
-	public static FixPointAnchor createAnchor(AnchorContainer ac, AnchorLocation loc, int x, int y) {
+	public static FixPointAnchor createBoundaryAnchor(AnchorContainer ac, AnchorLocation loc, int x, int y) {
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 
@@ -248,6 +136,10 @@ public class AnchorUtil {
 		gaService.createInvisibleRectangle(anchor);
 
 		return anchor;
+	}
+	
+	public static FixPointAnchor createAdHocAnchor(AnchorContainer ac, int x, int y) {
+		return createAdHocAnchor(ac, gaService.createPoint(x, y));
 	}
 	
 	public static FixPointAnchor createAdHocAnchor(AnchorContainer ac, Point p) {
@@ -321,11 +213,26 @@ public class AnchorUtil {
 
 		if (connection instanceof FreeFormConnection) {
 			EList<Point> bendpoints = ((FreeFormConnection) connection).getBendpoints();
-			if (bendpoints.size() > 0) {
-				FixPointAnchor sourceAnchor = getCorrectAnchor(sourceBoundaryAnchors, bendpoints.get(0));
-				FixPointAnchor targetAnchor = getCorrectAnchor(targetBoundaryAnchors,
-						bendpoints.get(bendpoints.size() - 1));
-				if (sourceAnchor.eContainer() != targetAnchor.eContainer())
+			if (bendpoints.size() > 0 && isBoundaryAnchor(connection.getStart()) && isBoundaryAnchor(connection.getEnd())) {
+				FixPointAnchor sourceAnchor = null;
+				FixPointAnchor targetAnchor = null;
+
+				for (int i=0; i<=bendpoints.size(); ++i) {
+					Point p = i<bendpoints.size() ? bendpoints.get(i) : GraphicsUtil.createPoint(connection.getEnd());
+					if (!GraphicsUtil.contains((Shape)source,p)) {
+						sourceAnchor = findNearestAnchor(sourceBoundaryAnchors, p);
+						break;
+					}
+				}
+
+				for (int i=bendpoints.size()-1; i != -1; --i) {
+					Point p = i>=0 ? bendpoints.get(i) : GraphicsUtil.createPoint(connection.getStart());
+					if (!GraphicsUtil.contains((Shape)target,p)) {
+						targetAnchor = findNearestAnchor(targetBoundaryAnchors, p);
+						break;
+					}
+				}
+				if (sourceAnchor!=null && targetAnchor!=null && sourceAnchor.eContainer() != targetAnchor.eContainer())
 					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceAnchor, targetAnchor);
 			}
 		}
@@ -340,26 +247,13 @@ public class AnchorUtil {
 		BoundaryAnchor targetLeft = targetBoundaryAnchors.get(AnchorLocation.LEFT);
 		BoundaryAnchor targetRight = targetBoundaryAnchors.get(AnchorLocation.RIGHT);
 
-		// if the source and target figure are the same, create the necessary bendpoints so that
-		// the connection loops from the figure's right edge to the its top edge
+		// if the source and target figure are the same, we're done - just return
+		// the existing anchors because the connection router will handle this
 		if (source == target && connection instanceof FreeFormConnection) {
-			GraphicsAlgorithm parentGa = targetTop.anchor.getParent()
-					.getGraphicsAlgorithm();
-			((FreeFormConnection)connection).getBendpoints().clear();
-			int x1 = parentGa.getX() + parentGa.getWidth() + 20;
-			int y1 = parentGa.getY() + parentGa.getHeight() / 2;
-			int x2 = parentGa.getX() + parentGa.getWidth() / 2;
-			int y2 = parentGa.getY() - 20;
-			Point bendPoint1 = gaService.createPoint(x1, y1);
-			Point bendPoint2 = gaService.createPoint(x1, y2);
-			Point bendPoint3 = gaService.createPoint(x2, y2);
-			EList<Point> bendpoints = ((FreeFormConnection) connection)
-					.getBendpoints();
-			bendpoints.add(bendPoint1);
-			bendpoints.add(bendPoint2);
-			bendpoints.add(bendPoint3);
-			return new Tuple<FixPointAnchor, FixPointAnchor>(
-					sourceRight.anchor, targetTop.anchor);
+			Anchor start = connection.getStart();
+			Anchor end = connection.getEnd();
+			if (start instanceof FixPointAnchor && end instanceof FixPointAnchor)
+				return new Tuple<FixPointAnchor, FixPointAnchor>((FixPointAnchor)start, (FixPointAnchor)end);
 		}
 
 		if (anchors==null) {
@@ -372,14 +266,14 @@ public class AnchorUtil {
 				if (!sLeft && !sRight) {
 					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, targetBottom.anchor);
 				} else if (sLeft) {
-					FixPointAnchor fromTopAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromTopAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceTop.anchor));
-					FixPointAnchor fromRightAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromRightAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceRight.anchor));
 	
-					double topLength = getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
+					double topLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
 							peService.getLocationRelativeToDiagram(sourceTop.anchor));
-					double rightLength = getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
+					double rightLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
 							peService.getLocationRelativeToDiagram(sourceRight.anchor));
 	
 					if (topLength < rightLength) {
@@ -388,14 +282,14 @@ public class AnchorUtil {
 						anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceRight.anchor, fromRightAnchor);
 					}
 				} else {
-					FixPointAnchor fromTopAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromTopAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceTop.anchor));
-					FixPointAnchor fromLeftAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromLeftAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceLeft.anchor));
 	
-					double topLength = getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
+					double topLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
 							peService.getLocationRelativeToDiagram(sourceTop.anchor));
-					double leftLength = getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
+					double leftLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
 							peService.getLocationRelativeToDiagram(sourceLeft.anchor));
 					if (topLength < leftLength) {
 						anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, fromTopAnchor);
@@ -410,14 +304,14 @@ public class AnchorUtil {
 				if (!sLeft && !sRight) {
 					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceBottom.anchor, targetTop.anchor);
 				} else if (sLeft) {
-					FixPointAnchor fromBottomAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromBottomAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-					FixPointAnchor fromRightAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromRightAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceRight.anchor));
 	
-					double bottomLength = getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
+					double bottomLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
 							peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-					double rightLength = getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
+					double rightLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
 							peService.getLocationRelativeToDiagram(sourceRight.anchor));
 	
 					if (bottomLength < rightLength) {
@@ -426,14 +320,14 @@ public class AnchorUtil {
 						anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceRight.anchor, fromRightAnchor);
 					}
 				} else {
-					FixPointAnchor fromBottomAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromBottomAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-					FixPointAnchor fromLeftAnchor = getCorrectAnchor(targetBoundaryAnchors,
+					FixPointAnchor fromLeftAnchor = findNearestAnchor(targetBoundaryAnchors,
 							peService.getLocationRelativeToDiagram(sourceLeft.anchor));
 	
-					double bottomLength = getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
+					double bottomLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
 							peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-					double leftLength = getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
+					double leftLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
 							peService.getLocationRelativeToDiagram(sourceLeft.anchor));
 					if (bottomLength < leftLength) {
 						anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceBottom.anchor, fromBottomAnchor);
@@ -521,16 +415,36 @@ public class AnchorUtil {
 		if (p.getY()>size.getHeight())
 			p.setY(size.getHeight());
 	}
-	private static FixPointAnchor getCorrectAnchor(Map<AnchorLocation, BoundaryAnchor> targetBoundaryAnchors,
-			ILocation loc) {
-		return getCorrectAnchor(targetBoundaryAnchors, gaService.createPoint(loc.getX(), loc.getY()));
+		
+	public static FixPointAnchor findNearestAnchor(AnchorContainer ac, Point p1) {
+		BoundaryAnchor ba = findNearestBoundaryAnchor(ac,p1);
+		return ba.anchor;
+	}
+	
+	public static BoundaryAnchor findNearestBoundaryAnchor(AnchorContainer ac, Point p1) {
+		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = getBoundaryAnchors(ac);
+		int dist = 2;
+		double minLength = Double.MAX_VALUE;
+		BoundaryAnchor nearestBoundaryAnchor = null;
+		for (Entry<AnchorLocation, BoundaryAnchor> entry : boundaryAnchors.entrySet()) {
+			BoundaryAnchor ba = entry.getValue();
+			if (Math.abs(ba.location.getX() - p1.getX())<=dist && Math.abs(ba.location.getY() - p1.getY())<=dist)
+				return ba;
+			Point p = GraphicsUtil.createPoint(ba.location); 
+			double length = GraphicsUtil.getLength(p1, p);
+			if (length < minLength) {
+				minLength = length;
+				nearestBoundaryAnchor = ba;
+			}
+		}
+		return nearestBoundaryAnchor;
 	}
 
-	private static double getLength(ILocation start, ILocation end) {
-		return Math.sqrt(Math.pow(start.getX() - end.getX(), 2) + Math.pow(start.getY() - end.getY(), 2));
+	public static FixPointAnchor findNearestAnchor(Map<AnchorLocation, BoundaryAnchor> boundaryAnchors, ILocation loc) {
+		return findNearestAnchor(boundaryAnchors, gaService.createPoint(loc.getX(), loc.getY()));
 	}
 
-	private static FixPointAnchor getCorrectAnchor(Map<AnchorLocation, BoundaryAnchor> boundaryAnchors, Point point) {
+	public static FixPointAnchor findNearestAnchor(Map<AnchorLocation, BoundaryAnchor> boundaryAnchors, Point point) {
 
 		BoundaryAnchor bottom = boundaryAnchors.get(AnchorLocation.BOTTOM);
 		BoundaryAnchor top = boundaryAnchors.get(AnchorLocation.TOP);
@@ -651,7 +565,7 @@ public class AnchorUtil {
 		p.setX(loc.getX());
 		p.setY(loc.getY());
 
-		relocateConnection(source.getAnchors(), anchors, target);
+		relocateConnection(source, target, anchors);
 		deleteEmptyAdHocAnchors(source);
 		deleteEmptyAdHocAnchors(target);
 		
@@ -667,12 +581,14 @@ public class AnchorUtil {
 		}
 	}
 
-	private static void relocateConnection(EList<Anchor> anchors, Tuple<FixPointAnchor, FixPointAnchor> newAnchors,
-			AnchorContainer target) {
+	private static void relocateConnection(AnchorContainer source, AnchorContainer target,
+			Tuple<FixPointAnchor, FixPointAnchor> newAnchors) {
 
+		EList<Anchor> sourceAnchors = source.getAnchors();
+		EList<Anchor> targetAnchors = target.getAnchors();
 		List<Connection> connectionsToBeUpdated = new ArrayList<Connection>();
 
-		for (Anchor anchor : anchors) {
+		for (Anchor anchor : sourceAnchors) {
 			if (!isBoundaryAnchor(anchor)) {
 				continue;
 			}
@@ -730,6 +646,10 @@ public class AnchorUtil {
 	public static boolean useAdHocAnchors(PictogramElement pictogramElement, Connection connection) {
 		BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(pictogramElement);
 		BaseElement flowElement = BusinessObjectUtil.getFirstBaseElement(connection);
+		return useAdHocAnchors(baseElement, flowElement);
+	}
+	
+	public static boolean useAdHocAnchors(BaseElement baseElement, BaseElement flowElement) {
 		if (baseElement instanceof Participant) {
 			return true;
 		}
@@ -740,10 +660,10 @@ public class AnchorUtil {
 		IDimension size = gaService.calculateSize(ga);
 		int w = size.getWidth();
 		int h = size.getHeight();
-		createAnchor(shape, AnchorLocation.TOP, w / 2, 0);
-		createAnchor(shape, AnchorLocation.RIGHT, w, h / 2);
-		createAnchor(shape, AnchorLocation.BOTTOM, w / 2, h);
-		createAnchor(shape, AnchorLocation.LEFT, 0, h / 2);
+		createBoundaryAnchor(shape, AnchorLocation.TOP, w / 2, 0);
+		createBoundaryAnchor(shape, AnchorLocation.RIGHT, w, h / 2);
+		createBoundaryAnchor(shape, AnchorLocation.BOTTOM, w / 2, h);
+		createBoundaryAnchor(shape, AnchorLocation.LEFT, 0, h / 2);
 	}
 
 	public static void relocateFixPointAnchors(Shape shape, int w, int h) {
@@ -971,11 +891,124 @@ public class AnchorUtil {
 		return null;
 	}
 
-	public static void updateConnection(IFeatureProvider fp, Connection connection) {
+	public static void updateConnections(IFeatureProvider fp, AnchorContainer ac) {
+		List<Connection> alreadyUpdated = new ArrayList<Connection>();
+		if (ac instanceof ContainerShape) {
+			for (Shape child : ((ContainerShape)ac).getChildren()) {
+				if (child instanceof ContainerShape)
+					updateConnections(fp, child, alreadyUpdated);
+			}
+		}
+		updateConnections(fp, ac, alreadyUpdated);
+	}
+	
+	private static void updateConnections(IFeatureProvider fp, AnchorContainer ac, List<Connection> alreadyUpdated) {
+		for (int ai=0; ai<ac.getAnchors().size(); ++ai) {
+			Anchor a = ac.getAnchors().get(ai);
+			for (int ci=0; ci<a.getIncomingConnections().size(); ++ci) {
+				Connection c = a.getIncomingConnections().get(ci);
+				if (c instanceof FreeFormConnection) {
+					if (!alreadyUpdated.contains(c)) {
+						if (c.getStart().getParent() != c.getEnd().getParent()) 
+							((FreeFormConnection)c).getBendpoints().clear();
+						updateConnection(fp, c);
+						alreadyUpdated.add(c);
+					}
+				}
+			}
+		}
+		
+		for (int ai=0; ai<ac.getAnchors().size(); ++ai) {
+			Anchor a = ac.getAnchors().get(ai);
+			for (int ci=0; ci<a.getOutgoingConnections().size(); ++ci) {
+				Connection c = a.getOutgoingConnections().get(ci);
+				if (c instanceof FreeFormConnection) {
+					if (!alreadyUpdated.contains(c)) {
+						if (c.getStart().getParent() != c.getEnd().getParent()) 
+							((FreeFormConnection)c).getBendpoints().clear();
+						updateConnection(fp, c);
+						alreadyUpdated.add(c);
+					}
+				}
+			}
+		}
+	}
+	
+	public static boolean updateConnection(IFeatureProvider fp, Connection connection) {
+		boolean layoutChanged = false;
+		LayoutContext layoutContext = new LayoutContext(connection);
+		ILayoutFeature layoutFeature = fp.getLayoutFeature(layoutContext);
+		if (layoutFeature!=null) {
+			
+			layoutFeature.layout(layoutContext);
+			layoutChanged = layoutFeature.hasDoneChanges();
+			
+			AnchorContainer source = connection.getStart().getParent();
+			AnchorContainer target = connection.getEnd().getParent();
+			Tuple<FixPointAnchor, FixPointAnchor> anchors = getSourceAndTargetBoundaryAnchors(source, target, connection);
+			Point oldStart = GraphicsUtil.createPoint(connection.getStart());
+			Point newStart = GraphicsUtil.createPoint(anchors.getFirst());
+			Point oldEnd = GraphicsUtil.createPoint(connection.getEnd());
+			Point newEnd = GraphicsUtil.createPoint(anchors.getSecond());
+			boolean redo = false;
+			if (isBoundaryAnchor(connection.getStart())) {
+				if (oldStart.getX()!=newStart.getX() || oldStart.getY()!=newStart.getY())
+					redo = true;
+			}
+			if (isBoundaryAnchor(connection.getEnd()) && !redo) {
+				if (oldEnd.getX()!=newEnd.getX() || oldEnd.getY()!=newEnd.getY())
+					redo = true;
+			}
+			if (redo) {
+				connection.setStart(anchors.getFirst());
+				connection.setEnd(anchors.getSecond());
+				layoutFeature.layout(layoutContext);
+				layoutChanged = true;
+			}
+		}
+		
+		boolean updateChanged = false;
 		UpdateContext updateContext = new UpdateContext(connection);
 		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext);
 		if (updateFeature.updateNeeded(updateContext).toBoolean()) {
 			updateFeature.update(updateContext);
+			updateChanged = updateFeature.hasDoneChanges();
 		}
+		
+		return layoutChanged || updateChanged;
+	}
+
+	public static AnchorLocation findNearestEdge(Shape shape, Point p) {
+		AnchorLocation al = AnchorLocation.TOP;
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
+		IDimension size = GraphicsUtil.calculateSize(shape);
+		int minDist = Integer.MAX_VALUE;
+		int dist;
+		
+		// check top edge first:
+		dist = Math.abs(p.getY() - loc.getY());
+		if (dist < minDist) {
+			minDist = dist;
+			al = AnchorLocation.TOP;
+		}
+		// left edge:
+		dist = Math.abs(p.getX() - loc.getX());
+		if (dist < minDist) {
+			minDist = dist;
+			al = AnchorLocation.LEFT;
+		}
+		// bottom edge:
+		dist = Math.abs(p.getY() - (loc.getY() + size.getHeight()));
+		if (dist < minDist) {
+			minDist = dist;
+			al = AnchorLocation.BOTTOM;
+		}
+		// right edge:
+		dist = Math.abs(p.getX() - (loc.getX() + size.getWidth()));
+		if (dist < minDist) {
+			minDist = dist;
+			al = AnchorLocation.RIGHT;
+		}
+		return al;
 	}
 }

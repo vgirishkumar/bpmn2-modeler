@@ -16,7 +16,6 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BendPointLayouter;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -32,13 +31,12 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
 		Shape shape = null;
-		BendPointLayouter layouter = null;
 		if (context.getPictogramElement() instanceof Shape) {
 			shape = (Shape) context.getPictogramElement();
-			layouter = new BendPointLayouter(shape);
 		}
 
 		super.resizeShape(context);
+		
 		if (shape!=null) {
 			AnchorUtil.relocateFixPointAnchors(shape, context.getWidth(), context.getHeight());
 			Object[] node = getAllBusinessObjectsForPictogramElement(context.getShape());
@@ -49,10 +47,5 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 			}
 		}
 		DIUtils.updateDIShape(context.getPictogramElement());
-
-
-		if (layouter!=null) {
-			layouter.layout();
-		}
 	}
 }
