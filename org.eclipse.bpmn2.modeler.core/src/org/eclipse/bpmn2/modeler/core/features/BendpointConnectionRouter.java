@@ -351,7 +351,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point p1 = newPoints.get(index);
 		
 		if (index==0) {
-			Anchor a = ffc.getStart();
+			Anchor a = oldStart;
 			AnchorContainer source = a.getParent();
 			if (AnchorUtil.isBoundaryAnchor(a)) {
 				BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, p1);
@@ -381,7 +381,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		}
 		
 		if (index==newPoints.size()-1) {
-			Anchor a = ffc.getEnd();
+			Anchor a = oldEnd;
 			AnchorContainer target = a.getParent();
 			if (AnchorUtil.isBoundaryAnchor(a)) {
 				BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, p1);

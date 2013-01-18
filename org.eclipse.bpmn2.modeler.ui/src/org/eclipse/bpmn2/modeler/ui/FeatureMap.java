@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.Conversation;
+import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
@@ -81,6 +82,7 @@ public class FeatureMap {
 		features.add(MessageFlow.class);
 		features.add(Association.class);
 		features.add(DataAssociation.class);
+		features.add(ConversationLink.class);
 		CONNECTORS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
