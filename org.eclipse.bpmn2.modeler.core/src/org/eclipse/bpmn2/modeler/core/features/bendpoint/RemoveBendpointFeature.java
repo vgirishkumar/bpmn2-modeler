@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -53,6 +54,6 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 			Activator.logError(e);
 		}
 	    
-		AnchorUtil.updateConnection(getFeatureProvider(), connection);
+		ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
 	}
 }

@@ -204,15 +204,9 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 					BaseElement be = ((BPMNEdge)de).getBpmnElement();
 					for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, be)) {
 						if (pe instanceof Connection) {
-							// FIXME: do we want to force a default routing here?
-							// i.e. if a user has moved a connection and it does not violate
-							// a routing constraint (e.g. the Manhattan router requires all
-							// lines be orthogonal) should we leave well enough alone?
-							// adding the following code will force re-routing.
-//							if (pe instanceof FreeFormConnection) {
-//								((FreeFormConnection)pe).getBendpoints().clear();
-//							}
-							if (AnchorUtil.updateConnection(getFeatureProvider(), (Connection)pe))
+							// force the default routing to happen
+							if (ConnectionFeatureContainer.updateConnection(getFeatureProvider(),
+									(Connection)pe, true))
 								hasDoneChanges = true;
 						}
 					}

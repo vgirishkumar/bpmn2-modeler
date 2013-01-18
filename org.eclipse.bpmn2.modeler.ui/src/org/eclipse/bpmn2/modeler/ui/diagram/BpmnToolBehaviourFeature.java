@@ -53,10 +53,14 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
+import org.eclipse.graphiti.features.context.impl.MoveBendpointContext;
+import org.eclipse.graphiti.features.context.impl.MoveContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -414,6 +418,21 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 				if (!(pe instanceof Connection)) {
 					editor.setPictogramElementForSelection(pe);
 				}
+				editor.refresh();
+			}
+			else if (context instanceof MoveShapeContext) {
+				PictogramElement pe = ((MoveShapeContext)context).getPictogramElement();
+				editor.setPictogramElementForSelection(pe);
+				editor.refresh();
+			}
+			else if (context instanceof AddBendpointContext) {
+				PictogramElement pe = ((AddBendpointContext)context).getConnection();
+				editor.setPictogramElementForSelection(pe);
+				editor.refresh();
+			}
+			else if (context instanceof MoveBendpointContext) {
+				PictogramElement pe = ((MoveBendpointContext)context).getConnection();
+				editor.setPictogramElementForSelection(pe);
 				editor.refresh();
 			}
 		}

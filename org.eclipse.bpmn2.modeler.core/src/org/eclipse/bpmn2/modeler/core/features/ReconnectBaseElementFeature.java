@@ -70,10 +70,7 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				else {
 					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
 				}
-				if (connection instanceof FreeFormConnection && ((FreeFormConnection)connection).getBendpoints().size()>0) {
-					int i = ((FreeFormConnection)connection).getBendpoints().size()-1;
-					Graphiti.getPeService().setPropertyValue(connection, MoveBendpointFeature.MOVABLE_BENDPOINT, ""+i);
-				}
+				BendpointConnectionRouter.setMovedBendpoint(connection, Integer.MAX_VALUE);
 
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
 				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
@@ -90,9 +87,7 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				else {
 					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
 				}
-				if (connection instanceof FreeFormConnection && ((FreeFormConnection)connection).getBendpoints().size()>0) {
-					Graphiti.getPeService().setPropertyValue(connection, MoveBendpointFeature.MOVABLE_BENDPOINT, "0");
-				}
+				BendpointConnectionRouter.setMovedBendpoint(connection, 0);
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
 				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 				newAnchor = anchors.getFirst();
@@ -133,7 +128,7 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
 			}
 			
-			AnchorUtil.updateConnection(getFeatureProvider(), connection);
+			ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection, true);
 
 			DIUtils.updateDIEdge(context.getConnection());
 		}

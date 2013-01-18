@@ -12,16 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import static org.eclipse.bpmn2.modeler.core.utils.FeatureSupport.getChildElementOfType;
-
-import java.util.List;
-
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -29,7 +24,6 @@ import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -84,6 +78,6 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 				AnchorUtil.reConnect((DiagramElement) object, getDiagram());
 			}
 		}
-		AnchorUtil.updateConnections(getFeatureProvider(), shape);
+		ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
 	}
 }
