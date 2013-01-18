@@ -13,7 +13,6 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.features.label.LayoutLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
@@ -65,12 +64,13 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 						IConnectionRouter router = null;
 						if (ss.getRoutingStyle() == RoutingStyle.Manhattan)
 							router = new ManhattanConnectionRouter(fp);
-						else if (ss.getRoutingStyle() == RoutingStyle.Direct)
-							router = new DirectConnectionRouter(fp);
-						else
-							router = new DefaultConnectionRouter(fp);
-						
-						hasDoneChanges = router.route(connection);
+						else if (ss.getRoutingStyle() == RoutingStyle.Bendpoint)
+							router = new BendpointConnectionRouter(fp);
+
+						if (router!=null) {
+							hasDoneChanges = router.route(connection);
+							router.dispose();
+						}
 					}
 				}
 			}

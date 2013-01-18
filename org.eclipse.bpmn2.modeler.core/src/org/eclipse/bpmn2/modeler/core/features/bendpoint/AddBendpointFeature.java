@@ -17,6 +17,8 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.dd.dc.DcFactory;
@@ -25,7 +27,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddBendpointContext;
 import org.eclipse.graphiti.features.impl.DefaultAddBendpointFeature;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.eclipse.graphiti.services.Graphiti;
 
 public class AddBendpointFeature extends DefaultAddBendpointFeature {
 
@@ -55,8 +56,8 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 				AnchorUtil.reConnect((DiagramElement) edge.getTargetElement(), getDiagram());
 			}
 		
-//			Graphiti.getPeService().setPropertyValue(connection, MoveBendpointFeature.MOVABLE_BENDPOINT, ""+context.getBendpointIndex());
-			AnchorUtil.updateConnection(getFeatureProvider(), connection);
+			BendpointConnectionRouter.setAddedBendpoint(connection, context.getBendpointIndex());
+			ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
 			
 		} catch (Exception e) {
 			Activator.logError(e);

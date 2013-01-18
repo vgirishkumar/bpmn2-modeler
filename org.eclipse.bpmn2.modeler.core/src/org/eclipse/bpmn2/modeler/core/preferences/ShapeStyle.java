@@ -32,14 +32,14 @@ public class ShapeStyle {
 
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-";
-	public static enum RoutingStyle { Direct, Manhattan};
+	public static enum RoutingStyle { Bendpoint, Manhattan};
 	IColorConstant shapeBackground;
 	IColorConstant shapePrimarySelectedColor;
 	IColorConstant shapeSecondarySelectedColor;
 	IColorConstant shapeForeground;
 	Font textFont;
 	IColorConstant textColor;
-	RoutingStyle routingStyle = RoutingStyle.Direct;
+	RoutingStyle routingStyle = RoutingStyle.Bendpoint;
 	boolean defaultSize;
 	boolean dirty;
 
@@ -91,11 +91,11 @@ public class ShapeStyle {
 				routingStyle = RoutingStyle.valueOf(a[7]);
 			}
 			catch (Exception e) {
-				routingStyle = RoutingStyle.Direct;
+				routingStyle = RoutingStyle.Bendpoint;
 			}
 		}
 		else
-			routingStyle = RoutingStyle.Direct;
+			routingStyle = RoutingStyle.Bendpoint;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {
