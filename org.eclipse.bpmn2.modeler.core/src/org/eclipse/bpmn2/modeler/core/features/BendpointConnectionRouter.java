@@ -98,7 +98,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	
 	protected boolean calculateRoute() {
 		// this router simply checks if a connection bendpoint is inside a source or target
-		// shape and removes it.
+		// shape and removes it. It also removes any unnecessary bendpoints (a bendpoint between
+		// two consecutive horizontal or vertical line segments).
 		boolean changed = false;
 
 		AnchorContainer source = connection.getStart().getParent();
@@ -111,6 +112,9 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 				changed = true;
 			}
 		}
+		if (removeUnusedBendpoints())
+			changed = true;
+		
 		return changed;
 	}
 	
@@ -309,6 +313,28 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return false;
 	}
 	
+	protected boolean removeUnusedBendpoints() {
+		boolean changed = false;
+		
+		Point p1 = newPoints.get(0);
+		for (int i=1; i<newPoints.size()-1; ++i) {
+			Point p2 = newPoints.get(i);
+			if (i+1 < newPoints.size()) {
+				// remove unnecessary bendpoints: two consecutive
+				// horizontal or vertical line segments
+				Point p3 = newPoints.get(i+1);
+				if ((isVertical(p1,p2) && isVertical(p2,p3)) ||
+						(isHorizontal(p1,p2) && isHorizontal(p2,p3))) {
+					changed = true;
+					newPoints.remove(i);
+				}
+			}
+			p1 = p2;
+		}
+		
+		return changed;
+	}
+	
 	/**
 	 * Set the connection's new start/end point anchors and the newly calculated bendpoints.
 	 */
@@ -319,15 +345,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point p1 = newPoints.get(0);
 		for (int i=1; i<newPoints.size()-1; ++i) {
 			Point p2 = newPoints.get(i);
-			if (i+1 < newPoints.size()) {
-				// remove unnecessary bendpoints: two consecutive
-				// horizontal or vertical line segments
-				Point p3 = newPoints.get(i+1);
-				if ((isVertical(p1,p2) && isVertical(p2,p3)) ||
-						(isHorizontal(p1,p2) && isHorizontal(p2,p3))) {
-					continue;
-				}
-			}
 			ffc.getBendpoints().add( GraphicsUtil.createPoint(p2.getX(), p2.getY()));
 			p1 = p2;
 		}
@@ -432,6 +449,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			return getDirection(index-1);
 		throw new Exception("getDirection: consecutive points are not orthogonal");
 	}
+	
+	protected final boolean bendpointsEqual(List<Point> bp1, Connection c) {
+		return bendpointsEqual(bp1,c,0);
+	}
 
 	/**
 	 * Check if the given connection's bendpoints are identical to the list of given points.
@@ -439,9 +460,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * 
 	 * @param bp1 - a list of Points to compare against
 	 * @param c - the FreeFormConnection whose bendpoints are to be tested for equality
+	 * @param maxDistance - a maximum distance between bendpoints for them to be considered "equal"
 	 * @return true if the connection's bendpoints is identical to the list of points in bp1
 	 */
-	protected final boolean bendpointsEqual(List<Point> bp1, Connection c) {
+	protected final boolean bendpointsEqual(List<Point> bp1, Connection c, int maxDistance) {
 		if (!(c instanceof FreeFormConnection))
 			return false;
 		
@@ -457,7 +479,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		int reverse = -1;
 		Point p1 = bp1.get(0);
 		Point p2 = bp2.get(0);
-		if (GraphicsUtil.pointsEqual(p1,p2)) {
+		if (pointsNear(p1,p2,maxDistance)) {
 			reverse = 0;
 		}
 		else {
@@ -465,7 +487,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			// but their bendpoints may simply be reversed, i.e. their
 			// directions are reversed
 			p2 = bp2.get(size-1);
-			if (GraphicsUtil.pointsEqual(p1,p2)) {
+			if (pointsNear(p1,p2,maxDistance)) {
 				reverse = size-1;
 			}
 		}
@@ -476,13 +498,20 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 					p2 = bp2.get(i);
 				else
 					p2 = bp2.get(reverse-i);
-				if (!GraphicsUtil.pointsEqual(p1,p2))
+				if (!pointsNear(p1,p2,maxDistance))
 					return false;
 			}
 		}
 		return true;
 	}
 
+	protected boolean pointsNear(Point p1, Point p2, int maxDistance) {
+		if (maxDistance==0)
+			return GraphicsUtil.pointsEqual(p1, p2);
+		if (GraphicsUtil.getLength(p1, p2)<=maxDistance)
+			return true;
+		return false;
+	}
 	/**
 	 * Check the newly calculated set of bendpoints for the given FreeFormConnection to see
 	 * if they overlap with any other connections that are connected to the same endpoints.
@@ -499,7 +528,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		connections.addAll(sourceAnchor.getIncomingConnections());
 		for (Connection c : connections) {
 			if (c!=ffc) {
-				if (bendpointsEqual(newPoints,c)) {
+				if (bendpointsEqual(newPoints,c,10)) {
 					// here's one
 					offset += 10;
 				}
@@ -532,6 +561,11 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point p3 = newPoints.get( newPoints.size()-1 );
 		Point p;
 		int x, y;
+		int shift = -1;
+		if (p0.getX() < p3.getX() && p0.getY() > p3.getY())
+			shift = 1;
+		if (p0.getX() > p3.getX() && p0.getY() < p3.getY())
+			shift = 1;
 		
 		// offset all of the intermediate points first
 		for (int i=1; i<newPoints.size()-1; ++i) {
@@ -540,11 +574,11 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			case UP:
 			case DOWN:
 				p.setX(p.getX() + offset);
-				p.setY(p.getY() + offset);
+				p.setY(p.getY() + shift * offset);
 				break;
 			case LEFT:
 			case RIGHT:
-				p.setX(p.getX() - offset);
+				p.setX(p.getX() + shift * offset);
 				p.setY(p.getY() + offset);
 				break;
 			}

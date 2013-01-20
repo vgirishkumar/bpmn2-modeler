@@ -170,6 +170,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			
 			// make sure everything is still OK with the BendpointRouter
 			if (changed) {
+				updateConnection();
 				if (super.calculateRoute() == false) {
 					// super hasn't made any changes so we're done here
 					// otherwise we would have to do our routing again
