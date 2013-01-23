@@ -96,7 +96,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 							}
 	
 						};
-						importsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_ImportType());
+						importsTable.bindList(process, ModelPackage.eINSTANCE.getGlobalType_Type());
 						importsTable.setTitle("Imports");
 						return importsTable;
 					}

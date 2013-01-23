@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType()
- * @model extendedMetaData="name='global_._type' kind='element'"
+ * @model extendedMetaData="name='global_._type' kind='empty'"
  * @generated
  */
 public interface GlobalType extends EObject {
@@ -41,7 +41,7 @@ public interface GlobalType extends EObject {
 	 * @return the value of the '<em>Identifier</em>' attribute.
 	 * @see #setIdentifier(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType_Identifier()
-	 * @model required="true"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
 	 *        extendedMetaData="kind='attribute' name='identifier'"
 	 * @generated
 	 */
@@ -68,7 +68,7 @@ public interface GlobalType extends EObject {
 	 * @return the value of the '<em>Type</em>' attribute.
 	 * @see #setType(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getGlobalType_Type()
-	 * @model required="true"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
 	 *        extendedMetaData="kind='attribute' name='type'"
 	 * @generated
 	 */

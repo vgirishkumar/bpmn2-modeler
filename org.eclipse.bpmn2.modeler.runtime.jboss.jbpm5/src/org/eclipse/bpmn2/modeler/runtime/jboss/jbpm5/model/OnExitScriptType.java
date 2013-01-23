@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getOnExitScriptType()
- * @model extendedMetaData="name='onExit-script_._type' kind='elementOnly' namespace='##targetNamespace'"
+ * @model extendedMetaData="name='onExit-script_._type' kind='elementOnly'"
  * @generated
  */
 public interface OnExitScriptType extends EObject {
@@ -41,8 +41,8 @@ public interface OnExitScriptType extends EObject {
 	 * @return the value of the '<em>Script</em>' attribute.
 	 * @see #setScript(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getOnExitScriptType_Script()
-	 * @model required="true"
-	 *        extendedMetaData="kind='element' name='script'"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
+	 *        extendedMetaData="kind='element' name='script' namespace='##targetNamespace'"
 	 * @generated
 	 */
 	String getScript();
@@ -68,7 +68,7 @@ public interface OnExitScriptType extends EObject {
 	 * @return the value of the '<em>Script Format</em>' attribute.
 	 * @see #setScriptFormat(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getOnExitScriptType_ScriptFormat()
-	 * @model required="true"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
 	 *        extendedMetaData="kind='attribute' name='scriptFormat'"
 	 * @generated
 	 */

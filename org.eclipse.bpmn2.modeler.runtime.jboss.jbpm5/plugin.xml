@@ -209,7 +209,61 @@
 			type="org.eclipse.bpmn2.StartEvent"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmStartEventFeatureContainer">
 		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Task"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.UserTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmUserTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.SendTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmSendTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ReceiveTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmReceiveTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ManualTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmManualTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ServiceTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmServiceTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.BusinessRuleTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmBusinessRuleTaskFeatureContainer">
+		</featureContainer>
+
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ScriptTask"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmScriptTaskFeatureContainer">
+		</featureContainer>
 				
+		<featureContainer
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.SequenceFlow"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmSequenceFlowFeatureContainer">
+		</featureContainer>
+
 		<featureContainer
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.EndEvent"

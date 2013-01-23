@@ -10,11 +10,18 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ElementParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.event.EndEventFeatureContainer;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class JbpmEndEventFeatureContainer extends EndEventFeatureContainer {
 
@@ -23,6 +30,22 @@ public class JbpmEndEventFeatureContainer extends EndEventFeatureContainer {
 		return new XJbpmCreateEndEventFeature(fp);
 	}
 
+	@Override
+	public IAddFeature getAddFeature(IFeatureProvider fp) {
+		return new AddEndEventFeature(fp) {
+
+			@Override
+			public PictogramElement add(IAddContext context) {
+				PictogramElement pe = super.add(context);
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+				ElementParameters ep = JbpmModelUtil.getElementParameters(be);
+				getFeatureProvider().link(pe, ep);
+				return pe;
+			}
+			
+		};
+	}
+	
 	public class XJbpmCreateEndEventFeature extends CreateEndEventFeature {
 
 		public XJbpmCreateEndEventFeature(IFeatureProvider fp) {

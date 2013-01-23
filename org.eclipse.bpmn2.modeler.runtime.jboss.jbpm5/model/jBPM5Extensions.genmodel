@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5/src"
     modelPluginID="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model" redirection=""
     forceOverwrite="true" modelName="JBPM5Extensions" modelPluginClass="" importerID="org.eclipse.emf.importer.ecore"
@@ -8,16 +7,77 @@
   <foreignModel>jBPM5Extensions.ecore</foreignModel>
   <genPackages prefix="Model" basePackage="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5"
       resource="XML" disposableProviderFactory="true" ecorePackage="jBPM5Extensions.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="jBPM5Extensions.ecore#//ResultType">
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/enum"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/min"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/max"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/mean"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/count"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//ResultType/sum"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="jBPM5Extensions.ecore#//TimeUnit">
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/ms"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/s"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/min"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/hour"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/day"/>
+      <genEnumLiterals ecoreEnumLiteral="jBPM5Extensions.ecore#//TimeUnit/year"/>
+    </genEnums>
     <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//PackageNameType"/>
     <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//PriorityType"/>
     <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//RuleFlowGroupType"/>
     <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//TaskNameType"/>
     <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//VersionType"/>
+    <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//ResultTypeObject"/>
+    <genDataTypes ecoreDataType="jBPM5Extensions.ecore#//TimeUnitObject"/>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//BetaDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//BetaDistributionType/scale"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//BetaDistributionType/shape"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//BinomialDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//BinomialDistributionType/probability"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//BinomialDistributionType/trials"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//BooleanParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//BooleanParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//Calendar">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Calendar/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Calendar/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Calendar/name"/>
+    </genClasses>
     <genClasses ecoreClass="jBPM5Extensions.ecore#//DocumentRoot">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/betaDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/parameterValue"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/binomialDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/booleanParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/dateTimeParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/decimalParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/durationParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/enumParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/erlangDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/expressionParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/floatingParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/gammaDistribution"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/global"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/import2"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/logNormalDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/metadata"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/metaentry"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/negativeExponentialDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/normalDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/numericParameter"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/onEntryScript"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/onExitScript"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/poissonDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/processAnalysisData"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/randomDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/stringParameter"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/triangularDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/truncatedNormalDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/uniformDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/userDistribution"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/userDistributionDataPoint"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//DocumentRoot/weibullDistribution"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DocumentRoot/packageName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DocumentRoot/priority"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DocumentRoot/ruleFlowGroup"/>
@@ -28,28 +88,201 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//GlobalType/identifier"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//GlobalType/type"/>
     </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ControlParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ControlParameters/probability"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ControlParameters/interTriggerTimer"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ControlParameters/maxTriggerCount"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ConstantParameter"/>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//CostParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//CostParameters/fixedCost"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//CostParameters/unitCost"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//CostParameters/currencyUnit"/>
+    </genClasses>
     <genClasses ecoreClass="jBPM5Extensions.ecore#//ImportType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ImportType/name"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//DateTimeParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DateTimeParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//DecimalParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DecimalParameterType/value"/>
     </genClasses>
     <genClasses ecoreClass="jBPM5Extensions.ecore#//OnEntryScriptType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//OnEntryScriptType/script"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//OnEntryScriptType/scriptFormat"/>
     </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ElementParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/timeParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/controlParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/resourceParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/priorityParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/costParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/propertyParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ElementParameters/vendorExtension"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ElementParameters/elementId"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ElementParameters/id"/>
+    </genClasses>
     <genClasses ecoreClass="jBPM5Extensions.ecore#//OnExitScriptType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//OnExitScriptType/script"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//OnExitScriptType/scriptFormat"/>
     </genClasses>
-    <genClasses ecoreClass="jBPM5Extensions.ecore#//Task">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Task/taskName"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Task/displayName"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Task/icon"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Task/parameters"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Task/results"/>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//DurationParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DurationParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//EnumParameterType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//EnumParameterType/group"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//EnumParameterType/parameterValueGroup"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//EnumParameterType/parameterValue"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ErlangDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ErlangDistributionType/k"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ErlangDistributionType/mean"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ExpressionParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ExpressionParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//FloatingParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//FloatingParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//GammaDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//GammaDistributionType/scale"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//GammaDistributionType/shape"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//LogNormalDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//LogNormalDistributionType/mean"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//LogNormalDistributionType/standardDeviation"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//MetadataType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//MetadataType/metaentry"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//NegativeExponentialDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//NegativeExponentialDistributionType/mean"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//NormalDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//NormalDistributionType/mean"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//NormalDistributionType/standardDeviation"/>
     </genClasses>
     <genClasses ecoreClass="jBPM5Extensions.ecore#//Parameter">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/type"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/value"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/resultRequest"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/parameterValueGroup"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Parameter/parameterValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/kpi"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Parameter/sla"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//NumericParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//NumericParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//MetaentryType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//MetaentryType/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//MetaentryType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//DistributionParameter">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//DistributionParameter/discrete"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ProcessAnalysisDataType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ProcessAnalysisDataType/group"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ProcessAnalysisDataType/scenario"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//PropertyParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//PropertyParameters/property"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//RandomDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//RandomDistributionType/max"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//RandomDistributionType/min"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ParameterValue">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ParameterValue/instance"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ParameterValue/result"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ParameterValue/validFor"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//PoissonDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//PoissonDistributionType/mean"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//PropertyType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//PropertyType/name"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//PriorityParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//PriorityParameters/interruptible"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//PriorityParameters/priority"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//TimeParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/transferTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/queueTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/waitTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/setUpTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/processingTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/validationTime"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//TimeParameters/reworkTime"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TimeParameters/timeUnit"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//StringParameterType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//StringParameterType/value"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//Scenario">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Scenario/scenarioParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Scenario/elementParameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Scenario/calendar"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//Scenario/vendorExtension"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/author"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/created"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/description"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/id"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/inherits"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/modified"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/result"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/vendor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//Scenario/version"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ResourceParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ResourceParameters/selection"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ResourceParameters/availability"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ResourceParameters/quantity"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ResourceParameters/workinghours"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ResourceParameters/role"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//ScenarioParameters">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ScenarioParameters/start"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ScenarioParameters/duration"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//ScenarioParameters/propertyParameters"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ScenarioParameters/baseCurrencyUnit"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ScenarioParameters/baseTimeUnit"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ScenarioParameters/replication"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//ScenarioParameters/seed"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//VendorExtension">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//VendorExtension/any"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//VendorExtension/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//VendorExtension/anyAttribute"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//TriangularDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TriangularDistributionType/max"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TriangularDistributionType/min"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TriangularDistributionType/mostLikely"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//TruncatedNormalDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TruncatedNormalDistributionType/max"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TruncatedNormalDistributionType/mean"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TruncatedNormalDistributionType/min"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//TruncatedNormalDistributionType/standardDeviation"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//UniformDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//UniformDistributionType/max"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//UniformDistributionType/min"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//UserDistributionDataPointType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//UserDistributionDataPointType/parameterValueGroup"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//UserDistributionDataPointType/parameterValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//UserDistributionDataPointType/probability"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//UserDistributionType">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//UserDistributionType/group"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference jBPM5Extensions.ecore#//UserDistributionType/userDistributionDataPoint"/>
+    </genClasses>
+    <genClasses ecoreClass="jBPM5Extensions.ecore#//WeibullDistributionType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//WeibullDistributionType/scale"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute jBPM5Extensions.ecore#//WeibullDistributionType/shape"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -48,6 +48,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -125,6 +126,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize(DiagramEditor)
 	 */
 	public void initialize(DiagramEditor editor) {
+		Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
 		ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
 		if (sel instanceof IStructuredSelection) {
 			Object o = ((IStructuredSelection)sel).getFirstElement();
