@@ -43,8 +43,6 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -251,7 +249,7 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 		
 		@Override
 		protected void setValueFromId(EObject object, EReference eReference, String ids) {
-			if (object instanceof CallActivity) {
+			if (object instanceof CallActivity && eReference==Bpmn2Package.eINSTANCE.getCallActivity_CalledElementRef()) {
 				// the CalledElementRef in CallActivity is just an ID. This means we need
 				// to create a CallableElement which is simply a proxy, not a real object.
 				CallActivity ca = (CallActivity)object;
