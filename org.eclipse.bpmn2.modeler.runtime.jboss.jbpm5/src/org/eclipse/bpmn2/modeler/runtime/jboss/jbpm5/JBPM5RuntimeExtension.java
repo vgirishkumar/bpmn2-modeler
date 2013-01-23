@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
@@ -473,8 +474,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override 
 	public void modelObjectCreated(final EObject object) {
 		if (object instanceof org.eclipse.bpmn2.Property ||
-				object instanceof DataInput ||
-				object instanceof DataOutput ||
+				object instanceof DataObject ||
 				object instanceof Message) {
 			object.eAdapters().add(new Adapter() {
 				@Override
@@ -489,14 +489,13 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 								Object oldValue = notification.getOldValue();
 								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
 								{
-									newValue = SyntaxCheckerUtils.toNCName((String)newValue);
 									EStructuralFeature id = object.eClass().getEStructuralFeature("id");
 									if (id!=null) {
+										newValue = SyntaxCheckerUtils.toNCName((String)newValue);
 										boolean deliver = object.eDeliver();
 										if (deliver)
 											object.eSetDeliver(false);
 										object.eSet(id, newValue);
-										object.eSet(feature, newValue);
 										if (deliver)
 											object.eSetDeliver(true);
 									}
@@ -507,7 +506,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 								Object oldValue = notification.getOldValue();
 								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) 
 								{
-									newValue = SyntaxCheckerUtils.toNCName((String)newValue);
 									EStructuralFeature name = object.eClass().getEStructuralFeature("name");
 									if (name!=null) {
 										boolean deliver = object.eDeliver();
