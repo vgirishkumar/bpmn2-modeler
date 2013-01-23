@@ -225,6 +225,10 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		
 		try {
 			Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
+			for (IPaletteCompartmentEntry e : ret) {
+				categories.put(e.getLabel(), (PaletteCompartmentEntry) e);
+			}
+			
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
 				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
 
