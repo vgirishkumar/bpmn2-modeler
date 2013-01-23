@@ -53,6 +53,8 @@ public class SyntaxCheckerUtils {
 		// Check the rest of the characters
 		for (int i = 1; i < nameLength; i++) {
 			c = name.charAt(i);
+			if (Character.isWhitespace(c))
+				continue;
 			if (!isNCNameChar(c)) {
 				c = '_';
 			}

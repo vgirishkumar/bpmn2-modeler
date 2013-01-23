@@ -229,6 +229,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				}
 				if (result == dataObject) { // the new one
 					mh.addFlowElement(container,dataObject);
+					dataObject.setId(null);
 					ModelUtil.setID(dataObject);
 					dataObject.setIsCollection(false);
 					dataObject.setName(ModelUtil.toDisplayName(dataObject.getId()));

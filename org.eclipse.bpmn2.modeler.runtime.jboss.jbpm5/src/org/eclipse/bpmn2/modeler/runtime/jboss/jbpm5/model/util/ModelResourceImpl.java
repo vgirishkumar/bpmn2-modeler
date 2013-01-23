@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Message;
@@ -89,12 +90,9 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 			protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
 				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 					return false;
-				// don't save the "name" feature of Property, DataInput or DataOutput objects.
+				// don't save the "name" feature of Property objects.
 				// see ModelXmlHandler.processElement() for details...
-				if (o instanceof Property ||
-						o instanceof DataInput ||
-						o instanceof DataOutput ||
-						o instanceof Message) {
+				if (o instanceof Property) {
 					if (f.getName().equals("name"))
 						return false;
 				}
@@ -187,13 +185,14 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 						}
 					}
 					
-					// Some objects, like Property, DataInput and DataOutput use the "id" attribute instead
+					// Some objects, like Property, DataObject and Message use the "id" attribute instead
 					// of "name". We need to copy this "id" to "name" so that the UI can deal with them.
+					// The "name" feature will not be saved when the file is saved, but the jBPM5 Runtime Extension
+					// will keep the "id" in sync with the name during editing.
 					// Editorial: I don't agree with the decision to allow users to change model object IDs,
 					// since these are (theoretically) supposed to be unique; but it is what it is...
 					if (childObject instanceof Property ||
-							childObject instanceof DataInput ||
-							childObject instanceof DataOutput ||
+							childObject instanceof DataObject ||
 							childObject instanceof Message) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
 						if (nameFeature!=null) {
