@@ -144,7 +144,7 @@ public class DIImport {
 					bpmnDiagrams.add(d);
 				}
 				featureProvider.link(diagram, bpmnDiagrams.get(0));
-
+				
 				// First: add all IDs to our ID mapping table
 				Definitions definitions = modelHandler.getDefinitions();
 				TreeIterator<EObject> iter = definitions.eAllContents();
@@ -166,7 +166,6 @@ public class DIImport {
 					}
 					List<DiagramElement> ownedElement = plane.getPlaneElement();
 
-					// FIXME: here we should create a new diagram and an editor page
 					importShapes(ownedElement);
 					importConnections(ownedElement);
 

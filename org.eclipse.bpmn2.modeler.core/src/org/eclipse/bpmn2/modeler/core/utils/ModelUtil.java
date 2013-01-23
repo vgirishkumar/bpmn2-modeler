@@ -53,6 +53,8 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -1183,6 +1185,15 @@ public class ModelUtil {
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
+		
+		if (feature.getEType() instanceof EEnum) {
+			EEnum en = (EEnum)feature.getEType();
+			Hashtable<String,Object> choices = new Hashtable<String,Object>();
+			for (EEnumLiteral el : en.getELiterals()) {
+				choices.put(el.getLiteral(), el.getInstance());
+			}
+			return choices;
+		}
 		return null;
 	}
 
@@ -1332,6 +1343,9 @@ public class ModelUtil {
 	}
 
 	public static boolean isMultiChoice(EObject object, EStructuralFeature feature) {
+		if (feature.getEType() instanceof EEnum) {
+			return true;
+		}
 		if (feature.getEType() instanceof EClass)
 		{
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);

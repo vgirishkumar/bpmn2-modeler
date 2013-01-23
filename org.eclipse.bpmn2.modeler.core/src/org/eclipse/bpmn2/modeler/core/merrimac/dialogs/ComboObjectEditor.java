@@ -24,7 +24,10 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectEList;
@@ -228,6 +231,10 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		return ModelUtil.canCreateNew(object,feature);
 	}
 	
+	protected boolean canSetNull() {
+		return ModelUtil.canSetNull(object,feature);
+	}
+	
 	protected EObject createObject() throws Exception {
 		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);
 		dialog.setFeatureEType(featureEType);
@@ -268,7 +275,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			ignoreComboSelections = false;
 			
 			Hashtable<String,Object> choices = getChoiceOfValues(object, feature);
-			if (ModelUtil.canSetNull(object,feature)) {
+			if (canSetNull()) {
 				// selecting this one will set the target's value to null
 				comboViewer.add("");
 			}
@@ -285,7 +292,8 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				if (newValue!=null) {
 					comboViewer.setData(entry.getKey(), newValue);
 					if (currentSelection==null) {
-						if (newValue.equals(oldValue) || entry.getKey().equals(oldValue)) {
+						String oldValueString = oldValue.toString();
+						if (newValue.equals(oldValue) || entry.getKey().equals(oldValue) || entry.getKey().equals(oldValueString)) {
 							currentSelection = new StructuredSelection(entry.getKey());
 						}
 						else if (adapter!=null) {

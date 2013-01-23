@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  *
  * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getImportType()
- * @model extendedMetaData="name='import_._type' kind='element'"
+ * @model extendedMetaData="name='import_._type' kind='empty'"
  * @generated
  */
 public interface ImportType extends EObject {
@@ -40,7 +40,7 @@ public interface ImportType extends EObject {
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getImportType_Name()
-	 * @model required="true"
+	 * @model dataType="org.eclipse.emf.ecore.xml.type.String" required="true"
 	 *        extendedMetaData="kind='attribute' name='name'"
 	 * @generated
 	 */
