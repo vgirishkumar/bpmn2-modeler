@@ -78,7 +78,7 @@ public class TextObjectEditor extends ObjectEditor {
 			@SuppressWarnings("restriction")
 			@Override
 			public void handleValueChange(final ValueChangeEvent e) {
-				updateObject(e.diff.getNewValue());
+				setValue(e.diff.getNewValue());
 			}
 		});
 		
@@ -111,8 +111,8 @@ public class TextObjectEditor extends ObjectEditor {
 	}
 
 	@Override
-	protected boolean updateObject(Object result) {
-		if (super.updateObject(result)) {
+	protected boolean setValue(Object result) {
+		if (super.setValue(result)) {
 			updateText();
 			return true;
 		}
@@ -182,5 +182,10 @@ public class TextObjectEditor extends ObjectEditor {
 	
 	public Control getControl() {
 		return text;
+	}
+
+	@Override
+	public Object getValue() {
+		return getText();
 	}
 }

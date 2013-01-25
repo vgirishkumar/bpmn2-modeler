@@ -33,10 +33,10 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class IoParametersDetailComposite extends AbstractDetailComposite {
 
-	AbstractListComposite inputSetsTable;
-	AbstractListComposite dataInputsTable;
-	AbstractListComposite outputSetsTable;
-	AbstractListComposite dataOutputsTable;
+	protected AbstractListComposite inputSetsTable;
+	protected AbstractListComposite dataInputsTable;
+	protected AbstractListComposite outputSetsTable;
+	protected AbstractListComposite dataOutputsTable;
 	
 	public IoParametersDetailComposite(Composite parent, int style) {
 		super(parent, style);

@@ -93,7 +93,7 @@ public class SampleImageProvider extends AbstractImageProvider {
 	}
 	
 	public static String getImageId(CustomTaskDescriptor ctd, IconSize size) {
-		String icon = (String) ctd.getProperty("icon"); 
+		String icon = (String) ctd.getPropertyValue("icon"); 
 		if (icon != null && icon.trim().length() > 0) {
 			return IMAGE_ID_PREFIX + icon.trim() + "." + size.value;
 		}
@@ -101,7 +101,7 @@ public class SampleImageProvider extends AbstractImageProvider {
 	}
 	
 	public static String getImagePath(CustomTaskDescriptor ctd, IconSize size) {
-		String icon = (String) ctd.getProperty("icon"); 
+		String icon = (String) ctd.getPropertyValue("icon"); 
 		if (icon != null && icon.trim().length() > 0) {
 			return ICONS_FOLDER + size.value + "/" + icon.trim();
 		}

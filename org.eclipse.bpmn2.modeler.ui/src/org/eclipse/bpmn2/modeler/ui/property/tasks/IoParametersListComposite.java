@@ -38,11 +38,11 @@ public class IoParametersListComposite extends DefaultListComposite {
 	/**
 	 * 
 	 */
-	Activity activity;
-	CallableElement element;
-	InputOutputSpecification ioSpecification;
-	EStructuralFeature ioFeature;
-	boolean isInput;
+	protected Activity activity;
+	protected CallableElement element;
+	protected InputOutputSpecification ioSpecification;
+	protected EStructuralFeature ioFeature;
+	protected boolean isInput;
 	
 	public IoParametersListComposite(IoParametersDetailComposite detailComposite, EObject container, InputOutputSpecification ioSpecification, EStructuralFeature ioFeature) {
 		super(detailComposite, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);

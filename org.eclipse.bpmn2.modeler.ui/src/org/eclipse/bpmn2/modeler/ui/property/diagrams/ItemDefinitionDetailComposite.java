@@ -72,8 +72,8 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 					label = ModelUtil.getLabel(object, attribute);
 				
 				ObjectEditor editor = new ComboObjectEditor(this,object,attribute) {
-					protected boolean updateObject(final Object result) {
-						super.updateObject(result);
+					protected boolean setValue(final Object result) {
+						super.setValue(result);
 						Display.getCurrent().syncExec( new Runnable() {
 							@Override
 							public void run() {
@@ -109,8 +109,8 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 			else {
 				ObjectEditor editor = new TextObjectEditor(this,object,reference) {
 					@Override
-					protected boolean updateObject(Object result) {
-						return super.updateObject(ModelUtil.createStringWrapper((String)result));
+					protected boolean setValue(Object result) {
+						return super.setValue(ModelUtil.createStringWrapper((String)result));
 					}
 				};
 				editor.createControl(parent,displayName);

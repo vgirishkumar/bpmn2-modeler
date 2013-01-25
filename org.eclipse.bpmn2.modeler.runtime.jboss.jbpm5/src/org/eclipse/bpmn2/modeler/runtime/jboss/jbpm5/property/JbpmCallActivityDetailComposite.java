@@ -76,13 +76,13 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 								initialValue,
 								validator);
 						if (dialog.open()==Window.OK){
-							updateObject(dialog.getValue());
+							setValue(dialog.getValue());
 						}
 					}
 					
 					
 					@Override
-					protected boolean updateObject(final Object result) {
+					protected boolean setValue(final Object result) {
 						if (result != object.eGet(feature)) {
 							TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 							domain.getCommandStack().execute(new RecordingCommand(domain) {

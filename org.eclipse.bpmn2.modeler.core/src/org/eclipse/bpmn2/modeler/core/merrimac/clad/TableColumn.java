@@ -14,10 +14,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.ColumnTableProvider;
-import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -25,27 +22,27 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.IItemPropertySource;
 import org.eclipse.emf.edit.ui.provider.PropertyDescriptor.EDataTypeCellEditor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Text;
 
 public class TableColumn extends ColumnTableProvider.Column implements ILabelProvider, ICellModifier {
 
 	protected AbstractListComposite listComposite;
-	protected TableViewer tableViewer;
 	// the underlying EObject of the table row
 	protected EObject object;
 	// the EStructuralFeature being managed for this table column
@@ -77,10 +74,6 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	
 	public void setOwner(AbstractListComposite abstractListComposite) {
 		this.listComposite = abstractListComposite;
-	}
-	
-	public void setTableViewer(TableViewer t) {
-		tableViewer = t;
 	}
 	
 	public void setHeaderText(String text) {
@@ -159,7 +152,10 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	}
 	
 	protected void setCellEditor(CellEditor ce) {
-		this.cellEditor = ce;
+		if (cellEditor!=null) {
+			cellEditor.dispose();
+		}
+		cellEditor = ce;
 
 		// this is the only tricky part: set the cell editor in the
 		// table viewer's list
@@ -170,29 +166,51 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		}
 	}
 	
+	protected CellEditor getCellEditor() {
+		CellEditor[] cellEditors = tableViewer.getCellEditors();
+		int index = getColumnIndex();
+		if (index>=0 && index<cellEditors.length) {
+			return cellEditors[index];
+		}
+		return null;
+	}
+	
 	protected CellEditor createCellEditor(Object element, String property) {
 		Composite parent = tableViewer.getTable();
 		if (cellEditor==null && feature!=null) {
 			EClassifier ec = feature.getEType();
 			Class ic = ec.getInstanceClass();
-
+			CellEditor ce = null;
+			
 			if (boolean.class.equals(ic)) {
-				cellEditor = new CustomCheckboxCellEditor(parent);
+				ce = new CustomCheckboxCellEditor(parent);
 			}
 			else if (ec instanceof EEnum) {
-				cellEditor = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
+				ce = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
 			}
 			else if (ModelUtil.isMultiChoice((EObject)element, feature)) {
-				cellEditor = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
+				ce = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
 			}
 			else if (ec instanceof EDataType) {
-				cellEditor = new EDataTypeCellEditor((EDataType)ec, parent);
+				ce = new EDataTypeCellEditor((EDataType)ec, parent) {
+					@Override
+					protected void handleDefaultSelection(final SelectionEvent event) {
+						// FIXME: Arghhh!!! no idea what's going on here!!!
+						// when RETURN key is pressed inside a cell editor, the cell text turns
+						// blue and selecting any other cells in the same column just makes that
+						// cell turn blue - it does not re-activate the cell editor.
+						// All other keys behave normally (like TAB).
+//						super.handleDefaultSelection(event);
+					}
+					
+				};
 			}
 			else if (ic==EObject.class) {
-				cellEditor = new StringWrapperCellEditor(parent);
+				ce = new StringWrapperCellEditor(parent);
 			}
-			setCellEditor(cellEditor);
+			setCellEditor(ce);
 		}
+
 		return cellEditor;
 	}
 	
@@ -202,7 +220,6 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	
 	public boolean canModify(Object element, String property) {
 		if (editable && listComposite.getColumnProvider().canModify(object, feature, (EObject)element)) {
-			cellEditor = null;
 			createCellEditor(element,property);
 			return cellEditor!=null;
 		}

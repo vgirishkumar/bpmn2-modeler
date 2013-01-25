@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
@@ -29,7 +31,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EStructuralFeature.Internal;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl.SimpleFeatureMapEntry;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -85,6 +86,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		}
 		
 		public Property(String name, String description) {
+			super();
 			this.name = name;
 			this.description = description;
 		}
@@ -112,6 +114,24 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				}
 			}
 			return null;
+		}
+	}
+	
+	public class ModelExtensionAdapter extends AdapterImpl {
+
+		ModelExtensionDescriptor descriptor;
+		
+		public ModelExtensionAdapter(ModelExtensionDescriptor descriptor) {
+			super();
+			this.descriptor = descriptor;
+		}
+		
+		public Property getProperty(String name) {
+			return descriptor.getProperty(name);
+		}
+		
+		public List<Property> getProperties(String path) {
+			return descriptor.getProperties(path);
 		}
 	}
 	
@@ -307,6 +327,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		if (modelObject==null)
 			modelObject = object;
 		populateObject(object, getProperties(), all);
+		addModelExtensionAdapter(object);
 	}
 	
 	/**
@@ -341,7 +362,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param feature
 	 * @param value
 	 */
-	private void setValue(EObject object, EStructuralFeature feature, Object value) {
+	private void setValue(EObject object, EStructuralFeature feature, Object value, boolean force, Property property) {
 		// should not set null value features
 		if (value == null) {
 			return;
@@ -370,8 +391,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				if (object.eGet(f)!=null)
 					return;
 			}
-			if (!object.eIsSet(feature))
+			if (!object.eIsSet(feature) || force) {
 				object.eSet(feature, value);
+			}
 		}
 	}
 	
@@ -403,7 +425,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		EObject childObject = null;
 		EStructuralFeature childFeature = null;
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(property.name);
-		
+
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
 
 		if (feature==null) {
@@ -428,43 +450,45 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 						childFeature = getFeature(p.name);
 						if (childFeature instanceof EAttribute) {
 							childObject = createObject(((EReference) childFeature));
-							setValue(childObject, childFeature, firstValue);
+							setValue(childObject, childFeature, firstValue, true, property);
 						}
 						else if (childFeature instanceof EReference) {
 							childObject = createObject(((EReference) childFeature).getEReferenceType());
-							FeatureMap.Entry entry = new SimpleFeatureMapEntry((Internal)childFeature, childObject);
-							setValue(object, feature, entry);
-							populateObjectFromValues(childObject,p.getValues(), all);
+							FeatureMap.Entry entry = new SimpleFeatureMapEntry((EStructuralFeature.Internal)childFeature, childObject);
+							setValue(object, feature, entry, true, property);
+							populateObjectFromValues(childObject,p.getValues(), true);
 						}
 					}
 				}
 			}
 			else
-				setValue(object, feature, firstValue);
+				setValue(object, feature, firstValue, all, property);
 		}
-		else if (all && feature instanceof EReference) {
-			EReference ref = (EReference)feature;
-			if (property.ref!=null) {
-				// navigate down the newly created custom task to find the object reference
-				childObject = modelObject;
-				String[] segments = property.ref.split("/");
-				for (String s : segments) {
-					// is the feature an Elist?
-					int index = s.indexOf('#');
-					if (index>0) {
-						index = Integer.parseInt(s.substring(index+1));
-						s = s.split("#")[0];
+		else if (feature instanceof EReference) {
+			if (all) {
+				EReference ref = (EReference)feature;
+				if (property.ref!=null) {
+					// navigate down the newly created custom task to find the object reference
+					childObject = modelObject;
+					String[] segments = property.ref.split("/");
+					for (String s : segments) {
+						// is the feature an Elist?
+						int index = s.indexOf('#');
+						if (index>0) {
+							index = Integer.parseInt(s.substring(index+1));
+							s = s.split("#")[0];
+						}
+						childFeature = childObject.eClass().getEStructuralFeature(s);
+						childObject = (EObject)getValue(childObject, childFeature, index);
 					}
-					childFeature = childObject.eClass().getEStructuralFeature(s);
-					childObject = (EObject)getValue(childObject, childFeature, index);
+					setValue(object, feature, childObject, true, property);
 				}
-				setValue(object, feature, childObject);
-			}
-			else if (firstValue instanceof Property)
-			{
-				childObject = createObject(ref.getEReferenceType());
-				setValue(object, feature, childObject);
-				populateObjectFromValues(childObject,property.getValues(), all);
+				else if (firstValue instanceof Property)
+				{
+					childObject = createObject(ref.getEReferenceType());
+					setValue(object, feature, childObject, true, property);
+					populateObjectFromValues(childObject,property.getValues(), all);
+				}
 			}
 		}
 		return feature;
@@ -476,13 +500,50 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param name
 	 * @return
 	 */
-	public Object getProperty(String name) {
+	public Object getPropertyValue(String name) {
 
 		for (Property prop : getProperties()) {
 			if (prop.name.equals(name)) {
 				if (!prop.getValues().isEmpty()) {
 					return prop.getValues().get(0);
 				}
+			}
+		}
+		return null;
+	}
+	
+	public List<Property> getProperties(String path) {
+		List<Property> result = new ArrayList<Property>();
+		List<Property> props = new ArrayList<Property>();
+		props.addAll(getProperties());
+		String names[] = path.split("/");
+		getProperties(props,names,0,result);
+		return result;
+	}
+	
+	private void getProperties(List<Property>props, String names[], int index, List<Property>result) {
+		String name = names[index];
+		for (Property p : props) {
+			if (p.name.equals(name)) {
+				if (index==names.length-1)
+					result.add(p);
+				else {
+					List<Property>childProps = new ArrayList<Property>();
+					for (Object v : p.values) {
+						if (v instanceof Property) {
+							childProps.add((Property)v);
+						}
+					}
+					getProperties(childProps, names, index+1, result);
+				}
+			}
+		}
+	}
+	
+	public Property getProperty(String name) {
+		for (Property prop : getProperties()) {
+			if (prop.name.equals(name)) {
+				return prop;
 			}
 		}
 		return null;
@@ -506,5 +567,25 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 
 	public void setProperties(List<Property> properties) {
 		this.properties = properties;
+	}
+	
+	public static ModelExtensionAdapter getModelExtensionAdapter(EObject object) {
+		for (Adapter a : object.eAdapters()) {
+			if (a instanceof ModelExtensionAdapter) {
+				return (ModelExtensionAdapter)a;
+			}
+		}
+		return null;
+	}
+
+	public void adaptObject(EObject object) {
+		if (modelObject==null)
+			modelObject = object;
+		addModelExtensionAdapter(object);
+	}
+	
+	private void addModelExtensionAdapter(EObject object) {
+		if (!object.eAdapters().contains(this))
+			object.eAdapters().add( new ModelExtensionAdapter(this) );
 	}
 }

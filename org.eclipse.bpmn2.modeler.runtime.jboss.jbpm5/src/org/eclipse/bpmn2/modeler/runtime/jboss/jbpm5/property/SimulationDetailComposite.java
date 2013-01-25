@@ -209,7 +209,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 			editor = new IntObjectEditor(this,decimalValue,ModelPackage.eINSTANCE.getDecimalParameterType_Value()) {
 
 				@Override
-				protected boolean updateObject(final Object result) {
+				protected boolean setValue(final Object result) {
 					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
@@ -250,7 +250,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 					}
 					
 					@Override
-					protected boolean updateObject(Object result) {
+					protected boolean setValue(Object result) {
 						final DistributionType dt = (DistributionType)result;
 						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
