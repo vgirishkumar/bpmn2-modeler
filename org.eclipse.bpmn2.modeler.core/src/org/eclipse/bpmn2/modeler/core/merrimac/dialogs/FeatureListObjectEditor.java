@@ -84,7 +84,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		text.setEditable(false);
 
-		references = (List<EObject>) object.eGet(feature);
+		references = getValue();
 		updateTextField();
 
 		boolean canEdit = ModelUtil.canEdit(object,feature);
@@ -287,5 +287,14 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 	
 	public Control getControl() {
 		return text;
+	}
+
+	@Override
+	public List getValue() {
+		Object v = object.eGet(feature);
+		if (v instanceof List) {
+			return (List)v;
+		}
+		return null;
 	}
 }

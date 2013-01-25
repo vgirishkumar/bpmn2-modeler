@@ -153,7 +153,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 						// create a new target object
 						try {
 							EObject value = createObject();
-							updateObject(value);
+							setValue(value);
 							fillCombo();
 						}
 						catch (Exception ex) {
@@ -177,7 +177,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 								EObject value = (EObject) comboViewer.getData(firstElement);
 								try {
 									value = editObject(value);
-									updateObject(value);
+									setValue(value);
 									fillCombo();
 								}
 								catch (Exception ex) {
@@ -200,13 +200,13 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 					if (selection instanceof StructuredSelection) {
 						String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
 						if(firstElement!=null && comboViewer.getData(firstElement)!=null)
-							updateObject(comboViewer.getData(firstElement));
+							setValue(comboViewer.getData(firstElement));
 						else {
 							if (firstElement!=null && firstElement.isEmpty())
 								firstElement = null;
 							if (firstElement==null)
 								firstElement = comboViewer.getCombo().getText();
-							updateObject(firstElement);
+							setValue(firstElement);
 							fillCombo();
 						}
 						if (editButton!=null)
@@ -253,21 +253,27 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	}
 
 	@Override
-	protected boolean updateObject(Object result) {
+	protected boolean setValue(Object result) {
 		keyPressed = false;
-		return super.updateObject(result);
+		return super.setValue(result);
 	}
 
+	@Override
+	public Object getValue() {
+		Object v =  object.eGet(feature);
+		// hack to deal with List features: use the first element in the list to
+		// determine which item to select as active in the combobox
+		if (v instanceof EObjectEList) {
+			EObjectEList list = (EObjectEList)v;
+			if (list.size()>0)
+				v = list.get(0);
+		}
+		return v;
+	}
+	
 	protected void fillCombo() {
 		if (comboViewer!=null) {
-			Object oldValue =  object.eGet(feature);
-			// hack to deal with List features: use the first element in the list to
-			// determine which item to select as active in the combobox
-			if (oldValue instanceof EObjectEList) {
-				EObjectEList list = (EObjectEList)oldValue;
-				if (list.size()>0)
-					oldValue = list.get(0);
-			}
+			Object oldValue =  getValue();
 	
 			ignoreComboSelections = true;
 			while (comboViewer.getElementAt(0) != null)
@@ -292,7 +298,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				if (newValue!=null) {
 					comboViewer.setData(entry.getKey(), newValue);
 					if (currentSelection==null) {
-						String oldValueString = oldValue.toString();
+						String oldValueString = oldValue==null ? null : oldValue.toString();
 						if (newValue.equals(oldValue) || entry.getKey().equals(oldValue) || entry.getKey().equals(oldValueString)) {
 							currentSelection = new StructuredSelection(entry.getKey());
 						}

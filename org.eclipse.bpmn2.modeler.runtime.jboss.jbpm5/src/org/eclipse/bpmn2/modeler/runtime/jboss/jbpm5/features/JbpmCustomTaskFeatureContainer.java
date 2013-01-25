@@ -74,7 +74,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 
 					@Override
 					public String getCreateImageId() {
-						final String iconPath = (String) customTaskDescriptor.getProperty("icon"); 
+						final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
 						if (iconPath != null && iconPath.trim().length() > 0) {
 							return iconPath.trim();
 						}
@@ -94,7 +94,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 					@Override
 					protected void decorateShape(IAddContext context, ContainerShape containerShape, Task businessObject) {
 						super.decorateShape(context, containerShape, businessObject);
-						final String iconPath = (String) customTaskDescriptor.getProperty("icon"); 
+						final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
 						if (iconPath != null && iconPath.trim().length() > 0) {
 							GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 							IGaService service = Graphiti.getGaService();

@@ -517,37 +517,37 @@
 				<value>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="TaskName"/>
+							<property name="name" value="TaskName" type="EString"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Priority"/>
+							<property name="name" value="Priority" type="EInt"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Comment"/>
+							<property name="name" value="Comment" type="EString"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="GroupId"/>
+							<property name="name" value="GroupId" type="ID"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Skippable"/>
+							<property name="name" value="Skippable" type="EBoolean"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Content"/>
+							<property name="name" value="Content" type="EString"/>
 						</value>
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="Locale"/>
+							<property name="name" value="Locale" type="EString"/>
 						</value>
 					</property>
 

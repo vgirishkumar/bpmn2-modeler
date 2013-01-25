@@ -56,15 +56,15 @@ public class BooleanObjectEditor extends ObjectEditor {
 		
 		button = getToolkit().createButton(composite, "", SWT.CHECK);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		button.setSelection((Boolean) object.eGet(feature));
+		button.setSelection(getValue());
 		IObservableValue buttonObserver = SWTObservables.observeSelection(button);
 		buttonObserver.addValueChangeListener(new IValueChangeListener() {
 			
 			@SuppressWarnings("restriction")
 			@Override
 			public void handleValueChange(ValueChangeEvent event) {
-				updateObject(new Boolean(button.getSelection()));
-				button.setSelection((Boolean) object.eGet(feature));
+				setValue(new Boolean(button.getSelection()));
+				button.setSelection(getValue());
 			}
 		});
 		
@@ -82,7 +82,28 @@ public class BooleanObjectEditor extends ObjectEditor {
 		
 		return button;
 	}
-	
+
+	@Override
+	public Boolean getValue() {
+		Object v = object.eGet(feature);
+		if (v instanceof Boolean)
+			return (Boolean)v;
+		if (v instanceof String) {
+			if ("true".equalsIgnoreCase((String)v))
+				return Boolean.TRUE;
+			// translate integer values as strings
+			try {
+				if (Integer.parseInt((String)v)!=0)
+					return Boolean.TRUE;
+			}
+			catch(Exception e) {}
+		}
+		if (v instanceof Integer && ((Integer)v).intValue()!=0) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);

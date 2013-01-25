@@ -29,7 +29,7 @@ public class ReadonlyTextObjectEditor extends TextAndButtonObjectEditor {
 		if (value == null || value instanceof EObject) {
 			FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, (EObject)value);
 			if (dialog.open()==Window.OK){
-				updateObject(dialog.getNewObject());
+				setValue(dialog.getNewObject());
 			}
 		}
 		else {

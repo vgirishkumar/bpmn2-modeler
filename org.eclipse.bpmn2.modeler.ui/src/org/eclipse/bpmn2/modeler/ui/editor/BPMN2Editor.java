@@ -528,6 +528,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				@Override
 				protected void doExecute() {
 					importDiagram();
+					getTargetRuntime().setResource(bpmnResource);
 				}
 			});
 		}

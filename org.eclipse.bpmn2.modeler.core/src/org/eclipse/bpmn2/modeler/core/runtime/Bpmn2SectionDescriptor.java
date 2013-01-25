@@ -89,6 +89,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			
 			// should we delegate to the section to determine whether it should be included in this tab?
 			if (sectionClass instanceof IBpmn2PropertySection) {
+				PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
+				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+				if (object==null)
+					return false;
 				return ((IBpmn2PropertySection)sectionClass).appliesTo(part, selection);
 			}
 			

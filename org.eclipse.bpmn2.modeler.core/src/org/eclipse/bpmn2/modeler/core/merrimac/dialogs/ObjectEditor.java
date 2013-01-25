@@ -185,7 +185,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
         }
 	}
 	
-	protected boolean updateObject(final Object result) {
+	protected boolean setValue(final Object result) {
 		TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 		boolean success = ModelUtil.setValue(domain, object, feature, result);
 		if (!success) {
@@ -198,6 +198,8 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		return true;
 	}
 
+	public abstract Object getValue();
+	
 	@Override
 	public void notifyChanged(Notification notification) {
 		updateLabelDecorator();

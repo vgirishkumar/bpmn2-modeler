@@ -96,10 +96,10 @@ public class FloatObjectEditor extends TextObjectEditor {
 			private void setFeatureValue(final double i) {
 				Class eTypeClass = feature.getEType().getInstanceClass();
 				if (Double.class.equals(eTypeClass) || double.class.equals(eTypeClass)) {
-					updateObject(Double.valueOf((double)i));
+					setValue(Double.valueOf((double)i));
 				}
 				else
-					updateObject(Float.valueOf((float)i));
+					setValue(Float.valueOf((float)i));
 			}
 		});
 

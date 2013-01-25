@@ -185,12 +185,12 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 								Map<String, String> map = (Map<String, String>)root.getXMLNSPrefixMap();
 								NamespacesEditingDialog dialog = new NamespacesEditingDialog(getShell(), "Change Namespace Prefix", map, entry.getKey(),null);
 								if (dialog.open() == Window.OK) {
-									updateObject(dialog.getPrefix());
+									setValue(dialog.getPrefix());
 								}
 							}
 							
 							@Override
-							protected boolean updateObject(final Object result) {
+							protected boolean setValue(final Object result) {
 								// we can't just change the key because the map that contains it
 								// needs to be updated, so remove old key, then add new.
 								if (result instanceof String && !((String)result).isEmpty() ) {
@@ -405,11 +405,11 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 							initialValue,
 							validator);
 					if (dialog.open()==Window.OK){
-						updateObject(dialog.getValue());
+						setValue(dialog.getValue());
 					}
 				}
 				
-				protected boolean updateObject(final Object value) {
+				protected boolean setValue(final Object value) {
 					// remove old prefix
 					String prefix = text.getText();
 					NamespaceUtil.removeNamespaceForPrefix(imp.eResource(), prefix);

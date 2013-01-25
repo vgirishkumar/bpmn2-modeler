@@ -29,8 +29,10 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Value;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -63,6 +65,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	protected ArrayList<PropertyExtensionDescriptor> propertyExtensions;
 	protected ArrayList<FeatureContainerDescriptor> featureContainers;
 	protected HashMap<Class, ShapeStyle> shapeStyles;
+	protected Bpmn2Resource bpmnResource;
 
 	public TargetRuntime(String id, String name, String versions, String description) {
 		this.id = id;
@@ -663,5 +666,23 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 
 	public void setRuntimeExtension(IBpmn2RuntimeExtension runtimeExtension) {
 		this.runtimeExtension = runtimeExtension;
+	}
+	
+	public void setResource(Bpmn2Resource bpmnResource) {
+		this.bpmnResource = bpmnResource;
+		
+		// attach ModelExtensionDescriptor.Property adapters to all modelExtension objects defined in
+		// the target runtime's plugin.xml
+		TreeIterator<EObject> iter = bpmnResource.getAllContents();
+		while (iter.hasNext()) {
+			EObject object = iter.next();
+			String className = object.eClass().getName();
+			for (ModelExtensionDescriptor med : getModelExtensions()) {
+	    		if (className.equals(med.getType())) {
+	    			med.adaptObject(object);
+	    			break;
+	    		}
+			}
+		}
 	}
 }

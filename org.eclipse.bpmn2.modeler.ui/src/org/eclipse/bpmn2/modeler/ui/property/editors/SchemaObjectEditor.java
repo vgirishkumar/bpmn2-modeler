@@ -184,7 +184,7 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 						selectionType+" is not a valid type definition.");
 			}
 			else
-				updateObject(value);
+				setValue(value);
 		}
 	}
 	
