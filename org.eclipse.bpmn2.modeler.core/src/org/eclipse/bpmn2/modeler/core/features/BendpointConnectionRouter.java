@@ -366,21 +366,31 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 */
 	protected final Direction getDirection(int index) throws Exception {
 		Point p1 = newPoints.get(index);
+		int size = newPoints.size();
 		
 		if (index==0) {
+			Point p = null;
+			Point movedBendpoint = getMovedBendpoint(ffc);
+			Point addedBendpoint = getAddedBendpoint(ffc);
+			if (movedBendpoint!=null)
+				p = movedBendpoint;
+			else if (addedBendpoint!=null)
+				p = addedBendpoint;
+			if (size>1 && p==newPoints.get(1))
+				p1 = p;
 			Anchor a = oldStart;
 			AnchorContainer source = a.getParent();
 			if (AnchorUtil.isBoundaryAnchor(a)) {
 				BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, p1);
 				switch (ba.locationType) {
 				case TOP:
-					return Direction.DOWN;
-				case BOTTOM:
 					return Direction.UP;
+				case BOTTOM:
+					return Direction.DOWN;
 				case LEFT:
-					return Direction.RIGHT;
-				case RIGHT:
 					return Direction.LEFT;
+				case RIGHT:
+					return Direction.RIGHT;
 				}
 			}
 			else {
@@ -397,7 +407,16 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			}
 		}
 		
-		if (index==newPoints.size()-1) {
+		if (index==size-1) {
+			Point p = null;
+			Point movedBendpoint = getMovedBendpoint(ffc);
+			Point addedBendpoint = getAddedBendpoint(ffc);
+			if (movedBendpoint!=null)
+				p = movedBendpoint;
+			else if (addedBendpoint!=null)
+				p = addedBendpoint;
+			if (size>2 && p==newPoints.get(size-2))
+				p1 = p;
 			Anchor a = oldEnd;
 			AnchorContainer target = a.getParent();
 			if (AnchorUtil.isBoundaryAnchor(a)) {
@@ -445,8 +464,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			else
 				return Direction.LEFT;
 		}
-		if (index>0)
-			return getDirection(index-1);
+		if (index<size-1)
+			return getDirection(index+1);
 		throw new Exception("getDirection: consecutive points are not orthogonal");
 	}
 	

@@ -44,7 +44,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Point addedBendpoint = getAddedBendpoint(ffc);
 
 		if (addedBendpoint!=null || movedBendpoint!=null) {
-			createNewPoints(newStart, newEnd, ffc.getBendpoints());
+//			createNewPoints(newStart, newEnd, ffc.getBendpoints());
+			List<Point> points = new ArrayList<Point>();
+			for (Point p : ffc.getBendpoints()) {
+				points.add(p);
+				if (p==addedBendpoint || p==movedBendpoint)
+					break;
+			}
+			createNewPoints(newStart, newEnd, points);
 		}
 		else {
 			createNewPoints(newStart, newEnd, null);
@@ -88,10 +95,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							// the second point is movable - adjust it so that it is directly above or below p1
 							p2.setX(p1.getX());
 						}
+//						else if (p2 == addedBendpoint) {
+//							p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
+//							newPoints.add(++i,p);
+//						}
 						else if (p0!=null) {
 							if (i+2==newPoints.size()) {
 								// this is the last point in the array, so if p2's direction is orthogonal
-								// to p1 we need to insert a couple of bendpoint here before the end
+								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.LEFT || d2==Direction.RIGHT){
 									p = GraphicsUtil.createPoint(m.getX(),p0.getY());
 									newPoints.add(++i,p);
@@ -126,10 +137,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							// the second point is movable - adjust it so that it is directly right or left of p1
 							p2.setY(p1.getY());
 						}
+//						else if (p2 == addedBendpoint) {
+//							p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
+//							newPoints.add(++i,p);
+//						}
 						else if (p0!=null) {
 							if (i+2==newPoints.size()) {
 								// this is the last point in the array, so if p2's direction is orthogonal
-								// to p1 we need to insert a couple of bendpoint here before the end
+								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.UP || d2==Direction.DOWN){
 									p = GraphicsUtil.createPoint(p0.getX(),m.getY());
 									newPoints.add(++i,p);
