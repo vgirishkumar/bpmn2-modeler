@@ -15,8 +15,11 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters;
 
 import java.util.Hashtable;
 
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
@@ -37,8 +40,6 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 	 */
 	public JbpmGlobalTypePropertiesAdapter(AdapterFactory adapterFactory, GlobalType object) {
 		super(adapterFactory, object);
-    	setProperty(ModelPackage.eINSTANCE.getGlobalType_Type(), UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(ModelPackage.eINSTANCE.getGlobalType_Type(), UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
     	EStructuralFeature feature = ModelPackage.eINSTANCE.getGlobalType_Identifier();
     	setFeatureDescriptor(feature,
@@ -50,6 +51,9 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
     		});	
 
     	feature = ModelPackage.eINSTANCE.getGlobalType_Type();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+    	
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
 				@Override
@@ -83,6 +87,15 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 			}
     	);
     	
+		
+		setObjectDescriptor(new ObjectDescriptor<GlobalType>(adapterFactory, object) {
+
+			@Override
+			public String getDisplayName(Object context) {
+				GlobalType object = adopt(context);
+				return object.getIdentifier();
+			}
+		});
 
 	}
 

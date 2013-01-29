@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl;
 
+import org.eclipse.bpmn2.impl.ItemAwareElementImpl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
 import org.eclipse.emf.common.notify.Notification;
@@ -31,7 +32,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  *
  * @generated
  */
-public class GlobalTypeImpl extends EObjectImpl implements GlobalType {
+public class GlobalTypeImpl extends ItemAwareElementImpl implements GlobalType {
 	/**
 	 * The default value of the '{@link #getIdentifier() <em>Identifier</em>}' attribute.
 	 * <!-- begin-user-doc -->

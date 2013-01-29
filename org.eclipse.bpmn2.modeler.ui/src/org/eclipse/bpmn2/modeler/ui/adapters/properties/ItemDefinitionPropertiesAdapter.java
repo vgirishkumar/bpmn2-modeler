@@ -42,8 +42,11 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	 */
 	public ItemDefinitionPropertiesAdapter(AdapterFactory adapterFactory, ItemDefinition object) {
 		super(adapterFactory, object);
-
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef();
+		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.TRUE);
+		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+		
+		
     	setFeatureDescriptor(ref,
 			new FeatureDescriptor<ItemDefinition>(adapterFactory,object,ref) {
 				@Override

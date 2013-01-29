@@ -33,7 +33,7 @@ public class DataOutputsListComposite extends DefaultListComposite {
 	CatchEvent catchEvent;
 	
 	public DataOutputsListComposite(Composite parent, CatchEvent catchEvent) {
-		super(parent, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|SHOW_DETAILS);
+		super(parent, DEFAULT_STYLE|EDIT_BUTTON);
 		this.catchEvent = catchEvent;
 		
 		columnProvider = new ListCompositeColumnProvider(this,true);

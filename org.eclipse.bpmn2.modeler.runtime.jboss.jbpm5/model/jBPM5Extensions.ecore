@@ -212,6 +212,15 @@
         <details key="namespace" value="##targetNamespace"/>
       </eAnnotations>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="importType" upperBound="-2"
+        eType="#//ImportType" volatile="true" transient="true" derived="true" containment="true"
+        resolveProxies="false">
+      <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
+        <details key="kind" value="element"/>
+        <details key="name" value="import"/>
+        <details key="namespace" value="##targetNamespace"/>
+      </eAnnotations>
+    </eStructuralFeatures>
     <eStructuralFeatures xsi:type="ecore:EReference" name="logNormalDistribution"
         upperBound="-2" eType="#//LogNormalDistributionType" volatile="true" transient="true"
         derived="true" containment="true" resolveProxies="false">
@@ -422,7 +431,7 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GlobalType">
+  <eClassifiers xsi:type="ecore:EClass" name="GlobalType" eSuperTypes="../../org.eclipse.bpmn2/model/BPMN20.ecore#//ItemAwareElement">
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
       <details key="name" value="global_._type"/>
       <details key="kind" value="empty"/>

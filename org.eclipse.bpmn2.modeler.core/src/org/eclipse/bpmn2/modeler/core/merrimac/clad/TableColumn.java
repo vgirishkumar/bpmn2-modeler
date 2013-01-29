@@ -26,19 +26,14 @@ import org.eclipse.emf.edit.ui.provider.PropertyDescriptor.EDataTypeCellEditor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Text;
 
 public class TableColumn extends ColumnTableProvider.Column implements ILabelProvider, ICellModifier {
 
@@ -48,7 +43,6 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	// the EStructuralFeature being managed for this table column
 	protected EStructuralFeature feature;
 	// The column cell editor
-	protected CellEditor cellEditor = null;
 	protected boolean editable = true;
 	protected String headerText = null;
 
@@ -119,50 +113,19 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	protected int getColumnIndex() {
 		return listComposite.getColumnProvider().getColumns().indexOf(this);
 	}
-	
-// NOTE: in certain cases we can't create a cell editor until we have the object
-// that the editor will be modifying - this happens very late in the cell editing
-// lifecycle in canModify() - this is where the cell editor needs to be constructed.
-//
-//	public CellEditor createCellEditor (Composite parent) {
-//		if (cellEditor==null && feature!=null) {
-//			EClassifier ec = feature.getEType();
-//			Class ic = ec.getInstanceClass();
-//			if (boolean.class.equals(ic)) {
-//				cellEditor = new CustomCheckboxCellEditor(parent);
-//			}
-//			else if (ec instanceof EEnum) {
-//				cellEditor = new ComboBoxCellEditor(parent, new String[] {""}, SWT.READ_ONLY);
-//			}
-//			else if (ModelUtil.isMultiChoice(feature.eContainer(), feature)) {
-//				cellEditor = new ComboBoxCellEditor(parent, new String[] {""});
-//			}
-//			else if (ec instanceof EDataType) {
-//				cellEditor = new EDataTypeCellEditor((EDataType)ec, parent);
-//			}
-//			else if (ic==EObject.class) {
-//				cellEditor = new StringWrapperCellEditor(parent);
-//			}
-//		}
-//		return cellEditor;
-//	}
 
 	protected Composite getParent() {
 		return tableViewer.getTable();
 	}
 	
 	protected void setCellEditor(CellEditor ce) {
-		if (cellEditor!=null) {
-			cellEditor.dispose();
-		}
-		cellEditor = ce;
-
-		// this is the only tricky part: set the cell editor in the
-		// table viewer's list
 		CellEditor[] cellEditors = tableViewer.getCellEditors();
 		int index = getColumnIndex();
 		if (index>=0 && index<cellEditors.length) {
-			cellEditors[index] = cellEditor;
+			CellEditor oldCe = cellEditors[index];
+			if (oldCe!=null && oldCe!=ce)
+				oldCe.dispose();
+			cellEditors[index] = ce;
 		}
 	}
 	
@@ -174,54 +137,41 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		}
 		return null;
 	}
-	
-	protected CellEditor createCellEditor(Object element, String property) {
-		Composite parent = tableViewer.getTable();
-		if (cellEditor==null && feature!=null) {
+
+	public CellEditor createCellEditor (Composite parent) {
+		CellEditor ce = null;
+		if (feature!=null) {
 			EClassifier ec = feature.getEType();
 			Class ic = ec.getInstanceClass();
-			CellEditor ce = null;
-			
 			if (boolean.class.equals(ic)) {
 				ce = new CustomCheckboxCellEditor(parent);
 			}
 			else if (ec instanceof EEnum) {
-				ce = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
+				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
-			else if (ModelUtil.isMultiChoice((EObject)element, feature)) {
-				ce = new CustomComboBoxCellEditor(parent, (EObject)element, feature);
+			else if (ModelUtil.isMultiChoice(feature.eContainer(), feature)) {
+				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
 			else if (ec instanceof EDataType) {
-				ce = new EDataTypeCellEditor((EDataType)ec, parent) {
-					@Override
-					protected void handleDefaultSelection(final SelectionEvent event) {
-						// FIXME: Arghhh!!! no idea what's going on here!!!
-						// when RETURN key is pressed inside a cell editor, the cell text turns
-						// blue and selecting any other cells in the same column just makes that
-						// cell turn blue - it does not re-activate the cell editor.
-						// All other keys behave normally (like TAB).
-//						super.handleDefaultSelection(event);
-					}
-					
-				};
+				ce = new EDataTypeCellEditor((EDataType)ec, parent);
 			}
 			else if (ic==EObject.class) {
 				ce = new StringWrapperCellEditor(parent);
 			}
-			setCellEditor(ce);
 		}
-
-		return cellEditor;
+		return ce;
 	}
 	
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 	}
-	
+
 	public boolean canModify(Object element, String property) {
+		// This is the only point in the cell editor lifecycle where we have access to the
+		// cell object being edited. 
 		if (editable && listComposite.getColumnProvider().canModify(object, feature, (EObject)element)) {
-			createCellEditor(element,property);
-			return cellEditor!=null;
+			CellEditor ce = getCellEditor();
+			return ce!=null;
 		}
 		return false;
 	}
@@ -231,8 +181,9 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	}
 
 	protected void modify(EObject object, EStructuralFeature feature, Object value) {
-		if (cellEditor instanceof CustomComboBoxCellEditor) {
-			value = ((CustomComboBoxCellEditor) cellEditor).getChoice(value);
+		CellEditor ce = getCellEditor();
+		if (ce instanceof CustomComboBoxCellEditor) {
+			value = ((CustomComboBoxCellEditor)ce).getChoice(value);
 		}
 		
 		boolean result = ModelUtil.setValue(getEditingDomain(), object, feature, value);
@@ -244,18 +195,19 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 //			ErrorUtils.showErrorMessage(null);
 //			tableViewer.refresh();
 //		}
-		tableViewer.refresh();
+//		tableViewer.refresh();
 	}
 	
 	@Override
 	public Object getValue(Object element, String property) {
+		CellEditor ce = getCellEditor();
 		if (element instanceof EObject) {
-			if (cellEditor instanceof CustomCheckboxCellEditor) {
-				return cellEditor.getValue();
+			if (ce instanceof CustomCheckboxCellEditor) {
+				return ce.getValue();
 			}
-			else if (cellEditor instanceof CustomComboBoxCellEditor) {
+			else if (ce instanceof CustomComboBoxCellEditor) {
 				// for combobox cell editors, the returned value is a list of strings
-				return cellEditor.getValue();
+				return ce.getValue();
 			}
 			else {
 				// all other types of cell editors accept the object/feature value
@@ -316,39 +268,51 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		}
 		
 	}
-	
+
 	public class CustomComboBoxCellEditor extends ComboBoxCellEditor {
 		
 		// list of choices as constructed by ExtendedPropertiesAdapter.FeatureDescriptor#getChoiceOfValues()
 		protected Hashtable<String,Object> choices = null;
 
-		public CustomComboBoxCellEditor(Composite parent, EObject object, EStructuralFeature feature) {
+		public CustomComboBoxCellEditor(Composite parent, EStructuralFeature feature) {
 			super(parent, new String[] {""}, SWT.READ_ONLY);
-			Object current = object.eGet(feature);
-			setValue(object, feature, current);
 		}
 		
+		public void activate(ColumnViewerEditorActivationEvent activationEvent) {
+			Object source = activationEvent.getSource();
+			if (source instanceof ViewerCell) {
+				Object element = ((ViewerCell)source).getElement();
+				if (element instanceof EObject) {
+					EObject object = (EObject)element;
+					Object current = object.eGet(feature);
+					setValue(object, feature, current);
+				}
+			}
+		}
+
 		public void setValue(EObject object, EStructuralFeature feature, Object current) {
 			
 			// build the list of valid choices for this object/feature and cache it;
 			// we'll need it again later in modify()
-			choices = null;
-			List<String> items = new ArrayList<String>();
-			choices = ModelUtil.getChoiceOfValues(object, feature);
-			items.addAll(choices.keySet());
-			this.setItems(items.toArray(new String[items.size()]));
+			if (choices == null) {
+				List<String> items = new ArrayList<String>();
+				choices = ModelUtil.getChoiceOfValues(object, feature);
+				items.addAll(choices.keySet());
+				this.setItems(items.toArray(new String[items.size()]));
+			}
 			
 			// find the index of the current value in the choices list
 			// need to handle both cases where current value matches the
 			// choices key (a String) or an EObject
+			String items[] = getItems();
 			int index = -1;
-			for (int i=0; i<items.size(); ++i) {
-				if (current == choices.get(items.get(i))) {
+			for (int i=0; i<items.length; ++i) {
+				if (current == choices.get(items[i])) {
 					index = i;
 					break;
 				}
 				if (current instanceof String) {
-					if (current.equals(items.get(i))) {
+					if (current.equals(items[i])) {
 						index = i;
 						break;
 					}
@@ -363,7 +327,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			int index = ((Integer)value).intValue();
 			if (index>=0) {
 				// look up the real value from the list of choices created by getValue()
-				String[] items = ((ComboBoxCellEditor)cellEditor).getItems();
+				String[] items = ((ComboBoxCellEditor)getCellEditor()).getItems();
 				value = choices.get(items[index]);
 			}
 			else

@@ -73,34 +73,36 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 					@Override
 					public Object[] getElements(Object inputElement) {
 						
+						Object elements[] = super.getElements(inputElement);
 						List<Property> props = null;
-						ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(object.eContainer());
+						ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(
+								JbpmIoParametersDetailComposite.this.getBusinessObject());
 						if (adapter!=null ) {
 							if (JbpmIoParametersListComposite.this.isInput)
 								props = adapter.getProperties("ioSpecification/dataInputs/name");
 							else
 								props = adapter.getProperties("ioSpecification/dataOutputs/name");
-						}
 						
-						Object elements[] = super.getElements(inputElement);
-						List<Object> filtered = new ArrayList<Object>();
-						for (Object e : elements) {
-							boolean skip = false;
-							EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name");
-							if (f!=null) {
-								Object elementName = (String) ((EObject)e).eGet(f);
-								for (Property p : props) {
-									Object propName = p.getFirstStringValue();
-									if (elementName!=null && propName!=null && elementName.equals(propName)) {
-										skip = true;
-										break;
+							List<Object> filtered = new ArrayList<Object>();
+							for (Object e : elements) {
+								boolean skip = false;
+								EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name");
+								if (f!=null) {
+									Object elementName = (String) ((EObject)e).eGet(f);
+									for (Property p : props) {
+										Object propName = p.getFirstStringValue();
+										if (elementName!=null && propName!=null && elementName.equals(propName)) {
+											skip = true;
+											break;
+										}
 									}
 								}
+								if (!skip)
+									filtered.add(e);
 							}
-							if (!skip)
-								filtered.add(e);
+							return filtered.toArray();
 						}
-						return filtered.toArray();
+						return elements;
 					}
 				};
 			}

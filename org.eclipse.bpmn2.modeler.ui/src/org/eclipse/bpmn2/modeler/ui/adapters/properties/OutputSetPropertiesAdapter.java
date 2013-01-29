@@ -38,15 +38,19 @@ public class OutputSetPropertiesAdapter extends ExtendedPropertiesAdapter<Output
 		super(adapterFactory, object);
 
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getOutputSet_DataOutputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataOutputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getOutputSet_OptionalOutputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataOutputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getOutputSet_WhileExecutingOutputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataOutputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getOutputSet_InputSetRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new InputSetFeatureDescriptor(adapterFactory,object, f));
 	}
 

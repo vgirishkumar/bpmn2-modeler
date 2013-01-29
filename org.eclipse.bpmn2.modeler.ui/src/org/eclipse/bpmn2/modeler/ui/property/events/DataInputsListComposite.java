@@ -32,7 +32,7 @@ public class DataInputsListComposite extends DefaultListComposite {
 	ThrowEvent throwEvent;
 
 	public DataInputsListComposite(Composite parent, ThrowEvent throwEvent) {
-		super(parent, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|SHOW_DETAILS);
+		super(parent, DEFAULT_STYLE|EDIT_BUTTON);
 		this.throwEvent = throwEvent;
 	
 		columnProvider = new ListCompositeColumnProvider(this,true);

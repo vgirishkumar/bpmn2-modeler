@@ -16,19 +16,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -261,8 +273,75 @@ public class ModelResourceImpl extends Bpmn2ModelerResourceImpl {
 				Interface iface = (Interface)object;
 				iface.setImplementationRef( ModelUtil.createStringWrapper(ids) );
 			}
+			else if (object instanceof DataAssociation) {
+				ItemAwareElement element = findItemAwareElement(object,ids);
+				if (element!=null) {
+					if (eReference.isMany()) {
+						EList list = (EList)object.eGet(eReference);
+						list.add(element);
+					}
+					else
+						object.eSet(eReference, element);
+				}
+				else
+					super.setValueFromId(object, eReference, ids);
+			}
 			else
 				super.setValueFromId(object, eReference, ids);
+		}
+		
+		private ItemAwareElement findItemAwareElement(EObject object, String ids) {
+			EObject container = object.eContainer();
+			do {
+				if (container instanceof Activity) {
+					Activity activity = (Activity)container;
+					for (Property p : activity.getProperties()) {
+						if (ids.equals(p.getId()))
+							return p;
+					}
+					LoopCharacteristics lc = activity.getLoopCharacteristics();
+					if (lc instanceof MultiInstanceLoopCharacteristics) {
+						MultiInstanceLoopCharacteristics mlc = (MultiInstanceLoopCharacteristics)lc;
+						if (ids.equals(mlc.getInputDataItem().getName()))
+							return mlc.getInputDataItem();
+						if (ids.equals(mlc.getOutputDataItem().getName()))
+							return mlc.getOutputDataItem();
+					}
+				}
+				else if (container instanceof Event) {
+					Event event = (Event)container;
+					for (Property p : event.getProperties()) {
+						if (ids.equals(p.getId()))
+							return p;
+					}
+				}
+				else if (container instanceof Process) {
+					Process process = (Process)container;
+					for (Property p : process.getProperties()) {
+						if (ids.equals(p.getId()))
+							return p;
+					}
+					
+					for (GlobalType g : ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class)) {
+						if (ids.equals(g.getIdentifier()))
+							return g;
+					}
+				}
+				else if (container instanceof Definitions) {
+					Definitions definitions = (Definitions)container;
+					for (DataObject d : ModelUtil.getAllRootElements(definitions, DataObject.class)) {
+						if (ids.equals(d.getId()))
+							return d;
+					}
+					for (DataStore s : ModelUtil.getAllRootElements(definitions, DataStore.class)) {
+						if (ids.equals(s.getId()))
+							return s;
+					}
+				}
+				container = container.eContainer();
+			}
+			while (container!=null);
+			return null;
 		}
     }
 } //ModelResourceImpl

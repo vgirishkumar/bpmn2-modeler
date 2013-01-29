@@ -329,13 +329,13 @@ public class AnchorUtil {
 			BoundaryAnchor ba = entry.getValue();
 			Point p = GraphicsUtil.createPoint(ba.anchor); 
 			double dist = GraphicsUtil.getLength(p1, p);
-			System.out.println("findNearestBoundaryAnchor: point="+p.getX()+","+p.getY()+" anchor="+ba.locationType+" dist="+dist);
+//			System.out.println("findNearestBoundaryAnchor: point="+p.getX()+","+p.getY()+" anchor="+ba.locationType+" dist="+dist);
 			if (dist < minDist) {
 				minDist = dist;
 				nearestBoundaryAnchor = ba;
 			}
 		}
-		System.out.println("  found="+nearestBoundaryAnchor.locationType);
+//		System.out.println("  found="+nearestBoundaryAnchor.locationType);
 		return nearestBoundaryAnchor;
 	}
 

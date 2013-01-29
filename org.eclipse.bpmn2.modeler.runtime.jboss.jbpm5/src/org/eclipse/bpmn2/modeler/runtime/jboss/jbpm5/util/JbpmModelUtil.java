@@ -126,6 +126,15 @@ public class JbpmModelUtil {
 			}
 		}
 		
+		List<ImportType> allImports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
+		for (ImportType it : allImports) {
+			if (className.equals(it.getName())) {
+				Shell shell = ModelUtil.getEditor(object).getSite().getShell();
+				MessageDialog.openWarning(shell, "Warning", "The import '"+className+"' already exists.");
+				return null;
+			}
+		}
+		
 		final Process fProcess = process;
 		final ImportType newImport = (ImportType)ModelFactory.eINSTANCE.create(ModelPackage.eINSTANCE.getImportType());
 		newImport.setName(className);
@@ -136,7 +145,7 @@ public class JbpmModelUtil {
 			protected void doExecute() {
 				
 				ModelUtil.addExtensionAttributeValue(fProcess,
-						ModelPackage.eINSTANCE.getGlobalType_Type(), newImport);
+						ModelPackage.eINSTANCE.getDocumentRoot_ImportType(), newImport);
 				
 				if (object instanceof ItemDefinition) {
 					// update the ItemDefinition passed to us...
@@ -173,7 +182,7 @@ public class JbpmModelUtil {
 						// Nope, don't need this! The ItemDefinition needs to stick around, otherwise the data types
 						// for process variables and globals would disappear. Besides, jBPM allows data types
 						// (a.k.a. ItemDefinitions) to be defined as sort of "forward references" without actual
-						// knowledge of the physicial structure of the data type - these get resolved (somehow,
+						// knowledge of the physical structure of the data type - these get resolved (somehow,
 						// through FM maybe?) at runtime.
 						// As a side note: if a type is unknown (i.e. there is no "import") then the structure
 						// will be unknown in java scripts (FormalExpressions).

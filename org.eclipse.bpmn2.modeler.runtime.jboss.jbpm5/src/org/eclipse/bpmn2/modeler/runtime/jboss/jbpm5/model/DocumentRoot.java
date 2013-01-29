@@ -33,6 +33,7 @@ import java.math.BigInteger;
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getFloatingParameter <em>Floating Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getGammaDistribution <em>Gamma Distribution</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getGlobal <em>Global</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getImportType <em>Import Type</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getLogNormalDistribution <em>Log Normal Distribution</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getMetadata <em>Metadata</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getMetaentry <em>Metaentry</em>}</li>
@@ -414,6 +415,33 @@ public interface DocumentRoot extends org.eclipse.bpmn2.DocumentRoot {
 	 * @generated
 	 */
 	void setGlobal(GlobalType value);
+
+	/**
+	 * Returns the value of the '<em><b>Import Type</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Import Type</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Import Type</em>' containment reference.
+	 * @see #setImportType(ImportType)
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage#getDocumentRoot_ImportType()
+	 * @model containment="true" upper="-2" transient="true" volatile="true" derived="true"
+	 *        extendedMetaData="kind='element' name='import' namespace='##targetNamespace'"
+	 * @generated
+	 */
+	ImportType getImportType();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getImportType <em>Import Type</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Import Type</em>' containment reference.
+	 * @see #getImportType()
+	 * @generated
+	 */
+	void setImportType(ImportType value);
 
 	/**
 	 * Returns the value of the '<em><b>Log Normal Distribution</b></em>' containment reference.

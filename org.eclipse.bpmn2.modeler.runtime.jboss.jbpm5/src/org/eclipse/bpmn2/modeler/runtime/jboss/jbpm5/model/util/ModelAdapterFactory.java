@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
@@ -275,6 +277,14 @@ public class ModelAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseBpmn2_DocumentRoot(org.eclipse.bpmn2.DocumentRoot object) {
 				return createBpmn2_DocumentRootAdapter();
+			}
+			@Override
+			public Adapter caseBaseElement(BaseElement object) {
+				return createBaseElementAdapter();
+			}
+			@Override
+			public Adapter caseItemAwareElement(ItemAwareElement object) {
+				return createItemAwareElementAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -979,6 +989,34 @@ public class ModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createBpmn2_DocumentRootAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.BaseElement <em>Base Element</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.bpmn2.BaseElement
+	 * @generated
+	 */
+	public Adapter createBaseElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.ItemAwareElement <em>Item Aware Element</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.bpmn2.ItemAwareElement
+	 * @generated
+	 */
+	public Adapter createItemAwareElementAdapter() {
 		return null;
 	}
 

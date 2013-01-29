@@ -42,7 +42,8 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	
 	public void bindList(EObject object, EStructuralFeature feature) {
 		extensionValueFeature = feature;
-		listItemClass = (EClass)feature.getEType();
+		if (feature.getEType() instanceof EClass)
+			listItemClass = (EClass)feature.getEType();
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
 		super.bindList(object,evf);
 	}

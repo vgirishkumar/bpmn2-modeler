@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model;
 
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -29,7 +30,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model extendedMetaData="name='global_._type' kind='empty'"
  * @generated
  */
-public interface GlobalType extends EObject {
+public interface GlobalType extends ItemAwareElement {
 	/**
 	 * Returns the value of the '<em><b>Identifier</b></em>' attribute.
 	 * <!-- begin-user-doc -->

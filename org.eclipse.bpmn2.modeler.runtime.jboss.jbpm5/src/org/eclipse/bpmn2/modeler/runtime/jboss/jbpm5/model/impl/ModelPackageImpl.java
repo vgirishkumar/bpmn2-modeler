@@ -801,7 +801,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_LogNormalDistribution() {
+	public EReference getDocumentRoot_ImportType() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(13);
 	}
 
@@ -810,7 +810,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_Metadata() {
+	public EReference getDocumentRoot_LogNormalDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(14);
 	}
 
@@ -819,7 +819,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_Metaentry() {
+	public EReference getDocumentRoot_Metadata() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(15);
 	}
 
@@ -828,7 +828,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_NegativeExponentialDistribution() {
+	public EReference getDocumentRoot_Metaentry() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(16);
 	}
 
@@ -837,7 +837,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_NormalDistribution() {
+	public EReference getDocumentRoot_NegativeExponentialDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(17);
 	}
 
@@ -846,7 +846,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_NumericParameter() {
+	public EReference getDocumentRoot_NormalDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(18);
 	}
 
@@ -855,7 +855,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_OnEntryScript() {
+	public EReference getDocumentRoot_NumericParameter() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(19);
 	}
 
@@ -864,7 +864,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_OnExitScript() {
+	public EReference getDocumentRoot_OnEntryScript() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(20);
 	}
 
@@ -873,7 +873,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_PoissonDistribution() {
+	public EReference getDocumentRoot_OnExitScript() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(21);
 	}
 
@@ -882,7 +882,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_ProcessAnalysisData() {
+	public EReference getDocumentRoot_PoissonDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(22);
 	}
 
@@ -891,7 +891,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_RandomDistribution() {
+	public EReference getDocumentRoot_ProcessAnalysisData() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(23);
 	}
 
@@ -900,7 +900,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_StringParameter() {
+	public EReference getDocumentRoot_RandomDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(24);
 	}
 
@@ -909,7 +909,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_TriangularDistribution() {
+	public EReference getDocumentRoot_StringParameter() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(25);
 	}
 
@@ -918,7 +918,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_TruncatedNormalDistribution() {
+	public EReference getDocumentRoot_TriangularDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(26);
 	}
 
@@ -927,7 +927,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_UniformDistribution() {
+	public EReference getDocumentRoot_TruncatedNormalDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(27);
 	}
 
@@ -936,7 +936,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_UserDistribution() {
+	public EReference getDocumentRoot_UniformDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(28);
 	}
 
@@ -945,7 +945,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_UserDistributionDataPoint() {
+	public EReference getDocumentRoot_UserDistribution() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(29);
 	}
 
@@ -954,7 +954,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_WeibullDistribution() {
+	public EReference getDocumentRoot_UserDistributionDataPoint() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(30);
 	}
 
@@ -963,8 +963,8 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDocumentRoot_PackageName() {
-		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(31);
+	public EReference getDocumentRoot_WeibullDistribution() {
+		return (EReference)documentRootEClass.getEStructuralFeatures().get(31);
 	}
 
 	/**
@@ -972,7 +972,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDocumentRoot_Priority() {
+	public EAttribute getDocumentRoot_PackageName() {
 		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(32);
 	}
 
@@ -981,7 +981,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDocumentRoot_RuleFlowGroup() {
+	public EAttribute getDocumentRoot_Priority() {
 		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(33);
 	}
 
@@ -990,7 +990,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDocumentRoot_TaskName() {
+	public EAttribute getDocumentRoot_RuleFlowGroup() {
 		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(34);
 	}
 
@@ -999,8 +999,17 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDocumentRoot_Version() {
+	public EAttribute getDocumentRoot_TaskName() {
 		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(35);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getDocumentRoot_Version() {
+		return (EAttribute)documentRootEClass.getEStructuralFeatures().get(36);
 	}
 
 	/**
@@ -2564,6 +2573,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		createEReference(documentRootEClass, DOCUMENT_ROOT__FLOATING_PARAMETER);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__GAMMA_DISTRIBUTION);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__GLOBAL);
+		createEReference(documentRootEClass, DOCUMENT_ROOT__IMPORT_TYPE);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__METADATA);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__METAENTRY);
@@ -2839,6 +2849,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		binomialDistributionTypeEClass.getESuperTypes().add(this.getDistributionParameter());
 		booleanParameterTypeEClass.getESuperTypes().add(this.getConstantParameter());
 		documentRootEClass.getESuperTypes().add(theBpmn2Package.getDocumentRoot());
+		globalTypeEClass.getESuperTypes().add(theBpmn2Package.getItemAwareElement());
 		constantParameterEClass.getESuperTypes().add(this.getParameterValue());
 		dateTimeParameterTypeEClass.getESuperTypes().add(this.getConstantParameter());
 		decimalParameterTypeEClass.getESuperTypes().add(this.getConstantParameter());
@@ -2894,6 +2905,7 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		initEReference(getDocumentRoot_FloatingParameter(), this.getFloatingParameterType(), null, "floatingParameter", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_GammaDistribution(), this.getGammaDistributionType(), null, "gammaDistribution", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_Global(), this.getGlobalType(), null, "global", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEReference(getDocumentRoot_ImportType(), this.getImportType(), null, "importType", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_LogNormalDistribution(), this.getLogNormalDistributionType(), null, "logNormalDistribution", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_Metadata(), this.getMetadataType(), null, "metadata", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_Metaentry(), this.getMetaentryType(), null, "metaentry", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
@@ -3365,6 +3377,14 @@ public class ModelPackageImpl extends EPackageImpl implements ModelPackage {
 		   new String[] {
 			 "kind", "element",
 			 "name", "global",
+			 "namespace", "##targetNamespace"
+		   });		
+		addAnnotation
+		  (getDocumentRoot_ImportType(), 
+		   source, 
+		   new String[] {
+			 "kind", "element",
+			 "name", "import",
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation

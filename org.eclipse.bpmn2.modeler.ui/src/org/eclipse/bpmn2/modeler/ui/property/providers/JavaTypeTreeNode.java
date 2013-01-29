@@ -59,7 +59,7 @@ public class JavaTypeTreeNode extends TreeNode {
 
 	@Override
 	public Object[] getChildren() {
-		List<JavaMemberTreeNode> kids = new ArrayList<JavaMemberTreeNode>();
+		List<TreeNode> kids = new ArrayList<TreeNode>();
 		try {
 			Class c = (Class)modelObject;
 			for (Field f : c.getDeclaredFields()) {
@@ -69,6 +69,10 @@ public class JavaTypeTreeNode extends TreeNode {
 			for (Method m : c.getDeclaredMethods()) {
 				if ((Modifier.PUBLIC & m.getModifiers()) != 0)
 					kids.add(new JavaMemberTreeNode(m,isCondensed));
+			}
+			for (Class ic : c.getClasses()) {
+				if ((Modifier.PUBLIC & ic.getModifiers()) != 0)
+					kids.add(new JavaTypeTreeNode(ic,isCondensed));
 			}
 		}
 		catch (Exception e) {
