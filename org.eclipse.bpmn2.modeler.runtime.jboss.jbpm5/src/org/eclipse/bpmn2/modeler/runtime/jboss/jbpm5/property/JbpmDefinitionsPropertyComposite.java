@@ -58,8 +58,6 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 						"targetNamespace",
 						"typeLanguage",
 						"expressionLanguage",
-						"exporter",
-						"exporterVersion",
 						"rootElements#ItemDefinition",
 						"imports",
 						"rootElements#Resource",
@@ -96,7 +94,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 							}
 	
 						};
-						importsTable.bindList(process, ModelPackage.eINSTANCE.getGlobalType_Type());
+						importsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_ImportType());
 						importsTable.setTitle("Imports");
 						return importsTable;
 					}

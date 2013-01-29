@@ -40,15 +40,19 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 		super(adapterFactory, object);
 
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_OptionalInputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_WhileExecutingInputRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_OutputSetRefs();
+		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setFeatureDescriptor(f, new OutputSetFeatureDescriptor(adapterFactory,object, f));
 	}
 

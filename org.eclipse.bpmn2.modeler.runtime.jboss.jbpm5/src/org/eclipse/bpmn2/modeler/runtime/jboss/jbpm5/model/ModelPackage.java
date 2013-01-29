@@ -1830,13 +1830,22 @@ public interface ModelPackage extends EPackage {
 	int DOCUMENT_ROOT__GLOBAL = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 12;
 
 	/**
+	 * The feature id for the '<em><b>Import Type</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DOCUMENT_ROOT__IMPORT_TYPE = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 13;
+
+	/**
 	 * The feature id for the '<em><b>Log Normal Distribution</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 13;
+	int DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 14;
 
 	/**
 	 * The feature id for the '<em><b>Metadata</b></em>' containment reference.
@@ -1845,7 +1854,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__METADATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 14;
+	int DOCUMENT_ROOT__METADATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 15;
 
 	/**
 	 * The feature id for the '<em><b>Metaentry</b></em>' containment reference.
@@ -1854,7 +1863,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__METAENTRY = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 15;
+	int DOCUMENT_ROOT__METAENTRY = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 16;
 
 	/**
 	 * The feature id for the '<em><b>Negative Exponential Distribution</b></em>' containment reference.
@@ -1863,7 +1872,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__NEGATIVE_EXPONENTIAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 16;
+	int DOCUMENT_ROOT__NEGATIVE_EXPONENTIAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 17;
 
 	/**
 	 * The feature id for the '<em><b>Normal Distribution</b></em>' containment reference.
@@ -1872,7 +1881,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 17;
+	int DOCUMENT_ROOT__NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 18;
 
 	/**
 	 * The feature id for the '<em><b>Numeric Parameter</b></em>' containment reference.
@@ -1881,7 +1890,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__NUMERIC_PARAMETER = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 18;
+	int DOCUMENT_ROOT__NUMERIC_PARAMETER = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 19;
 
 	/**
 	 * The feature id for the '<em><b>On Entry Script</b></em>' containment reference.
@@ -1890,7 +1899,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__ON_ENTRY_SCRIPT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 19;
+	int DOCUMENT_ROOT__ON_ENTRY_SCRIPT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 20;
 
 	/**
 	 * The feature id for the '<em><b>On Exit Script</b></em>' containment reference.
@@ -1899,7 +1908,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__ON_EXIT_SCRIPT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 20;
+	int DOCUMENT_ROOT__ON_EXIT_SCRIPT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 21;
 
 	/**
 	 * The feature id for the '<em><b>Poisson Distribution</b></em>' containment reference.
@@ -1908,7 +1917,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__POISSON_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 21;
+	int DOCUMENT_ROOT__POISSON_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 22;
 
 	/**
 	 * The feature id for the '<em><b>Process Analysis Data</b></em>' containment reference.
@@ -1917,7 +1926,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 22;
+	int DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 23;
 
 	/**
 	 * The feature id for the '<em><b>Random Distribution</b></em>' containment reference.
@@ -1926,7 +1935,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__RANDOM_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 23;
+	int DOCUMENT_ROOT__RANDOM_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 24;
 
 	/**
 	 * The feature id for the '<em><b>String Parameter</b></em>' containment reference.
@@ -1935,7 +1944,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__STRING_PARAMETER = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 24;
+	int DOCUMENT_ROOT__STRING_PARAMETER = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 25;
 
 	/**
 	 * The feature id for the '<em><b>Triangular Distribution</b></em>' containment reference.
@@ -1944,7 +1953,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__TRIANGULAR_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 25;
+	int DOCUMENT_ROOT__TRIANGULAR_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 26;
 
 	/**
 	 * The feature id for the '<em><b>Truncated Normal Distribution</b></em>' containment reference.
@@ -1953,7 +1962,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__TRUNCATED_NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 26;
+	int DOCUMENT_ROOT__TRUNCATED_NORMAL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 27;
 
 	/**
 	 * The feature id for the '<em><b>Uniform Distribution</b></em>' containment reference.
@@ -1962,7 +1971,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__UNIFORM_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 27;
+	int DOCUMENT_ROOT__UNIFORM_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 28;
 
 	/**
 	 * The feature id for the '<em><b>User Distribution</b></em>' containment reference.
@@ -1971,7 +1980,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__USER_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 28;
+	int DOCUMENT_ROOT__USER_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 29;
 
 	/**
 	 * The feature id for the '<em><b>User Distribution Data Point</b></em>' containment reference.
@@ -1980,7 +1989,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__USER_DISTRIBUTION_DATA_POINT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 29;
+	int DOCUMENT_ROOT__USER_DISTRIBUTION_DATA_POINT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 30;
 
 	/**
 	 * The feature id for the '<em><b>Weibull Distribution</b></em>' containment reference.
@@ -1989,7 +1998,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__WEIBULL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 30;
+	int DOCUMENT_ROOT__WEIBULL_DISTRIBUTION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 31;
 
 	/**
 	 * The feature id for the '<em><b>Package Name</b></em>' attribute.
@@ -1998,7 +2007,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__PACKAGE_NAME = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 31;
+	int DOCUMENT_ROOT__PACKAGE_NAME = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 32;
 
 	/**
 	 * The feature id for the '<em><b>Priority</b></em>' attribute.
@@ -2007,7 +2016,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__PRIORITY = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 32;
+	int DOCUMENT_ROOT__PRIORITY = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 33;
 
 	/**
 	 * The feature id for the '<em><b>Rule Flow Group</b></em>' attribute.
@@ -2016,7 +2025,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__RULE_FLOW_GROUP = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 33;
+	int DOCUMENT_ROOT__RULE_FLOW_GROUP = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 34;
 
 	/**
 	 * The feature id for the '<em><b>Task Name</b></em>' attribute.
@@ -2025,7 +2034,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__TASK_NAME = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 34;
+	int DOCUMENT_ROOT__TASK_NAME = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 35;
 
 	/**
 	 * The feature id for the '<em><b>Version</b></em>' attribute.
@@ -2034,7 +2043,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__VERSION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 35;
+	int DOCUMENT_ROOT__VERSION = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 36;
 
 	/**
 	 * The number of structural features of the '<em>Document Root</em>' class.
@@ -2043,7 +2052,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT_FEATURE_COUNT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 36;
+	int DOCUMENT_ROOT_FEATURE_COUNT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 37;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.GlobalTypeImpl <em>Global Type</em>}' class.
@@ -2056,13 +2065,76 @@ public interface ModelPackage extends EPackage {
 	int GLOBAL_TYPE = 5;
 
 	/**
+	 * The feature id for the '<em><b>Extension Values</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__EXTENSION_VALUES = Bpmn2Package.ITEM_AWARE_ELEMENT__EXTENSION_VALUES;
+
+	/**
+	 * The feature id for the '<em><b>Documentation</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__DOCUMENTATION = Bpmn2Package.ITEM_AWARE_ELEMENT__DOCUMENTATION;
+
+	/**
+	 * The feature id for the '<em><b>Extension Definitions</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__EXTENSION_DEFINITIONS = Bpmn2Package.ITEM_AWARE_ELEMENT__EXTENSION_DEFINITIONS;
+
+	/**
+	 * The feature id for the '<em><b>Id</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__ID = Bpmn2Package.ITEM_AWARE_ELEMENT__ID;
+
+	/**
+	 * The feature id for the '<em><b>Any Attribute</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__ANY_ATTRIBUTE = Bpmn2Package.ITEM_AWARE_ELEMENT__ANY_ATTRIBUTE;
+
+	/**
+	 * The feature id for the '<em><b>Data State</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__DATA_STATE = Bpmn2Package.ITEM_AWARE_ELEMENT__DATA_STATE;
+
+	/**
+	 * The feature id for the '<em><b>Item Subject Ref</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GLOBAL_TYPE__ITEM_SUBJECT_REF = Bpmn2Package.ITEM_AWARE_ELEMENT__ITEM_SUBJECT_REF;
+
+	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GLOBAL_TYPE__IDENTIFIER = 0;
+	int GLOBAL_TYPE__IDENTIFIER = Bpmn2Package.ITEM_AWARE_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -2071,7 +2143,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GLOBAL_TYPE__TYPE = 1;
+	int GLOBAL_TYPE__TYPE = Bpmn2Package.ITEM_AWARE_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>Global Type</em>' class.
@@ -2080,7 +2152,7 @@ public interface ModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GLOBAL_TYPE_FEATURE_COUNT = 2;
+	int GLOBAL_TYPE_FEATURE_COUNT = Bpmn2Package.ITEM_AWARE_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.ControlParametersImpl <em>Control Parameters</em>}' class.
@@ -4871,6 +4943,17 @@ public interface ModelPackage extends EPackage {
 	EReference getDocumentRoot_Global();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getImportType <em>Import Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Import Type</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getImportType()
+	 * @see #getDocumentRoot()
+	 * @generated
+	 */
+	EReference getDocumentRoot_ImportType();
+
+	/**
 	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DocumentRoot#getLogNormalDistribution <em>Log Normal Distribution</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -7161,6 +7244,14 @@ public interface ModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference DOCUMENT_ROOT__GLOBAL = eINSTANCE.getDocumentRoot_Global();
+
+		/**
+		 * The meta object literal for the '<em><b>Import Type</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DOCUMENT_ROOT__IMPORT_TYPE = eINSTANCE.getDocumentRoot_ImportType();
 
 		/**
 		 * The meta object literal for the '<em><b>Log Normal Distribution</b></em>' containment reference feature.

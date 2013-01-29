@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ExpressionParameterTy
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.FloatingParameterType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GammaDistributionType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.LogNormalDistributionType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.MetaentryType;
@@ -73,6 +74,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getFloatingParameter <em>Floating Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getGammaDistribution <em>Gamma Distribution</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getGlobal <em>Global</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getImportType <em>Import Type</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getLogNormalDistribution <em>Log Normal Distribution</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getMetadata <em>Metadata</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl.DocumentRootImpl#getMetaentry <em>Metaentry</em>}</li>
@@ -570,6 +572,33 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 */
 	public void setGlobal(GlobalType newGlobal) {
 		((FeatureMap.Internal)getMixed()).set(ModelPackage.Literals.DOCUMENT_ROOT__GLOBAL, newGlobal);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ImportType getImportType() {
+		return (ImportType)getMixed().get(ModelPackage.Literals.DOCUMENT_ROOT__IMPORT_TYPE, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetImportType(ImportType newImportType, NotificationChain msgs) {
+		return ((FeatureMap.Internal)getMixed()).basicAdd(ModelPackage.Literals.DOCUMENT_ROOT__IMPORT_TYPE, newImportType, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setImportType(ImportType newImportType) {
+		((FeatureMap.Internal)getMixed()).set(ModelPackage.Literals.DOCUMENT_ROOT__IMPORT_TYPE, newImportType);
 	}
 
 	/**
@@ -1197,6 +1226,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return basicSetGammaDistribution(null, msgs);
 			case ModelPackage.DOCUMENT_ROOT__GLOBAL:
 				return basicSetGlobal(null, msgs);
+			case ModelPackage.DOCUMENT_ROOT__IMPORT_TYPE:
+				return basicSetImportType(null, msgs);
 			case ModelPackage.DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION:
 				return basicSetLogNormalDistribution(null, msgs);
 			case ModelPackage.DOCUMENT_ROOT__METADATA:
@@ -1271,6 +1302,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getGammaDistribution();
 			case ModelPackage.DOCUMENT_ROOT__GLOBAL:
 				return getGlobal();
+			case ModelPackage.DOCUMENT_ROOT__IMPORT_TYPE:
+				return getImportType();
 			case ModelPackage.DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION:
 				return getLogNormalDistribution();
 			case ModelPackage.DOCUMENT_ROOT__METADATA:
@@ -1368,6 +1401,9 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return;
 			case ModelPackage.DOCUMENT_ROOT__GLOBAL:
 				setGlobal((GlobalType)newValue);
+				return;
+			case ModelPackage.DOCUMENT_ROOT__IMPORT_TYPE:
+				setImportType((ImportType)newValue);
 				return;
 			case ModelPackage.DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION:
 				setLogNormalDistribution((LogNormalDistributionType)newValue);
@@ -1489,6 +1525,9 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 			case ModelPackage.DOCUMENT_ROOT__GLOBAL:
 				setGlobal((GlobalType)null);
 				return;
+			case ModelPackage.DOCUMENT_ROOT__IMPORT_TYPE:
+				setImportType((ImportType)null);
+				return;
 			case ModelPackage.DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION:
 				setLogNormalDistribution((LogNormalDistributionType)null);
 				return;
@@ -1596,6 +1635,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getGammaDistribution() != null;
 			case ModelPackage.DOCUMENT_ROOT__GLOBAL:
 				return getGlobal() != null;
+			case ModelPackage.DOCUMENT_ROOT__IMPORT_TYPE:
+				return getImportType() != null;
 			case ModelPackage.DOCUMENT_ROOT__LOG_NORMAL_DISTRIBUTION:
 				return getLogNormalDistribution() != null;
 			case ModelPackage.DOCUMENT_ROOT__METADATA:

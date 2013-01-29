@@ -1346,15 +1346,14 @@ public class ModelUtil {
 		if (feature.getEType() instanceof EEnum) {
 			return true;
 		}
-		if (feature.getEType() instanceof EClass)
-		{
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
-			if (adapter!=null) {
-				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE);
-				if (result instanceof Boolean)
-					return ((Boolean)result);
-			}
+		
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		if (adapter!=null) {
+			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE);
+			if (result instanceof Boolean)
+				return ((Boolean)result);
 		}
+
 		return getChoiceOfValues(object,feature) != null;
 	}
 

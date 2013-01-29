@@ -37,7 +37,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	protected Event event;
 	
 	public EventDefinitionsListComposite(Composite parent, Event event) {
-		super(parent, ADD_BUTTON|REMOVE_BUTTON|SHOW_DETAILS);
+		super(parent, DEFAULT_STYLE);
 		this.event = event;
 	}
 

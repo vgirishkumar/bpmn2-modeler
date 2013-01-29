@@ -83,6 +83,6 @@ public class InterfaceDetailComposite extends DefaultDetailComposite {
 
 	@Override
 	public boolean needRefresh(EObject be) {
-		return true;
+		return super.needRefresh(be);
 	}
 }

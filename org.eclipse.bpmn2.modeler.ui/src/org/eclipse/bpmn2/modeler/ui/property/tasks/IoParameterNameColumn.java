@@ -24,7 +24,7 @@ public class IoParameterNameColumn extends TableColumn {
 
 	public IoParameterNameColumn(EObject o, EStructuralFeature f) {
 		super(o, f);
-		setEditable(false);
+//		setEditable(false);
 	}
 
 	@Override

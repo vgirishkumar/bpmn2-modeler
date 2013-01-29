@@ -29,6 +29,9 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.widgets.Composite;
 
 public class IoParameterMappingColumn extends TableColumn {
 
@@ -94,17 +97,36 @@ public class IoParameterMappingColumn extends TableColumn {
 			ItemAwareElement target = getTargetElement(da);
 			association = da;
 			EStructuralFeature f = getTargetFeature(source);
-			((CustomComboBoxCellEditor)cellEditor).setValue(da,f,target);
-			value = (Integer)cellEditor.getValue();
+			CellEditor ce = getCellEditor();
+			if (ce instanceof CustomComboBoxCellEditor) {
+				((CustomComboBoxCellEditor)ce).setValue(da,f,target);
+				value = (Integer)getCellEditor().getValue();
+			}
 		}
 		return value;
 	}
 	
 	@Override
-	protected CellEditor createCellEditor(Object element, String property) {
-		CellEditor ce = new CustomComboBoxCellEditor(getParent(), object, feature);
-		setCellEditor(ce);
-		return ce;
+	public CellEditor createCellEditor(Composite parent) {
+		return new CustomComboBoxCellEditor(parent, feature) {
+			
+			public void activate(ColumnViewerEditorActivationEvent activationEvent) {
+				Object activationSource = activationEvent.getSource();
+				if (activationSource instanceof ViewerCell) {
+					Object element = ((ViewerCell)activationSource).getElement();
+					if (element instanceof ItemAwareElement) {
+						ItemAwareElement source = (ItemAwareElement)element;
+						DataAssociation da = getDataAssociation(source);
+						if (da!=null) {
+							ItemAwareElement target = getTargetElement(da);
+							association = da;
+							EStructuralFeature f = getTargetFeature(source);
+							setValue(da,f,target);
+						}
+					}
+				}
+			}
+		};
 	}
 	
 	@Override

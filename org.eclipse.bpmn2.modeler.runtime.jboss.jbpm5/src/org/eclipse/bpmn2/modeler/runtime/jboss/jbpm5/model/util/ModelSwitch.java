@@ -6,12 +6,16 @@
  */
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.ItemAwareElement;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.*;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.util.Switch;
 
 /**
  * <!-- begin-user-doc -->
@@ -127,6 +131,8 @@ public class ModelSwitch<T> {
 			case ModelPackage.GLOBAL_TYPE: {
 				GlobalType globalType = (GlobalType)theEObject;
 				T result = caseGlobalType(globalType);
+				if (result == null) result = caseItemAwareElement(globalType);
+				if (result == null) result = caseBaseElement(globalType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -1163,6 +1169,36 @@ public class ModelSwitch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Base Element</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Base Element</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBaseElement(BaseElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Item Aware Element</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Item Aware Element</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseItemAwareElement(ItemAwareElement object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>EObject</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -1177,4 +1213,4 @@ public class ModelSwitch<T> {
 		return null;
 	}
 
-} //ModelSwitch
+}

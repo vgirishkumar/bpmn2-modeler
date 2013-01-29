@@ -223,7 +223,6 @@ public class AnchorUtil {
 			return new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, targetTop.anchor);
 		}
 		
-		Tuple<FixPointAnchor, FixPointAnchor> anchors = null;
 		Anchor oldStartAnchor = connection.getStart();
 		Anchor oldEndAnchor = connection.getEnd();
 
@@ -234,103 +233,14 @@ public class AnchorUtil {
 				return new Tuple<FixPointAnchor, FixPointAnchor>((FixPointAnchor)oldStartAnchor, (FixPointAnchor)oldEndAnchor);
 		}
 		
-		boolean sLower = sourceTop.location.getY() > targetBottom.location.getY();
-		boolean sHigher = sourceBottom.location.getY() < targetTop.location.getY();
-		boolean sRight = sourceLeft.location.getX() > targetRight.location.getX();
-		boolean sLeft = sourceRight.location.getX() < targetLeft.location.getX();
+		Tuple<FixPointAnchor, FixPointAnchor> anchors = new Tuple<FixPointAnchor, FixPointAnchor>(
+				findNearestBoundaryAnchor(source, GraphicsUtil.createPoint(oldStartAnchor)).anchor,
+				findNearestBoundaryAnchor(target, GraphicsUtil.createPoint(oldEndAnchor)).anchor
+		);
 
-		if (sLower) {
-			if (!sLeft && !sRight) {
-				anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, targetBottom.anchor);
-			} else if (sLeft) {
-				FixPointAnchor fromTopAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceTop.anchor));
-				FixPointAnchor fromRightAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceRight.anchor));
-
-				double topLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
-						peService.getLocationRelativeToDiagram(sourceTop.anchor));
-				double rightLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
-						peService.getLocationRelativeToDiagram(sourceRight.anchor));
-
-				if (topLength < rightLength) {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, fromTopAnchor);
-				} else {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceRight.anchor, fromRightAnchor);
-				}
-			} else {
-				FixPointAnchor fromTopAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceTop.anchor));
-				FixPointAnchor fromLeftAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceLeft.anchor));
-
-				double topLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromTopAnchor),
-						peService.getLocationRelativeToDiagram(sourceTop.anchor));
-				double leftLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
-						peService.getLocationRelativeToDiagram(sourceLeft.anchor));
-				if (topLength < leftLength) {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, fromTopAnchor);
-				} else {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceLeft.anchor, fromLeftAnchor);
-				}
-			}
-
-		}
-
-		if (sHigher) {
-			if (!sLeft && !sRight) {
-				anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceBottom.anchor, targetTop.anchor);
-			} else if (sLeft) {
-				FixPointAnchor fromBottomAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-				FixPointAnchor fromRightAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceRight.anchor));
-
-				double bottomLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
-						peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-				double rightLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromRightAnchor),
-						peService.getLocationRelativeToDiagram(sourceRight.anchor));
-
-				if (bottomLength < rightLength) {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceBottom.anchor, fromBottomAnchor);
-				} else {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceRight.anchor, fromRightAnchor);
-				}
-			} else {
-				FixPointAnchor fromBottomAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-				FixPointAnchor fromLeftAnchor = findNearestAnchor(targetBoundaryAnchors,
-						peService.getLocationRelativeToDiagram(sourceLeft.anchor));
-
-				double bottomLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromBottomAnchor),
-						peService.getLocationRelativeToDiagram(sourceBottom.anchor));
-				double leftLength = GraphicsUtil.getLength(peService.getLocationRelativeToDiagram(fromLeftAnchor),
-						peService.getLocationRelativeToDiagram(sourceLeft.anchor));
-				if (bottomLength < leftLength) {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceBottom.anchor, fromBottomAnchor);
-				} else {
-					anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceLeft.anchor, fromLeftAnchor);
-				}
-			}
-		}
-
-		// if source left is further than target right then use source left and target right
-		if (sRight) {
-			anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceLeft.anchor, targetRight.anchor);
-		}
-
-		// if source right is smaller than target left then use source right and target left
-		if (sLeft) {
-			anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceRight.anchor, targetLeft.anchor);
-		}
-
-		if (anchors == null) {
-			anchors = new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, targetTop.anchor);
-		}
-		
-		// if the source and/or target figure is a participant, the Connection should have
-		// the CONNECTION_SOURCE_LOCATION and/or CONNECTION_TARGET_LOCATION properties set - these
-		// are the locations at which the connection was started and/or terminated.
+		// if the source and/or target anchors are "Ad Hoc" anchors (e.g., the shape is a participant)
+		// the Connection should have the CONNECTION_SOURCE_LOCATION and/or CONNECTION_TARGET_LOCATION
+		// properties set - these are the locations at which the connection was started and/or terminated.
 		Point targetLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_TARGET_LOCATION));
 		Point sourceLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_SOURCE_LOCATION));
 		if (targetLoc!=null) {
@@ -427,84 +337,6 @@ public class AnchorUtil {
 		}
 //		System.out.println("  found="+nearestBoundaryAnchor.locationType);
 		return nearestBoundaryAnchor;
-	}
-
-	public static FixPointAnchor findNearestAnchor(Map<AnchorLocation, BoundaryAnchor> boundaryAnchors, ILocation loc) {
-		return findNearestAnchor(boundaryAnchors, gaService.createPoint(loc.getX(), loc.getY()));
-	}
-
-	public static FixPointAnchor findNearestAnchor(Map<AnchorLocation, BoundaryAnchor> boundaryAnchors, Point point) {
-
-		BoundaryAnchor bottom = boundaryAnchors.get(AnchorLocation.BOTTOM);
-		BoundaryAnchor top = boundaryAnchors.get(AnchorLocation.TOP);
-		BoundaryAnchor right = boundaryAnchors.get(AnchorLocation.RIGHT);
-		BoundaryAnchor left = boundaryAnchors.get(AnchorLocation.LEFT);
-
-		boolean pointLower = point.getY() > bottom.location.getY();
-		boolean pointHigher = point.getY() < top.location.getY();
-		boolean pointRight = point.getX() > right.location.getX();
-		boolean pointLeft = point.getX() < left.location.getX();
-
-		// Find the best connector.
-		if (pointLower) {
-			if (!pointLeft && !pointRight) {
-				// bendpoint is straight below the shape
-				return bottom.anchor;
-			} else if (pointLeft) {
-
-				int deltaX = left.location.getX() - point.getX();
-				int deltaY = point.getY() - bottom.location.getY();
-				if (deltaX > deltaY) {
-					return left.anchor;
-				} else {
-					return bottom.anchor;
-				}
-			} else {
-				int deltaX = point.getX() - right.location.getX();
-				int deltaY = point.getY() - bottom.location.getY();
-				if (deltaX > deltaY) {
-					return right.anchor;
-				} else {
-					return bottom.anchor;
-				}
-			}
-		}
-
-		if (pointHigher) {
-			if (!pointLeft && !pointRight) {
-				// bendpoint is straight above the shape
-				return top.anchor;
-			} else if (pointLeft) {
-				int deltaX = left.location.getX() - point.getX();
-				int deltaY = top.location.getY() - point.getY();
-				if (deltaX > deltaY) {
-					return left.anchor;
-				} else {
-					return top.anchor;
-				}
-			} else {
-				int deltaX = point.getX() - right.location.getX();
-				int deltaY = top.location.getY() - point.getY();
-				if (deltaX > deltaY) {
-					return right.anchor;
-				} else {
-					return top.anchor;
-				}
-			}
-
-		}
-
-		// if we reach here, then the point is neither above or below the shape and we only need to determine if we need
-		// to connect to the left or right part of the shape
-		if (pointRight) {
-			return right.anchor;
-		}
-
-		if (pointLeft) {
-			return left.anchor;
-		}
-
-		return top.anchor;
 	}
 
 	public static void reConnect(DiagramElement element, Diagram diagram) {

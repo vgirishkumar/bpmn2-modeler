@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection;
@@ -41,7 +42,8 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 
 	static {
 		PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
-		PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
+		PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
+		PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
 	}
 
 	@Override
@@ -76,8 +78,12 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 					
 					protected EObject createObject() throws Exception {
 						String name = JbpmModelUtil.showImportDialog(object);
-						if (name!=null)
-							return JbpmModelUtil.addImport(name, object);
+						if (name!=null) {
+							ImportType it = JbpmModelUtil.addImport(name, object);
+							if (it==null)
+								throw new Exception("Import Already Exists");
+							return it;
+						}
 						throw new Exception("Dialog Cancelled");
 					}
 				};

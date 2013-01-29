@@ -42,6 +42,7 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
     	setProperty(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Source(), UI_CAN_EDIT, Boolean.TRUE);
     	setProperty(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target(), UI_CAN_CREATE_NEW, Boolean.FALSE);
     	setProperty(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target(), UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target(), UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target();
     	setFeatureDescriptor(ref,

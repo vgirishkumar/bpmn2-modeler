@@ -35,6 +35,8 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -407,14 +409,22 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		////////////////////////////////////////////////////////////
 		// Create handlers
 		////////////////////////////////////////////////////////////
+		if ((style & SHOW_DETAILS)!=0 && (style & EDIT_BUTTON)==0) {
+			tableViewer.addDoubleClickListener( new IDoubleClickListener() {
+				@Override
+				public void doubleClick(DoubleClickEvent event) {
+					showDetails(true);
+				}
+			});
+		}
 		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				boolean enable = !event.getSelection().isEmpty();
 				if ((style & SHOW_DETAILS)!=0) {
 					if (detailSection!=null && detailSection.isVisible())
 						showDetails(true);
-					else if ((style & EDIT_BUTTON)==0)
-						showDetails(true);
+//					else if ((style & EDIT_BUTTON)==0)
+//						showDetails(true);
 				}
 				if (removeAction!=null)
 					removeAction.setEnabled(enable);
@@ -470,7 +480,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					detailSection.setText(label+" Details");
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
 					enable = detailComposite.getChildren().length>0;
-					tableSection.setExpanded(true);
+					tableSection.setExpanded(enable);
 				}
 			}
 			detailSection.setVisible(enable);
