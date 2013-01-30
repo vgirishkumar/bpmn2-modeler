@@ -49,7 +49,7 @@ public class FloatObjectEditor extends TextObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.editors.ObjectEditor#createControl(org.eclipse.swt.widgets.Composite, java.lang.String)
 	 */
 	@Override
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
 		text = getToolkit().createText(composite, "");

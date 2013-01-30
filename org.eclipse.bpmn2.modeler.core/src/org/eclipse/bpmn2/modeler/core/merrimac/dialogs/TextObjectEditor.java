@@ -48,25 +48,23 @@ public class TextObjectEditor extends ObjectEditor {
 		super(parent, object, feature);
 	}
 
-	public TextObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, int style) {
-		super(parent, object, feature, style);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.editors.ObjectEditor#createControl(org.eclipse.swt.widgets.Composite, java.lang.String)
 	 */
 	@Override
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		boolean multiLine = ((style & SWT.MULTI) != 0);
-		if (multiLine)
-			style |= SWT.V_SCROLL;
+		boolean multiLine = false;
+		if (ModelUtil.isMultiLine(object,feature)) {
+			multiLine = true;
+			style |= SWT.MULTI | SWT.V_SCROLL;
+		}
 
 		text = getToolkit().createText(composite, "", style);
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 		if (multiLine) {
-			data.heightHint = 40;
+			data.heightHint = 100;
 		}
 		text.setLayoutData(data);
 
@@ -159,9 +157,12 @@ public class TextObjectEditor extends ObjectEditor {
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		if (this.object == notification.getNotifier() &&
-				this.feature == notification.getFeature()) {
-			updateText();
+		if (this.object == notification.getNotifier()) {
+			if (notification.getFeature() instanceof EStructuralFeature) {
+				EStructuralFeature f = (EStructuralFeature)notification.getFeature();
+				if (f!=null && f.getName().equals(this.feature.getName()) )
+					updateText();
+			}
 		}
 	}
 	

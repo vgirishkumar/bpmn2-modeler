@@ -13,10 +13,14 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 
+import java.util.List;
+
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.impl.Bpmn2PackageImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -62,6 +66,28 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			}
 		}
 		return composite;
+	}
+	
+	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
+		if (feature.getEType() == PACKAGE.getDocumentation()) {
+			if (getPreferences().getSimplifyLists()) {
+				List<Documentation> docList = (List<Documentation>)object.eGet(feature);
+				Documentation documentation;
+				if (docList.size()==0) {
+					documentation = (Documentation) FACTORY.createDocumentation();
+					InsertionAdapter.add(object, feature, documentation);
+				}
+				else {
+					documentation = docList.get(0);
+				}
+				EStructuralFeature f = PACKAGE.getDocumentation_Text();
+				ModelUtil.setMultiLine(documentation, f, true);
+				TextObjectEditor documentationEditor = new TextObjectEditor(this,documentation,f);
+				documentationEditor.createControl(getAttributesParent(),"Documentation");
+				return null;
+			}
+		}
+		return super.bindList(object, feature, listItemClass);
 	}
 	
 	/**

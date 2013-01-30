@@ -1174,7 +1174,16 @@ public class ModelUtil {
 		return getLongDisplayName(object, feature);
 	}
 
-	public static boolean getIsMultiLine(EObject object, EStructuralFeature feature) {
+	public static boolean setMultiLine(EObject object, EStructuralFeature feature, boolean multiLine) {
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		if (adapter!=null) {
+			adapter.getFeatureDescriptor(feature).setMultiLine(multiLine);
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isMultiLine(EObject object, EStructuralFeature feature) {
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).isMultiLine(object);
@@ -1215,6 +1224,7 @@ public class ModelUtil {
 		
 		if (valueChanged) {
 			try {
+				InsertionAdapter.executeIfNeeded(object);
 				if (newValue instanceof EObject) {
 					// make sure the new object is added to its control first
 					// so that it inherits the control's Resource and EditingDomain

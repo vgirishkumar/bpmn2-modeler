@@ -406,10 +406,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				editor.createControl(parent,label);
 			}
 			else if (String.class.equals(eTypeClass)) {
-				int style = SWT.NONE;
-				if (ModelUtil.getIsMultiLine(object,attribute))
-					style |= SWT.MULTI;
-				ObjectEditor editor = new TextObjectEditor(this,object,attribute,style);
+				ObjectEditor editor = new TextObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 			} else if (Boolean.class.equals(eTypeClass) ||
 					boolean.class.equals(eTypeClass)

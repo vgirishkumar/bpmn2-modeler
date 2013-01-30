@@ -557,6 +557,9 @@
 			<enable object="TerminateEventDefinition"/>
 
 			<!-- data definitions -->
+			<enable object="InputOutputSpecification"/>
+			<enable object="InputSet"/>
+			<enable object="OutputSet"/>
 			<enable object="Operation"/>
 			<enable object="Interface"/>
 			<enable object="ItemDefinition"/>
@@ -597,6 +600,8 @@
 			<disable object="ParticipantAssociation"/>
 			<disable object="ParticipantMultiplicity"/>
 			
+			<enable object="Assignment"/>
+			<enable object="FormalExpression"/>
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
 		</modelEnablement>
 

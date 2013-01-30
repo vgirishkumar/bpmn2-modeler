@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
@@ -50,7 +51,7 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 		return getBusinessObjectForSelection(selection) != null;
 	}
 
-	public class DescriptionPropertyComposite extends AbstractDetailComposite {
+	public class DescriptionPropertyComposite extends DefaultDetailComposite {
 
 		StyledText descriptionText;
 		

@@ -37,11 +37,11 @@ public abstract class MultivalueObjectEditor extends ObjectEditor {
 	 * @param object
 	 * @param feature
 	 */
-	public MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+	protected MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
 	}
 	
-	public MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, EClass featureEType) {
+	protected MultivalueObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, EClass featureEType) {
 		super(parent, object, feature);
 		this.featureEType = featureEType;
 	}

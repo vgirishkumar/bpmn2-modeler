@@ -423,7 +423,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 					return getNamespacePrefix();
 				}
 			};
-			editor.createControl(composite,"Namespace Prefix",SWT.NONE);
+			editor.createControl(composite,"Namespace Prefix");
 			
 			super.createBindings(be);
 		}

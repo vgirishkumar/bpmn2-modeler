@@ -39,6 +39,11 @@ public class ScriptTaskPropertiesAdapter extends TaskPropertiesAdapter<ScriptTas
 			new FeatureDescriptor<ScriptTask>(adapterFactory,object,ref) {
     		
 	    		@Override
+				public boolean isMultiLine(Object context) {
+					return true;
+				}
+
+				@Override
 	    		public String getDisplayName(Object context) {
 	    			ScriptTask task = adopt(context);
 					if (task.getScript()==null)

@@ -55,7 +55,7 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.editors.ObjectEditor#createControl(org.eclipse.swt.widgets.Composite, java.lang.String, int)
 	 */
 	@Override
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 		super.createControl(composite, label, style);
 
 		// we assume that the "Edit" button will handle editing of this read-only text field

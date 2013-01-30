@@ -54,17 +54,23 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected ControlDecoration decoration;
 	protected int style;
 	
-	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature, int style) {
+	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
 		this.object = object;
 		this.feature = feature;
-		this.style = style;
+		this.style = SWT.NONE;
 	}
 	
-	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
-		this(parent, object, feature, SWT.NONE);
-	}
-	
+	/**
+	 * This must be implemented by the ObjectEditor subclasses and should not be made public - clients
+	 * should use one of the public createControl() methods instead so that the notifyChange listeners
+	 * are hooked in to the change notification chain.
+	 *  
+	 * @param composite - parent composite for this ObjectEditor control
+	 * @param label - a text label displayed to the left of the control
+	 * @param style - editor control SWT style flags
+	 * @return the control created by the ObjectEditor subclasses (e.g. a Text, or Combo)
+	 */
 	protected abstract Control createControl(Composite composite, String label, int style);
 	
 	public Control createControl(Composite composite, String label) {

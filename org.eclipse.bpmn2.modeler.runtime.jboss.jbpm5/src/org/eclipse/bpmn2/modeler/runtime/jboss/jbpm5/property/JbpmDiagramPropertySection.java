@@ -19,14 +19,9 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -88,12 +83,10 @@ public class JbpmDiagramPropertySection extends DefaultPropertySection {
 		public void createBindings(EObject be) {
 
 			BPMNDiagram bpmnDiagram = (BPMNDiagram)be;
-			bindAttribute(bpmnDiagram.getPlane().getBpmnElement(),"id");
-			bindAttribute(be,"name");
-
-			EAttribute documentation = (EAttribute) be.eClass().getEStructuralFeature("documentation");
-			documentationEditor = new TextObjectEditor(this,be,documentation);
-			documentationEditor.createControl(getAttributesParent(),"Documentation",SWT.MULTI);
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			bindAttribute(bpmnElement,"id");
+			bindAttribute(bpmnElement,"name");
+			bindList(bpmnElement,"documentation");
 		}
 	};
 }

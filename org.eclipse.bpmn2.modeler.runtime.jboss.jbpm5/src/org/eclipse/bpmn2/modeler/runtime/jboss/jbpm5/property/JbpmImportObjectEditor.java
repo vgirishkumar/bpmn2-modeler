@@ -28,7 +28,7 @@ public class JbpmImportObjectEditor extends TextAndButtonObjectEditor {
 	}
 	
 	@Override
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 		super.createControl(composite, label, style);
 		// the Text field should be editable
 		text.setEditable(true);

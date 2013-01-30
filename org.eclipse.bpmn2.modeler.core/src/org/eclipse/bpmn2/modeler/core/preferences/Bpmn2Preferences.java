@@ -121,6 +121,8 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public final static String PREF_SHOW_ID_ATTRIBUTE_LABEL = "Show ID attribute for BPMN2 Elements";
 	public final static String PREF_CHECK_PROJECT_NATURE = "check.project.nature";
 	public final static String PREF_CHECK_PROJECT_NATURE_LABEL = "Check if project is configured for BPMN2 Project Nature";
+	public final static String PREF_SIMPLIFY_LISTS = "simplify.lists";
+	public final static String PREF_SIMPLIFY_LISTS_LABEL = "Simplify Documentation lists";
 
 	private static Hashtable<IProject,Bpmn2Preferences> instances = null;
 	private static IProject activeProject;
@@ -144,6 +146,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	private boolean showDescriptions;
 	private boolean showIdAttribute;
 	private boolean checkProjectNature;
+	private boolean simplifyLists;
 	private BPMNDIAttributeDefault isHorizontal;
 	private BPMNDIAttributeDefault isExpanded;
 	private BPMNDIAttributeDefault isMessageVisible;
@@ -257,6 +260,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		globalPreferences.setDefault(PREF_TARGET_RUNTIME, rid);
 		globalPreferences.setDefault(PREF_SHOW_ADVANCED_PROPERTIES, false);
 		globalPreferences.setDefault(PREF_CHECK_PROJECT_NATURE, true);
+		globalPreferences.setDefault(PREF_SIMPLIFY_LISTS, true);
 		globalPreferences.setDefault(PREF_SHOW_DESCRIPTIONS, true);
 		globalPreferences.setDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.DEFAULT_TRUE.name());
 		globalPreferences.setDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
@@ -285,6 +289,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			projectPreferences.remove(PREF_SHOW_DESCRIPTIONS);
 			projectPreferences.remove(PREF_SHOW_ID_ATTRIBUTE);
 			projectPreferences.remove(PREF_CHECK_PROJECT_NATURE);
+			projectPreferences.remove(PREF_SIMPLIFY_LISTS);
 			projectPreferences.remove(PREF_IS_HORIZONTAL);
 			projectPreferences.remove(PREF_IS_EXPANDED);
 			projectPreferences.remove(PREF_IS_MESSAGE_VISIBLE);
@@ -312,6 +317,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		globalPreferences.setToDefault(PREF_SHOW_DESCRIPTIONS);
 		globalPreferences.setToDefault(PREF_SHOW_ID_ATTRIBUTE);
 		globalPreferences.setToDefault(PREF_CHECK_PROJECT_NATURE);
+		globalPreferences.setToDefault(PREF_SIMPLIFY_LISTS);
 		globalPreferences.setToDefault(PREF_IS_HORIZONTAL);
 		globalPreferences.setToDefault(PREF_IS_EXPANDED);
 		globalPreferences.setToDefault(PREF_IS_MESSAGE_VISIBLE);
@@ -388,6 +394,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
 			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
+			simplifyLists = getBoolean(PREF_SIMPLIFY_LISTS, true);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
@@ -419,6 +426,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			setBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
 			setBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
 			setBoolean(PREF_CHECK_PROJECT_NATURE, checkProjectNature);
+			setBoolean(PREF_SIMPLIFY_LISTS, simplifyLists);
 			setBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, isHorizontal);
 
 			setBPMNDIAttributeDefault(PREF_IS_EXPANDED, isExpanded);
@@ -587,6 +595,16 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public void setCheckProjectNature(boolean show) {
 		overrideGlobalBoolean(PREF_CHECK_PROJECT_NATURE, show);
 		checkProjectNature = show;
+	}
+	
+	public boolean getSimplifyLists() {
+		load();
+		return simplifyLists;
+	}
+	
+	public void setSimplifyLists(boolean simplify) {
+		overrideGlobalBoolean(PREF_SIMPLIFY_LISTS,simplify);
+		simplifyLists = simplify;
 	}
 
 	public boolean getOverrideModelEnablements() {

@@ -48,7 +48,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		super(parent, obj, feat);
 	}
 	
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 
 		// create a separate label to the LEFT of the checkbox, otherwise the grid layout will
 		// be off by one column for all other widgets that are created after this one.

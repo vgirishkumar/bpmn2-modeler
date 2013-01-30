@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -88,6 +89,13 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				@Override
 				public String[] getProperties() {
 					return properties; 
+				}
+
+				@Override
+				public String getLabel(EClass eclass) {
+					if (eclass.getName().equals("Property"))
+						return "Variables";
+					return super.getLabel(eclass);
 				}
 			};
 		}
