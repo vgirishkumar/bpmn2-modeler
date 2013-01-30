@@ -557,6 +557,9 @@
 			<enable object="TerminateEventDefinition"/>
 
 			<!-- data definitions -->
+			<enable object="InputOutputSpecification"/>
+			<enable object="InputSet"/>
+			<enable object="OutputSet"/>
 			<enable object="Operation"/>
 			<enable object="Interface"/>
 			<enable object="ItemDefinition"/>

@@ -55,6 +55,6 @@ public class ScriptTaskDetailComposite extends DefaultDetailComposite {
 		bindAttribute(be,"scriptFormat");
 //		bindAttribute(be,"script");
 		scriptEditor = new TextObjectEditor(this,be,be.eClass().getEStructuralFeature("script"));
-		scriptEditor.createControl(getAttributesParent(),"Script",SWT.MULTI);
+		scriptEditor.createControl(getAttributesParent(),"Script");
 	}
 }

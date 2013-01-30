@@ -101,6 +101,12 @@ public class Bpmn2HomePreferencePage
 				getFieldEditorParent());
 		addField(checkProjectNature);
 
+		BooleanFieldEditor simplifyLists = new BooleanFieldEditor(
+				Bpmn2Preferences.PREF_SIMPLIFY_LISTS,
+				Bpmn2Preferences.PREF_SIMPLIFY_LISTS_LABEL,
+				getFieldEditorParent());
+		addField(simplifyLists);
+
 		Group group = new Group(getFieldEditorParent(), SWT.BORDER);
 		group.setLayout(new GridLayout(3,false));
 		group.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));

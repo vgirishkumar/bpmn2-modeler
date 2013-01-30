@@ -153,10 +153,17 @@
 		</propertyExtension>
 
 		<propertyExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.GlobalType"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnEntryScript"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGlobalTypePropertiesAdapter">
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnEntryScriptType"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmOnEntryScriptPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnExitScript"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnExitScriptType"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmOnExitScriptPropertiesAdapter">
 		</propertyExtension>
 
 		<propertyExtension
@@ -178,6 +185,13 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.DataOutputAssociation"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmDataAssociationPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.GlobalType"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGlobalTypePropertiesAdapter">
 		</propertyExtension>
 		
 		<featureContainer
@@ -634,6 +648,9 @@
 			<disable object="Assignment" feature="documentation"/>
 			<disable object="Assignment" feature="extensionDefinitions"/>
 			<disable object="Assignment" feature="id"/>
+			<enable object="Association"/>
+			<disable object="Association" feature="sourceRef"/>
+			<disable object="Association" feature="targetRef"/>
 			<enable object="BaseElement"/>
 			<disable object="BaseElement" feature="documentation"/>
 			<disable object="BaseElement" feature="extensionDefinitions"/>
@@ -815,6 +832,8 @@
 			<disable object="FormalExpression" feature="extensionValues"/>
 			<disable object="FormalExpression" feature="id"/>
 			<disable object="FormalExpression" feature="mixed"/>
+			<enable object="Group"/>
+			<disable object="Group" feature="categoryValueRef"/>
 			<enable object="InclusiveGateway"/>
 			<disable object="InclusiveGateway" feature="anyAttribute"/>
 			<disable object="InclusiveGateway" feature="auditing"/>
@@ -1188,6 +1207,7 @@
 			<disable object="TerminateEventDefinition" feature="extensionDefinitions"/>
 			<disable object="TerminateEventDefinition" feature="extensionValues"/>
 			<disable object="TerminateEventDefinition" feature="id"/>
+			<enable object="TextAnnotation"/>
 			<enable object="ThrowEvent" feature="dataInputAssociation"/>
 			<enable object="TimerEventDefinition"/>
 			<disable object="TimerEventDefinition" feature="anyAttribute"/>
@@ -1218,6 +1238,7 @@
 			<disable object="UserTask" feature="renderings"/>
 			<disable object="UserTask" feature="startQuantity"/>
 			
+			<disable object="ConversationLink"/>
 			<enable object="GlobalType"/>
 			<enable object="ImportType"/>
 			<enable object="OnEntryScriptType"/>

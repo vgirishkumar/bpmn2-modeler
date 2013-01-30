@@ -84,7 +84,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.editors.ObjectEditor#createControl(org.eclipse.swt.widgets.Composite, java.lang.String, int)
 	 */
 	@Override
-	public Control createControl(Composite composite, String label, int style) {
+	protected Control createControl(Composite composite, String label, int style) {
 		if (label==null)
 			label = ModelUtil.getLabel(object,feature);
 		createLabel(composite, label);

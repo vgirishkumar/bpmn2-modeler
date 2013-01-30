@@ -64,9 +64,9 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 			}
 			
 		};
-		scriptFormatEditor.createControl(getAttributesParent(),"Script Language",SWT.NONE);
+		scriptFormatEditor.createControl(getAttributesParent(),"Script Language");
 
 		scriptEditor = new TextObjectEditor(this,be,be.eClass().getEStructuralFeature("script"));
-		scriptEditor.createControl(getAttributesParent(),"Script",SWT.MULTI);
+		scriptEditor.createControl(getAttributesParent(),"Script");
 	}
 }
