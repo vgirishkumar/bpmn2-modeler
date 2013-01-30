@@ -600,6 +600,8 @@
 			<disable object="ParticipantAssociation"/>
 			<disable object="ParticipantMultiplicity"/>
 			
+			<enable object="Assignment"/>
+			<enable object="FormalExpression"/>
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
 		</modelEnablement>
 
