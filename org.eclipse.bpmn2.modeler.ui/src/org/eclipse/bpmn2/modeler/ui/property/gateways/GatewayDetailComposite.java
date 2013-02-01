@@ -100,12 +100,12 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 	 */
 	public class SequenceFlowsListComposite extends DefaultListComposite {
 		public SequenceFlowsListComposite(AbstractBpmn2PropertySection section) {
-			super(section, SHOW_DETAILS);
+			super(section, EDIT_BUTTON|SHOW_DETAILS);
 		}
 
 		
 		public SequenceFlowsListComposite(Composite parent) {
-			super(parent, SHOW_DETAILS);
+			super(parent, EDIT_BUTTON|SHOW_DETAILS);
 		}
 
 		/* (non-Javadoc)

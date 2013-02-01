@@ -11,25 +11,25 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-
-package org.eclipse.bpmn2.modeler.ui.property.tasks;
+package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
-public class ManualTaskDetailComposite extends TaskDetailComposite {
-
-	public ManualTaskDetailComposite(Composite parent, int style) {
-		super(parent, style);
-	}
+/**
+ * @author Bob Brodt
+ *
+ */
+public class JbpmSendTaskDetailComposite extends JbpmActivityDetailComposite {
 
 	/**
 	 * @param section
 	 */
-	public ManualTaskDetailComposite(AbstractBpmn2PropertySection section) {
+	public JbpmSendTaskDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
 
+	public JbpmSendTaskDetailComposite(Composite parent, int style) {
+		super(parent, style);
+	}
 }
