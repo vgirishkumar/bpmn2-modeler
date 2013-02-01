@@ -141,6 +141,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Return the bundle ID
 	 * @return
 	 */
 	public String getID() {
