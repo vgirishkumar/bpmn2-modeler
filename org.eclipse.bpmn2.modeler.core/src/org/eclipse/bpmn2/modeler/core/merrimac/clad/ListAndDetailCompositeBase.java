@@ -197,7 +197,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	protected boolean isModelObjectEnabled(EClass eclass) {
 		if (eclass!=null)
 			return isModelObjectEnabled(eclass,null);
-		return true;
+		return false;
 	}
 
 	public TargetRuntime getTargetRuntime() {
@@ -299,10 +299,12 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 				getAllChildWidgets(parent, kids);
 				for (Notification n : notifications) {
 					for (Control c : kids) {
-						INotifyChangedListener listener = (INotifyChangedListener)c.getData(
-								IConstants.NOTIFY_CHANGE_LISTENER_KEY);
-						if (listener!=null) {
-							listener.notifyChanged(n);
+						if (!c.isDisposed()) {
+							INotifyChangedListener listener = (INotifyChangedListener)c.getData(
+									IConstants.NOTIFY_CHANGE_LISTENER_KEY);
+							if (listener!=null) {
+								listener.notifyChanged(n);
+							}
 						}
 					}
 				}

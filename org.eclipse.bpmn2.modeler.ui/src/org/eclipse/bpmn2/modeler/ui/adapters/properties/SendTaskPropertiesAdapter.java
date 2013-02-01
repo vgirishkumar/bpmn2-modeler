@@ -51,6 +51,8 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 		super(adapterFactory, object);
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getSendTask_MessageRef();
+    	this.setProperty(ref, this.UI_CAN_CREATE_NEW, Boolean.FALSE);
+
     	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,ref) {
 
     		public void setValue(Object context, final Object value) {

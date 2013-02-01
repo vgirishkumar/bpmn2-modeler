@@ -922,12 +922,14 @@ public class ModelUtil {
 			Resource resource = getResource(object);
 			if (resource!=null) {
 				EClass eClass = (EClass)feature.getEType();
-				list = new ArrayList<EObject>();
-				TreeIterator<EObject> contents = resource.getAllContents();
-				while (contents.hasNext()) {
-					Object item = contents.next();
-					if (eClass.isInstance(item)) {
-						list.add((EObject)item);
+				if (eClass != EcorePackage.eINSTANCE.getEObject()) {
+					list = new ArrayList<EObject>();
+					TreeIterator<EObject> contents = resource.getAllContents();
+					while (contents.hasNext()) {
+						Object item = contents.next();
+						if (eClass.isInstance(item)) {
+							list.add((EObject)item);
+						}
 					}
 				}
 			}
@@ -940,11 +942,13 @@ public class ModelUtil {
 		Resource resource = getResource(object);
 		if (resource!=null) {
 			list = new ArrayList<EObject>();
-			TreeIterator<EObject> contents = resource.getAllContents();
-			while (contents.hasNext()) {
-				Object item = contents.next();
-				if (eClass.isInstance(item)) {
-					list.add((EObject)item);
+			if (eClass != EcorePackage.eINSTANCE.getEObject()) {
+				TreeIterator<EObject> contents = resource.getAllContents();
+				while (contents.hasNext()) {
+					Object item = contents.next();
+					if (eClass.isInstance(item)) {
+						list.add((EObject)item);
+					}
 				}
 			}
 		}

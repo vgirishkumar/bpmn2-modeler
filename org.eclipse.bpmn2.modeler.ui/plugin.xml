@@ -160,6 +160,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
+			type="org.eclipse.bpmn2.di.BPMNDiagram"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			label="Interfaces">
 		</propertyTab>
@@ -569,6 +570,7 @@
 			<enable object="DataOutput"/>
 			<enable object="DataOutputAssociation"/>
 			<enable object="Property"/>
+			<enable object="ItemAwareElement"/>
 			<enable object="DataStore"/>
 			<enable object="DataStoreReference"/>
 			<enable object="DataObjectReference"/>

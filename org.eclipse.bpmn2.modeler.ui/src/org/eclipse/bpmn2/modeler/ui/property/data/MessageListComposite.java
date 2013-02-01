@@ -28,25 +28,17 @@ public class MessageListComposite extends DefaultListComposite {
 	}
 
 	public MessageListComposite(AbstractBpmn2PropertySection section) {
-		super(section,
-				AbstractListComposite.SHOW_DETAILS |
-				AbstractListComposite.ADD_BUTTON |
-				AbstractListComposite.MOVE_BUTTONS |
-				AbstractListComposite.DELETE_BUTTON);
+		super(section, DEFAULT_STYLE);
 	}
 
 	public MessageListComposite(Composite parent, int style) {
-		super(parent,
-				AbstractListComposite.SHOW_DETAILS |
-				AbstractListComposite.ADD_BUTTON |
-				AbstractListComposite.MOVE_BUTTONS |
-				AbstractListComposite.DELETE_BUTTON);
+		super(parent, DEFAULT_STYLE);
 	}
 	
 	@Override
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
-			columnProvider = new ListCompositeColumnProvider(this, false);
+			columnProvider = new ListCompositeColumnProvider(this);
 			columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getMessage_Name()));
 			columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getMessage_ItemRef()));
 		}

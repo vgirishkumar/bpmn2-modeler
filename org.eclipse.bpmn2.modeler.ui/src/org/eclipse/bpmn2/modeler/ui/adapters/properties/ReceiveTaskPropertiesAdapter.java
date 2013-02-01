@@ -32,8 +32,10 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -55,8 +57,11 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 		super(adapterFactory, object);
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef();
+    	this.setProperty(ref, this.UI_CAN_CREATE_NEW, Boolean.FALSE);
+    	
     	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,ref) {
     		
+    		@Override
     		public void setValue(Object context, final Object value) {
     			if (value instanceof Message || value==null) {
 	    			final ReceiveTask object = adopt(context);
@@ -80,7 +85,8 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
     	ref = Bpmn2Package.eINSTANCE.getReceiveTask_OperationRef();
     	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,ref) {
     		
-    		public void setValue(Object context, final Object value) {
+    		@Override
+   		public void setValue(Object context, final Object value) {
     			if (value instanceof Operation || value==null) {
 	    			final ReceiveTask object = adopt(context);
 	    			final Operation operation = (Operation)value; 

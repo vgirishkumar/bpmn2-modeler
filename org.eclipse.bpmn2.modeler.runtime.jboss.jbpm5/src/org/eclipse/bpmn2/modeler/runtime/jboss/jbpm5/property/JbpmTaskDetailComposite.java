@@ -189,6 +189,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				}
 				else {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
+					((TextObjectEditor)editor).setMultiLine(false);
 				}
 				editor.createControl(getAttributesParent(),name);
 			}
@@ -221,7 +222,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	public class ActorsListComposite extends DefaultListComposite {
 
 		public ActorsListComposite(Composite parent) {
-			super(parent, AbstractListComposite.READ_ONLY_STYLE);
+			super(parent, AbstractListComposite.COMPACT_STYLE);
 		}
 		
 		public EClass getListItemClass(EObject object, EStructuralFeature feature) {
@@ -231,7 +232,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 		@Override
 		public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 			if (columnProvider==null) {
-				columnProvider = new ListCompositeColumnProvider(this, true);
+				columnProvider = new ListCompositeColumnProvider(this);
 				columnProvider.add( new ActorsNameTableColumn(object) );
 			}
 			return columnProvider;

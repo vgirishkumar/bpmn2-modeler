@@ -404,7 +404,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 
 		if (mapPropertyButton==null) {
-			mapPropertyButton = toolkit.createButton(this, "Map to a Property", SWT.RADIO);
+			mapPropertyButton = toolkit.createButton(this, "Map to a Variable", SWT.RADIO);
 			mapPropertyButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 
 			mapPropertyButton.addSelectionListener(new SelectionAdapter() {
@@ -539,7 +539,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						
 					};
 					propertyDetailsComposite.setBusinessObject(association);
-					propertyDetailsComposite.setTitle("Properties");
+					propertyDetailsComposite.setTitle("Variables");
 				}
 			}
 			else {
@@ -751,7 +751,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	public class AssignmentListComposite extends DefaultListComposite {
 
 		public AssignmentListComposite(Composite parent) {
-			super(parent, ADD_BUTTON|REMOVE_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);
+			super(parent, DEFAULT_STYLE);
 		}
 		
 		@Override

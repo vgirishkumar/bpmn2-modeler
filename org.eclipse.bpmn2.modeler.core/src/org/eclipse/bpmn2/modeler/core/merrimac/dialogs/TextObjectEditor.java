@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Text;
 public class TextObjectEditor extends ObjectEditor {
 
 	protected Text text;
+	boolean multiLine = false;
+	boolean testMultiLine = true;
 	
 	/**
 	 * @param parent
@@ -55,8 +57,7 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		boolean multiLine = false;
-		if (ModelUtil.isMultiLine(object,feature)) {
+		if (testMultiLine && ModelUtil.isMultiLine(object,feature)) {
 			multiLine = true;
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
@@ -96,6 +97,11 @@ public class TextObjectEditor extends ObjectEditor {
 		return text;
 	}
 	
+	public void setMultiLine(boolean multiLine) {
+		testMultiLine = false;
+		this.multiLine = multiLine;
+
+	}
 	@Override
 	public void setObject(EObject object) {
 		super.setObject(object);

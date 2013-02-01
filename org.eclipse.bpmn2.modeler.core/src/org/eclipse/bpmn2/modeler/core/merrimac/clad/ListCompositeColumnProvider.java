@@ -20,7 +20,7 @@ public class ListCompositeColumnProvider extends ColumnTableProvider {
 	protected boolean canModify = true;
 
 	public ListCompositeColumnProvider(AbstractListComposite list) {
-		this(list,false);
+		this(list,true);
 	}
 	
 	public ListCompositeColumnProvider(AbstractListComposite list, boolean canModify) {

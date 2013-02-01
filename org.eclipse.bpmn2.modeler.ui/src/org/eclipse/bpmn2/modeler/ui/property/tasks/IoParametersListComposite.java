@@ -45,13 +45,13 @@ public class IoParametersListComposite extends DefaultListComposite {
 	protected boolean isInput;
 	
 	public IoParametersListComposite(IoParametersDetailComposite detailComposite, EObject container, InputOutputSpecification ioSpecification, EStructuralFeature ioFeature) {
-		super(detailComposite, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);
+		super(detailComposite, DEFAULT_STYLE);
 		this.ioFeature = ioFeature;
 		this.ioSpecification = ioSpecification;
 		isInput = ("dataInputs".equals(ioFeature.getName()));
 		if (container instanceof Activity) {
 			this.activity = (Activity)container;
-			columnProvider = new ListCompositeColumnProvider(this, true);
+			columnProvider = new ListCompositeColumnProvider(this);
 			EClass listItemClass = (EClass)ioFeature.getEType();
 			setListItemClass(listItemClass);
 			

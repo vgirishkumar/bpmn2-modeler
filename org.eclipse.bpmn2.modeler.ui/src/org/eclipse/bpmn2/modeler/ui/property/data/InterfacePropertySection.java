@@ -78,8 +78,8 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	
 	public class InterfaceSectionRoot extends DefaultDetailComposite {
 
-		DefinedInterfaceListComposite definedInterfacesTable;
-		ProvidedInterfaceListComposite providedInterfacesTable;
+		protected DefinedInterfaceListComposite definedInterfacesTable;
+		protected ProvidedInterfaceListComposite providedInterfacesTable;
 		
 		/**
 		 * @param parent
@@ -127,11 +127,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		 * @param style
 		 */
 		public DefinedInterfaceListComposite(Composite parent) {
-			super(parent,
-					AbstractListComposite.SHOW_DETAILS |
-					AbstractListComposite.ADD_BUTTON |
-					AbstractListComposite.MOVE_BUTTONS |
-					AbstractListComposite.DELETE_BUTTON);
+			super(parent, DELETE_STYLE);
 		}
 
 		@Override
@@ -142,7 +138,6 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		public void bindList(EObject theobject) {
 			Definitions defs = ModelUtil.getDefinitions(theobject);
 			super.bindList(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements());
-			setTitle("All Defined Interfaces");
 		}
 
 		@Override
@@ -157,7 +152,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		@Override
 		public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 			if (columnProvider==null) {
-				columnProvider = new ListCompositeColumnProvider(this, false);
+				columnProvider = new ListCompositeColumnProvider(this);
 				columnProvider.add(new TableColumn(object, Bpmn2Package.eINSTANCE.getInterface_Name()));
 				columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()));
 			}
@@ -172,12 +167,8 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		 * @param style
 		 */
 		public ProvidedInterfaceListComposite(Composite parent) {
-			super(parent,
-					// only allow details editing in DefinedInterfacesTable
-//					AbstractListComposite.SHOW_DETAILS |
-					AbstractListComposite.ADD_BUTTON |
-					AbstractListComposite.MOVE_BUTTONS |
-					AbstractListComposite.REMOVE_BUTTON);
+			// only allow details editing in DefinedInterfacesTable
+			super(parent, AbstractListComposite.READ_ONLY_STYLE);
 		}
 		
 		public void bindList(final EObject theobject, final EStructuralFeature thefeature) {

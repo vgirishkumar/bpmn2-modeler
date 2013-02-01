@@ -25,8 +25,10 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -278,8 +280,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 
-			// hack to handle QNames and arbitrary strings in structureRefs
-			if (eReference.getName().equals("structureRef") && object instanceof ItemDefinition) {
+			// hack to handle QNames and arbitrary strings in ItemDefinition structureRefs,
+			// Interface implementationRefs and Operation implementationRefs
+			if (
+					(eReference.getName().equals("structureRef") && object instanceof ItemDefinition) ||
+					(eReference.getName().equals("implementationRef") && object instanceof Interface) ||
+					(eReference.getName().equals("implementationRef") && object instanceof Operation)
+			) {
 				object.eSet(eReference, ModelUtil.createStringWrapper(ids));
 				return;
 			}

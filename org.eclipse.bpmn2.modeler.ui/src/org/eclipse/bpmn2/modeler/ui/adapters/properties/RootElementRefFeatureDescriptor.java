@@ -87,7 +87,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 		else if (value instanceof EObject) {
 			EObject rootElement = (EObject) value;
 			if (rootElement!=null)
-				choices.put(ModelUtil.getDisplayName(rootElement), rootElement);
+				choices.put(getChoiceString(rootElement), rootElement);
 		}
 		Definitions definitions = ModelUtil.getDefinitions(object);
 		if (definitions!=null) {
