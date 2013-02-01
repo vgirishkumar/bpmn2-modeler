@@ -16,6 +16,8 @@ import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.ExpressionDetailComposite;
 import org.eclipse.emf.ecore.EObject;
@@ -114,7 +116,9 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 				addRemoveConditionButton.setText("Remove Condition");
 				setDefaultFlowCheckbox.setVisible(false);
 				this.businessObject = exp;
-				super.createBindings(exp);
+				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
+				composite.setBusinessObject(exp);
+				composite.setTitle("Condition Expression");
 			}
 			else {
 				addRemoveConditionButton.setText("Add Condition");

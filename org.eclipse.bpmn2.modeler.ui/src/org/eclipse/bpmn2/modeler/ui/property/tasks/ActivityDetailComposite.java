@@ -70,20 +70,25 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
 						"anyAttribute",
+						"isForCompensation",
 						"calledElementRef", // only used in CallActivity
 						"calledChoreographyRef", // only used in CallChoreography
-						"startQuantity",
-						"completionQuantity",
-						"completionCondition",
-						"isForCompensation",
+						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask
+						"operationRef", // SendTask, ReceiveTask, ServiceTask
+						"messageRef", // SendTask, ReceiveTask
+						"isInstantiate", // ReceiveTask
+						"script", "scriptFormat", // ScriptTask
 						"triggeredByEvent",
 						"cancelRemainingInstances",
-						"loopCharacteristics",
 						"properties",
 						"resources",
 						"method",
 						"ordering",
 						"protocol",
+						"startQuantity",
+						"completionQuantity",
+						"completionCondition",
+						"loopCharacteristics",
 				};
 				
 				@Override

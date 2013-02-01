@@ -67,15 +67,15 @@
 
 		<propertyTab
 			id="bpmn2.jbpm.customTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCustomTaskPropertySection"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Custom Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.task.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskPropertySection"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			label="Task">
 		</propertyTab>
 
@@ -90,7 +90,7 @@
 			id="bpmn2.jbpm.businessRuleTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
 			class="default"
-			features="anyAttribute implementation"
+			features="anyAttribute isForCompensation implementation"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Business Rule Task">
@@ -124,6 +124,30 @@
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskPropertySection"
 	        label="Script Task"
 		    type="org.eclipse.bpmn2.ScriptTask">
+		</propertyTab>
+
+		<propertyTab
+	        id="bpmn2.jbpm.receiveTask.tab"
+	        replaceTab="org.eclipse.bpmn2.modeler.receiveTask.tab"
+		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmReceiveTaskPropertySection"
+	        label="Receive Task"
+		    type="org.eclipse.bpmn2.ReceiveTask">
+		</propertyTab>
+
+		<propertyTab
+	        id="bpmn2.jbpm.sendTask.tab"
+	        replaceTab="org.eclipse.bpmn2.modeler.sendTask.tab"
+		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskPropertySection"
+	        label="Send Task"
+		    type="org.eclipse.bpmn2.SendTask">
+		</propertyTab>
+
+		<propertyTab
+	        id="bpmn2.jbpm.manualTask.tab"
+	        replaceTab="org.eclipse.bpmn2.modeler.manualTask.tab"
+		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmManualTaskPropertySection"
+	        label="Manual Task"
+		    type="org.eclipse.bpmn2.ManualTask">
 		</propertyTab>
 
 		<propertyTab
@@ -528,8 +552,8 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="CallActivity Extensions"
 			type="CallActivity">
-			<property name="waitForCompletion" value="false"/>
-			<property name="independent" value="false"/>
+			<property name="waitForCompletion" value="false" type="EBoolean"/>
+			<property name="independent" value="false" type="EBoolean"/>
 		</modelExtension>
 
 		<modelExtension
@@ -645,7 +669,6 @@
 			<disable object="AdHocSubProcess" feature="id"/>
 			<disable object="AdHocSubProcess" feature="incoming"/>
 			<disable object="AdHocSubProcess" feature="ioSpecification"/>
-			<disable object="AdHocSubProcess" feature="isForCompensation"/>
 			<disable object="AdHocSubProcess" feature="laneSets"/>
 			<disable object="AdHocSubProcess" feature="lanes"/>
 			<disable object="AdHocSubProcess" feature="loopCharacteristics"/>
@@ -702,7 +725,6 @@
 			<disable object="BusinessRuleTask" feature="incoming"/>
 			<disable object="BusinessRuleTask" feature="incomingConversationLinks"/>
 			<disable object="BusinessRuleTask" feature="ioSpecification"/>
-			<disable object="BusinessRuleTask" feature="isForCompensation"/>
 			<disable object="BusinessRuleTask" feature="lanes"/>
 			<disable object="BusinessRuleTask" feature="loopCharacteristics"/>
 			<disable object="BusinessRuleTask" feature="monitoring"/>
@@ -721,7 +743,6 @@
 			<disable object="CallActivity" feature="extensionDefinitions"/>
 			<disable object="CallActivity" feature="id"/>
 			<disable object="CallActivity" feature="incoming"/>
-			<disable object="CallActivity" feature="isForCompensation"/>
 			<disable object="CallActivity" feature="lanes"/>
 			<disable object="CallActivity" feature="loopCharacteristics"/>
 			<disable object="CallActivity" feature="monitoring"/>
@@ -822,7 +843,6 @@
 			<disable object="ExclusiveGateway" feature="anyAttribute"/>
 			<disable object="ExclusiveGateway" feature="auditing"/>
 			<disable object="ExclusiveGateway" feature="categoryValueRef"/>
-			<disable object="ExclusiveGateway" feature="default"/>
 			<disable object="ExclusiveGateway" feature="documentation"/>
 			<disable object="ExclusiveGateway" feature="extensionDefinitions"/>
 			<disable object="ExclusiveGateway" feature="extensionValues"/>
@@ -849,7 +869,6 @@
 			<disable object="InclusiveGateway" feature="anyAttribute"/>
 			<disable object="InclusiveGateway" feature="auditing"/>
 			<disable object="InclusiveGateway" feature="categoryValueRef"/>
-			<disable object="InclusiveGateway" feature="default"/>
 			<disable object="InclusiveGateway" feature="documentation"/>
 			<disable object="InclusiveGateway" feature="extensionDefinitions"/>
 			<disable object="InclusiveGateway" feature="extensionValues"/>
@@ -932,22 +951,16 @@
 			<disable object="LinkEventDefinition" feature="source"/>
 			<disable object="LinkEventDefinition" feature="target"/>
 			<enable object="ManualTask"/>
-			<disable object="ManualTask" feature="anyAttribute"/>
 			<disable object="ManualTask" feature="auditing"/>
 			<disable object="ManualTask" feature="boundaryEventRefs"/>
 			<disable object="ManualTask" feature="categoryValueRef"/>
 			<disable object="ManualTask" feature="completionQuantity"/>
-			<disable object="ManualTask" feature="dataInputAssociations"/>
-			<disable object="ManualTask" feature="dataOutputAssociations"/>
 			<disable object="ManualTask" feature="default"/>
 			<disable object="ManualTask" feature="documentation"/>
 			<disable object="ManualTask" feature="extensionDefinitions"/>
-			<disable object="ManualTask" feature="extensionValues"/>
 			<disable object="ManualTask" feature="id"/>
 			<disable object="ManualTask" feature="incoming"/>
 			<disable object="ManualTask" feature="incomingConversationLinks"/>
-			<disable object="ManualTask" feature="ioSpecification"/>
-			<disable object="ManualTask" feature="isForCompensation"/>
 			<disable object="ManualTask" feature="lanes"/>
 			<disable object="ManualTask" feature="loopCharacteristics"/>
 			<disable object="ManualTask" feature="monitoring"/>
@@ -1042,7 +1055,6 @@
 			<disable object="ReceiveTask" feature="incoming"/>
 			<disable object="ReceiveTask" feature="incomingConversationLinks"/>
 			<disable object="ReceiveTask" feature="instantiate"/>
-			<disable object="ReceiveTask" feature="isForCompensation"/>
 			<disable object="ReceiveTask" feature="lanes"/>
 			<disable object="ReceiveTask" feature="loopCharacteristics"/>
 			<disable object="ReceiveTask" feature="monitoring"/>
@@ -1072,7 +1084,6 @@
 			<disable object="ScriptTask" feature="incoming"/>
 			<disable object="ScriptTask" feature="incomingConversationLinks"/>
 			<disable object="ScriptTask" feature="ioSpecification"/>
-			<disable object="ScriptTask" feature="isForCompensation"/>
 			<disable object="ScriptTask" feature="lanes"/>
 			<disable object="ScriptTask" feature="loopCharacteristics"/>
 			<disable object="ScriptTask" feature="monitoring"/>
@@ -1096,7 +1107,6 @@
 			<disable object="SendTask" feature="implementation"/>
 			<disable object="SendTask" feature="incoming"/>
 			<disable object="SendTask" feature="incomingConversationLinks"/>
-			<disable object="SendTask" feature="isForCompensation"/>
 			<disable object="SendTask" feature="lanes"/>
 			<disable object="SendTask" feature="loopCharacteristics"/>
 			<disable object="SendTask" feature="monitoring"/>
@@ -1129,7 +1139,6 @@
 			<disable object="ServiceTask" feature="implementation"/>
 			<disable object="ServiceTask" feature="incoming"/>
 			<disable object="ServiceTask" feature="incomingConversationLinks"/>
-			<disable object="ServiceTask" feature="isForCompensation"/>
 			<disable object="ServiceTask" feature="lanes"/>
 			<disable object="ServiceTask" feature="loopCharacteristics"/>
 			<disable object="ServiceTask" feature="monitoring"/>
@@ -1188,7 +1197,6 @@
 			<disable object="SubProcess" feature="id"/>
 			<disable object="SubProcess" feature="incoming"/>
 			<disable object="SubProcess" feature="ioSpecification"/>
-			<disable object="SubProcess" feature="isForCompensation"/>
 			<disable object="SubProcess" feature="laneSets"/>
 			<disable object="SubProcess" feature="lanes"/>
 			<disable object="SubProcess" feature="monitoring"/>
@@ -1207,7 +1215,6 @@
 			<disable object="Task" feature="id"/>
 			<disable object="Task" feature="incoming"/>
 			<disable object="Task" feature="incomingConversationLinks"/>
-			<disable object="Task" feature="isForCompensation"/>
 			<disable object="Task" feature="lanes"/>
 			<disable object="Task" feature="loopCharacteristics"/>
 			<disable object="Task" feature="monitoring"/>
@@ -1243,7 +1250,6 @@
 			<disable object="UserTask" feature="implementation"/>
 			<disable object="UserTask" feature="incoming"/>
 			<disable object="UserTask" feature="incomingConversationLinks"/>
-			<disable object="UserTask" feature="isForCompensation"/>
 			<disable object="UserTask" feature="lanes"/>
 			<disable object="UserTask" feature="loopCharacteristics"/>
 			<disable object="UserTask" feature="monitoring"/>
