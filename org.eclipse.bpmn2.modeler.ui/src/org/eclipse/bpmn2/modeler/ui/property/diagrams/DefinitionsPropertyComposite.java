@@ -140,7 +140,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 	public class NamespaceListComposite extends DefaultListComposite {
 		
 		public NamespaceListComposite(AbstractBpmn2PropertySection section) {
-			super(section, ADD_BUTTON | REMOVE_BUTTON | SHOW_DETAILS);
+			super(section, ADD_BUTTON | REMOVE_BUTTON | EDIT_BUTTON);
 		}
 
 		

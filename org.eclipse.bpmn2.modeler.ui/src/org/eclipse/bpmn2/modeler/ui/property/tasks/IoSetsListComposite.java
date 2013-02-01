@@ -58,11 +58,11 @@ public class IoSetsListComposite extends DefaultListComposite {
 	boolean isInput;
 	
 	public IoSetsListComposite(IoParametersDetailComposite detailComposite, EObject container, InputOutputSpecification ioSpecification, EStructuralFeature ioFeature) {
-		super(detailComposite, ADD_BUTTON|REMOVE_BUTTON|EDIT_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);
+		super(detailComposite, DEFAULT_STYLE);
 		this.ioFeature = ioFeature;
 		this.ioSpecification = ioSpecification;
 		
-		columnProvider = new ListCompositeColumnProvider(this, true);
+		columnProvider = new ListCompositeColumnProvider(this);
 		EClass listItemClass = (EClass)ioFeature.getEType();
 		setListItemClass(listItemClass);
 		

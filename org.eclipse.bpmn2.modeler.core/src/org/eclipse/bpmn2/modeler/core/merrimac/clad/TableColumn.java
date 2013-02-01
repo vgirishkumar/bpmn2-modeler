@@ -34,6 +34,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 public class TableColumn extends ColumnTableProvider.Column implements ILabelProvider, ICellModifier {
 
@@ -180,7 +181,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		modify((EObject)element, feature, value);
 	}
 
-	protected void modify(EObject object, EStructuralFeature feature, Object value) {
+	protected void modify(final EObject object, EStructuralFeature feature, Object value) {
 		CellEditor ce = getCellEditor();
 		if (ce instanceof CustomComboBoxCellEditor) {
 			value = ((CustomComboBoxCellEditor)ce).getChoice(value);
@@ -195,7 +196,9 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 //			ErrorUtils.showErrorMessage(null);
 //			tableViewer.refresh();
 //		}
-//		tableViewer.refresh();
+		if (result) {
+			tableViewer.refresh(object);
+		}
 	}
 	
 	@Override
@@ -294,25 +297,24 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			
 			// build the list of valid choices for this object/feature and cache it;
 			// we'll need it again later in modify()
-			if (choices == null) {
-				List<String> items = new ArrayList<String>();
-				choices = ModelUtil.getChoiceOfValues(object, feature);
-				items.addAll(choices.keySet());
-				this.setItems(items.toArray(new String[items.size()]));
-			}
+			// NOTE: This list should be rebuilt every time before we activate this
+			// cell editor since the choices may have changed.
+			List<String> items = new ArrayList<String>();
+			choices = ModelUtil.getChoiceOfValues(object, feature);
+			items.addAll(choices.keySet());
+			this.setItems(items.toArray(new String[items.size()]));
 			
 			// find the index of the current value in the choices list
 			// need to handle both cases where current value matches the
 			// choices key (a String) or an EObject
-			String items[] = getItems();
 			int index = -1;
-			for (int i=0; i<items.length; ++i) {
-				if (current == choices.get(items[i])) {
+			for (int i=0; i<items.size(); ++i) {
+				if (current == choices.get(items.get(i))) {
 					index = i;
 					break;
 				}
 				if (current instanceof String) {
-					if (current.equals(items[i])) {
+					if (current.equals(items.get(i))) {
 						index = i;
 						break;
 					}

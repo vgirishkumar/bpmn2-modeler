@@ -137,7 +137,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 							if (composite instanceof AbstractListComposite) {
 								((AbstractListComposite)composite).setTitle(
 										getPropertiesProvider().getLabel((EObject)o,feature)+
-										" for "+
+										" List for "+
 										ModelUtil.getLongDisplayName((EObject)o));
 							}
 						}

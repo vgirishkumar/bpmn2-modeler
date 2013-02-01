@@ -59,8 +59,12 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(feature);
 			if (propertyDescriptor != null)
 				label = propertyDescriptor.getDisplayName(object);
-			else
-				label = ModelUtil.toDisplayName(feature.getName());
+			else {
+				if (feature instanceof EReference)
+					label = ModelUtil.getLabel(feature.getEType());
+				else
+					label = ModelUtil.toDisplayName(feature.getName());
+			}
 		}
 		return label;
 	}

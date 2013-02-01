@@ -48,6 +48,13 @@ public class OperationRefFeatureDescriptor<T extends BaseElement> extends RootEl
 	}
 	
 	@Override
+	public String getChoiceString(Object value) {
+		Operation op = (Operation)value;
+		Interface intf = (Interface)op.eContainer();
+		return intf.getName() + "/" + op.getName();
+	}
+
+	@Override
 	public Hashtable<String, Object> getChoiceOfValues(Object context) {
 		final T object = adopt(context);
 		Hashtable<String,Object> choices = super.getChoiceOfValues(context);
@@ -55,19 +62,12 @@ public class OperationRefFeatureDescriptor<T extends BaseElement> extends RootEl
 		// collect all defined Interfaces and add their Operations to the list of available choices
 		// Whether or not the Interface is actually supported by the underlying Process is a job
 		// for validation
-		List<Interface> interfaces = new ArrayList<Interface>();
 		Definitions definitions = ModelUtil.getDefinitions(object);
-		if (definitions!=null) {
-			for (RootElement re : definitions.getRootElements()) {
-				if (re instanceof Interface) {
-					interfaces.add((Interface)re);
-				}
-			}
-		}
+		List<Interface> interfaces = ModelUtil.getAllRootElements(definitions, Interface.class);
 		
 		for (Interface intf : interfaces) {
 			for (Operation operation : intf.getOperations()) {
-				choices.put(ModelUtil.getDisplayName(operation), operation);
+				choices.put(getChoiceString(operation), operation);
 			}
 		}
 

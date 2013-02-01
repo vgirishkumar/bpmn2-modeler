@@ -43,7 +43,7 @@ public class ResourceRoleListComposite extends DefaultListComposite {
 	
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
-			columnProvider = new ListCompositeColumnProvider(this,true);
+			columnProvider = new ListCompositeColumnProvider(this);
 			columnProvider.add(new TableColumn(object, PACKAGE.getResourceRole_Name()));
 			columnProvider.add(new TableColumn(object, PACKAGE.getResourceRole_ResourceRef()));
 		}

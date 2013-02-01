@@ -90,13 +90,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				public String[] getProperties() {
 					return properties; 
 				}
-
-				@Override
-				public String getLabel(EClass eclass) {
-					if (eclass.getName().equals("Property"))
-						return "Variables";
-					return super.getLabel(eclass);
-				}
 			};
 		}
 		return propertiesProvider;

@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter.ImplementationRefFeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -49,7 +50,11 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 	 */
 	public OperationPropertiesAdapter(AdapterFactory adapterFactory, Operation object) {
 		super(adapterFactory, object);
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getOperation_InMessageRef();
+
+		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getOperation_ImplementationRef();
+    	setFeatureDescriptor(ref, new ImplementationRefFeatureDescriptor<Operation>(this, adapterFactory, object, ref));
+
+    	ref = Bpmn2Package.eINSTANCE.getOperation_InMessageRef();
     	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(adapterFactory,object,ref));
        	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
@@ -64,79 +69,79 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 				Operation operation = super.createObject(resource, context);
 				// find an Interface to which we can add this new Operation
 				// Ask user which Interface if there are more than one.
-				Definitions definitions = ModelUtil.getDefinitions(resource);
-				Interface intf = null;
-				final List<Interface> interfaces = ModelUtil.getAllRootElements(definitions, Interface.class);
-				if (interfaces.size()>1) {
-					ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
-					dialog.setContentProvider(new IStructuredContentProvider() {
-						
-						@Override
-						public void dispose() {
-						}
-			
-						@Override
-						public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-						}
-			
-						@Override
-						public Object[] getElements(Object inputElement) {
-							return interfaces.toArray();
-						}
-						
-					});
-					
-					dialog.setLabelProvider(new ILabelProvider() {
-			
-						@Override
-						public void addListener(ILabelProviderListener listener) {
-						}
-			
-						@Override
-						public void dispose() {
-						}
-			
-						@Override
-						public boolean isLabelProperty(Object element, String property) {
-							return false;
-						}
-			
-						@Override
-						public void removeListener(ILabelProviderListener listener) {
-						}
-			
-						@Override
-						public Image getImage(Object element) {
-							return null;
-						}
-			
-						@Override
-						public String getText(Object element) {
-							return ModelUtil.toDisplayName( ((Interface)element).getName() );
-						}
-						
-					});
-					
-					dialog.setTitle("Select an Interface for the new Operation");
-					dialog.setAddCancelButton(true);
-					dialog.setHelpAvailable(false);
-					dialog.setInput(new Object());
-
-					if (dialog.open()==Window.OK){
-						intf = (Interface)dialog.getResult()[0];
-					}
-					else {
-						intf = interfaces.get(0);
-					}
-				}
-				else if (interfaces.size()==1) {
-					intf = interfaces.get(0);
-				}
-				else {
-					intf = (Interface)ModelUtil.createObject(resource, Bpmn2Package.eINSTANCE.getInterface());
-					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), intf);
-				}
-				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
+//				Definitions definitions = ModelUtil.getDefinitions(resource);
+//				Interface intf = null;
+//				final List<Interface> interfaces = ModelUtil.getAllRootElements(definitions, Interface.class);
+//				if (interfaces.size()>1) {
+//					ListDialog dialog = new ListDialog(Display.getCurrent().getActiveShell());
+//					dialog.setContentProvider(new IStructuredContentProvider() {
+//						
+//						@Override
+//						public void dispose() {
+//						}
+//			
+//						@Override
+//						public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//						}
+//			
+//						@Override
+//						public Object[] getElements(Object inputElement) {
+//							return interfaces.toArray();
+//						}
+//						
+//					});
+//					
+//					dialog.setLabelProvider(new ILabelProvider() {
+//			
+//						@Override
+//						public void addListener(ILabelProviderListener listener) {
+//						}
+//			
+//						@Override
+//						public void dispose() {
+//						}
+//			
+//						@Override
+//						public boolean isLabelProperty(Object element, String property) {
+//							return false;
+//						}
+//			
+//						@Override
+//						public void removeListener(ILabelProviderListener listener) {
+//						}
+//			
+//						@Override
+//						public Image getImage(Object element) {
+//							return null;
+//						}
+//			
+//						@Override
+//						public String getText(Object element) {
+//							return ModelUtil.toDisplayName( ((Interface)element).getName() );
+//						}
+//						
+//					});
+//					
+//					dialog.setTitle("Select an Interface for the new Operation");
+//					dialog.setAddCancelButton(true);
+//					dialog.setHelpAvailable(false);
+//					dialog.setInput(new Object());
+//
+//					if (dialog.open()==Window.OK){
+//						intf = (Interface)dialog.getResult()[0];
+//					}
+//					else {
+//						intf = interfaces.get(0);
+//					}
+//				}
+//				else if (interfaces.size()==1) {
+//					intf = interfaces.get(0);
+//				}
+//				else {
+//					intf = (Interface)ModelUtil.createObject(resource, Bpmn2Package.eINSTANCE.getInterface());
+//					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), intf);
+//				}
+//				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
 				return operation;
 			}
     		

@@ -55,6 +55,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
+						"rootElements#Process.global",
 						"rootElements#Process.properties",
 						"rootElements#Process.resources",
 				};
@@ -81,9 +82,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 			for (RootElement re : definitions.getRootElements()) {
 				if (re instanceof Process) {
 					Process process = (Process)re;
-					globalsTable = new ExtensionValueListComposite(
-							this, AbstractListComposite.DEFAULT_STYLE|AbstractListComposite.EDIT_BUTTON)
-					{
+					globalsTable = new ExtensionValueListComposite(this, AbstractListComposite.DEFAULT_STYLE) {
 						
 						@Override
 						protected EObject addListItem(EObject object, EStructuralFeature feature) {
@@ -111,7 +110,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 						}
 					};
 					globalsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_Global());
-					globalsTable.setTitle("Globals for "+ModelUtil.getLongDisplayName(process));
+					globalsTable.setTitle("Global List for "+ModelUtil.getLongDisplayName(process));
 				}
 			}
 		}

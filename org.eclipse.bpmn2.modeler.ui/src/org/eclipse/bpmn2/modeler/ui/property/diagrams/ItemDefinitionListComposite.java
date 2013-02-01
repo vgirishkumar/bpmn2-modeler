@@ -41,7 +41,7 @@ public class ItemDefinitionListComposite extends DefaultListComposite {
 
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
-			columnProvider = new ListCompositeColumnProvider(this,true);
+			columnProvider = new ListCompositeColumnProvider(this);
 			EClass eclass = PACKAGE.getItemDefinition();
 			
 			columnProvider.add(object,PACKAGE.getItemDefinition_StructureRef()).setEditable(false);

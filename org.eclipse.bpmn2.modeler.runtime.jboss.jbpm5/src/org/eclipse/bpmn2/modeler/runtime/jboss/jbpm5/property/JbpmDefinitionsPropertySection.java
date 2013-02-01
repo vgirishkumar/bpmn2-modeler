@@ -108,25 +108,17 @@ public class JbpmDefinitionsPropertySection extends DefinitionsPropertySection {
 		}
 
 		public JbpmMessageListComposite(AbstractBpmn2PropertySection section) {
-			super(section,
-					AbstractListComposite.SHOW_DETAILS |
-					AbstractListComposite.ADD_BUTTON |
-					AbstractListComposite.MOVE_BUTTONS |
-					AbstractListComposite.DELETE_BUTTON);
+			super(section, DEFAULT_STYLE);
 		}
 
 		public JbpmMessageListComposite(Composite parent, int style) {
-			super(parent,
-					AbstractListComposite.SHOW_DETAILS |
-					AbstractListComposite.ADD_BUTTON |
-					AbstractListComposite.MOVE_BUTTONS |
-					AbstractListComposite.DELETE_BUTTON);
+			super(parent, DEFAULT_STYLE);
 		}
 		
 		@Override
 		public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 			if (columnProvider==null) {
-				columnProvider = new ListCompositeColumnProvider(this, false);
+				columnProvider = new ListCompositeColumnProvider(this);
 				TableColumn tc = new TableColumn(object,Bpmn2Package.eINSTANCE.getBaseElement_Id());
 				tc.setHeaderText("Name"); 
 				columnProvider.add(tc);

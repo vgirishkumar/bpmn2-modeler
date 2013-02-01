@@ -36,7 +36,7 @@ public class DataOutputsListComposite extends DefaultListComposite {
 		super(parent, DEFAULT_STYLE|EDIT_BUTTON);
 		this.catchEvent = catchEvent;
 		
-		columnProvider = new ListCompositeColumnProvider(this,true);
+		columnProvider = new ListCompositeColumnProvider(this);
 		
 		EStructuralFeature f;
 		f = PACKAGE.getDataOutput_Name();

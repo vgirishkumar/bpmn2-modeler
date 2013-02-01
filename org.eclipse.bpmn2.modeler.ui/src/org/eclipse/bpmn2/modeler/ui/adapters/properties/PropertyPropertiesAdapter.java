@@ -98,6 +98,10 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 				return fd.getChoiceString(context);
 			}
 			
+			@Override
+			public String getLabel(Object context) {
+				return "Variable";
+			}
 		});
 	}
 

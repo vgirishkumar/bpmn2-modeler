@@ -38,12 +38,12 @@ public class PropertyListComposite extends DefaultListComposite {
 	@Override
 	public void bindList(EObject theobject, EStructuralFeature thefeature) {
 		super.bindList(theobject, thefeature);
-		ModelUtil.setLabel(theobject, thefeature, "Variables");
+//		ModelUtil.setLabel(theobject, thefeature, "Variables");
 	}
 	
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
-			columnProvider = new ListCompositeColumnProvider(this,true);
+			columnProvider = new ListCompositeColumnProvider(this);
 			columnProvider.add(new TableColumn(object, PACKAGE.getProperty_Name()));
 			columnProvider.add(new TableColumn(object, PACKAGE.getItemAwareElement_ItemSubjectRef()));
 		}

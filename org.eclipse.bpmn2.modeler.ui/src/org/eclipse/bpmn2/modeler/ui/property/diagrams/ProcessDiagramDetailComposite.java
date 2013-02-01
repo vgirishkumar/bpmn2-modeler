@@ -16,15 +16,15 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
-public class ProcessDiagramPropertyComposite extends DefaultDetailComposite {
+public class ProcessDiagramDetailComposite extends DefaultDetailComposite {
 
 	private AbstractPropertiesProvider propertiesProvider;
 
-	public ProcessDiagramPropertyComposite(Composite parent, int style) {
+	public ProcessDiagramDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
 
-	public ProcessDiagramPropertyComposite(AbstractBpmn2PropertySection section) {
+	public ProcessDiagramDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
 
@@ -35,11 +35,12 @@ public class ProcessDiagramPropertyComposite extends DefaultDetailComposite {
 				String[] properties = new String[] {
 						"id", "name",
 						"anyAttribute",
-						"processType", "isExecutable", "isClosed",
-						"definitionalCollaborationRef",
-						"ioSpecification",
-						"ioBinding",
-						"properties", "laneSets", "correlationSubscriptions"};
+						"processType",
+						"isExecutable",
+						"isClosed",
+						"laneSets",
+						"correlationSubscriptions"
+				};
 				
 				@Override
 				public String[] getProperties() {

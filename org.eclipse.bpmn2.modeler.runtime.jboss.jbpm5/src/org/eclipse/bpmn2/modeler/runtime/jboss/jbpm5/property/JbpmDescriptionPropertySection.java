@@ -91,11 +91,11 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 				// create our own for Process
 				bindDescription(be);
 				
-				bindAttribute(process, "id");
 				bindAttribute(process, "name");
-				bindAttribute(process, "anyAttribute");
-				bindAttribute(process, "processType");
-				bindAttribute(process, "isExecutable");
+//				bindAttribute(process, "id");
+//				bindAttribute(process, "anyAttribute");
+//				bindAttribute(process, "isExecutable");
+				bindList(process,"documentation");
 //				bindAttribute(process, "adHoc");
 //				bindList(process, "properties"); // this has moved to JbpmDataItemsDetailComposite
 //				bindList(process, "laneSets"); // don't need this

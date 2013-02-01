@@ -35,7 +35,7 @@ public class DataInputsListComposite extends DefaultListComposite {
 		super(parent, DEFAULT_STYLE|EDIT_BUTTON);
 		this.throwEvent = throwEvent;
 	
-		columnProvider = new ListCompositeColumnProvider(this,true);
+		columnProvider = new ListCompositeColumnProvider(this);
 		
 		EStructuralFeature f;
 		f = PACKAGE.getDataInput_Name();

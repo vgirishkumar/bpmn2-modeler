@@ -32,12 +32,12 @@ public class ProcessDiagramPropertySection extends AbstractBpmn2PropertySection 
 	 */
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new ProcessDiagramPropertyComposite(this);
+		return new ProcessDiagramDetailComposite(this);
 	}
 
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
-		return new ProcessDiagramPropertyComposite(parent,style);
+		return new ProcessDiagramDetailComposite(parent,style);
 	}
 
 	@Override

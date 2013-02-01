@@ -70,8 +70,12 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	public static final int EDIT_BUTTON = 1 << 23; // show "Edit..." button
 	public static final int SHOW_DETAILS = 1 << 24; // create a "Details" section
 	public static final int DELETE_BUTTON = 1 << 25; // show "Delete" button - this uses EcoreUtil.delete() to kill the EObject
-	public static final int DEFAULT_STYLE = (
+	public static final int COMPACT_STYLE = (
 			ADD_BUTTON|REMOVE_BUTTON|MOVE_BUTTONS|SHOW_DETAILS);
+	public static final int DEFAULT_STYLE = (
+			ADD_BUTTON|REMOVE_BUTTON|MOVE_BUTTONS|EDIT_BUTTON|SHOW_DETAILS);
+	public static final int DELETE_STYLE = (
+			ADD_BUTTON|DELETE_BUTTON|MOVE_BUTTONS|EDIT_BUTTON|SHOW_DETAILS);
 	public static final int READ_ONLY_STYLE = (
 			ADD_BUTTON|REMOVE_BUTTON|MOVE_BUTTONS);
 	
@@ -409,7 +413,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		////////////////////////////////////////////////////////////
 		// Create handlers
 		////////////////////////////////////////////////////////////
-		if ((style & SHOW_DETAILS)!=0 && (style & EDIT_BUTTON)==0) {
+		if ((style & SHOW_DETAILS)!=0) { // && (style & EDIT_BUTTON)==0) {
 			tableViewer.addDoubleClickListener( new IDoubleClickListener() {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
