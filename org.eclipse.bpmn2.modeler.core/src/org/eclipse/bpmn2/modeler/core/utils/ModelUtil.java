@@ -599,7 +599,7 @@ public class ModelUtil {
 	}
 	
 	/**
-	 * @deprecated use {@link createDynamicAttribute()} instead.  
+	 * Removed "deprecated" annotation: ModelExtensionDescriptor.populateObject() needs this  
 	 */
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature addAnyAttribute(EObject childObject, String name, Object value) {
@@ -607,7 +607,7 @@ public class ModelUtil {
 	}
 	
 	/**
-	 * @deprecated use {@link createDynamicAttribute()} instead.  
+	 * Removed "deprecated" annotation: ModelExtensionDescriptor.populateObject() needs this  
 	 */
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, Object value) {
@@ -684,19 +684,21 @@ public class ModelUtil {
 		if (type==null)
 			type = "EString";
 		
-		EClassifier eClassifier = getEClassifierFromString(pkg,type);
-		if (eClassifier==null || !(eClassifier instanceof EDataType)) {
-			String message = "The model extension attribute '"+
-					name+"' for type '"+eClass.getName()+
-					"' can not be created because '"+
-					type+"' is not a known data type.";
-
-			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"Internal Error",
-					message);
-			throw new IllegalArgumentException(message);
+		EClassifier eClassifier = null;
+		if (type!=null) {
+			eClassifier = getEClassifierFromString(pkg,type);
+			if (eClassifier==null || !(eClassifier instanceof EDataType)) {
+				String message = "The model extension attribute '"+
+						name+"' for type '"+eClass.getName()+
+						"' can not be created because '"+
+						type+"' is not a known data type.";
+	
+				MessageDialog.openError(Display.getDefault().getActiveShell(),
+						"Internal Error",
+						message);
+				throw new IllegalArgumentException(message);
+			}
 		}
-
 		if (attr==null) {
 			attr = EcorePackage.eINSTANCE.getEcoreFactory().createEAttribute();
 			attr.setName(name);
@@ -707,7 +709,7 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(attr, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
-		else
+		else if (eClassifier!=null)
 			attr.setEType(eClassifier);
 		
 		// force this feature to be serialized regardless of whether its value is the default value
@@ -725,6 +727,12 @@ public class ModelUtil {
 		if (docRoot==null) {
 			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
 			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
+			if (docRoot==null) {
+				EClassifier e = pkg.getEClassifier("DocumentRoot");
+				if (e instanceof EClass) {
+					docRoot = (EClass)e;
+				}
+			}
 		}
 		if (docRoot!=null) {
 			for (EStructuralFeature f : docRoot.getEStructuralFeatures()) {
@@ -738,19 +746,21 @@ public class ModelUtil {
 			}
 		}
 
-		EClassifier eClassifier = getEClassifierFromString(pkg,type);
-		if (eClassifier==null || !(eClassifier instanceof EClass)) {
-			String message = "The model extension reference '"+
-					name+"' for object '"+object.eClass().getName()+
-					"' can not be created because '"+
-					type+"' is not a known object type.";
-
-			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"Internal Error",
-					message);
-			throw new IllegalArgumentException(message);
+		EClassifier eClassifier = null;
+		if (type!=null) {
+			eClassifier = getEClassifierFromString(pkg,type);
+			if (eClassifier==null || !(eClassifier instanceof EClass)) {
+				String message = "The model extension reference '"+
+						name+"' for object '"+object.eClass().getName()+
+						"' can not be created because '"+
+						type+"' is not a known object type.";
+	
+				MessageDialog.openError(Display.getDefault().getActiveShell(),
+						"Internal Error",
+						message);
+				throw new IllegalArgumentException(message);
+			}
 		}
-		
 		if (ref==null) {
 			ref = EcorePackage.eINSTANCE.getEcoreFactory().createEReference();
 			ref.setName(name);
@@ -761,9 +771,9 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.setNamespace(ref, pkg.getNsURI());
 			ExtendedMetaData.INSTANCE.setDocumentRoot(docRoot);
 		}
-		else
+		else if (eClassifier!=null)
 			ref.setEType(eClassifier);
-
+		
 		return ref;
 	}
 	
