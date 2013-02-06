@@ -94,7 +94,6 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatu
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.TransactionFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer.CreateCustomTaskFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ManualTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ReceiveTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ScriptTaskFeatureContainer;
@@ -102,6 +101,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.SendTaskFeatureContai
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ServiceTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.TaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.UserTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer.CreateCustomTaskFeature;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.GroupFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.TextAnnotationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.CallChoreographyFeatureContainer;

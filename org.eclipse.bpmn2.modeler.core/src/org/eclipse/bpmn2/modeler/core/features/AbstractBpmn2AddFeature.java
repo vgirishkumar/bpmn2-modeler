@@ -28,7 +28,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @param containerShape
 	 * @return
 	 */
-	protected GraphicsAlgorithmContainer getGraphicsAlgorithm(ContainerShape containerShape) {
+	protected static GraphicsAlgorithmContainer getGraphicsAlgorithm(ContainerShape containerShape) {
 		if (containerShape.getGraphicsAlgorithm() instanceof RoundedRectangle)
 			return containerShape.getGraphicsAlgorithm();
 		if (containerShape.getChildren().size()>0) {

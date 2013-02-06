@@ -231,6 +231,8 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
 				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
+				if (!container.isAvailable(featureProvider))
+					continue;
 
 				String id = tc.getId();
 				container.setId(id);

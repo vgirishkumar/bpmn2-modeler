@@ -16,18 +16,23 @@ public class JbpmTaskFeatureContainer extends TaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<Task>(fp) {
-
-			@Override
-			public PictogramElement add(IAddContext context) {
-				PictogramElement pe = super.add(context);
-				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
-				ElementParameters ep = JbpmModelUtil.getElementParameters(be);
-				getFeatureProvider().link(pe, ep);
-				return pe;
-			}
-			
-		};
+		return new JbpmAddTaskFeature(fp);
 	}
 
+	public static class JbpmAddTaskFeature extends AddTaskFeature<Task> {
+
+		public JbpmAddTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public PictogramElement add(IAddContext context) {
+			PictogramElement pe = super.add(context);
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+			ElementParameters ep = JbpmModelUtil.getElementParameters(be);
+			getFeatureProvider().link(pe, ep);
+			return pe;
+		}
+		
+	}
 }

@@ -14,8 +14,10 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -235,6 +237,11 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							ct.type = e.getAttribute("type");
 							ct.description = e.getAttribute("description");
 							ct.category = e.getAttribute("category");
+							ct.icon = e.getAttribute("icon");
+							String tabs = e.getAttribute("propertyTabs");
+							if (tabs!=null) {
+								ct.propertyTabs = tabs.split(" ");
+							}
 							ct.featureContainer = (ICustomTaskFeatureContainer) e.createExecutableExtension("featureContainer");
 							ct.featureContainer.setCustomTaskDescriptor(ct);
 							ct.featureContainer.setId(id);
@@ -356,6 +363,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			}
 			
 			currentRuntime = getDefaultRuntime();
+			
+			CustomTaskImageProvider.registerAvailableImages();
 		}
 		return targetRuntimes;
 	}
@@ -671,16 +680,26 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	public void setResource(Bpmn2Resource bpmnResource) {
 		this.bpmnResource = bpmnResource;
 		
-		// attach ModelExtensionDescriptor.Property adapters to all modelExtension objects defined in
-		// the target runtime's plugin.xml
 		TreeIterator<EObject> iter = bpmnResource.getAllContents();
 		while (iter.hasNext()) {
 			EObject object = iter.next();
 			String className = object.eClass().getName();
+			// attach ModelExtensionDescriptor.Property adapters to all <modelExtension>
+			// objects defined in the target runtime's plugin.xml
 			for (ModelExtensionDescriptor med : getModelExtensions()) {
 	    		if (className.equals(med.getType())) {
-	    			med.adaptObject(object);
+					med.adaptObject(object);
 	    			break;
+	    		}
+			}
+			// do the same thing for all <customTask> elements, but only if the object
+			// is identified by the CustomTaskFeatureContainer as a genuine "custom task"
+			for (CustomTaskDescriptor ctd : getCustomTasks()) {
+	    		if (className.equals(ctd.getType())) {
+	    			if (ctd.getFeatureContainer().getId(object)!=null) {
+	    				ctd.adaptObject(object);
+	    				break;
+	    			}
 	    		}
 			}
 		}

@@ -16,9 +16,13 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
@@ -33,7 +37,8 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		protected AbstractPropertySection sectionClass;
 		protected Class appliesToClass;
 		protected String enablesFor;
-		protected String filter;
+		protected String filterClassName;
+		protected PropertySectionFilter filter;
 		
 		public Bpmn2SectionDescriptor(Bpmn2TabDescriptor td, IConfigurationElement e) {
 			tab = td.getId();
@@ -51,9 +56,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				else {
 					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class");
 				}
-				filter = e.getAttribute("filter");
-				if (filter==null || filter.isEmpty())
-					filter = "org.eclipse.bpmn2.modeler.ui.property.Bpmn2PropertyFilter";
+				filterClassName = e.getAttribute("filter");
+				if (filterClassName==null || filterClassName.isEmpty())
+					filterClassName = "org.eclipse.bpmn2.modeler.core.runtime.PropertySectionFilter";
+				filter = (PropertySectionFilter) Class.forName(filterClassName).getConstructor(null).newInstance(null);
 				enablesFor = e.getAttribute("enablesFor");
 				String type = e.getAttribute("type");
 				if (type!=null && !type.isEmpty()) {
@@ -86,10 +92,34 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 
 		@Override
 		public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+
+			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
+			if (!filter.select(pe))
+				return false;
 			
+			DiagramEditor editor = ModelUtil.getDiagramEditor(pe);
+			if (editor!=null) {
+				TargetRuntime rt = (TargetRuntime) editor.getAdapter(TargetRuntime.class);
+				if (rt!=null) {
+					EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+					int selected = 0;
+					int count = 0;
+					for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
+						for (String s : tc.getPropertyTabs()) {
+							if (tab.equals(s)) {
+								if (tc.getFeatureContainer().getId(object)!=null)
+									++selected;
+								++count;
+							}
+						}
+					}
+					if (count>0 && selected==0)
+						return false;
+				}
+			}
+
 			// should we delegate to the section to determine whether it should be included in this tab?
 			if (sectionClass instanceof IBpmn2PropertySection) {
-				PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 				if (object==null)
 					return false;
@@ -98,7 +128,6 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			
 			// if an input description was specified, check if the selected business object is of this description. 
 			if (appliesToClass!=null) {
-				PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 				// this is a special hack to allow selection of connection decorator labels:
 				// the connection decorator does not have a business object linked to it,
 				// but its parent (the connection) does.

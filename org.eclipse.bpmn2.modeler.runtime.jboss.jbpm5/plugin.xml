@@ -68,6 +68,7 @@
 		<propertyTab
 			id="bpmn2.jbpm.customTask.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCustomTaskPropertySection"
+			replaceTab="bpmn2.jbpm.task.tab org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Custom Task">
 		</propertyTab>
@@ -76,13 +77,15 @@
 			id="bpmn2.jbpm.task.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskPropertySection"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.userTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.userTask.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
+			replaceTab="org.eclipse.bpmn2.modeler.userTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="User Task">
 		</propertyTab>
 

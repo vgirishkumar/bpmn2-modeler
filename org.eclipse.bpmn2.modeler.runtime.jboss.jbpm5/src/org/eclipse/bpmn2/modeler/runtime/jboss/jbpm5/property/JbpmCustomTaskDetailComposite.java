@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.swt.widgets.Composite;
 
-public class JbpmCustomTaskDetailComposite extends JbpmActivityDetailComposite {
+public class JbpmCustomTaskDetailComposite extends JbpmTaskDetailComposite {
 
 	public JbpmCustomTaskDetailComposite(Composite parent, int style) {
 		super(parent, style);

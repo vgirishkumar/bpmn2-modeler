@@ -21,7 +21,7 @@ public class JBPM5ImageProvider extends AbstractImageProvider {
 
 	/* This method publishes needed protected method 'addImageFilePath' */
 	public void addImageFilePathLazy(String imageId, String imageFilePath){
-	    /** Check if its not already registered */
+	    /** Check if its not already registered **/
 	    if(getImageFilePath( imageId ) == null){
 	        addImageFilePath( imageId, imageFilePath );
 	    }

@@ -304,6 +304,20 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="propertyTabs" type="string">
+            <annotation>
+               <documentation>
+                  The Property Tabs to be displayed when one of these Custom Tasks is selected. This can be a space-separated list of Property Tab IDs.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  An image that is associated with this Custom Task in the Toolpalette. The string value represents a plugin-relative path to an image file.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

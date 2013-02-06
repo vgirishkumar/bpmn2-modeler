@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.custom.StyledText;
@@ -114,7 +115,11 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
-				description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
+				// if this is a Custom Task, use the description provided by the <customTask> extension
+				if (ModelExtensionDescriptor.getModelExtensionAdapter(object) != null)
+					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION);
+				if (description==null)
+					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
 			}
 			return description;
 		}

@@ -449,8 +449,8 @@ public class JbpmModelUtil {
 				controlParams.setProbability( createParameter(100.0) );
 				elementParams.setControlParameters(controlParams);
 			}
+			scenario.getElementParameters().add(elementParams);
 		}
-		scenario.getElementParameters().add(elementParams);
 		
 		return elementParams;
 	}

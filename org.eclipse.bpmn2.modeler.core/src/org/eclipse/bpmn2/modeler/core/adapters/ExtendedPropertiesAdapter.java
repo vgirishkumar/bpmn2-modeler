@@ -32,6 +32,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 
 	// common property keys
 	public final static String LONG_DESCRIPTION = "long.description";
+	public final static String CUSTOM_DESCRIPTION = "custom.description";
 	public final static String UI_CAN_EDIT = "ui.can.edit";
 	// Any adapter that uses this must override setValue() which understands
 	// how to convert a String to the required type.

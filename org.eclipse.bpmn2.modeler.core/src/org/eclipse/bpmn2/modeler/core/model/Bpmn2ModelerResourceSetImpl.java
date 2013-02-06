@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
@@ -252,6 +255,28 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 				protected Map<?, ?> getContentDescriptionOptions() {
 					return getLoadOptions();
 				}
+				
+				@Override
+				public Resource.Factory getFactory(URI uri, String contentType) {
+					Resource.Factory factory = convert(getFactory(uri, protocolToFactoryMap,
+							extensionToFactoryMap,
+							contentTypeIdentifierToFactoryMap, contentType,
+							true));
+					if (factory instanceof Bpmn2ModelerResourceFactoryImpl && uri.isPlatformResource()) {
+						try {
+							// check if an extension model has been defined by the target runtime.
+							String name = uri.segment(1);
+							IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+							Bpmn2Preferences pref = Bpmn2Preferences.getInstance(project);
+							TargetRuntime rt = pref.getRuntime();
+							factory = rt.getModelDescriptor().getResourceFactory();
+						}
+						catch (Exception e) {
+						}
+					}
+					return factory;
+				}
+
 			};
 		}
 		return resourceFactoryRegistry;
