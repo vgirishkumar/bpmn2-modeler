@@ -10,22 +10,20 @@
  *
  * @author Innar Made
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.property;
+package org.eclipse.bpmn2.modeler.core.runtime;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.di.impl.BPMNDiagramImpl;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 
-public class Bpmn2PropertyFilter extends AbstractPropertySectionFilter {
+public class PropertySectionFilter extends AbstractPropertySectionFilter {
 
 	@Override
 	protected boolean accept(PictogramElement pe) {
-		EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-		boolean enabled = eObject instanceof BaseElement || eObject instanceof BPMNDiagramImpl;
-		return enabled;
+		EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+		return object instanceof BaseElement || object  instanceof BPMNDiagram;
 	}
-
 }

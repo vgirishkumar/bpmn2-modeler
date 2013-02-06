@@ -13,10 +13,12 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.impl.Bpmn2PackageImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
@@ -28,6 +30,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -128,7 +131,20 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			if (eclass!=null) {
 				Object value = be.eGet(feature);
 				if (value instanceof EList) {
+					List<Object> values = new ArrayList<Object>();
 					for (Object o : (EList)value) {
+						if (o instanceof ExtensionAttributeValue) {
+							ExtensionAttributeValue eav = (ExtensionAttributeValue)o;
+							for (Entry e : eav.getValue()) {
+								values.add(e.getValue());
+							}
+						}
+						else {
+							values.add(o);
+						}
+					}
+					
+					for (Object o : values) {
 						if (eclass.isInstance(o)) {
 							propArray = property.split("[\\.#]");
 							featureName = propArray[0];

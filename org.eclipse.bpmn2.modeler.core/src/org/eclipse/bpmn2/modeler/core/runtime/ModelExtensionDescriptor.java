@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -328,7 +330,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		if (modelObject==null)
 			modelObject = object;
 		populateObject(object, getProperties(), all);
-		addModelExtensionAdapter(object);
+		adaptObject(object);
 	}
 	
 	/**
@@ -342,17 +344,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		for (Property prop : properties) {
 			populateObject(object,prop, all);
 		}
-	}
-	
-	protected EPackage getEPackage(EStructuralFeature feature) {
-		EObject o = feature;
-		while ( o.eContainer()!=null ) {
-			o = o.eContainer();
-			if (o instanceof EPackage) {
-				return (EPackage)o;
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -378,7 +369,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				try {
 					// TODO: figure out why feature.eClass().getEPackage().getEFactoryInstance() doesn't
 					// return the correct factory!
-					EFactory factory = getEPackage(feature).getEFactoryInstance();
+					EFactory factory = ModelUtil.getEPackage(feature).getEFactoryInstance();
 					value = factory.createFromString(eDataType, (String)value);
 				}
 				catch (Exception e)
@@ -387,6 +378,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 					value = factory.createFromString(eDataType, (String)value);
 				}
 			}
+
 			if (object.eClass().getEStructuralFeature(feature.getName())!=null) {
 				// this feature exists for this object, so we can set it directly
 				// but only if it's not already set.
@@ -406,12 +398,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 					if (f!=null) {
 						if (object.eGet(f)!=null)
 							return;
-						if (!object.eIsSet(feature) || force) {
-							object.eSet(feature, value);
-						}
 					}
-					else {
-						ModelUtil.addAnyAttribute(object, feature.getEType().getEPackage().getNsURI(), property.name, value);
+					if (!object.eIsSet(feature) || force) {
+						object.eSet(feature, value);
 					}
 				}
 			}
@@ -603,6 +592,12 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		if (modelObject==null)
 			modelObject = object;
 		addModelExtensionAdapter(object);
+		if (description!=null && !description.isEmpty()) {
+			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+			if (adapter!=null) {
+				adapter.setProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION, description);
+			}
+		}
 	}
 	
 	private void addModelExtensionAdapter(EObject object) {

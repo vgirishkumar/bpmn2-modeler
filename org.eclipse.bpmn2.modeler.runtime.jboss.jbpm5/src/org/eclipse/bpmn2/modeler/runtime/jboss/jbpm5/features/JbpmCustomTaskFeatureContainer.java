@@ -36,6 +36,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatyp
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.ParameterDefinitionImpl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.WorkDefinitionImpl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.WorkImpl;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmTaskFeatureContainer.JbpmAddTaskFeature;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
@@ -62,48 +63,16 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 	
 	@Override
 	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
+		
 		return new TaskFeatureContainer() {
 			@Override
 			public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-				return new CreateTaskFeature(fp) {
-					@Override
-					public Task createBusinessObject(ICreateContext context) {
-						Task businessObject = super.createBusinessObject(context);
-						return businessObject;
-					}
-
-					@Override
-					public String getCreateImageId() {
-						final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
-						if (iconPath != null && iconPath.trim().length() > 0) {
-							return iconPath.trim();
-						}
-						return null;
-					}
-
-					@Override
-					public String getCreateLargeImageId() {
-						return getCreateImageId();
-					}
-				};
+				return new JbpmCreateCustomTaskFeature(fp);
 			}
 			
 			@Override
 			public IAddFeature getAddFeature(IFeatureProvider fp) {
-				return new AddTaskFeature<Task>(fp) {
-					@Override
-					protected void decorateShape(IAddContext context, ContainerShape containerShape, Task businessObject) {
-						super.decorateShape(context, containerShape, businessObject);
-						final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
-						if (iconPath != null && iconPath.trim().length() > 0) {
-							GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-							IGaService service = Graphiti.getGaService();
-							Image img = service.createImage(ga, iconPath);
-							service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE,
-									GraphicsUtil.TASK_IMAGE_SIZE);
-						}
-					}
-				};
+				return new JbpmAddCustomTaskFeature(fp);
 			}
 			
 			@Override
@@ -112,6 +81,48 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 			}
 
 		};
+	}
+	
+	protected class JbpmCreateCustomTaskFeature extends CreateTaskFeature {
+
+		public JbpmCreateCustomTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public String getCreateImageId() {
+			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
+			if (iconPath != null && iconPath.trim().length() > 0) {
+				return iconPath.trim();
+			}
+			return null;
+		}
+
+		@Override
+		public String getCreateLargeImageId() {
+			return getCreateImageId();
+		}
+		
+	}
+	
+	protected class JbpmAddCustomTaskFeature extends JbpmAddTaskFeature {
+
+		public JbpmAddCustomTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+		
+		@Override
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, Task businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
+			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
+			if (iconPath != null && iconPath.trim().length() > 0) {
+				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
+				IGaService service = Graphiti.getGaService();
+				Image img = service.createImage(ga, iconPath);
+				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE,
+						GraphicsUtil.TASK_IMAGE_SIZE);
+			}
+		}
 	}
 	
 	public String getId(EObject object) {

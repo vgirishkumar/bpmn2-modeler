@@ -11,21 +11,19 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.impl.TaskImpl;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -42,11 +40,13 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IAreaContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Image;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -267,11 +267,23 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 
 		@Override
 		public String getCreateImageId() {
+			String icon = customTaskDescriptor.getIcon();
+			if (icon!=null) {
+				String id = customTaskDescriptor.getImageId(icon, IconSize.SMALL);
+				if (id!=null)
+					return id;
+			}
 			return createFeatureDelegate.getCreateImageId();
 		}
 
 		@Override
 		public String getCreateLargeImageId() {
+			String icon = customTaskDescriptor.getIcon();
+			if (icon!=null) {
+				String id = customTaskDescriptor.getImageId(icon, IconSize.LARGE);
+				if (id!=null)
+					return id;
+			}
 			return createFeatureDelegate.getCreateLargeImageId();
 		}
 	}
@@ -294,9 +306,34 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			Graphiti.getPeService().setPropertyValue(pe,CUSTOM_TASK_ID,getId());
+			
+			// add an icon to the top-left corner if applicable, and if the implementing
+			// addFeatureDelegate hasn't already done so.
+			String icon = customTaskDescriptor.getIcon();
+			if (icon!=null && pe instanceof ContainerShape) {
+				boolean addImage = true;
+				ContainerShape containerShape = (ContainerShape)pe;
+				GraphicsAlgorithm ga = (GraphicsAlgorithm)AbstractBpmn2AddFeature.getGraphicsAlgorithm(containerShape);
+				for (PictogramElement child : containerShape.getChildren()) {
+					if (child.getGraphicsAlgorithm() instanceof Image) {
+						addImage = false;
+						break;
+					}
+				}
+				for (GraphicsAlgorithm g : ga.getGraphicsAlgorithmChildren()) {
+					if (g instanceof Image) {
+						addImage = false;
+						break;
+					}
+				}
+				if (addImage) {
+					Image img = CustomTaskImageProvider.createImage(customTaskDescriptor, ga, icon, 24, 24);
+					Graphiti.getGaService().setLocationAndSize(img, 2, 2, 24, 24);
+				}
+			}
 			return pe;
 		}
-
+		
 		@Override
 		public BaseElement getBusinessObject(IAddContext context) {
 			// TODO Auto-generated method stub

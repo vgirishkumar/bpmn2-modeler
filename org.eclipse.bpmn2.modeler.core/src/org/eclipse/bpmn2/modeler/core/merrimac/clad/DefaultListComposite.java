@@ -11,10 +11,12 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -64,7 +66,15 @@ public class DefaultListComposite extends AbstractListComposite {
 					return null; // user cancelled
 			}
 			newItem = ModelUtil.createFeature(object,feature,listItemClass);
-			list.add(newItem);
+			if (newItem==null) {
+				MessageDialog.openError(getShell(), "Internal Error",
+						"Can not create a new " +
+						listItemClass.getName() +
+						" because its Object Factory is unknown."
+				);
+			}
+			else
+				list.add(newItem);
 		}
 		return newItem;
 	}

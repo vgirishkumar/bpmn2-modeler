@@ -59,4 +59,8 @@ public abstract class BaseElementFeatureContainer implements FeatureContainer {
 			new ShowPropertiesFeature(fp)
 		};
 	}
+	
+	public boolean isAvailable(IFeatureProvider fp) {
+		return true;
+	}
 }

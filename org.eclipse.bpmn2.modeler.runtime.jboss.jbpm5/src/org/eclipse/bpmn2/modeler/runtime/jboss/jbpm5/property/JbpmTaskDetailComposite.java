@@ -191,7 +191,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
 					((TextObjectEditor)editor).setMultiLine(false);
 				}
-				editor.createControl(getAttributesParent(),name);
+				editor.createControl(getAttributesParent(),ModelUtil.toDisplayName(name));
 			}
 		}
 	}

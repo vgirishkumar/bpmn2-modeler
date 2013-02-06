@@ -46,7 +46,9 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.bpmn2.util.ImportHelper;
+import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
 import org.eclipse.bpmn2.util.QNameURIHandler;
+import org.eclipse.bpmn2.util.XmlExtendedMetadata;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dd.dc.Bounds;
@@ -73,6 +75,7 @@ import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLSave;
+import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.xml.sax.helpers.DefaultHandler;
@@ -99,15 +102,24 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	public Bpmn2ModelerResourceImpl(URI uri) {
 		super(uri);
 		
-		// overwrite helper and uri handler in options map
+		// override helper and uri handler in options map
 		this.xmlHelper = new Bpmn2ModelerXmlHelper(this);
         this.uriHandler = new FragmentQNameURIHandler(xmlHelper);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, false);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, true);
-        
         this.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
 
+        ExtendedMetaData extendedMetadata = new XmlExtendedMetadata();
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
+        this.getDefaultLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION, new OnlyContainmentTypeInfo());
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
+        this.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_ELEMENT_HANDLER, new ElementHandlerImpl(true));
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_ENCODING, "UTF-8");
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_USE_CACHED_LOOKUP_TABLE, new ArrayList<Object>());
+        
         // some interesting things to play with:
 //        this.getDefaultLoadOptions().put(XMLResource.OPTION_LAX_FEATURE_PROCESSING, true);
 //        this.getDefaultLoadOptions().put(XMLResource.OPTION_LAX_WILDCARD_PROCESSING, true);
@@ -739,15 +751,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
     		// I'm still not convinced that getFeature() shouldn't simply return the feature
     		// from the given EClass instead of searching the EPackage of the Resource being
     		// loaded (if the EClass has a feature with that name of course).
-    		EPackage pkg = eClass.getEPackage(); 
+    		EStructuralFeature result = null;
+    		EPackage pkg = eClass.getEPackage();
 			if (pkg != Bpmn2Package.eINSTANCE &&
 					pkg != BpmnDiPackage.eINSTANCE &&
 					pkg != DcPackage.eINSTANCE &&
 					pkg != DiPackage.eINSTANCE &&
 					pkg != TargetRuntime.getCurrentRuntime().getModelDescriptor().getEPackage()) {
-				return eClass.getEStructuralFeature(name);
+				result = eClass.getEStructuralFeature(name);
 			}
-			return super.getFeature(eClass, namespaceURI, name, isElement);
+			if (result==null)
+				result = super.getFeature(eClass, namespaceURI, name, isElement);
+			return result;
 		}
 	}
 }

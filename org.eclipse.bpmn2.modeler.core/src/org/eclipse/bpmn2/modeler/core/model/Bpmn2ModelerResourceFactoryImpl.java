@@ -49,28 +49,8 @@ public class Bpmn2ModelerResourceFactoryImpl extends ResourceFactoryImpl {
      */
     @Override
     public Resource createResource(URI uri) {
-        Bpmn2ModelerResourceImpl result = new Bpmn2ModelerResourceImpl(uri);
-        ExtendedMetaData extendedMetadata = new XmlExtendedMetadata();
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
-        result.getDefaultLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
-
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION,
-                new OnlyContainmentTypeInfo());
-
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE,
-                Boolean.TRUE);
-
-        result.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
-
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_ELEMENT_HANDLER,
-                new ElementHandlerImpl(true));
-
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_ENCODING, "UTF-8");
-        
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_USE_CACHED_LOOKUP_TABLE,
-        		new ArrayList<Object>());
-
-        return result;
+        Bpmn2ModelerResourceImpl resource = new Bpmn2ModelerResourceImpl(uri);
+        return resource;
     }
 
     /*

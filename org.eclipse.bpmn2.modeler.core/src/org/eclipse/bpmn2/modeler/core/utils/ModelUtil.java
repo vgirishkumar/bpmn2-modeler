@@ -1298,6 +1298,13 @@ public class ModelUtil {
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).createFeature(resource, object, eclass);
+		// There is no properties adapter registered for this class. This can only happen if the object to
+		// be created is in an external package. If this is the case, simply construct an object using the
+		// registered model factory.
+		EPackage pkg = eclass.getEPackage();
+		if (!isBpmnPackage(pkg)) {
+			return pkg.getEFactoryInstance().create(eclass);
+		}
 		return null;
 	}
 
@@ -1483,5 +1490,16 @@ public class ModelUtil {
 	        }
 	    }
 	    return null;
+	}
+
+	public static EPackage getEPackage(EStructuralFeature feature) {
+		EObject o = feature;
+		while ( o.eContainer()!=null ) {
+			o = o.eContainer();
+			if (o instanceof EPackage) {
+				return (EPackage)o;
+			}
+		}
+		return null;
 	}
 }
