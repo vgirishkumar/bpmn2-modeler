@@ -327,8 +327,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 
 	public void populateObject(EObject object, boolean all) {
-		if (modelObject==null)
-			modelObject = object;
+		modelObject = object;
 		populateObject(object, getProperties(), all);
 		adaptObject(object);
 	}
@@ -589,8 +588,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 
 	public void adaptObject(EObject object) {
-		if (modelObject==null)
-			modelObject = object;
 		addModelExtensionAdapter(object);
 		if (description!=null && !description.isEmpty()) {
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
