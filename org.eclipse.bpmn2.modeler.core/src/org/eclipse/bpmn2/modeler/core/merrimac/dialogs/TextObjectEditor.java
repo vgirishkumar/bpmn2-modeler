@@ -102,6 +102,11 @@ public class TextObjectEditor extends ObjectEditor {
 		this.multiLine = multiLine;
 
 	}
+	
+	public void setEditable(boolean editable) {
+		text.setEditable(editable);
+	}
+	
 	@Override
 	public void setObject(EObject object) {
 		super.setObject(object);

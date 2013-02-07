@@ -13,7 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
@@ -21,12 +24,12 @@ import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Import;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 
@@ -70,26 +73,49 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues(Object context) {
 					final CallActivity activity = adopt(context);
-					Hashtable<String, Object> choices = super.getChoiceOfValues(activity);
+					Hashtable<String, Object> choices = new Hashtable<String,Object>();
+					String label;
+					Definitions defs = ModelUtil.getDefinitions(object);
+
+					// first add all local processes and global whatnots
+					List<CallableElement> localProcesses = ModelUtil.getAllRootElements(defs, CallableElement.class);
+					for (CallableElement elem : localProcesses) {
+						label = ModelUtil.getDisplayName(elem) + " (" + elem.getId() + ")";
+						choices.put(label, elem);
+					}
+					
 					// add processes defined in imports
 					ImportUtil importer = new ImportUtil();
-					
-					Definitions defs = ModelUtil.getDefinitions(object);
-					for (Import imp : defs.getImports()) {
+					List<Import> imports = defs.getImports();
+					for (Import imp : imports) {
 						if (ImportUtil.IMPORT_TYPE_BPMN2.equals(imp.getImportType())) {
-							// load the process file and look for <process> elements
+							// load the process file and look for callable elements
 							Object object = importer.loadImport(imp);
 							if (object instanceof DocumentRoot) {
-								defs = ((DocumentRoot)object).getDefinitions();
-								for (RootElement elem : defs.getRootElements()) {
-									if (elem instanceof Process) {
-										String label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")";
+								Definitions importDefs = ((DocumentRoot)object).getDefinitions();
+								for (RootElement elem : importDefs.getRootElements()) {
+									if (elem instanceof CallableElement) {
+										label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")";
 										choices.put(label, elem);
 									}
 								}
 							}
 						}
 					}
+
+					// remove the Call Activity's owning CallableElement (can't make recursive calls?)
+					EObject parent = activity.eContainer();
+					while (parent!=null && !(parent instanceof CallableElement)) {
+						parent = parent.eContainer();
+					}
+					List<String> keys = new ArrayList<String>();
+					for (Entry<String, Object> entry : choices.entrySet()) {
+						if (entry.getValue() == parent)
+							keys.add(entry.getKey());
+					}
+					for (String key : keys)
+						choices.remove(key);
+					
 					return choices;
 				}
 			}

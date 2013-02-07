@@ -1198,6 +1198,9 @@ public class ModelUtil {
 	}
 
 	public static boolean isMultiLine(EObject object, EStructuralFeature feature) {
+		if (feature==null)
+			return false;
+		
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).isMultiLine(object);
@@ -1205,6 +1208,9 @@ public class ModelUtil {
 	}
 
 	public static Hashtable<String, Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
+		if (feature==null)
+			return null;
+		
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
@@ -1309,7 +1315,7 @@ public class ModelUtil {
 	}
 
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
-		if (feature.getEType() instanceof EClass) {
+		if (feature!=null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
@@ -1329,7 +1335,7 @@ public class ModelUtil {
 	}
 
 	public static boolean canCreateNew(EObject object, EStructuralFeature feature) {
-		if (feature.getEType() instanceof EClass) {
+		if (feature!=null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW);
@@ -1349,7 +1355,7 @@ public class ModelUtil {
 	}
 
 	public static boolean canEditInline(EObject object, EStructuralFeature feature) {
-		if (feature.getEType() instanceof EClass) {
+		if (feature!=null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT_INLINE);
@@ -1361,7 +1367,7 @@ public class ModelUtil {
 	}
 
 	public static boolean canSetNull(EObject object, EStructuralFeature feature) {
-		if (feature.getEType() instanceof EClass) {
+		if (feature!=null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
@@ -1374,6 +1380,9 @@ public class ModelUtil {
 	}
 
 	public static boolean isMultiChoice(EObject object, EStructuralFeature feature) {
+		if (feature==null) {
+			return false;
+		}
 		if (feature.getEType() instanceof EEnum) {
 			return true;
 		}

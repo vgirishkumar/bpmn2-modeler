@@ -595,6 +595,7 @@
 			<enable object="TerminateEventDefinition"/>
 
 			<!-- data definitions -->
+			<enable object="Import"/>
 			<enable object="InputOutputSpecification"/>
 			<enable object="InputSet"/>
 			<enable object="OutputSet"/>
@@ -792,7 +793,7 @@
 	  id="org.eclipse.bpmn2.modeler.diagram.menu.extension"
 	  point="org.eclipse.ui.menus">
 	 <menuContribution
-	    locationURI= "menu:org.eclipse.ui.main.menu?after=File">
+	    locationURI= "menu:org.eclipse.ui.main.menu?after=additions">
 	    <menu
 	       id="org.eclipse.bpmn2.modeler.diagram.menu"
 	       label="Diagram">
