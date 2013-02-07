@@ -28,7 +28,7 @@ import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.expressions.EvaluationContext;
+import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -46,7 +46,7 @@ public class CreateDiagramCommand extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		EvaluationContext ctx = (EvaluationContext)event.getApplicationContext();
+		IEvaluationContext ctx = (IEvaluationContext)event.getApplicationContext();
 		Object var = ctx.getDefaultVariable();
 		Object model = null;
 		BPMN2Editor editor = BPMN2Editor.getActiveEditor();
@@ -54,6 +54,7 @@ public class CreateDiagramCommand extends AbstractHandler {
 			for (Object e : (List)var) {
 				if ( e instanceof EditPart) {
 					model = ((EditPart)e).getModel();
+					break;
 				}
 			}
 		}

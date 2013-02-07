@@ -14,21 +14,37 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.Choreography;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
+import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNPlane;
+import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,6 +52,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 public class ActivityDetailComposite extends DefaultDetailComposite {
 
@@ -73,6 +90,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"isForCompensation",
 						"calledElementRef", // only used in CallActivity
 						"calledChoreographyRef", // only used in CallChoreography
+						"calledCollaborationRef", // only used in CallConversation
 						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask
 						"operationRef", // SendTask, ReceiveTask, ServiceTask
 						"messageRef", // SendTask, ReceiveTask
@@ -101,10 +119,10 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	}
 
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
+		if (!isModelObjectEnabled(object.eClass(), reference))
+			return;
+		
 		if ("loopCharacteristics".equals(reference.getName())) {
-			if (!isModelObjectEnabled(object.eClass(), reference))
-				return;
-
 			final Activity activity = (Activity) businessObject;
 			LoopCharacteristics loopCharacteristics = (LoopCharacteristics) activity.getLoopCharacteristics();
 				
@@ -194,9 +212,85 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 
 		}
+		else if ("calledElementRef".equals(reference.getName())) {
+			// Handle CallActivity.calledElementRef
+			//
+			String displayName = getPropertiesProvider().getLabel(object, reference);
+			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
+				// handle creation of new target elements here:
+				protected EObject createObject() throws Exception {
+					CallableElement calledElement = (CallableElement)super.createObject();
+					// create a new diagram for the CallableElement
+					createNewDiagram(calledElement);
+					return calledElement;
+				}
+			};
+			editor.createControl(parent,displayName);
+		}
+		else if ("calledChoreographyRef".equals(reference.getName())) {
+			// Handle CallChoreography.calledChoreographyRef
+			//
+			// FIXME: This section should really be in a different detail composite class.
+			// This detail composite is intended for Activity elements and their subclasses
+			// but a CallChoreography is a ChoreographyActivity, not a subclass of Activity.
+			// See the "static" initializers section of BPMN2Editor.
+			// For now, this will have to do...
+			String displayName = getPropertiesProvider().getLabel(object, reference);
+			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
+				// handle creation of new target elements here:
+				protected EObject createObject() throws Exception {
+					Choreography choreography = (Choreography)super.createObject();
+					// create a new diagram for the Choreography
+					createNewDiagram(choreography);
+					return choreography;
+				}
+			};
+			editor.createControl(parent,displayName);
+		}
+		else if ("calledCollaborationRef".equals(reference.getName())) {
+			// Handle CallConversation.calledCollaborationRef
+			//
+			// FIXME: This section should really be in a different detail composite class.
+			// This detail composite is intended for Activity elements and their subclasses
+			// but a CallConversation is a ChoreographyNode, not a subclass of Activity.
+			// See the "static" initializers section of BPMN2Editor.
+			// For now, this will have to do...
+			String displayName = getPropertiesProvider().getLabel(object, reference);
+			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
+				// handle creation of new target elements here:
+				protected EObject createObject() throws Exception {
+					Collaboration collaboration = (Collaboration)super.createObject();
+					// create a new diagram for the Collaboration
+					createNewDiagram(collaboration);
+					return collaboration;
+				}
+			};
+			editor.createControl(parent,displayName);
+		}
 		else
 			super.bindReference(parent, object, reference);
 		
 		redrawPage();
+	}
+	
+	private void createNewDiagram(final BaseElement bpmnElement) {
+		final Definitions definitions = ModelUtil.getDefinitions(bpmnElement);
+		final String name = ModelUtil.getName(bpmnElement);
+		
+		editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+			@Override
+			protected void doExecute() {
+				BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
+				plane.setBpmnElement(bpmnElement);
+				
+				BPMNDiagram diagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
+				diagram.setPlane(plane);
+				diagram.setName(name);
+				definitions.getDiagrams().add(diagram);
+				
+				ModelUtil.setID(plane);
+				ModelUtil.setID(diagram);
+			}
+		});
 	}
 }

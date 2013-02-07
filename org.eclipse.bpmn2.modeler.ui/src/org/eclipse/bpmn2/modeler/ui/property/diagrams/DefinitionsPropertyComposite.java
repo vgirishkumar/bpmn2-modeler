@@ -45,6 +45,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -322,12 +323,19 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 							return prefix;
 						return "";
 					}
+
+					@Override
+					public CellEditor createCellEditor (Composite parent) {
+						CellEditor ce = null;
+						// TODO: create a dialog cell editor for NS prefix
+						return ce;
+					}
 				};
 				columnProvider.add(tableColumn);
 				// add remaining columns
-				columnProvider.add(new TableColumn(object,PACKAGE.getImport_Namespace()));
-				columnProvider.add(new TableColumn(object,PACKAGE.getImport_Location()));
-				columnProvider.add(new TableColumn(object,PACKAGE.getImport_ImportType()));
+				columnProvider.add(new TableColumn(object,PACKAGE.getImport_Namespace())).setEditable(false);
+				columnProvider.add(new TableColumn(object,PACKAGE.getImport_Location())).setEditable(false);
+				columnProvider.add(new TableColumn(object,PACKAGE.getImport_ImportType())).setEditable(false);
 			}
 			return columnProvider;
 		}
@@ -382,7 +390,13 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			final Import imp = (Import)be;
 			
 			Composite composite = getAttributesParent();
-			TextAndButtonObjectEditor editor = new TextAndButtonObjectEditor(this,be,null) {
+			TextObjectEditor editor;
+			String label;
+			EStructuralFeature feature;
+			
+			feature = null;
+			label = "Namespace Prefix";
+			editor = new TextAndButtonObjectEditor(this,be,feature) {
 
 				@Override
 				protected void buttonClicked(int buttonId) {
@@ -423,9 +437,25 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 					return getNamespacePrefix();
 				}
 			};
-			editor.createControl(composite,"Namespace Prefix");
+			editor.createControl(composite,label);
 			
-			super.createBindings(be);
+			feature = Bpmn2Package.eINSTANCE.getImport_Namespace();
+			label = ModelUtil.getLabel(be, feature);
+			editor = new TextObjectEditor(this,be, feature);
+			editor.createControl(composite,label);
+			editor.setEditable(false);
+
+			feature = Bpmn2Package.eINSTANCE.getImport_Location();
+			label = ModelUtil.getLabel(be, feature);
+			editor = new TextObjectEditor(this,be, feature);
+			editor.createControl(composite,label);
+			editor.setEditable(false);
+
+			feature = Bpmn2Package.eINSTANCE.getImport_ImportType();
+			label = ModelUtil.getLabel(be, feature);
+			editor = new TextObjectEditor(this,be, feature);
+			editor.createControl(composite,label);
+			editor.setEditable(false);
 		}
 		
 		private String getNamespacePrefix() {
