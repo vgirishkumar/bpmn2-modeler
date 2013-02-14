@@ -172,8 +172,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 		};
 
 		public CreateDataObjectFeature(IFeatureProvider fp) {
-			super(fp, "Data Object",
-					"Provides information about what activities require to be performed or what they produce");
+			super(fp, "Data Object", "Create "+"Data Object");
 		}
 
 		@Override

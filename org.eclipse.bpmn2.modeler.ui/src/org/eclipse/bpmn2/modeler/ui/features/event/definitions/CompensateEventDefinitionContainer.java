@@ -102,7 +102,7 @@ public class CompensateEventDefinitionContainer extends AbstractEventDefinitionF
 	public static class CreateCompensateEventDefinition extends CreateEventDefinition<CompensateEventDefinition> {
 
 		public CreateCompensateEventDefinition(IFeatureProvider fp) {
-			super(fp, "Compensate Definition", "Adds compensate trigger to event");
+			super(fp, "Compensate Event Definition", "Create "+"Compensate Event Definition");
 		}
 
 		@Override

@@ -179,6 +179,9 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				Process process = (Process)result;
 				process.getSupportedInterfaceRefs();
 			}
+			if (result instanceof Class) {
+				value = ((Class)result).getName();
+			}
 			if (value.isEmpty()) {
 				MessageDialog.openWarning(parent.getShell(), "Invalid Selection","The selection, "+
 						selectionType+" is not a valid type definition.");

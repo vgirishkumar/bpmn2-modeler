@@ -46,10 +46,6 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 		
     	setFeatureDescriptor(feature,
 			new ItemAwareElementFeatureDescriptor<Property>(adapterFactory,object,feature) {
-				@Override
-				public String getLabel(Object context) {
-					return "Data Type";
-				}
 				
 				@Override
 				public void setValue(Object context, final Object value) {

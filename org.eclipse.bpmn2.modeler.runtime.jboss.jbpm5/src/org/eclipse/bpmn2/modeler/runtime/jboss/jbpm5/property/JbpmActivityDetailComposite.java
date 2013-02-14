@@ -56,7 +56,10 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	@Override
 	public void createBindings(EObject be) {
 		super.createBindings(be);
-		
+		bindEntryExitScripts(be);
+	}
+	
+	protected void bindEntryExitScripts(EObject be) {
 		onEntryScriptTable = new ScriptTableComposite(this);
 		onEntryScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
 		onEntryScriptTable.setTitle("On Entry Scripts");
@@ -66,7 +69,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 		onExitScriptTable.setTitle("On Exit Scripts");
 	}
 	
-	private class ScriptTableComposite extends ExtensionValueListComposite {
+	public class ScriptTableComposite extends ExtensionValueListComposite {
 
 		/**
 		 * @param parent

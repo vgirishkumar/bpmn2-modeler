@@ -57,6 +57,9 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 			public String getDisplayName(Object context) {
 				String text = "";
 				T flowElement = adopt(context); 
+				if (feature.getName().equals("name"))
+					return (String)flowElement.getName();
+
 				EStructuralFeature f = flowElement.eClass().getEStructuralFeature("name");
 				if (f!=null) {
 					String name = (String)flowElement.eGet(f);

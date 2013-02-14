@@ -62,8 +62,7 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 	public static class CreateCallChoreographyFeature extends AbstractCreateFlowElementFeature<CallChoreography> {
 
 		public CreateCallChoreographyFeature(IFeatureProvider fp) {
-			super(fp, "Call Choreography",
-					"Identifies a point in the Process where a global Choreography or a Global Choreography Task is used");
+			super(fp, "Call Choreography", "Create "+"Call Choreography");
 		}
 
 		@Override

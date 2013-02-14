@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -323,6 +325,55 @@ public class AnchorUtil {
 	
 	public static BoundaryAnchor findNearestBoundaryAnchor(AnchorContainer ac, Point p1) {
 		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = getBoundaryAnchors(ac);
+		
+		// If the shape is a BoundaryEvent, only look at the BoundaryAnchors that are outside
+		// of the parent shape.
+		String boundaryEventPos = peService.getPropertyValue(
+				ac, BoundaryEventPositionHelper.BOUNDARY_EVENT_RELATIVE_POS);
+		if (boundaryEventPos!=null) {
+			PositionOnLine pol = PositionOnLine.fromString(boundaryEventPos);
+			switch (pol.getLocationType()) {
+			case TOP:
+				boundaryAnchors.remove(AnchorLocation.BOTTOM);
+				boundaryAnchors.remove(AnchorLocation.LEFT);
+				boundaryAnchors.remove(AnchorLocation.RIGHT);
+				break;
+			case TOP_LEFT:
+				boundaryAnchors.remove(AnchorLocation.BOTTOM);
+				boundaryAnchors.remove(AnchorLocation.RIGHT);
+				break;
+			case TOP_RIGHT:
+				boundaryAnchors.remove(AnchorLocation.BOTTOM);
+				boundaryAnchors.remove(AnchorLocation.LEFT);
+				break;
+			case BOTTOM:
+				boundaryAnchors.remove(AnchorLocation.TOP);
+				boundaryAnchors.remove(AnchorLocation.LEFT);
+				boundaryAnchors.remove(AnchorLocation.RIGHT);
+				break;
+			case BOTTOM_LEFT:
+				boundaryAnchors.remove(AnchorLocation.TOP);
+				boundaryAnchors.remove(AnchorLocation.RIGHT);
+				break;
+			case BOTTOM_RIGHT:
+				boundaryAnchors.remove(AnchorLocation.TOP);
+				boundaryAnchors.remove(AnchorLocation.LEFT);
+				break;
+			case LEFT:
+				boundaryAnchors.remove(AnchorLocation.TOP);
+				boundaryAnchors.remove(AnchorLocation.BOTTOM);
+				boundaryAnchors.remove(AnchorLocation.RIGHT);
+				break;
+			case RIGHT:
+				boundaryAnchors.remove(AnchorLocation.TOP);
+				boundaryAnchors.remove(AnchorLocation.BOTTOM);
+				boundaryAnchors.remove(AnchorLocation.LEFT);
+				break;
+			case UNKNOWN:
+				break;
+			}
+		}
+		
 		double minDist = Double.MAX_VALUE;
 		BoundaryAnchor nearestBoundaryAnchor = null;
 		for (Entry<AnchorLocation, BoundaryAnchor> entry : boundaryAnchors.entrySet()) {

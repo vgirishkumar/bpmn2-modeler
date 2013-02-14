@@ -76,8 +76,7 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 	public static class CreateAdHocSubProcessFeature extends AbstractCreateExpandableFlowNodeFeature<AdHocSubProcess> {
 
 		public CreateAdHocSubProcessFeature(IFeatureProvider fp) {
-			super(fp, "Ad-Hoc Sub-Process",
-					"A specialized sub-process in which the Activities have no required sequence relationships");
+			super(fp, "Ad-Hoc Sub-Process", "Create "+"Ad-Hoc Sub-Process");
 		}
 
 		@Override

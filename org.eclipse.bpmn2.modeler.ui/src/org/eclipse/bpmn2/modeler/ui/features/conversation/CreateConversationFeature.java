@@ -30,7 +30,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conversation> {
 
 	public CreateConversationFeature(IFeatureProvider fp) {
-		super(fp, "Conversation", "A logical grouping of Message exchanges");
+		super(fp, "Conversation", "Create "+"Conversation");
 	}
 
 	@Override

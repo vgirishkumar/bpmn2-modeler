@@ -43,6 +43,9 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 	 */
 	public RootElementRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
 		super(adapterFactory, object, feature);
+		// I found a couple of instances where this class was used for references that were NOT
+		// RootElements - just check to make sure here...
+		assert RootElement.class.isInstance( feature.eClass().getInstanceClass() );
 	}
 	
 	@Override

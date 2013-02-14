@@ -21,10 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataObject;
-import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -536,6 +537,15 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 				}
 				
 			});
+		}
+		else if (object instanceof Gateway ||
+				object instanceof CatchEvent ||
+				object instanceof ThrowEvent) {
+			// these objects should not be assigned names when initially created
+			EStructuralFeature feature = object.eClass().getEStructuralFeature("name");
+			if (feature!=null && !object.eIsSet(feature)) {
+				object.eSet(feature, "");
+			}
 		}
 	}
 

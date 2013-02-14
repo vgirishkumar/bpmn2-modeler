@@ -45,15 +45,15 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 	public ItemAwareElementPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
 		
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	
-    	setFeatureDescriptor(ref,
-			new ItemAwareElementFeatureDescriptor<T>(adapterFactory, object, ref)
+    	setFeatureDescriptor(feature,
+			new ItemAwareElementFeatureDescriptor<T>(adapterFactory, object, feature)
     	);
     	
-    	ref = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
-    	setFeatureDescriptor(ref,
-			new FeatureDescriptor<T>(adapterFactory,object,ref) {
+    	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
+    	setFeatureDescriptor(feature,
+			new FeatureDescriptor<T>(adapterFactory,object,feature) {
 				@Override
 				public void setValue(Object context, Object value) {
 					final ItemAwareElement element = adopt(context);

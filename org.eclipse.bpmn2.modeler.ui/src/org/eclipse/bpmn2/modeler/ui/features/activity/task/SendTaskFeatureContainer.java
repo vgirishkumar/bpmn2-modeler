@@ -47,22 +47,25 @@ public class SendTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<SendTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, SendTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_SEND_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddSendTaskFeature(fp);
 	}
 
+	public static class AddSendTaskFeature extends AbstractAddDecoratedTaskFeature<SendTask> {
+
+		public AddSendTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_SEND_TASK;
+		}
+	}
+	
 	public static class CreateSendTaskFeature extends AbstractCreateTaskFeature<SendTask> {
 
 		public CreateSendTaskFeature(IFeatureProvider fp) {
-			super(fp, "Send Task", "Task that is completed when a message is sent");
+			super(fp, "Send Task", "Create "+"Send Task");
 		}
 
 		@Override

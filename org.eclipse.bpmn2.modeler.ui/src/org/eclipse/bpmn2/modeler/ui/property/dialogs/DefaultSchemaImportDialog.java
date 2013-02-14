@@ -633,7 +633,7 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 		Resource resource = null;
 		if ("java".equals(kind)) {
 			final String fileName = uri.lastSegment();
-			final List<Class> results = new ArrayList<Class>();
+			final ArrayList<Class> results = new ArrayList<Class>();
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 			for (IProject p : projects) {
 				try {

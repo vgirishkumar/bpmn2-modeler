@@ -85,7 +85,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 	public static class CreateEndEventFeature extends AbstractCreateEventFeature<EndEvent> {
 
 		public CreateEndEventFeature(IFeatureProvider fp) {
-			super(fp, "End Event", "Indicates the end of a process or choreography");
+			super(fp, "End Event", "Create "+"End Event");
 		}
 
 		@Override

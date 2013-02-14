@@ -48,28 +48,31 @@ public class BusinessRuleTaskFeatureContainer extends AbstractTaskFeatureContain
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<BusinessRuleTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, BusinessRuleTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_BUSINESS_RULE_TASK);
-				service.setLocationAndSize(img, 2, 2, 16, 16);
-			}
+		return new AddBusinessRuleTask(fp);
+	}
 
-			@Override
-			public int getWidth() {
-				return GraphicsUtil.getActivitySize(getDiagram()).getWidth();
-//				return GraphicsUtil.TASK_DEFAULT_WIDTH + 50;
-			}
-		};
+	public static class AddBusinessRuleTask extends AbstractAddDecoratedTaskFeature<BusinessRuleTask> {
+
+		public AddBusinessRuleTask(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public int getWidth() {
+			return GraphicsUtil.getActivitySize(getDiagram()).getWidth();
+//			return GraphicsUtil.TASK_DEFAULT_WIDTH + 50;
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_BUSINESS_RULE_TASK;
+		}
 	}
 
 	public static class CreateBusinessRuleTaskFeature extends AbstractCreateTaskFeature<BusinessRuleTask> {
 
 		public CreateBusinessRuleTaskFeature(IFeatureProvider fp) {
-			super(fp, "Business Rule Task", "Task that can use Business Rules Engine");
+			super(fp, "Business Rule Task", "Create "+"Business Rule Task");
 		}
 
 		@Override

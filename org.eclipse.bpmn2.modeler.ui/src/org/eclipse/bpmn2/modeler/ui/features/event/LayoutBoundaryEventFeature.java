@@ -14,8 +14,10 @@ package org.eclipse.bpmn2.modeler.ui.features.event;
 
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine.*;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.features.event.PositionOnLine.LocationType;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;

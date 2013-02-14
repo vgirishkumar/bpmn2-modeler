@@ -82,7 +82,7 @@ public class IntermediateCatchEventFeatureContainer extends AbstractEventFeature
 	public static class CreateIntermediateCatchEventFeature extends AbstractCreateEventFeature<IntermediateCatchEvent> {
 
 		public CreateIntermediateCatchEventFeature(IFeatureProvider fp) {
-			super(fp, "Catch Event", "Token remains at the event until event trigger will occur");
+			super(fp, "Catch Event", "Create "+"Catch Event");
 		}
 
 		@Override

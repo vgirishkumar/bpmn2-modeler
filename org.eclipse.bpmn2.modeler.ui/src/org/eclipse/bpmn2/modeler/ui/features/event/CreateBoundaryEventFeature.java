@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -34,7 +35,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 public class CreateBoundaryEventFeature extends AbstractBpmn2CreateFeature<BoundaryEvent> {
 
 	public CreateBoundaryEventFeature(IFeatureProvider fp) {
-		super(fp, "Boundary Event", "Adds boundary event to activity, defaults to interrupting");
+		super(fp, "Boundary Event", "Create "+"Boundary Event");
 	}
 
 	@Override

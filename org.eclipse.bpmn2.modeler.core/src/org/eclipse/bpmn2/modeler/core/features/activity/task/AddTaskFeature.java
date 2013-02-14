@@ -12,9 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity.task;
 
-import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -25,9 +24,6 @@ import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
 public class AddTaskFeature<T extends Task> extends AbstractAddActivityFeature<T> {
 

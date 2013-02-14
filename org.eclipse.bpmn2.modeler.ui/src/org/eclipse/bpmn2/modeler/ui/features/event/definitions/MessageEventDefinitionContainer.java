@@ -98,7 +98,7 @@ public class MessageEventDefinitionContainer extends AbstractEventDefinitionFeat
 	public static class CreateMessageEventDefinition extends CreateEventDefinition<MessageEventDefinition> {
 
 		public CreateMessageEventDefinition(IFeatureProvider fp) {
-			super(fp, "Message Definition", "Marks that event expects a message");
+			super(fp, "Message Event Definition", "Create "+"Message Event Definition");
 		}
 
 		@Override

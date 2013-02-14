@@ -97,7 +97,7 @@ public class LinkEventDefinitionContainer extends AbstractEventDefinitionFeature
 	public static class CreateLinkEventDefinition extends CreateEventDefinition<LinkEventDefinition> {
 
 		public CreateLinkEventDefinition(IFeatureProvider fp) {
-			super(fp, "Link Definition", "Adds link trigger to event");
+			super(fp, "Link Event Definition", "Create "+"Link Event Definition");
 		}
 
 		@Override

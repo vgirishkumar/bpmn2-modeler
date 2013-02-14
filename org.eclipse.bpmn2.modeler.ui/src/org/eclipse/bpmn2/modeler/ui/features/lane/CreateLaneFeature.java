@@ -33,7 +33,7 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 	private static int index = 1;
 
 	public CreateLaneFeature(IFeatureProvider fp) {
-		super(fp, "Lane", "A sub-partition in a process that helps to organize and categorize activities");
+		super(fp, "Lane", "Create "+"Lane");
 	}
 
 	@Override

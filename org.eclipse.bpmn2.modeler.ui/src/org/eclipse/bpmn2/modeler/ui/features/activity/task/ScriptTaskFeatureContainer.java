@@ -17,21 +17,13 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
-import org.eclipse.graphiti.mm.algorithms.Image;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
 
 public class ScriptTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
@@ -47,22 +39,25 @@ public class ScriptTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<ScriptTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, ScriptTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_SCRIPT_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddScriptTaskFeature(fp);
 	}
+	
+	public static class AddScriptTaskFeature extends AbstractAddDecoratedTaskFeature<ScriptTask> {
 
+		public AddScriptTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_SCRIPT_TASK;
+		}
+	}
+	
 	public static class CreateScriptTaskFeature extends AbstractCreateTaskFeature<ScriptTask> {
 
 		public CreateScriptTaskFeature(IFeatureProvider fp) {
-			super(fp, "Script Task", "Task executed by a business process engine");
+			super(fp, "Script Task", "Create "+"Script Task");
 		}
 
 		@Override
