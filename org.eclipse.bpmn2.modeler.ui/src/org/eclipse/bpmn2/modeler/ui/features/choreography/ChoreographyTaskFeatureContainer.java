@@ -144,7 +144,7 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 	public static class CreateChoreographyTaskFeature extends AbstractCreateFlowElementFeature<ChoreographyTask> {
 
 		public CreateChoreographyTaskFeature(IFeatureProvider fp) {
-			super(fp, "Choreography Task", "Represents interactions between two participants");
+			super(fp, "Choreography Task", "Create "+"Choreography Task");
 		}
 
 		@Override

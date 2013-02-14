@@ -48,23 +48,24 @@ public class ManualTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<ManualTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, ManualTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_MANUAL_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddManualTaskFeature(fp);
+	}
+	
+	public static class AddManualTaskFeature extends AbstractAddDecoratedTaskFeature<ManualTask> {
+				public AddManualTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_MANUAL_TASK;
+		}
 	}
 
 	public static class CreateManualTaskFeature extends AbstractCreateTaskFeature<ManualTask> {
 
 		public CreateManualTaskFeature(IFeatureProvider fp) {
-			super(fp, "Manual Task",
-					"Task that is expected to perform without the aid of any business process execution engine or any application");
+			super(fp, "Manual Task", "Create "+"Manual Task");
 		}
 
 		@Override

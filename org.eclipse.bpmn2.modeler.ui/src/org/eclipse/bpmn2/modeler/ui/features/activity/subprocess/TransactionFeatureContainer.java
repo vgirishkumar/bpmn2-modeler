@@ -104,9 +104,7 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 	public static class CreateTransactionFeature extends AbstractCreateExpandableFlowNodeFeature<Transaction> {
 
 		public CreateTransactionFeature(IFeatureProvider fp) {
-			super(fp, "Transaction",
-					"Specialized sub-process that will have behavior controlled by transaction protocol");
-		}
+			super(fp, "Transaction", "Create "+"Transaction");		}
 
 		@Override
 		protected String getStencilImageId() {

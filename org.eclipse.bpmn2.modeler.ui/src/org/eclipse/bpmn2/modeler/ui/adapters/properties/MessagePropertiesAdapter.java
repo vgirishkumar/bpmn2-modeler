@@ -14,19 +14,15 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
 
 /**
  * @author Gary Brown
@@ -41,10 +37,15 @@ public class MessagePropertiesAdapter extends RootElementPropertiesAdapter<Messa
 	public MessagePropertiesAdapter(AdapterFactory adapterFactory, Message object) {
 		super(adapterFactory, object);
 
-		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
+		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
     	
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Message>(adapterFactory, object, ref) {
+    	setFeatureDescriptor(feature, new FeatureDescriptor<Message>(adapterFactory, object, feature) {
 
+    		@Override
+    		public String getLabel(Object context) {
+    			return "Data Type";
+    		}
+    		
     		@Override
     		public String getDisplayName(Object context) {
     			EObject object = this.object;

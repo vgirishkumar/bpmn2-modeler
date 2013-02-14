@@ -48,22 +48,25 @@ public class ReceiveTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<ReceiveTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, ReceiveTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_RECEIVE_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddReceiveTaskFeature(fp);
+	}
+	
+	public static class AddReceiveTaskFeature extends AbstractAddDecoratedTaskFeature<ReceiveTask> {
+
+		public AddReceiveTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_RECEIVE_TASK;
+		}
 	}
 
 	public static class CreateReceiveTaskFeature extends AbstractCreateTaskFeature<ReceiveTask> {
 
 		public CreateReceiveTaskFeature(IFeatureProvider fp) {
-			super(fp, "Receive Task", "Task that is completed when a message arrives");
+			super(fp, "Receive Task", "Create "+"Receive Task");
 		}
 
 		@Override

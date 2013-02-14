@@ -63,7 +63,7 @@ public class ParallelGatewayFeatureContainer extends AbstractGatewayFeatureConta
 	public static class CreateParallelGatewayFeature extends AbstractCreateGatewayFeature<ParallelGateway> {
 
 		public CreateParallelGatewayFeature(IFeatureProvider fp) {
-			super(fp, "Parallel Gateway", "Used to combine or create parallel flows");
+			super(fp, "Parallel Gateway", "Create "+"Parallel Gateway");
 		}
 
 		@Override

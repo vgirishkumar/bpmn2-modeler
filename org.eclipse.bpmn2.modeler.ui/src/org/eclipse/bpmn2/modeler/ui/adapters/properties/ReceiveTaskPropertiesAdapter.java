@@ -56,10 +56,12 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 	public ReceiveTaskPropertiesAdapter(AdapterFactory adapterFactory, ReceiveTask object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef();
-    	this.setProperty(ref, this.UI_CAN_CREATE_NEW, Boolean.FALSE);
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
-    	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,ref) {
+    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
     		
     		@Override
     		public void setValue(Object context, final Object value) {
@@ -82,8 +84,12 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
     		
     	});
 
-    	ref = Bpmn2Package.eINSTANCE.getReceiveTask_OperationRef();
-    	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,ref) {
+    	feature = Bpmn2Package.eINSTANCE.getReceiveTask_OperationRef();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
     		
     		@Override
    		public void setValue(Object context, final Object value) {

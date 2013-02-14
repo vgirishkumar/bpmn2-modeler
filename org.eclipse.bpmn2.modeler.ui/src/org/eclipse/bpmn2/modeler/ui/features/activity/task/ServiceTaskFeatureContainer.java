@@ -47,22 +47,25 @@ public class ServiceTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<ServiceTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, ServiceTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_SERVICE_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddServiceTaskFeature(fp);
+	}
+
+	public static class AddServiceTaskFeature extends AbstractAddDecoratedTaskFeature<SendTask> {
+
+		public AddServiceTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_SERVICE_TASK;
+		}
 	}
 
 	public static class CreateServiceTaskFeature extends AbstractCreateTaskFeature<ServiceTask> {
 
 		public CreateServiceTaskFeature(IFeatureProvider fp) {
-			super(fp, "Service Task", "Task that uses some kind of service");
+			super(fp, "Service Task", "Create "+"Service Task");
 		}
 
 		@Override

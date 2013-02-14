@@ -93,7 +93,7 @@
 			id="bpmn2.jbpm.businessRuleTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
 			class="default"
-			features="anyAttribute isForCompensation implementation"
+			features="anyAttribute implementation isForCompensation"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Business Rule Task">
@@ -332,36 +332,6 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.IntermediateThrowEvent"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmIntermediateThrowEventFeatureContainer">
-		</featureContainer>
-				
-		<featureContainer
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.ComplexGateway"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmComplexGatewayFeatureContainer">
-		</featureContainer>
-				
-		<featureContainer
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.EventBasedGateway"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmEventBasedGatewayFeatureContainer">
-		</featureContainer>
-				
-		<featureContainer
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.ExclusiveGateway"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmExclusiveGatewayFeatureContainer">
-		</featureContainer>
-				
-		<featureContainer
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.InclusiveGateway"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmInclusiveGatewayFeatureContainer">
-		</featureContainer>
-				
-		<featureContainer
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.ParallelGateway"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmParallelGatewayFeatureContainer">
 		</featureContainer>
 		
 <!--
@@ -655,7 +625,7 @@
 
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="full">
 			<disable object="all"/>
-			
+
 			<enable object="AdHocSubProcess"/>
 			<disable object="AdHocSubProcess" feature="anyAttribute"/>
 			<disable object="AdHocSubProcess" feature="artifacts"/>
@@ -1267,6 +1237,14 @@
 			<enable object="ImportType"/>
 			<enable object="OnEntryScriptType"/>
 			<enable object="OnExitScriptType"/>
+			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
+			<enable object="Process" feature="version"/>
+			<enable object="Process" feature="packageName"/>
+			<enable object="Process" feature="adHoc"/>
+			<enable object="Process" feature="isExecutable"/>
+			<enable object="SequenceFlow" feature="priority"/>
+			<enable object="CallActivity" feature="waitForCompletion"/>
+			<enable object="CallActivity" feature="independent"/>
 			
 			<disable object="all" feature="isCollection"/>
 			<disable object="all" feature="dataState"/>

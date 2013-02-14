@@ -241,7 +241,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
 			class="default"
-			features="anyAttribute implementation"
+			features="anyAttribute implementation isForCompensation"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -260,7 +260,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.receiveTask.tab"
 			class="default"
-			features="implementation instantiate messageRef operationRef"
+			features="implementation instantiate messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ReceiveTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -279,7 +279,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.sendTask.tab"
 			class="default"
-			features="implementation messageRef operationRef"
+			features="implementation messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.SendTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -289,7 +289,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.serviceTask.tab"
 			class="default"
-			features="implementation operationRef"
+			features="implementation operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ServiceTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -299,7 +299,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.userTask.tab"
 			class="default"
-			features="implementation renderings"
+			features="implementation renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"

@@ -87,7 +87,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
 						"anyAttribute",
-						"isForCompensation",
 						"calledElementRef", // only used in CallActivity
 						"calledChoreographyRef", // only used in CallChoreography
 						"calledCollaborationRef", // only used in CallConversation
@@ -95,6 +94,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"operationRef", // SendTask, ReceiveTask, ServiceTask
 						"messageRef", // SendTask, ReceiveTask
 						"isInstantiate", // ReceiveTask
+						"isForCompensation",
 						"script", "scriptFormat", // ScriptTask
 						"triggeredByEvent",
 						"cancelRemainingInstances",

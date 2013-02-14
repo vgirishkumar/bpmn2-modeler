@@ -89,7 +89,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 	public class CreateStartEventFeature extends AbstractCreateEventFeature<StartEvent> {
 
 		public CreateStartEventFeature(IFeatureProvider fp) {
-			super(fp, "Start Event", "Indicates the start of a process or choreography");
+			super(fp, "Start Event", "Create "+"Start Event");
 		}
 
 		@Override

@@ -81,7 +81,7 @@ public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatu
 	public static class CreateConversationLinkFeature extends AbstractCreateFlowFeature<ConversationLink, Participant, Conversation> {
 
 		public CreateConversationLinkFeature(IFeatureProvider fp) {
-			super(fp, "Conversation Link", "Connects Conversation nodes to and from Participants");
+			super(fp, "Conversation Link", "Create "+"Conversation Link");
 		}
 
 		@Override

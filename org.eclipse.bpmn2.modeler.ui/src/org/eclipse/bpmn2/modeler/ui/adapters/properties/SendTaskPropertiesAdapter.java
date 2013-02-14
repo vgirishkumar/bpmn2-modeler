@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
-import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -24,7 +23,6 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -33,9 +31,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * @author Bob Brodt
@@ -50,10 +45,12 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 	public SendTaskPropertiesAdapter(AdapterFactory adapterFactory, SendTask object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getSendTask_MessageRef();
-    	this.setProperty(ref, this.UI_CAN_CREATE_NEW, Boolean.FALSE);
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getSendTask_MessageRef();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-    	setFeatureDescriptor(ref, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,ref) {
+    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
 
     		public void setValue(Object context, final Object value) {
     			if (value instanceof Message || value==null) {
@@ -75,8 +72,12 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
     		
     	});
 
-    	ref = Bpmn2Package.eINSTANCE.getSendTask_OperationRef();
-    	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,ref) {
+    	feature = Bpmn2Package.eINSTANCE.getSendTask_OperationRef();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
     		
     		public void setValue(Object context, final Object value) {
     			if (value instanceof Operation || value==null) {

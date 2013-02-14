@@ -16,7 +16,7 @@ public class JbpmServiceTaskFeatureContainer extends ServiceTaskFeatureContainer
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<ServiceTask>(fp) {
+		return new AddServiceTaskFeature(fp) {
 
 			@Override
 			public PictogramElement add(IAddContext context) {

@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
+import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.UpdateChoreographyMessageFlowFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -41,7 +42,9 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
@@ -59,6 +62,22 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 	public static final int ENVELOPE_HEIGHT = 20;
 	public static final String IS_REFERENCE = "is.reference";
 
+	@Override
+	public Object getApplyObject(IContext context) {
+		// FIXME: move the Participant Band Message delete functionality into a Custom Feature
+		// the same way the "Add Message" is handled currently
+		Object object = super.getApplyObject(context);
+		if (object instanceof Message) {
+			if (context instanceof IPictogramElementContext) {
+				PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
+				if (ChoreographyUtil.isChoreographyMessage(pe))
+					return null;
+			}
+			return object;
+		}
+		return null;
+	}
+	
 	@Override
 	public boolean canApplyTo(Object o) {
 		return super.canApplyTo(o) && o instanceof Message;
@@ -181,7 +200,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 	public static class CreateMessageFeature extends AbstractCreateRootElementFeature<Message> {
 
 		public CreateMessageFeature(IFeatureProvider fp) {
-			super(fp, "Message", "Represents the content of a communication between two Participants");
+			super(fp, "Message", "Create "+"Message");
 		}
 
 		@Override

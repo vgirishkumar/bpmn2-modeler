@@ -11,24 +11,16 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ElementParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.event.StartEventFeatureContainer;
 import org.eclipse.graphiti.features.IAddFeature;
-import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class JbpmStartEventFeatureContainer extends StartEventFeatureContainer {
-
-	@Override
-	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		return new JbpmCreateStartEventFeature(fp);
-	}
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
@@ -44,19 +36,5 @@ public class JbpmStartEventFeatureContainer extends StartEventFeatureContainer {
 			}
 			
 		};
-	}
-
-	public class JbpmCreateStartEventFeature extends CreateStartEventFeature {
-
-		public JbpmCreateStartEventFeature(IFeatureProvider fp) {
-			super(fp);
-		}
-		
-		@Override
-		public StartEvent createBusinessObject(ICreateContext context) {
-			StartEvent event = super.createBusinessObject(context);
-			event.setName("");
-			return event;
-		}
 	}
 }

@@ -166,8 +166,7 @@ public class CallActivityFeatureContainer extends AbstractExpandableActivityFeat
 		// editor to display its contents.
 		
 		public CreateCallActivityFeature(IFeatureProvider fp) {
-			super(fp, "Call Activity",
-					"Identifies a point in the Process where a global Process or a Global Task is called");
+			super(fp, "Call Activity", "Create "+"Call Activity");
 		}
 
 		@Override

@@ -93,7 +93,7 @@ public class SignalEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static class CreateSignalEventDefinition extends CreateEventDefinition<SignalEventDefinition> {
 
 		public CreateSignalEventDefinition(IFeatureProvider fp) {
-			super(fp, "Signal Definition", "Adds signal definition to event");
+			super(fp, "Signal Event Definition", "Create "+"Signal Event Definition");
 		}
 
 		@Override

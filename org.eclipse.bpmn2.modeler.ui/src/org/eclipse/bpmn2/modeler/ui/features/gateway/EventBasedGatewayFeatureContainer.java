@@ -94,7 +94,7 @@ public class EventBasedGatewayFeatureContainer extends AbstractGatewayFeatureCon
 	public static class CreateEventBasedGatewayFeature extends AbstractCreateGatewayFeature<EventBasedGateway> {
 
 		public CreateEventBasedGatewayFeature(IFeatureProvider fp) {
-			super(fp, "Event-Based Gateway", "Represents a branching point in the process");
+			super(fp, "Event-Based Gateway", "Create "+"Event-Based Gateway");
 		}
 
 		@Override

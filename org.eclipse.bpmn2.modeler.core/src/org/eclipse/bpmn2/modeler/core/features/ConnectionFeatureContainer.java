@@ -144,7 +144,7 @@ public abstract class ConnectionFeatureContainer implements FeatureContainer {
 		boolean updateChanged = false;
 		UpdateContext updateContext = new UpdateContext(connection);
 		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext);
-		if (updateFeature.updateNeeded(updateContext).toBoolean()) {
+		if (updateFeature!=null && updateFeature.updateNeeded(updateContext).toBoolean()) {
 			updateFeature.update(updateContext);
 			updateChanged = updateFeature.hasDoneChanges();
 		}

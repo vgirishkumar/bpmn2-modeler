@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
@@ -88,6 +89,7 @@ public class NewJbpmProcessWizard extends Wizard implements INewWizard {
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
 			MessageDialog.openError(getShell(), "Error", realException.getMessage());
+			Activator.logError(e);
 			return false;
 		}
 		return true;
@@ -126,7 +128,7 @@ public class NewJbpmProcessWizard extends Wizard implements INewWizard {
 		
 		if (isSetJbpmRuntime) {
 			monitor.setTaskName("Configuring project for jBPM Runtime...");
-			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance((IProject)container);
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(container.getProject());
 			TargetRuntime rt = TargetRuntime.getRuntime(JBPM5RuntimeExtension.JBPM5_RUNTIME_ID);
 			prefs.setRuntime(rt);
 			try {

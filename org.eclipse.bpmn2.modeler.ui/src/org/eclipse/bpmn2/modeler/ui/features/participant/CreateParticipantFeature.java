@@ -25,7 +25,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Participant> {
 	
 	public CreateParticipantFeature(IFeatureProvider fp) {
-	    super(fp, "Pool", "Container for partitioning a set of activities");
+	    super(fp, "Pool", "Create "+"Pool");
     }
 
 	@Override

@@ -14,9 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.ServiceTask;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -32,11 +30,13 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 	 */
 	public ServiceTaskPropertiesAdapter(AdapterFactory adapterFactory, ServiceTask object) {
 		super(adapterFactory, object);
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getServiceTask_OperationRef();
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getServiceTask_OperationRef();
 
-    	setProperty(ref, UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(ref, UI_CAN_EDIT, Boolean.TRUE);
-    	setFeatureDescriptor(ref, new OperationRefFeatureDescriptor<ServiceTask>(adapterFactory,object,ref));
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(adapterFactory,object,feature));
 	}
 
 }

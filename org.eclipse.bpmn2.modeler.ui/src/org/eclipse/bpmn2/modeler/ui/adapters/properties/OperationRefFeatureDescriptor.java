@@ -13,30 +13,23 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
-import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.ReceiveTask;
-import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
  *
  */
-public class OperationRefFeatureDescriptor<T extends BaseElement> extends RootElementRefFeatureDescriptor<T> {
+public class OperationRefFeatureDescriptor<T extends BaseElement> extends FeatureDescriptor<T> {
 
 	/**
 	 * @param adapterFactory

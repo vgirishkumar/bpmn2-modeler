@@ -91,7 +91,7 @@ public class ConditionalEventDefinitionContainer extends AbstractEventDefinition
 		}
 
 		public CreateConditionalEventDefinition(IFeatureProvider fp) {
-			super(fp, "Conditional Event Definition", "Conditional trigger");
+			super(fp, "Conditional Event Definition", "Create "+"Conditional Event Definition");
 		}
 
 		@Override

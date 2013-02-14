@@ -35,6 +35,20 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 	}
 
 	@Override
+	public boolean canAddBendpoint(IAddBendpointContext context) {
+		try {
+			FreeFormConnection connection = context.getConnection();
+			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
+			ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
+			BPMNEdge edge = (BPMNEdge) modelHandler.findDIElement(element);
+			return edge!=null;
+		} catch (Exception e) {
+			Activator.logError(e);
+		}
+		return false;
+	}
+
+	@Override
 	public void addBendpoint(IAddBendpointContext context) {
 		super.addBendpoint(context);
 		try {

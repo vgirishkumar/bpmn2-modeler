@@ -52,6 +52,7 @@ import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -79,6 +80,17 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	IPeService peService = Graphiti.getPeService();
 	IGaService gaService = Graphiti.getGaService();
 
+	public Object getApplyObject(IContext context) {
+		// FIXME: move the Participant Band Message delete functionality into a Custom Feature
+		// the same way the "Add Message" is handled currently
+		if (context instanceof IPictogramElementContext) {
+			PictogramElement pe = ((IPictogramElementContext) context).getPictogramElement();
+			if (ChoreographyUtil.isChoreographyMessageLink(pe))
+				return null;
+		}
+		return super.getApplyObject(context);
+	}
+	
 	@Override
 	public boolean canApplyTo(Object o) {
 		return super.canApplyTo(o) && o instanceof MessageFlow;
@@ -109,6 +121,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		System.out.println("");
 		return new UpdateLabelFeature(fp) {
 
 			@Override
@@ -299,7 +312,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	public static class CreateMessageFlowFeature extends AbstractCreateFlowFeature<MessageFlow, InteractionNode, InteractionNode> {
 
 		public CreateMessageFlowFeature(IFeatureProvider fp) {
-			super(fp, "Message Flow", "Represents message between two participants");
+			super(fp, "Message Flow", "Create "+"Message Flow");
 		}
 
 		@Override

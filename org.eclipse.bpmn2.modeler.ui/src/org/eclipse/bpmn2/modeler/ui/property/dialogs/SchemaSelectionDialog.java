@@ -13,18 +13,24 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.dialogs;
 
+import java.util.ArrayList;
+
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
+import org.eclipse.bpmn2.modeler.core.utils.JavaProjectClassLoader;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.property.providers.BPMN2DefinitionsTreeContentProvider;
+import org.eclipse.bpmn2.modeler.ui.property.providers.JavaTreeContentProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.ModelTreeLabelProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.ServiceTreeContentProvider;
 import org.eclipse.bpmn2.modeler.ui.property.providers.TreeNode;
 import org.eclipse.bpmn2.modeler.ui.property.providers.VariableTypeTreeContentProvider;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -32,6 +38,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
@@ -83,6 +91,12 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		shell.setText("Schema Selection");
 	}
 
+	@Override
+	public void create() {
+		super.create();
+		updateOK(false);
+	}
+	
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite contents = (Composite) super.createDialogArea(parent);
@@ -169,19 +183,7 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		tree.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TreeItem[] sel = tree.getSelection();
-				if (sel.length==1) {
-					Object data = sel[0].getData();
-					if (data instanceof TreeNode) {
-						TreeNode tn = (TreeNode)data;
-						Object[] result = new Object[] {tn.getModelObject()};
-						setSelectionResult(result);
-						setSelectionPath(sel[0]);
-						updateOK(true);
-					}
-					else
-						updateOK(false);
-				}
+				computeResult();
 			}
 		});
 
@@ -221,6 +223,24 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 	 */
 	@Override
 	protected void computeResult() {
+		TreeItem[] sel = tree.getSelection();
+		if (sel.length==1) {
+			Object data = sel[0].getData();
+			if (data instanceof TreeNode) {
+				TreeNode tn = (TreeNode)data;
+				Object[] result = new Object[] {tn.getModelObject()};
+				setSelectionResult(result);
+				setSelectionPath(sel[0]);
+				updateOK(true);
+			}
+			else {
+				Object[] result = new Object[] {};
+				setSelectionResult(result);
+				updateOK(false);
+			}
+		}
+		else
+			updateOK(false);
 	}
 
 	void attemptLoad() {
@@ -234,6 +254,9 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		} else if ("bpmn".equals(importType)) {
 			treeContentProvider = new BPMN2DefinitionsTreeContentProvider(true);
 			path = importLocation;
+		} else if ("java".equals(importType)) {
+			treeContentProvider = new JavaTreeContentProvider(true);
+			path = importLocation;
 		} else {
 			treeContentProvider = null;
 			input = null;
@@ -246,7 +269,7 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		}
 
 		// empty paths are ignored
-		if (path.length() == 0) {
+		if (path==null || path.length() == 0) {
 			return;
 		}
 
@@ -291,6 +314,23 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 
 	Object attemptLoad(URI uri, String kind) {
 
+		if ("java".equals(kind)) {
+			final String fileName = uri.lastSegment();
+			final ArrayList<Class> results = new ArrayList<Class>();
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (IProject p : projects) {
+				try {
+					if (p.isOpen() && p.hasNature(JavaCore.NATURE_ID)) {
+						final IJavaProject javaProject = JavaCore.create(p);
+						JavaProjectClassLoader cl = new JavaProjectClassLoader(javaProject);
+						results.addAll(cl.findClasses(fileName));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return results;
+		}
 		Resource resource = null;
 		try {
 			hackedResourceSet = ModelUtil.slightlyHackedResourceSet(bpmn2Editor.getResourceSet());
@@ -348,6 +388,8 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 				return "xsd";
 			if ("http://www.omg.org/spec/BPMN/20100524/MODEL".equals(type))
 				return "bpmn";
+			if ("http://www.java.com/javaTypes".equals(type))
+				return "java";
 			return "xml";
 		}
 		return null;

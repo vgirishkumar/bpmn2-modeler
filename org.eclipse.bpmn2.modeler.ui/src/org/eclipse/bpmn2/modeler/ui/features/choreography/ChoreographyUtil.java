@@ -50,6 +50,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.IMoveContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -111,6 +116,27 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return false;
 	}
 
+	public static boolean isChoreographyMessageLink(PictogramElement pe) {
+		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+		if (o instanceof MessageFlow && pe instanceof Connection) {
+			Connection c = (Connection)pe;
+			if (peService.getPropertyValue(c.getStart().getParent(),MESSAGE_LINK) != null)
+				return true;
+			if (peService.getPropertyValue(c.getEnd().getParent(),MESSAGE_LINK) != null)
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean isChoreographyMessage(PictogramElement pe) {
+		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+		if (o instanceof Message && pe instanceof ContainerShape) {
+			if (peService.getPropertyValue(pe,MESSAGE_LINK) != null)
+				return true;
+		}
+		return false;
+	}
+	
 	public static Tuple<List<ContainerShape>, List<ContainerShape>> getTopAndBottomBands(
 			List<ContainerShape> participantBands) {
 		List<ContainerShape> top = new ArrayList<ContainerShape>();
@@ -749,6 +775,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			String text = itemDefinitionName;
 			if (messageName!=null && !messageName.isEmpty())
 				text += "/" + messageName;
+			text = messageName;
 			return text;
 		}
 	}
@@ -765,12 +792,81 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		}
 	}
 
-	public static void moveChoreographyMessageLinks(ContainerShape choreographyContainer) {
-		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(choreographyContainer, BPMNShape.class);
+	public static void updateChoreographyMessageLinks(IPictogramElementContext context) {
+		ContainerShape choreographyTaskShape = (ContainerShape)context.getPictogramElement();
+		if (true) {
+			moveChoreographyMessageLinks(choreographyTaskShape);
+			return;
+		}
+		// FIXME: when/if we figure out how to save the location for a Message attached to
+		// a Participant Band (the BPMNShape.isMessageVisible==true for the Participant Band)
+		// this code. Until then, it doesn't make sense to allow the Message to be moved.
+		int dxTop = 0, dyTop = 0;
+		int dxBottom = 0, dyBottom = 0;
+		if (context instanceof IMoveShapeContext) {
+			dxTop = dxBottom = ((IMoveShapeContext)context).getDeltaX();
+			dyTop = dyBottom = ((IMoveShapeContext)context).getDeltaY();
+		}
+		else if (context instanceof IResizeShapeContext) {
+			IDimension oldSize = GraphicsUtil.calculateSize(choreographyTaskShape);
+			int direction = ((IResizeShapeContext)context).getDirection();
+			int x = ((IResizeShapeContext)context).getX();
+			int y = ((IResizeShapeContext)context).getY();
+			int w = ((IResizeShapeContext)context).getWidth();
+			int h = ((IResizeShapeContext)context).getHeight();
+			
+			if ((direction & IResizeShapeContext.DIRECTION_NORTH) != 0) {
+				dyTop = (oldSize.getHeight() - h);
+			}
+			if ((direction & IResizeShapeContext.DIRECTION_EAST) != 0) {
+				dxTop = dxBottom = (w - oldSize.getWidth())/2;
+			}
+			if ((direction & IResizeShapeContext.DIRECTION_SOUTH) != 0) {
+				dyBottom = (h - oldSize.getHeight());
+			}
+			if ((direction & IResizeShapeContext.DIRECTION_WEST) != 0) {
+				dxTop = dxBottom = (oldSize.getWidth() - w)/2;
+			}
+		}
+		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape);
+		BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
+		BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
+
+		for (Connection connection : topBoundaryAnchor.anchor.getOutgoingConnections()) {
+			EObject container = connection.getEnd().eContainer();
+			if (container instanceof ContainerShape) {
+				String property = peService.getPropertyValue((PropertyContainer) container, MESSAGE_LINK);
+				if (property != null && new Boolean(property)) {
+					ILocation loc = peService.getLocationRelativeToDiagram((ContainerShape)container);
+					int x = loc.getX() + dxTop;
+					int y = loc.getY() + dyTop;
+					gaService.setLocation(((ContainerShape) container).getGraphicsAlgorithm(), x, y);
+					break;
+				}
+			}
+		}
+
+		for (Connection connection : bottomBoundaryAnchor.anchor.getOutgoingConnections()) {
+			EObject container = connection.getEnd().eContainer();
+			if (container instanceof ContainerShape) {
+				String property = peService.getPropertyValue((PropertyContainer) container, MESSAGE_LINK);
+				if (property != null && new Boolean(property)) {
+					ILocation loc = peService.getLocationRelativeToDiagram((ContainerShape)container);
+					int x = loc.getX() + dxBottom;
+					int y = loc.getY() + dyBottom;
+					gaService.setLocation(((ContainerShape) container).getGraphicsAlgorithm(), x, y);
+					break;
+				}
+			}
+		}
+	}
+	
+	public static void moveChoreographyMessageLinks(ContainerShape choreographyTaskShape) {
+		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(choreographyTaskShape, BPMNShape.class);
 		Bounds bounds = bpmnShape.getBounds();
 		int x = (int) ((bounds.getX() + bounds.getWidth() / 2) - (ENV_W / 2));
 
-		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyContainer);
+		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape);
 		BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
 		BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
 

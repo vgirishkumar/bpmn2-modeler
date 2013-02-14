@@ -156,8 +156,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	public static class CreateSequenceFlowFeature extends AbstractCreateFlowFeature<SequenceFlow, FlowNode, FlowNode> {
 
 		public CreateSequenceFlowFeature(IFeatureProvider fp) {
-			super(fp, "Sequence Flow",
-					"A Sequence Flow is used to show the order that Activities will be performed in a Process");
+			super(fp, "Sequence Flow", "Create "+"Sequence Flow");
 		}
 
 		@Override

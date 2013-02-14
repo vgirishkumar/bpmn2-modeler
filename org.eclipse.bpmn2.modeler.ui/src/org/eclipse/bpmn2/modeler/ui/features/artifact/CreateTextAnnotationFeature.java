@@ -24,7 +24,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 public class CreateTextAnnotationFeature extends AbstractCreateArtifactFeature<TextAnnotation> {
 
 	public CreateTextAnnotationFeature(IFeatureProvider fp) {
-		super(fp, "Annotation", "Provide additional information");
+		super(fp, "Annotation", "Create "+"Annotation");
 	}
 
 	@Override

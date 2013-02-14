@@ -190,7 +190,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	public class CreateAssociationFeature extends AbstractCreateFlowFeature<Association, BaseElement, BaseElement> {
 
 		public CreateAssociationFeature(IFeatureProvider fp) {
-			super(fp, "Association", "Associate information with artifacts and flow objects");
+			super(fp, "Association", "Create "+"Association");
 		}
 
 		@Override

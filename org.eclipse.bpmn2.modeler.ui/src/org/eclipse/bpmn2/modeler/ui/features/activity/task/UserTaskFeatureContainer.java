@@ -47,26 +47,24 @@ public class UserTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<UserTask>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, UserTask businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
-				IGaService service = Graphiti.getGaService();
-				Image img = service.createImage(ga, ImageProvider.IMG_16_USER_TASK);
-				service.setLocationAndSize(img, 2, 2, GraphicsUtil.TASK_IMAGE_SIZE, GraphicsUtil.TASK_IMAGE_SIZE);
-			}
-		};
+		return new AddUserTaskFeature(fp);
+	}
+	
+	public static class AddUserTaskFeature extends AbstractAddDecoratedTaskFeature<UserTask> {
+				public AddUserTaskFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		protected String getStencilImageId() {
+			return ImageProvider.IMG_16_USER_TASK;
+		}
 	}
 
 	public static class CreateUserTaskFeature extends AbstractCreateTaskFeature<UserTask> {
 
 		public CreateUserTaskFeature(IFeatureProvider fp) {
-			super(fp, "User Task",
-					"A User Task is a typical \"workflow\" Task where a human"
-					+" performer performs the Task with the assistance of a"
-					+" software application and is scheduled through a modelObject"
-					+" list manager of some sort.");
+			super(fp, "User Task", "Create "+"User Task");
 		}
 
 		@Override

@@ -53,6 +53,6 @@ public class MoveChoreographyFeature extends MoveFlowNodeFeature {
 				bounds.setY(loc.getY() + ga.getY());
 			}
 		}
-		ChoreographyUtil.moveChoreographyMessageLinks((ContainerShape) context.getPictogramElement());
+		ChoreographyUtil.updateChoreographyMessageLinks(context);
 	}
 }

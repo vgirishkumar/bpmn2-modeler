@@ -19,6 +19,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmActivityDetailComposite.ScriptTableComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
@@ -68,5 +70,8 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 
 		scriptEditor = new TextObjectEditor(this,be,be.eClass().getEStructuralFeature("script"));
 		scriptEditor.createControl(getAttributesParent(),"Script");
+
+		bindAttribute(be,"isForCompensation");
+		bindEntryExitScripts(be);
 	}
 }
