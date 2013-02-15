@@ -47,5 +47,7 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 			}
 		}
 		DIUtils.updateDIShape(context.getPictogramElement());
+		
+		ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
 	}
 }

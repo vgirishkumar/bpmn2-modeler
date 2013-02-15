@@ -72,6 +72,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Point p1 = null;
 		Point p2 = null;
 		Direction d1, d2;
+		final int offset = 20;
 		
 		for (int tries=0; tries<4; ++tries) {
 			for (int i=0; i<newPoints.size()-1; ++i) {
@@ -118,10 +119,31 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							switch (d2) {
 							case LEFT:
 							case RIGHT:
+								if (d1==Direction.DOWN && p2.getY() < p1.getY()) {
+									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
+									newPoints.add(i+2,p);
+									break;
+								}
+								if (d1==Direction.UP && p2.getY() > p1.getY()) {
+									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() - offset);
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(m.getX(),p1.getY() - offset);
+									newPoints.add(i+2,p);
+									break;
+								}
 								p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
 								newPoints.add(i+1,p);
 								break;
 							case UP:
+								if (d1==Direction.DOWN) {
+									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
+									newPoints.add(i+2,p);
+									break;
+								}
 							case DOWN:
 								p = GraphicsUtil.createPoint(p1.getX(),m.getY());
 								newPoints.add(++i,p);
@@ -160,10 +182,31 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							switch (d2) {
 							case UP:
 							case DOWN:
+								if (d1==Direction.RIGHT && p2.getX() < p1.getX()) {
+									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
+									newPoints.add(i+2,p);
+									break;
+								}
+								if (d1==Direction.LEFT && p2.getX() > p1.getX()) {
+									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
+									newPoints.add(i+1,p);
+									break;
+								}
 								p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
 								newPoints.add(i+1,p);
 								break;
 							case LEFT:
+								if (d1==Direction.RIGHT) {
+									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
+									newPoints.add(i+1,p);
+									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
+									newPoints.add(i+2,p);
+									break;
+								}
 							case RIGHT:
 								p = GraphicsUtil.createPoint(m.getX(),p1.getY());
 								newPoints.add(++i,p);
