@@ -813,6 +813,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		// FIXME: when/if we figure out how to save the location for a Message attached to
 		// a Participant Band (the BPMNShape.isMessageVisible==true for the Participant Band)
 		// this code. Until then, it doesn't make sense to allow the Message to be moved.
+		/*
 		int dxTop = 0, dyTop = 0;
 		int dxBottom = 0, dyBottom = 0;
 		if (context instanceof IMoveShapeContext) {
@@ -820,6 +821,9 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			dyTop = dyBottom = ((IMoveShapeContext)context).getDeltaY();
 		}
 		else if (context instanceof IResizeShapeContext) {
+			// If/when this code is implemented, we will have to figure out something
+			// different for Graphiti 0.8.2 because the API has changed:
+			// IResizeShapeContext.getDirection() was added in 0.9.0
 			IDimension oldSize = GraphicsUtil.calculateSize(choreographyTaskShape);
 			int direction = ((IResizeShapeContext)context).getDirection();
 			int x = ((IResizeShapeContext)context).getX();
@@ -871,6 +875,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				}
 			}
 		}
+		*/
 	}
 	
 	public static void moveChoreographyMessageLinks(ContainerShape choreographyTaskShape) {
