@@ -16,10 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.PropertyBasedFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
@@ -40,9 +44,11 @@ import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractMoveShapeFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
+import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 
 public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatureContainer {
 
@@ -57,6 +63,16 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 	}
 
 	@Override
+	public boolean canApplyTo(Object o) {
+		if (super.canApplyTo(o))
+			return true;
+		if (o instanceof Connection &&
+				ChoreographyUtil.isChoreographyMessageLink((Connection)o))
+			return true;
+		return false;
+	}
+
+	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return null;
 	}
@@ -68,7 +84,10 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return null;
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageFlowFeature(fp));
+		return multiUpdate;
 	}
 
 	@Override
@@ -111,6 +130,11 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 		return new DefaultDeleteBPMNShapeFeature(fp) {
 
 			@Override
+			public boolean canDelete(IDeleteContext context) {
+				return context.getPictogramElement() instanceof ContainerShape;
+			}
+
+			@Override
 			public void delete(IDeleteContext context) {
 				ContainerShape envelope = (ContainerShape) context.getPictogramElement();
 				Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(envelope);
@@ -131,9 +155,11 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 						continue;
 					}
 
-					if (!BusinessObjectUtil.containsElementOfType((PictogramElement) start, ChoreographyActivity.class)) {
+					ChoreographyActivity ca = BusinessObjectUtil.getFirstElementOfType((PictogramElement)start, ChoreographyActivity.class);
+					if (ca==null) {
 						continue;
 					}
+					MessageFlow mf = (MessageFlow)BusinessObjectUtil.getBusinessObjectForPictogramElement(connection);
 
 					List<ContainerShape> bands = ChoreographyUtil
 							.getParticipantBandContainerShapes((ContainerShape) start);
@@ -149,6 +175,12 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 						bpmnShape.setIsMessageVisible(false);
 					}
 
+					ChoreographyUtil.removeChoreographyMessageLink(connection);
+					
+					if (ca instanceof ChoreographyTask) {
+						ChoreographyTask ct = (ChoreographyTask) ca;
+						ct.getMessageFlowRef().remove(mf);
+					}
 					break;
 				}
 			}

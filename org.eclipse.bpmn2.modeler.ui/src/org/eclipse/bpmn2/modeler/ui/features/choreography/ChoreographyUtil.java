@@ -137,6 +137,18 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return false;
 	}
 	
+	public static boolean removeChoreographyMessageLink(PictogramElement pe) {
+		if (isChoreographyMessageLink(pe)) {
+			Connection connection = (Connection)pe;
+			// remove the Message figure
+			peService.deletePictogramElement( connection.getEnd().getParent() );
+			// remove the connection
+			peService.deletePictogramElement(connection);
+			return true;
+		}
+		return false;
+	}
+	
 	public static Tuple<List<ContainerShape>, List<ContainerShape>> getTopAndBottomBands(
 			List<ContainerShape> participantBands) {
 		List<ContainerShape> top = new ArrayList<ContainerShape>();

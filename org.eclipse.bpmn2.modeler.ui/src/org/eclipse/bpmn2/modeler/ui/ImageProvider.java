@@ -149,6 +149,7 @@ public class ImageProvider extends AbstractImageProvider {
 
 	public static final String IMG_16_ADD_PARTICIPANT = PREFIX + "addparticipant" + dot16;
 	public static final String IMG_16_ADD_MESSAGE = PREFIX + "addmessage" + dot16;
+	public static final String IMG_16_REMOVE_MESSAGE = PREFIX + "removemessage" + dot16;
 	public static final String IMG_16_ROTATE = PREFIX + "rotate" + dot16;
 	public static final String IMG_16_WHITEBOX = PREFIX + "whitebox" + dot16;
 	public static final String IMG_16_BLACKBOX = PREFIX + "blackbox" + dot16;
@@ -217,6 +218,7 @@ public class ImageProvider extends AbstractImageProvider {
 
 		addImageFilePath(IMG_16_ADD_PARTICIPANT, ICONS_16 + "addparticipant.png");
 		addImageFilePath(IMG_16_ADD_MESSAGE, ICONS_16 + "addmessage.png");
+		addImageFilePath(IMG_16_REMOVE_MESSAGE, ICONS_16 + "removemessage.png");
 		addImageFilePath(IMG_16_ROTATE, ICONS_16 + "rotate.png");
 		addImageFilePath(IMG_16_PROPERTIES, ICONS_16 + "properties.png");
 

@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.ui.features.data;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
@@ -22,7 +21,6 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
@@ -43,11 +41,9 @@ import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -64,15 +60,8 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public Object getApplyObject(IContext context) {
-		// FIXME: move the Participant Band Message delete functionality into a Custom Feature
-		// the same way the "Add Message" is handled currently
 		Object object = super.getApplyObject(context);
-		if (object instanceof Message) {
-			if (context instanceof IPictogramElementContext) {
-				PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-				if (ChoreographyUtil.isChoreographyMessage(pe))
-					return null;
-			}
+		if (object instanceof Message && !isChoreographyMessage(context)) {
 			return object;
 		}
 		return null;
@@ -83,6 +72,18 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		return super.canApplyTo(o) && o instanceof Message;
 	}
 
+	public static boolean isChoreographyMessage(IContext context) {
+		// This Feature Container DOES NOT handle Messages attached
+		// to Choreography Participant Bands.
+		// See ChoreographyMessageLinkFeatureContainer instead.
+		if (context instanceof IPictogramElementContext) {
+			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
+			if (ChoreographyUtil.isChoreographyMessage(pe))
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateMessageFeature(fp);
@@ -95,12 +96,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		// because ChoreographyTasks have an associated Message visual,
-		// we need to allow these to update themselves also.
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageFlowFeature(fp));
-		return multiUpdate;
+		return new UpdateLabelFeature(fp);
 	}
 
 	@Override
