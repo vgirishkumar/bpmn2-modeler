@@ -23,7 +23,9 @@ import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -88,7 +90,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getDescription() {
-	    return "Add a new Message to this Choreography Task";
+	    return "Add a Message definition to this Choreography Participant";
 	}
 
 	@Override
@@ -117,7 +119,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 					// with this participant as the source
 					ChoreographyTask ct=(ChoreographyTask)parent;
 					
-					if (ct.getParticipantRefs().size() == 2) {
+					if (ct.getParticipantRefs().size() >= 2) {
 						boolean canAdd=true;
 						
 						for (MessageFlow mf : ct.getMessageFlowRef()) {
@@ -198,6 +200,10 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 
 								mf.setMessageRef(result);
 								ct.getMessageFlowRef().add(mf);
+								
+								BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
+								bpmnShape.setIsMessageVisible(true);
+
 							} else {
 								// REPORT ERROR??
 							}

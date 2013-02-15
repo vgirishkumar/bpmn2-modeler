@@ -151,7 +151,8 @@ public class InterfacePropertySection extends DefaultPropertySection {
 			if (columnProvider==null) {
 				columnProvider = new ListCompositeColumnProvider(this);
 				columnProvider.add(new TableColumn(object, Bpmn2Package.eINSTANCE.getInterface_Name()));
-				columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()));
+				columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()))
+					.setHeaderText("Implementation");
 			}
 			return columnProvider;
 		}

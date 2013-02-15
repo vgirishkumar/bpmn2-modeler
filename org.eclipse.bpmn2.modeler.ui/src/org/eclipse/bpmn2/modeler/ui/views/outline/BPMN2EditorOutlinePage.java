@@ -12,6 +12,10 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Viewport;
@@ -39,6 +43,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -206,12 +211,36 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		return pageBook;
 	}
 
+	Job refreshJob;
+	
 	/**
 	 * Refreshes the outline on any change of the diagram editor. Most
 	 * importantly, there is a property change event editor-dirty.
 	 */
 	public void propertyChanged(Object source, int propId) {
-		refresh();
+		if (refreshJob != null) {
+			refreshJob.cancel();
+			refreshJob.sleep();
+		}
+		else {
+			refreshJob = new Job("") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					if (getState()==Job.RUNNING) {
+						Display.getDefault().asyncExec(new Runnable() {
+	
+							@Override
+							public void run() {
+								refresh();
+							}
+							
+						});
+					}
+					return Status.OK_STATUS;
+				}
+			};
+		}
+		refreshJob.schedule(500);
 	}
 
 	/**

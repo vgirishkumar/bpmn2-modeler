@@ -442,9 +442,11 @@ public class DIImport {
 			PictogramElement newContainer = addFeature.add(context);
 			featureProvider.link(newContainer, new Object[] { bpmnElement, shape });
 			if (bpmnElement instanceof Participant) {
-				// TODO: figure out why this was put here initially;
-				// participant bands are already handled separately
-//				elements.put(((Participant) bpmnElement).getProcessRef(), newContainer);
+				// If the Participant ("Pool") references a Process, add it to our list of elements;
+				// its ContainerShape is the same as the Participant's.
+				Process process = ((Participant) bpmnElement).getProcessRef();
+				if (process!=null)
+					elements.put(process, newContainer);
 			}
 			else if (bpmnElement instanceof ChoreographyActivity) {
 				ChoreographyActivity ca = (ChoreographyActivity)bpmnElement;

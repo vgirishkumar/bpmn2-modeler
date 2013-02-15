@@ -121,7 +121,6 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		System.out.println("");
 		return new UpdateLabelFeature(fp) {
 
 			@Override

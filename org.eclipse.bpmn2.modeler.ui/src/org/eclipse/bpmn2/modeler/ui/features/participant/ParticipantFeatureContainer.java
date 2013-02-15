@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyParticipantFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.BlackboxFeature;
+import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyMessageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.RemoveChoreographyParticipantFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.UpdateChoreographyMessageLinkFeature;
@@ -102,12 +103,13 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
-		ICustomFeature[] thisFeatures = new ICustomFeature[5 + superFeatures.length];
+		ICustomFeature[] thisFeatures = new ICustomFeature[6 + superFeatures.length];
 		thisFeatures[0] = new ShowDiagramPageFeature(fp);
 		int i;
 		for (i=0; i<superFeatures.length; ++i)
 			thisFeatures[i+1] = superFeatures[i];
 		thisFeatures[++i] = new AddChoreographyMessageFeature(fp);
+		thisFeatures[++i] = new RemoveChoreographyMessageFeature(fp);
 		thisFeatures[++i] = new RotatePoolFeature(fp);
 		thisFeatures[++i] = new WhiteboxFeature(fp);
 		thisFeatures[++i] = new BlackboxFeature(fp);
