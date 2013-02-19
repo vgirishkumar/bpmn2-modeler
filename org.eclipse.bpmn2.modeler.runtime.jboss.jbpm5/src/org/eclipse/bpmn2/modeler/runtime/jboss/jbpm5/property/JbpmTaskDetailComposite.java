@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.ResourceAssignmentExpression;
@@ -111,6 +112,12 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 			// for the editors (these will go away if they are not touched by the user)
 			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name");
 			InputOutputSpecification ioSpec = task.getIoSpecification();
+			if (ioSpec==null) {
+				ioSpec = FACTORY.createInputOutputSpecification();
+				InsertionAdapter.add(task,
+						PACKAGE.getActivity_IoSpecification(),
+						ioSpec);
+			}
 			for (Property property : props) {
 				
 				// this will become the label for the Object Editor
@@ -138,8 +145,23 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					parameter = FACTORY.createDataInput();
 					ModelUtil.setID(parameter, resource);
 					parameter.setName(name);
-					InsertionAdapter.add(task,
+					InsertionAdapter.add(ioSpec,
 							PACKAGE.getInputOutputSpecification_DataInputs(),
+							parameter);
+					
+					// create the InputSet if needed
+					InputSet inputSet = null;
+					if (ioSpec.getInputSets().size()==0) {
+						inputSet = FACTORY.createInputSet();
+						InsertionAdapter.add(ioSpec,
+								PACKAGE.getInputOutputSpecification_InputSets(),
+								inputSet);
+					}
+					else
+						inputSet = ioSpec.getInputSets().get(0);
+					// add the parameter to the InputSet also
+					InsertionAdapter.add(inputSet,
+							PACKAGE.getInputSet_DataInputRefs(),
 							parameter);
 				}
 				
