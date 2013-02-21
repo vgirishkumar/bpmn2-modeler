@@ -81,12 +81,21 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			else
 				newUri = URI.createURI(uriString, true);
 			if (newUri.fragment()!=null) {
-				setDefaultTimeoutProperties();
-				o = super.getEObject(newUri, loadOnDemand);
-				restoreTimeoutProperties();
+				try {
+					setDefaultTimeoutProperties();
+					o = super.getEObject(newUri, loadOnDemand);
+				}
+				catch (Exception e) {
+					throw e;
+				}
+				finally {
+					restoreTimeoutProperties();
+				}
 			}
-			else
+			else {
+				newUri = newUri.appendFragment(uri.lastSegment());
 				o = super.getEObject(newUri, loadOnDemand);
+			}
 		}
 		return o;
 	}
@@ -204,6 +213,19 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 		return null;
 	}
 	
+	public Resource getResource(URI uri, boolean loadOnDemand) {
+		Resource resource = super.getResource(uri, loadOnDemand);
+		int index = resources.indexOf(resource);
+		if (index>2) {
+			// the first two Resources loaded are the Graphiti XMI resource and
+			// our BPMN2 model file. All others are probably loaded as a result
+			// of imports or references to external Resources. We want to track
+			// changes to those and also make sure they don't get saved by Graphiti's
+			// EmfService class.
+			resource.setTrackingModification(true);
+		}
+		return resource;
+	}
 	
 	protected Resource demandCreateResource ( URI uri, String kind ) {
 		return createResource ( uri, kind );
@@ -228,6 +250,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					
 					final Object wsilFactory = extensionToFactoryMap.get("wsil");
 					final Object wsdlFactory = extensionToFactoryMap.get("wsdl");
+					final Object xsdFactory = extensionToFactoryMap.get("xsd");
 					
 					final Map<String, Object> contentTypeToFactoryMap = 
 						Resource.Factory.Registry.INSTANCE.getContentTypeToFactoryMap();
@@ -237,6 +260,9 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					}
 					if (null != wsdlFactory) {
 						contentTypeToFactoryMap.put("wsdl", wsdlFactory);
+					}
+					if (null != xsdFactory) {
+						contentTypeToFactoryMap.put("xsd", xsdFactory);
 					}
 
 					return convert(getFactory(uri,

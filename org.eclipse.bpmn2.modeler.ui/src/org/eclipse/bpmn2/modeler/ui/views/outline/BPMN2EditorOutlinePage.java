@@ -383,10 +383,15 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	 * Refresh.
 	 */
 	void refresh() {
-		final EditPartViewer viewer = getViewer();
-		final EditPart contents = viewer.getContents();
-		if (contents != null) {
-			contents.refresh();
+		try {
+			final EditPartViewer viewer = getViewer();
+			final EditPart contents = viewer.getContents();
+			if (contents != null) {
+				contents.refresh();
+			}
+		}
+		catch (Exception e) {
+			// ignore SWT exceptions caused by closing the editor
 		}
 	}
 }

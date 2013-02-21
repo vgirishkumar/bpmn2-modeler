@@ -24,11 +24,14 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.wsdl.Message;
+import org.eclipse.xsd.XSDElementDeclaration;
 
 /**
  * @author Bob Brodt
@@ -57,9 +60,20 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				@Override
 				public String getDisplayName(Object context) {
 					final ItemDefinition itemDefinition = adopt(context);
+					Resource resource = ModelUtil.getResource(itemDefinition);
 					String name = "";
-					if (itemDefinition.getStructureRef()!=null) {
-						name = ModelUtil.getStringWrapperValue(itemDefinition.getStructureRef());
+					Object value = itemDefinition.getStructureRef();
+					if (value!=null) {
+						if (value instanceof XSDElementDeclaration) {
+							XSDElementDeclaration elem = (XSDElementDeclaration)value;
+							name = elem.getQName();
+						}
+						else if (value instanceof Message) {
+							Message message = (Message)value;
+							name = NamespaceUtil.normalizeQName(resource,message.getQName());
+						}
+						else if (ModelUtil.isStringWrapper(value))
+							name = ModelUtil.getStringWrapperValue(value);
 					}
 					else {
 						name = itemDefinition.getId() + ".type";

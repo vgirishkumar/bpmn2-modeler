@@ -1279,6 +1279,12 @@ public class ModelUtil {
 		return true;
 	}
 
+	public static Object getValue(final EObject object, final EStructuralFeature feature) {
+		ExtendedPropertiesAdapter adapter = AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		Object value = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
+		return value;
+	}
+	
 	public static EObject createObject(Object object) {
 		if (object instanceof EObject)
 			return createObject(((EObject)object).eResource(),object);

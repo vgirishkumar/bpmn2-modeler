@@ -150,9 +150,13 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 			if (columnProvider==null) {
 				columnProvider = new ListCompositeColumnProvider(this);
-				columnProvider.add(new TableColumn(object, Bpmn2Package.eINSTANCE.getInterface_Name()));
-				columnProvider.add(new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()))
-					.setHeaderText("Implementation");
+				TableColumn tc = new TableColumn(object, Bpmn2Package.eINSTANCE.getInterface_Name());
+				columnProvider.add(tc);
+				tc.setEditable(false);
+				
+				tc = new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
+				columnProvider.add(tc).setHeaderText("Implementation");
+				tc.setEditable(false);
 			}
 			return columnProvider;
 		}

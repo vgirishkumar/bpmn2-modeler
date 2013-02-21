@@ -410,13 +410,13 @@ public class ImportUtil {
 			bpmn2op.setName(wsdlop.getName());
 			
 			Input input = wsdlop.getEInput();
-			if (input!=null) {
+			if (input!=null && input.getEMessage()!=null) {
 				org.eclipse.bpmn2.Message bpmn2msg = createMessage(definitions, imp, input.getEMessage());
 				bpmn2op.setInMessageRef(bpmn2msg);
 			}
 			
 			Output output = wsdlop.getEOutput();
-			if (output!=null) {
+			if (output!=null && output.getEMessage()!=null) {
 				org.eclipse.bpmn2.Message bpmn2msg = createMessage(definitions, imp, output.getEMessage());
 				bpmn2op.setOutMessageRef(bpmn2msg);
 			}

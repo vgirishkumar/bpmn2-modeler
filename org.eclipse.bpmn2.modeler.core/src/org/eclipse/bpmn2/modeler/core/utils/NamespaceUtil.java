@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import javax.xml.namespace.QName;
 
 /**
  * @author Bob Brodt
@@ -57,6 +58,20 @@ public class NamespaceUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static String normalizeQName(Resource resource, QName qname) {
+		String localPart = qname.getLocalPart();
+		String namespace = qname.getNamespaceURI();
+		String prefix = qname.getPrefix();
+		if (prefix!=null && !prefix.isEmpty()) {
+			return prefix + ":" + localPart;
+		}
+		prefix = getPrefixForNamespace(resource, namespace);
+		if (prefix!=null && !prefix.isEmpty()) {
+			return prefix + ":" + localPart;
+		}
+		return localPart;
 	}
 	
 	public static boolean hasNamespace(Resource resource, String namespace) {
