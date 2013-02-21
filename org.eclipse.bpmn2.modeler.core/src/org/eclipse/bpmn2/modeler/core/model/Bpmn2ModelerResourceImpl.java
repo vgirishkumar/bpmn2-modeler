@@ -105,6 +105,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		// override helper and uri handler in options map
 		this.xmlHelper = new Bpmn2ModelerXmlHelper(this);
         this.uriHandler = new FragmentQNameURIHandler(xmlHelper);
+        uriHandler.setBaseURI(uri);
+        
         this.getDefaultLoadOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, false);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, true);
@@ -263,25 +265,53 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		protected void setValueFromId(EObject object, EReference eReference, String ids) {
 
+			EObject value = null;
+			
+			// hack to handle QNames and arbitrary strings in ItemDefinition structureRefs,
+			// Interface implementationRefs and Operation implementationRefs
+			if (
+					(object instanceof ItemDefinition &&
+						eReference == Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef()) ||
+					(object instanceof Interface &&
+							eReference == Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()) ||
+					(object instanceof Operation &&
+							eReference == Bpmn2Package.eINSTANCE.getOperation_ImplementationRef())
+			) {
+				try {
+					// if the ID string is a URI, try to resolve and load the object
+					URI uri = uriHandler.resolve( URI.createURI(ids) );
+					value = resourceSet.getEObject(uri, true);
+				}
+				catch (Exception e) {
+				}
+				if (value==null) {
+					// not a URI or can't find EObject: create a string wrapper EObject
+					object.eSet(eReference, ModelUtil.createStringWrapper(ids));
+				}
+				else
+					object.eSet(eReference, value);
+				return;
+			}
+
 			for (EObject o : objects) {
 				TreeIterator<EObject> iter = o.eAllContents();
 				while (iter.hasNext()) {
-					EObject obj = iter.next();
-					EStructuralFeature feature = ((EObject) obj).eClass().getEIDAttribute();
-					if (feature != null && obj.eGet(feature) != null) {
-						Object id = obj.eGet(feature);
+					value = iter.next();
+					EStructuralFeature feature = value.eClass().getEIDAttribute();
+					if (feature != null && value.eGet(feature) != null) {
+						Object id = value.eGet(feature);
 						if (id != null && id.equals(ids)) {
 							try {
 								if (object.eGet(eReference) instanceof EList) {
-									((EList)object.eGet(eReference)).add(obj);
+									((EList)object.eGet(eReference)).add(value);
 								}
 								else {
-									object.eSet(eReference, obj);
+									object.eSet(eReference, value);
 								}
 							} catch (Exception e) {
 								String msg = "Invalid or unknown reference from:\n  " +
 										object + "\nfeature:\n  " + eReference +
-										"\nto:\n  " + obj;
+										"\nto:\n  " + value;
 								IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
 										msg, e);
 								Activator.getDefault().logStatus(s);
@@ -290,17 +320,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						}
 					}
 				}
-			}
-
-			// hack to handle QNames and arbitrary strings in ItemDefinition structureRefs,
-			// Interface implementationRefs and Operation implementationRefs
-			if (
-					(eReference.getName().equals("structureRef") && object instanceof ItemDefinition) ||
-					(eReference.getName().equals("implementationRef") && object instanceof Interface) ||
-					(eReference.getName().equals("implementationRef") && object instanceof Operation)
-			) {
-				object.eSet(eReference, ModelUtil.createStringWrapper(ids));
-				return;
 			}
 
 			super.setValueFromId(object, eReference, ids);
@@ -627,6 +646,14 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 
 		@Override
+		public URI resolve(URI uri) {
+			URI resolvedUri = super.resolve(uri);
+			if (resolvedUri.isRelative())
+				resolvedUri = resolvedUri.resolve(baseURI);
+			return resolvedUri;
+		}
+
+		@Override
 		public URI deresolve(URI uri) {
 			String fragment = uri.fragment();
 			if (fragment != null && !fragment.startsWith("/")) {
@@ -683,8 +710,22 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		
 		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
+		}		
+		  
+		public void pushContext() {
+			boolean isTopLevelContext = false;
+			try {
+				namespaceSupport.getDeclaredPrefixCount();
+			}
+			catch (ArrayIndexOutOfBoundsException e) {
+				isTopLevelContext = true;
+			}
+			namespaceSupport.pushContext();
+			// add the "bpmn2" namespace as the top-level default XML namespace
+			if (isTopLevelContext) {
+				addPrefix("", Bpmn2Package.eNS_URI);
+			}
 		}
-		
 
 		public void setValue(EObject object, EStructuralFeature feature,
 				Object value, int position) {

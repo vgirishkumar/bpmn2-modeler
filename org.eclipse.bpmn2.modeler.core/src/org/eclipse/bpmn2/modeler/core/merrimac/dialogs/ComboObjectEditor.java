@@ -247,7 +247,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		throw new Exception("Dialog Cancelled");
+		throw new OperationCanceledException("Dialog Cancelled");
 	}
 	
 	protected EObject editObject(EObject value) throws Exception {
@@ -256,7 +256,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		throw new Exception("Dialog Cancelled");
+		throw new OperationCanceledException("Dialog Cancelled");
 	}
 
 	@Override

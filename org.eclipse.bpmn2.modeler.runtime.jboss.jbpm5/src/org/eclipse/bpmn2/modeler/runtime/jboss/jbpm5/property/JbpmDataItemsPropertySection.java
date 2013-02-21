@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.PropertyListComposite;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -81,10 +82,10 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 						if (name!=null) {
 							ImportType it = JbpmModelUtil.addImport(name, object);
 							if (it==null)
-								throw new Exception("Import Already Exists");
+								throw new OperationCanceledException("Import Already Exists");
 							return it;
 						}
-						throw new Exception("Dialog Cancelled");
+						throw new OperationCanceledException("Dialog Cancelled");
 					}
 				};
 				editor.createControl(parent,label);

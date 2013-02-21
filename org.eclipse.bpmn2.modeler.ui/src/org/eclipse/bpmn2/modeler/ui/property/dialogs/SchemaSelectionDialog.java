@@ -38,6 +38,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -124,14 +126,20 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 			public void widgetSelected(SelectionEvent e) {
 				SchemaImportDialog dialog = new SchemaImportDialog(getShell());
 				if (dialog.open() == Window.OK) {
-					Object result[] = dialog.getResult();
+					final Object result[] = dialog.getResult();
 					if (result.length == 1) {
-						Import imp = ImportUtil.addImport(bpmn2Editor.getModelHandler().getResource(), result[0]);
-						if (imp!=null) {
-							int index = importList.getItemCount();
-							importList.add(imp.getLocation());
-							importList.setData(""+index,imp);
-						}
+						TransactionalEditingDomain domain = bpmn2Editor.getEditingDomain();
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								Import imp = ImportUtil.addImport(bpmn2Editor.getModelHandler().getResource(), result[0]);
+								if (imp!=null) {
+									int index = importList.getItemCount();
+									importList.add(imp.getLocation());
+									importList.setData(""+index,imp);
+								}
+							}
+						});
 					}
 				}
 			}
