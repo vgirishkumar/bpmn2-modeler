@@ -13,8 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
-import java.lang.reflect.Member;
 import java.util.List;
+
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IType;
 
 /**
  * @author Bob Brodt
@@ -24,7 +26,7 @@ public class JavaMemberContentProvider extends AbstractContentProvider {
 	
 	@Override
 	public void collectElements(Object input, List list)  {
-		if (input instanceof Member) {
+		if (input instanceof IMember && !(input instanceof IType)) {
 			list.add(input);
 			return;
 		}			

@@ -10,19 +10,11 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.util.ListMap;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.wst.wsdl.Definition;
-import org.eclipse.wst.wsdl.PortType;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IType;
 
 
 /**
@@ -57,16 +49,14 @@ public class JavaTreeContentProvider extends ModelTreeContentProvider {
 		}
 		
 		if (inputElement instanceof List) {									
-			List list = (List)inputElement;
-			return (Object[]) ListMap.Map ( 
-					fContentProvider.getElements( inputElement ), //list.toArray(),						
-					new ListMap.Visitor () {		
-						public Object visit (Object obj) {
-							Object r = getTreeNode ( obj );
-							return (r == null ? ListMap.IGNORE : r );
-						}					
-					},
-					EMPTY_ARRAY );							
+			Object[] elements = fContentProvider.getElements( inputElement );
+			ListMap.Visitor visitor = new ListMap.Visitor () {		
+				public Object visit (Object obj) {
+					Object r = getTreeNode ( obj );
+					return (r == null ? ListMap.IGNORE : r );
+				}					
+			};
+			return (Object[]) ListMap.Map(elements,  visitor, EMPTY_ARRAY);							
 		}
 		
 		return EMPTY_ARRAY;
@@ -75,10 +65,10 @@ public class JavaTreeContentProvider extends ModelTreeContentProvider {
 	
 	ITreeNode getTreeNode ( Object inputElement ) {
 		
-		if (inputElement instanceof Class) {
+		if (inputElement instanceof IType) {
 			return new JavaTypeTreeNode(inputElement,isCondensed);
 		}
-		else if (inputElement instanceof Member) {
+		else if (inputElement instanceof IMember) {
 			return new JavaMemberTreeNode(inputElement,isCondensed);
 		}
 
