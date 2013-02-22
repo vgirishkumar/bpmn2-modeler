@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IFile;
@@ -86,7 +87,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					o = super.getEObject(newUri, loadOnDemand);
 				}
 				catch (Exception e) {
-					throw e;
+					Activator.logError(e);
 				}
 				finally {
 					restoreTimeoutProperties();
