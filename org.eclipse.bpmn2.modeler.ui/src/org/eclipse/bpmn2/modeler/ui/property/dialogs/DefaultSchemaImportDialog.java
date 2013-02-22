@@ -42,6 +42,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -633,10 +634,9 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 		Resource resource = null;
 		if ("java".equals(kind)) {
 			final String fileName = uri.lastSegment();
-			final ArrayList<Class> results = new ArrayList<Class>();
-			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-			for (IProject p : projects) {
+			final ArrayList<IType> results = new ArrayList<IType>();
 				try {
+				    IProject p = bpmn2Editor.getProject();
 					if (p.isOpen() && p.hasNature(JavaCore.NATURE_ID)) {
 						final IJavaProject javaProject = JavaCore.create(p);
 						JavaProjectClassLoader cl = new JavaProjectClassLoader(javaProject);
@@ -645,7 +645,6 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
 			return results;
 		}
 		else {
@@ -855,7 +854,7 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 			IStructuredSelection sel = (IStructuredSelection)fTreeViewer.getSelection();
 			if (!sel.isEmpty()) {
 				TreeNode treeNode = (TreeNode)sel.getFirstElement();
-				if (treeNode.getModelObject() instanceof Class)
+				if (treeNode.getModelObject() instanceof IType)
 					setSelectionResult(new Object[] { treeNode.getModelObject() });
 				else
 					setSelectionResult(null);

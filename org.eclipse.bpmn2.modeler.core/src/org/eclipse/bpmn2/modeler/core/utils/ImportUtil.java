@@ -34,7 +34,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Input;
@@ -91,7 +93,7 @@ public class ImportUtil {
 		Resource resource = null;
 		if (IMPORT_KIND_JAVA.equals(kind)) {
 			final String fileName = uri.lastSegment();
-			final List<Class> results = new ArrayList<Class>();
+			final List<IType> results = new ArrayList<IType>();
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 			for (IProject p : projects) {
 				try {
@@ -173,9 +175,9 @@ public class ImportUtil {
 				imp.setLocation(schema.getSchemaLocation());
 				imp.setNamespace(schema.getTargetNamespace());
 			}
-			else if (importObject instanceof Class) {
+			else if (importObject instanceof IType) {
 				// Java class
-				Class clazz = (Class)importObject;
+			    IType clazz = (IType)importObject;
 				// TODO: create a location URI for the class file
 //				ClassLoader cl = clazz.getClassLoader();
 //				String name = clazz.getName().replaceAll("\\.", "/").concat(".class");
@@ -183,8 +185,8 @@ public class ImportUtil {
 //				URI uri = URI.createPlatformPluginURI(url.getPath(), true);
 				imp = Bpmn2ModelerFactory.create(Import.class);
 				imp.setImportType(IMPORT_TYPE_JAVA);
-				imp.setLocation(clazz.getName());
-				imp.setNamespace("http://" + clazz.getPackage().getName());
+				imp.setLocation(clazz.getFullyQualifiedName('.'));
+				imp.setNamespace("http://" + clazz.getPackageFragment().getElementName());
 			}
 			else if (importObject instanceof Definitions) {
 				// BPMN 2.0 Diagram file
@@ -243,8 +245,8 @@ public class ImportUtil {
 						createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
 					}
 				}
-				else if (importObject instanceof Class) {
-					Class clazz = (Class)importObject;
+				else if (importObject instanceof IType) {
+					IType clazz = (IType)importObject;
 
 					createItemDefinition(definitions, imp, clazz);
 				}
@@ -317,15 +319,20 @@ public class ImportUtil {
 			else if ("http://www.java.com/javaTypes".equals(type)) {
 				String className = imp.getLocation();
 				boolean deleted = false;
-				IJavaProject[] projects = JavaProjectClassLoader.findProject(className);
-				for (int i=0; i<projects.length; ++i) {
-					JavaProjectClassLoader loader = new JavaProjectClassLoader(projects[i]);
-					Class clazz = loader.findClass(className);
-					if (clazz!=null) {
-						deleteItemDefinition(definitions, imp, clazz);
-						deleted = true;
-					}
+		        String filename = definitions.eResource().getURI().trimFragment().toPlatformString(true);
+		        if (filename!=null) {
+		        IJavaProject project = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().findMember(filename).getProject());
+				if (project != null) {
+					try {
+                        IType clazz = project.findType(className);
+                        if (clazz!=null) {
+                        	deleteItemDefinition(definitions, imp, clazz);
+                        	deleted = true;
+                        }
+                    } catch (JavaModelException e) {
+                    }
 				}
+		        }
 				if (!deleted)
 					deleteItemDefinition(definitions, imp, className);
 			}
@@ -610,11 +617,14 @@ public class ImportUtil {
 	 * @param clazz - the Java Class object that defines the structure of the ItemDefinition
 	 * @return the newly created object, or an existing ItemDefinition that is identical to the given Java type
 	 */
-	public static ItemDefinition createItemDefinition(Definitions definitions, Import imp, Class clazz) {
-		for (Class c : clazz.getDeclaredClasses()) {
-			createItemDefinition(definitions, imp, c);
-		}
-		return createItemDefinition(definitions, imp, clazz.getName(), ItemKind.PHYSICAL);
+	public static ItemDefinition createItemDefinition(Definitions definitions, Import imp, IType clazz) {
+		try {
+            for (IType c : clazz.getTypes()) {
+            	createItemDefinition(definitions, imp, c);
+            }
+        } catch (JavaModelException e) {
+        }
+		return createItemDefinition(definitions, imp, clazz.getFullyQualifiedName('.'), ItemKind.PHYSICAL);
 	}
 	
 	/**
@@ -702,11 +712,14 @@ public class ImportUtil {
 	 * @param imp - the Import object where the Java type is defined
 	 * @param clazz - the Java Class object that defines the structure of the ItemDefinition
 	 */
-	public static void deleteItemDefinition(Definitions definitions, Import imp, Class clazz) {
-		for (Class c : clazz.getDeclaredClasses()) {
-			deleteItemDefinition(definitions, imp, c);
-		}
-		EObject structureRef = ModelUtil.createStringWrapper(clazz.getName());
+	public static void deleteItemDefinition(Definitions definitions, Import imp, IType clazz) {
+		try {
+            for (IType c : clazz.getTypes()) {
+            	deleteItemDefinition(definitions, imp, c);
+            }
+        } catch (JavaModelException e) {
+        }
+		EObject structureRef = ModelUtil.createStringWrapper(clazz.getFullyQualifiedName('.'));
 		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.PHYSICAL);
 		if (itemDef!=null) {
 			EcoreUtil.delete(itemDef);

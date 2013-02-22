@@ -20,7 +20,6 @@ import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
@@ -60,20 +59,15 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ScenarioParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.TimeParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.TimeUnit;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.UniformDistributionType;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.ListDialog;
 
 public class JbpmModelUtil {
 
@@ -91,8 +85,8 @@ public class JbpmModelUtil {
 		SchemaImportDialog dialog = new SchemaImportDialog(shell, SchemaImportDialog.ALLOW_JAVA);
 		if (dialog.open() == Window.OK) {
 			Object result[] = dialog.getResult();
-			if (result.length == 1 && result[0] instanceof Class) {
-				className = ((Class)result[0]).getName();
+			if (result.length == 1 && result[0] instanceof IType) {
+				className = ((IType)result[0]).getFullyQualifiedName('.');
 			}
 		}
 		return className;

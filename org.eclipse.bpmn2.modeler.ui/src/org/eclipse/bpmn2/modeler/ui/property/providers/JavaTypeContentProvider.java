@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.property.providers;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jdt.core.IType;
 
 /**
  * @author Bob Brodt
@@ -26,7 +26,7 @@ public class JavaTypeContentProvider extends AbstractContentProvider {
 
 	@Override
 	public void collectElements(Object input, List list)  {
-		if (input instanceof Class) {
+		if (input instanceof IType) {
 			list.add(input);
 			return;
 		}			

@@ -15,7 +15,6 @@ package org.eclipse.bpmn2.modeler.ui.property.editors;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -26,6 +25,7 @@ import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaSelectionDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Button;
@@ -179,8 +179,8 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				Process process = (Process)result;
 				process.getSupportedInterfaceRefs();
 			}
-			if (result instanceof Class) {
-				value = ((Class)result).getName();
+			if (result instanceof IType) {
+				value = ((IType)result).getFullyQualifiedName('.');
 			}
 			if (value.isEmpty()) {
 				MessageDialog.openWarning(parent.getShell(), "Invalid Selection","The selection, "+

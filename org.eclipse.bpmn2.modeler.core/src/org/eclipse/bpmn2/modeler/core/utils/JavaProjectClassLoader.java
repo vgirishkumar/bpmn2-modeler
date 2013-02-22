@@ -13,32 +13,24 @@
 
 package org.eclipse.bpmn2.modeler.core.utils;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.core.search.SearchMatch;
-import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
-import org.eclipse.jdt.core.search.SearchRequestor;
-import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.core.search.TypeNameMatch;
+import org.eclipse.jdt.core.search.TypeNameMatchRequestor;
 
-public class JavaProjectClassLoader extends ClassLoader {
+public class JavaProjectClassLoader {
 	private IJavaProject javaProject;
-	private static final String PROTOCOL_PREFIX = "file:///";
 
 	public JavaProjectClassLoader(IJavaProject project) {
 		super();
@@ -47,124 +39,68 @@ public class JavaProjectClassLoader extends ClassLoader {
 		this.javaProject = project;
 	}
 
-	public Class findClass(String className) {
+	public IType findClass(String className, IProject project) {
 		try {
-			String[] classPaths = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
-			URL[] urls = new URL[classPaths.length];
-			for (int i = 0; i < classPaths.length; i++)
-				urls[i] = new URL(PROTOCOL_PREFIX + computeForURLClassLoader(classPaths[i]));
-			ClassLoader loader = new URLClassLoader(urls);
-			Class classObject = loader.loadClass(className);
-			return classObject;
-
+		    IJavaProject javaProject = JavaCore.create(project);
+		    return javaProject.findType(className);
 		} catch (Exception e) {
 		}
 		return null;
 	}
 	
-	public List<Class> findClasses(String classNamePattern) {
-		final List<Class> results = new ArrayList<Class>();
+	public List<IType> findClasses(String classNamePattern) {
+		final List<IType> results = new ArrayList<IType>();
 		if (classNamePattern.endsWith(".java")) {
 			classNamePattern = classNamePattern.substring(0,classNamePattern.lastIndexOf("."));
 		}
 		// find exact matches first
 		findClasses(classNamePattern, results);
-		// and then everything else
-		if (!classNamePattern.endsWith("*")) {
-			classNamePattern += "*";
-			findClasses(classNamePattern, results);
-		}
 		return results;
 	}
 	
-	public void findClasses(String classNamePattern, final List<Class> results) {
-		SearchPattern pattern = SearchPattern.createPattern(classNamePattern,
-	            IJavaSearchConstants.TYPE, IJavaSearchConstants.TYPE,
-	            SearchPattern.R_PATTERN_MATCH);
+	public void findClasses(String classNamePattern, final List<IType> results) {
 		SearchEngine searchEngine = new SearchEngine();
 		IJavaSearchScope scope = SearchEngine.createJavaSearchScope((IJavaElement[]) new IJavaProject[] {javaProject});
-		SearchRequestor requestor = new SearchRequestor() {
-			public void acceptSearchMatch(SearchMatch match) {
-				IJavaElement e = (IJavaElement) match.getElement();
-				String elementName = e.getElementName();
-				while (e!=null) {
-					if (e instanceof IPackageFragment) {
-						IPackageFragment pf = (IPackageFragment)e;
-						String className = pf.getElementName() + "." + elementName;
-						Class c = findClass(className);
-						if (c!=null) {
-							boolean found = false;
-							for (Class cr : results) {
-								if (cr.getName().equals(c.getName())) {
-									found = true;
-									break;
-								}
-							}
-							if (!found)
-								results.add(c);
-						}
-					}
-					e = e.getParent();
-				}
-			}
-		};
-		try {
-			searchEngine.search(
-					pattern,
-					new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() },
-					scope,
-					requestor,
-					null);
-		} catch (CoreException e) {
-		}
+        char[] packageName = null;
+        char[] typeName = null;
+        int index = classNamePattern.lastIndexOf('.');
+        int packageMatch = SearchPattern.R_EXACT_MATCH;
+        int typeMatch = SearchPattern.R_PREFIX_MATCH;
+
+        if (index == -1) {
+            // There is no package qualification
+            // Perform the search only on the type name
+            typeName = classNamePattern.toCharArray();
+        } else if ((index + 1) == classNamePattern.length()) {
+            // There is a package qualification and the last character is a
+            // dot
+            // Perform the search for all types under the given package
+            // Pattern for all types
+            typeName = "".toCharArray(); //$NON-NLS-1$
+            // Package name without the trailing dot
+            packageName = classNamePattern.substring(0, index).toCharArray();
+        } else {
+            // There is a package qualification, followed by a dot, and 
+            // a type fragment
+            // Type name without the package qualification
+            typeName = classNamePattern.substring(index + 1).toCharArray();
+            // Package name without the trailing dot
+            packageName = classNamePattern.substring(0, index).toCharArray();
+        }
+
+        try {
+            TypeNameMatchRequestor req = new TypeNameMatchRequestor() {
+                public void acceptTypeNameMatch(TypeNameMatch match) {
+                    results.add(match.getType());
+                }
+            };
+            // Note:  Do not use the search() method, its performance is
+            // bad compared to the searchAllTypeNames() method
+            searchEngine.searchAllTypeNames(packageName, packageMatch, typeName,
+                    typeMatch, IJavaSearchConstants.CLASS_AND_INTERFACE, scope, req,
+                    IJavaSearchConstants.WAIT_UNTIL_READY_TO_SEARCH, null);
+        } catch (CoreException e) {
+        }
 	}
 	
-	public static IJavaProject[] findProject(final String className) {
-		SearchPattern pattern = SearchPattern.createPattern(className,
-	            IJavaSearchConstants.TYPE, IJavaSearchConstants.TYPE,
-	            SearchPattern.R_EXACT_MATCH);
-		final List<IJavaProject> results = new ArrayList<IJavaProject>();
-		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for (IProject p : projects) {
-			try {
-				if (p.isOpen() && p.hasNature(JavaCore.NATURE_ID)) {
-					final IJavaProject javaProject = JavaCore.create(p);
-					SearchEngine searchEngine = new SearchEngine();
-					IJavaSearchScope scope = SearchEngine.createJavaSearchScope((IJavaElement[]) new IJavaProject[] {javaProject});
-					SearchRequestor requestor = new SearchRequestor() {
-						public void acceptSearchMatch(SearchMatch match) {
-							IJavaElement e = (IJavaElement) match.getElement();
-							String elementName = e.getElementName();
-							while (e!=null) {
-								if (e instanceof IPackageFragment) {
-									IPackageFragment pf = (IPackageFragment)e;
-									String n = pf.getElementName() + "." + elementName;
-									if (className.equals(n))
-										results.add(javaProject);
-								}
-								e = e.getParent();
-							}
-						}
-					};
-					searchEngine.search(
-							pattern,
-							new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() },
-							scope,
-							requestor,
-							null);
-				}
-			} catch (Exception e) {
-			}
-		}
-		return (IJavaProject[]) results.toArray(new IJavaProject[results.size()]);
-	}
-
-	private static String computeForURLClassLoader(String classpath) {
-		if (!classpath.endsWith("/")) {
-			File file = new File(classpath);
-			if (file.exists() && file.isDirectory())
-				classpath = classpath.concat("/");
-		}
-		return classpath;
-	}
 }

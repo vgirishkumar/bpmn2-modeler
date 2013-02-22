@@ -41,6 +41,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -324,7 +325,7 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 
 		if ("java".equals(kind)) {
 			final String fileName = uri.lastSegment();
-			final ArrayList<Class> results = new ArrayList<Class>();
+			final ArrayList<IType> results = new ArrayList<IType>();
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 			for (IProject p : projects) {
 				try {

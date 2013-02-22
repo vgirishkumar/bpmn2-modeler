@@ -13,14 +13,13 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -39,9 +38,9 @@ public class JavaMemberTreeNode extends TreeNode {
 
 	@Override
 	public String getLabel() {
-		Member member = (Member)modelObject;
+	    IMember member = (IMember)modelObject;
 		String label = "";
-		String name = member.getName();
+		String name = member.getElementName();
 //		int mod = member.getModifiers();
 //		if ((mod & Modifier.PUBLIC)!=0)
 //			label += "public ";
@@ -52,28 +51,30 @@ public class JavaMemberTreeNode extends TreeNode {
 //		if ((mod & Modifier.STATIC)!=0)
 //			label += "static ";
 		
-		if (member instanceof Field) {
-			Field f = (Field)member;
-			Type t = f.getGenericType();
-			if (t instanceof Class)
-				label += ((Class)t).getSimpleName() + " ";
-			else
-				label += t.toString() + " ";
+		if (member instanceof IField) {
+			IField f = (IField)member;
+			try {
+                label += Signature.getSignatureSimpleName(f.getTypeSignature()) + " ";
+            } catch (JavaModelException e) {
+            }
 		}
-		if (member instanceof Method) {
-			Method m = (Method)member;
-			label += m.getReturnType().getSimpleName() + " ";
+		if (member instanceof IMethod) {
+		    IMethod m = (IMethod)member;
+			try {
+                label += Signature.getSignatureSimpleName(m.getReturnType()) + " ";
+            } catch (JavaModelException e) {
+            }
 		}
 		label += name;
-		if (member instanceof Method) {
-			Method m = (Method)member;
+		if (member instanceof IMethod) {
+		    IMethod m = (IMethod)member;
 			if (m.getParameterTypes().length>0) {
 				label += "(";
-				Class[] p = m.getParameterTypes();
+				String[] p = m.getParameterTypes();
 				for (int i=0; i<p.length; ++i) {
-					label += p[i].getSimpleName();
+					label += Signature.getSignatureSimpleName(p[i]);
 					if (i+1<p.length)
-						label += ",";
+						label += ", ";
 				}
 				label += ")";
 			}
@@ -86,9 +87,9 @@ public class JavaMemberTreeNode extends TreeNode {
 
 	@Override
 	public Image getImage() {
-		if (modelObject instanceof Method)
+		if (modelObject instanceof IMethod)
 			return Activator.getDefault().getImage(IConstants.ICON_JAVA_PUBLIC_METHOD_16);
-		if (modelObject instanceof Field)
+		if (modelObject instanceof IField)
 			return Activator.getDefault().getImage(IConstants.ICON_JAVA_PUBLIC_FIELD_16);
 		return null;
 	}

@@ -13,15 +13,16 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -40,15 +41,18 @@ public class JavaTypeTreeNode extends TreeNode {
 
 	@Override
 	public String getLabel() {
-		Class c = (Class)modelObject;
-		return c.getSimpleName() + " - " + c.getPackage().getName();
+		IType c = (IType)modelObject;
+		return c.getElementName() + " - " + c.getFullyQualifiedName('.');
 	}
 
 	@Override
 	public Image getImage() {
-		Class c = (Class)modelObject;
-		if (c.isInterface())
-			return Activator.getDefault().getImage(IConstants.ICON_JAVA_INTERFACE_16);
+	    IType c = (IType)modelObject;
+		try {
+            if (c.isInterface())
+            	return Activator.getDefault().getImage(IConstants.ICON_JAVA_INTERFACE_16);
+        } catch (JavaModelException e) {
+        }
 		return Activator.getDefault().getImage(IConstants.ICON_JAVA_CLASS_16);
 	}
 
@@ -61,17 +65,17 @@ public class JavaTypeTreeNode extends TreeNode {
 	public Object[] getChildren() {
 		List<TreeNode> kids = new ArrayList<TreeNode>();
 		try {
-			Class c = (Class)modelObject;
-			for (Field f : c.getDeclaredFields()) {
-				if ((Modifier.PUBLIC & f.getModifiers()) != 0)
+			IType c = (IType)modelObject;
+			for (IField f : c.getFields()) {
+				if (Flags.isPublic(f.getFlags()))
 					kids.add(new JavaMemberTreeNode(f,isCondensed));
 			}
-			for (Method m : c.getDeclaredMethods()) {
-				if ((Modifier.PUBLIC & m.getModifiers()) != 0)
+			for (IMethod m : c.getMethods()) {
+				if ((Flags.isPublic(m.getFlags()) && !m.isConstructor()) || c.isInterface())
 					kids.add(new JavaMemberTreeNode(m,isCondensed));
 			}
-			for (Class ic : c.getClasses()) {
-				if ((Modifier.PUBLIC & ic.getModifiers()) != 0)
+			for (IType ic : c.getTypes()) {
+				if (Flags.isPublic(ic.getFlags()))
 					kids.add(new JavaTypeTreeNode(ic,isCondensed));
 			}
 		}
