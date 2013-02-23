@@ -1476,6 +1476,11 @@
 		<toolPalette
 			id="org.eclipse.bpmn2.modeler.toolpalette.default"
 			runtimeId="org.jboss.runtime.jbpm5">
+			<category name="Workflow Patterns">
+				<tool name="Sub Process with Start-&gt;End"
+					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
+			</category>
+			
 			<category name="Tasks">
 				<tool name="Task" object="Task"/>
 				<tool name="Manual Task" object="ManualTask"/>
@@ -1541,7 +1546,7 @@
 			<!-- TODO: not yet implemented
 			<category name="Workflow Patterns">
 				<tool name="Sub Process with start-end"
-					object="SubProcess+StartEvent[x=10,y=50],EndEvent[x=100,y=50]"/>
+					object="SubProcess+StartEvent[x=10,y=50],EndEvent[x=100,y=50],SequenceFlow"/>
 				<tool name="Arbitrary Cycles">
 					<composite id="arbitrary.cycles">
 						<object type="Task" id="arbitrary.cycles.taskA" name="Task A"/>

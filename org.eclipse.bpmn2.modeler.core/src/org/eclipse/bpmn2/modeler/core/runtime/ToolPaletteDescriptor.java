@@ -1,6 +1,7 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Stack;
 
@@ -84,13 +85,46 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 					type = "";
 				}
 				else if (c==',') {
+					ToolPart newTool = new ToolPart(type);
 					if (tool==null) {
-						toolParts.add(new ToolPart(type));
+						toolParts.add(newTool);
 					}
 					else {
-						tool.children.add( new ToolPart(type) );
+						tool.children.add(newTool);
 					}
 					type = "";
+				}
+				else if (c=='[') {
+					ToolPart newTool = new ToolPart(type);
+					if (tool==null) {
+						toolParts.add(newTool);
+					}
+					else {
+						tool.children.add(newTool);
+					}
+					type = "";
+					
+					// data for preceding object type follows:
+					// [name=value] or [name1=value1,name2=value2]
+					// are valid
+					++i;
+					do {
+						String prop = "";
+						while (i<chars.length) {
+							c = chars[i++];
+							if (c=='=')
+								break;
+							prop += c;
+						}
+						String value = "";
+						while (i<chars.length) {
+							c = chars[i++];
+							if (c==',' || c==']')
+								break;
+							value += c;
+						}
+						newTool.putProperty(prop,value);
+					} while (i<chars.length && c!=']');
 				}
 				else if ("".equals(type)) {
 					if (Character.isJavaIdentifierStart(c))
@@ -132,6 +166,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	public class ToolPart {
 		String parent;
 		List<ToolPart> children = new ArrayList<ToolPart>();
+		Hashtable<String, String> properties = null;
 		
 		public ToolPart(String type) {
 			parent = type;
@@ -143,6 +178,26 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		
 		public List<ToolPart> getChildren() {
 			return children;
+		}
+		
+		public void putProperty(String name, String value) {
+			getProperties().put(name, value);
+		}
+		
+		public Hashtable<String, String> getProperties() {
+			if (properties==null)
+				properties = new Hashtable<String, String>();
+			return properties;
+		}
+		
+		public String getProperty(String name) {
+			if (properties==null)
+				return null;
+			return properties.get(name);
+		}
+		
+		public boolean hasProperties() {
+			return properties!=null && properties.size()>0;
 		}
 	}
 	

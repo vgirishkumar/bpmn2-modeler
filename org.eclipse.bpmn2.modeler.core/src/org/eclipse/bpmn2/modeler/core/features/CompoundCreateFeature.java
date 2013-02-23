@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
@@ -25,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
@@ -45,7 +47,9 @@ import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
@@ -64,13 +68,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		
 		IFeature feature;
 		List<CreateFeatureNode> children = new ArrayList<CreateFeatureNode>();
-		int x = 0;
-		int y = 0;
-		int width = 0;
-		int height = 0;
-		PictogramElement sourcePictogramElement = null;
-		PictogramElement targetPictogramElement = null;
-
+		Hashtable<String, String> properties = null;
+		
 		public CreateFeatureNode(IFeature feature) {
 			this.feature = feature;
 		}
@@ -110,22 +109,66 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 				}
 			}
 			
+			List<PictogramElement> createdPEs = new ArrayList<PictogramElement>();
 			IContext childContext = null;
-			for (CreateFeatureNode ft : children) {
-				if (ft.feature instanceof ICreateFeature) {
+			String value;
+			int x = 0;
+			int y = 0;
+			int width = 0;
+			int height = 0;
+			PictogramElement source = null;
+			PictogramElement target = null;
+
+			for (int i =0; i<children.size(); ++i) {
+				CreateFeatureNode node = children.get(i);
+				if (node.feature instanceof ICreateFeature) {
 					childContext = new CreateContext();
 					((CreateContext)childContext).setTargetContainer(targetContainer);
-					((CreateContext)childContext).setX(x);
-					((CreateContext)childContext).setX(y);
-					((CreateContext)childContext).setWidth(width);
-					((CreateContext)childContext).setHeight(height);
+					value = node.getProperty("x");
+					if (value!=null) {
+						x = Integer.parseInt(value);
+						((CreateContext)childContext).setX(x);
+					}
+					value = node.getProperty("y");
+					if (value!=null) {
+						y = Integer.parseInt(value);
+						((CreateContext)childContext).setY(y);
+					}
+					value = node.getProperty("width");
+					if (value!=null) {
+						width = Integer.parseInt(value);
+						((CreateContext)childContext).setWidth(width);
+					}
+					value = node.getProperty("height");
+					if (value!=null) {
+						height = Integer.parseInt(value);
+						((CreateContext)childContext).setHeight(height);
+					}
 				}
-				else if (ft.feature instanceof ICreateConnectionFeature) {
+				else if (node.feature instanceof ICreateConnectionFeature) {
 					childContext = new CreateConnectionContext();
-					((CreateConnectionContext)childContext).setSourcePictogramElement(sourcePictogramElement);
-					((CreateConnectionContext)childContext).setTargetPictogramElement(targetPictogramElement);
+					source = createdPEs.get(i-2);
+					target = createdPEs.get(i-1);
+					Point sp = AnchorUtil.getCenterPoint((Shape)source);
+					Point tp = AnchorUtil.getCenterPoint((Shape)target);
+					FixPointAnchor sourceAnchor = AnchorUtil.findNearestAnchor((Shape)source, tp);
+					FixPointAnchor targetAnchor = AnchorUtil.findNearestAnchor((Shape)target, sp);
+					((CreateConnectionContext)childContext).setSourcePictogramElement(source);
+					((CreateConnectionContext)childContext).setTargetPictogramElement(target);
+					((CreateConnectionContext)childContext).setSourceAnchor(sourceAnchor);
+					((CreateConnectionContext)childContext).setTargetAnchor(targetAnchor);
 				}
-				objects.add(ft.create(childContext));
+				
+				List<Object> result = node.create(childContext);
+				PictogramElement pe = null;
+				for (Object o : result) {
+					if (o instanceof PictogramElement) {
+						pe = (PictogramElement)o;
+						break;
+					}
+				}
+				createdPEs.add(pe);
+				objects.add(result);
 			}
 			return objects;
 		}
@@ -140,8 +183,10 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			return true;
 		}
 		
-		public void addChild(IFeature feature) {
-			children.add(new CreateFeatureNode(feature));
+		public CreateFeatureNode addChild(IFeature feature) {
+			CreateFeatureNode node = new CreateFeatureNode(feature);
+			children.add(node);
+			return node;
 		}
 
 		public EClass getBusinessObjectClass() {
@@ -182,56 +227,24 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			this.feature = feature;
 		}
 
-		public int getX() {
-			return x;
-		}
-
-		public void setX(int x) {
-			this.x = x;
-		}
-
-		public int getY() {
-			return y;
-		}
-
-		public void setY(int y) {
-			this.y = y;
-		}
-
-		public int getWidth() {
-			return width;
-		}
-
-		public void setWidth(int width) {
-			this.width = width;
-		}
-
-		public int getHeight() {
-			return height;
-		}
-
-		public void setHeight(int height) {
-			this.height = height;
-		}
-
-		public PictogramElement getSourcePictogramElement() {
-			return sourcePictogramElement;
-		}
-
-		public void setSourcePictogramElement(PictogramElement sourcePictogramElement) {
-			this.sourcePictogramElement = sourcePictogramElement;
-		}
-
-		public PictogramElement getTargetPictogramElement() {
-			return targetPictogramElement;
-		}
-
-		public void setTargetPictogramElement(PictogramElement targetPictogramElement) {
-			this.targetPictogramElement = targetPictogramElement;
-		}
-
 		public List<CreateFeatureNode> getChildren() {
 			return children;
+		}
+
+		public void setProperties(Hashtable<String, String> properties) {
+			getProperties().putAll(properties);
+		}
+		
+		public Hashtable<String, String> getProperties() {
+			if (properties==null)
+				properties = new Hashtable<String, String>();
+			return properties;
+		}
+		
+		public String getProperty(String name) {
+			if (properties==null)
+				return null;
+			return properties.get(name);
 		}
 	} // CreateFeatureNode
 	
@@ -250,10 +263,10 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		super(fp, null, null);
 	}
 	
-	public CreateFeatureNode addChild(IFeature cf) {
-		CreateFeatureNode ft = new CreateFeatureNode(cf);
-		children.add(ft);
-		return ft;
+	public CreateFeatureNode addChild(IFeature feature) {
+		CreateFeatureNode node = new CreateFeatureNode(feature);
+		children.add(node);
+		return node;
 	}
 
 	@Override

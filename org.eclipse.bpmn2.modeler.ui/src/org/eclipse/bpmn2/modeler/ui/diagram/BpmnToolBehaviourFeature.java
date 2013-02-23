@@ -182,10 +182,24 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			parentFeature = featureProvider.getCreateFeatureForBusinessObject(eClass.getInstanceClass());
 		}
 		if (root!=null) {
-			if (node!=null)
-				node.addChild(parentFeature);
-			else
+			if (node!=null) {
+				CreateFeatureNode n = node.addChild(parentFeature);
+				if (toolPart.hasProperties()) {
+					n.setProperties(toolPart.getProperties());
+				}
+			}
+			else {
 				node = root.addChild(parentFeature);
+				if (toolPart.hasProperties()) {
+					node.setProperties(toolPart.getProperties());
+				}
+			}
+		}
+		else if (toolPart.hasProperties()) {
+			root = new CompoundCreateFeature(featureProvider, tool.getName(), tool.getDescription());
+			node = root.addChild(parentFeature);
+			node.setProperties(toolPart.getProperties());
+			parentFeature = root;
 		}
 		
 		for (ToolPart childToolPart : toolPart.getChildren()) {
