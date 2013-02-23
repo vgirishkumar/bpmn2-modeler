@@ -18,14 +18,21 @@ import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature.CreateFeatureNode;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -37,6 +44,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureCont
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.IExecutionInfo;
@@ -51,6 +59,8 @@ import org.eclipse.graphiti.features.IFeatureChecker;
 import org.eclipse.graphiti.features.IFeatureCheckerHolder;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICreateConnectionContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
@@ -63,6 +73,7 @@ import org.eclipse.graphiti.features.context.impl.MoveContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -90,6 +101,8 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 
 	BPMNFeatureProvider featureProvider;
 	ModelEnablementDescriptor modelEnablements;
+	ModelDescriptor modelDescriptor;
+	Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	
 	public BpmnToolBehaviourFeature(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);
@@ -107,21 +120,86 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		if (object!=null) {
 			modelEnablements = editor.getTargetRuntime().getModelEnablements((EObject)object);
 			featureProvider = (BPMNFeatureProvider)getFeatureProvider();
-			
-			// add compartments from super class
-			createConnectors(palette);
-			createTasksCompartments(palette);
-			createGatewaysCompartments(palette);
-			createEventsCompartments(palette);
-			createEventDefinitionsCompartments(palette);
-			createDataCompartments(palette);
-			createOtherCompartments(palette);
-			createCustomTasks(palette);
+			modelDescriptor = editor.getTargetRuntime().getModelDescriptor();
+			categories.clear();
+			ToolPaletteDescriptor toolPaletteDescriptor = editor.getTargetRuntime().getToolPalette((EObject)object);
+			if (toolPaletteDescriptor!=null) {
+				for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
+					if ("Catching Intermediate Events".equals(category.getName()))
+						System.out.println();
+					PaletteCompartmentEntry compartmentEntry = categories.get(category.getName());
+					for (ToolDescriptor tool : category.getTools()) {
+						IFeature feature = getCreateFeature(tool);
+						if (feature!=null) {
+							if (compartmentEntry==null) {
+								compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+								compartmentEntry.setInitiallyOpen(false);
+								categories.put(category.getName(), compartmentEntry);
+							}
+							createEntry(feature, compartmentEntry);
+						}
+					}
+					if (compartmentEntry!=null && compartmentEntry.getToolEntries().size()>0)
+						palette.add(compartmentEntry);
+				}
+			}
+			else
+			{
+				// create a default toolpalette
+				createConnectors(palette);
+				createTasksCompartments(palette);
+				createGatewaysCompartments(palette);
+				createEventsCompartments(palette);
+				createEventDefinitionsCompartments(palette);
+				createDataCompartments(palette);
+				createOtherCompartments(palette);
+				createCustomTasks(palette);
+			}
 		}
 		
 		return palette.toArray(new IPaletteCompartmentEntry[palette.size()]);
 	}
 
+	private IFeature getCreateFeature(ToolDescriptor tool) {
+		if (tool.getToolParts().size()==1)
+			return getCreateFeature(tool, null, null, tool.getToolParts().get(0));
+		else {
+			CompoundCreateFeature compoundFeature = null;
+			for (ToolPart tp : tool.getToolParts()) {
+				if (compoundFeature==null)
+					compoundFeature = new CompoundCreateFeature(featureProvider,tool.getName(),tool.getDescription());
+				getCreateFeature(tool, compoundFeature, null, tp);
+			}
+			return compoundFeature;
+		}
+	}
+	
+	private IFeature getCreateFeature(ToolDescriptor tool, CompoundCreateFeature root, CreateFeatureNode node, ToolPart toolPart) {
+		IFeature parentFeature = null;
+		String name = toolPart.getParent();
+		EClassifier eClass = modelDescriptor.getClassifier(name);
+		if (eClass!=null) {
+			parentFeature = featureProvider.getCreateFeatureForBusinessObject(eClass.getInstanceClass());
+		}
+		if (root!=null) {
+			if (node!=null)
+				node.addChild(parentFeature);
+			else
+				node = root.addChild(parentFeature);
+		}
+		
+		for (ToolPart childToolPart : toolPart.getChildren()) {
+			if (root==null) {
+				root = new CompoundCreateFeature(featureProvider, tool.getName(), tool.getDescription());
+				node = root.addChild(parentFeature);
+				parentFeature = root;
+			}
+			getCreateFeature(tool, root, node, childToolPart);
+		}
+		
+		return parentFeature;
+	}
+	
 	private void createEventsCompartments(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Events", null);
 
@@ -189,23 +267,48 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createEntries(List<Class> neededEntries, PaletteCompartmentEntry compartmentEntry) {
-		for (Class c : neededEntries) {
-			if (modelEnablements.isEnabled(c.getSimpleName())) {
-				IFeature feature = featureProvider.getCreateFeatureForBusinessObject(c);
-				if (feature instanceof ICreateFeature) {
-					ICreateFeature cf = (ICreateFeature)feature;
-					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
-						cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
-					compartmentEntry.addToolEntry(objectCreationToolEntry);
-				}
-				else if (feature instanceof ICreateConnectionFeature) {
-					ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
-					ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
-							cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
-							cf.getCreateLargeImageId());
-					connectionCreationToolEntry.addCreateConnectionFeature(cf);
-					compartmentEntry.addToolEntry(connectionCreationToolEntry);
-				}
+		for (Object o : neededEntries) {
+			if (o instanceof Class) {
+				createEntry((Class)o, compartmentEntry);
+			}
+		}
+	}
+	
+	private void createEntry(Class c, PaletteCompartmentEntry compartmentEntry) {
+		if (modelEnablements.isEnabled(c.getSimpleName())) {
+			IFeature feature = featureProvider.getCreateFeatureForBusinessObject(c);
+			if (feature instanceof ICreateFeature) {
+				ICreateFeature cf = (ICreateFeature)feature;
+				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
+					cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				compartmentEntry.addToolEntry(objectCreationToolEntry);
+			}
+			else if (feature instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
+				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
+						cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+						cf.getCreateLargeImageId());
+				connectionCreationToolEntry.addCreateConnectionFeature(cf);
+				compartmentEntry.addToolEntry(connectionCreationToolEntry);
+			}
+		}
+	}
+	
+	private void createEntry(IFeature feature, PaletteCompartmentEntry compartmentEntry) {
+		if (modelEnablements.isEnabled(feature)) {
+			if (feature instanceof ICreateFeature) {
+				ICreateFeature cf = (ICreateFeature)feature;
+				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
+					cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				compartmentEntry.addToolEntry(objectCreationToolEntry);
+			}
+			else if (feature instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
+				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
+						cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+						cf.getCreateLargeImageId());
+				connectionCreationToolEntry.addCreateConnectionFeature(cf);
+				compartmentEntry.addToolEntry(connectionCreationToolEntry);
 			}
 		}
 	}
@@ -224,7 +327,6 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {
-			Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 			for (IPaletteCompartmentEntry e : ret) {
 				categories.put(e.getLabel(), (PaletteCompartmentEntry) e);
 			}

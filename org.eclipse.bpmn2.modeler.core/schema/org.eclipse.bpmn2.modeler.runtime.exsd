@@ -27,6 +27,7 @@
             <element ref="propertyExtension"/>
             <element ref="featureContainer"/>
             <element ref="style" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="toolPalette" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -659,6 +660,230 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
             <annotation>
                <documentation>
                   
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="toolPalette">
+      <complexType>
+         <choice>
+            <element ref="category" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Unique ID used to identify the Tool Palette.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined runtime elements for which this propertyTab will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="type">
+            <annotation>
+               <documentation>
+                  Optional diagram type name: either Process, Collaboration or Choreography.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="Process">
+                  </enumeration>
+                  <enumeration value="Collaboration">
+                  </enumeration>
+                  <enumeration value="Choreography">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="profile" type="string">
+            <annotation>
+               <documentation>
+                  An optional profile name that can be used to define different levels of enablment within each diagram type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="category">
+      <complexType>
+         <choice>
+            <element ref="tool" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Toolpalette &quot;drawer&quot; label.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Description used in dialogs and tooltips.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  Toolpalette drawer icon.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="tool">
+      <complexType>
+         <choice>
+            <element ref="composite" minOccurs="0" maxOccurs="1"/>
+         </choice>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Tool label
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Description used in dialogs and tooltips.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  Tool icon
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="object" type="string">
+            <annotation>
+               <documentation>
+                  Name of the BPMN2 element that this tool will create.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="object">
+      <annotation>
+         <documentation>
+            Used to create compound objects and templates.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="object" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of the BPMN2 element that this tool will create.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Object ID
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Object label
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="x" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="y" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="connection">
+      <annotation>
+         <documentation>
+            Connects two objects in the composite tool.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="object" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Optional diagram type name: either Process, Collaboration or Choreography.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Unique ID used to identify the Tool Palette.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="source" type="string" use="required">
+            <annotation>
+               <documentation>
+                  ID of the source object.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="target" type="string" use="required">
+            <annotation>
+               <documentation>
+                  ID of the target object.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Connection label.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="composite">
+      <complexType>
+         <choice>
+            <element ref="connection" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="object" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="composite" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Composite ID
                </documentation>
             </annotation>
          </attribute>

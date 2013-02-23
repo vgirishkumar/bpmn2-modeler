@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> extends AbstractBpmn2CreateFeature<T> {
 	
@@ -73,9 +74,12 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 		} catch (IOException e) {
 			Activator.logError(e);
 		}
+		PictogramElement pe = null;
 		if (context.getProperty(OPTION_DONT_ADD) == null) {
-			addGraphicalRepresentation(context, element);
+			pe = addGraphicalRepresentation(context, element);
 		}
+		if (pe!=null)
+			return new Object[] { element, pe };
 		return new Object[] { element };
 	}
 	
