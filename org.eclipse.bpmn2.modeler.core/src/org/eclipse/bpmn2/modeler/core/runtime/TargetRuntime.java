@@ -66,6 +66,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	protected ModelEnablementDescriptor defaultModelEnablements;
 	protected ArrayList<PropertyExtensionDescriptor> propertyExtensions;
 	protected ArrayList<FeatureContainerDescriptor> featureContainers;
+	protected ArrayList<ToolPaletteDescriptor> toolPalettes;
 	protected HashMap<Class, ShapeStyle> shapeStyles;
 	protected Bpmn2Resource bpmnResource;
 
@@ -308,6 +309,11 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							EClass eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(object);
 							ShapeStyle ss = new ShapeStyle(foreground, background, textColor, font);
 							currentRuntime.getShapeStyles().put(eclass.getInstanceClass(), ss);
+						}
+						else if (e.getName().equals("toolPalette")) {
+							ToolPaletteDescriptor tp = new ToolPaletteDescriptor();
+							tp.create(e);
+							currentRuntime.addToolPalette(tp);
 						}
 					}
 				}
@@ -592,6 +598,61 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		me.setRuntime(this);
 		getModelEnablements().add(me);
 	}
+	
+	
+	//////////////////////
+
+	public ArrayList<ToolPaletteDescriptor> getToolPalettes()
+	{
+		if (toolPalettes==null) {
+			toolPalettes = new ArrayList<ToolPaletteDescriptor>();
+		}
+		return toolPalettes;
+	}
+	
+	public ToolPaletteDescriptor getToolPalette(EObject object)
+	{
+		return getToolPalette( ModelUtil.getDiagramType(object) );
+	}
+	
+	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType)
+	{
+		return getToolPalette(diagramType, null);
+	}
+	
+	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)
+	{
+		ToolPaletteDescriptor defaultToolPalette = null;
+		for (ToolPaletteDescriptor tp : getToolPalettes()) {
+			String s = diagramType.name();
+			if (diagramType == Bpmn2DiagramType.NONE && tp.getType()==null) {
+				if (profile==null || profile.equalsIgnoreCase(tp.getProfile()))
+					return tp;
+			}
+			if (s.equalsIgnoreCase(tp.getType())) {
+				if (profile==null || profile.equalsIgnoreCase(tp.getProfile()))
+					return tp;
+			}
+			if (tp.getType()==null || tp.getType().isEmpty())
+				defaultToolPalette = tp;
+		}
+
+		if (defaultToolPalette!=null)
+			return defaultToolPalette;
+		
+		if (this != getDefaultRuntime()) {
+			// fall back to toolPalettes from Default Runtime
+			return getDefaultRuntime().getToolPalette(diagramType, profile);
+		}
+		return null;
+	}
+	
+	public void addToolPalette(ToolPaletteDescriptor tp) {
+		tp.setRuntime(this);
+		getToolPalettes().add(tp);
+	}
+	/////////////////////
+	
 	
 	protected Map<Class, ShapeStyle> getShapeStyles() {
 		if (shapeStyles==null) {

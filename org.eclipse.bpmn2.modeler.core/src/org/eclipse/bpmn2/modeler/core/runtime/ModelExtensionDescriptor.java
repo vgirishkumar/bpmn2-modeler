@@ -37,7 +37,6 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl.SimpleFeatureMapEntry;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 
 /**
@@ -232,38 +231,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		}
 
 		return eObject;
-	}
-	
-	/**
-	 * Search the Target Runtime's EPackage for a structural feature with the specified name.
-	 * If the feature is not found in the runtime package, search the Bpmn2Package.
-	 * 
-	 * @param name - name of the feature that specifies both an EClass and an EStructuralFeature
-	 *               in the form "EClassName.EStructuralFeatureName"
-	 * @return
-	 */
-	private EStructuralFeature getFeature(String name) {
-		String[] parts = name.split("\\.");
-		EClass eClass = (EClass)getEPackage().getEClassifier(parts[0]);
-		if (eClass==null) {
-			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(parts[0]);
-		}
-		if (eClass!=null) {
-			EStructuralFeature feature = eClass.getEStructuralFeature(parts[1]);
-			if (ExtendedMetaData.INSTANCE.getFeatureKind(feature) == ExtendedMetaData.UNSPECIFIED_FEATURE) {
-				if (feature instanceof EAttribute) {
-					ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ATTRIBUTE_FEATURE);
-				}
-				else {
-					ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ELEMENT_FEATURE);
-				}
-				ExtendedMetaData.INSTANCE.setNamespace(feature, eClass.getEPackage().getNsURI());
-				ExtendedMetaData.INSTANCE.setName(feature, feature.getName());
-			}
-			
-			return feature;
-		}
-		return null;
 	}
 	
 	/**

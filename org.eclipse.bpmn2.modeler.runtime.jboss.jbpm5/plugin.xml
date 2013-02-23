@@ -623,7 +623,7 @@
 			</property>
 		</modelExtension>
 
-		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="full">
+		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="Full">
 			<disable object="all"/>
 
 			<enable object="AdHocSubProcess"/>
@@ -1250,7 +1250,7 @@
 			<disable object="all" feature="dataState"/>
 		</modelEnablement>
 		
-		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="simple">
+		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="Simple">
 			<disable object="all"/>
 			<!-- copy the enablements from "Process" diagram type -->
 			<enable object="default" feature="Process.full"/>
@@ -1288,6 +1288,299 @@
 			<enable object="OnEntryScriptType"/>
 			<enable object="OnExitScriptType"/>
 		</modelEnablement>
+		
+		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="RuleFlow">
+			<disable object="all" />
+		
+			<enable object="Process" />
+			<enable object="Process" feature="version" />
+			<enable object="Process" feature="packageName" />
+			<disable object="Process" feature="artifacts" />
+			<disable object="Process" feature="auditing" />
+			<disable object="Process" feature="correlationSubscriptions" />
+			<disable object="Process" feature="definitionalCollaborationRef" />
+			<disable object="Process" feature="documentation" />
+			<disable object="Process" feature="extensionDefinitions" />
+			<disable object="Process" feature="extensionValues" />
+			<disable object="Process" feature="ioBinding" />
+			<disable object="Process" feature="ioSpecification" />
+			<disable object="Process" feature="isClosed" />
+			<disable object="Process" feature="laneSets" />
+			<disable object="Process" feature="monitoring" />
+			<disable object="Process" feature="processType" />
+			<disable object="Process" feature="resources" />
+			<disable object="Process" feature="supportedInterfaceRefs" />
+			<disable object="Process" feature="supports" />
+			<disable object="Process" feature="adHoc" />
+			<disable object="Process" feature="isExecutable" />
+		
+			<enable object="Property" />
+			<disable object="Property" feature="dataState" />
+		
+			<enable object="StartEvent" />
+			<disable object="StartEvent" feature="anyAttribute" />
+			<disable object="StartEvent" feature="auditing" />
+			<disable object="StartEvent" feature="categoryValueRef" />
+			<disable object="StartEvent" feature="dataOutputAssociation" />
+			<disable object="StartEvent" feature="dataOutputs" />
+			<disable object="StartEvent" feature="documentation" />
+			<disable object="StartEvent" feature="eventDefinitionRefs" />
+			<disable object="StartEvent" feature="eventDefinitions" />
+			<disable object="StartEvent" feature="extensionDefinitions" />
+			<disable object="StartEvent" feature="extensionValues" />
+			<disable object="StartEvent" feature="id" />
+			<disable object="StartEvent" feature="incoming" />
+			<disable object="StartEvent" feature="incomingConversationLinks" />
+			<disable object="StartEvent" feature="isInterrupting" />
+			<disable object="StartEvent" feature="lanes" />
+			<disable object="StartEvent" feature="monitoring" />
+			<disable object="StartEvent" feature="name" />
+			<disable object="StartEvent" feature="outgoing" />
+			<disable object="StartEvent" feature="outgoingConversationLinks" />
+			<disable object="StartEvent" feature="outputSet" />
+			<disable object="StartEvent" feature="parallelMultiple" />
+			<disable object="StartEvent" feature="properties" />
+		
+			<enable object="EndEvent" />
+			<disable object="EndEvent" feature="anyAttribute" />
+			<disable object="EndEvent" feature="auditing" />
+			<disable object="EndEvent" feature="categoryValueRef" />
+			<disable object="EndEvent" feature="dataInputAssociation" />
+			<disable object="EndEvent" feature="dataInputs" />
+			<disable object="EndEvent" feature="documentation" />
+			<disable object="EndEvent" feature="eventDefinitionRefs" />
+			<disable object="EndEvent" feature="extensionDefinitions" />
+			<disable object="EndEvent" feature="extensionValues" />
+			<disable object="EndEvent" feature="id" />
+			<disable object="EndEvent" feature="incoming" />
+			<disable object="EndEvent" feature="incomingConversationLinks" />
+			<disable object="EndEvent" feature="lanes" />
+			<disable object="EndEvent" feature="monitoring" />
+			<disable object="EndEvent" feature="name" />
+			<disable object="EndEvent" feature="outgoing" />
+			<disable object="EndEvent" feature="outgoingConversationLinks" />
+			<disable object="EndEvent" feature="properties" />
+			<enable object="TerminateEventDefinition" />
+		
+			<enable object="BusinessRuleTask" />
+			<disable object="BusinessRuleTask" feature="auditing" />
+			<disable object="BusinessRuleTask" feature="boundaryEventRefs" />
+			<disable object="BusinessRuleTask" feature="categoryValueRef" />
+			<disable object="BusinessRuleTask" feature="completionQuantity" />
+			<disable object="BusinessRuleTask" feature="dataInputAssociations" />
+			<disable object="BusinessRuleTask" feature="dataOutputAssociations" />
+			<disable object="BusinessRuleTask" feature="default" />
+			<disable object="BusinessRuleTask" feature="documentation" />
+			<disable object="BusinessRuleTask" feature="extensionDefinitions" />
+			<disable object="BusinessRuleTask" feature="extensionValues" />
+			<disable object="BusinessRuleTask" feature="id" />
+			<disable object="BusinessRuleTask" feature="implementation" />
+			<disable object="BusinessRuleTask" feature="incoming" />
+			<disable object="BusinessRuleTask" feature="incomingConversationLinks" />
+			<disable object="BusinessRuleTask" feature="ioSpecification" />
+			<disable object="BusinessRuleTask" feature="isForCompensation" />
+			<disable object="BusinessRuleTask" feature="lanes" />
+			<disable object="BusinessRuleTask" feature="loopCharacteristics" />
+			<disable object="BusinessRuleTask" feature="monitoring" />
+			<disable object="BusinessRuleTask" feature="outgoing" />
+			<disable object="BusinessRuleTask" feature="outgoingConversationLinks" />
+			<disable object="BusinessRuleTask" feature="properties" />
+			<disable object="BusinessRuleTask" feature="resources" />
+			<disable object="BusinessRuleTask" feature="startQuantity" />
+		
+			<enable object="ExclusiveGateway" />
+			<disable object="ExclusiveGateway" feature="anyAttribute" />
+			<disable object="ExclusiveGateway" feature="auditing" />
+			<disable object="ExclusiveGateway" feature="categoryValueRef" />
+			<disable object="ExclusiveGateway" feature="default" />
+			<disable object="ExclusiveGateway" feature="documentation" />
+			<disable object="ExclusiveGateway" feature="extensionDefinitions" />
+			<disable object="ExclusiveGateway" feature="extensionValues" />
+			<disable object="ExclusiveGateway" feature="id" />
+			<disable object="ExclusiveGateway" feature="incoming" />
+			<disable object="ExclusiveGateway" feature="lanes" />
+			<disable object="ExclusiveGateway" feature="monitoring" />
+			<disable object="ExclusiveGateway" feature="outgoing" />
+			<enable object="FormalExpression" />
+			<disable object="FormalExpression" feature="anyAttribute" />
+			<disable object="FormalExpression" feature="documentation" />
+			<disable object="FormalExpression" feature="evaluatesToTypeRef" />
+			<disable object="FormalExpression" feature="extensionDefinitions" />
+			<disable object="FormalExpression" feature="extensionValues" />
+			<disable object="FormalExpression" feature="id" />
+			<disable object="FormalExpression" feature="mixed" />
+		
+			<enable object="CallActivity" />
+			<disable object="CallActivity" feature="auditing" />
+			<disable object="CallActivity" feature="boundaryEventRefs" />
+			<disable object="CallActivity" feature="categoryValueRef" />
+			<disable object="CallActivity" feature="completionQuantity" />
+			<disable object="CallActivity" feature="default" />
+			<disable object="CallActivity" feature="documentation" />
+			<disable object="CallActivity" feature="extensionDefinitions" />
+			<disable object="CallActivity" feature="id" />
+			<disable object="CallActivity" feature="incoming" />
+			<disable object="CallActivity" feature="isForCompensation" />
+			<disable object="CallActivity" feature="lanes" />
+			<disable object="CallActivity" feature="loopCharacteristics" />
+			<disable object="CallActivity" feature="monitoring" />
+			<disable object="CallActivity" feature="outgoing" />
+			<disable object="CallActivity" feature="properties" />
+			<disable object="CallActivity" feature="resources" />
+			<disable object="CallActivity" feature="startQuantity" />
+			<enable object="InputOutputSpecification" />
+			<enable object="InputOutputSpecification" feature="dataInputs" />
+			<enable object="InputOutputSpecification" feature="dataOutputs" />
+		
+			<enable object="ParallelGateway" />
+		
+			<enable object="ScriptTask" />
+			<disable object="ScriptTask" feature="anyAttribute" />
+			<disable object="ScriptTask" feature="auditing" />
+			<disable object="ScriptTask" feature="boundaryEventRefs" />
+			<disable object="ScriptTask" feature="categoryValueRef" />
+			<disable object="ScriptTask" feature="completionQuantity" />
+			<disable object="ScriptTask" feature="dataInputAssociations" />
+			<disable object="ScriptTask" feature="dataOutputAssociations" />
+			<disable object="ScriptTask" feature="default" />
+			<disable object="ScriptTask" feature="documentation" />
+			<disable object="ScriptTask" feature="extensionDefinitions" />
+			<disable object="ScriptTask" feature="extensionValues" />
+			<disable object="ScriptTask" feature="id" />
+			<disable object="ScriptTask" feature="incoming" />
+			<disable object="ScriptTask" feature="incomingConversationLinks" />
+			<disable object="ScriptTask" feature="ioSpecification" />
+			<disable object="ScriptTask" feature="lanes" />
+			<disable object="ScriptTask" feature="loopCharacteristics" />
+			<disable object="ScriptTask" feature="monitoring" />
+			<disable object="ScriptTask" feature="outgoing" />
+			<disable object="ScriptTask" feature="outgoingConversationLinks" />
+			<disable object="ScriptTask" feature="properties" />
+			<disable object="ScriptTask" feature="resources" />
+			<disable object="ScriptTask" feature="startQuantity" />
+		
+			<enable object="SequenceFlow" />
+			<enable object="SequenceFlow" feature="priority" />
+		
+			<!-- I seem to have to add these, otherwise they show up, even though I 
+				disable all at the start -->
+			<disable object="BoundaryEvent" />
+			<disable object="ConversationLink" />
+			<disable object="DataInput" />
+			<disable object="DataOutput" />
+			<disable object="Lane" />
+			<enable object="InputOutputSpecification" feature="dataInputs" />
+			<enable object="InputOutputSpecification" feature="dataOutputs" />
+		</modelEnablement>
+
+		<toolPalette
+			id="org.eclipse.bpmn2.modeler.toolpalette.default"
+			runtimeId="org.jboss.runtime.jbpm5">
+			<category name="Workflow Patterns">
+				<tool name="Sub Process with Start-&gt;End"
+					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
+			</category>
+			
+			<category name="Tasks">
+				<tool name="Task" object="Task"/>
+				<tool name="Manual Task" object="ManualTask"/>
+				<tool name="User Task" object="UserTask"/>
+				<tool name="Script Task" object="ScriptTask"/>
+				<tool name="Business Rule Task" object="BusinessRuleTask"/>
+				<tool name="Service Task" object="ServiceTask"/>
+				<tool name="Send Task" object="SendTask"/>
+				<tool name="Receive Task" object="ReceiveTask"/>
+			</category>
+			<category name="Artifacts">
+				<tool name="Group" object="Group"/>
+				<tool name="Text Annotation" object="TextAnnotation"/>
+			</category>
+			<category name="Catching Intermediate Events">
+				<tool name="Conditional" object="IntermediateCatchEvent+ConditionalEventDefinition"/>
+				<tool name="Error" object="IntermediateCatchEvent+ErrorEventDefinition"/>
+				<tool name="Escalation" object="IntermediateCatchEvent+EscalationEventDefinition"/>
+				<tool name="Message" object="IntermediateCatchEvent+MessageEventDefinition"/>
+				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition"/>
+				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition"/>
+			</category>
+			<category name="Containers and Activities">
+				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
+				<tool name="Subprocess" object="SubProcess"/>
+				<tool name="Reusable Subprocess" object="CallActivity"/>
+				<tool name="Lane" object="Lane"/>
+			</category>
+			<category name="Connections">
+				<tool name="Sequence Flow" object="SequenceFlow"/>
+				<tool name="Association" object="Association"/>
+			</category>
+			<category name="Data Objects">
+				<tool name="Data Object" object="DataObject"/>
+			</category>
+			<category name="End Events">
+				<tool name="Cancel" object="EndEvent+CancelEventDefinition"/>
+				<tool name="Compensation" object="EndEvent+CompensateEventDefinition"/>
+				<tool name="End" object="EndEvent"/>
+				<tool name="Error" object="EndEvent+ErrorEventDefinition"/>
+				<tool name="Escalation" object="EndEvent+EscalationEventDefinition"/>
+				<tool name="Message" object="EndEvent+MessageEventDefinition"/>
+				<tool name="Signal" object="EndEvent+SignalEventDefinition"/>
+				<tool name="Terminate" object="EndEvent+TerminateEventDefinition"/>
+			</category>
+			<category name="Gateways">
+				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
+				<tool name="Event-based" object="EventBasedGateway"/>
+				<tool name="Inclusive" object="InclusiveGateway"/>
+				<tool name="Parallel" object="ParallelGateway"/>
+			</category>
+			<category name="Start Events">
+				<tool name="Compensation" object="StartEvent+CompensateEventDefinition"/>
+				<tool name="Conditional" object="StartEvent+ConditionalEventDefinition"/>
+				<tool name="Error" object="StartEvent+ErrorEventDefinition"/>
+				<tool name="Escalation" object="StartEvent+EscalationEventDefinition"/>
+				<tool name="Start" object="StartEvent"/>
+				<tool name="Message" object="StartEvent+MessageEventDefinition"/>
+				<tool name="Signal" object="StartEvent+SignalEventDefinition"/>
+				<tool name="Timer" object="StartEvent+TimerEventDefinition"/>
+			</category>
+			
+			<!-- TODO: not yet implemented
+			<category name="Workflow Patterns">
+				<tool name="Sub Process with start-end"
+					object="SubProcess+StartEvent[x=10,y=50],EndEvent[x=100,y=50],SequenceFlow"/>
+				<tool name="Arbitrary Cycles">
+					<composite id="arbitrary.cycles">
+						<object type="Task" id="arbitrary.cycles.taskA" name="Task A"/>
+						<object type="Task" id="arbitrary.cycles.taskB" name="Task B"/>
+						<object type="Task" id="arbitrary.cycles.taskC" name="Task C"/>
+						<object type="Task" id="arbitrary.cycles.taskD" name="Task D"/>
+						<object type="Task" id="arbitrary.cycles.taskE" name="Task E"/>
+						<object type="Task" id="arbitrary.cycles.taskF" name="Task F"/>
+						<object type="Task" id="arbitrary.cycles.taskG" name="Task G"/>
+						<object type="ExclusiveGateway" id="arbitrary.cycles.xor1"/>
+						<object type="ExclusiveGateway" id="arbitrary.cycles.xor2"/>
+						<object type="ExclusiveGateway" id="arbitrary.cycles.xor3"/>
+						<object type="ExclusiveGateway" id="arbitrary.cycles.xor4"/>
+						<object type="ExclusiveGateway" id="arbitrary.cycles.xor5"/>
+						<connection id="arbitrary.cycles.c1" type="SequenceFlow" source="arbitrary.cycles.taskA" target="arbitrary.cycles.xor1"/>
+						<connection id="arbitrary.cycles.c2" type="SequenceFlow" source="arbitrary.cycles.xor1" target="arbitrary.cycles.taskB"/>
+						<connection id="arbitrary.cycles.c3" type="SequenceFlow" source="arbitrary.cycles.xor1" target="arbitrary.cycles.xor2"/>
+						<connection id="arbitrary.cycles.c4" type="SequenceFlow" source="arbitrary.cycles.xor2" target="arbitrary.cycles.taskC"/>
+						<connection id="arbitrary.cycles.c5" type="SequenceFlow" source="arbitrary.cycles.taskB" target="arbitrary.cycles.xor3"/>
+						<connection id="arbitrary.cycles.c6" type="SequenceFlow" source="arbitrary.cycles.taskC" target="arbitrary.cycles.xor3"/>
+						<connection id="arbitrary.cycles.c7" type="SequenceFlow" source="arbitrary.cycles.xor3" target="arbitrary.cycles.taskD"/>
+						<connection id="arbitrary.cycles.c8" type="SequenceFlow" source="arbitrary.cycles.taskD" target="arbitrary.cycles.xor4"/>
+						<connection id="arbitrary.cycles.c9" type="SequenceFlow" source="arbitrary.cycles.xor4" target="arbitrary.cycles.taskE"/>
+						<connection id="arbitrary.cycles.c10" type="SequenceFlow" source="arbitrary.cycles.xor4" target="arbitrary.cycles.taskF"/>
+						<connection id="arbitrary.cycles.c11" type="SequenceFlow" source="arbitrary.cycles.taskF" target="arbitrary.cycles.xor5"/>
+						<connection id="arbitrary.cycles.c12" type="SequenceFlow" source="arbitrary.cycles.xor5" target="arbitrary.cycles.taskG"/>
+						<connection id="arbitrary.cycles.c13" type="SequenceFlow" source="arbitrary.cycles.xor5" target="arbitrary.cycles.xor2"/>
+					</composite>
+				</tool>
+			</category>
+			-->
+			
+		</toolPalette>
+		
 		
 	</extension>
  <extension

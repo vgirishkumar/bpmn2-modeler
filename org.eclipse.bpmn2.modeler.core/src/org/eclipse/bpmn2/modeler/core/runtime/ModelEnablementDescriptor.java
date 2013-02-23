@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
+import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ToolEnablementPreferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -34,6 +35,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.graphiti.features.IFeature;
 
 /**
  * @author Bob Brodt
@@ -334,6 +336,14 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 
 	public boolean isEnabled(String className) {
 		return isEnabled(className, null);
+	}
+	
+	public boolean isEnabled(IFeature feature) {
+		if (feature instanceof IBpmn2CreateFeature) {
+			EClass eClass = ((IBpmn2CreateFeature)feature).getBusinessObjectClass();
+			return isEnabled(eClass);
+		}
+		return false;
 	}
 	
 	public Collection<String> getAllEnabled() {
