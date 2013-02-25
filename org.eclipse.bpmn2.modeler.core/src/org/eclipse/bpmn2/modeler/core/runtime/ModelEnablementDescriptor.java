@@ -236,25 +236,13 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 		else if ("default".equals(className)) {
 			// select the set of enablements from the default runtime
 			// an optional featureName is used to specify a ModelEnablement type
-			TargetRuntime rt = TargetRuntime.getDefaultRuntime();
-			String type = getType();
-			String profile = null;
-			if (featureName!=null) {
-				if (featureName.contains(".")) {
-					String[] a = featureName.split("\\.");
-					type = a[0];
-					profile = a[1];
-				}
-				else
-					type = featureName;
-			}
-			Set <Entry<String, HashSet<String>>> otherClasses =
-					rt.getModelEnablements(ModelUtil.getDiagramType(type), profile).classes.entrySet(); 
-			for (Entry<String, HashSet<String>> entry : otherClasses) {
-				for (String feature : entry.getValue()) {
-					setEnabled(entry.getKey(), feature, enabled);
-				}
-			}
+			initializeFromTargetRuntime(TargetRuntime.getDefaultRuntime(), featureName, enabled);
+		}
+		else if (className.contains(".")) {
+			// the "object=" attribute points to a Target Runtime ID,
+			// use this as the starting point for the current profile.
+			TargetRuntime rt = TargetRuntime.getRuntime(className);
+			initializeFromTargetRuntime(rt, featureName, enabled);
 		}
 		else if (featureName!=null && !featureName.isEmpty()) {
 			if ("all".equals(featureName)) {
@@ -289,6 +277,26 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 			setEnabled(className, enabled);
 	}
 
+	private void initializeFromTargetRuntime(TargetRuntime rt, String featureName, boolean enabled) {
+		String type = getType();
+		String profile = null;
+		if (featureName!=null) {
+			if (featureName.contains(".")) {
+				String[] a = featureName.split("\\.");
+				type = a[0];
+				profile = a[1];
+			}
+			else
+				type = featureName;
+		}
+		Set <Entry<String, HashSet<String>>> otherClasses =
+				rt.getModelEnablements(ModelUtil.getDiagramType(type), profile).classes.entrySet(); 
+		for (Entry<String, HashSet<String>> entry : otherClasses) {
+			for (String feature : entry.getValue()) {
+				setEnabled(entry.getKey(), feature, enabled);
+			}
+		}
+	}
 	
 	private ToolEnablementPreferences getToolEnablementPreferences() {
 		IProject project = Bpmn2Preferences.getActiveProject();

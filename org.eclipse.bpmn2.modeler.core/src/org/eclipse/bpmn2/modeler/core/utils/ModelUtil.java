@@ -530,17 +530,21 @@ public class ModelUtil {
 		if (object instanceof BPMNDiagram)
 			return getDiagramType((BPMNDiagram)object);
 		DiagramEditor editor = getDiagramEditor(object);
+		return getDiagramType(editor);
+	}
+	
+	public static Bpmn2DiagramType getDiagramType(DiagramEditor editor) {
 		if (editor!=null) {
 			Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
 			if (diagram!=null) {
-				object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
+				EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
 				if (object instanceof BPMNDiagram)
 					return getDiagramType((BPMNDiagram)object);
 			}
 		}
 		return Bpmn2DiagramType.NONE;
 	}
-
+	
 	public static Bpmn2DiagramType getDiagramType(BPMNDiagram diagram) {
 		if (diagram!=null && getResource(diagram)!=null) {
 			BPMNPlane plane = diagram.getPlane();

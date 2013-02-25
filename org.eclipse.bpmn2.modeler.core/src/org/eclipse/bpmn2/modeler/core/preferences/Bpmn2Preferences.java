@@ -86,6 +86,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public final static String PREF_SHOW_DESCRIPTIONS = "show.descriptions";
 	public final static String PREF_SHOW_DESCRIPTIONS_LABEL = "Show &descriptions in Properties Tab for BPMN2 Elements";
 	public final static String PREF_OVERRIDE_MODEL_ENABLEMENTS = "override.model.enablements";
+	public final static String PREF_DEFAULT_MODEL_ENABLEMENT_PROFILE = "default.model.enablement.profile";
 	public final static String PREF_IS_HORIZONTAL = "is.horizontal";
 	public final static String PREF_IS_HORIZONTAL_LABEL = "&Horizontal layout of Pools, Lanes and diagram elements [isHorizontal]";
 	
@@ -154,6 +155,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	private String connectionTimeout;
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
+	private String defaultModelEnablementProfile;
 
 	private HashMap<Class, ShapeStyle> shapeStyles = new HashMap<Class, ShapeStyle>();
 	
@@ -383,8 +385,10 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			// load all preferences
 			loadDefaults();
 			
-			if (projectPreferences!=null)
+			if (projectPreferences!=null) {
 				overrideModelEnablements = projectPreferences.getBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, false);
+				defaultModelEnablementProfile = projectPreferences.get(PREF_DEFAULT_MODEL_ENABLEMENT_PROFILE, "");
+			}
 
 			String id = getString(PREF_TARGET_RUNTIME,TargetRuntime.getFirstNonDefaultId());
 			if (id==null || id.isEmpty())
@@ -418,8 +422,10 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		if (dirty) {
 			// this is the only preference that is a project property,
 			// and not saved in the preference store for this plugin.
-			if (projectPreferences!=null)
+			if (projectPreferences!=null) {
 				projectPreferences.putBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, overrideModelEnablements);
+				projectPreferences.put(PREF_DEFAULT_MODEL_ENABLEMENT_PROFILE, defaultModelEnablementProfile);
+			}
 
 			setString(PREF_TARGET_RUNTIME,getRuntime().getId());
 			setBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
@@ -614,6 +620,16 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	
 	public void setOverrideModelEnablements(boolean override) {
 		overrideModelEnablements = override;
+		dirty = true;
+	}
+
+	public String getDefaultModelEnablementProfile() {
+		load();
+		return defaultModelEnablementProfile;
+	}
+	
+	public void setDefaultModelEnablementProfile(String profile) {
+		defaultModelEnablementProfile = profile;
 		dirty = true;
 	}
 	

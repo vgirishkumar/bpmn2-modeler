@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,6 +70,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	protected ArrayList<ToolPaletteDescriptor> toolPalettes;
 	protected HashMap<Class, ShapeStyle> shapeStyles;
 	protected Bpmn2Resource bpmnResource;
+	protected String modelEnablementProfile;
 
 	public TargetRuntime(String id, String name, String versions, String description) {
 		this.id = id;
@@ -346,8 +348,10 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 //						}
 					
 					// DEBUG:
+//					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
 //						System.out.println("Runtime: '"+rt.getName()+
 //								"'\nEnablement type: '"+me.getType()+
+//								"' Profile: '"+me.getProfile()+
 //								"'\nNumber of enabled model elements: "+me.getAllEnabled().size());
 //						List<String> classes = new ArrayList<String>(me.getAllEnabled().size());
 //						classes.addAll(me.getAllEnabled());
@@ -363,6 +367,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 //						}
 //						System.out.println("");
 //					}
+//					System.out.println("");
+					
 				}
 				
 			} catch (Exception ex) {
@@ -552,7 +558,15 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		}
 		return null;
 	}
-
+	
+	public String getModelEnablementProfile() {
+		return modelEnablementProfile;
+	}
+	
+	public void setModelEnablementProfile(String profile) {
+		modelEnablementProfile = profile;
+	}
+	
 	public ArrayList<ModelEnablementDescriptor> getModelEnablements()
 	{
 		if (modelEnablements==null) {
@@ -561,18 +575,31 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return modelEnablements;
 	}
 	
-	public ModelEnablementDescriptor getModelEnablements(EObject object)
+	public ModelEnablementDescriptor  getModelEnablements(EObject object)
 	{
-		return getModelEnablements( ModelUtil.getDiagramType(object) );
+		return getModelEnablements( ModelUtil.getDiagramType(object), getModelEnablementProfile() );
 	}
 	
-	public ModelEnablementDescriptor getModelEnablements(Bpmn2DiagramType diagramType)
+	public ArrayList<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)
 	{
-		return getModelEnablements(diagramType, null);
+		ArrayList<ModelEnablementDescriptor> list = new ArrayList<ModelEnablementDescriptor>();
+		for (ModelEnablementDescriptor me : getModelEnablements()) {
+			String s = diagramType.name();
+			if (diagramType == Bpmn2DiagramType.NONE && me.getType()==null) {
+				list.add(me);
+			}
+			else if (s.equalsIgnoreCase(me.getType())) {
+				list.add(me);
+			}
+		}
+		return list;
 	}
 	
 	public ModelEnablementDescriptor getModelEnablements(Bpmn2DiagramType diagramType, String profile)
 	{
+		if (profile!=null && profile.isEmpty())
+			profile = null;
+		
 		for (ModelEnablementDescriptor me : getModelEnablements()) {
 			String s = diagramType.name();
 			if (diagramType == Bpmn2DiagramType.NONE && me.getType()==null) {
@@ -617,7 +644,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	
 	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType)
 	{
-		return getToolPalette(diagramType, null);
+		return getToolPalette(diagramType, getModelEnablementProfile());
 	}
 	
 	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)

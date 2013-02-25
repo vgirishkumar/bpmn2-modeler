@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature.CreateFeatureNode;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
@@ -37,7 +36,9 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
+import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.FeatureMap;
+import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
@@ -47,6 +48,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.gef.Tool;
+import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
@@ -59,8 +64,6 @@ import org.eclipse.graphiti.features.IFeatureChecker;
 import org.eclipse.graphiti.features.IFeatureCheckerHolder;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
-import org.eclipse.graphiti.features.context.ICreateConnectionContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
@@ -69,11 +72,9 @@ import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.features.context.impl.MoveBendpointContext;
-import org.eclipse.graphiti.features.context.impl.MoveContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
@@ -96,6 +97,8 @@ import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IImageDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 
 public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
@@ -104,31 +107,88 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	ModelDescriptor modelDescriptor;
 	Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	
+	protected class ProfileSelectionToolEntry extends ToolEntry {
+		BPMN2Editor editor;
+		
+		ProfileSelectionToolEntry(BPMN2Editor editor, String label) {
+			super(label, null, null, null, null);
+			this.editor = editor;
+		}
+		
+		public Tool createTool() {
+			String profile = getLabel();
+			editor.setModelEnablementProfile(profile);
+			Display.getDefault().asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					editor.updatePalette();
+				}
+				
+			});
+			return null;
+		}
+
+		@Override
+		public ImageDescriptor getLargeIcon() {
+			return super.getSmallIcon();
+		}
+
+		@Override
+		public ImageDescriptor getSmallIcon() {
+			if (getLabel().equals(editor.getModelEnablementProfile()))
+				return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_CHECKED_16);
+			return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_UNCHECKED_16);
+		}
+	}
+	
 	public BpmnToolBehaviourFeature(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);
 	}
 
+	public void createPaletteProfilesGroup(BPMN2Editor editor, PaletteRoot paletteRoot) {
+		TargetRuntime rt = editor.getTargetRuntime();
+		PaletteDrawer drawer = new PaletteDrawer("Profiles", null);
+		int size = 0;
+		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
+
+		for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
+			String profile = med.getProfile();
+			if (profile==null)
+				profile = "Unnamed "+(size+1);
+			drawer.add(new ProfileSelectionToolEntry(editor, profile));
+			++size;
+		}
+		if (size>1) {
+			drawer.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
+			paletteRoot.add(1,drawer);
+		}
+	}
+	
 	@Override
 	public IPaletteCompartmentEntry[] getPalette() {
 
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 		Diagram diagram = getDiagramTypeProvider().getDiagram();
-		Object object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
+		EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
 		
 		List<IPaletteCompartmentEntry> palette = new ArrayList<IPaletteCompartmentEntry>();
 
 		if (object!=null) {
-			modelEnablements = editor.getTargetRuntime().getModelEnablements((EObject)object);
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(object);
+			String profile = editor.getModelEnablementProfile();
+			modelEnablements = editor.getTargetRuntime().getModelEnablements(diagramType, profile);
 			featureProvider = (BPMNFeatureProvider)getFeatureProvider();
 			modelDescriptor = editor.getTargetRuntime().getModelDescriptor();
+			
+			PaletteCompartmentEntry compartmentEntry = null;
 			categories.clear();
-			ToolPaletteDescriptor toolPaletteDescriptor = editor.getTargetRuntime().getToolPalette((EObject)object);
+			ToolPaletteDescriptor toolPaletteDescriptor = editor.getTargetRuntime().getToolPalette(diagramType, profile);
 			if (toolPaletteDescriptor!=null) {
 				for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
-					if ("Catching Intermediate Events".equals(category.getName()))
-						System.out.println();
-					PaletteCompartmentEntry compartmentEntry = categories.get(category.getName());
+					compartmentEntry = categories.get(category.getName());
 					for (ToolDescriptor tool : category.getTools()) {
+						
 						IFeature feature = getCreateFeature(tool);
 						if (feature!=null) {
 							if (compartmentEntry==null) {

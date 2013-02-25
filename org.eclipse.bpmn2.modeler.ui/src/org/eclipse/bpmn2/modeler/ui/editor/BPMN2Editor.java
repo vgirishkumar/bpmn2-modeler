@@ -98,6 +98,7 @@ import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
+import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
@@ -177,6 +178,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
+import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -310,6 +312,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
+	private String modelEnablementProfile;
 //	private Hashtable<BPMNDiagram, GraphicalViewer> mapDiagramToViewer = new Hashtable<BPMNDiagram, GraphicalViewer>();
 
 	protected DiagramEditorAdapter editorAdapter;
@@ -449,6 +452,17 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return targetRuntime;
 	}
 	
+	public String getModelEnablementProfile() {
+		if (modelEnablementProfile==null) {
+			modelEnablementProfile = getTargetRuntime().getModelEnablementProfile();
+		}
+		return modelEnablementProfile;
+	}
+	
+	public void setModelEnablementProfile(String profile) {
+		modelEnablementProfile = profile;
+	}
+	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {
 		if (targetRuntime==null) {
 			 // If the project has not been configured for a specific runtime through the "BPMN2"
@@ -468,6 +482,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 			if (targetRuntime==null)
 				targetRuntime = TargetRuntime.getDefaultRuntime();
+
+			String profile = getPreferences().getDefaultModelEnablementProfile();
+			targetRuntime.setModelEnablementProfile(profile);
 		}
 		return targetRuntime;
 	}
@@ -568,10 +585,15 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		di.generateFromDI();
 	}
 
-	protected void updatePalette() {
+	public void updatePalette() {
 		GFPaletteRoot pr = (GFPaletteRoot)getPaletteRoot();
-		if (pr!=null)
+		if (pr!=null) {
 			pr.updatePaletteEntries();
+			BpmnToolBehaviourFeature toolBehaviorProvider = 
+					(BpmnToolBehaviourFeature)getDiagramTypeProvider().
+					getCurrentToolBehaviorProvider();
+			toolBehaviorProvider.createPaletteProfilesGroup(this, pr);
+		}
 	}
 	
 	@Override

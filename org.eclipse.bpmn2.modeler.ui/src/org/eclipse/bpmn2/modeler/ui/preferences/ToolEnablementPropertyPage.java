@@ -34,6 +34,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -81,7 +82,30 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		Composite container = new Composite(parent, SWT.NULL);
 		container.setLayout(new GridLayout(3, false));
 		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
-		
+
+		final Label lblProfile = new Label(container, SWT.NONE);
+		lblProfile.setText("Default Tool Enablement Profile:");
+		lblProfile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+
+		final Combo cboProfile = new Combo(container, SWT.READ_ONLY);
+		cboProfile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		TargetRuntime currentRuntime = bpmn2Preferences.getRuntime();
+		String currentProfile = bpmn2Preferences.getDefaultModelEnablementProfile();
+		int i = 1;
+		int iSelected = -1;
+		cboProfile.add("");
+		for (ModelEnablementDescriptor md : currentRuntime.getModelEnablements()) {
+			String profile = md.getProfile();
+			String text = profile;
+			if (text==null || text.isEmpty())
+				text = "Unnamed " + (i+1);
+			cboProfile.add(text);
+			cboProfile.setData(Integer.toString(i), md);
+			if (iSelected<0 && (currentProfile!=null && currentProfile.equals(profile)))
+				cboProfile.select(iSelected = i);
+			++i;
+		}
+
 		final Button btnOverride = new Button(container,SWT.CHECK);
 		btnOverride.setText("Override default tool enablements with these settings:");
 		btnOverride.setSelection(bpmn2Preferences.getOverrideModelEnablements());
@@ -103,9 +127,8 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 
 		final Combo cboCopy = new Combo(container, SWT.READ_ONLY);
 		cboCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		TargetRuntime cr = bpmn2Preferences.getRuntime();
-		int i = 0;
-		int iSelected = -1;
+		i = 0;
+		iSelected = -1;
 		for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
 			for (ModelEnablementDescriptor md : rt.getModelEnablements()) {
 				String text = rt.getName();
@@ -115,7 +138,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 					text += " (" + md.getProfile() + ")";
 				cboCopy.add(text);
 				cboCopy.setData(Integer.toString(i), md);
-				if (rt == cr && iSelected<0)
+				if (rt == currentRuntime && iSelected<0)
 					cboCopy.select(iSelected = i);
 				++i;
 			}
@@ -177,7 +200,14 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		});
 		checkboxTreeViewer.setUseHashlookup(true);
 		m_bindingContext = initDataBindings();
-		
+
+		cboProfile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				bpmn2Preferences.setDefaultModelEnablementProfile( cboProfile.getText() );
+			}
+		});
+
 		boolean enable = btnOverride.getSelection();
 		checkboxTree.setEnabled(enable);
 		btnCopy.setEnabled(enable);

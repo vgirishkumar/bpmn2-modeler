@@ -1253,7 +1253,7 @@
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="Simple">
 			<disable object="all"/>
 			<!-- copy the enablements from "Process" diagram type -->
-			<enable object="default" feature="Process.full"/>
+			<enable object="org.jboss.runtime.jbpm5" feature="Process.Full"/>
 			
 			<!-- and then disable these objects and features -->
 			<disable object="AdHocSubProcess"/>
@@ -1472,14 +1472,51 @@
 			<enable object="InputOutputSpecification" feature="dataInputs" />
 			<enable object="InputOutputSpecification" feature="dataOutputs" />
 		</modelEnablement>
-
+		
 		<toolPalette
-			id="org.eclipse.bpmn2.modeler.toolpalette.default"
-			runtimeId="org.jboss.runtime.jbpm5">
-			<category name="Workflow Patterns">
-				<tool name="Sub Process with Start-&gt;End"
-					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
+			id="org.eclipse.bpmn2.modeler.toolpalette.simple"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="Process" profile="Simple">
+			
+			<category name="Tasks">
+				<tool name="BusinessRuleTask" object="BusinessRuleTask"/>
+				<tool name="Manual Task" object="ManualTask"/>
+				<tool name="User Task" object="UserTask"/>
 			</category>
+			<category name="Connections">
+				<tool name="Sequence Flow" object="SequenceFlow"/>
+				<tool name="Association" object="Association"/>
+			</category>
+			<category name="Gateways">
+				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
+				<tool name="Inclusive" object="InclusiveGateway"/>
+			</category>
+		</toolPalette>
+		
+		<toolPalette
+			id="org.eclipse.bpmn2.modeler.toolpalette.ruleFlow"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="Process" profile="RuleFlow">
+			
+			<category name="Tasks">
+				<tool name="Task" object="Task"/>
+				<tool name="Manual Task" object="ManualTask"/>
+				<tool name="User Task" object="UserTask"/>
+			</category>
+			<category name="Connections">
+				<tool name="Sequence Flow" object="SequenceFlow"/>
+				<tool name="Association" object="Association"/>
+			</category>
+			<category name="Gateways">
+				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
+				<tool name="Inclusive" object="InclusiveGateway"/>
+			</category>
+		</toolPalette>
+		
+		<toolPalette
+			id="org.eclipse.bpmn2.modeler.toolpalette.full"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="Process" profile="Full">
 			
 			<category name="Tasks">
 				<tool name="Task" object="Task"/>
@@ -1543,10 +1580,11 @@
 				<tool name="Timer" object="StartEvent+TimerEventDefinition"/>
 			</category>
 			
-			<!-- TODO: not yet implemented
 			<category name="Workflow Patterns">
-				<tool name="Sub Process with start-end"
-					object="SubProcess+StartEvent[x=10,y=50],EndEvent[x=100,y=50],SequenceFlow"/>
+				<tool name="Sub Process with Start-&gt;End"
+					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
+			
+			<!-- TODO: not yet implemented
 				<tool name="Arbitrary Cycles">
 					<composite id="arbitrary.cycles">
 						<object type="Task" id="arbitrary.cycles.taskA" name="Task A"/>
@@ -1576,8 +1614,8 @@
 						<connection id="arbitrary.cycles.c13" type="SequenceFlow" source="arbitrary.cycles.xor5" target="arbitrary.cycles.xor2"/>
 					</composite>
 				</tool>
-			</category>
 			-->
+			</category>
 			
 		</toolPalette>
 		
