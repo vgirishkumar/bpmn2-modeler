@@ -112,14 +112,18 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						String prop = "";
 						while (i<chars.length) {
 							c = chars[i++];
-							if (c=='=')
+							if (c=='\\')
+								c = chars[i++];
+							else if (c=='=')
 								break;
 							prop += c;
 						}
 						String value = "";
 						while (i<chars.length) {
 							c = chars[i++];
-							if (c==',' || c==']')
+							if (c=='\\')
+								c = chars[i++];
+							else if (c==',' || c==']')
 								break;
 							value += c;
 						}

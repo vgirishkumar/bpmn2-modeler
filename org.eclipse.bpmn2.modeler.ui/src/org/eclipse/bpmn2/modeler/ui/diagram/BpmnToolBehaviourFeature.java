@@ -370,13 +370,18 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	
 	private void createEntry(IFeature feature, PaletteCompartmentEntry compartmentEntry) {
 		if (modelEnablements.isEnabled(feature)) {
-			if (feature instanceof ICreateFeature) {
+			IFeature targetFeature = feature;
+			if (feature instanceof CompoundCreateFeature) {
+				CompoundCreateFeature cf = (CompoundCreateFeature)feature;
+				targetFeature = ((CreateFeatureNode)cf.getChildren().get(0)).getFeature();
+			}
+			if (targetFeature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;
 				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
 					cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
-			else if (feature instanceof ICreateConnectionFeature) {
+			else if (targetFeature instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
 				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
 						cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),

@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
@@ -24,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureC
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -31,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -48,6 +51,7 @@ import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -62,7 +66,8 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
  */
 public class CompoundCreateFeature<CONTEXT extends IContext>
 		extends AbstractCreateFeature
-		implements IBpmn2CreateFeature<BaseElement, CONTEXT> {
+		implements IBpmn2CreateFeature<BaseElement, CONTEXT>,
+		ICreateConnectionFeature {
 	
 	public class CreateFeatureNode {
 		
@@ -91,6 +96,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 
 		public List<Object> create(IContext context) {
+			// Create the parent element.
+			// For ICreateContext this will result in a BaseElement and a ContainerShape;
+			// for ICreateConnectionContext we only get a Graphiti Connection element.
 			List<Object> objects = new ArrayList<Object>();
 			if (feature instanceof ICreateFeature && context instanceof ICreateContext) {
 				Object created[] = ((ICreateFeature)feature).create((ICreateContext)context);
@@ -101,14 +109,28 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 				objects.add(((ICreateConnectionFeature)feature).create((ICreateConnectionContext)context));
 			}
 
+			BaseElement businessObject = null;
 			ContainerShape targetContainer = null;
+			Connection connection = null;
 			for (Object o : objects) {
-				if (o instanceof ContainerShape) {
+				if (o instanceof ContainerShape && targetContainer==null) {
 					targetContainer = (ContainerShape)o;
-					break;
+				}
+				else if (o instanceof Connection && connection==null) {
+					connection = (Connection)o;
+				}
+				else if (o instanceof BaseElement && businessObject==null) {
+					businessObject = (BaseElement)o;
 				}
 			}
+			if (connection!=null) {
+				// we need the BaseElement that is linked to this connection
+				businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
+			}
+			// now apply the Business Object properties
+			applyBusinessObjectProperties(businessObject);
 			
+			// Now process the child features
 			List<PictogramElement> createdPEs = new ArrayList<PictogramElement>();
 			IContext childContext = null;
 			String value;
@@ -161,16 +183,43 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 				
 				List<Object> result = node.create(childContext);
 				PictogramElement pe = null;
+				Connection cn = null;
+				BaseElement be = null;
 				for (Object o : result) {
-					if (o instanceof PictogramElement) {
-						pe = (PictogramElement)o;
-						break;
+					if (o instanceof ContainerShape) {
+						pe = (ContainerShape)o;
+					}
+					else if (o instanceof Connection) {
+						cn = (Connection)o;
+					}
+					else if (o instanceof BaseElement) {
+						be = (BaseElement)o;
 					}
 				}
-				createdPEs.add(pe);
+				if (pe!=null)
+					createdPEs.add(pe);
+				else if (cn!=null) {
+					be = BusinessObjectUtil.getFirstBaseElement(cn);
+				}
+				applyBusinessObjectProperties(be);
 				objects.add(result);
 			}
 			return objects;
+		}
+
+		private void applyBusinessObjectProperties(BaseElement be) {
+			if (be!=null && properties!=null) {
+				ModelDescriptor md = TargetRuntime.getCurrentRuntime().getModelDescriptor();
+				for (Entry<String, String> entry : properties.entrySet()) {
+					if (entry.getKey().startsWith("$")) {
+						String featureName = entry.getKey().substring(1);
+						String value = entry.getValue();
+						EStructuralFeature f = md.getFeature(be.eClass().getName(), featureName);
+						md.setValueFromString(be, f, value, true);
+					}
+				}
+			}
+
 		}
 		
 		public boolean isAvailable(IContext context) {
@@ -270,6 +319,24 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	}
 
 	@Override
+	public boolean canExecute(IContext context) {
+		boolean ret = false;
+		if (context instanceof ICreateContext)
+			ret = canCreate((ICreateContext) context);
+		else if (context instanceof ICreateConnectionContext)
+			ret = canCreate((ICreateConnectionContext)context);
+		return ret;
+	}
+	
+	@Override
+	public void execute(IContext context) {
+		if (context instanceof ICreateContext)
+			create((ICreateContext) context);
+		else if (context instanceof ICreateConnectionContext)
+			create((ICreateConnectionContext)context);
+	}
+	
+	@Override
 	public boolean canCreate(ICreateContext context) {
 		for (CreateFeatureNode ft : children) {
 			if (ft.canCreate(context)==false)
@@ -279,12 +346,35 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	}
 
 	@Override
+	public boolean canCreate(ICreateConnectionContext context) {
+		for (CreateFeatureNode ft : children) {
+			if (ft.canCreate(context)==false)
+				return false;
+		}
+		return true;
+	}
+	
+	@Override
 	public Object[] create(ICreateContext context) {
 		List<Object> objects = new ArrayList<Object>();
 		for (CreateFeatureNode ft : children) {
 			objects.addAll( ft.create(context) );
 		}
 		return objects.toArray();
+	}
+
+	@Override
+	public Connection create(ICreateConnectionContext context) {
+		List<Object> objects = new ArrayList<Object>();
+		for (CreateFeatureNode ft : children) {
+			objects.addAll( ft.create(context) );
+		}
+		if (objects.size()>0) {
+			Object o = objects.get(0);
+			if (o instanceof Connection)
+				return (Connection)o;
+		}
+		return null;
 	}
 
 	@Override
@@ -327,5 +417,26 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 
 	public List<CreateFeatureNode> getChildren() {
 		return children;
+	}
+
+	@Override
+	public boolean canStartConnection(ICreateConnectionContext context) {
+		return true;
+	}
+
+	@Override
+	public void startConnecting() {
+	}
+
+	@Override
+	public void endConnecting() {
+	}
+
+	@Override
+	public void attachedToSource(ICreateConnectionContext context) {
+	}
+
+	@Override
+	public void canceledAttaching(ICreateConnectionContext context) {
 	}
 }

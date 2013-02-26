@@ -321,56 +321,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param value
 	 */
 	private void setValue(EObject object, EStructuralFeature feature, Object value, boolean force, Property property) {
-		// should not set null value features
-		if (value == null) {
-			return;
-		}
-		
-		if (feature.isMany()) {
-			((EList)object.eGet(feature)).add(value);
-		}
-		else {
-			if (value instanceof String) {
-				EDataType eDataType = (EDataType)feature.getEType();
-				try {
-					// TODO: figure out why feature.eClass().getEPackage().getEFactoryInstance() doesn't
-					// return the correct factory!
-					EFactory factory = ModelUtil.getEPackage(feature).getEFactoryInstance();
-					value = factory.createFromString(eDataType, (String)value);
-				}
-				catch (Exception e)
-				{
-					EFactory factory = EcorePackage.eINSTANCE.getEFactoryInstance();
-					value = factory.createFromString(eDataType, (String)value);
-				}
-			}
-
-			if (object.eClass().getEStructuralFeature(feature.getName())!=null) {
-				// this feature exists for this object, so we can set it directly
-				// but only if it's not already set.
-				if (!object.eIsSet(feature) || force) {
-					object.eSet(feature, value);
-				}
-			}
-			else {
-				// the feature does not exist in this object, so we either need to
-				// create an "anyAttribute" entry or, if the object is an ExtensionAttributeValue,
-				// create an entry in its "value" feature map.
-				if (object instanceof ExtensionAttributeValue) {
-					ModelUtil.addExtensionAttributeValue(object.eContainer(), feature, value);
-				}
-				else {
-					EStructuralFeature f = ModelUtil.getAnyAttribute(object, feature.getName());
-					if (f!=null) {
-						if (object.eGet(f)!=null)
-							return;
-					}
-					if (!object.eIsSet(feature) || force) {
-						object.eSet(feature, value);
-					}
-				}
-			}
-		}
+		this.setValueFromString(object, feature, value, force);
 	}
 	
 	/**

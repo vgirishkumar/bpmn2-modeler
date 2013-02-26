@@ -1264,16 +1264,25 @@ public class ModelUtil {
 				}
 				else {
 					// fallback is to set the new value here using good ol' EObject.eSet()
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							if (object.eGet(feature) instanceof List) {
-								((List)object.eGet(feature)).add(newValue);
+					if (domain!=null) {
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								if (object.eGet(feature) instanceof List) {
+									((List)object.eGet(feature)).add(newValue);
+								}
+								else
+									object.eSet(feature, newValue);
 							}
-							else
-								object.eSet(feature, newValue);
+						});
+					}
+					else {
+						if (object.eGet(feature) instanceof List) {
+							((List)object.eGet(feature)).add(newValue);
 						}
-					});
+						else
+							object.eSet(feature, newValue);
+					}
 				}
 			} catch (Exception e) {
 				ErrorUtils.showErrorMessage(e.getMessage());

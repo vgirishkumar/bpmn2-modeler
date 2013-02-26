@@ -231,6 +231,34 @@
 			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGlobalTypePropertiesAdapter">
 		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.exclusiveGateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ExclusiveGateway"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.inclusiveGateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.InclusiveGateway"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.eventBasedGateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.EventBasedGateway"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.parallelGateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ParallelGateway"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
+		</propertyExtension>
 		
 		<featureContainer
 			runtimeId="org.jboss.runtime.jbpm5"
@@ -334,171 +362,14 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmIntermediateThrowEventFeatureContainer">
 		</featureContainer>
 		
-<!--
-		<customTask
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.LogTask"
-			runtimeId="org.jboss.runtime.jbpm5"
-			name="Log Task"
-			description="This task is used to log messages"
-			type="Task">
-			<property name="taskName" value="SampleLogTask"/>
-			<property name="displayName" value="Sample Log Task" type="EString"/>
-			<property name="icon" value="icons/log.png" type="EString"/>
-			<property name="ioSpecification">
-				<value>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="Parameter"/>
-						</value>
-					</property>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="Message"/>
-						</value>
-					</property>
-					<property name="dataOutputs">
-						<value>
-							<property name="name" value="result"/>
-						</value>
-					</property>
-
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#0"/>
-						</value>
-					</property>
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#1"/>
-						</value>
-					</property>
-
-					<property name="outputSets">
-						<value>
-							<property name="dataOutputRefs" ref="ioSpecification/dataOutputs#0"/>
-						</value>
-					</property>
-				</value>
-			</property>
-			<property name="dataInputAssociations">
-				<value>
-					<property name="sourceRef" value="someVariable"/>
-					<property name="targetRef" ref="ioSpecification/dataInputs#0"/>
-				</value>
-			</property>
-			<property name="dataInputAssociations">
-				<value>
-					<property name="sourceRef" value="someVariable"/>
-					<property name="targetRef" ref="ioSpecification/dataInputs#1"/>
-				</value>
-			</property>
-			<property name="dataOutputAssociations">
-				<value>
-					<property name="sourceRef" ref="ioSpecification/dataOutputs#0"/>
-					<property name="targetRef" value="someVariable"/>
-				</value>
-			</property>
-		</customTask>
--->	
-<!--
-		<customTask
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.EmailTask"
-			runtimeId="org.jboss.runtime.jbpm5"
-			name="Sample Email Task"
-			description="This task is used to send emails"
-			type="Task">
-			<property name="taskName" value="SampleEmailTask"/>
-			<property name="displayName" value="Sample Email Task" type="EString"/>
-			<property name="icon" value="icons/email.png" type="EString"/>
-			<property name="ioSpecification">
-				<value>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="Attachment"/>
-						</value>
-					</property>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="Body"/>
-						</value>
-					</property>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="Subject"/>
-						</value>
-					</property>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="To"/>
-						</value>
-					</property>
-					<property name="dataInputs">
-						<value>
-							<property name="name" value="From"/>
-						</value>
-					</property>
-					<property name="dataOutputs">
-						<value>
-							<property name="name" value="result"/>
-						</value>
-					</property>
-
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#0"/>
-						</value>
-					</property>
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#1"/>
-						</value>
-					</property>
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#2"/>
-						</value>
-					</property>
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#3"/>
-						</value>
-					</property>
-					<property name="inputSets">
-						<value>
-							<property name="dataInputRefs" ref="ioSpecification/dataInputs#4"/>
-						</value>
-					</property>
-
-					<property name="outputSets">
-						<value>
-							<property name="dataOutputRefs" ref="ioSpecification/dataOutputs#0"/>
-						</value>
-					</property>
-				</value>
-			</property>
-			<property name="dataInputAssociations">
-				<value>
-					<property name="sourceRef" value="someVariable"/>
-					<property name="targetRef" ref="ioSpecification/dataInputs#0"/>
-				</value>
-			</property>
-			<property name="dataOutputAssociations">
-				<value>
-					<property name="sourceRef" ref="ioSpecification/dataOutputs#0"/>
-					<property name="targetRef" value="someVariable"/>
-				</value>
-			</property>
-		</customTask>
--->
+<!-- Model Extensions -->
 		
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.process"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="Process Extensions"
 			type="Process">
-			<property name="version" value="1" type="EInt"/>
+			<property name="version" value="1"/>
 			<property name="packageName" value="defaultPackage"/>
 			<property name="adHoc" value="false" type="EBoolean"/>
 			<property name="isExecutable" value="true" type="EBoolean"/>
@@ -527,6 +398,38 @@
 			type="CallActivity">
 			<property name="waitForCompletion" value="false" type="EBoolean"/>
 			<property name="independent" value="false" type="EBoolean"/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="ExclusiveGateway Extensions"
+			type="ExclusiveGateway">
+			<property name="gatewayDirection" value="Diverging"/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="EventBasedGateway Extensions"
+			type="EventBasedGateway">
+			<property name="gatewayDirection" value="Diverging"/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="InclusiveGateway Extensions"
+			type="InclusiveGateway">
+			<property name="gatewayDirection" value="Diverging"/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="ParallelGateway Extensions"
+			type="ParallelGateway">
+			<property name="gatewayDirection" value="Diverging"/>
 		</modelExtension>
 
 		<modelExtension
@@ -622,6 +525,16 @@
 				</value>
 			</property>
 		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.sequenceFlow"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="SequenceFlow Extensions"
+			type="SequenceFlow">
+			<property name="priority" value="1" type="EInt"/>
+		</modelExtension>
+
+<!-- Model Enablements -->
 
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="Full">
 			<disable object="all"/>
@@ -812,6 +725,18 @@
 			<disable object="EscalationEventDefinition" feature="extensionValues"/>
 			<disable object="EscalationEventDefinition" feature="id"/>
 			<enable object="EventDefinition"/>
+			<enable object="EventBasedGateway"/>
+			<disable object="EventBasedGateway" feature="anyAttribute"/>
+			<disable object="EventBasedGateway" feature="auditing"/>
+			<disable object="EventBasedGateway" feature="categoryValueRef"/>
+			<disable object="EventBasedGateway" feature="documentation"/>
+			<disable object="EventBasedGateway" feature="extensionDefinitions"/>
+			<disable object="EventBasedGateway" feature="extensionValues"/>
+			<disable object="EventBasedGateway" feature="id"/>
+			<disable object="EventBasedGateway" feature="incoming"/>
+			<disable object="EventBasedGateway" feature="lanes"/>
+			<disable object="EventBasedGateway" feature="monitoring"/>
+			<disable object="EventBasedGateway" feature="outgoing"/>
 			<enable object="ExclusiveGateway"/>
 			<disable object="ExclusiveGateway" feature="anyAttribute"/>
 			<disable object="ExclusiveGateway" feature="auditing"/>
@@ -1282,6 +1207,7 @@
 			<disable object="SendTask"/>
 			<disable object="Task" feature="extensionValues"/>
 			<disable object="UserTask" feature="extensionValues"/>
+			<disable object="Process" feature="adHoc"/>
 			
 			<enable object="GlobalType"/>
 			<enable object="ImportType"/>
@@ -1473,23 +1399,41 @@
 			<enable object="InputOutputSpecification" feature="dataOutputs" />
 		</modelEnablement>
 		
+<!-- Tool Palettes -->
+
 		<toolPalette
 			id="org.eclipse.bpmn2.modeler.toolpalette.simple"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Simple">
 			
-			<category name="Tasks">
-				<tool name="BusinessRuleTask" object="BusinessRuleTask"/>
+			<category name="Activities">
+				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
+				<tool name="Subprocess" object="SubProcess"/>
+				<tool name="Reusable Subprocess" object="CallActivity"/>
+				<tool name="Task" object="Task"/>
 				<tool name="Manual Task" object="ManualTask"/>
 				<tool name="User Task" object="UserTask"/>
+				<tool name="Script Task" object="ScriptTask"/>
+				<tool name="Business Rule Task" object="BusinessRuleTask"/>
+				<tool name="Service Task" object="ServiceTask"/>
+				<tool name="Send Task" object="SendTask"/>
+				<tool name="Receive Task" object="ReceiveTask"/>
 			</category>
 			<category name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
-				<tool name="Association" object="Association"/>
+			</category>
+			<category name="End Events">
+				<tool name="End" object="EndEvent"/>
+				<tool name="Error" object="EndEvent+ErrorEventDefinition"/>
+				<tool name="Terminate" object="EndEvent+TerminateEventDefinition"/>
 			</category>
 			<category name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
 				<tool name="Inclusive" object="InclusiveGateway"/>
+				<tool name="Parallel" object="ParallelGateway"/>
+			</category>
+			<category name="Start Events">
+				<tool name="Start" object="StartEvent"/>
 			</category>
 		</toolPalette>
 		
@@ -1503,13 +1447,12 @@
 				<tool name="Manual Task" object="ManualTask"/>
 				<tool name="User Task" object="UserTask"/>
 			</category>
+			<category name="Catching Intermediate Events">
+				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition"/>
+				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition"/>
+			</category>
 			<category name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
-				<tool name="Association" object="Association"/>
-			</category>
-			<category name="Gateways">
-				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
-				<tool name="Inclusive" object="InclusiveGateway"/>
 			</category>
 		</toolPalette>
 		
@@ -1518,7 +1461,10 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Full">
 			
-			<category name="Tasks">
+			<category name="Activities">
+				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
+				<tool name="Subprocess" object="SubProcess"/>
+				<tool name="Reusable Subprocess" object="CallActivity"/>
 				<tool name="Task" object="Task"/>
 				<tool name="Manual Task" object="ManualTask"/>
 				<tool name="User Task" object="UserTask"/>
@@ -1532,23 +1478,10 @@
 				<tool name="Group" object="Group"/>
 				<tool name="Text Annotation" object="TextAnnotation"/>
 			</category>
-			<category name="Catching Intermediate Events">
-				<tool name="Conditional" object="IntermediateCatchEvent+ConditionalEventDefinition"/>
-				<tool name="Error" object="IntermediateCatchEvent+ErrorEventDefinition"/>
-				<tool name="Escalation" object="IntermediateCatchEvent+EscalationEventDefinition"/>
-				<tool name="Message" object="IntermediateCatchEvent+MessageEventDefinition"/>
-				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition"/>
-				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition"/>
-			</category>
-			<category name="Containers and Activities">
-				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
-				<tool name="Subprocess" object="SubProcess"/>
-				<tool name="Reusable Subprocess" object="CallActivity"/>
-				<tool name="Lane" object="Lane"/>
-			</category>
 			<category name="Connections">
+				<tool name="Association (undirected)" object="Association[$associationDirection=None]"/>
+				<tool name="Association (one-way)" object="Association[$associationDirection=One]"/>
 				<tool name="Sequence Flow" object="SequenceFlow"/>
-				<tool name="Association" object="Association"/>
 			</category>
 			<category name="Data Objects">
 				<tool name="Data Object" object="DataObject"/>
@@ -1569,6 +1502,21 @@
 				<tool name="Inclusive" object="InclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
 			</category>
+			<category name="Intermediate Catch Events">
+				<tool name="Conditional" object="IntermediateCatchEvent+ConditionalEventDefinition"/>
+				<tool name="Error" object="IntermediateCatchEvent+ErrorEventDefinition"/>
+				<tool name="Escalation" object="IntermediateCatchEvent+EscalationEventDefinition"/>
+				<tool name="Intermediate" object="IntermediateCatchEvent"/>
+				<tool name="Message" object="IntermediateCatchEvent+MessageEventDefinition"/>
+				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition"/>
+				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition"/>
+			</category>
+			<category name="Intermediate Throw Events">
+				<tool name="Escalation" object="IntermediateThrowEvent+EscalationEventDefinition"/>
+				<tool name="Intermediate" object="IntermediateThrowEvent"/>
+				<tool name="Message" object="IntermediateThrowEvent+MessageEventDefinition"/>
+				<tool name="Signal" object="IntermediateThrowEvent+SignalEventDefinition"/>
+			</category>
 			<category name="Start Events">
 				<tool name="Compensation" object="StartEvent+CompensateEventDefinition"/>
 				<tool name="Conditional" object="StartEvent+ConditionalEventDefinition"/>
@@ -1578,6 +1526,9 @@
 				<tool name="Message" object="StartEvent+MessageEventDefinition"/>
 				<tool name="Signal" object="StartEvent+SignalEventDefinition"/>
 				<tool name="Timer" object="StartEvent+TimerEventDefinition"/>
+			</category>
+			<category name="Swimlanes">
+				<tool name="Lane" object="Lane"/>
 			</category>
 			
 			<category name="Workflow Patterns">
@@ -1761,6 +1712,15 @@
             id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wizards.NewJbpmProcessWizard"
             name="jBPM Process Diagram">
       </wizard>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2HomePreferencePage"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage"
+            id="org.jboss.runtime.jbpm5.preferences"
+            name="jBPM Runtime"/>
    </extension>
 	
 </plugin>

@@ -13,11 +13,18 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 
 public class BaseRuntimeDescriptor {
@@ -45,6 +52,10 @@ public class BaseRuntimeDescriptor {
 		return Bpmn2Package.eINSTANCE;
 	}
 
+	public EStructuralFeature getFeature(String className, String featureName) {
+		return getFeature(className + "." + featureName);
+	}
+	
 	/**
 	 * Search the Target Runtime's EPackage for a structural feature with the specified name.
 	 * If the feature is not found in the runtime package, search the Bpmn2Package.
@@ -83,5 +94,58 @@ public class BaseRuntimeDescriptor {
 			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(name);
 		}
 		return eClass;
+	}
+	
+	public void setValueFromString(EObject object, EStructuralFeature feature, Object value, boolean force) {
+		// should not set null value features
+		if (value == null) {
+			return;
+		}
+		
+		if (feature.isMany()) {
+			((EList)object.eGet(feature)).add(value);
+		}
+		else {
+			if (value instanceof String) {
+				EDataType eDataType = (EDataType)feature.getEType();
+				try {
+					// TODO: figure out why feature.eClass().getEPackage().getEFactoryInstance() doesn't
+					// return the correct factory!
+					EFactory factory = ModelUtil.getEPackage(feature).getEFactoryInstance();
+					value = factory.createFromString(eDataType, (String)value);
+				}
+				catch (Exception e)
+				{
+					EFactory factory = EcorePackage.eINSTANCE.getEFactoryInstance();
+					value = factory.createFromString(eDataType, (String)value);
+				}
+			}
+
+			if (object.eClass().getEStructuralFeature(feature.getName())!=null) {
+				// this feature exists for this object, so we can set it directly
+				// but only if it's not already set.
+				if (!object.eIsSet(feature) || force) {
+					object.eSet(feature, value);
+				}
+			}
+			else {
+				// the feature does not exist in this object, so we either need to
+				// create an "anyAttribute" entry or, if the object is an ExtensionAttributeValue,
+				// create an entry in its "value" feature map.
+				if (object instanceof ExtensionAttributeValue) {
+					ModelUtil.addExtensionAttributeValue(object.eContainer(), feature, value);
+				}
+				else {
+					EStructuralFeature f = ModelUtil.getAnyAttribute(object, feature.getName());
+					if (f!=null) {
+						if (object.eGet(f)!=null)
+							return;
+					}
+					if (!object.eIsSet(feature) || force) {
+						object.eSet(feature, value);
+					}
+				}
+			}
+		}
 	}
 }

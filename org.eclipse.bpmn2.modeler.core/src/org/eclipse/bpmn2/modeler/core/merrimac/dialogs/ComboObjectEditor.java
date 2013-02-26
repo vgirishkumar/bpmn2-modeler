@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
@@ -298,26 +300,27 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			if (ModelUtil.isStringWrapper(oldValue))
 				oldValue = ModelUtil.getStringWrapperValue(oldValue);
 
+			ArrayList<String> list = new ArrayList<String>(choices.keySet());
+			Collections.sort(list);
 			StructuredSelection currentSelection = null;
-			for (Entry<String, Object> entry : choices.entrySet()) {
-				comboViewer.add(entry.getKey());
-				Object newValue = entry.getValue(); 
+			for (String key : list) {
+				comboViewer.add(key);
+				Object newValue = choices.get(key); 
 				if (newValue!=null) {
-					comboViewer.setData(entry.getKey(), newValue);
+					comboViewer.setData(key, newValue);
 					if (currentSelection==null) {
 						String oldValueString = oldValue==null ? null : oldValue.toString();
-						if (newValue.equals(oldValue) || entry.getKey().equals(oldValue) || entry.getKey().equals(oldValueString)) {
-							currentSelection = new StructuredSelection(entry.getKey());
+						if (newValue.equals(oldValue) || key.equals(oldValue) || key.equals(oldValueString)) {
+							currentSelection = new StructuredSelection(key);
 						}
 						else if (adapter!=null) {
 							if (adapter.getObjectDescriptor().equals(newValue)) {
-								currentSelection = new StructuredSelection(entry.getKey());
+								currentSelection = new StructuredSelection(key);
 							}
 						}
 					}
 				}
 			}
-			
 			if (currentSelection!=null)
 				comboViewer.setSelection(currentSelection);
 			if (editButton!=null)
