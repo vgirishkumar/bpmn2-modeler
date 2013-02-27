@@ -25,9 +25,12 @@ import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureC
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -298,14 +301,20 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	} // CreateFeatureNode
 	
 	protected List<CreateFeatureNode> children = new ArrayList<CreateFeatureNode>();
+	protected ToolDescriptor tool;
 	
 	/**
 	 * @param fp
 	 * @param name
 	 * @param description
 	 */
-	public CompoundCreateFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+//	public CompoundCreateFeature(IFeatureProvider fp, String name, String description) {
+//		super(fp, name, description);
+//	}
+	
+	public CompoundCreateFeature(IFeatureProvider fp, ToolDescriptor tool) {
+		super(fp, tool.getName(), tool.getDescription());
+		this.tool = tool;
 	}
 	
 	public CompoundCreateFeature(IFeatureProvider fp) {
@@ -373,6 +382,26 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			Object o = objects.get(0);
 			if (o instanceof Connection)
 				return (Connection)o;
+		}
+		return null;
+	}
+	
+	@Override
+	public String getCreateImageId() {
+		String icon = tool.getIcon();
+		if (icon!=null) {
+			TargetRuntime rt = tool.getParent().getParent().getRuntime();
+			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.SMALL);
+		}
+		return null;
+	}
+
+	@Override
+	public String getCreateLargeImageId() {
+		String icon = tool.getIcon();
+		if (icon!=null) {
+			TargetRuntime rt = tool.getParent().getParent().getRuntime();
+			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.LARGE);
 		}
 		return null;
 	}

@@ -27,15 +27,20 @@ import java.util.Properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.ENamedElement;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.osgi.service.prefs.BackingStoreException;
@@ -96,6 +101,33 @@ public class ToolEnablementPreferences {
 		setEnabledAll(false);
 		
 		Collection<String> enablements = md.getAllEnabled();
+		TargetRuntime rt = md.getRuntime();
+		for (ModelExtensionDescriptor me : rt.getModelExtensions()) {
+			for (Property p : me.getProperties()) {
+				String s = me.getType();
+				enablements.add(s);
+				s +=  "." + p.name;
+				enablements.add(s);
+			}
+		}
+		if (rt.getModelDescriptor()!=null) {
+			for (EClassifier ec : rt.getModelDescriptor().getEPackage().getEClassifiers()) {
+				TreeIterator<EObject> it = ec.eAllContents();
+				while (it.hasNext()) {
+					EObject o = it.next();
+					String s = ec.getName();
+					enablements.add(s);
+					if (o instanceof EAttribute) {
+						 s += "." + ((EAttribute)o).getName();
+						enablements.add(s);
+					}
+					else if (o instanceof EReference) {
+						s += "." + ((EReference)o).getName();
+						enablements.add(s);
+					}
+				}
+			}
+		}
 		for (String s : enablements) {
 			String className = null;
 			String featureName = null;
@@ -106,14 +138,19 @@ public class ToolEnablementPreferences {
 			}
 			else
 				className = s;
-			for (EClass e : elementSet) {
-				if (e.getName().equals(className)) {
-					prefs.putBoolean(className, true);
-					if (featureName!=null)
-						prefs.putBoolean(className+"."+featureName, true);
-					break;
-				}
+			if (className!=null) {
+				prefs.putBoolean(className, true);
+				if (featureName!=null)
+					prefs.putBoolean(className+"."+featureName, true);
 			}
+//			for (EClass e : elementSet) {
+//				if (e.getName().equals(className)) {
+//					prefs.putBoolean(className, true);
+//					if (featureName!=null)
+//						prefs.putBoolean(className+"."+featureName, true);
+//					break;
+//				}
+//			}
 		}
 	}
 	
@@ -243,14 +280,43 @@ public class ToolEnablementPreferences {
 		prefs.flush();
 	}
 
-	public void export(String path) throws BackingStoreException, FileNotFoundException, IOException {
+	public void exportPreferences(String runtimeId, String type, String profile, String path) throws BackingStoreException, FileNotFoundException, IOException {
 		FileWriter fw = new FileWriter(path);
+		boolean writeXml = path.endsWith(".xml");
 
 		List<String> keys = Arrays.asList(prefs.keys());
 		Collections.sort(keys);
-		for (String k : keys) {
-			fw.write(k + "=" + prefs.getBoolean(k, true) + "\r\n");
+
+		if (writeXml) {
+			fw.write("\t\t<modelEnablement");
+			if (runtimeId!=null)
+				fw.write(" runtimeId=\"" + runtimeId + "\"");
+			if (type!=null)
+				fw.write(" type=\"" + type + "\"");
+			if (profile!=null)
+				fw.write(" profile=\"" + profile + "\"");
+			fw.write(">\r\n");
+			
+			fw.write("\t\t\t<disable object=\"all\"/>\r\n");
 		}
+		
+		for (String k : keys) {
+			boolean enable = prefs.getBoolean(k, true);
+			if (writeXml) {
+				if (enable) {
+					if (k.contains(".")) {
+						String a[] = k.split("\\.");
+						fw.write("\t\t\t<enable object=\""+ a[0] + "\" feature=\"" + a[1] + "\"/>\r\n");
+					}
+				}
+			}
+			else
+				fw.write(k + "=" + enable + "\r\n");
+		}
+		if (writeXml) {
+			fw.write("\t</modelEnablement>\r\n");
+		}
+		
 		fw.flush();
 		fw.close();
 	}

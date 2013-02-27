@@ -305,7 +305,6 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 
 
 	public boolean isEnabled(String className, String featureName) {
-//		System.out.println(className+"."+featureName);
 		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
 		if ("id".equals(featureName)) {
 			if (!prefs.getShowIdAttribute())

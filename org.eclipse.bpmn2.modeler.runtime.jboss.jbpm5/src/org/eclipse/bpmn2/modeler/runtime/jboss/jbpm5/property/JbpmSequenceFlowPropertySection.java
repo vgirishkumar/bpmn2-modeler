@@ -44,7 +44,7 @@ public class JbpmSequenceFlowPropertySection extends SequenceFlowPropertySection
 					// or the (possibly) attached Gateway's "default flow" feature is disabled
 					boolean conditionEnabled = true;
 					boolean defaultEnabled = true;
-					ModelEnablementDescriptor modelEnablement = getModelEnablement(selection);
+					ModelEnablementDescriptor modelEnablement = getModelEnablement();
 					if (!modelEnablement.isEnabled("SequenceFlow", "conditionExpression")) {
 						conditionEnabled = false;
 					}

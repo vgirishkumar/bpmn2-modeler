@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -31,6 +32,7 @@ import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * @author Bob Brodt
@@ -104,8 +106,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<T extends BaseElement
 			return false;
 		
 		if (o instanceof EObject) {
-			ModelEnablementDescriptor e = TargetRuntime.getCurrentRuntime().getModelEnablements((EObject)o);
-			return e.isEnabled(getBusinessObjectClass());
+			return isModelObjectEnabled((EObject)o);
 		}
 		return false;
 	}
@@ -125,6 +126,26 @@ public abstract class AbstractBpmn2CreateConnectionFeature<T extends BaseElement
 	}
 
 	public void postExecute(IExecutionInfo executionInfo) {
-		
+	}
+	
+	protected boolean isModelObjectEnabled() {
+		ModelEnablementDescriptor me = getModelEnablements();
+		if (me!=null)
+			return me.isEnabled(getBusinessObjectClass());
+		return false;
+	}
+	
+	protected boolean isModelObjectEnabled(EObject o) {
+		ModelEnablementDescriptor me = getModelEnablements();
+		if (me!=null) {
+			EClass eclass = (o instanceof EClass) ? (EClass)o : o.eClass();
+			return me.isEnabled(eclass);
+		}
+		return false;
+	}
+	
+	protected ModelEnablementDescriptor getModelEnablements() {
+		DiagramEditor editor = (DiagramEditor) getDiagramEditor();
+		return (ModelEnablementDescriptor) editor.getAdapter(ModelEnablementDescriptor.class);
 	}
 }

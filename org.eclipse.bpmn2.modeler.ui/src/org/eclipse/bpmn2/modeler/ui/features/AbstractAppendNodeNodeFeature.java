@@ -61,6 +61,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -155,7 +156,9 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 	}
 	
 	protected EClass selectNewObjectType(EObject oldObject) {
-		ModelEnablementDescriptor enablements = TargetRuntime.getCurrentRuntime().getModelEnablements(oldObject);
+		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
+		ModelEnablementDescriptor enablements =
+				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
 		EClass newType = getBusinessObjectClass();
 
 		// build a list of possible subclasses for the popup menu

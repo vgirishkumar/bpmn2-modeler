@@ -72,6 +72,5 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 		scriptEditor.createControl(getAttributesParent(),"Script");
 
 		bindAttribute(be,"isForCompensation");
-		bindEntryExitScripts(be);
 	}
 }

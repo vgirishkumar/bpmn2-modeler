@@ -13,15 +13,24 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
+import java.util.List;
+
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnEntryScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnExitScriptType;
 import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityDetailComposite;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.Section;
@@ -32,8 +41,10 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 
-	ScriptTableComposite onEntryScriptTable;
-	ScriptTableComposite onExitScriptTable;
+//	ScriptTableComposite onEntryScriptTable;
+//	ScriptTableComposite onExitScriptTable;
+	JbpmScriptTaskDetailComposite onEntryScriptEditor;
+	JbpmScriptTaskDetailComposite onExitScriptEditor;
 	
 	/**
 	 * @param section
@@ -49,8 +60,8 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	@Override
 	public void cleanBindings() {
 		super.cleanBindings();
-		onEntryScriptTable = null;
-		onExitScriptTable = null;
+//		onEntryScriptTable = null;
+//		onExitScriptTable = null;
 	}
 
 	@Override
@@ -60,13 +71,54 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	}
 	
 	protected void bindEntryExitScripts(EObject be) {
-		onEntryScriptTable = new ScriptTableComposite(this);
-		onEntryScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
-		onEntryScriptTable.setTitle("On Entry Scripts");
+//		onEntryScriptTable = new ScriptTableComposite(this);
+//		onEntryScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
+//		onEntryScriptTable.setTitle("On Entry Scripts");
+		boolean enable = isModelObjectEnabled(be.eClass().getName(), "onEntryScript");
+		onEntryScriptEditor = new JbpmScriptTaskDetailComposite(this, SWT.NONE);
+		OnEntryScriptType onEntryScript = getOrCreateEntryExitScript((Activity)be, OnEntryScriptType.class);
+		onEntryScriptEditor.setBusinessObject(onEntryScript);
+		onEntryScriptEditor.setTitle("On Entry Script");
 		
-		onExitScriptTable = new ScriptTableComposite(this);
-		onExitScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnExitScript());
-		onExitScriptTable.setTitle("On Exit Scripts");
+//		onExitScriptTable = new ScriptTableComposite(this);
+//		onExitScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnExitScript());
+//		onExitScriptTable.setTitle("On Exit Scripts");
+		onExitScriptEditor = new JbpmScriptTaskDetailComposite(this, SWT.NONE);
+		OnExitScriptType onExitScript = getOrCreateEntryExitScript((Activity)be, OnExitScriptType.class);
+		onExitScriptEditor.setBusinessObject(onExitScript);
+		onExitScriptEditor.setTitle("On Exit Script");
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends EObject> T getOrCreateEntryExitScript(final Activity be, final Class<T> clazz) {
+		final Object[] result = new Object[] {null};
+		List<T> onEntryScriptList = ModelUtil.getAllExtensionAttributeValues(be, clazz);
+		if (onEntryScriptList.size()>0)
+			result[0] = onEntryScriptList.get(0);
+		else {
+			TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+			domain.getCommandStack().execute(new RecordingCommand(domain) {
+				@Override
+				protected void doExecute() {
+					EClass eclass = (EClass)ModelPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
+					T script = (T) ModelFactory.eINSTANCE.create(eclass);
+					EStructuralFeature f = script.eClass().getEStructuralFeature("script");
+					if (f!=null)
+						script.eSet(f, "");
+					f = script.eClass().getEStructuralFeature("scriptFormat");
+					if (f!=null)
+						script.eSet(f,"http://www.java.com/java");
+					if (clazz == OnEntryScriptType.class)
+						f = ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript();
+					else
+						f = ModelPackage.eINSTANCE.getDocumentRoot_OnExitScript();
+					ModelUtil.addExtensionAttributeValue(be, f, script);
+					result[0] = script;
+				}
+				
+			});
+		}
+		return (T)result[0];
 	}
 	
 	public class ScriptTableComposite extends ExtensionValueListComposite {
@@ -87,7 +139,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 			EObject newScript = ModelFactory.eINSTANCE.create(listItemClass);
 			EStructuralFeature f = newScript.eClass().getEStructuralFeature("script");
 			if (f!=null)
-				newScript.eSet(feature, "");
+				newScript.eSet(f, "");
 			f = newScript.eClass().getEStructuralFeature("scriptFormat");
 			if (f!=null)
 				newScript.eSet(f,"http://www.java.com/java");

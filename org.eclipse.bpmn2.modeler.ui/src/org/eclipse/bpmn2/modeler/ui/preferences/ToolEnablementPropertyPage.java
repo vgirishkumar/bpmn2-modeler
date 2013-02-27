@@ -25,11 +25,18 @@ import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -43,9 +50,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -60,6 +69,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 	private Object[] toolsEnabled;
 	private CheckboxTreeViewer checkboxTreeViewer;
 	private Tree checkboxTree;
+	private boolean profileCopied;
 
 	private WritableList writableList;
 
@@ -116,7 +126,86 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		data.heightHint = 200;
 		checkboxTree.setLayoutData(data);
+		checkboxTreeViewer.setCheckStateProvider(new ICheckStateProvider() {
+			@Override
+			public boolean isChecked(Object element) {
+				if (element instanceof ToolEnablement) {
+					return ((ToolEnablement)element).getEnabled();
+				}
+				return false;
+			}
 
+			@Override
+			public boolean isGrayed(Object element) {
+				if (element instanceof ToolEnablement) {
+					ToolEnablement te = (ToolEnablement)element;
+					if (te.getTool() instanceof EClass) {
+						int countEnabled = 0;
+						for (ToolEnablement child : te.getChildren()) {
+							if (child.getEnabled())
+								++countEnabled;
+						}
+						return countEnabled != te.getChildren().size();
+					}
+				}
+				return false;
+			}
+			
+		});
+		checkboxTreeViewer.addCheckStateListener(new ICheckStateListener() {
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				boolean checked = event.getChecked();
+				ToolEnablement element = (ToolEnablement)event.getElement();
+				element.setEnabled(checked);
+				if (element.getTool() instanceof EClass) {
+					boolean grayed = false;
+					checkboxTreeViewer.setSubtreeChecked(element, checked);
+					if (!checked) {
+						// move from checked state to grayed state if
+						// all children are currently selected
+						int countEnabled = 0;
+						for (ToolEnablement child : element.getChildren()) {
+							if (child.getEnabled())
+								++countEnabled;
+						}
+						if (countEnabled == element.getChildren().size()) {
+							checkboxTreeViewer.setGrayChecked(element, true);
+							grayed = true;
+						}
+					}
+					for (ToolEnablement child : element.getChildren()) {
+						child.setEnabled(checked);
+					}
+					if (!grayed) {
+						checkboxTreeViewer.setChecked(element, checked);
+						checkboxTreeViewer.setGrayed(element, false);
+					}
+				}
+				else {
+					ToolEnablement parent = element.getParent();
+					int countEnabled = 0;
+					for (ToolEnablement child : parent.getChildren()) {
+						if (child.getEnabled())
+							++countEnabled;
+					}
+					if (countEnabled==0) {
+						checkboxTreeViewer.setChecked(parent, false);
+						parent.setEnabled(false);
+					}
+					else if (countEnabled == parent.getChildren().size()) {
+						checkboxTreeViewer.setChecked(parent, true);
+						checkboxTreeViewer.setGrayed(parent, false);
+						parent.setEnabled(true);
+					}
+					else {
+						checkboxTreeViewer.setGrayChecked(parent, true);
+						parent.setEnabled(true);
+					}
+				}
+			}
+		});
+				
 		final Button btnCopy = new Button(container,SWT.FLAT);
 		btnCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		btnCopy.setText("Copy");
@@ -177,7 +266,17 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 				String path = dialog.open();
 				if (path != null) {
 					try {
-						toolEnablementPreferences.export(path);
+						String runtimeId = null;
+						String type = null;
+						String profile = null;
+						if (profileCopied) {
+							int i = cboCopy.getSelectionIndex();
+							ModelEnablementDescriptor md = (ModelEnablementDescriptor)cboCopy.getData(""+i);
+							runtimeId = md.getRuntime().getId();
+							profile = md.getProfile();
+							type = md.getType();
+						}
+						toolEnablementPreferences.exportPreferences(runtimeId, type, profile, path);
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -200,7 +299,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		});
 		checkboxTreeViewer.setUseHashlookup(true);
 		m_bindingContext = initDataBindings();
-
+		
 		cboProfile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -227,6 +326,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		});
 		
 		btnCopy.addSelectionListener(new SelectionAdapter() {
+			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int i = cboCopy.getSelectionIndex();
@@ -236,6 +336,8 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 				reloadPreferences();
 				checkboxTreeViewer.refresh();
 				restoreDefaults();
+				
+				profileCopied = true;
 			}
 		});
 

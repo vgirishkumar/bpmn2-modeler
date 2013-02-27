@@ -44,6 +44,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * @author Bob Brodt
@@ -169,7 +170,9 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				Property property = (Property)choices.get(value);
 				if (property==null) {
 					// need to create a new one!
-					ModelEnablementDescriptor modelEnablement = BPMN2Editor.getActiveEditor().getTargetRuntime().getModelEnablements(object);
+					DiagramEditor editor = ModelUtil.getEditor(object);
+					ModelEnablementDescriptor modelEnablement =
+							(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
 					// find nearest element that can contain a Property and create one
 					container = association;
 					for (;;) {

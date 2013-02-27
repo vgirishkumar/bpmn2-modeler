@@ -46,21 +46,8 @@ public class IoParametersPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			ModelEnablementDescriptor modelEnablement = getModelEnablement(selection);
-			EObject selectionBO = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-			if (selectionBO instanceof SubProcess) {
-				// Section 10, P211 of the BPMN 2.0 spec:
-				// "Embedded SubProcesses MUST NOT define Data Inputs and Data Outputs directly,
-				// however they MAY define them indirectly via MultiInstanceLoopCharacteristics."
-				return false;
-			}
-			
-			EStructuralFeature feature = selectionBO.eClass().getEStructuralFeature("ioSpecification");
-			if (feature != null) {
-				if (!modelEnablement.isEnabled(selectionBO.eClass(), feature))
-					return false;
-			}
-			return true;
+			if (getBusinessObjectForSelection(selection)!=null)
+				return true;
 		}
 		return false;
 	}
@@ -68,9 +55,15 @@ public class IoParametersPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
+		if (be instanceof SubProcess) {
+			// Section 10, P211 of the BPMN 2.0 spec:
+			// "Embedded SubProcesses MUST NOT define Data Inputs and Data Outputs directly,
+			// however they MAY define them indirectly via MultiInstanceLoopCharacteristics."
+			return null;
+		}
 		if (be!=null) {
 			EStructuralFeature feature = be.eClass().getEStructuralFeature("ioSpecification");
-			if (feature != null)
+			if (feature!=null && isModelObjectEnabled(be, feature))
 				return be;
 		}
 		return null;

@@ -51,18 +51,13 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 		// that is, it has a "taskName" extension attribute
 		BPMN2Editor editor = (BPMN2Editor)part.getAdapter(BPMN2Editor.class);
 		if (editor!=null) {
-			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 			EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-			ModelEnablementDescriptor modelEnablement = editor.getTargetRuntime().getModelEnablements(object);
 			
-			if (object.eClass() == Bpmn2Package.eINSTANCE.getTask()) {
-				if (modelEnablement.isEnabled(object.eClass()))
-				{
-					List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
-					for (EStructuralFeature f : features) {
-						if ("displayName".equals(f.getName()))
-							return true;
-					}
+			if (object.eClass() == Bpmn2Package.eINSTANCE.getTask() && isModelObjectEnabled(object)) {
+				List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
+				for (EStructuralFeature f : features) {
+					if ("displayName".equals(f.getName()))
+						return true;
 				}
 			}
 		}

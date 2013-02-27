@@ -227,7 +227,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			CompoundCreateFeature compoundFeature = null;
 			for (ToolPart tp : tool.getToolParts()) {
 				if (compoundFeature==null)
-					compoundFeature = new CompoundCreateFeature(featureProvider,tool.getName(),tool.getDescription());
+					compoundFeature = new CompoundCreateFeature(featureProvider,tool);
 				getCreateFeature(tool, compoundFeature, null, tp);
 			}
 			return compoundFeature;
@@ -236,7 +236,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	
 	private IFeature getCreateFeature(ToolDescriptor tool, CompoundCreateFeature root, CreateFeatureNode node, ToolPart toolPart) {
 		IFeature parentFeature = null;
-		String name = toolPart.getParent();
+		String name = toolPart.getName();
 		EClassifier eClass = modelDescriptor.getClassifier(name);
 		if (eClass!=null) {
 			parentFeature = featureProvider.getCreateFeatureForBusinessObject(eClass.getInstanceClass());
@@ -256,7 +256,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			}
 		}
 		else if (toolPart.hasProperties()) {
-			root = new CompoundCreateFeature(featureProvider, tool.getName(), tool.getDescription());
+			root = new CompoundCreateFeature(featureProvider, tool);
 			node = root.addChild(parentFeature);
 			node.setProperties(toolPart.getProperties());
 			parentFeature = root;
@@ -264,7 +264,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		
 		for (ToolPart childToolPart : toolPart.getChildren()) {
 			if (root==null) {
-				root = new CompoundCreateFeature(featureProvider, tool.getName(), tool.getDescription());
+				root = new CompoundCreateFeature(featureProvider, tool);
 				node = root.addChild(parentFeature);
 				parentFeature = root;
 			}

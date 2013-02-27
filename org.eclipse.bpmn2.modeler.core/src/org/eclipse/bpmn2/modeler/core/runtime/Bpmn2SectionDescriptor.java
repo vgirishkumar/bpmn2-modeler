@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -94,20 +95,23 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
+			if (pe instanceof ConnectionDecorator) {
+				pe = (PictogramElement) pe.eContainer();
+			}
 			if (!filter.select(pe))
 				return false;
 			
+			EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
 			DiagramEditor editor = ModelUtil.getDiagramEditor(pe);
 			if (editor!=null) {
 				TargetRuntime rt = (TargetRuntime) editor.getAdapter(TargetRuntime.class);
 				if (rt!=null) {
-					EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 					int selected = 0;
 					int count = 0;
 					for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
 						for (String s : tc.getPropertyTabs()) {
 							if (tab.equals(s)) {
-								if (tc.getFeatureContainer().getId(object)!=null)
+								if (tc.getFeatureContainer().getId(businessObject)!=null)
 									++selected;
 								++count;
 							}
@@ -120,8 +124,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 
 			// should we delegate to the section to determine whether it should be included in this tab?
 			if (sectionClass instanceof IBpmn2PropertySection) {
-				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-				if (object==null)
+				if (businessObject==null)
 					return false;
 				return ((IBpmn2PropertySection)sectionClass).appliesTo(part, selection);
 			}
