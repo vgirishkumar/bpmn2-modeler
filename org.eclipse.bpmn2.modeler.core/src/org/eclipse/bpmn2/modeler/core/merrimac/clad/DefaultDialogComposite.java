@@ -168,6 +168,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		businessObject = (EObject)object;
 		if (details!=null && details.size()>0) {
 			for (AbstractDetailComposite detail : details) {
+				detail.setIsPopupDialog(true);
 				detail.setBusinessObject(businessObject);
 			}
 		}

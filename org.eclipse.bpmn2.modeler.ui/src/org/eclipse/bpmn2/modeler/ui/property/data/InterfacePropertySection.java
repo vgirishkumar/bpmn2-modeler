@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -44,6 +45,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ListDialog;
 
 public class InterfacePropertySection extends DefaultPropertySection {
@@ -56,7 +58,24 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	public InterfacePropertySection() {
 		super();
 	}
-
+	
+	@Override
+	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInterface())) {
+			EObject bo = getBusinessObjectForSelection(selection);
+			if (bo instanceof Participant) {
+				return true;
+			} else if (bo instanceof BPMNDiagram) {
+				BaseElement be = ((BPMNDiagram)bo).getPlane().getBpmnElement();
+				if (be instanceof Process)
+					return true;
+			} else if (bo instanceof CallableElement) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject bo = super.getBusinessObjectForSelection(selection);

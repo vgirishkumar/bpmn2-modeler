@@ -13,20 +13,22 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 
 	// The Drawers
-	public class CategoryDescriptor {
+	public static class CategoryDescriptor {
+		private ToolPaletteDescriptor parent;
 		private String name;
-		String description;
-		String icon;
-		List<ToolDescriptor> tools = new ArrayList<ToolDescriptor>();
+		private String description;
+		private String icon;
+		private List<ToolDescriptor> tools = new ArrayList<ToolDescriptor>();
 		
-		public CategoryDescriptor(String name, String description, String icon) {
+		public CategoryDescriptor(ToolPaletteDescriptor parent, String name, String description, String icon) {
+			this.parent = parent;
 			this.name = name;
 			this.description = description;
 			this.icon = icon;
 		}
 		
 		public ToolDescriptor addTool(String name, String description, String icon, String object) {
-			ToolDescriptor tool = new ToolDescriptor(name, description, icon, object);
+			ToolDescriptor tool = new ToolDescriptor(this, name, description, icon, object);
 			tools.add(tool);
 			return tool;
 		}
@@ -46,20 +48,26 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		public String getIcon() {
 			return icon;
 		}
+		
+		public ToolPaletteDescriptor getParent() {
+			return parent;
+		}
 	};
 	
 	// The Tools
-	public class ToolDescriptor {
-		String name;
-		String description;
-		String icon;
-		List<ToolPart> toolParts = new ArrayList<ToolPart>();
+	public static class ToolDescriptor {
+		private CategoryDescriptor parent;
+		private String name;
+		private String description;
+		private String icon;
+		private List<ToolPart> toolParts = new ArrayList<ToolPart>();
 		
-		public ToolDescriptor(String name, String description, String icon, String object) {
+		public ToolDescriptor(CategoryDescriptor parent, String name, String description, String icon, String object) {
+			this.parent = parent;
 			this.name = name;
 			this.description = description;
 			this.icon = icon;
-			String type = "";
+			String toolpartName = "";
 			Stack<ToolPart> toolStack = new Stack<ToolPart>();
 			ToolPart tool = null;
 			char chars[] = object.toCharArray();
@@ -68,41 +76,41 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 				if (c=='+') {
 					toolStack.push(tool);
 					if (tool!=null) {
-						ToolPart newTool = new ToolPart(type);
+						ToolPart newTool = new ToolPart(this, toolpartName);
 						tool.children.add(newTool);
 						tool = newTool;
 					}
 					else {
-						tool = new ToolPart(type);
+						tool = new ToolPart(this, toolpartName);
 						toolParts.add(tool);
 					}
-					type = "";
+					toolpartName = "";
 				}
 				else if (c=='-') {
-					if (!"".equals(type))
-						tool.children.add( new ToolPart(type) );
+					if (!"".equals(toolpartName))
+						tool.children.add( new ToolPart(this, toolpartName) );
 					tool = toolStack.pop();
-					type = "";
+					toolpartName = "";
 				}
 				else if (c==',') {
-					ToolPart newTool = new ToolPart(type);
+					ToolPart newTool = new ToolPart(this, toolpartName);
 					if (tool==null) {
 						toolParts.add(newTool);
 					}
 					else {
 						tool.children.add(newTool);
 					}
-					type = "";
+					toolpartName = "";
 				}
 				else if (c=='[') {
-					ToolPart newTool = new ToolPart(type);
+					ToolPart newTool = new ToolPart(this, toolpartName);
 					if (tool==null) {
 						toolParts.add(newTool);
 					}
 					else {
 						tool.children.add(newTool);
 					}
-					type = "";
+					toolpartName = "";
 					
 					// data for preceding object type follows:
 					// [name=value] or [name1=value1,name2=value2]
@@ -112,35 +120,39 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						String prop = "";
 						while (i<chars.length) {
 							c = chars[i++];
-							if (c=='=')
+							if (c=='\\')
+								c = chars[i++];
+							else if (c=='=')
 								break;
 							prop += c;
 						}
 						String value = "";
 						while (i<chars.length) {
 							c = chars[i++];
-							if (c==',' || c==']')
+							if (c=='\\')
+								c = chars[i++];
+							else if (c==',' || c==']')
 								break;
 							value += c;
 						}
 						newTool.putProperty(prop,value);
 					} while (i<chars.length && c!=']');
 				}
-				else if ("".equals(type)) {
+				else if ("".equals(toolpartName)) {
 					if (Character.isJavaIdentifierStart(c))
-						type += c;
+						toolpartName += c;
 				}
 				else if (Character.isJavaIdentifierPart(c)) {
-					type += c;
+					toolpartName += c;
 				}
 				
 				if (i==chars.length-1) {
 					if (tool==null) {
-						tool = new ToolPart(type);
+						tool = new ToolPart(this, toolpartName);
 						toolParts.add(tool);
 					}
 					else {
-						tool.children.add( new ToolPart(type) );
+						tool.children.add( new ToolPart(this, toolpartName) );
 					}
 				}
 			}
@@ -161,19 +173,25 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		public String getIcon() {
 			return icon;
 		}
+		
+		public CategoryDescriptor getParent() {
+			return parent;
+		}
 	};
 	
-	public class ToolPart {
-		String parent;
-		List<ToolPart> children = new ArrayList<ToolPart>();
-		Hashtable<String, String> properties = null;
+	public static class ToolPart {
+		private ToolDescriptor parent;
+		private String name;
+		private List<ToolPart> children = new ArrayList<ToolPart>();
+		private Hashtable<String, String> properties = null;
 		
-		public ToolPart(String type) {
-			parent = type;
+		public ToolPart(ToolDescriptor parent, String name) {
+			this.parent = parent;
+			this.name = name;
 		}
 		
-		public String getParent() {
-			return parent;
+		public String getName() {
+			return name;
 		}
 		
 		public List<ToolPart> getChildren() {
@@ -198,6 +216,10 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		
 		public boolean hasProperties() {
 			return properties!=null && properties.size()>0;
+		}
+		
+		public ToolDescriptor getParent() {
+			return parent;
 		}
 	}
 	
@@ -236,7 +258,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	}
 	
 	protected CategoryDescriptor addCategory(String name, String description, String icon) {
-		CategoryDescriptor category = new CategoryDescriptor(name, description, icon);
+		CategoryDescriptor category = new CategoryDescriptor(this, name, description, icon);
 		categories.add(category);
 		return category;
 	}

@@ -12,19 +12,16 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gef.EditPart;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -37,7 +34,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.IContributedContentsView;
-import org.eclipse.ui.part.IPage;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
@@ -266,25 +262,35 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
 		
 		if (editor!=null) {
-			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
-			EObject selectionBO = getBusinessObjectForSelection(selection);
-			ModelEnablementDescriptor modelEnablement = getModelEnablement(selection);
-			
-			if (selectionBO!=null && modelEnablement.isEnabled(selectionBO.eClass())) {
-				return true;			
+			return isModelObjectEnabled(getBusinessObjectForSelection(selection));
+		}
+		return false;
+	}
+	
+	protected boolean isModelObjectEnabled(EObject o, EStructuralFeature f) {
+		if (o !=null) {
+			ModelEnablementDescriptor me = getModelEnablement();
+			if (me!=null) {
+				EClass eclass = (o instanceof EClass) ? (EClass)o : o.eClass();
+				return me.isEnabled(eclass, f);
 			}
 		}
 		return false;
 	}
 	
-	protected ModelEnablementDescriptor getModelEnablement(ISelection selection) {
-		EObject selectionBO = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		if (selectionBO!=null) {
-			TargetRuntime rt = (TargetRuntime) getDiagramEditor().getAdapter(TargetRuntime.class);
-			if (rt!=null)
-				return rt.getModelEnablements(selectionBO);
+	protected boolean isModelObjectEnabled(EObject o) {
+		if (o !=null) {
+			ModelEnablementDescriptor me = getModelEnablement();
+			if (me!=null) {
+				EClass eclass = (o instanceof EClass) ? (EClass)o : o.eClass();
+				return me.isEnabled(eclass);
+			}
 		}
-		return null;
+		return false;
+	}
+
+	protected ModelEnablementDescriptor getModelEnablement() {
+		return (ModelEnablementDescriptor)getDiagramEditor().getAdapter(ModelEnablementDescriptor.class);
 	}
 	
 	public boolean doReplaceTab(String id, IWorkbenchPart part, ISelection selection) {

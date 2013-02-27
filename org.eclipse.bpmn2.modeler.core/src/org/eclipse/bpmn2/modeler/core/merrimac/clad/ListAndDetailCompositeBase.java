@@ -65,6 +65,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	protected DiagramEditor diagramEditor;
 	protected TransactionalEditingDomainImpl editingDomain;
 	protected ModelHandler modelHandler;
+	protected boolean isPopupDialog;
 
 	public ListAndDetailCompositeBase(AbstractBpmn2PropertySection section) {
 		this(section, SWT.NONE);
@@ -177,15 +178,16 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return diagramEditor;
 	}
 	
-	public ModelEnablementDescriptor getModelEnablement(EObject object) {
-		if (object==null)
-			object = businessObject;
-		modelEnablement =  getTargetRuntime().getModelEnablements(object);
+	public ModelEnablementDescriptor getModelEnablement() {
+		if (modelEnablement==null) {
+			modelEnablement = (ModelEnablementDescriptor)getDiagramEditor().
+				getAdapter(ModelEnablementDescriptor.class);
+		}
 		return modelEnablement;
 	}
 
 	protected boolean isModelObjectEnabled(String className, String featureName) {
-		return modelEnablement.isEnabled(className, featureName);
+		return getModelEnablement().isEnabled(className, featureName);
 	}
 
 	protected boolean isModelObjectEnabled(EClass eclass, EStructuralFeature feature) {
@@ -219,7 +221,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		if (diagramEditor==null)
 			diagramEditor = ModelUtil.getEditor(object);
 		addDomainListener();
-		getModelEnablement(object);
 		try {
 			modelHandler = ModelHandlerLocator.getModelHandler(
 					getDiagramEditor().getDiagramTypeProvider().getDiagram().eResource());
@@ -328,5 +329,9 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	public boolean isPostcommitOnly() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public void setIsPopupDialog(boolean isPopupDialog) {
+		this.isPopupDialog = isPopupDialog;
 	}
 }

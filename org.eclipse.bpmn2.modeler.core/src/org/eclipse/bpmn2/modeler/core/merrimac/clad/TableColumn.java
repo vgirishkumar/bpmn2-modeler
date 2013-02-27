@@ -11,6 +11,7 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -302,6 +303,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			List<String> items = new ArrayList<String>();
 			choices = ModelUtil.getChoiceOfValues(object, feature);
 			items.addAll(choices.keySet());
+			Collections.sort(items);
 			this.setItems(items.toArray(new String[items.size()]));
 			
 			// find the index of the current value in the choices list

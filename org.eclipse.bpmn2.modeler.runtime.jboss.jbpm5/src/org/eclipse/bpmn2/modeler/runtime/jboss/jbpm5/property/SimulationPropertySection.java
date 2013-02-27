@@ -17,9 +17,11 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
@@ -33,6 +35,9 @@ public class SimulationPropertySection extends DefaultPropertySection {
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (!Activator.getDefault().getPreferenceStore().getBoolean(JbpmPreferencePage.PREF_SHOW_SIMULATION_TAB))
+			return false;
+		
 		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 		return object instanceof BPMNDiagram ||
 				object instanceof Task ||

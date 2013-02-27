@@ -57,7 +57,7 @@ public class ModelSubclassSelectionDialog extends ListDialog {
 			listItemClass = (EClass)feature.getEType(); // allow a classcast exception
 		this.listItemClass = listItemClass;
 		
-		ModelEnablementDescriptor modelEnablement = getTargetRuntime().getModelEnablements(object);
+		ModelEnablementDescriptor modelEnablement = (ModelEnablementDescriptor)diagramEditor.getAdapter(ModelEnablementDescriptor.class);
 		items = new ArrayList<EClass>();
 		if (listItemClass!=null
 				&& !listItemClass.isAbstract()

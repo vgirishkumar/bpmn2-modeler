@@ -530,7 +530,7 @@
 
 		<!-- -->
 
-		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Process">
+		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Process" profile="Default Process">
 			<disable object="all"/>
 			<enable object="Definitions"/>
 
@@ -645,7 +645,7 @@
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
 		</modelEnablement>
 
-		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Collaboration">
+		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Collaboration" profile="Default Collaboration">
 			<disable object="all"/>
 			<!-- copy the enablements from "Process" diagram type -->
 			<enable object="default" feature="Process"/>
@@ -662,7 +662,7 @@
 			<enable object="ConversationLink"/>
 		</modelEnablement>
 
-		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Choreography">
+		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Choreography" profile="Default Choreography">
 			<disable object="all"/>
 			<!-- copy the enablements from "Collaboration" diagram type -->
 			<enable object="default" feature="Collaboration"/>

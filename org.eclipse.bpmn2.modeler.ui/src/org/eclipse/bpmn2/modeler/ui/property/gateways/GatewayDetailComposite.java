@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
@@ -91,12 +92,14 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 	public void createBindings(EObject be) {
 		super.createBindings(be);
 		Gateway gateway = (Gateway)be;
-		sequenceFlowsList = new SequenceFlowsListComposite(this);
-		sequenceFlowsList.bindList(gateway, Bpmn2Package.eINSTANCE.getFlowNode_Incoming());
+		if (!(gateway instanceof ParallelGateway)) {
+			sequenceFlowsList = new SequenceFlowsListComposite(this);
+			sequenceFlowsList.bindList(gateway, Bpmn2Package.eINSTANCE.getFlowNode_Incoming());
+		}
 	}
 	
 	/**
-	 * A ListComposite that displays all incoming and outgoing sequence flows for a Gateway
+	 * A ListComposite that displays all outgoing sequence flows for a Gateway
 	 */
 	public class SequenceFlowsListComposite extends DefaultListComposite {
 		public SequenceFlowsListComposite(AbstractBpmn2PropertySection section) {
@@ -148,7 +151,7 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 	}
 
 	/**
-	 * Custom content provider for a gateway's incoming and outgoing sequence flows
+	 * Custom content provider for a gateway's outgoing sequence flows
 	 */
 	public class SequenceFlowsListContentProvider extends ListCompositeContentProvider {
 
@@ -157,7 +160,7 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 			
 			Gateway gateway = (Gateway)object;
 			list = new BasicEList<EObject>();
-			list.addAll(gateway.getIncoming());
+//			list.addAll(gateway.getIncoming());
 			list.addAll(gateway.getOutgoing());
 		}
 
@@ -224,9 +227,12 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 			String text = "";
 			switch (columnIndex) {
 			case 1:
-				text += ModelUtil.getDisplayName(flow.getSourceRef());
-				text += " -> ";
-				text += ModelUtil.getDisplayName(flow.getTargetRef());
+				text = flow.getName();
+				if (text==null || text.isEmpty()) {
+					text = ModelUtil.getDisplayName(flow.getSourceRef());
+					text += " -> ";
+					text += ModelUtil.getDisplayName(flow.getTargetRef());
+				}
 				break;
 			case 2:
 				text = ModelUtil.getDisplayName(flow.getConditionExpression());

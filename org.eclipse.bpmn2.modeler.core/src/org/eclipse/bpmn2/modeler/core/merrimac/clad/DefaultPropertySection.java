@@ -13,8 +13,11 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -67,7 +70,8 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 			return super.appliesTo(part, selection);
 		
 		PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
-		if (pe!=null) {
+		if (pe instanceof ConnectionDecorator) {
+			pe = ((ConnectionDecorator)pe).getConnection();
 			// this is a special hack to allow selection of connection decorator labels:
 			// the connection decorator does not have a business object linked to it,
 			// but its parent (the connection) does.

@@ -70,11 +70,7 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 		@Override
 		protected void cleanBindings() {
 			super.cleanBindings();
-			if (descriptionText!=null) {
-				if (!descriptionText.isDisposed())
-					descriptionText.dispose();
-				descriptionText = null;
-			}
+			descriptionText = null;
 		}
 
 		/*
@@ -101,7 +97,9 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 		}
 		
 		protected void bindDescription(EObject be) {
-			if (Bpmn2Preferences.getInstance().getShowDescriptions()) {
+			// don't display the description text if disabled in preferences,
+			// or if this is a popup configuration dialog.
+			if (Bpmn2Preferences.getInstance().getShowDescriptions() && !isPopupDialog) {
 				String description = getDescription(be);
 	
 				if (description != null) {

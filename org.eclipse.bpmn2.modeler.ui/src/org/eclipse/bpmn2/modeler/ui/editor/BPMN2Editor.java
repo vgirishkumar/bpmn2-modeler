@@ -87,7 +87,9 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
@@ -312,6 +314,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
+	private String modelEnablementProfile;
 //	private Hashtable<BPMNDiagram, GraphicalViewer> mapDiagramToViewer = new Hashtable<BPMNDiagram, GraphicalViewer>();
 
 	protected DiagramEditorAdapter editorAdapter;
@@ -442,6 +445,21 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return targetRuntime;
 	}
 	
+	public String getModelEnablementProfile() {
+		if (modelEnablementProfile==null) {
+			modelEnablementProfile = getPreferences().getDefaultModelEnablementProfile();
+		}
+		return modelEnablementProfile;
+	}
+	
+	public void setModelEnablementProfile(String profile) {
+		modelEnablementProfile = profile;
+		StructuredSelection sel = new StructuredSelection(new Object[] {bpmnDiagram});
+		selectionChanged(multipageEditor, sel);
+//		getAdapter(IPropertySheetPage.class);
+//		tabbedPropertySheetPage.setSelectedTab("bpmn2.jbpm.diagram.tab");
+	}
+	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {
 		if (targetRuntime==null) {
 			 // If the project has not been configured for a specific runtime through the "BPMN2"
@@ -461,6 +479,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 			if (targetRuntime==null)
 				targetRuntime = TargetRuntime.getDefaultRuntime();
+
+			String profile = getPreferences().getDefaultModelEnablementProfile();
+			setModelEnablementProfile(profile);
 		}
 		return targetRuntime;
 	}
@@ -561,10 +582,15 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		di.generateFromDI();
 	}
 
-	protected void updatePalette() {
+	public void updatePalette() {
 		GFPaletteRoot pr = (GFPaletteRoot)getPaletteRoot();
-		if (pr!=null)
+		if (pr!=null) {
 			pr.updatePaletteEntries();
+			BpmnToolBehaviourFeature toolBehaviorProvider = 
+					(BpmnToolBehaviourFeature)getDiagramTypeProvider().
+					getCurrentToolBehaviorProvider();
+			toolBehaviorProvider.createPaletteProfilesGroup(this, pr);
+		}
 	}
 	
 	@Override
@@ -793,6 +819,14 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				BPMN2EditorOutlinePage outlinePage = new BPMN2EditorOutlinePage(this);
 				return outlinePage;
 			}
+		}
+		if (required == ModelEnablementDescriptor.class) {
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
+			return getTargetRuntime().getModelEnablements(diagramType, getModelEnablementProfile());
+		}
+		if (required == ToolPaletteDescriptor.class) {
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
+			return getTargetRuntime().getToolPalette(diagramType, getModelEnablementProfile());
 		}
 		
 		return super.getAdapter(required);

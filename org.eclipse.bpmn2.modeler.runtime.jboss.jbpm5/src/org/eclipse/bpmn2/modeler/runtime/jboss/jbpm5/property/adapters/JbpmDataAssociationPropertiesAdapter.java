@@ -46,16 +46,20 @@ public class JbpmDataAssociationPropertiesAdapter extends
 		public Hashtable<String, Object> getChoiceOfValues(Object context) {
 			EObject object = adopt(context);
 			Hashtable<String, Object> choices = super.getChoiceOfValues(context);
-			EObject container = ModelUtil.getContainer(object);
-			Definitions definitions = ModelUtil.getDefinitions(container);
-			for (RootElement re : definitions.getRootElements()) {
-				if (re instanceof Process) {
-					Process process = (Process)re;
-					for (GlobalType g : ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class)) {
-						choices.put(g.getIdentifier(), g);
-					}
-				}
-			}
+			
+			// GlobalType extensions can not be used for DataAssociations (as of jBPM 6)
+			// but maybe this will be supported in the future.
+			
+//			EObject container = ModelUtil.getContainer(object);
+//			Definitions definitions = ModelUtil.getDefinitions(container);
+//			for (RootElement re : definitions.getRootElements()) {
+//				if (re instanceof Process) {
+//					Process process = (Process)re;
+//					for (GlobalType g : ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class)) {
+//						choices.put(g.getIdentifier(), g);
+//					}
+//				}
+//			}
 			return choices;
 		}
 	}

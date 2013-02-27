@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 
 public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
@@ -346,8 +348,10 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 //						}
 					
 					// DEBUG:
+//					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
 //						System.out.println("Runtime: '"+rt.getName()+
 //								"'\nEnablement type: '"+me.getType()+
+//								"' Profile: '"+me.getProfile()+
 //								"'\nNumber of enabled model elements: "+me.getAllEnabled().size());
 //						List<String> classes = new ArrayList<String>(me.getAllEnabled().size());
 //						classes.addAll(me.getAllEnabled());
@@ -363,6 +367,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 //						}
 //						System.out.println("");
 //					}
+//					System.out.println("");
+					
 				}
 				
 			} catch (Exception ex) {
@@ -552,7 +558,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		}
 		return null;
 	}
-
+	
 	public ArrayList<ModelEnablementDescriptor> getModelEnablements()
 	{
 		if (modelEnablements==null) {
@@ -563,16 +569,34 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	
 	public ModelEnablementDescriptor getModelEnablements(EObject object)
 	{
-		return getModelEnablements( ModelUtil.getDiagramType(object) );
+		// TODO: At some point the separation of "Core" and "UI" plugins is going to become
+		// an unmanageable problem: I am having to resort to using DiagramEditor.getAdapter()
+		// more and more just to get things done.
+		// Think about either reorganizing these two plugins, or simply combining them...
+		DiagramEditor diagramEditor = ModelUtil.getEditor(object);
+		return (ModelEnablementDescriptor) diagramEditor.getAdapter(ModelEnablementDescriptor.class);
 	}
 	
-	public ModelEnablementDescriptor getModelEnablements(Bpmn2DiagramType diagramType)
+	public ArrayList<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)
 	{
-		return getModelEnablements(diagramType, null);
+		ArrayList<ModelEnablementDescriptor> list = new ArrayList<ModelEnablementDescriptor>();
+		for (ModelEnablementDescriptor me : getModelEnablements()) {
+			String s = diagramType.name();
+			if (diagramType == Bpmn2DiagramType.NONE && me.getType()==null) {
+				list.add(me);
+			}
+			else if (s.equalsIgnoreCase(me.getType())) {
+				list.add(me);
+			}
+		}
+		return list;
 	}
 	
 	public ModelEnablementDescriptor getModelEnablements(Bpmn2DiagramType diagramType, String profile)
 	{
+		if (profile!=null && profile.isEmpty())
+			profile = null;
+		
 		for (ModelEnablementDescriptor me : getModelEnablements()) {
 			String s = diagramType.name();
 			if (diagramType == Bpmn2DiagramType.NONE && me.getType()==null) {
@@ -612,12 +636,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	
 	public ToolPaletteDescriptor getToolPalette(EObject object)
 	{
-		return getToolPalette( ModelUtil.getDiagramType(object) );
-	}
-	
-	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType)
-	{
-		return getToolPalette(diagramType, null);
+		DiagramEditor diagramEditor = ModelUtil.getEditor(object);
+		return (ToolPaletteDescriptor) diagramEditor.getAdapter(ToolPaletteDescriptor.class);
 	}
 	
 	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)

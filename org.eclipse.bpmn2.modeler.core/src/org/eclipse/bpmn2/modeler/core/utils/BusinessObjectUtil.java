@@ -31,6 +31,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gef.EditPart;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -158,21 +159,19 @@ public class BusinessObjectUtil {
 
 	public static EObject getBusinessObjectForSelection(ISelection selection) {
 		PictogramElement pe = getPictogramElementForSelection(selection);
-		if (pe!=null)
-			return getFirstElementOfType(pe, EObject.class);
-		if (selection instanceof IStructuredSelection) {
-			Object o = ((IStructuredSelection)selection).getFirstElement();
-			if (o instanceof EditPart) {
-				o = ((EditPart)o).getModel();
-				if (o instanceof EObject)
-					return (EObject)o;
-			}
-		}				
-		return null;
+		return getBusinessObjectForPictogramElement(pe);
 	}
 
 	public static EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
 		if (pe!=null) {
+			// Substitute the Connection for a ConnectionDecorator because these
+			// do not have linked business objects although a connection decorator
+			// can still be selected. The net effect is that when a connection
+			// decorator is selected, it is the same as selecting the connection
+			// that owns it.
+			if (pe instanceof ConnectionDecorator) {
+				pe = ((ConnectionDecorator)pe).getConnection();
+			}
 			Object be = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 			if (be instanceof EObject)
 				return (EObject) be;

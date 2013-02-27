@@ -25,15 +25,23 @@ import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IElementComparer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -42,9 +50,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -59,6 +69,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 	private Object[] toolsEnabled;
 	private CheckboxTreeViewer checkboxTreeViewer;
 	private Tree checkboxTree;
+	private boolean profileCopied;
 
 	private WritableList writableList;
 
@@ -81,7 +92,30 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		Composite container = new Composite(parent, SWT.NULL);
 		container.setLayout(new GridLayout(3, false));
 		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
-		
+
+		final Label lblProfile = new Label(container, SWT.NONE);
+		lblProfile.setText("Default Tool Enablement Profile:");
+		lblProfile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+
+		final Combo cboProfile = new Combo(container, SWT.READ_ONLY);
+		cboProfile.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		TargetRuntime currentRuntime = bpmn2Preferences.getRuntime();
+		String currentProfile = bpmn2Preferences.getDefaultModelEnablementProfile();
+		int i = 1;
+		int iSelected = -1;
+		cboProfile.add("");
+		for (ModelEnablementDescriptor md : currentRuntime.getModelEnablements()) {
+			String profile = md.getProfile();
+			String text = profile;
+			if (text==null || text.isEmpty())
+				text = "Unnamed " + (i+1);
+			cboProfile.add(text);
+			cboProfile.setData(Integer.toString(i), md);
+			if (iSelected<0 && (currentProfile!=null && currentProfile.equals(profile)))
+				cboProfile.select(iSelected = i);
+			++i;
+		}
+
 		final Button btnOverride = new Button(container,SWT.CHECK);
 		btnOverride.setText("Override default tool enablements with these settings:");
 		btnOverride.setSelection(bpmn2Preferences.getOverrideModelEnablements());
@@ -92,7 +126,86 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		data.heightHint = 200;
 		checkboxTree.setLayoutData(data);
+		checkboxTreeViewer.setCheckStateProvider(new ICheckStateProvider() {
+			@Override
+			public boolean isChecked(Object element) {
+				if (element instanceof ToolEnablement) {
+					return ((ToolEnablement)element).getEnabled();
+				}
+				return false;
+			}
 
+			@Override
+			public boolean isGrayed(Object element) {
+				if (element instanceof ToolEnablement) {
+					ToolEnablement te = (ToolEnablement)element;
+					if (te.getTool() instanceof EClass) {
+						int countEnabled = 0;
+						for (ToolEnablement child : te.getChildren()) {
+							if (child.getEnabled())
+								++countEnabled;
+						}
+						return countEnabled != te.getChildren().size();
+					}
+				}
+				return false;
+			}
+			
+		});
+		checkboxTreeViewer.addCheckStateListener(new ICheckStateListener() {
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				boolean checked = event.getChecked();
+				ToolEnablement element = (ToolEnablement)event.getElement();
+				element.setEnabled(checked);
+				if (element.getTool() instanceof EClass) {
+					boolean grayed = false;
+					checkboxTreeViewer.setSubtreeChecked(element, checked);
+					if (!checked) {
+						// move from checked state to grayed state if
+						// all children are currently selected
+						int countEnabled = 0;
+						for (ToolEnablement child : element.getChildren()) {
+							if (child.getEnabled())
+								++countEnabled;
+						}
+						if (countEnabled == element.getChildren().size()) {
+							checkboxTreeViewer.setGrayChecked(element, true);
+							grayed = true;
+						}
+					}
+					for (ToolEnablement child : element.getChildren()) {
+						child.setEnabled(checked);
+					}
+					if (!grayed) {
+						checkboxTreeViewer.setChecked(element, checked);
+						checkboxTreeViewer.setGrayed(element, false);
+					}
+				}
+				else {
+					ToolEnablement parent = element.getParent();
+					int countEnabled = 0;
+					for (ToolEnablement child : parent.getChildren()) {
+						if (child.getEnabled())
+							++countEnabled;
+					}
+					if (countEnabled==0) {
+						checkboxTreeViewer.setChecked(parent, false);
+						parent.setEnabled(false);
+					}
+					else if (countEnabled == parent.getChildren().size()) {
+						checkboxTreeViewer.setChecked(parent, true);
+						checkboxTreeViewer.setGrayed(parent, false);
+						parent.setEnabled(true);
+					}
+					else {
+						checkboxTreeViewer.setGrayChecked(parent, true);
+						parent.setEnabled(true);
+					}
+				}
+			}
+		});
+				
 		final Button btnCopy = new Button(container,SWT.FLAT);
 		btnCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		btnCopy.setText("Copy");
@@ -103,9 +216,8 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 
 		final Combo cboCopy = new Combo(container, SWT.READ_ONLY);
 		cboCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		TargetRuntime cr = bpmn2Preferences.getRuntime();
-		int i = 0;
-		int iSelected = -1;
+		i = 0;
+		iSelected = -1;
 		for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
 			for (ModelEnablementDescriptor md : rt.getModelEnablements()) {
 				String text = rt.getName();
@@ -115,7 +227,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 					text += " (" + md.getProfile() + ")";
 				cboCopy.add(text);
 				cboCopy.setData(Integer.toString(i), md);
-				if (rt == cr && iSelected<0)
+				if (rt == currentRuntime && iSelected<0)
 					cboCopy.select(iSelected = i);
 				++i;
 			}
@@ -154,7 +266,17 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 				String path = dialog.open();
 				if (path != null) {
 					try {
-						toolEnablementPreferences.export(path);
+						String runtimeId = null;
+						String type = null;
+						String profile = null;
+						if (profileCopied) {
+							int i = cboCopy.getSelectionIndex();
+							ModelEnablementDescriptor md = (ModelEnablementDescriptor)cboCopy.getData(""+i);
+							runtimeId = md.getRuntime().getId();
+							profile = md.getProfile();
+							type = md.getType();
+						}
+						toolEnablementPreferences.exportPreferences(runtimeId, type, profile, path);
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -178,6 +300,13 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		checkboxTreeViewer.setUseHashlookup(true);
 		m_bindingContext = initDataBindings();
 		
+		cboProfile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				bpmn2Preferences.setDefaultModelEnablementProfile( cboProfile.getText() );
+			}
+		});
+
 		boolean enable = btnOverride.getSelection();
 		checkboxTree.setEnabled(enable);
 		btnCopy.setEnabled(enable);
@@ -197,6 +326,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		});
 		
 		btnCopy.addSelectionListener(new SelectionAdapter() {
+			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int i = cboCopy.getSelectionIndex();
@@ -206,6 +336,8 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 				reloadPreferences();
 				checkboxTreeViewer.refresh();
 				restoreDefaults();
+				
+				profileCopied = true;
 			}
 		});
 

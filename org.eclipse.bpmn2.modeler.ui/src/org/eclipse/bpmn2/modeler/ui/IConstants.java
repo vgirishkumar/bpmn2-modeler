@@ -34,6 +34,8 @@ public interface IConstants {
 	public final String ICON_OUTPUT_32 = "obj20/output.png"; //$NON-NLS-1$
 	public final String ICON_THROW_16 = "obj16/throw.gif"; //$NON-NLS-1$
 	public final String ICON_THROW_32 = "obj20/throw.png"; //$NON-NLS-1$
+	public final String ICON_CHECKBOX_CHECKED_16 = "obj16/checkbox-checked.png"; //$NON-NLS-1$
+	public final String ICON_CHECKBOX_UNCHECKED_16 = "obj16/checkbox-unchecked.png"; //$NON-NLS-1$
 
 	public final String ICON_XSD_ATTRIBUTE_DECLARATION_16 = "obj16/XSDAttributeDeclaration.gif"; //$NON-NLS-1$
 	public final String ICON_XSD_ELEMENT_DECLARATION_16 = "obj16/XSDElementDeclaration.gif"; //$NON-NLS-1$

@@ -66,12 +66,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@Override
 	public boolean isAvailable(IContext context) {
-		List<ModelEnablementDescriptor> enablements = TargetRuntime.getCurrentRuntime().getModelEnablements();
-		for (ModelEnablementDescriptor e : enablements) {
-			if (e.isEnabled(getBusinessObjectClass()))
-				return true;
-		}
-		return false;
+		return isModelObjectEnabled();
 	}
 
 	/* (non-Javadoc)
@@ -131,5 +126,24 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		Object value = context.getProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID);
 		newContext.putProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID, value);
 		return getFeatureProvider().addIfPossible(newContext);
+	}
+	
+	protected boolean isModelObjectEnabled() {
+		ModelEnablementDescriptor me = getModelEnablements();
+		if (me!=null)
+			return me.isEnabled(getBusinessObjectClass());
+		return false;
+	}
+	
+	protected boolean isModelObjectEnabled(EObject o) {
+		ModelEnablementDescriptor me = getModelEnablements();
+		if (me!=null)
+			return me.isEnabled(o.eClass());
+		return false;
+	}
+	
+	protected ModelEnablementDescriptor getModelEnablements() {
+		DiagramEditor editor = (DiagramEditor) getDiagramEditor();
+		return (ModelEnablementDescriptor) editor.getAdapter(ModelEnablementDescriptor.class);
 	}
 }

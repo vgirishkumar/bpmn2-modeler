@@ -3,6 +3,8 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 import java.net.URL;
 
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.services.Graphiti;
@@ -49,6 +51,15 @@ public class CustomTaskImageProvider {
 					if (icon!=null)
 						registerImage(ctd, icon);
 				}
+				for (ToolPaletteDescriptor tp : rt.getToolPalettes()) {
+					for (CategoryDescriptor cd : tp.getCategories()) {
+						for (ToolDescriptor td : cd.getTools()) {
+							String icon = td.getIcon();
+							if (icon!=null)
+								registerImage(rt, icon);
+						}
+					}
+				}
 			}
 			registered = true;
 		}
@@ -93,5 +104,63 @@ public class CustomTaskImageProvider {
 				imageRegistry.put(imageId, descriptor);
 			}
 		}
+	}
+
+	public static Image createImage(TargetRuntime rt, GraphicsAlgorithmContainer ga, String icon, IconSize size) {
+		// To create an image of a specific size, use the "huge" versions
+		// to prevent pixelation when stretching a small image
+		String imageId = getImageId(rt,icon, size); 
+		if (imageId != null) {
+			Image img = Graphiti.getGaService().createImage(ga, imageId);
+			img.setProportional(false);
+			return img;
+		}
+		return null;
+	}
+
+	public static Image createImage(TargetRuntime rt, GraphicsAlgorithmContainer ga, String icon, int w, int h) {
+		// To create an image of a specific size, use the "huge" versions
+		// to prevent pixelation when stretching a small image
+		String imageId = getImageId(rt,icon, IconSize.LARGE); 
+		if (imageId != null) {
+			Image img = Graphiti.getGaService().createImage(ga, imageId);
+			img.setProportional(false);
+			img.setWidth(w);
+			img.setHeight(h);
+			img.setStretchH(true);
+			img.setStretchV(true);
+			return img;
+		}
+		return null;
+	}
+
+	protected static void registerImage(TargetRuntime rt, String icon) {
+		ImageRegistry imageRegistry = GraphitiUIPlugin.getDefault().getImageRegistry();
+		for (IconSize size : IconSize.values()) {
+			String imageId = getImageId(rt,icon,size); 
+			if (imageId != null) {
+				String filename = getImagePath(rt,icon,size);
+				URL url = rt.getRuntimeExtension().getClass().getClassLoader().getResource(filename);
+				ImageDescriptor descriptor =  ImageDescriptor.createFromURL(url);
+				imageRegistry.put(imageId, descriptor);
+			}
+		}
+	}
+	
+
+	public static String getImageId(TargetRuntime rt, String icon, IconSize size) {
+		if (icon != null && icon.trim().length() > 0) {
+			String prefix = rt.getRuntimeExtension().getClass().getPackage().getName();
+			return prefix + "." + icon.trim() + "." + size.value;
+		}
+		return null;
+	}
+	
+	public static String getImagePath(TargetRuntime rt, String icon, IconSize size) {
+		if (icon != null && icon.trim().length() > 0) {
+			String prefix = rt.getRuntimeExtension().getClass().getPackage().getName();
+			return CustomTaskImageProvider.ICONS_FOLDER + size.value + "/" + icon.trim();
+		}
+		return null;
 	}
 }
