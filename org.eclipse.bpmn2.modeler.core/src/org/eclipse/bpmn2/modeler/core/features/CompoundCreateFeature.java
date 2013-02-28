@@ -453,19 +453,15 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return true;
 	}
 
-	@Override
 	public void startConnecting() {
 	}
 
-	@Override
 	public void endConnecting() {
 	}
 
-	@Override
 	public void attachedToSource(ICreateConnectionContext context) {
 	}
 
-	@Override
 	public void canceledAttaching(ICreateConnectionContext context) {
 	}
 }

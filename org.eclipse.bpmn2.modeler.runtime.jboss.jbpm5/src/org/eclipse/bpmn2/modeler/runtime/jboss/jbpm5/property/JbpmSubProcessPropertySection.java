@@ -29,10 +29,6 @@ import org.eclipse.ui.IWorkbenchPart;
  */
 public class JbpmSubProcessPropertySection extends JbpmActivityPropertySection {
 
-	static {
-		PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
-	}
-
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new JbpmSubProcessDetailComposite(this);

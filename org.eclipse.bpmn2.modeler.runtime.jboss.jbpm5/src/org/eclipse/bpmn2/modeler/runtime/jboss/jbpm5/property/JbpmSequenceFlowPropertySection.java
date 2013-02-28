@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -42,15 +43,14 @@ public class JbpmSequenceFlowPropertySection extends SequenceFlowPropertySection
 					Gateway gateway = (Gateway) ((SequenceFlow) be).getSourceRef();
 					// hide this tab if the "condition expression" on the Sequence Flow
 					// or the (possibly) attached Gateway's "default flow" feature is disabled
-					boolean conditionEnabled = true;
+					boolean conditionEnabled = isModelObjectEnabled(
+							Bpmn2Package.eINSTANCE.getSequenceFlow(),
+							Bpmn2Package.eINSTANCE.getSequenceFlow_ConditionExpression());
+
 					boolean defaultEnabled = true;
-					ModelEnablementDescriptor modelEnablement = getModelEnablement();
-					if (!modelEnablement.isEnabled("SequenceFlow", "conditionExpression")) {
-						conditionEnabled = false;
-					}
 					EStructuralFeature defaultFeature = gateway.eClass().getEStructuralFeature("default");
 					if (defaultFeature!=null) {
-						if (!modelEnablement.isEnabled(gateway.eClass(), defaultFeature))
+						if (!isModelObjectEnabled(gateway.eClass(), defaultFeature))
 							defaultEnabled = false;
 					}
 					return conditionEnabled || defaultEnabled;

@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
@@ -65,8 +68,10 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			if (appliesToClass==null)
+			if (appliesToClass==null) {
 				return true;
+			}
+			
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 			if (pe instanceof ConnectionDecorator) {
 				pe = ((ConnectionDecorator)pe).getConnection();

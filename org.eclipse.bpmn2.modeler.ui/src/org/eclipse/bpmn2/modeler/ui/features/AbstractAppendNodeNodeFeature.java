@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -144,8 +145,12 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 					if (newType!=null) {
 						// if user made a selection, then create the new shape...
 						ContainerShape newShape = createNewShape(mh, oldShape, newType);
-						// ...and connect this shape to the new one with a SequenceFlow
+						// ...and connect this shape to the new one with a SequenceFlow...
 						createNewConnection(mh, oldShape, newShape);
+						
+						// .. then reroute the connection
+						ConnectionFeatureContainer.updateConnections(getFeatureProvider(), newShape);
+
 						changesDone = true;
 					}
 				} catch (Exception e) {

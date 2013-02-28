@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Composite;
 
 public class GatewayDetailComposite extends DefaultDetailComposite {
 
-	private SequenceFlowsListComposite sequenceFlowsList;
+	protected SequenceFlowsListComposite sequenceFlowsList;
 
 	/**
 	 * @param section
@@ -93,9 +93,13 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 		super.createBindings(be);
 		Gateway gateway = (Gateway)be;
 		if (!(gateway instanceof ParallelGateway)) {
-			sequenceFlowsList = new SequenceFlowsListComposite(this);
+			sequenceFlowsList = createSequenceFlowsListComposite(this);
 			sequenceFlowsList.bindList(gateway, Bpmn2Package.eINSTANCE.getFlowNode_Incoming());
 		}
+	}
+	
+	protected SequenceFlowsListComposite createSequenceFlowsListComposite(Composite parent) {
+		return new SequenceFlowsListComposite(parent);
 	}
 	
 	/**
@@ -176,7 +180,7 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 	public class SequenceFlowListColumnProvider extends ListCompositeColumnProvider {
 
 		public SequenceFlowListColumnProvider(AbstractListComposite list, EObject object) {
-			super(list, false);
+			this(list, false);
 			// add 2 or 3 columns, depending on gateway type
 			add(new SequenceFlowListColumn(object,1)); // identifier (from -> to)
 			add(new SequenceFlowListColumn(object,2)); // Condition (expression)
@@ -184,6 +188,10 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 				add(new SequenceFlowListColumn(object,3)); // Is Default (boolean)
 			}
 		}
+		
+		public SequenceFlowListColumnProvider(AbstractListComposite list, boolean canModify) {
+			super(list,canModify);
+		}		
 	}
 	
 	/**

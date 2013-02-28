@@ -115,16 +115,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		cleanBindings();
 		if (businessObject != null) {
 			createBindings(businessObject);
-
-//			Control[] kids = getChildren();
-//			if (kids.length==1 && kids[0]==this.attributesSection) {
-//				attributesSection.setVisible(false);
-//				GridData data = (GridData)attributesSection.getLayoutData();
-//				data.exclude = true;
-//				attributesComposite.setParent(this);
-//				attributesSection.dispose();
-//				attributesSection = null;
-//			}
+			checkEmptyPage();
 			redrawPage();
 		}
 	}
@@ -136,6 +127,28 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		ModelUtil.disposeChildWidgets(this);
 	}
 	
+	protected void checkEmptyPage() {
+		if (getChildren().length==0) {
+			createMissingPropertiesLabel(businessObject);
+		}
+	}
+	
+	protected void createMissingPropertiesLabel(EObject be) {
+		if (getDiagramEditor()!=null) {
+			String text =
+					"Warning: this Property Sheet is empty because the model element\n" +
+					"\"" + be.eClass().getName() + "\" has no visible features.\n\n" +
+					"At least one of these element features must be enabled:\n";
+			String props[] = getPropertiesProvider().getProperties();
+			for (String s : props) {
+				text += "    " + s + "\n";
+			}
+			text += "\nPlease configure the Tool Enablement Preferences for this project accordingly.";
+
+			createLabel(this, text);
+		}
+	}
+
 	/**
 	 * Returns the composite that is used to contain all EAttributes for the
 	 * current selection. The default behavior is to construct a non-collapsible

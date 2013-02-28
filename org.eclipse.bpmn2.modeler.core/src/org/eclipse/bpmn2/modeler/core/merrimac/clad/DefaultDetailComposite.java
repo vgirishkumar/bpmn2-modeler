@@ -206,20 +206,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				attributesSection = null;
 			}
 		}
-
-//		if (getChildren().length==0) {
-//			createMissingPropertiesLabel(businessObject);
-//		}
 		redrawPage();
-	}
-	
-	private void createMissingPropertiesLabel(EObject be) {
-		if (getDiagramEditor()!=null) {
-			if (getPropertySection()!=null) {
-				String tab = propertySection.tabbedPropertySheetPage.getSelectedTab().getLabel();
-				createLabel(this,"No "+tab+" Properties for this "+getPropertiesProvider().getLabel(be));
-			}
-		}
 	}
 
 	protected void bindReference(Composite parent, EObject object, EReference reference) {

@@ -40,13 +40,9 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof BPMNDiagram) {
-//			EList<EObject> contents = be.eResource().getContents();
-//			if (!contents.isEmpty() && contents.get(0) instanceof DocumentRoot) {
-//				return contents.get(0);
-//			}
 			try {
 				return ModelHandlerLocator.getModelHandler(be.eResource()).getDefinitions();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Activator.showErrorWithLogging(e);
 			}
 		}

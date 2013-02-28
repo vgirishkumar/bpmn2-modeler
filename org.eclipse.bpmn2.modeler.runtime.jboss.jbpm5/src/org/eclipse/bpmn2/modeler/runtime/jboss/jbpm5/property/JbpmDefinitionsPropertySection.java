@@ -14,22 +14,14 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.MessageDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.MessageListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -42,10 +34,6 @@ import org.eclipse.ui.IWorkbenchPart;
  *
  */
 public class JbpmDefinitionsPropertySection extends DefinitionsPropertySection {
-	static {
-		PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
-		PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
