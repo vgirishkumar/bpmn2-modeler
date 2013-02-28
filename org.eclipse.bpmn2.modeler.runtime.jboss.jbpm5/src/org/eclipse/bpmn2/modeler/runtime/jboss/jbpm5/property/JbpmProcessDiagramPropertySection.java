@@ -54,7 +54,7 @@ public class JbpmProcessDiagramPropertySection extends ProcessDiagramPropertySec
 		}
 
 		protected boolean isModelObjectEnabled(String className, String featureName) {
-			if (featureName!=null && "id".equals(featureName))
+			if ("id".equals(featureName))
 					return true;
 			boolean enable = super.isModelObjectEnabled(className,featureName);
 			return enable;

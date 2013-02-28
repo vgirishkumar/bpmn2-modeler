@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -72,17 +73,18 @@ public class BaseRuntimeDescriptor {
 		}
 		if (eClass!=null) {
 			EStructuralFeature feature = eClass.getEStructuralFeature(parts[1]);
-			if (ExtendedMetaData.INSTANCE.getFeatureKind(feature) == ExtendedMetaData.UNSPECIFIED_FEATURE) {
-				if (feature instanceof EAttribute) {
-					ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ATTRIBUTE_FEATURE);
+			if (feature!=null) {
+				if (ExtendedMetaData.INSTANCE.getFeatureKind(feature) == ExtendedMetaData.UNSPECIFIED_FEATURE) {
+					if (feature instanceof EAttribute) {
+						ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ATTRIBUTE_FEATURE);
+					}
+					else {
+						ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ELEMENT_FEATURE);
+					}
+					ExtendedMetaData.INSTANCE.setNamespace(feature, eClass.getEPackage().getNsURI());
+					ExtendedMetaData.INSTANCE.setName(feature, feature.getName());
 				}
-				else {
-					ExtendedMetaData.INSTANCE.setFeatureKind(feature,ExtendedMetaData.ELEMENT_FEATURE);
-				}
-				ExtendedMetaData.INSTANCE.setNamespace(feature, eClass.getEPackage().getNsURI());
-				ExtendedMetaData.INSTANCE.setName(feature, feature.getName());
 			}
-			
 			return feature;
 		}
 		return null;

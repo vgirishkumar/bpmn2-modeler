@@ -18,20 +18,19 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 
 /**
  * @author Bob Brodt
  * 
  */
-public class DescriptionPropertySection extends AbstractBpmn2PropertySection implements ITabbedPropertyConstants {
+public class DescriptionPropertySection extends DefaultPropertySection implements ITabbedPropertyConstants {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()
@@ -44,12 +43,6 @@ public class DescriptionPropertySection extends AbstractBpmn2PropertySection imp
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		 return new DescriptionPropertyComposite(parent, style);
-	}
-
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		// always show this tab
-		return getBusinessObjectForSelection(selection) != null;
 	}
 
 	public class DescriptionPropertyComposite extends DefaultDetailComposite {

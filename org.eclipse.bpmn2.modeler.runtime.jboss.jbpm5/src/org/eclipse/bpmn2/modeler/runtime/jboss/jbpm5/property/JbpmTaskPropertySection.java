@@ -40,15 +40,17 @@ public class JbpmTaskPropertySection extends TaskPropertySection {
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		if (object!=null && Bpmn2Package.eINSTANCE.getTask() == object.eClass()) {
-			List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
-			for (EStructuralFeature f : features) {
-				if ("displayName".equals(f.getName()))
-					// don't display this tab for Custom Tasks
-					return false;
+		if (super.appliesTo(part, selection)) {
+			EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+			if (object!=null && Bpmn2Package.eINSTANCE.getTask() == object.eClass()) {
+				List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
+				for (EStructuralFeature f : features) {
+					if ("displayName".equals(f.getName()))
+						// don't display this tab for Custom Tasks
+						return false;
+				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}

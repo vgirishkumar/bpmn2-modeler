@@ -21,6 +21,8 @@
 			uri="http://www.jboss.org/drools"
 			resourceFactory="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util.ModelResourceFactoryImpl">
 		</model>
+
+<!-- Property Tabs -->
 		
 		<propertyTab
 			id="bpmn2.jbpm.description.tab"
@@ -41,72 +43,78 @@
 		<propertyTab
 			id="bpmn2.jbpm.interface.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.interface.tab"
+			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmInterfacePropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			label="Interfaces">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.definitions.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
 			replaceTab="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection"
+			type="org.eclipse.bpmn2.di.BPMNDiagram"
 			label="Definitions">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.dataitems.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.dataitems.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataItemsPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			replaceTab="org.eclipse.bpmn2.modeler.dataitems.tab"
 			label="Data Items">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.customTask.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCustomTaskPropertySection"
 			replaceTab="bpmn2.jbpm.task.tab org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCustomTaskPropertySection"
+			type="org.eclipse.bpmn2.Task"
 			label="Custom Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.task.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskPropertySection"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskPropertySection"
+			type="org.eclipse.bpmn2.Task"
 			label="Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.userTask.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
 			replaceTab="org.eclipse.bpmn2.modeler.userTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
+			type="org.eclipse.bpmn2.UserTask"
 			label="User Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.businessRuleTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmBusinessRuleTaskPropertySection"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Business Rule Task">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.callActivity.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.callActivity.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCallActivityPropertySection"
+			type="org.eclipse.bpmn2.CallActivity"
 			label="Call Activity">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.SubProcess.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.subProcess.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSubProcessPropertySection"
 			type="org.eclipse.bpmn2.SubProcess"
 			label="Sub Process">
@@ -122,38 +130,43 @@
 		<propertyTab
 	        id="bpmn2.jbpm.scriptTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.scriptTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskPropertySection"
-	        label="Script Task"
-		    type="org.eclipse.bpmn2.ScriptTask">
+		    type="org.eclipse.bpmn2.ScriptTask"
+		    label="Script Task">
 		</propertyTab>
 
 		<propertyTab
 	        id="bpmn2.jbpm.receiveTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.receiveTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmReceiveTaskPropertySection"
-	        label="Receive Task"
-		    type="org.eclipse.bpmn2.ReceiveTask">
+		    type="org.eclipse.bpmn2.ReceiveTask"
+	        label="Receive Task">
 		</propertyTab>
 
 		<propertyTab
 	        id="bpmn2.jbpm.sendTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.sendTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskPropertySection"
-	        label="Send Task"
-		    type="org.eclipse.bpmn2.SendTask">
+		    type="org.eclipse.bpmn2.SendTask"
+	        label="Send Task">
 		</propertyTab>
 
 		<propertyTab
 	        id="bpmn2.jbpm.manualTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.manualTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmManualTaskPropertySection"
-	        label="Manual Task"
-		    type="org.eclipse.bpmn2.ManualTask">
+		    type="org.eclipse.bpmn2.ManualTask"
+	        label="Manual Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.jboss.runtime.jbpm5.sequenceflow.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.sequenceflow.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSequenceFlowPropertySection"
 			type="org.eclipse.bpmn2.SequenceFlow"
 			label="Sequence Flow">
@@ -161,16 +174,18 @@
 
 		<propertyTab
 			id="org.jboss.runtime.jbpm5.activitiy.io.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmIoParametersPropertySection"
 			replaceTab="org.eclipse.bpmn2.modeler.activity.io.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmIoParametersPropertySection"
 			label="I/O Parameters">
 		</propertyTab>
 
 		<propertyTab
 			id="org.jboss.runtime.jbpm5.commonEvent.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.commonEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCommonEventPropertySection"
 			type="org.eclipse.bpmn2.Event"
-			replaceTab="org.eclipse.bpmn2.modeler.commonEvent.tab"
 			label="Event">
 		</propertyTab>
 		
@@ -185,8 +200,11 @@
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.FormalExpression"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.FormalExpression"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmFormalExpressionPropertiesAdapter">
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmFormalExpressionPropertiesAdapter"
+			>
 		</propertyExtension>
+
+<!-- Property Extension Adapters -->
 
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnEntryScript"
@@ -224,6 +242,20 @@
 		</propertyExtension>
 
 		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.DataInput"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.DataInput"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmDataInputPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.DataOutput"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.DataOutput"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmDataOutputPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.GlobalType"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
@@ -257,6 +289,8 @@
 			type="org.eclipse.bpmn2.ParallelGateway"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
 		</propertyExtension>
+		
+<!-- Graphiti Feature Container Overrides -->
 		
 		<featureContainer
 			runtimeId="org.jboss.runtime.jbpm5"
@@ -360,7 +394,7 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmIntermediateThrowEventFeatureContainer">
 		</featureContainer>
 		
-<!-- Model Extensions -->
+<!-- BPMN Model Element Extensions -->
 		
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.process"
@@ -532,7 +566,7 @@
 			<property name="priority" value="1" type="EInt"/>
 		</modelExtension>
 
-<!-- Model Enablements -->
+<!-- Model Enablements and Profiles -->
 
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="Full">
 			<disable object="all"/>
@@ -1085,6 +1119,7 @@
 		
 		
 	</extension>
+	
  <extension
        point="org.eclipse.graphiti.ui.imageProviders">
     <imageProvider
@@ -1227,6 +1262,7 @@
       </wizard>
    </extension>
    
+   <!-- TODO: Nothing to put here yet...
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -1235,5 +1271,6 @@
             id="org.jboss.runtime.jbpm5.preferences"
             name="jBPM Runtime"/>
    </extension>
+	-->
 	
 </plugin>

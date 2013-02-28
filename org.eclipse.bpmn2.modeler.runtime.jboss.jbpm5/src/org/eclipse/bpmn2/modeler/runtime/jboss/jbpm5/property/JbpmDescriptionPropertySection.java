@@ -42,7 +42,10 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		return getBusinessObjectForSelection(selection) != null;
+		if (super.appliesTo(part, selection)) {
+			return getBusinessObjectForSelection(selection) != null;
+		}
+		return false;
 	}
 
 	@Override

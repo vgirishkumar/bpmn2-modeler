@@ -78,7 +78,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 
 	@Override
 	protected boolean isModelObjectEnabled(String className, String featureName) {
-		if (className.equals("DataInput"))
+		if ("DataInput".equals(className))
 			return true;
 		return super.isModelObjectEnabled(className, featureName);
 	}

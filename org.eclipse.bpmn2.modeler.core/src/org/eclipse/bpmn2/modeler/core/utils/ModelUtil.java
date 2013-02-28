@@ -726,6 +726,7 @@ public class ModelUtil {
 		if (isBpmnPackage(pkg)) {
 			throw new IllegalArgumentException("Can not add dynamic reference to "+pkg.getName());
 		}
+		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
 		EReference ref = null;
 		EClass docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
 		if (docRoot==null) {
@@ -755,7 +756,7 @@ public class ModelUtil {
 			eClassifier = getEClassifierFromString(pkg,type);
 			if (eClassifier==null || !(eClassifier instanceof EClass)) {
 				String message = "The model extension reference '"+
-						name+"' for object '"+object.eClass().getName()+
+						name+"' for object '"+eClass.getName()+
 						"' can not be created because '"+
 						type+"' is not a known object type.";
 	

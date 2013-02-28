@@ -12,23 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
-import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataOutput;
-import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
-public class IoParametersPropertySection extends AbstractBpmn2PropertySection {
+public class IoParametersPropertySection extends DefaultPropertySection {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()
@@ -41,15 +33,6 @@ public class IoParametersPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		return new IoParametersDetailComposite(parent,style);
-	}
-
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (super.appliesTo(part, selection)) {
-			if (getBusinessObjectForSelection(selection)!=null)
-				return true;
-		}
-		return false;
 	}
 
 	@Override

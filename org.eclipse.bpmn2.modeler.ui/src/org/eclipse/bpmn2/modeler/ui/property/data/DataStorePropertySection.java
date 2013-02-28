@@ -13,8 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.data;
 
-import org.eclipse.bpmn2.DataStore;
-import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.DataStoreReference;
@@ -22,9 +20,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
@@ -32,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
  * @author Bob Brodt
  *
  */
-public class DataStorePropertySection extends AbstractBpmn2PropertySection {
+public class DataStorePropertySection extends DefaultPropertySection {
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()

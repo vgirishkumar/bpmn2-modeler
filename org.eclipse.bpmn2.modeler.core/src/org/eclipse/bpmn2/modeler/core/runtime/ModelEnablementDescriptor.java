@@ -310,7 +310,7 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 			if (!prefs.getShowIdAttribute())
 				return false;
 		}
-		if (prefs.getOverrideModelEnablements()) {
+		if (prefs.getOverrideModelEnablementProfile()) {
 			String name = className;
 			if (featureName!=null && !featureName.isEmpty())
 				name += "." + featureName;

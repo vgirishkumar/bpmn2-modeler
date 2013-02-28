@@ -169,20 +169,8 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * @return
 	 */
 	protected abstract AbstractDetailComposite createSectionRoot();
-	
 	public abstract AbstractDetailComposite createSectionRoot(Composite parent, int style);
-
-//	protected EObject getBusinessObjectForPictogramElement(PictogramElement pe) {
-//		return BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
-//	}
-	
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
-		return BusinessObjectUtil.getBusinessObjectForSelection(selection);
-	}
-	
-	protected EObject getBusinessObjectForSelection() {
-		return getBusinessObjectForSelection(getSelection());
-	}
+	protected abstract EObject getBusinessObjectForSelection(ISelection selection);
 	
 	/* (non-Javadoc)
 	 * Yet another ugly hack: this restores the current property sheet page parent
@@ -205,7 +193,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	@Override
 	public void refresh() {
-		EObject be = getBusinessObjectForSelection();
+		EObject be = getBusinessObjectForSelection(getSelection());
 		
 		if (be!=null) {
 			AbstractDetailComposite sectionRoot = getSectionRoot();
@@ -262,7 +250,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
 		
 		if (editor!=null) {
-			return isModelObjectEnabled(getBusinessObjectForSelection(selection));
+			return true;
 		}
 		return false;
 	}

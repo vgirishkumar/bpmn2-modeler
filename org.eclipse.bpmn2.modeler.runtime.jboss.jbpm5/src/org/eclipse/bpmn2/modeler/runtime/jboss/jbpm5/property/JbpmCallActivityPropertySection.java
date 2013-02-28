@@ -29,12 +29,6 @@ import org.eclipse.ui.IWorkbenchPart;
 public class JbpmCallActivityPropertySection extends JbpmActivityPropertySection {
 
 	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		return object!=null && Bpmn2Package.eINSTANCE.getCallActivity() == object.eClass();
-	}
-
-	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new JbpmCallActivityDetailComposite(this);
 	}

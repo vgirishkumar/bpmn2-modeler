@@ -58,7 +58,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	public final static Bpmn2ModelerFactory FACTORY = Bpmn2ModelerFactory.getInstance();
 	protected AbstractBpmn2PropertySection propertySection;
 	protected FormToolkit toolkit;
-	private ModelEnablementDescriptor modelEnablement;
 	protected IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 	protected EObject businessObject;
 	protected int style;
@@ -177,14 +176,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		}
 		return diagramEditor;
 	}
-	
-	public ModelEnablementDescriptor getModelEnablement() {
-		if (modelEnablement==null) {
-			modelEnablement = (ModelEnablementDescriptor)getDiagramEditor().
-				getAdapter(ModelEnablementDescriptor.class);
-		}
-		return modelEnablement;
-	}
 
 	protected boolean isModelObjectEnabled(String className, String featureName) {
 		return getModelEnablement().isEnabled(className, featureName);
@@ -200,6 +191,10 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		if (eclass!=null)
 			return isModelObjectEnabled(eclass,null);
 		return false;
+	}
+
+	protected ModelEnablementDescriptor getModelEnablement() {
+		return (ModelEnablementDescriptor)getDiagramEditor().getAdapter(ModelEnablementDescriptor.class);
 	}
 
 	public TargetRuntime getTargetRuntime() {

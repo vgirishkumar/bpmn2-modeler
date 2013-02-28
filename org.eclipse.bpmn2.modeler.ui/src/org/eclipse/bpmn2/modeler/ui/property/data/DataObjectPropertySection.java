@@ -13,26 +13,15 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.data;
 
-import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataState;
-import org.eclipse.bpmn2.Expression;
-import org.eclipse.bpmn2.FormalExpression;
-import org.eclipse.bpmn2.HumanPerformer;
-import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.Performer;
-import org.eclipse.bpmn2.PotentialOwner;
-import org.eclipse.bpmn2.ResourceAssignmentExpression;
-import org.eclipse.bpmn2.ResourceParameterBinding;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
@@ -47,7 +36,7 @@ import org.eclipse.swt.widgets.Composite;
  * Data Object the state of the Data Object Reference in square brackets as follows: <Data Object Name> [ <Data
  * Object Reference State> ]."
  */
-public class DataObjectPropertySection extends AbstractBpmn2PropertySection {
+public class DataObjectPropertySection extends DefaultPropertySection {
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()

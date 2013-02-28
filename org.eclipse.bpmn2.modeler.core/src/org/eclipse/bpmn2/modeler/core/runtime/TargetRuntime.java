@@ -382,6 +382,57 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return targetRuntimes;
 	}
 	
+	/**
+	 * Reload the <modelEnablement> elements from the plugin configurations.
+	 * 
+	 * @param modelEnablements - the possibly modified list of model enablements which is only used to
+	 * identify the runtimeId, type and profile of the configuration element to search for.
+	 * 
+	 * @return a new ModelEnablementDescriptor with the original enablement settings.
+	 */
+	public static ModelEnablementDescriptor reloadModelEnablements(ModelEnablementDescriptor modelEnablements) {
+		IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				RUNTIME_EXTENSION_ID);
+
+		String runtimeId = modelEnablements.getRuntime().getId();
+		String type = modelEnablements.getType();
+		String profile = modelEnablements.getProfile();
+		ModelEnablementDescriptor me = null;
+		try {
+			for (IConfigurationElement e : config) {
+				if (e.getName().equals("modelEnablement")) {
+					String t = e.getAttribute("type");
+					String p = e.getAttribute("profile");
+					String id = e.getAttribute("runtimeId");
+					if (runtimeId.equals(id) && type.equals(t) && profile.equals(p)) {
+						TargetRuntime rt = getRuntime(id);
+						me = new ModelEnablementDescriptor(rt);
+						me.setType(t);
+						me.setProfile(p);
+						
+						if (e.getAttribute("override") != null) {
+							me.setOverride(new Boolean(e.getAttribute("override")));
+						}
+						
+						for (IConfigurationElement c : e.getChildren()) {
+							String object = c.getAttribute("object");
+							String feature = c.getAttribute("feature");
+							if (c.getName().equals("enable")) {
+								me.setEnabled(object, feature, true);
+							} else if (c.getName().equals("disable")) {
+								me.setEnabled(object, feature, false);
+							}
+						}
+						break;
+					}
+				}
+			}
+		} catch (Exception ex) {
+			Activator.logError(ex);
+		}
+		return me;
+	}
+	
 	private static Object getModelExtensionProperties(ModelExtensionDescriptor ct, IConfigurationElement e) {
 		
 		String elem = e.getName();
