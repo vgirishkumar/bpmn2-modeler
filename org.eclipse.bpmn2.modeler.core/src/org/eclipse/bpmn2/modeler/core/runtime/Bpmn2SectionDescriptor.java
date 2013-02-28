@@ -96,6 +96,9 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 			if (pe instanceof ConnectionDecorator) {
+				// this is a special hack to allow selection of connection decorator labels:
+				// the connection decorator does not have a business object linked to it,
+				// but its parent (the connection) does.
 				pe = (PictogramElement) pe.eContainer();
 			}
 			if (!filter.select(pe))
@@ -131,12 +134,6 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			
 			// if an input description was specified, check if the selected business object is of this description. 
 			if (appliesToClass!=null) {
-				// this is a special hack to allow selection of connection decorator labels:
-				// the connection decorator does not have a business object linked to it,
-				// but its parent (the connection) does.
-				if (pe.getLink()==null && pe.eContainer() instanceof PictogramElement)
-					pe = (PictogramElement)pe.eContainer();
-
 				// check all linked BusinessObjects for a match
 				if (pe.getLink()!=null) {
 					for (EObject eObj : pe.getLink().getBusinessObjects()){

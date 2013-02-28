@@ -33,12 +33,6 @@ public class JbpmManualTaskPropertySection extends JbpmTaskPropertySection {
 	}
 
 	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		return object!=null && Bpmn2Package.eINSTANCE.getManualTask() == object.eClass();
-	}
-
-	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new JbpmManualTaskDetailComposite(this);
 	}

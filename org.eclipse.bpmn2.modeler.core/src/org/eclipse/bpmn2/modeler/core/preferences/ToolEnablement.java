@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.ENamedElement;
 
 public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 
+	private String name;
 	private ENamedElement tool;
 	private Boolean enabled;
 
@@ -33,13 +34,19 @@ public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 		this.parent = parent;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public String getName() {
-		return tool.getName();
+		if (tool!=null)
+			return tool.getName();
+		return name==null ? "" : name;
 	}
 
 	public String getPreferenceName() {
-		if (parent == null) {
-			return tool.getName();
+		if (parent == null || parent.getTool()==null) {
+			return getName();
 		} else {
 			return parent.getPreferenceName() + "." + getName();
 		}

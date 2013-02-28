@@ -32,11 +32,6 @@ public class JbpmSubProcessPropertySection extends JbpmActivityPropertySection {
 	static {
 		PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
 	}
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		return object!=null && Bpmn2Package.eINSTANCE.getSubProcess() == object.eClass();
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {

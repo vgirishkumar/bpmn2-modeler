@@ -47,17 +47,19 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		// only show this property section if the selected Task is a "custom task"
-		// that is, it has a "taskName" extension attribute
-		BPMN2Editor editor = (BPMN2Editor)part.getAdapter(BPMN2Editor.class);
-		if (editor!=null) {
-			EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-			
-			if (object.eClass() == Bpmn2Package.eINSTANCE.getTask() && isModelObjectEnabled(object)) {
-				List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
-				for (EStructuralFeature f : features) {
-					if ("displayName".equals(f.getName()))
-						return true;
+		if (super.appliesTo(part, selection)) {
+			// only show this property section if the selected Task is a "custom task"
+			// that is, it has a "taskName" extension attribute
+			BPMN2Editor editor = (BPMN2Editor)part.getAdapter(BPMN2Editor.class);
+			if (editor!=null) {
+				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+				
+				if (object.eClass() == Bpmn2Package.eINSTANCE.getTask() && isModelObjectEnabled(object)) {
+					List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
+					for (EStructuralFeature f : features) {
+						if ("displayName".equals(f.getName()))
+							return true;
+					}
 				}
 			}
 		}

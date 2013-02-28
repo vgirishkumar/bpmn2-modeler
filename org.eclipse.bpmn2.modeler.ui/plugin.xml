@@ -154,209 +154,209 @@
 		<!-- ============  Diagrams ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.process.diagram.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Process">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
+			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			label="Definitions">
 		</propertyTab>
 
 		<!-- ============  Connections ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.assocation.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="associationDirection"
 			type="org.eclipse.bpmn2.Association"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Assocation">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.sequenceflow.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.connectors.SequenceFlowPropertySection"
 			type="org.eclipse.bpmn2.SequenceFlow"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Sequence Flow">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.messageFlow.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowPropertySection"
 			type="org.eclipse.bpmn2.MessageFlow"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Message Flow">
 		</propertyTab>
 		
 		<!-- ============  Activities ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.callActivity.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.CallActivity"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Call Activity">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.subProcess.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.SubProcess"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Sub Process">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.adHocSubProcess.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
-			type="org.eclipse.bpmn2.AdHocSubProcess"
 			replaceTab="org.eclipse.bpmn2.modeler.subProcess.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
+			type="org.eclipse.bpmn2.AdHocSubProcess"
 			label="AdHoc Sub Process">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.transaction.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
-			type="org.eclipse.bpmn2.Transaction"
 			replaceTab="org.eclipse.bpmn2.modeler.subProcess.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
+			type="org.eclipse.bpmn2.Transaction"
 			label="Transaction">
 		</propertyTab>
 
 		<!-- ============  Tasks ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection"
 			type="org.eclipse.bpmn2.Task"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="anyAttribute implementation isForCompensation"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Business Rule Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.manualTask.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ManualTaskPropertySection"
-			type="org.eclipse.bpmn2.ManualTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ManualTaskPropertySection"
+			type="org.eclipse.bpmn2.ManualTask"
 			label="Manual Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.receiveTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="implementation instantiate messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ReceiveTask"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Receive Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.scriptTask.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskPropertySection"
-			type="org.eclipse.bpmn2.ScriptTask"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskPropertySection"
+			type="org.eclipse.bpmn2.ScriptTask"
 			label="Script Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.sendTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="implementation messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.SendTask"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Send Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.serviceTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="implementation operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ServiceTask"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Service Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.userTask.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="implementation renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="User Task">
 		</propertyTab>
 
 		<!-- ============  Choreography Activities ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.callChoreography.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.CallChoreography"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Call Choreography">
 		</propertyTab>
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.choreographyTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="loopType initiatingParticipantRef correlationKeys messageFlowRef"
 			type="org.eclipse.bpmn2.ChoreographyTask"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Choreography Task">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.subChoreography.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="anyAttribute loopType participantRefs initiatingParticipantRef correlationKeys artifacts"
 			type="org.eclipse.bpmn2.SubChoreography"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Sub Choreography">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.conversation.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="correlationKeys"
 			type="org.eclipse.bpmn2.Conversation"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Conversation">
 		</propertyTab>
 
 		<!-- ============  Gateways ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.gateway.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.gateways.GatewayPropertySection"
 			type="org.eclipse.bpmn2.Gateway"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Gateway">
 		</propertyTab>
 
 		<!-- ============  Events ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.commonEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.events.CommonEventPropertySection"
 			type="org.eclipse.bpmn2.Event"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Event">
 		</propertyTab>
 
@@ -364,17 +364,17 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.group.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="anyAttribute categoryValueRef"
 			type="org.eclipse.bpmn2.Group"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Group">
 		</propertyTab>
 		
 		<propertyTab
+			id="org.eclipse.bpmn2.modeler.textAnnotation.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationPropertySection"
-			id="org.eclipse.bpmn2.modeler.textAnnotation.tab"
 			type="org.eclipse.bpmn2.TextAnnotation"
 			label="Text Annotation">
 		</propertyTab>
@@ -382,153 +382,159 @@
 		<!-- ============  Root Elements ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.error.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="errorCode structureRef"
 			type="org.eclipse.bpmn2.Error"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Error">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.escalation.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="escalationCode structureRef"
 			type="org.eclipse.bpmn2.Escalation"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Escalation">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.interface.tab"
+			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			label="Interfaces">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.itemDefinition.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="itemKind structureRef isCollection import"
 			type="org.eclipse.bpmn2.ItemDefinition"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Item Definition">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.message.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="itemRef"
 			type="org.eclipse.bpmn2.Message"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Message">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.partnerEntity.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="participantRef"
 			type="org.eclipse.bpmn2.PartnerEntity"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Partner">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.partnerRole.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="participantRef"
 			type="org.eclipse.bpmn2.PartnerRole"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Partner Role">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.resource.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="resourceParameters"
 			type="org.eclipse.bpmn2.Resource"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Resource">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.signal.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
 			features="structureRef"
 			type="org.eclipse.bpmn2.Signal"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Signal">
 		</propertyTab>
 
 		<!-- ============  Item Aware Elements ============ -->
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Data Items">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataInput.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataInputPropertySection"
 			type="org.eclipse.bpmn2.DataInput"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Data Input">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataobject.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectPropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectPropertySection"
+			type="org.eclipse.bpmn2.DataObject"
 			label="Data Object">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataobjectref.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectReferencePropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectReferencePropertySection"
+			type="org.eclipse.bpmn2.DataObjectReference"
 			label="Reference">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.dataOutput.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataOutputPropertySection"
 			type="org.eclipse.bpmn2.DataOutput"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="Data Output">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.datastore.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection"
+			type="org.eclipse.bpmn2.DataStore"
 			label="Data Store">
 		</propertyTab>
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.datastoreref.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStoreReferencePropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStoreReferencePropertySection"
+			type="org.eclipse.bpmn2.DataStoreReference"
 			label="Reference">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.activity.io.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersPropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersPropertySection"
 			label="I/O Parameters">
 		</propertyTab>
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.advanced.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.AdvancedPropertySection"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.AdvancedPropertySection"
 			popup="false"
 			label="Advanced">
 		</propertyTab>
 
-		<!-- -->
+		<!-- ======================================== -->
+		<!-- ===  Model Enablements and Profiles ==== -->
+		<!-- ======================================== -->
 
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.none" type="Process" profile="Default Process">
 			<disable object="all"/>

@@ -28,12 +28,6 @@ import org.eclipse.ui.IWorkbenchPart;
 public class JbpmBusinessRuleTaskPropertySection extends JbpmActivityPropertySection {
 
 	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		return object!=null && Bpmn2Package.eINSTANCE.getBusinessRuleTask() == object.eClass();
-	}
-
-	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new JbpmActivityDetailComposite(this);
 	}

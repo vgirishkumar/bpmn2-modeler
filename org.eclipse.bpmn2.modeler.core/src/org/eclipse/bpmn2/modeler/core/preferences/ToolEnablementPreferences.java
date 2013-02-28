@@ -62,28 +62,6 @@ public class ToolEnablementPreferences {
 			}
 		}
 		elementSet.addAll(items);
-//		elementSet.addAll(getSubClasses(i.getFlowElement()));
-//		elementSet.addAll(getSubClasses(i.getItemAwareElement()));
-//		elementSet.addAll(getSubClasses(i.getDataAssociation()));
-//		elementSet.addAll(getSubClasses(i.getRootElement()));
-//		elementSet.addAll(getSubClasses(i.getEventDefinition()));
-//		elementSet.addAll(getSubClasses(i.getLoopCharacteristics()));
-//		elementSet.addAll(getSubClasses(i.getExpression()));
-//		elementSet.add(i.getDefinitions());
-//		elementSet.add(i.getOperation());
-//		elementSet.add(i.getLane());
-//		elementSet.add(i.getEscalation());
-//		elementSet.add(i.getPotentialOwner());
-//		elementSet.add(i.getResourceAssignmentExpression());
-//		elementSet.add(i.getInputSet());
-//		elementSet.add(i.getOutputSet());
-//		elementSet.add(i.getAssignment());
-//		elementSet.add(i.getAssociation());
-//		elementSet.add(i.getTextAnnotation());
-//		elementSet.add(i.getMessageFlow());
-//		elementSet.add(i.getConversationLink());
-//		elementSet.add(i.getGroup());
-//		elementSet.add(i.getConversation());
 	}
 
 	private ToolEnablementPreferences(Preferences prefs) {
@@ -97,60 +75,31 @@ public class ToolEnablementPreferences {
 		return new ToolEnablementPreferences(prefs);
 	}
 
-	public void setEnablements(ModelEnablementDescriptor md) {
-		setEnabledAll(false);
+	public void setEnablements(ModelEnablementDescriptor me) {
 		
-		Collection<String> enablements = md.getAllEnabled();
-		TargetRuntime rt = md.getRuntime();
-		for (ModelExtensionDescriptor me : rt.getModelExtensions()) {
-			for (Property p : me.getProperties()) {
-				String s = me.getType();
-				enablements.add(s);
-				s +=  "." + p.name;
-				enablements.add(s);
-			}
-		}
-		if (rt.getModelDescriptor()!=null) {
-			for (EClassifier ec : rt.getModelDescriptor().getEPackage().getEClassifiers()) {
-				TreeIterator<EObject> it = ec.eAllContents();
-				while (it.hasNext()) {
-					EObject o = it.next();
-					String s = ec.getName();
-					enablements.add(s);
-					if (o instanceof EAttribute) {
-						 s += "." + ((EAttribute)o).getName();
-						enablements.add(s);
-					}
-					else if (o instanceof EReference) {
-						s += "." + ((EReference)o).getName();
-						enablements.add(s);
-					}
+		Collection<String> enablements = me.getAllEnabled();
+
+		try {
+			String keys[] = prefs.keys();
+			for (String k : keys)
+				prefs.remove(k);
+			for (String s : enablements) {
+				String className = null;
+				String featureName = null;
+				if (s.contains(".")) {
+					String[] a = s.split("\\.");
+					className = a[0];
+					featureName = a[1];
 				}
-			}
-		}
-		for (String s : enablements) {
-			String className = null;
-			String featureName = null;
-			if (s.contains(".")) {
-				String[] a = s.split("\\.");
-				className = a[0];
-				featureName = a[1];
-			}
-			else
-				className = s;
-			if (className!=null) {
+				else
+					className = s;
+				
 				prefs.putBoolean(className, true);
 				if (featureName!=null)
 					prefs.putBoolean(className+"."+featureName, true);
 			}
-//			for (EClass e : elementSet) {
-//				if (e.getName().equals(className)) {
-//					prefs.putBoolean(className, true);
-//					if (featureName!=null)
-//						prefs.putBoolean(className+"."+featureName, true);
-//					break;
-//				}
-//			}
+		}
+		catch (Exception e) {
 		}
 	}
 	
@@ -192,22 +141,122 @@ public class ToolEnablementPreferences {
 		return ret;
 	}
 	
-	private void setEnabledAll(boolean enabled) {
-		for (EClass e : elementSet) {
-			prefs.putBoolean(e.getName(), enabled);
+	public List<ToolEnablement> getAllExtensionElements(ModelEnablementDescriptor me) {
+		
+		// Fetch all of the <modelExtension> extension point elements defined
+		// in the Target Runtime plugin.
+		ArrayList<ToolEnablement> bpmnModelExtensions = new ArrayList<ToolEnablement>();
+		
+		ToolEnablement bpmnModelExtensionsRoot = new ToolEnablement();
+		bpmnModelExtensionsRoot.setEnabled(true);
+		bpmnModelExtensionsRoot.setName("BPMN Model Element Extensions");
 
-			for (EAttribute a : e.getEAllAttributes()) {
-				prefs.putBoolean(e.getName()+"."+a.getName(), enabled);
+		TargetRuntime rt = me.getRuntime();
+		for (ModelExtensionDescriptor mx : rt.getModelExtensions()) {
+			if (mx.getProperties().size()>0) {
+				// this <modelExtension> has at least one <property>
+				// that can be enabled or disabled:
+				// get the EClass which this <modelExtension> extends
+				String className = mx.getType();
+				EClassifier eclass = me.getClassifier(className);
+				if (eclass instanceof EClass) {
+					// and create a ToolEnablement for it
+					ToolEnablement tool = new ToolEnablement(eclass, bpmnModelExtensionsRoot);
+					// fetch its current enablement state
+					tool.setEnabled(isEnabled((EClass)eclass));
+					// and add it to our list
+					bpmnModelExtensions.add(tool);
+				}
 			}
-
-			for (EReference a : e.getEAllContainments()) {
-				prefs.putBoolean(e.getName()+"."+a.getName(), enabled);
-			}
-
-			for (EReference a : e.getEAllReferences()) {
-				prefs.putBoolean(e.getName()+"."+a.getName(), enabled);
+			
+			// now fetch all of the <property> elements contained
+			// in the <modelExtension> element. The result list
+			// so far contains only EClass tools; the <property>
+			// elements will become their children.
+			for (ToolEnablement tool : bpmnModelExtensions) {
+				for (ModelExtensionDescriptor me2 : rt.getModelExtensions()) {
+					if (tool.getName().equals(me2.getType())) {
+						ArrayList<ToolEnablement> children = new ArrayList<ToolEnablement>();
+						for (Property p : me2.getProperties()) {
+							EClass eclass = (EClass)tool.getTool();
+							EStructuralFeature feature = me.getFeature(me2.getType(), p.name);
+							if (feature==null)
+								feature = me2.getFeature(eclass, p);
+							if (feature instanceof EAttribute) {
+								ToolEnablement child = new ToolEnablement(feature, tool);
+								// set enablement state of the feature:
+								// the EClass is that of the parent tool.
+								child.setEnabled(isEnabled(eclass, feature));
+								children.add(child);
+							}
+						}
+						// add the sorted list to the children of this tool parent
+						sortTools(children);
+						tool.setChildren(children);
+					}
+				}
 			}
 		}
+		sortTools(bpmnModelExtensions);
+		bpmnModelExtensionsRoot.setChildren(bpmnModelExtensions);
+		
+		ToolEnablement runtimeModelExtensionsRoot = new ToolEnablement();
+		runtimeModelExtensionsRoot.setEnabled(true);
+		runtimeModelExtensionsRoot.setName("Target Runtime Model Extensions");
+
+		
+		ArrayList<ToolEnablement> runtimeModelExtensions = new ArrayList<ToolEnablement>();
+
+		for (EClassifier ec : rt.getModelDescriptor().getEPackage().getEClassifiers()) {
+			if (ec instanceof EClass) {
+				EClass eclass = (EClass)ec;
+				// skip over DocumentRoot - we'll assume that all of its features are
+				// containers of, or references to EClasses which we'll process anyway.
+				if (eclass.getName().equals("DocumentRoot"))
+					continue;
+				
+				ToolEnablement tool = new ToolEnablement(eclass, runtimeModelExtensionsRoot);
+				// fetch its current enablement state
+				tool.setEnabled(isEnabled((EClass)eclass));
+				// and add it to our list
+				runtimeModelExtensions.add(tool);
+				
+				HashSet<EStructuralFeature> possibleFeatures = new HashSet<EStructuralFeature>();
+
+				ArrayList<ToolEnablement> children = new ArrayList<ToolEnablement>();
+
+				for (EAttribute a : eclass.getEAllAttributes()) {
+					possibleFeatures.add(a);
+				}
+
+				for (EReference a : eclass.getEAllContainments()) {
+					possibleFeatures.add(a);
+				}
+
+				for (EReference a : eclass.getEAllReferences()) {
+					possibleFeatures.add(a);
+				}
+
+				for (EStructuralFeature feature : possibleFeatures) {
+					ToolEnablement toolEnablement = new ToolEnablement(feature, tool);
+					toolEnablement.setEnabled(isEnabled(eclass, feature));
+					children.add(toolEnablement);
+				}
+				sortTools(children);
+				tool.setChildren(children);
+			}
+		}
+		sortTools(runtimeModelExtensions);
+		runtimeModelExtensionsRoot.setChildren(runtimeModelExtensions);
+
+		ArrayList<ToolEnablement> allExtensions = new ArrayList<ToolEnablement>();
+//		allExtensions.addAll(bpmnModelExtensions);
+//		allExtensions.addAll(runtimeModelExtensions);
+		
+		allExtensions.add(bpmnModelExtensionsRoot);
+		allExtensions.add(runtimeModelExtensionsRoot);
+		
+		return allExtensions;
 	}
 
 	private void sortTools(ArrayList<ToolEnablement> ret) {
@@ -222,11 +271,11 @@ public class ToolEnablementPreferences {
 	}
 
 	public boolean isEnabled(EClass element) {
-		return prefs.getBoolean(element.getName(), true);
+		return prefs.getBoolean(element.getName(), false);
 	}
 
 	public boolean isEnabled(String name) {
-		return prefs.getBoolean(name, true);
+		return prefs.getBoolean(name, false);
 	}
 
 	public boolean isEnabled(String name, boolean b) {
@@ -234,7 +283,7 @@ public class ToolEnablementPreferences {
 	}
 
 	public boolean isEnabled(EClass c, ENamedElement element) {
-		return prefs.getBoolean(c.getName() + "." + element.getName(), true);
+		return prefs.getBoolean(c.getName() + "." + element.getName(), false);
 	}
 
 	public void setEnabled(ToolEnablement tool, boolean enabled) {
@@ -242,29 +291,11 @@ public class ToolEnablementPreferences {
 	}
 
 	public boolean isEnabled(ToolEnablement tool) {
-		return prefs.getBoolean(tool.getPreferenceName(), true);
+		return prefs.getBoolean(tool.getPreferenceName(), false);
 	}
 
 	public void flush() throws BackingStoreException {
 		prefs.flush();
-	}
-
-	public static List<EClass> getSubClasses(EClass parentClass) {
-
-		List<EClass> classList = new ArrayList<EClass>();
-		EList<EClassifier> classifiers = Bpmn2Package.eINSTANCE.getEClassifiers();
-
-		for (EClassifier classifier : classifiers) {
-			if (classifier instanceof EClass) {
-				EClass clazz = (EClass) classifier;
-
-				clazz.getEAllSuperTypes().contains(parentClass);
-				if (parentClass.isSuperTypeOf(clazz) && !clazz.isAbstract()) {
-					classList.add(clazz);
-				}
-			}
-		}
-		return classList;
 	}
 
 	public void importPreferences(String path) throws FileNotFoundException, IOException, BackingStoreException {
@@ -301,7 +332,7 @@ public class ToolEnablementPreferences {
 		}
 		
 		for (String k : keys) {
-			boolean enable = prefs.getBoolean(k, true);
+			boolean enable = prefs.getBoolean(k, false);
 			if (writeXml) {
 				if (enable) {
 					if (k.contains(".")) {
@@ -320,22 +351,4 @@ public class ToolEnablementPreferences {
 		fw.flush();
 		fw.close();
 	}
-
-	public static ArrayList<EStructuralFeature> getAttributes(EClass eClass) {
-		ArrayList<EStructuralFeature> ret = new ArrayList<EStructuralFeature>();
-
-//		if (Bpmn2Package.eINSTANCE.getTask().equals(eClass)) {
-//			ret.add(taskName);
-//		} else if (Bpmn2Package.eINSTANCE.getCallActivity().equals(eClass)) {
-//			ret.add(waitFor);
-//			ret.add(independent);
-//		} else if (Bpmn2Package.eINSTANCE.getBusinessRuleTask().equals(eClass)) {
-//			ret.add(ruleFlowGroup);
-//		} else if (Bpmn2Package.eINSTANCE.getProcess().equals(eClass)) {
-//			ret.add(packageName);
-//		}
-
-		return ret;
-	}
-
 }

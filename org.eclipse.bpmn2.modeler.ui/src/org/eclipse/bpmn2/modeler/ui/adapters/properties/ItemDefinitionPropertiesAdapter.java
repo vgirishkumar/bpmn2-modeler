@@ -94,7 +94,10 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	    		@Override
 	    		public Object getValue(Object context) {
 					final ItemDefinition itemDefinition = adopt(context);
-					return itemDefinition.getStructureRef();
+					Object value = itemDefinition.getStructureRef();
+					if (value==null)
+						value = ModelUtil.createStringWrapper("");
+					return value;
 	    		}
 
 	    		@Override

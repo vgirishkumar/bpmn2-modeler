@@ -61,16 +61,18 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInterface())) {
-			EObject bo = getBusinessObjectForSelection(selection);
-			if (bo instanceof Participant) {
-				return true;
-			} else if (bo instanceof BPMNDiagram) {
-				BaseElement be = ((BPMNDiagram)bo).getPlane().getBpmnElement();
-				if (be instanceof Process)
+		if (super.appliesTo(part, selection)) {
+			if (isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInterface())) {
+				EObject bo = getBusinessObjectForSelection(selection);
+				if (bo instanceof Participant) {
 					return true;
-			} else if (bo instanceof CallableElement) {
-				return true;
+				} else if (bo instanceof BPMNDiagram) {
+					BaseElement be = ((BPMNDiagram)bo).getPlane().getBpmnElement();
+					if (be instanceof Process)
+						return true;
+				} else if (bo instanceof CallableElement) {
+					return true;
+				}
 			}
 		}
 		return false;

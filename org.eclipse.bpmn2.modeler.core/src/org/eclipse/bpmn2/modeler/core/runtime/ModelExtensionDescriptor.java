@@ -340,6 +340,24 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		return object.eGet(feature);
 	}
 	
+	public EStructuralFeature getFeature(EClass eclass, Property property) {
+		EStructuralFeature feature = eclass.getEStructuralFeature(property.name);
+
+		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
+
+		if (feature==null) {
+			EPackage pkg = getEPackage();
+			// if the Property has a "ref" or if its value is a Property
+			// then this must be an EReference
+			if (property.ref!=null || firstValue instanceof Property) {
+				feature = ModelUtil.createDynamicReference(pkg, eclass, property.name, property.type);
+			}
+			else
+				feature = ModelUtil.createDynamicAttribute(pkg, eclass, property.name, property.type);
+		}
+		return feature;
+	}
+
 	/**
 	 * Populate the given EObject from the Property tree defined in this runtime
 	 * plugin's "modelObject" extension point.
@@ -359,8 +377,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 			EPackage pkg = getEPackage();
 			// if the Property has a "ref" or if its value is a Property
 			// then this must be an EReference
-			EClassifier eClass = ModelUtil.getEClassifierFromString(
-					pkg,property.type==null ? "EString" : property.type);
 			if (property.ref!=null || firstValue instanceof Property) {
 				feature = ModelUtil.createDynamicReference(pkg, object, property.name, property.type);
 			}

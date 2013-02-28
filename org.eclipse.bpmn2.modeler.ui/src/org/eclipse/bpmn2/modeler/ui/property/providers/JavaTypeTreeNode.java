@@ -58,7 +58,7 @@ public class JavaTypeTreeNode extends TreeNode {
 
 	@Override
 	public boolean hasChildren() {
-		return getChildren().length>0;
+		return false; //getChildren().length>0;
 	}
 
 	@Override

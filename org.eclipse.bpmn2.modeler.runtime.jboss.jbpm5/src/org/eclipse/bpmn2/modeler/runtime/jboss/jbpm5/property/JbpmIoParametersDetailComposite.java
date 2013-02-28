@@ -12,7 +12,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExte
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.IoSetsListComposite;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;

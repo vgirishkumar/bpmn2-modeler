@@ -143,7 +143,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	
 	private TargetRuntime targetRuntime;
 	private boolean showAdvancedPropertiesTab;
-	private boolean overrideModelEnablements;
+	private boolean overrideModelEnablementProfile;
 	private boolean showDescriptions;
 	private boolean showIdAttribute;
 	private boolean checkProjectNature;
@@ -386,7 +386,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			loadDefaults();
 			
 			if (projectPreferences!=null) {
-				overrideModelEnablements = projectPreferences.getBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, false);
+				overrideModelEnablementProfile = projectPreferences.getBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, false);
 				defaultModelEnablementProfile = projectPreferences.get(PREF_DEFAULT_MODEL_ENABLEMENT_PROFILE, "");
 			}
 
@@ -423,7 +423,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			// this is the only preference that is a project property,
 			// and not saved in the preference store for this plugin.
 			if (projectPreferences!=null) {
-				projectPreferences.putBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, overrideModelEnablements);
+				projectPreferences.putBoolean(PREF_OVERRIDE_MODEL_ENABLEMENTS, overrideModelEnablementProfile);
 				projectPreferences.put(PREF_DEFAULT_MODEL_ENABLEMENT_PROFILE, defaultModelEnablementProfile);
 			}
 
@@ -454,8 +454,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			setShapeStyle(entry.getKey(), entry.getValue());
 		}
 		
-		if (projectPreferences!=null)
+		if (projectPreferences!=null) {
 			projectPreferences.flush();
+		}
 
 		dirty = false;
 	}
@@ -613,13 +614,13 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		simplifyLists = simplify;
 	}
 
-	public boolean getOverrideModelEnablements() {
+	public boolean getOverrideModelEnablementProfile() {
 		load();
-		return overrideModelEnablements;
+		return overrideModelEnablementProfile;
 	}
 	
 	public void setOverrideModelEnablements(boolean override) {
-		overrideModelEnablements = override;
+		overrideModelEnablementProfile = override;
 		dirty = true;
 	}
 

@@ -454,10 +454,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	public void setModelEnablementProfile(String profile) {
 		modelEnablementProfile = profile;
-		StructuredSelection sel = new StructuredSelection(new Object[] {bpmnDiagram});
-		selectionChanged(multipageEditor, sel);
-//		getAdapter(IPropertySheetPage.class);
-//		tabbedPropertySheetPage.setSelectedTab("bpmn2.jbpm.diagram.tab");
 	}
 	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {

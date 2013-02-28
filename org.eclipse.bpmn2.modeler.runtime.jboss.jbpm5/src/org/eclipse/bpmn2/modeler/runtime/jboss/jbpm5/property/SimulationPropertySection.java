@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
@@ -35,9 +36,13 @@ public class SimulationPropertySection extends DefaultPropertySection {
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (!Activator.getDefault().getPreferenceStore().getBoolean(JbpmPreferencePage.PREF_SHOW_SIMULATION_TAB))
+		super.appliesTo(part,selection); // this sets the DiagramEditor as a side-effect
+		
+		// Only enable Simulation tab if "Scenario" extension element is enabled.
+		if (!isModelObjectEnabled(ModelPackage.eINSTANCE.getScenario()))
 			return false;
 		
+		// and all this other stuff...
 		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 		return object instanceof BPMNDiagram ||
 				object instanceof Task ||
