@@ -58,12 +58,14 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 	@Override
 	public void createBindings(final EObject be) {
 		
+		bindAttribute(be, "name");
+		
 		if (isModelObjectEnabled("SequenceFlow", "conditionExpression")) {
 			
 			final SequenceFlow sequenceFlow = (SequenceFlow) be;
 			
 			GridData data;
-				
+
 			addRemoveConditionButton = new Button(this, SWT.PUSH);
 			addRemoveConditionButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 			addRemoveConditionButton.addSelectionListener(new SelectionAdapter() {

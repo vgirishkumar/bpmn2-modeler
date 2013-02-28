@@ -13,25 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * @author Bob Brodt
  *
  */
 public class JbpmScriptTaskPropertySection extends JbpmTaskPropertySection {
-	static {
-		PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {

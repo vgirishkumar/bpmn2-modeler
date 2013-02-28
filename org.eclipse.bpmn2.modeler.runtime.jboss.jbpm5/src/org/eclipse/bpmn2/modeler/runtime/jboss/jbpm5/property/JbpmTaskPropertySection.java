@@ -34,9 +34,6 @@ import org.eclipse.ui.IWorkbenchPart;
  *
  */
 public class JbpmTaskPropertySection extends TaskPropertySection {
-	static {
-		PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
-	}
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {

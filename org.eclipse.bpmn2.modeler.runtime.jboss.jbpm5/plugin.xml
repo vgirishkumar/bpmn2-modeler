@@ -190,11 +190,22 @@
 		</propertyTab>
 		
 		<propertyTab
+			id="org.jboss.runtime.jbpm5.gateway.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.gateway.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmGatewayPropertySection"
+			type="org.eclipse.bpmn2.Gateway"
+			label="Gateway">
+		</propertyTab>
+		
+		<propertyTab
 			id="org.jboss.runtime.jbpm5.simulation.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.SimulationPropertySection"
 			type="org.eclipse.bpmn2.BaseElement"
 			label="Simulation">
 		</propertyTab>
+
+<!-- Property Extension Adapters -->
 		
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.FormalExpression"
@@ -203,8 +214,6 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmFormalExpressionPropertiesAdapter"
 			>
 		</propertyExtension>
-
-<!-- Property Extension Adapters -->
 
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnEntryScript"
@@ -556,14 +565,6 @@
 					<property name="targetRef" ref="ioSpecification/dataInputs#6"/>
 				</value>
 			</property>
-		</modelExtension>
-		
-		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.sequenceFlow"
-			runtimeId="org.jboss.runtime.jbpm5"
-			name="SequenceFlow Extensions"
-			type="SequenceFlow">
-			<property name="priority" value="1" type="EInt"/>
 		</modelExtension>
 
 <!-- Model Enablements and Profiles -->

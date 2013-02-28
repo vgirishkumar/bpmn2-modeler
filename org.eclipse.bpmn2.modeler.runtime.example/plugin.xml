@@ -98,7 +98,7 @@
 			<property name="affectsTaskExecution" value="false" type="EBoolean"/>
 		</modelExtension>
 		
-		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process">
+		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process" profile="Default">
 			<disable object="all"/>
 			<enable object="default" feature="Process"/>
 			

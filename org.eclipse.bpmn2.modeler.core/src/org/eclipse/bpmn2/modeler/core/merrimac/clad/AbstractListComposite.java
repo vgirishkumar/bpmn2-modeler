@@ -388,10 +388,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 				});
 			
-				sashForm.setWeights(new int[] { 1, 2 });
+				sashForm.setWeights(new int[] { 50, 50 });
 			}					
 			else
-				sashForm.setWeights(new int[] { 1 });
+				sashForm.setWeights(new int[] { 100 });
 		}
 		else {
 			tableSection = createListSection(sashForm,label);
@@ -483,7 +483,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 					detailSection.setText(label+" Details");
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
-					enable = detailComposite.getChildren().length>0;
+//					enable = detailComposite.getChildren().length>0;
 					tableSection.setExpanded(enable);
 				}
 			}
@@ -491,6 +491,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			detailSection.setExpanded(enable);
 			if (editAction!=null)
 				editAction.setChecked(enable);
+
+			sashForm.setWeights(new int[] { 50, 50 });
 
 			final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
 			tableViewer.setInput(list);

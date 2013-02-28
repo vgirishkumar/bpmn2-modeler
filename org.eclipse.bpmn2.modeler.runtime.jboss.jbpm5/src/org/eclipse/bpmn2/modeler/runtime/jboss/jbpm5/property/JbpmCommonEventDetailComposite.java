@@ -52,30 +52,33 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 
 	@Override
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
-		if ("eventDefinitions".equals(feature.getName())) {
-			eventsTable = new EventDefinitionsListComposite(this, (Event)object) {
-
-				@Override
-				protected EObject addListItem(EObject object, EStructuralFeature feature) {
-					List<EventDefinition> eventDefinitions = null;
-					if (event instanceof ThrowEvent)
-						eventDefinitions = ((ThrowEvent)event).getEventDefinitions();
-					else if  (event instanceof CatchEvent)
-						eventDefinitions = ((CatchEvent)event).getEventDefinitions();
-						
-					if (eventDefinitions.size()>0) {
-						MessageDialog.openError(getShell(), "Not Supported",
-							"Can not add more than one Event Definition"
-						);
-						return null;
+		if (isModelObjectEnabled(object.eClass(), feature)) {
+			if ("eventDefinitions".equals(feature.getName())) {
+				eventsTable = new EventDefinitionsListComposite(this, (Event)object) {
+	
+					@Override
+					protected EObject addListItem(EObject object, EStructuralFeature feature) {
+						List<EventDefinition> eventDefinitions = null;
+						if (event instanceof ThrowEvent)
+							eventDefinitions = ((ThrowEvent)event).getEventDefinitions();
+						else if  (event instanceof CatchEvent)
+							eventDefinitions = ((CatchEvent)event).getEventDefinitions();
+							
+						if (eventDefinitions.size()>0) {
+							MessageDialog.openError(getShell(), "Not Supported",
+								"Can not add more than one Event Definition"
+							);
+							return null;
+						}
+						return super.addListItem(object, feature);
 					}
-					return super.addListItem(object, feature);
-				}
-			};
-			eventsTable.bindList(object, feature);
-			eventsTable.setTitle("Event Definitions");
-			return eventsTable;
+				};
+				eventsTable.bindList(object, feature);
+				eventsTable.setTitle("Event Definitions");
+				return eventsTable;
+			}
+			return super.bindList(object, feature, listItemClass);
 		}
-		return super.bindList(object, feature, listItemClass);
+		return null;
 	}
 }

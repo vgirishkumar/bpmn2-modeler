@@ -21,12 +21,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.ScriptTask;
+import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
@@ -34,6 +47,24 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmActivityDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCommonEventDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataAssociationDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmGatewayDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmImportTypeDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmItemDefinitionListComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmManualTaskDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmMultiInstanceDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmReceiveTaskDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSequenceFlowDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataItemsPropertySection.GlobalTypeDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection.JbpmMessageDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection.JbpmMessageListComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
@@ -65,7 +96,7 @@ import org.xml.sax.InputSource;
 
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
-
+	
 	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5";
 	
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
@@ -78,6 +109,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 		"http://www.jboss.org/drools/rule", "Rule",
 	};
 	private List<WorkItemDefinition> workItemDefinitions;
+	private static boolean initialized = false;
 	
 	/* (non-Javadoc)
 	 * Check if the given input file is a drools-generated (jBPM) process file.
@@ -128,6 +160,28 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize(DiagramEditor)
 	 */
 	public void initialize(DiagramEditor editor) {
+		if (!initialized) {
+			// Register all of our Property Tab Detail overrides here. 
+	        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
+	        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
+	        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
+	        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
+	        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
+	        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
+	        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
+	        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
+	        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
+	        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
+	        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
+	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
+	        initialized = true;
+		}
+		
 		Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
 		ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
 		if (sel instanceof IStructuredSelection) {

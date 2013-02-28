@@ -81,32 +81,34 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 	@Override
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
 		if (object instanceof CatchEvent || object instanceof ThrowEvent) {
-			if ("eventDefinitions".equals(feature.getName())) {
-				eventsTable = new EventDefinitionsListComposite(this, (Event)object);
-				eventsTable.bindList(object, feature);
-				eventsTable.setTitle("Event Definitions");
-				return eventsTable;
-			}
-			if ("dataInputs".equals(feature.getName())) {
-				if (object instanceof ThrowEvent) {
-					ThrowEvent throwEvent = (ThrowEvent)object;
-					inputTable = new DataInputsListComposite(this, throwEvent);
-					inputTable.bindList(object, feature);
-					inputTable.setTitle("Input Parameters");
-					return inputTable;
+			if (isModelObjectEnabled(object.eClass(), feature)) {
+				if ("eventDefinitions".equals(feature.getName())) {
+					eventsTable = new EventDefinitionsListComposite(this, (Event)object);
+					eventsTable.bindList(object, feature);
+					eventsTable.setTitle("Event Definitions");
+					return eventsTable;
 				}
-			}
-			if ("dataOutputs".equals(feature.getName())) {
-				if (object instanceof CatchEvent) {
-					CatchEvent catchEvent = (CatchEvent)object;
-					outputTable = new DataOutputsListComposite(this, catchEvent);
-					outputTable.bindList(catchEvent, feature);
-					outputTable.setTitle("Output Parameters");
-					return outputTable;
+				if ("dataInputs".equals(feature.getName())) {
+					if (object instanceof ThrowEvent) {
+						ThrowEvent throwEvent = (ThrowEvent)object;
+						inputTable = new DataInputsListComposite(this, throwEvent);
+						inputTable.bindList(object, feature);
+						inputTable.setTitle("Input Parameters");
+						return inputTable;
+					}
 				}
-			}
-			if ("properties".equals(feature.getName())) {
-				return super.bindList(object, feature, listItemClass);
+				if ("dataOutputs".equals(feature.getName())) {
+					if (object instanceof CatchEvent) {
+						CatchEvent catchEvent = (CatchEvent)object;
+						outputTable = new DataOutputsListComposite(this, catchEvent);
+						outputTable.bindList(catchEvent, feature);
+						outputTable.setTitle("Output Parameters");
+						return outputTable;
+					}
+				}
+				if ("properties".equals(feature.getName())) {
+					return super.bindList(object, feature, listItemClass);
+				}
 			}
 			return null;
 		}

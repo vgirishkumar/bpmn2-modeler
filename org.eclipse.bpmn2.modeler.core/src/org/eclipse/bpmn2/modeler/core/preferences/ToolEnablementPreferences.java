@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -56,9 +57,39 @@ public class ToolEnablementPreferences {
 	static {
 		Bpmn2Package i = Bpmn2Package.eINSTANCE;
 		final List<EClass> items = new ArrayList<EClass>();
+		HashSet<EClass> superTypes = new HashSet<EClass>();
+
+		// Create a list of super types for the BPMN2 elements.
+		// This will be used to cull the final list of editable
+		// elements down to a manageable subset.
+		superTypes.add(i.getDefinitions());
 		for (EClassifier eclassifier : i.getEClassifiers() ) {
 			if (eclassifier instanceof EClass) {
-				items.add((EClass)eclassifier);
+				EClass eclass = (EClass)eclassifier;
+				superTypes.addAll(eclass.getESuperTypes());
+			}
+		}
+		for (EClassifier eclassifier : i.getEClassifiers() ) {
+			if (eclassifier.getName().equals("DocumentRoot"))
+				continue;
+			if (eclassifier instanceof EClass) {
+				EClass eclass = (EClass)eclassifier;
+				boolean keep = true;
+				if (superTypes.contains(eclass))
+					keep = false;
+				else {
+					for (EClass superEClass : superTypes) {
+						for (EStructuralFeature sf : superEClass.getEAllStructuralFeatures()) {
+							if (sf instanceof EReference) {
+								if (sf.getEType() == eclass)
+									keep = false;
+							}
+						}
+					}
+				}
+				if (keep) {
+					items.add((EClass)eclassifier);
+				}
 			}
 		}
 		elementSet.addAll(items);
@@ -118,7 +149,10 @@ public class ToolEnablementPreferences {
 			ArrayList<ToolEnablement> children = new ArrayList<ToolEnablement>();
 
 			for (EAttribute a : e.getEAllAttributes()) {
-				possibleFeatures.add(a);
+				// anyAttribute is always enabled to support
+				// extension features.
+				if (!"anyAttribute".equals(a.getName()))
+						possibleFeatures.add(a);
 			}
 
 			for (EReference a : e.getEAllContainments()) {

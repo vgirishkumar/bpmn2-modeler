@@ -13,11 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventPropertySection;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -25,10 +22,7 @@ import org.eclipse.swt.widgets.Composite;
  *
  */
 public class JbpmCommonEventPropertySection extends CommonEventPropertySection {
-	static {
-		PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
-	}
-	
+
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new JbpmCommonEventDetailComposite(this);

@@ -13,41 +13,24 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
-import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.PropertyListComposite;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * @author Bob Brodt
  *
  */
 public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
-
-	static {
-		PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
-		PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
-		PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
