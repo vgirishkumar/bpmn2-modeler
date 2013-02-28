@@ -65,29 +65,29 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			if (appliesToClass!=null) {
-				PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
-				if (pe instanceof ConnectionDecorator) {
-					pe = ((ConnectionDecorator)pe).getConnection();
-					// this is a special hack to allow selection of connection decorator labels:
-					// the connection decorator does not have a business object linked to it,
-					// but its parent (the connection) does.
-					if (pe.getLink()==null && pe.eContainer() instanceof PictogramElement)
-						pe = (PictogramElement)pe.eContainer();
-			
-					// check all linked BusinessObjects for a match
-					if (pe.getLink()!=null) {
-						for (EObject eObj : pe.getLink().getBusinessObjects()){
-							if (appliesToClass.isInstance(eObj)) {
-								return true;
-							}
+			if (appliesToClass==null)
+				return true;
+			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
+			if (pe instanceof ConnectionDecorator) {
+				pe = ((ConnectionDecorator)pe).getConnection();
+				// this is a special hack to allow selection of connection decorator labels:
+				// the connection decorator does not have a business object linked to it,
+				// but its parent (the connection) does.
+				if (pe.getLink()==null && pe.eContainer() instanceof PictogramElement)
+					pe = (PictogramElement)pe.eContainer();
+		
+				// check all linked BusinessObjects for a match
+				if (pe.getLink()!=null) {
+					for (EObject eObj : pe.getLink().getBusinessObjects()){
+						if (appliesToClass.isInstance(eObj)) {
+							return true;
 						}
 					}
 				}
-				EObject eObj = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-				if (eObj!=null)
-					return appliesToClass.isInstance(eObj);
 			}
+			EObject eObj = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+			if (eObj!=null)
+				return appliesToClass.isInstance(eObj);
 		}
 		return false;
 	}

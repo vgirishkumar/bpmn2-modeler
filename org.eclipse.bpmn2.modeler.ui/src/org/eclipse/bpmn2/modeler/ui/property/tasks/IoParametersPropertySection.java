@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPart;
 
 public class IoParametersPropertySection extends DefaultPropertySection {
 
@@ -33,6 +34,15 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		return new IoParametersDetailComposite(parent,style);
+	}
+	
+	@Override
+	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (super.appliesTo(part, selection)) {
+			if (getBusinessObjectForSelection(selection)!=null)
+				return true;
+		}
+		return false;
 	}
 
 	@Override

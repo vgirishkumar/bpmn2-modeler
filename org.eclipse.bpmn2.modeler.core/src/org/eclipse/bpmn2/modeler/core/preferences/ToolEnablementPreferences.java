@@ -51,7 +51,6 @@ public class ToolEnablementPreferences {
 	private final Preferences prefs;
 
 	private static HashSet<EClass> elementSet = new HashSet<EClass>();
-	private static HashSet<EClass> extensionElementSet = new HashSet<EClass>();
 
 
 	static {

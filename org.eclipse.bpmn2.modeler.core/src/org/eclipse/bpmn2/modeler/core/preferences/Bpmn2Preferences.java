@@ -454,8 +454,9 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			setShapeStyle(entry.getKey(), entry.getValue());
 		}
 		
-		if (projectPreferences!=null)
+		if (projectPreferences!=null) {
 			projectPreferences.flush();
+		}
 
 		dirty = false;
 	}

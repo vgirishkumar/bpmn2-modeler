@@ -51,8 +51,10 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * @author Bob Brodt
@@ -70,7 +72,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	public JbpmTaskDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
-
+		
 	@Override
 	public void cleanBindings() {
 		super.cleanBindings();
