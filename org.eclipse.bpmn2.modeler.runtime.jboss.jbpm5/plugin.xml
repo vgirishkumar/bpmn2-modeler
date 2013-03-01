@@ -893,6 +893,8 @@
 			<enable object="InputOutputSpecification" feature="id"/>
 			<enable object="InputOutputSpecification" feature="inputSets"/>
 			<enable object="InputOutputSpecification" feature="outputSets"/>
+			<enable object="ItemDefinition" feature="id"/>
+			<enable object="ItemDefinition" feature="structureRef"/>
 			<enable object="ParallelGateway" feature="anyAttribute"/>
 			<enable object="ParallelGateway" feature="auditing"/>
 			<enable object="ParallelGateway" feature="categoryValueRef"/>

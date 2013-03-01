@@ -57,39 +57,9 @@ public class ToolEnablementPreferences {
 	static {
 		Bpmn2Package i = Bpmn2Package.eINSTANCE;
 		final List<EClass> items = new ArrayList<EClass>();
-		HashSet<EClass> superTypes = new HashSet<EClass>();
-
-		// Create a list of super types for the BPMN2 elements.
-		// This will be used to cull the final list of editable
-		// elements down to a manageable subset.
-		superTypes.add(i.getDefinitions());
 		for (EClassifier eclassifier : i.getEClassifiers() ) {
 			if (eclassifier instanceof EClass) {
-				EClass eclass = (EClass)eclassifier;
-				superTypes.addAll(eclass.getESuperTypes());
-			}
-		}
-		for (EClassifier eclassifier : i.getEClassifiers() ) {
-			if (eclassifier.getName().equals("DocumentRoot"))
-				continue;
-			if (eclassifier instanceof EClass) {
-				EClass eclass = (EClass)eclassifier;
-				boolean keep = true;
-				if (superTypes.contains(eclass))
-					keep = false;
-				else {
-					for (EClass superEClass : superTypes) {
-						for (EStructuralFeature sf : superEClass.getEAllStructuralFeatures()) {
-							if (sf instanceof EReference) {
-								if (sf.getEType() == eclass)
-									keep = false;
-							}
-						}
-					}
-				}
-				if (keep) {
-					items.add((EClass)eclassifier);
-				}
+				items.add((EClass)eclassifier);
 			}
 		}
 		elementSet.addAll(items);
