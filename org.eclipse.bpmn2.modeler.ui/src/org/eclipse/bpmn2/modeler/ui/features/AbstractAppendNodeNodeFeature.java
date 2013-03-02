@@ -256,10 +256,12 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		}
 		AddContext ac = new AddContext(new AreaContext(), newObject);
 		AbstractAddBPMNShapeFeature af = (AbstractAddBPMNShapeFeature)getFeatureProvider().getAddFeature(ac);
+		int wOffset = 50;
+		int hOffset = 50;
 		int w = af.getWidth();
 		int h = af.getHeight();
 		if (horz) {
-			x += width + 50 + w/2;
+			x += width + wOffset + w/2;
 			y += height/2;
 			boolean done = false;
 			while (!done) {
@@ -276,7 +278,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		}
 		else {
 			x += width/2;
-			y += height + 50 + h/2;
+			y += height + hOffset + h/2;
 			boolean done = false;
 			while (!done) {
 				done = true;

@@ -222,7 +222,11 @@ public class AnchorUtil {
 		BoundaryAnchor targetRight = targetBoundaryAnchors.get(AnchorLocation.RIGHT);
 
 		if (connection==null) {
-			return new Tuple<FixPointAnchor, FixPointAnchor>(sourceTop.anchor, targetTop.anchor);
+			Point p1 = GraphicsUtil.getShapeCenter(source);
+			Point p2 = GraphicsUtil.getShapeCenter(target);
+			FixPointAnchor sourceAnchor = AnchorUtil.findNearestAnchor(source, p2);
+			FixPointAnchor targetAnchor = findNearestAnchor(target,p1);
+			return new Tuple<FixPointAnchor, FixPointAnchor>(sourceAnchor, targetAnchor);
 		}
 		
 		Anchor oldStartAnchor = connection.getStart();
