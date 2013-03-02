@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ToolEnablement;
 import org.eclipse.bpmn2.modeler.core.preferences.ToolEnablementPreferences;
@@ -36,6 +37,9 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -119,10 +123,10 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		btnOverride.setSelection(bpmn2Preferences.getOverrideModelEnablementProfile());
 		btnOverride.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
 
-		Composite treesContainer = new Composite(container, SWT.NULL);
+		final Composite treesContainer = new Composite(container, SWT.BORDER);
 		treesContainer.setLayout(new GridLayout(2, true));
-		treesContainer.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
-
+		treesContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		
 		// Create Checkbox Tree Viwers for standard BPMN 2.0 elements and any extension elements
 		bpmnTreeViewer = createCheckboxTreeViewer(treesContainer, "Standard BPMN Elements");
 		bpmnTree = bpmnTreeViewer.getTree();
@@ -131,15 +135,15 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		extensionTree = extensionTreeViewer.getTree();
 				
 		final Button btnCopy = new Button(container,SWT.FLAT);
-		btnCopy.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
+		btnCopy.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, false, false, 1, 1));
 		btnCopy.setText("Initialize");
 
 		final Label lblCopy = new Label(container, SWT.NONE);
 		lblCopy.setText("these Override Settings from this Profile:");
-		lblCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		lblCopy.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 1, 1));
 
 		final Combo cboCopy = new Combo(container, SWT.READ_ONLY);
-		cboCopy.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		cboCopy.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1));
 		i = 0;
 		iSelected = -1;
 		for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
@@ -161,6 +165,21 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 				}
 			}
 		}
+
+		// adjust height of the tree viewers to fill their container when dialog is resized
+		// oddly enough, setting GridData.widthHint still causes the controls to fill available
+		// horizontal space, but setting heightHint just keeps them the same height. Probably
+		// because a GridLayout has a fixed number of columns, but variable number of rows.
+		parent.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				GridData gd = (GridData) bpmnTree.getLayoutData();
+				gd.heightHint = 1000;
+				gd = (GridData) extensionTree.getLayoutData();
+				gd.heightHint = 1000;
+				treesContainer.layout();
+			}
+		});
 
 		Composite importExportButtons = new Composite(container, SWT.NONE);
 		importExportButtons.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1));
@@ -262,7 +281,7 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		
 		Composite container = new Composite(parent, SWT.NULL);
 		container.setLayout(new GridLayout(1, true));
-		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		final Label label = new Label(container, SWT.NONE);
 		label.setText(name);
@@ -271,15 +290,23 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		final CheckboxTreeViewer treeViewer = new CheckboxTreeViewer(container, SWT.BORDER);
 		final Tree tree = treeViewer.getTree();
 
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		GridData data = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
 		data.heightHint = 200;
-		data.widthHint = 100;
+		data.widthHint = 50;
 		tree.setLayoutData(data);
 		treeViewer.setCheckStateProvider(new ICheckStateProvider() {
 			@Override
 			public boolean isChecked(Object element) {
 				if (element instanceof ToolEnablement) {
-					return ((ToolEnablement)element).getEnabled();
+					ToolEnablement toolEnablement = (ToolEnablement)element;
+					if (toolEnablement.getChildren().size()>0) {
+						for (ToolEnablement child : toolEnablement.getChildren()) {
+							if (child.getEnabled())
+								return true;
+						}
+						return false;
+					}
+					return toolEnablement.getEnabled();
 				}
 				return false;
 			}
@@ -287,17 +314,13 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 			@Override
 			public boolean isGrayed(Object element) {
 				if (element instanceof ToolEnablement) {
-					ToolEnablement te = (ToolEnablement)element;
-					if (te.getTool() instanceof EClass) {
-						int countEnabled = 0;
-						for (ToolEnablement child : te.getChildren()) {
-							if (child.getEnabled())
-								++countEnabled;
-						}
-						return countEnabled != te.getChildren().size();
+					ToolEnablement toolEnablement = (ToolEnablement)element;
+					int countEnabled = 0;
+					for (ToolEnablement child : toolEnablement.getChildren()) {
+						if (child.getEnabled())
+							++countEnabled;
 					}
-					else if (te.getTool()==null)
-						return true;
+					return countEnabled>0 && countEnabled != toolEnablement.getChildren().size();
 				}
 				return false;
 			}
@@ -308,44 +331,47 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 			@Override
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				boolean checked = event.getChecked();
-				ToolEnablement element = (ToolEnablement)event.getElement();
-				element.setEnabled(checked);
-				if (element.getTool() instanceof EClass) {
-					boolean grayed = false;
-					treeViewer.setSubtreeChecked(element, checked);
-					if (!checked) {
-						// move from checked state to grayed state if
-						// all children are currently selected
-						int countEnabled = 0;
-						for (ToolEnablement child : element.getChildren()) {
-							if (child.getEnabled())
-								++countEnabled;
-						}
-						if (countEnabled == element.getChildren().size()) {
-							treeViewer.setGrayChecked(element, true);
-							grayed = true;
-						}
-					}
-					for (ToolEnablement child : element.getChildren()) {
-						child.setEnabled(checked);
-					}
-					if (!grayed) {
-						treeViewer.setChecked(element, checked);
-						treeViewer.setGrayed(element, false);
+				Object element = event.getElement();
+				if (element instanceof ToolEnablement) {
+					ToolEnablement toolEnablement = (ToolEnablement)element;
+					updateDescendents(toolEnablement, checked);
+					updateAncestors(toolEnablement.getParent(), checked);
+				}
+			}
+			
+			void updateDescendents(ToolEnablement toolEnablement, boolean checked) {
+				for (ToolEnablement child : toolEnablement.getChildren()) {
+					updateDescendents(child,checked);
+				}
+				toolEnablement.setSubtreeEnabled(checked);
+				treeViewer.setSubtreeChecked(toolEnablement, checked);
+				
+				treeViewer.setChecked(toolEnablement, checked);
+				treeViewer.setGrayed(toolEnablement, false);
+				for (ToolEnablement friend : toolEnablement.getFriends()) {
+					updateAncestors(friend, checked);
+					if (friend.getParent()!=null)
+						updateAncestors(friend.getParent(), checked);
+				}
+				for (ToolEnablement child : toolEnablement.getChildren()) {
+					for (ToolEnablement friend : child.getFriends()) {
+						if (child.getParent()!=null)
+							updateAncestors(child.getParent(), checked);
+						updateAncestors(friend, checked);
 					}
 				}
-				else if (element.getParent()!=null) {
-					ToolEnablement parent = element.getParent();
-					int countEnabled = 0;
-					for (ToolEnablement child : parent.getChildren()) {
-						if (child.getEnabled())
-							++countEnabled;
-					}
-					if (countEnabled==0) {
+			}
+			
+			void updateAncestors(ToolEnablement parent, boolean checked) {
+				while (parent!=null) {
+					int enabled = parent.getSubtreeEnabledCount();
+					int size = parent.getSubtreeEnabledCount();
+					if (enabled==0) {
 						treeViewer.setChecked(parent, false);
 						parent.setEnabled(false);
+						checked = true;
 					}
-					else if (countEnabled == parent.getChildren().size()) {
+					else if (enabled==size) {
 						treeViewer.setChecked(parent, true);
 						treeViewer.setGrayed(parent, false);
 						parent.setEnabled(true);
@@ -354,9 +380,14 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 						treeViewer.setGrayChecked(parent, true);
 						parent.setEnabled(true);
 					}
+					
+					for (ToolEnablement friend : parent.getFriends()) {
+						updateAncestors(friend, checked);
+					}
+					bpmnTreeViewer.refresh(parent);
+					extensionTreeViewer.refresh(parent);
+					parent = parent.getParent();
 				}
-				else
-					treeViewer.setGrayChecked(element, true);
 			}
 		});
 
@@ -380,6 +411,8 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 	private void restoreDefaults() {
 		bpmnTreeViewer.setCheckedElements(bpmnToolsEnabled);
 		extensionTreeViewer.setCheckedElements(extensionToolsEnabled);
+		bpmnTreeViewer.refresh();
+		extensionTreeViewer.refresh();
 	}
 
 	@Override
@@ -415,15 +448,15 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 	}
 
 	private void reloadPreferences() {
-		bpmnToolsEnabled = reloadPreferences(bpmnTools, null);
+		bpmnToolsEnabled = reloadPreferences(bpmnTools, null, null);
 		if (modelEnablements!=null)
-			extensionToolsEnabled = reloadPreferences(extensionTools, modelEnablements);
+			extensionToolsEnabled = reloadPreferences(extensionTools, bpmnTools, modelEnablements);
 	}
 	
-	private Object[] reloadPreferences(List<ToolEnablement> tools, ModelEnablementDescriptor me) {
+	private Object[] reloadPreferences(List<ToolEnablement> tools, List<ToolEnablement> bpmnTools, ModelEnablementDescriptor me) {
 		tools.clear();
 		if (me!=null)
-			tools.addAll(toolEnablementPreferences.getAllExtensionElements(me));
+			tools.addAll(toolEnablementPreferences.getAllExtensionElements(me, bpmnTools));
 		else
 			tools.addAll(toolEnablementPreferences.getAllElements());
 

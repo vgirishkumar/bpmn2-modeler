@@ -442,7 +442,7 @@
 		</modelExtension>
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.exclusiveGateway"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="ExclusiveGateway Extensions"
 			type="ExclusiveGateway">
@@ -450,7 +450,7 @@
 		</modelExtension>
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.eventBasedGateway"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="EventBasedGateway Extensions"
 			type="EventBasedGateway">
@@ -458,7 +458,7 @@
 		</modelExtension>
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.inclusiveGateway"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="InclusiveGateway Extensions"
 			type="InclusiveGateway">
@@ -466,7 +466,7 @@
 		</modelExtension>
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.gateway"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.parallelGateway"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="ParallelGateway Extensions"
 			type="ParallelGateway">
@@ -474,7 +474,7 @@
 		</modelExtension>
 
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.UserTask"
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.userTask"
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="UserTask Extensions"
 			type="UserTask">
@@ -893,18 +893,11 @@
 			<enable object="InputOutputSpecification" feature="id"/>
 			<enable object="InputOutputSpecification" feature="inputSets"/>
 			<enable object="InputOutputSpecification" feature="outputSets"/>
-			<enable object="ParallelGateway" feature="anyAttribute"/>
-			<enable object="ParallelGateway" feature="auditing"/>
-			<enable object="ParallelGateway" feature="categoryValueRef"/>
-			<enable object="ParallelGateway" feature="documentation"/>
-			<enable object="ParallelGateway" feature="extensionDefinitions"/>
-			<enable object="ParallelGateway" feature="extensionValues"/>
+			<enable object="ItemDefinition" feature="id"/>
+			<enable object="ItemDefinition" feature="structureRef"/>
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="id"/>
-			<enable object="ParallelGateway" feature="incoming"/>
-			<enable object="ParallelGateway" feature="monitoring"/>
 			<enable object="ParallelGateway" feature="name"/>
-			<enable object="ParallelGateway" feature="outgoing"/>
 			<enable object="Process" feature="anyAttribute"/>
 			<enable object="Process" feature="flowElements"/>
 			<enable object="Process" feature="id"/>
@@ -937,10 +930,6 @@
 			<enable object="SequenceFlow" feature="priority"/>
 			<enable object="SequenceFlow" feature="sourceRef"/>
 			<enable object="SequenceFlow" feature="targetRef"/>
-			<enable object="TerminateEventDefinition" feature="anyAttribute"/>
-			<enable object="TerminateEventDefinition" feature="documentation"/>
-			<enable object="TerminateEventDefinition" feature="extensionDefinitions"/>
-			<enable object="TerminateEventDefinition" feature="extensionValues"/>
 			<enable object="TerminateEventDefinition" feature="id"/>
 		</modelEnablement>
 		
@@ -967,18 +956,16 @@
 			<category name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
-			<category name="End Events">
-				<tool name="End" object="EndEvent"/>
-				<tool name="Error" object="EndEvent+ErrorEventDefinition"/>
-				<tool name="Terminate" object="EndEvent+TerminateEventDefinition"/>
+			<category name="Events">
+				<tool name="Start" object="StartEvent" icon="StartEvent.png"/>
+				<tool name="End" object="EndEvent" icon="EndEvent.png"/>
+				<tool name="Error End" object="EndEvent+ErrorEventDefinition" icon="ErrorEndEvent.png"/>
+				<tool name="Terminate End" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
 			<category name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
 				<tool name="Inclusive" object="InclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
-			</category>
-			<category name="Start Events">
-				<tool name="Start" object="StartEvent"/>
 			</category>
 		</toolPalette>
 		
@@ -996,8 +983,7 @@
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
 			<category name="Events">
-				<tool name="End" object="EndEvent"/>
-				<tool name="Start" object="StartEvent"/>
+				<tool name="Terminate" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
 			<category name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>

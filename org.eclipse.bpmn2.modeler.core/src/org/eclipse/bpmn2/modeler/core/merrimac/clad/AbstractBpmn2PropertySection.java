@@ -221,7 +221,6 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * Force a layout of the property sheet page.
 	 */
 	public void layout() {
-		Control sectionRoot = (AbstractDetailComposite)parent.getChildren()[0];
 		Composite composite = (Composite)tabbedPropertySheetPage.getControl();
 		composite.layout(true);
 		tabbedPropertySheetPage.resizeScrolledComposite();
@@ -255,8 +254,14 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		return false;
 	}
 	
+	protected boolean isModelObjectEnabled(EObject o, String featureName) {
+		EClass eclass = (o instanceof EClass) ? (EClass)o : o.eClass();
+		EStructuralFeature f = eclass.getEStructuralFeature(featureName);
+		return isModelObjectEnabled(o, f);
+	}
+	
 	protected boolean isModelObjectEnabled(EObject o, EStructuralFeature f) {
-		if (o !=null) {
+		if (o !=null && f!=null) {
 			ModelEnablementDescriptor me = getModelEnablement();
 			if (me!=null) {
 				EClass eclass = (o instanceof EClass) ? (EClass)o : o.eClass();

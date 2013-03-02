@@ -184,7 +184,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 	public void createBindings(EObject be) {
 		AbstractPropertiesProvider provider = getPropertiesProvider(be); 
 		if (provider==null) {
-			createMissingPropertiesLabel(be);
+			createEmptyLabel(be);
 			return;
 		}
 		

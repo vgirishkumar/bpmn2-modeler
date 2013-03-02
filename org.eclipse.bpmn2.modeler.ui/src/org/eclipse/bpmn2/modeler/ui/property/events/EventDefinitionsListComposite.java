@@ -25,10 +25,13 @@ import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 
@@ -40,7 +43,39 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 		super(parent, DEFAULT_STYLE);
 		this.event = event;
 	}
+	
+	protected int createColumnProvider(EObject theobject, EStructuralFeature thefeature) {
+		if (columnProvider==null) {
+			getColumnProvider(theobject,thefeature);
+		}
+		return columnProvider.getColumns().size();
+	}
+	
+	@Override
+	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
+		columnProvider = super.getColumnProvider(object,feature);
+		columnProvider.add(
+				new TableColumn(object,feature) {
+					public String getText(Object element) {
+						EObject o = (EObject)element;
+						return o.eClass().getName();
+					}
 
+					@Override
+					public String getHeaderText() {
+						return "Event Type";
+					}
+					
+					@Override
+					public CellEditor createCellEditor (Composite parent) {
+						// need to override this to avoid any problems
+						return super.createCellEditor(parent);
+					}
+				}
+			).setEditable(false);
+		return columnProvider;
+	}
+	
 	@Override
 	public EClass getListItemClassToAdd(EClass listItemClass) {
 		EClass eclass = null;

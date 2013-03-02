@@ -57,39 +57,9 @@ public class ToolEnablementPreferences {
 	static {
 		Bpmn2Package i = Bpmn2Package.eINSTANCE;
 		final List<EClass> items = new ArrayList<EClass>();
-		HashSet<EClass> superTypes = new HashSet<EClass>();
-
-		// Create a list of super types for the BPMN2 elements.
-		// This will be used to cull the final list of editable
-		// elements down to a manageable subset.
-		superTypes.add(i.getDefinitions());
 		for (EClassifier eclassifier : i.getEClassifiers() ) {
-			if (eclassifier instanceof EClass) {
-				EClass eclass = (EClass)eclassifier;
-				superTypes.addAll(eclass.getESuperTypes());
-			}
-		}
-		for (EClassifier eclassifier : i.getEClassifiers() ) {
-			if (eclassifier.getName().equals("DocumentRoot"))
-				continue;
-			if (eclassifier instanceof EClass) {
-				EClass eclass = (EClass)eclassifier;
-				boolean keep = true;
-				if (superTypes.contains(eclass))
-					keep = false;
-				else {
-					for (EClass superEClass : superTypes) {
-						for (EStructuralFeature sf : superEClass.getEAllStructuralFeatures()) {
-							if (sf instanceof EReference) {
-								if (sf.getEType() == eclass)
-									keep = false;
-							}
-						}
-					}
-				}
-				if (keep) {
-					items.add((EClass)eclassifier);
-				}
+			if (eclassifier instanceof EClass && eclassifier!=i.getDocumentRoot()) {
+				items.add((EClass)eclassifier);
 			}
 		}
 		elementSet.addAll(items);
@@ -175,7 +145,42 @@ public class ToolEnablementPreferences {
 		return ret;
 	}
 	
-	public List<ToolEnablement> getAllExtensionElements(ModelEnablementDescriptor me) {
+	private ToolEnablement findOrCreateTool(List<ToolEnablement> tools, ENamedElement elem, ToolEnablement parent) {
+		ToolEnablement t = findTool(tools,elem,parent);
+		if (t!=null) {
+			t.addFriend(parent);
+			return t;
+		}
+		return new ToolEnablement(elem, parent);
+	}
+	
+	private ToolEnablement findTool(List<ToolEnablement> tools, ENamedElement elem, ToolEnablement parent) {
+		for (ToolEnablement tool : tools) {
+			ToolEnablement thisParent = tool.getParent();
+			if (thisParent!=null && parent!=null) {
+				if (thisParent.getTool() == parent.getTool()) {
+					for (ToolEnablement childTool : thisParent.getChildren()) {
+						ENamedElement thisElem = childTool.getTool();
+						if (thisElem == elem) {
+							return childTool;
+						}
+					}
+				}
+			}
+			else if (thisParent==parent) {
+				if (tool.getTool() == elem)
+					return tool;
+			}
+			else if (thisParent==null) {
+				ToolEnablement t = findTool(tool.getChildren(), elem, parent);
+				if (t!=null)
+					return t;
+			}
+		}
+		return null;
+	}
+	
+	public List<ToolEnablement> getAllExtensionElements(ModelEnablementDescriptor me, List<ToolEnablement> bpmnTools) {
 		
 		// Fetch all of the <modelExtension> extension point elements defined
 		// in the Target Runtime plugin.
@@ -217,7 +222,7 @@ public class ToolEnablementPreferences {
 							if (feature==null)
 								feature = me2.getFeature(eclass, p);
 							if (feature instanceof EAttribute) {
-								ToolEnablement child = new ToolEnablement(feature, tool);
+								ToolEnablement child = findOrCreateTool(bpmnTools, feature, tool);
 								// set enablement state of the feature:
 								// the EClass is that of the parent tool.
 								child.setEnabled(isEnabled(eclass, feature));
@@ -272,7 +277,7 @@ public class ToolEnablementPreferences {
 				}
 
 				for (EStructuralFeature feature : possibleFeatures) {
-					ToolEnablement toolEnablement = new ToolEnablement(feature, tool);
+					ToolEnablement toolEnablement = findOrCreateTool(bpmnTools, feature, tool);
 					toolEnablement.setEnabled(isEnabled(eclass, feature));
 					children.add(toolEnablement);
 				}

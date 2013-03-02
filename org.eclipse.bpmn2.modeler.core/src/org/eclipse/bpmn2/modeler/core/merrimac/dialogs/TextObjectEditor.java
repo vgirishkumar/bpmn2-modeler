@@ -26,6 +26,8 @@ import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -62,19 +64,26 @@ public class TextObjectEditor extends ObjectEditor {
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
 
-		text = getToolkit().createText(composite, "", style);
+		text = getToolkit().createText(composite, "", style | SWT.BORDER);
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 		if (multiLine) {
 			data.heightHint = 100;
 		}
 		text.setLayoutData(data);
+		text.addTraverseListener(new TraverseListener() {
 
+			@Override
+			public void keyTraversed(TraverseEvent e) {
+				if (e.detail == SWT.TRAVERSE_RETURN && multiLine)
+					e.doit = false;
+			}
+			
+		});
 		setText(ModelUtil.getDisplayName(object, feature));
 
 		IObservableValue textObserver = SWTObservables.observeText(text, SWT.Modify);
 		textObserver.addValueChangeListener(new IValueChangeListener() {
 
-			@SuppressWarnings("restriction")
 			@Override
 			public void handleValueChange(final ValueChangeEvent e) {
 				setValue(e.diff.getNewValue());

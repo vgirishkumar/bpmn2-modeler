@@ -22,15 +22,17 @@ public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 	private String name;
 	private ENamedElement tool;
 	private Boolean enabled;
-
-	private ArrayList<ToolEnablement> children = new ArrayList<ToolEnablement>();
 	private ToolEnablement parent;
+	private ArrayList<ToolEnablement> children;
+	// "friends" are references to this ToolEnablement.
+	private ArrayList<ToolEnablement> friends;
+	private static ArrayList<ToolEnablement> EMPTY_LIST = new ArrayList<ToolEnablement>();
 
 	public ToolEnablement() {
 	}
 
 	public ToolEnablement(ENamedElement tool, ToolEnablement parent) {
-		this.tool = tool;
+		setTool(tool);
 		this.parent = parent;
 	}
 
@@ -60,7 +62,43 @@ public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 		this.enabled = enabled;
 	}
 
+	public void setSubtreeEnabled(Boolean enabled) {
+		setEnabled(enabled);
+		for (ToolEnablement child : getChildren()) {
+			child.setSubtreeEnabled(enabled);
+		}
+	}
+
+	public int getSubtreeSize() {
+		return getSubtreeSize(this);
+	}
+	
+	private static int getSubtreeSize(ToolEnablement parent) {
+		int size = 0;
+		for (ToolEnablement child : parent.getChildren()) {
+			++size;
+			size += getSubtreeSize(child);
+		}
+		return size;
+	}
+	
+	public int getSubtreeEnabledCount() {
+		return getSubtreeEnabledCount(this);
+	}
+	
+	private static int getSubtreeEnabledCount(ToolEnablement parent) {
+		int count = 0;
+		for (ToolEnablement child : parent.getChildren()) {
+			if (child.getEnabled())
+				++count;
+			count += getSubtreeEnabledCount(child);
+		}
+		return count;
+	}
+	
 	public void setTool(ENamedElement tool) {
+		if (tool!=null)
+			this.name = tool.getName();
 		this.tool = tool;
 	}
 
@@ -73,6 +111,8 @@ public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 	}
 
 	public ArrayList<ToolEnablement> getChildren() {
+		if (children==null)
+			return EMPTY_LIST;
 		return children;
 	}
 
@@ -90,8 +130,27 @@ public class ToolEnablement extends AbstractPropertyChangeListenerProvider {
 				+ (parent == null ? "null" : parent.getName()) + "]";
 	}
 
-	public boolean isAnyChildren() {
+	public boolean hasChildren() {
 		return children != null && children.size() > 0;
 
+	}
+	
+	public boolean hasFriends() {
+		return friends!=null && friends.size()>0;
+	}
+	
+	public ArrayList<ToolEnablement> getFriends() {
+		if (friends==null)
+			return EMPTY_LIST;
+		return friends;
+	}
+	
+	public void addFriend(ToolEnablement friend) {
+		if (friend!=null) {
+			if (friends==null)
+				friends = new ArrayList<ToolEnablement>();
+			if (!friends.contains(friend))
+				friends.add(friend);
+		}
 	}
 }
