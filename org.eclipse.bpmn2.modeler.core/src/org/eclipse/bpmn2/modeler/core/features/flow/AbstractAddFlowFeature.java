@@ -33,6 +33,7 @@ import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -109,16 +110,22 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_CREATED, "true");
 		}
 		
+		Anchor sourceAnchor = addContext.getSourceAnchor();
+		Anchor targetAnchor = addContext.getTargetAnchor();
 		Object importProp = context.getProperty(DIImport.IMPORT_PROPERTY);
 		if (importProp != null && (Boolean) importProp) {
-			connection.setStart(addContext.getSourceAnchor());
-			connection.setEnd(addContext.getTargetAnchor());
+			connection.setStart(sourceAnchor);
+			connection.setEnd(targetAnchor);
 		} else {
-			Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
-					sourceContainer, targetContainer, connection);
+			if (sourceAnchor==null || targetAnchor==null) {
+				Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
+					sourceContainer, targetContainer, null);
+				sourceAnchor = anchors.getFirst();
+				targetAnchor = anchors.getSecond();
+			}
 
-			connection.setStart(anchors.getFirst());
-			connection.setEnd(anchors.getSecond());
+			connection.setStart(sourceAnchor);
+			connection.setEnd(targetAnchor);
 		}
 		
 		if (ModelUtil.hasName(businessObject)) {

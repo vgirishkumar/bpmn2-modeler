@@ -1308,6 +1308,14 @@ public class GraphicsUtil {
 			return createPoint(peService.getLocationRelativeToDiagram((Shape)ac));
 		return null;
 	}
+	
+	public static Point getShapeCenter(AnchorContainer shape) {
+		Point p = createPoint(shape);
+		IDimension size = calculateSize(shape);
+		p.setX( p.getX() + size.getWidth()/2 );
+		p.setY( p.getY() + size.getHeight()/2 );
+		return p;
+	}
 
 	public static Point createPoint(ILocation loc) {
 		return createPoint(loc.getX(), loc.getY());
