@@ -193,7 +193,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 				List<AbstractDetailComposite> removedDetails = new ArrayList<AbstractDetailComposite>();
 				for (i=0; i<details.size(); ++i) {
 					AbstractDetailComposite detail = details.get(i);
-					if (detail.getChildren().length==0) {
+					if (detail.isEmpty()) {
 						removedTabs.add(folder.getItem(i));
 						removedDetails.add(detail);
 					}

@@ -142,7 +142,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 
 	public CellEditor createCellEditor (Composite parent) {
 		CellEditor ce = null;
-		if (feature!=null) {
+		if (editable && feature!=null) {
 			EClassifier ec = feature.getEType();
 			Class ic = ec.getInstanceClass();
 			if (boolean.class.equals(ic)) {

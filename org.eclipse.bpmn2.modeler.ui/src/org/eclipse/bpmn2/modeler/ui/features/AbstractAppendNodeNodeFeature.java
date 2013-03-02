@@ -114,12 +114,12 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		return true;
+		return getAvailableTypes().size()>0;
 	}
 
 	@Override
 	public boolean isAvailable(IContext context) {
-		return true;
+		return getAvailableTypes().size()>0;
 	}
 
 	/* (non-Javadoc)
@@ -141,7 +141,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 					// AbstractAppendNodeNodeFeature specializations; for example the class
 					// AppendActivityFeature will construct a popup list of all Activity subclasses
 					// e.g. Task, ScriptTask, SubProcess, etc. 
-					EClass newType = selectNewObjectType((EObject)bo);
+					EClass newType = selectNewObjectType();
 					if (newType!=null) {
 						// if user made a selection, then create the new shape...
 						ContainerShape newShape = createNewShape(mh, oldShape, newType);
@@ -160,7 +160,34 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		}
 	}
 	
-	protected EClass selectNewObjectType(EObject oldObject) {
+	protected EClass selectNewObjectType() {
+		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
+		ModelEnablementDescriptor enablements =
+				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
+		EClass newType = getBusinessObjectClass();
+
+		// build a list of possible subclasses for the popup menu
+		List<EClass> subtypes = getAvailableTypes();
+		// show popup menu
+		boolean doit = subtypes.size()>0;
+		if (doit) {
+			newType = subtypes.get(0);
+			if (subtypes.size()>1) {
+				PopupMenu popupMenu = new PopupMenu(subtypes, labelProvider);
+				doit = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (doit) {
+					newType = (EClass) popupMenu.getResult();
+					return newType;
+				}
+			}
+			else
+				return newType;
+		}
+
+		return null;
+	}
+
+	protected List<EClass> getAvailableTypes() {
 		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
 		ModelEnablementDescriptor enablements =
 				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
@@ -183,24 +210,9 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 				}
 			}
 		}
-		
-		// show popup menu
-		boolean doit = subtypes.size()>0;
-		if (doit) {
-			newType = subtypes.get(0);
-			if (subtypes.size()>1) {
-				PopupMenu popupMenu = new PopupMenu(subtypes, labelProvider);
-				doit = popupMenu.show(Display.getCurrent().getActiveShell());
-				if (doit) {
-					newType = (EClass) popupMenu.getResult();
-					return newType;
-				}
-			}
-		}
-
-		return null;
+		return subtypes;
 	}
-
+	
 	protected ContainerShape createNewShape(ModelHandler mh, ContainerShape oldShape, EClass newType) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		boolean horz = Bpmn2Preferences.getInstance().isHorizontalDefault();
@@ -312,46 +324,6 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		SequenceFlow flow = mh.createSequenceFlow(oldObject, newObject);
 		acc.setNewObject(flow);
 		Connection connection = (Connection)getFeatureProvider().addIfPossible(acc);
-		
-		if (connection instanceof FreeFormConnection) {
-			// avoid diagonal lines by inserting bendpoints (prefer orthogonal layouts)
-			ILayoutService layoutService = Graphiti.getLayoutService();
-			ILocation loc0 = layoutService.getLocationRelativeToDiagram(connection.getStart());
-			ILocation loc1 = layoutService.getLocationRelativeToDiagram(connection.getEnd());
-			if (loc0.getX()!=loc1.getX() && loc0.getY()!=loc1.getY()) {
-				boolean horz = Bpmn2Preferences.getInstance().isHorizontalDefault();
-				FreeFormConnection ff = (FreeFormConnection)connection;
-				Point p;
-				if (horz) {
-					p = Graphiti.getCreateService().createPoint(loc0.getX(), loc1.getY());
-				}
-				else {
-					p = Graphiti.getCreateService().createPoint(loc1.getX(), loc0.getY());
-				}
-				ff.getBendpoints().add(p);
-				DIUtils.updateDIEdge(connection);
-				
-				// adjust the anchor point to the new shape if necessary
-				DiagramElement shape = mh.findDIElement(newObject);
-				AnchorUtil.reConnect(shape, getDiagram());
-				
-				ILocation newloc0 = layoutService.getLocationRelativeToDiagram(connection.getStart());
-				ILocation newloc1 = layoutService.getLocationRelativeToDiagram(connection.getEnd());
-				if (!newloc0.equals(loc0) || !newloc1.equals(loc1)) {
-					// the connection's End anchor has changed as a result of inserting the bendpoint
-					// so need to adjust the bendpoint
-					ff.getBendpoints().clear();
-					if (horz) {
-						p = Graphiti.getCreateService().createPoint(newloc0.getX(), newloc1.getY());
-					}
-					else {
-						p = Graphiti.getCreateService().createPoint(newloc1.getX(), newloc0.getY());
-					}
-					ff.getBendpoints().add(p);
-					DIUtils.updateDIEdge(connection);
-				}
-			}
-		}
 		return connection;
 	}
 	

@@ -47,6 +47,7 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
@@ -338,8 +339,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		////////////////////////////////////////////////////////////
 		// Collect columns to be displayed and build column provider
 		////////////////////////////////////////////////////////////
-		if (createColumnProvider(businessObject, feature) <= 0)
+		if (createColumnProvider(businessObject, feature) <= 0) {
+			dispose();
 			return;
+		}
 
 		////////////////////////////////////////////////////////////
 		// SashForm contains the table section and a possible
@@ -483,8 +486,11 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 					detailSection.setText(label+" Details");
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
-//					enable = detailComposite.getChildren().length>0;
-					tableSection.setExpanded(enable);
+					enable = !detailComposite.isEmpty();
+					detailSection.setExpanded(enable);
+					if (!enable && editAction!=null)
+						editAction.setEnabled(enable);
+
 				}
 			}
 			detailSection.setVisible(enable);

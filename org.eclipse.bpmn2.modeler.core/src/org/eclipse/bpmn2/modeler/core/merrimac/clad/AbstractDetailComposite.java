@@ -74,6 +74,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase implements ResourceSetListener {
 
+	public final String EMPTY_LABEL_PROPERTY = "empty.label";
 	protected Section attributesSection = null;
 	protected Composite attributesComposite = null;
 	protected Font descriptionFont = null;
@@ -115,7 +116,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		cleanBindings();
 		if (businessObject != null) {
 			createBindings(businessObject);
-			checkEmptyPage();
+			if (isEmpty())
+				createEmptyLabel(businessObject);
 			redrawPage();
 		}
 	}
@@ -127,16 +129,29 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		ModelUtil.disposeChildWidgets(this);
 	}
 	
-	protected void checkEmptyPage() {
-		if (getChildren().length==0) {
-			createMissingPropertiesLabel(businessObject);
+	protected boolean isEmpty() {
+		Control kids[] = getChildren();
+		if (kids.length==0) {
+			return true;
 		}
+		else if (kids.length==1 && EMPTY_LABEL_PROPERTY.equals(kids[0].getData())) {
+			return true;
+		}
+		return false;
 	}
 	
-	protected void createMissingPropertiesLabel(EObject be) {
-		if (getDiagramEditor()!=null) {
+	protected void createEmptyLabel(EObject be) {
+		boolean doit = false;
+		Control kids[] = getChildren();
+		if (kids.length==0) {
+			doit = true;
+		}
+		else if (kids.length==1 && EMPTY_LABEL_PROPERTY.equals(kids[0].getData())) {
+			doit = true;
+		}
+		if (doit) {
 			String text =
-					"Warning: this Property Sheet is empty because the model element\n" +
+					"This Property Sheet is empty because the model element\n" +
 					"\"" + be.eClass().getName() + "\" has no visible features.\n\n" +
 					"At least one of these element features must be enabled:\n";
 			String props[] = getPropertiesProvider().getProperties();
@@ -145,7 +160,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			}
 			text += "\nPlease configure the Tool Enablement Preferences for this project accordingly.";
 
-			createLabel(this, text);
+			Label label = createLabel(this, text);
+			label.setData(EMPTY_LABEL_PROPERTY);
 		}
 	}
 
