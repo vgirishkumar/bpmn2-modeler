@@ -58,7 +58,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				new TableColumn(object,feature) {
 					public String getText(Object element) {
 						EObject o = (EObject)element;
-						return o.eClass().getName();
+						return o.eClass().getName().replace("EventDefinition", "");
 					}
 
 					@Override

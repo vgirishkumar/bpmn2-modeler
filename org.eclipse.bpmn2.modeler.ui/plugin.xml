@@ -615,6 +615,7 @@
 			<enable object="DataOutputAssociation"/>
 			<enable object="Property"/>
 			<enable object="ItemAwareElement"/>
+			<enable object="DataState"/>
 			<enable object="DataStore"/>
 			<enable object="DataStoreReference"/>
 			<enable object="DataObjectReference"/>
@@ -629,6 +630,9 @@
 			<enable object="MultiInstanceLoopCharacteristics"/>
 			<enable object="Lane"/>
 			<enable object="LaneSet"/>
+			<enable object="Resource"/>
+			<enable object="ResourceParameter"/>
+			<enable object="ResourceRole"/>
 			
 			<!-- this is intended to be a baseclass for global tasks and Process and -->
 			<!-- should NOT be a valid selection in ModelSubclassSelectionDialog -->
