@@ -220,10 +220,12 @@ public class AnchorUtil {
 		BoundaryAnchor targetBottom = targetBoundaryAnchors.get(AnchorLocation.BOTTOM);
 		BoundaryAnchor targetLeft = targetBoundaryAnchors.get(AnchorLocation.LEFT);
 		BoundaryAnchor targetRight = targetBoundaryAnchors.get(AnchorLocation.RIGHT);
+		Point p1;
+		Point p2;
 
 		if (connection==null) {
-			Point p1 = GraphicsUtil.getShapeCenter(source);
-			Point p2 = GraphicsUtil.getShapeCenter(target);
+			p1 = GraphicsUtil.getShapeCenter(source);
+			p2 = GraphicsUtil.getShapeCenter(target);
 			FixPointAnchor sourceAnchor = AnchorUtil.findNearestAnchor(source, p2);
 			FixPointAnchor targetAnchor = findNearestAnchor(target,p1);
 			return new Tuple<FixPointAnchor, FixPointAnchor>(sourceAnchor, targetAnchor);
@@ -239,9 +241,18 @@ public class AnchorUtil {
 				return new Tuple<FixPointAnchor, FixPointAnchor>((FixPointAnchor)oldStartAnchor, (FixPointAnchor)oldEndAnchor);
 		}
 		
+		if (oldStartAnchor==null) {
+			p2 = GraphicsUtil.getShapeCenter(target);
+			oldStartAnchor = findNearestBoundaryAnchor(source, p2).anchor;
+ 
+		}
+		if (oldEndAnchor==null) {
+			p1 = GraphicsUtil.getShapeCenter(source);
+			oldEndAnchor = findNearestBoundaryAnchor(target, p1).anchor;
+		}
 		Tuple<FixPointAnchor, FixPointAnchor> anchors = new Tuple<FixPointAnchor, FixPointAnchor>(
-				findNearestBoundaryAnchor(source, GraphicsUtil.createPoint(oldStartAnchor)).anchor,
-				findNearestBoundaryAnchor(target, GraphicsUtil.createPoint(oldEndAnchor)).anchor
+				(FixPointAnchor)oldStartAnchor,
+				(FixPointAnchor)oldEndAnchor
 		);
 
 		// if the source and/or target anchors are "Ad Hoc" anchors (e.g., the shape is a participant)

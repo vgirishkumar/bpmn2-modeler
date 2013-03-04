@@ -123,6 +123,12 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 				sourceAnchor = anchors.getFirst();
 				targetAnchor = anchors.getSecond();
 			}
+			else {
+				Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
+						sourceContainer, targetContainer, connection);
+					sourceAnchor = anchors.getFirst();
+					targetAnchor = anchors.getSecond();
+			}
 
 			connection.setStart(sourceAnchor);
 			connection.setEnd(targetAnchor);

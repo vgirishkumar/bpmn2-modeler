@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -68,7 +69,8 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 						"gatewayDirection",
 						"instantiate",
 						"activationCondition",
-						"eventGatewayType"
+						"eventGatewayType",
+						"outgoing"
 						// note: "default" sequence flow is already being displayed in the SequenceFlow tab
 						// so, no need to show it here
 				};
@@ -94,10 +96,17 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 		Gateway gateway = (Gateway)be;
 		if (!(gateway instanceof ParallelGateway)) {
 			sequenceFlowsList = createSequenceFlowsListComposite(this);
-			sequenceFlowsList.bindList(gateway, Bpmn2Package.eINSTANCE.getFlowNode_Incoming());
+			sequenceFlowsList.bindList(gateway, Bpmn2Package.eINSTANCE.getFlowNode_Outgoing());
 		}
 	}
 	
+	protected void bindReference(Composite parent, EObject object, EReference reference) {
+		if (!reference.getName().equals("outgoing")) {
+			// we'll take of this one ourselves using a SequenceFlowsListComposite
+			super.bindReference(parent, object, reference);
+		}
+	}
+
 	protected SequenceFlowsListComposite createSequenceFlowsListComposite(Composite parent) {
 		return new SequenceFlowsListComposite(parent);
 	}
@@ -141,16 +150,18 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 		
 		public void bindList(final EObject theobject, final EStructuralFeature thefeature) {
 			super.bindList(theobject, thefeature);
-			tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
-				public void selectionChanged(SelectionChangedEvent event) {
-					StructuredSelection sel = (StructuredSelection)event.getSelection();
-					EObject object = (EObject)sel.getFirstElement();
-					Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
-					List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, object);
-					getDiagramEditor().setPictogramElementForSelection(pes.get(0));
-					getDiagramEditor().refresh();
-				}
-			});
+			if (tableViewer!=null) {
+				tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+					public void selectionChanged(SelectionChangedEvent event) {
+						StructuredSelection sel = (StructuredSelection)event.getSelection();
+						EObject object = (EObject)sel.getFirstElement();
+						Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+						List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, object);
+						getDiagramEditor().setPictogramElementForSelection(pes.get(0));
+						getDiagramEditor().refresh();
+					}
+				});
+			}
 		}
 	}
 
