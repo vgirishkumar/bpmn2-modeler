@@ -16,11 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 /**
@@ -54,6 +56,12 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			createNewPoints(newStart, newEnd, points);
 		}
 		else {
+			// calculate new start and end anchors by using the boundary anchors nearest to
+			// the source and target shapes.
+			Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
+					newStart.getParent(), newEnd.getParent(), null);
+			newStart = anchors.getFirst();
+			newEnd = anchors.getSecond();
 			createNewPoints(newStart, newEnd, null);
 		}
 	}
@@ -223,6 +231,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			
 			// handle the special case of multiple connections with the same bendpoints
 			// by offsetting this connection either horizontally or vertically by a few pixels
+			updateConnection();
 			if (offsetStackedConnections())
 				changed = true;
 			

@@ -880,8 +880,11 @@
 			<enable object="CallActivity" feature="name"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
 			<enable object="EndEvent" feature="inputSet"/>
+			<enable object="ExclusiveGateway" feature="default"/>
 			<enable object="ExclusiveGateway" feature="gatewayDirection"/>
+			<enable object="ExclusiveGateway" feature="id"/>
 			<enable object="ExclusiveGateway" feature="name"/>
+			<enable object="ExclusiveGateway" feature="outgoing"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
 			<enable object="InputOutputSpecification" feature="anyAttribute"/>
@@ -898,6 +901,7 @@
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="id"/>
 			<enable object="ParallelGateway" feature="name"/>
+			<enable object="ParallelGateway" feature="outgoing"/>
 			<enable object="Process" feature="anyAttribute"/>
 			<enable object="Process" feature="flowElements"/>
 			<enable object="Process" feature="id"/>

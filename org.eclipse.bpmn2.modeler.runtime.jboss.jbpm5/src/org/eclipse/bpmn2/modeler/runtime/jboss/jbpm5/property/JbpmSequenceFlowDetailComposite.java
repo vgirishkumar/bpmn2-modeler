@@ -41,7 +41,7 @@ public class JbpmSequenceFlowDetailComposite extends SequenceFlowDetailComposite
 	
 	@Override
 	public void createBindings(EObject be) {
-		bindAttribute(this, be, "priority");
+		bindAttribute(getAttributesParent(), be, "priority");
 		super.createBindings(be);
 	}
 	

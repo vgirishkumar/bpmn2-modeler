@@ -33,9 +33,11 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Expand;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
+import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IReason;
@@ -59,7 +61,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class CallActivityFeatureContainer extends AbstractExpandableActivityFeatureContainer {
+public class CallActivityFeatureContainer extends AbstractActivityFeatureContainer {
 
 	private static final int MARKER_OFFSET = 4;
 	private static final String CALL_ACTIVITY_REF_PROPERTY = "call.activity.ref";
@@ -275,5 +277,11 @@ public class CallActivityFeatureContainer extends AbstractExpandableActivityFeat
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
