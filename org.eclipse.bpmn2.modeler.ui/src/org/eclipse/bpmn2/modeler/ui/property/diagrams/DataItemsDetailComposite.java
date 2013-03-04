@@ -54,7 +54,6 @@ public class DataItemsDetailComposite extends DefaultDetailComposite {
 						"rootElements#Process.resources",
 						"rootElements#Process.correlationSubscriptions",
 						"rootElements#Process.collaborations",
-						"rootElements#Process.artifacts",
 				};
 				
 				@Override

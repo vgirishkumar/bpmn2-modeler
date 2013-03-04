@@ -537,6 +537,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 							editor.createControl(parent,displayName);
 						}
 						
+						protected boolean isEmpty() {
+							return false;
+						}						
 					};
 					propertyDetailsComposite.setBusinessObject(association);
 					propertyDetailsComposite.setTitle("Variables");
