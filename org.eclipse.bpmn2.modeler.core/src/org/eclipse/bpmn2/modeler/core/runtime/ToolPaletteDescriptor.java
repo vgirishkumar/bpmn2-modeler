@@ -15,13 +15,18 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	// The Drawers
 	public static class CategoryDescriptor {
 		private ToolPaletteDescriptor parent;
+		private String id;
+		// these are used to sort the categories
+		private String before;
+		private String after;
 		private String name;
 		private String description;
 		private String icon;
 		private List<ToolDescriptor> tools = new ArrayList<ToolDescriptor>();
 		
-		public CategoryDescriptor(ToolPaletteDescriptor parent, String name, String description, String icon) {
+		public CategoryDescriptor(ToolPaletteDescriptor parent, String id, String name, String description, String icon) {
 			this.parent = parent;
+			this.id = id;
 			this.name = name;
 			this.description = description;
 			this.icon = icon;
@@ -37,6 +42,26 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			return tools;
 		}
 
+		public String getId() {
+			return id;
+		}
+
+		public void setBefore(String before) {
+			this.before = before;
+		}
+
+		public String getBefore() {
+			return before;
+		}
+
+		public void setAfter(String after) {
+			this.after = after;
+		}
+
+		public String getAfter() {
+			return after;
+		}
+		
 		public String getName() {
 			return name;
 		}
@@ -239,10 +264,17 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		profile = e.getAttribute("profile");
 		for (IConfigurationElement c : e.getChildren()) {
 			if (c.getName().equals("category")) {
+				String cid = c.getAttribute("id");
 				String name = c.getAttribute("name");
 				String description = c.getAttribute("description");
 				String icon = c.getAttribute("icon");
-				CategoryDescriptor category = addCategory(name, description, icon);
+				CategoryDescriptor category = addCategory(cid, name, description, icon);
+				cid = c.getAttribute("before");
+				if (cid!=null)
+					category.setBefore(cid);
+				cid = c.getAttribute("after");
+				if (cid!=null)
+					category.setAfter(cid);
 				for (IConfigurationElement t : c.getChildren()) {
 					if (t.getName().equals("tool")) {
 						name = t.getAttribute("name");
@@ -257,12 +289,61 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		}
 	}
 	
-	protected CategoryDescriptor addCategory(String name, String description, String icon) {
-		CategoryDescriptor category = new CategoryDescriptor(this, name, description, icon);
-		categories.add(category);
+	protected CategoryDescriptor addCategory(String id, String name, String description, String icon) {
+		CategoryDescriptor category = null;
+		for (CategoryDescriptor cd : categories) {
+			if (cd.getId().equals(id)) {
+				category = cd;
+				break;
+			}
+		}
+		if (category==null) {
+			category = new CategoryDescriptor(this, id, name, description, icon);
+			categories.add(category);
+		}
 		return category;
 	}
 
+	public void sortCategories() {
+		// order the categories depending on "before" abd "after" attributes
+		List<CategoryDescriptor> sorted = new ArrayList<CategoryDescriptor>();
+		sorted.addAll(categories);
+		boolean changed = false;
+		for (CategoryDescriptor movedCategory : categories) {
+			String before = movedCategory.getBefore();
+			if (before!=null) {
+				for (CategoryDescriptor cd : sorted) {
+					if (cd.getId().equals(before)) {
+						sorted.remove(movedCategory);
+						int i = sorted.indexOf(cd);
+						sorted.add(i,movedCategory);
+						changed = true;
+						break;
+					}
+				}				
+			}
+			String after = movedCategory.getAfter();
+			if (after!=null) {
+				for (CategoryDescriptor cd : sorted) {
+					if (cd.getId().equals(after)) {
+						sorted.remove(movedCategory);
+						int i = sorted.indexOf(cd);
+						if (i+1 < sorted.size())
+							sorted.add(i+1,movedCategory);
+						else
+							sorted.add(movedCategory);
+						changed = true;
+						break;
+					}
+				}				
+			}
+		}
+		if (changed) {
+			categories.clear();
+			categories.addAll(sorted);
+		}
+	}
+	
 	public String getProfile() {
 		return profile;
 	}

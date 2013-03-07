@@ -177,13 +177,14 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		if (object!=null) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(object);
 			String profile = editor.getModelEnablementProfile();
-			modelEnablements = editor.getTargetRuntime().getModelEnablements(diagramType, profile);
+			TargetRuntime rt = editor.getTargetRuntime();
+			modelEnablements = rt.getModelEnablements(diagramType, profile);
 			featureProvider = (BPMNFeatureProvider)getFeatureProvider();
-			modelDescriptor = editor.getTargetRuntime().getModelDescriptor();
+			modelDescriptor = rt.getModelDescriptor();
 			
 			PaletteCompartmentEntry compartmentEntry = null;
 			categories.clear();
-			ToolPaletteDescriptor toolPaletteDescriptor = editor.getTargetRuntime().getToolPalette(diagramType, profile);
+			ToolPaletteDescriptor toolPaletteDescriptor = rt.getToolPalette(diagramType, profile);
 			if (toolPaletteDescriptor!=null) {
 				for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
 					compartmentEntry = categories.get(category.getName());
@@ -199,9 +200,23 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 							createEntry(feature, compartmentEntry);
 						}
 					}
-					if (compartmentEntry!=null && compartmentEntry.getToolEntries().size()>0)
+					// if there are no tools defined for this category, check if it will be
+					// used for only Custom Tasks. If so, create the category anyway.
+					if (compartmentEntry==null) {
+						for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
+							if (category.getName().equals(tc.getCategory())) {
+								compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+								compartmentEntry.setInitiallyOpen(false);
+								categories.put(category.getName(), compartmentEntry);
+								palette.add(compartmentEntry);
+								break;
+							}
+						}
+					}
+					else if (compartmentEntry.getToolEntries().size()>0)
 						palette.add(compartmentEntry);
 				}
+				createCustomTasks(palette);
 			}
 			else
 			{
