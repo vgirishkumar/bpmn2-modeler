@@ -1168,7 +1168,7 @@ public class GraphicsUtil {
 			return getGatewaySize(diagram);
 		if (be instanceof Activity)
 			return getActivitySize(diagram);
-		return null;
+		return new Size(50,50);
 	}
 	
 	public static boolean contains(Shape shape, Point point) {

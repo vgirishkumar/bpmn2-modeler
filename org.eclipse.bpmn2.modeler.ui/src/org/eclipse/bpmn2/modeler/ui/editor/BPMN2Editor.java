@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -80,6 +81,7 @@ import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.di.DIImport.DiagramElementTree;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
@@ -186,6 +188,7 @@ import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFPaletteRoot;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -205,6 +208,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.ide.ResourceUtil;
@@ -585,6 +589,22 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		di.setModelHandler(modelHandler);
 
 		di.generateFromDI();
+		
+		DiagramElementTree missing = di.findMissingDIElements();
+		// Display a dialog here of the missing elements and allow user
+		// to choose which ones to create
+		if (missing.hasChildren(null)) {
+			CheckedTreeSelectionDialog dlg = new CheckedTreeSelectionDialog(
+					Display.getDefault().getActiveShell(), missing, missing);
+			dlg.setMessage(
+					"These items do not have Diagram Elements and can not be shown in the editor.\n"+
+					"Please select the items for which you would like to create Diagram Elements.");
+			dlg.setInput(missing);
+			dlg.setContainerMode(true);
+			dlg.open();
+		}
+		
+		di.createMissingDIElements(missing);
 	}
 
 	public void updatePalette() {
