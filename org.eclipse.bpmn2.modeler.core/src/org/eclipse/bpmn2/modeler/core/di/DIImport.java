@@ -21,23 +21,29 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
+import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataStore;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
@@ -356,6 +362,22 @@ public class DIImport {
 		return added;
 	}
 	
+	private List<Artifact> getArtifacts(BaseElement container) {
+		if (container instanceof Process) {
+			return ((Process)container).getArtifacts();
+		}
+		if (container instanceof SubProcess) {
+			return ((SubProcess)container).getArtifacts();
+		}
+		if (container instanceof SubChoreography) {
+			return ((SubChoreography)container).getArtifacts();
+		}
+		if (container instanceof Collaboration) {
+			return ((Collaboration)container).getArtifacts();
+		}
+		return null;
+	}
+	
 	private void findMissingDIElements(DiagramElementTreeNode missing, BaseElement be) {
 		if (be instanceof FlowElementsContainer) {
 			FlowElementsContainer container = (FlowElementsContainer)be;
@@ -369,7 +391,7 @@ public class DIImport {
 			for (FlowElement fe : container.getFlowElements()) {
 				if (elements.get(fe) == null && !laneElements.contains(fe)) {
 					// create a BPMNShape or BPMNEdge for this thing
-					if (fe instanceof FlowNode) {
+					if (!(fe instanceof SequenceFlow)) {
 						if (parentNode==null)
 							parentNode = missing.addChild(container);
 						parentNode.addChild(fe);
@@ -379,22 +401,47 @@ public class DIImport {
 					}
 				}
 			}
+			List<Artifact> artifacts = getArtifacts(container);
+			if (artifacts!=null) {
+				for (Artifact a : artifacts) {
+					if (elements.get(a) == null && !(a instanceof Association)) {
+						if (parentNode==null)
+							parentNode = missing.addChild(container);
+						parentNode.addChild(a);
+					}
+				}
+			}
+		}
+		else if (be instanceof Collaboration) {
+			Collaboration container = (Collaboration)be;
+			DiagramElementTreeNode parentNode = null;
+			for (Artifact a : container.getArtifacts()) {
+				if (elements.get(a) == null && !(a instanceof Association)) {
+					if (parentNode==null)
+						parentNode = missing.addChild(container);
+					parentNode.addChild(a);
+				}
+			}
+			for (Participant p : container.getParticipants()) {
+				if (elements.get(p) == null) {
+					if (parentNode==null)
+						parentNode = missing.addChild(container);
+					parentNode.addChild(p);
+				}
+			}
+			for (ConversationNode c : container.getConversations()) {
+				if (elements.get(c) == null) {
+					if (parentNode==null)
+						parentNode = missing.addChild(container);
+					parentNode.addChild(c);
+				}
+			}
 		}
 		else if (be instanceof DataStore) {
 			if (elements.get(be) == null) {
 				missing.addChild(be);
 			}
 		}
-	}
-	
-	private FlowElementsContainer getFlowElementsContainer(EObject o) {
-		while (o!=null) {
-			if (o instanceof FlowElementsContainer) {
-				return (FlowElementsContainer)o;
-			}
-			o = o.eContainer();
-		}
-		return null;
 	}
 	
 	private FlowElementsContainer getRootElementContainer(EObject o) {
@@ -407,44 +454,23 @@ public class DIImport {
 		return null;
 	}
 	
-	private void createMissingDIElement(DiagramElementTreeNode node, Point location, List<BaseElement> created) {
-		BaseElement element = node.getBaseElement();
-		float x = location.getX();
-		float y = location.getY();
-		if (element instanceof Lane) {
-			Lane lane = (Lane)element;
-			FlowElementsContainer container = getFlowElementsContainer(lane);
-			BPMNDiagram bpmnDiagram = createDIDiagram(container);
-			BPMNShape bpmnLaneShape = createDIShape(bpmnDiagram, lane, x, y);
-			
-			for (DiagramElementTreeNode childNode : node.getChildren()) {
-				BaseElement childElement = childNode.getBaseElement();
-				PictogramElement pe = elements.get(childElement);
-				if (pe==null) {
-					// create a BPMNShape for this thing
-					if (childElement instanceof FlowNode) {
-						BPMNShape bpmnShape = createDIShape(bpmnDiagram, childElement, x, y);
-						importShape(bpmnShape);
-
-						x += bpmnShape.getBounds().getWidth() + HORZ_PADDING;
-						created.add(childElement);
-					}
-				}
-			}
-			float xMin = Integer.MAX_VALUE;
-			float yMin = Integer.MAX_VALUE;
-			float width = 0;
-			float height = 0;
-			List<BPMNDiagram> diagrams = modelHandler.getAll(BPMNDiagram.class);
-			for (FlowNode flowNode : lane.getFlowNodeRefs()) {
-				BPMNShape flowNodeBPMNShape = (BPMNShape)DIUtils.findDiagramElement(diagrams,flowNode);
+	@SuppressWarnings("rawtypes")
+	private Bounds calculateBoundingRectangle(List flowElements) {
+		float xMin = Integer.MAX_VALUE;
+		float yMin = Integer.MAX_VALUE;
+		float width = 0;
+		float height = 0;
+		List<BPMNDiagram> diagrams = modelHandler.getAll(BPMNDiagram.class);
+		for (Object flowElement : flowElements) {
+			if (flowElement instanceof FlowNode) {
+				BPMNShape flowNodeBPMNShape = (BPMNShape)DIUtils.findDiagramElement(diagrams,(FlowNode)flowElement);
 				if (flowNodeBPMNShape!=null) {
 					// adjust bounds of Lane
-					Bounds bounds = flowNodeBPMNShape.getBounds();
-					x = bounds.getX();
-					y = bounds.getY();
-					float w = bounds.getWidth();
-					float h = bounds.getHeight();
+					Bounds b = flowNodeBPMNShape.getBounds();
+					float x = b.getX();
+					float y = b.getY();
+					float w = b.getWidth();
+					float h = b.getHeight();
 					if (x<xMin)
 						xMin = x;
 					if (y<yMin) 
@@ -455,54 +481,117 @@ public class DIImport {
 						height = y - yMin + h;
 				}
 			}
-			if (width>0 && height>0) {
-				Bounds bounds = bpmnLaneShape.getBounds();
-				bounds.setWidth(width);
-				bounds.setHeight(height);
-				bounds.setX(xMin);
-				bounds.setY(yMin);
+		}
+		if (width>0 && height>0) {
+			Bounds bounds = DcFactory.eINSTANCE.createBounds();
+			bounds.setX(xMin);
+			bounds.setY(yMin);
+			bounds.setWidth(width);
+			bounds.setHeight(height);
+			return bounds;
+		}
+
+		return null;
+	}
+	
+	private BPMNShape createMissingDIElement(DiagramElementTreeNode node, Point location, List<BaseElement> created) {
+		BaseElement element = node.getBaseElement();
+		BPMNShape bpmnShape = null;
+		BPMNDiagram bpmnDiagram = createDIDiagram(element);
+
+		float x = location.getX();
+		float y = location.getY();
+		if (element instanceof Lane) {
+			Lane lane = (Lane)element;
+			bpmnShape = createDIShape(bpmnDiagram, lane, x, y);
+
+			Point childLocation = DcFactory.eINSTANCE.createPoint();
+			childLocation.setX(x);
+			childLocation.setY(y);
+
+			for (DiagramElementTreeNode childNode : node.getChildren()) {
+				BPMNShape bs = createMissingDIElement(childNode, childLocation, created);
+				childLocation.setX(bs.getBounds().getX() + bs.getBounds().getWidth() + HORZ_PADDING);
 			}
 			
-			importShape(bpmnLaneShape);
-			ContainerShape pe = (ContainerShape) elements.get(lane);
-			pe.getGraphicsAlgorithm().setX((int)xMin);
-			pe.getGraphicsAlgorithm().setY((int)yMin);
-			pe.getGraphicsAlgorithm().setWidth((int)width + HORZ_PADDING);
-			pe.getGraphicsAlgorithm().setHeight((int)height + VERT_PADDING);
-			
+			Bounds bounds = calculateBoundingRectangle(lane.getFlowNodeRefs());
+			if (bounds!=null) {
+				ContainerShape pe = (ContainerShape) elements.get(lane);
+				pe.getGraphicsAlgorithm().setWidth((int)bounds.getWidth() + 2*HORZ_PADDING);
+				pe.getGraphicsAlgorithm().setHeight((int)bounds.getHeight() + 2*VERT_PADDING);
+				DIUtils.updateDIShape(pe);
+				location.setY(y + bounds.getHeight() + 2*VERT_PADDING);
+			}
 			created.add(lane);
-			
-			location.setY(y + height + 100);
 		}
 		else if (element instanceof FlowElementsContainer) {
 			FlowElementsContainer container = (FlowElementsContainer)element;
-			// find the BPMNDiagram for this container
-			BPMNDiagram bpmnDiagram = createDIDiagram(container);
-			for (DiagramElementTreeNode childNode : node.getChildren()) {
-				BaseElement childElement = childNode.getBaseElement();
-				PictogramElement pe = elements.get(childElement);
-				if (pe==null) {
-					// create a BPMNShape for this thing
-					if (childElement instanceof FlowNode) {
-						BPMNShape bpmnShape = createDIShape(bpmnDiagram, childElement, x, y);
-						importShape(bpmnShape);
-						x += bpmnShape.getBounds().getWidth() + HORZ_PADDING;
+			
+			Point childLocation = DcFactory.eINSTANCE.createPoint();
+			childLocation.setX(x);
+			childLocation.setY(y);
 
-						created.add(childElement);
-					}
-				}
+			for (DiagramElementTreeNode childNode : node.getChildren()) {
+				BPMNShape bs = createMissingDIElement(childNode, childLocation, created);
+				childLocation.setX(bs.getBounds().getX() + bs.getBounds().getWidth() + HORZ_PADDING);
 			}
-			location.setX(x);
-			location.setY(y);
+			
+			if (!(container instanceof RootElement)) {
+				// This can only be either a SubChoreography or SubProcess.
+				// In this case, determine the bounds of the container figure
+				// by computing the smallest bounding rectangle that can contain
+				// all of the child figures.
+				Bounds bounds = calculateBoundingRectangle(container.getFlowElements());
+				if (bounds!=null) {
+					ContainerShape pe = (ContainerShape) elements.get(container);
+					pe.getGraphicsAlgorithm().setWidth((int)bounds.getWidth() + 2*HORZ_PADDING);
+					pe.getGraphicsAlgorithm().setHeight((int)bounds.getHeight() + 2*VERT_PADDING);
+					DIUtils.updateDIShape(pe);
+					location.setY(y + bounds.getHeight() + 2*VERT_PADDING);
+				}
+				created.add(container);
+			}			
 		}
-		else if (element instanceof DataStore) {
-			BPMNDiagram bpmnDiagram = modelHandler.getDefinitions().getDiagrams().get(0);
-			BPMNShape bpmnShape = createDIShape(bpmnDiagram, element, x, y);
-			importShape(bpmnShape);
-			y += bpmnShape.getBounds().getHeight() + VERT_PADDING;
-			location.setY(y);
+		else if (element instanceof Collaboration) {
+			Point childLocation = DcFactory.eINSTANCE.createPoint();
+			childLocation.setX(x);
+			childLocation.setY(y);
+
+			for (DiagramElementTreeNode childNode : node.getChildren()) {
+				BPMNShape bs = createMissingDIElement(childNode, childLocation, created);
+				childLocation.setX(bs.getBounds().getX() + bs.getBounds().getWidth() + HORZ_PADDING);
+			}
+		}
+		else if (element instanceof Participant) {
+			Participant participant = (Participant)element;
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
+		else if (element instanceof ConversationNode) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		else if (element instanceof FlowNode) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		else if (element instanceof DataObject) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		else if (element instanceof DataObjectReference) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		else if (element instanceof DataStore) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		else if (element instanceof DataStoreReference) {
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
+			created.add(element);
+		}
+		return bpmnShape;
 	}
 	
 	public void createMissingDIElements(DiagramElementTree missing) {
@@ -525,16 +614,12 @@ public class DIImport {
 		for (BaseElement be : shapes) {
 			if (be instanceof FlowNode) {
 				FlowNode flowNode = (FlowNode)be;
-				// find this FlowNode's container element
-				FlowElementsContainer container = getRootElementContainer(flowNode);
-				// find the BPMNDiagram for this container
-				BPMNDiagram bpmnDiagram = createDIDiagram(container);
+				// find the BPMNDiagram that contains this flow node
+				BPMNDiagram bpmnDiagram = createDIDiagram(flowNode);
 
 				for (SequenceFlow sf : flowNode.getIncoming()) {
 					if (!connections.contains(sf)) {
 						BPMNEdge bpmnEdge = createDIEdge(bpmnDiagram, sf);
-						importConnection(bpmnEdge);
-						
 						connections.add(sf);
 					}
 				}
@@ -542,16 +627,25 @@ public class DIImport {
 				for (SequenceFlow sf : flowNode.getOutgoing()) {
 					if (!connections.contains(sf)) {
 						BPMNEdge bpmnEdge = createDIEdge(bpmnDiagram, sf);
-						importConnection(bpmnEdge);
-
 						connections.add(sf);
+					}
+				}
+			}
+			else if (be instanceof ConversationNode) {
+				ConversationNode convNode = (ConversationNode)be;
+				BPMNDiagram bpmnDiagram = createDIDiagram(convNode);
+				for (MessageFlow mf : convNode.getMessageFlowRefs()) {
+					if (!connections.contains(mf)) {
+						BPMNEdge bpmnEdge = createDIEdge(bpmnDiagram, mf);
+						connections.add(mf);
 					}
 				}
 			}
 		}
 	}
 	
-	protected BPMNDiagram createDIDiagram(FlowElementsContainer container) {
+	protected BPMNDiagram createDIDiagram(BaseElement bpmnElement) {
+		FlowElementsContainer container = getRootElementContainer(bpmnElement);
 		Definitions definitions = modelHandler.getDefinitions();
 		BPMNDiagram bpmnDiagram = null;
 		for (BPMNDiagram d : definitions.getDiagrams()) {
@@ -603,30 +697,9 @@ public class DIImport {
 			plane.getPlaneElement().add(bpmnShape);
 			
 			ModelUtil.setID(bpmnShape);
+			importShape(bpmnShape);
 		}
 		
-//		if (bpmnElement instanceof FlowElementsContainer) {
-//			float xMax = x + bpmnShape.getBounds().getWidth();
-//			float yMax = y + bpmnShape.getBounds().getHeight();
-//			x += HORZ_PADDING;
-//			FlowElementsContainer container = (FlowElementsContainer)bpmnElement;
-//			for (FlowElement fe : container.getFlowElements()) {
-//				if (fe instanceof FlowNode) {
-//					BPMNShape s = createDIShape(bpmnDiagram, fe, x, y);
-//					x += s.getBounds().getWidth() + HORZ_PADDING;
-//					
-//					if (x > xMax) {
-//						xMax = x;
-//					}
-//					if (y > yMax) {
-//						yMax = y;
-//					}
-//				}
-//			}
-//			bpmnShape.getBounds().setWidth(xMax);
-//			bpmnShape.getBounds().setHeight(yMax);
-//		}
-
 		return bpmnShape;
 	}
 	
@@ -675,6 +748,7 @@ public class DIImport {
 			plane.getPlaneElement().add(bpmnEdge);
 			
 			ModelUtil.setID(bpmnEdge);
+			importConnection(bpmnEdge);
 		}
 		
 		return bpmnEdge;
