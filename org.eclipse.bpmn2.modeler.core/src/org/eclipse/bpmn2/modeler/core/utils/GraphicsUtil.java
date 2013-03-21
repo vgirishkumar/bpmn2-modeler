@@ -1366,4 +1366,8 @@ public class GraphicsUtil {
 		}
 		return dim;
 	}
+	
+	public static boolean isLabelShape(Shape shape) {
+		return Graphiti.getPeService().getPropertyValue(shape, LABEL_PROPERTY) != null;
+	}
 }
