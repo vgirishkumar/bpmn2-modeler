@@ -4,24 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.dd.dc.Bounds;
-import org.eclipse.dd.dc.DcFactory;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
-import org.eclipse.graphiti.features.context.impl.ResizeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -29,13 +24,19 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.ILayoutService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
+/**
+ * 
+ */
 public class ShapeLayoutManager {
 
 	private static final int HORZ_PADDING = 50;
 	private static final int VERT_PADDING = 50;
 	private DiagramEditor editor;
+	private static final ILayoutService layoutService = Graphiti.getLayoutService();
+	private static boolean debug = false;
 	
 	public ShapeLayoutManager(DiagramEditor editor) {
 		this.editor = editor;
@@ -46,21 +47,35 @@ public class ShapeLayoutManager {
 	}
 	
 	public void layout(ContainerShape container) {
+		layout(container, 0);
+	}
+	
+	private void layout(ContainerShape container, int level) {
+
+		dump(level, "layout", container);
 		
+		// Collect all child shapes: this excludes any label shapes
+		// (which also happen to be ContainerShape objects); we want ONLY the
+		// graphical objects that have corresponding BPMNShape objects.
 		List<ContainerShape> childShapes = new ArrayList<ContainerShape>();
 		for (PictogramElement pe : container.getChildren()) {
-			if (pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe)) {
+			if (isChildShape(pe)) {
 				ContainerShape childContainer = (ContainerShape)pe;
 				boolean hasChildren = false;
 				for (Shape shape : childContainer.getChildren()) {
-					if (shape instanceof ContainerShape) {
+					if (isChildShape(shape)) {
 						hasChildren = true;
 						break;
 					}
 				}
 				if (hasChildren)
-					layout(childContainer);
-				childShapes.add((ContainerShape)pe);
+					layout(childContainer, level+1);
+				// for some unknown reason, Diagram children are inserted
+				// in reverse order by Graphiti
+				if (container instanceof Diagram)
+					childShapes.add(0,childContainer);
+				else
+					childShapes.add(childContainer);
 			}
 		}
 
@@ -122,38 +137,44 @@ public class ShapeLayoutManager {
 		// arrange the threads
 		int x = HORZ_PADDING;
 		int y = VERT_PADDING;
-		int maxHeight = VERT_PADDING;
-		int maxWidth = 0;
 		
 		for (List<ContainerShape[]> thread : threads) {
 			// stack the threads on top of each other
 			x = HORZ_PADDING;
-			int maxThreadHeight = 0;
+			int maxHeight = 0;
 			for (ContainerShape[] shapes : thread) {
 				for (ContainerShape shape : shapes) {
-					moveShape(container, shape, x, y);
 					IDimension size = GraphicsUtil.calculateSize(shape);
-					if (size.getHeight() > maxThreadHeight)
-						maxThreadHeight = size.getHeight();
-					x += size.getWidth() + HORZ_PADDING;
-					if (x > maxWidth)
-						maxWidth = x;
+					if (size.getHeight() > maxHeight)
+						maxHeight = size.getHeight();
 				}
 			}
-			y += maxThreadHeight + VERT_PADDING;
-			maxHeight += maxThreadHeight + VERT_PADDING;
-		}
-		
-		// now resize the container so that all children are visible
-		if (!(container instanceof Diagram)) {
-			resizeShape(container, maxWidth, maxHeight);
+			for (ContainerShape[] shapes : thread) {
+				for (ContainerShape shape : shapes) {
+					IDimension size = GraphicsUtil.calculateSize(shape);
+					int dy = (maxHeight - size.getHeight()) / 2;
+					moveShape(container, shape, x, y + dy);
+					x += size.getWidth() + HORZ_PADDING;
+				}
+			}
+			y += maxHeight + VERT_PADDING;
 		}
 
 		stackShapes(container, unconnectedShapes);
 		if (startShapes.size()==0 && endShapes.size()==0 && middleShapes.size()>0)
 			stackShapes(container, middleShapes);
+		
+		// now resize the container so that all children are visible
+		if (!(container instanceof Diagram)) {
+			resizeContainerShape(container);
+		}
+
+		// TODO: remove this temporary hack to fix Manhattan Router issue
+		for (ContainerShape child : childShapes) {
+			ConnectionFeatureContainer.updateConnections(editor.getDiagramTypeProvider().getFeatureProvider(), child);
+		}
 	}
-	
+
 	private void stackShapes(ContainerShape container, List<ContainerShape> unconnectedShapes) {
 		// stack any unconnected shapes on top of each other
 		// first stack shapes that are NOT containers (like DataObject, DataStore, etc.)
@@ -162,10 +183,13 @@ public class ShapeLayoutManager {
 		int x = HORZ_PADDING;
 		int y = VERT_PADDING;
 		if (unconnectedShapes.size()>0) {
+			List<ContainerShape> children = getContainerShapeChildren(container);
 			for (ContainerShape shape : unconnectedShapes) {
-				if (getChildren(shape).size()==0) {
-					moveShape(container, shape, x, y);
+				if (getContainerShapeChildren(shape).size()==0) {
 					IDimension size = GraphicsUtil.calculateSize(shape);
+					Point p = moveShape(container, shape, x, y, children);
+					x = p.getX();
+					y = p.getY();
 					y += size.getHeight() + VERT_PADDING;
 					if (size.getWidth() > maxWidth)
 						maxWidth = size.getWidth();
@@ -178,21 +202,17 @@ public class ShapeLayoutManager {
 			x += maxWidth + HORZ_PADDING;
 			y = VERT_PADDING;
 			for (ContainerShape shape : unconnectedShapes) {
-				if (getChildren(shape).size()!=0) {
-					moveShape(container, shape, x, y);
+				if (getContainerShapeChildren(shape).size()!=0) {
 					IDimension size = GraphicsUtil.calculateSize(shape);
+					Point p = moveShape(container, shape, x, y, children);
+					x = p.getX();
+					y = p.getY();
 					y += size.getHeight() + VERT_PADDING;
 					if (size.getWidth() > maxWidth)
 						maxWidth = size.getWidth();
 				}
 			}
-			if (y>maxHeight)
-				maxHeight = y;
 		}
-		
-//		if (!(container instanceof Diagram)) {
-//			resizeShape(container, maxWidth, maxHeight);
-//		}
 	}
 	
 	private void moveShape(ContainerShape container, ContainerShape shape, int x, int y) {
@@ -204,6 +224,44 @@ public class ShapeLayoutManager {
 		if (moveFeature.canMoveShape(context)) {
 			moveFeature.moveShape(context);
 		}
+	}
+	
+	private Point moveShape(ContainerShape container, ContainerShape child, int x, int y, List<ContainerShape> allChildren) {
+		boolean intersects;
+		do {
+			intersects = false;
+			moveShape(container, child, x, y);
+			for (ContainerShape c : allChildren) {
+				if (c!=child && GraphicsUtil.intersects(child, c)) {
+					intersects = true;
+					y += VERT_PADDING;
+				}
+			}
+		}
+		while (intersects);
+		
+		return Graphiti.getCreateService().createPoint(x, y);
+	}
+	
+	private void resizeContainerShape(ContainerShape container) {
+		List<ContainerShape> children = getContainerShapeChildren(container);
+		ILocation containerLocation = layoutService.getLocationRelativeToDiagram(container);
+		int width = 0;
+		int height = 0;
+		
+		for (ContainerShape child : children) {
+			IDimension size = GraphicsUtil.calculateSize(child);
+			ILocation location = layoutService.getLocationRelativeToDiagram(child);
+			int x = location.getX() - containerLocation.getX();
+			int y = location.getY() - containerLocation.getY();
+			int w = x + size.getWidth();
+			int h = y + size.getHeight();
+			if (w>width)
+				width = w;
+			if (h>height)
+				height = h;
+		}
+		resizeShape(container, width + HORZ_PADDING, height + VERT_PADDING);
 	}
 	
 	private void resizeShape(ContainerShape container, int width, int height) {
@@ -283,7 +341,7 @@ public class ShapeLayoutManager {
 		if (diagram!=null) {
 			List<PictogramElement> list = Graphiti.getLinkService().getPictogramElements(diagram, be);
 			for (PictogramElement pe : list) {
-				if (pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe)) {
+				if (isChildShape(pe)) {
 					if (BusinessObjectUtil.getFirstBaseElement(pe) == be)
 						return (ContainerShape)pe;
 				}
@@ -296,15 +354,41 @@ public class ShapeLayoutManager {
 		return null;
 	}
 
-	private List<ContainerShape> getChildren(ContainerShape container) {
+	private List<ContainerShape> getContainerShapeChildren(ContainerShape container) {
 		
 		List<ContainerShape> childShapes = new ArrayList<ContainerShape>();
 		for (PictogramElement pe : container.getChildren()) {
-			if (pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe)) {
+			if (isChildShape(pe)) {
 				childShapes.add((ContainerShape)pe);
 			}
 		}
 		
 		return childShapes;
+	}
+	
+	private boolean isChildShape(PictogramElement pe) {
+		return pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe);
+	}
+	
+	private void dump(String label, ContainerShape shape) {
+		dump(0, label,shape,0,0);
+	}
+	
+	private void dump(int level, String label, ContainerShape shape) {
+		dump(level, label,shape,0,0);
+	}
+	
+	private void dump(int level, String label, ContainerShape shape, int x, int y) {
+		if (debug) {
+			EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+			for (int i=0; i<level; ++i)
+				System.out.print(".");
+			System.out.print(label+" "+be.eClass().getName()+"("+ModelUtil.getDisplayName(be)+")");
+			if (x>0 && y>0) {
+				System.out.println(" at "+x+", "+y);
+			}
+			else
+				System.out.println("");
+		}
 	}
 }

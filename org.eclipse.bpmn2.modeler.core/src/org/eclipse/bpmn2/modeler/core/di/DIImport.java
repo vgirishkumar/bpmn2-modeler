@@ -68,6 +68,7 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Size;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
@@ -105,7 +106,9 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.PartInitException;
 
 @SuppressWarnings("restriction")
 public class DIImport {
@@ -370,13 +373,14 @@ public class DIImport {
 					// to choose which ones to create
 					if (missing.hasChildren()) {
 						MissingDIElementsDialog dlg = new MissingDIElementsDialog(missing);
-						dlg.open();
-						createMissingDIElements(missing);
-						
-						for (DiagramElementTreeNode node : missing.getChildren()) {
-							if (node.getChecked()) {
-								ShapeLayoutManager layoutManager = new ShapeLayoutManager(editor);
-								layoutManager.layout(node.getBaseElement());
+						if (dlg.open()==Window.OK) {
+							createMissingDIElements(missing);
+							
+							for (DiagramElementTreeNode node : missing.getChildren()) {
+								if (node.getChecked()) {
+									ShapeLayoutManager layoutManager = new ShapeLayoutManager(editor);
+									layoutManager.layout(node.getBaseElement());
+								}
 							}
 						}
 					}
@@ -521,18 +525,23 @@ public class DIImport {
 		return null;
 	}
 	
-	private BPMNShape createMissingDIElement(DiagramElementTreeNode node, List<BaseElement> created) {
+	private BPMNShape createMissingDIElement(DiagramElementTreeNode node, int x, int y, List<BaseElement> created) {
 		BaseElement element = node.getBaseElement();
 		BPMNShape bpmnShape = null;
 		BPMNDiagram bpmnDiagram = createDIDiagram(element);
+		
+//		System.out.println("creating "+element.eClass().getName()+"("+ModelUtil.getDisplayName(element)+") at "+x+", "+y);
 
 		if (element instanceof Lane) {
 			Lane lane = (Lane)element;
-			bpmnShape = createDIShape(bpmnDiagram, lane, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, lane, x, y);
 
 			for (DiagramElementTreeNode childNode : node.getChildren()) {
 				if (childNode.getChecked()) {
-					createMissingDIElement(childNode, created);
+					BPMNShape shape = createMissingDIElement(childNode, x, y, created);
+					if (shape!=null) {
+						y += shape.getBounds().getHeight() + 10;
+					}
 				}
 			}
 			created.add(lane);
@@ -542,52 +551,55 @@ public class DIImport {
 
 			for (DiagramElementTreeNode childNode : node.getChildren()) {
 				if (childNode.getChecked()) {
-					createMissingDIElement(childNode, created);
+					BPMNShape shape = createMissingDIElement(childNode, x, y, created);
+					if (shape!=null) {
+						y += shape.getBounds().getHeight() + 10;
+					}
 				}
 			}
 			
 			if (!(container instanceof RootElement)) {
 				// This can only be either a SubChoreography or SubProcess.
-				// In this case, determine the bounds of the container figure
-				// by computing the smallest bounding rectangle that can contain
-				// all of the child figures.
 				created.add(container);
 			}			
 		}
 		else if (element instanceof Collaboration) {
 			for (DiagramElementTreeNode childNode : node.getChildren()) {
 				if (childNode.getChecked()) {
-					createMissingDIElement(childNode, created);
+					BPMNShape shape = createMissingDIElement(childNode, x, y, created);
+					if (shape!=null) {
+						y += shape.getBounds().getHeight() + 10;
+					}
 				}
 			}
 		}
 		else if (element instanceof Participant) {
 			Participant participant = (Participant)element;
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof ConversationNode) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof FlowNode) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof DataObject) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof DataObjectReference) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof DataStore) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		else if (element instanceof DataStoreReference) {
-			bpmnShape = createDIShape(bpmnDiagram, element, 0, 0);
+			bpmnShape = createDIShape(bpmnDiagram, element, x, y);
 			created.add(element);
 		}
 		return bpmnShape;
@@ -597,10 +609,16 @@ public class DIImport {
 
 		// look for any BPMN2 elements that do not have corresponding DI elements
 		// and create DI elements for them. First, handle the BPMNShape objects:
+		int x = 102400;
+		int y = 0;
 		List<BaseElement> shapes = new ArrayList<BaseElement>();
 		for (DiagramElementTreeNode node : missing.getChildren()) {
-			if (node.getChecked())
-				createMissingDIElement(node, shapes);
+			if (node.getChecked()) {
+				BPMNShape shape = createMissingDIElement(node, x, y, shapes);
+				if (shape!=null) {
+					y += shape.getBounds().getHeight() + 10;
+				}
+			}
 		}
 		
 		// Next create the BPMNEdge objects. At this point, all of the source
@@ -708,7 +726,8 @@ public class DIImport {
 			bounds.setHeight(size.getHeight());
 			bpmnShape.setBounds(bounds);
 			plane.getPlaneElement().add(bpmnShape);
-			
+			Bpmn2Preferences.getInstance(bpmnDiagram.eResource()).applyBPMNDIDefaults(bpmnShape, null);
+
 			ModelUtil.setID(bpmnShape);
 			importShape(bpmnShape);
 		}
