@@ -39,7 +39,7 @@ public class JbpmTaskPropertySection extends TaskPropertySection {
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
 			EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-			if (object!=null && Bpmn2Package.eINSTANCE.getTask() == object.eClass()) {
+			if (object!=null && Bpmn2Package.eINSTANCE.getTask().isInstance(object)) {
 				List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
 				for (EStructuralFeature f : features) {
 					if ("displayName".equals(f.getName()))

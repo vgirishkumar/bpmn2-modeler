@@ -24,6 +24,8 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -42,6 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -160,6 +163,75 @@ public class GraphicsUtil {
 		public Polyline vertical;
 	}
 
+	public static class LineSegment {
+		private Point start;
+		private Point end;
+		
+		public LineSegment() {
+			this(0,0,0,0);
+		}
+		public LineSegment(Point start, Point end) {
+			this(start.getX(),start.getY(), end.getX(),end.getY());
+		}
+		public LineSegment(int x1, int y1, int x2, int y2) {
+			start = Graphiti.getCreateService().createPoint(x1, y1);
+			end = Graphiti.getCreateService().createPoint(x2, y2);
+		}
+		public void setStart(Point p) {
+			setStart(p.getX(),p.getY());
+		}
+		public void setStart(int x, int y) {
+			start.setX(x);
+			start.setY(y);
+		}
+		public void setEnd(Point p) {
+			setEnd(p.getX(),p.getY());
+		}
+		public void setEnd(int x, int y) {
+			end.setX(x);
+			end.setY(y);
+		}
+		public Point getStart() {
+			return start;
+		}
+		public Point getEnd() {
+			return end;
+		}
+		public double getDistance(Point p) {
+			// for vertical and horizontal line segments, the distance to a point
+			// is the orthogonal distance if the point lies between the start and end
+			// points of the line segment
+			if (isHorizontal()) {
+				if (p.getX()>=start.getX() && p.getX()<=end.getX())
+					return Math.abs(start.getY() - p.getY());
+			}
+			if (isVertical()) {
+				if (p.getY()>=start.getY() && p.getY()<=end.getY())
+					return Math.abs(start.getX() - p.getX());
+			}
+			// otherwise, the distance is the minimum of the distances
+			// of the point to the two endpoints of the line segment
+	        double d1 = getDistanceToStart(p);
+	        double d2 = getDistanceToEnd(p);
+	        return Math.min(d1, d2);
+		}
+		public boolean isHorizontal() {
+			return Math.abs(start.getY() - end.getY()) <= 1;
+		}
+		public boolean isVertical() {
+			return Math.abs(start.getX() - end.getX()) <= 1;
+		}
+		public boolean isSlanted() {
+			return !isHorizontal() && !isVertical();
+		}
+		public double getDistanceToStart(Point p) {
+	        return Math.hypot(start.getX()-p.getX(), start.getY()-p.getY());
+		}
+		public double getDistanceToEnd(Point p) {
+	        return Math.hypot(end.getX()-p.getX(), end.getY()-p.getY());
+		}
+	}
+	
 	/* GATEWAY */
 
 	private static final String DELETABLE_PROPERTY = "deletable";
@@ -1168,7 +1240,7 @@ public class GraphicsUtil {
 			return getGatewaySize(diagram);
 		if (be instanceof Activity)
 			return getActivitySize(diagram);
-		return null;
+		return new Size(TASK_DEFAULT_WIDTH,TASK_DEFAULT_HEIGHT);
 	}
 	
 	public static boolean contains(Shape shape, Point point) {
@@ -1222,7 +1294,7 @@ public class GraphicsUtil {
 				loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 		
 //		java.awt.Rectangle rect = new java.awt.Rectangle(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
-//		return rect.intersectsLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+//		return rect.intersectsLine(start.getX(), start.getY(), end.getX(), end.getY());
 	}
 
 	/**
@@ -1366,4 +1438,104 @@ public class GraphicsUtil {
 		}
 		return dim;
 	}
+	
+	public static boolean isLabelShape(Shape shape) {
+		return Graphiti.getPeService().getPropertyValue(shape, LABEL_PROPERTY) != null;
+	}
+	
+	public static boolean debug = false;
+
+	public static void dump(String label, List<ContainerShape> shapes) {
+		if (shapes!=null) {
+			if (debug) {
+				System.out.println(label);
+				for (ContainerShape shape : shapes)
+					dump(1, "",shape,0,0);
+				System.out.println("");
+			}
+		}
+	}
+	
+	public static void dump(String label, Anchor anchor) {
+		if (debug) {
+			System.out.print(label+" ");
+			ILocation loc = peService.getLocationRelativeToDiagram(anchor);
+			System.out.print(" at "+loc.getX()+", "+loc.getY());
+			dump(" parent=", (ContainerShape)anchor.getParent());
+			if (AnchorUtil.isBoundaryAnchor(anchor)) {
+				String property = Graphiti.getPeService().getPropertyValue(
+						anchor, AnchorUtil.BOUNDARY_FIXPOINT_ANCHOR);
+				if (property != null && anchor instanceof FixPointAnchor) {
+					System.out.println(" location="+AnchorLocation.getLocation(property));
+				}
+			}
+		}
+	}
+	
+	public static void dump(String label, ContainerShape shape) {
+		dump(0, label,shape,0,0);
+	}
+	
+	public static void dump(int level, String label, ContainerShape shape) {
+		dump(level, label,shape,0,0);
+	}
+	
+	public static void dump(int level, String label, ContainerShape shape, int x, int y) {
+		if (debug) {
+			EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+			String id = "";
+			if (be instanceof BaseElement) {
+				id = " " + ((BaseElement)be).getId();
+			}
+			for (int i=0; i<level; ++i)
+				System.out.print("    ");
+			System.out.print(
+					label+" "+
+					be.eClass().getName()+id+": "+
+					ModelUtil.getDisplayName(be)
+			);
+			if (x>0 && y>0) {
+				System.out.println(" at "+x+", "+y);
+			}
+			else
+				System.out.println("");
+		}
+	}
+	
+	public static LineSegment findNearestEdge(Shape shape, Point p) {
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
+		IDimension size = GraphicsUtil.calculateSize(shape);
+		LineSegment top = new LineSegment(loc.getX(),loc.getY(),
+				loc.getX()+size.getWidth(), loc.getY());
+		LineSegment left = new LineSegment(loc.getX(),loc.getY(), loc.getX(),
+				loc.getY()+size.getHeight());
+		LineSegment bottom = new LineSegment(loc.getX(), loc.getY()+size.getHeight(),
+				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
+		LineSegment right = new LineSegment(loc.getX()+size.getWidth(), loc.getY(),
+				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
+		double minDist;
+		double dist;
+		LineSegment result;
+		
+		minDist = top.getDistance(p);
+		result = top;
+		
+		dist = bottom.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = bottom;
+		}
+		dist = left.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = left;
+		}
+		dist = right.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = right;
+		}
+		return result;
+	}
+
 }

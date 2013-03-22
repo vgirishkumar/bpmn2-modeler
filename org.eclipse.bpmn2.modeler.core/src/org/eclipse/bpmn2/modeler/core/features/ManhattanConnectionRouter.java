@@ -15,15 +15,13 @@ package org.eclipse.bpmn2.modeler.core.features;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 /**
  * A Connection Router that constrains all line segments of a connection to be either
@@ -46,13 +44,16 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Point addedBendpoint = getAddedBendpoint(ffc);
 
 		if (addedBendpoint!=null || movedBendpoint!=null) {
-//			createNewPoints(newStart, newEnd, ffc.getBendpoints());
 			List<Point> points = new ArrayList<Point>();
-			for (Point p : ffc.getBendpoints()) {
-				points.add(p);
-				if (p==addedBendpoint || p==movedBendpoint)
-					break;
-			}
+			if (movedBendpoint!=null)
+				points.add(movedBendpoint);
+			if (addedBendpoint!=null)
+				points.add(addedBendpoint);
+//			for (Point p : ffc.getBendpoints()) {
+//				points.add(p);
+//				if (p==addedBendpoint || p==movedBendpoint)
+//					break;
+//			}
 			createNewPoints(newStart, newEnd, points);
 		}
 		else {
@@ -83,6 +84,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		final int offset = 20;
 		
 		for (int tries=0; tries<4; ++tries) {
+			changed = calculateAnchors();
 			for (int i=0; i<newPoints.size()-1; ++i) {
 				p0 = i>0 ? newPoints.get(i-1) : null;
 				p1 = newPoints.get(i);
@@ -90,6 +92,8 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 				if (isSlanted(p1, p2)) {
 					Point m = GraphicsUtil.getMidpoint(p1, p2);
+					boolean isLastBendpoint = (i+2==newPoints.size());
+
 					try {
 						d1 = getDirection(i); 
 						d2 = getDirection(i+1);
@@ -100,126 +104,98 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					switch (d1) {
 					case UP:
 					case DOWN:
-						if (p2 == movedBendpoint) {
-							// the second point is movable - adjust it so that it is directly above or below p1
-							p2.setX(p1.getX());
-						}
-//						else if (p2 == addedBendpoint) {
-//							p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
-//							newPoints.add(++i,p);
-//						}
-						else if (p0!=null) {
-							if (i+2==newPoints.size()) {
+						if (p0!=null) {
+							if (isLastBendpoint) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.LEFT || d2==Direction.RIGHT){
-									p = GraphicsUtil.createPoint(m.getX(),p0.getY());
-									newPoints.add(++i,p);
-									p = GraphicsUtil.createPoint(m.getX(),p2.getY());
-									newPoints.add(++i,p);
+									insertPoint(++i, m.getX(),p0.getY());
+									insertPoint(++i, m.getX(),p2.getY());
 									break;
 								}
+								else {
+									p1.setX(p2.getX());
+								}
 							}
-							p1.setX(p2.getX());
-							p1.setY(p0.getY());
+							else {
+								p1.setX(p2.getX());
+								p1.setY(p0.getY());
+							}
 						}
 						else {
 							switch (d2) {
 							case LEFT:
 							case RIGHT:
 								if (d1==Direction.DOWN && p2.getY() < p1.getY()) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() + offset);
+									insertPoint(i+2, m.getX(),p1.getY() + offset);
 									break;
 								}
 								if (d1==Direction.UP && p2.getY() > p1.getY()) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() - offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() - offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() - offset);
+									insertPoint(i+2, m.getX(),p1.getY() - offset);
 									break;
 								}
-								p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
-								newPoints.add(i+1,p);
+								insertPoint(i+1, p1.getX(),p2.getY());
 								break;
 							case UP:
 								if (d1==Direction.DOWN) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() + offset);
+									insertPoint(i+2, m.getX(),p1.getY() + offset);
 									break;
 								}
 							case DOWN:
-								p = GraphicsUtil.createPoint(p1.getX(),m.getY());
-								newPoints.add(++i,p);
-								p = GraphicsUtil.createPoint(p2.getX(),m.getY());
-								newPoints.add(++i,p);
+								insertPoint(++i, p1.getX(),m.getY());
+								insertPoint(++i, p2.getX(),m.getY());
 								break;
 							}
 						}
 						break;
 					case LEFT:
 					case RIGHT:
-						if (p2 == movedBendpoint) {
-							// the second point is movable - adjust it so that it is directly right or left of p1
-							p2.setY(p1.getY());
-						}
-//						else if (p2 == addedBendpoint) {
-//							p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
-//							newPoints.add(++i,p);
-//						}
-						else if (p0!=null) {
-							if (i+2==newPoints.size()) {
+						if (p0!=null) {
+							if (isLastBendpoint) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.UP || d2==Direction.DOWN){
-									p = GraphicsUtil.createPoint(p0.getX(),m.getY());
-									newPoints.add(++i,p);
-									p = GraphicsUtil.createPoint(p2.getX(),m.getY());
-									newPoints.add(++i,p);
+									insertPoint(++i, p0.getX(),m.getY());
+									insertPoint(++i, p2.getX(),m.getY());
 									break;
 								}
+								else {
+									p1.setY(p2.getY());
+								}
 							}
-							p1.setX(p0.getX());
-							p1.setY(p2.getY());
+							else {
+								p1.setX(p0.getX());
+								p1.setY(p2.getY());
+							}
 						}
 						else {
 							switch (d2) {
 							case UP:
 							case DOWN:
 								if (d1==Direction.RIGHT && p2.getX() < p1.getX()) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+2, p1.getX() + offset,m.getY());
 									break;
 								}
 								if (d1==Direction.LEFT && p2.getX() > p1.getX()) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+1,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+1, p1.getX() + offset,m.getY());
 									break;
 								}
-								p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
-								newPoints.add(i+1,p);
+								insertPoint(i+1, p2.getX(),p1.getY());
 								break;
 							case LEFT:
 								if (d1==Direction.RIGHT) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+2, p1.getX() + offset,m.getY());
 									break;
 								}
 							case RIGHT:
-								p = GraphicsUtil.createPoint(m.getX(),p1.getY());
-								newPoints.add(++i,p);
-								p = GraphicsUtil.createPoint(m.getX(),p2.getY());
-								newPoints.add(++i,p);
+								insertPoint(++i, m.getX(),p1.getY());
+								insertPoint(++i, m.getX(),p2.getY());
 								break;
 							}
 						}
@@ -231,21 +207,61 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			
 			// handle the special case of multiple connections with the same bendpoints
 			// by offsetting this connection either horizontally or vertically by a few pixels
-			updateConnection();
 			if (offsetStackedConnections())
 				changed = true;
 			
 			// make sure everything is still OK with the BendpointRouter
 			if (changed) {
 				updateConnection();
-				if (super.calculateRoute() == false) {
-					// super hasn't made any changes so we're done here
-					// otherwise we would have to do our routing again
-					break;
-				}
+				changed = super.calculateRoute();
 			}
+
+			if (!changed)
+				break;
 		}
 		
 		return changed;
+	}
+	
+	protected void finalizeConnection() {
+		// TODO: should we keep this???
+		// remove any "short" line segments by adjusting the next
+		// bendpoint either horizontally or vertically by the length
+		// of the short segment
+//		for (int i=1; i<newPoints.size()-2; ++i) {
+//			Point p1 = newPoints.get(i);
+//			Point p2 = newPoints.get(i+1);
+//			int d = getShortSegment(p1,p2);
+//			if (d!=0) {
+//				Point p3 = newPoints.get(i+2);
+//				if (isVertical(p1,p2)) {
+//					p3.setY(p3.getY() + d);
+//				}
+//				else {
+//					p3.setX(p3.getX() + d);
+//				}
+//			}
+//			p1 = p2;
+//		}
+		
+		super.finalizeConnection();
+	}
+	
+	private int getShortSegment(Point p1, Point p2) {
+		if (isVertical(p1,p2)) {
+			int d = p2.getY() - p1.getY();
+			if (Math.abs(d) < 10)
+				return d;
+		}
+		else if (isHorizontal(p1,p2)) {
+			int d = p2.getX() - p1.getX();
+			if (Math.abs(d) < 10)
+				return d;
+		}
+		return 0;
+	}
+	
+	protected boolean fixCollisions() {
+		return false;
 	}
 }

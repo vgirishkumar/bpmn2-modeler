@@ -130,7 +130,7 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 					String objectName = flowNode.getName();
 					if (objectName!=null && objectName.isEmpty())
 						objectName = null;
-					String typeName = ModelUtil.getDisplayName(flowNode);
+					String typeName = ModelUtil.getLabel(flowNode);
 					if (allowDefault(sequenceFlow)) {
 						setDefaultFlowCheckbox.setVisible(true);
 						setDefaultFlowCheckbox.setSelection( getDefault(sequenceFlow) == sequenceFlow );

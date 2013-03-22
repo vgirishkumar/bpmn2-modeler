@@ -940,11 +940,11 @@
 <!-- Tool Palettes -->
 
 		<toolPalette
-			id="org.eclipse.bpmn2.modeler.toolpalette.simple"
+			id="org.jboss.runtime.jbpm5.toolpalette.simple"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Simple">
 			
-			<category name="Activities">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Activities" name="Activities">
 				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
 				<tool name="Subprocess" object="SubProcess"/>
 				<tool name="Reusable Subprocess" object="CallActivity"/>
@@ -957,16 +957,16 @@
 				<tool name="Send Task" object="SendTask"/>
 				<tool name="Receive Task" object="ReceiveTask"/>
 			</category>
-			<category name="Connections">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Connection" name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
-			<category name="Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Events" name="Events">
 				<tool name="Start" object="StartEvent" icon="StartEvent.png"/>
 				<tool name="End" object="EndEvent" icon="EndEvent.png"/>
 				<tool name="Error End" object="EndEvent+ErrorEventDefinition" icon="ErrorEndEvent.png"/>
 				<tool name="Terminate End" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
-			<category name="Gateways">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Gateways" name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
 				<tool name="Inclusive" object="InclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
@@ -974,33 +974,33 @@
 		</toolPalette>
 		
 		<toolPalette
-			id="org.eclipse.bpmn2.modeler.toolpalette.ruleFlow"
+			id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="RuleFlow">
 			
-			<category name="Activities">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Activities" name="Activities">
 				<tool name="Business Rule Task" object="BusinessRuleTask"/>
 				<tool name="Call Activity" object="CallActivity"/>
 				<tool name="Script Task" object="ScriptTask"/>
 			</category>
-			<category name="Connections">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Connections" name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
-			<category name="Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Events" name="Events">
 				<tool name="Terminate" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
-			<category name="Gateways">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Gateways" name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
 			</category>
 		</toolPalette>
 		
 		<toolPalette
-			id="org.eclipse.bpmn2.modeler.toolpalette.full"
+			id="org.jboss.runtime.jbpm5.toolpalette.full"
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Full">
 			
-			<category name="Activities">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Activities" name="Activities">
 				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
 				<tool name="Subprocess" object="SubProcess"/>
 				<tool name="Reusable Subprocess" object="CallActivity"/>
@@ -1013,19 +1013,19 @@
 				<tool name="Send Task" object="SendTask"/>
 				<tool name="Receive Task" object="ReceiveTask"/>
 			</category>
-			<category name="Artifacts">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Artifacts" name="Artifacts">
 				<tool name="Group" object="Group"/>
 				<tool name="Text Annotation" object="TextAnnotation"/>
 			</category>
-			<category name="Connections">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Connections" name="Connections">
 				<tool name="Association (undirected)" object="Association[$associationDirection=None]"/>
 				<tool name="Association (one-way)" object="Association[$associationDirection=One]"/>
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
-			<category name="Data Objects">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.DataObjects" name="Data Objects">
 				<tool name="Data Object" object="DataObject"/>
 			</category>
-			<category name="End Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.EndEvents" name="End Events">
 				<tool name="Cancel" object="EndEvent+CancelEventDefinition" icon="CancelEndEvent.png"/>
 				<tool name="Compensation" object="EndEvent+CompensateEventDefinition" icon="CompensationEndEvent.png"/>
 				<tool name="End" object="EndEvent" icon="EndEvent.png"/>
@@ -1035,13 +1035,13 @@
 				<tool name="Signal" object="EndEvent+SignalEventDefinition" icon="SignalEndEvent.png"/>
 				<tool name="Terminate" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
-			<category name="Gateways">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Gateways" name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
 				<tool name="Event-based" object="EventBasedGateway"/>
 				<tool name="Inclusive" object="InclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
 			</category>
-			<category name="Intermediate Catch Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.CatchEvents" name="Intermediate Catch Events">
 				<tool name="Conditional" object="IntermediateCatchEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
 				<tool name="Error" object="IntermediateCatchEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
 				<tool name="Escalation" object="IntermediateCatchEvent+EscalationEventDefinition" icon="EscalationCatchEvent.png"/>
@@ -1049,13 +1049,13 @@
 				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
 				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
 			</category>
-			<category name="Intermediate Throw Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.ThrowEvents" name="Intermediate Throw Events">
 				<tool name="Escalation" object="IntermediateThrowEvent+EscalationEventDefinition" icon="EscalationThrowEvent.png"/>
 				<tool name="Intermediate" object="IntermediateThrowEvent" icon="ThrowEvent.png"/>
 				<tool name="Message" object="IntermediateThrowEvent+MessageEventDefinition" icon="MessageThrowEvent.png"/>
 				<tool name="Signal" object="IntermediateThrowEvent+SignalEventDefinition" icon="SignalThrowEvent.png"/>
 			</category>
-			<category name="Start Events">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.StartEvents" name="Start Events">
 				<tool name="Compensation" object="StartEvent+CompensateEventDefinition" icon="CompensationStartEvent.png"/>
 				<tool name="Conditional" object="StartEvent+ConditionalEventDefinition" icon="ConditionalStartEvent.png"/>
 				<tool name="Error" object="StartEvent+ErrorEventDefinition" icon="ErrorStartEvent.png"/>
@@ -1065,11 +1065,11 @@
 				<tool name="Signal" object="StartEvent+SignalEventDefinition" icon="SignalStartEvent.png"/>
 				<tool name="Timer" object="StartEvent+TimerEventDefinition" icon="TimerStartEvent.png"/>
 			</category>
-			<category name="Swimlanes">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.SwimLanes" name="Swimlanes">
 				<tool name="Lane" object="Lane"/>
 			</category>
 			
-			<category name="Workflow Patterns">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Patterns" name="Workflow Patterns">
 				<tool name="Sub Process with Start-&gt;End"
 					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
 			

@@ -313,9 +313,19 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							currentRuntime.getShapeStyles().put(eclass.getInstanceClass(), ss);
 						}
 						else if (e.getName().equals("toolPalette")) {
-							ToolPaletteDescriptor tp = new ToolPaletteDescriptor();
-							tp.create(e);
-							currentRuntime.addToolPalette(tp);
+							ToolPaletteDescriptor toolPalette = null;
+							String id = e.getAttribute("id");
+							for (ToolPaletteDescriptor tp : currentRuntime.getToolPalettes()) {
+								if (tp.id.equals(id)) {
+									toolPalette = tp;
+									break;
+								}
+							}
+							if (toolPalette==null) {
+								toolPalette = new ToolPaletteDescriptor();
+								currentRuntime.addToolPalette(toolPalette);
+							}
+							toolPalette.create(e);
 						}
 					}
 				}
@@ -328,6 +338,10 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 					if (rt.modelDescriptor==null) {
 						rt.modelDescriptor = getDefaultRuntime().getModelDescriptor(); 
 					}
+					for (ToolPaletteDescriptor tp : rt.getToolPalettes()) {
+						tp.sortCategories();
+					}
+					
 					// add customTask and modelExtension features to modelEnablements
 //					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
 //						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {

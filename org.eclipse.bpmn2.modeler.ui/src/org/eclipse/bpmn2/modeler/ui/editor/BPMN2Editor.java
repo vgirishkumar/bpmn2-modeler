@@ -410,7 +410,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			return false;
 		return super.isDirty();
 	}
-    
+	
 	public Bpmn2Preferences getPreferences() {
 		if (preferences==null) {
 			loadPreferences(getProject());
@@ -739,7 +739,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		String name = getEditorInput().getName();
 		setPartName(URI.decode(name));
 	}
-	
+
 	private void addFileChangeListener() {
 		if (fileChangeListener==null) {
 			fileChangeListener = new IFileChangeListener() {
@@ -1016,7 +1016,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		});
 	}
-	
+
 	protected void reopenEditor(final IPath newFilePath) {
 		Display display = getSite().getShell().getDisplay();
 		display.syncExec(new Runnable() {
@@ -1034,20 +1034,20 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					try {
 						getSite().getPage().openEditor(new FileEditorInput(renamedFile), EDITOR_ID);
 					} catch (PartInitException e) {
-						Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
-						ErrorUtils.showErrorWithLogging(status);
-					}
-				}
+		Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+		ErrorUtils.showErrorWithLogging(status);
+	}
+	}
 			}
 		});
-	}
+		}
 
 	// Show error dialog and log the error
 	private void showErrorDialogWithLogging(Exception e) {
 		Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
 		ErrorUtils.showErrorWithLogging(status);
 	}
-
+	
 	////////////////////////////////////////////////////////////////////////////////
 	// Other handlers
 	////////////////////////////////////////////////////////////////////////////////

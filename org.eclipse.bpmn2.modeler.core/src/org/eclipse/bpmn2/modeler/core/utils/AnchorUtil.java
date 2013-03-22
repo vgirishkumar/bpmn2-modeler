@@ -389,16 +389,69 @@ public class AnchorUtil {
 			}
 		}
 		
+//		System.out.println("findNearestBoundaryAnchor for="+p1.getX()+","+p1.getY());
 		double minDist = Double.MAX_VALUE;
+		double d1Dist = 0;
 		BoundaryAnchor nearestBoundaryAnchor = null;
 		for (Entry<AnchorLocation, BoundaryAnchor> entry : boundaryAnchors.entrySet()) {
 			BoundaryAnchor ba = entry.getValue();
 			Point p = GraphicsUtil.createPoint(ba.anchor); 
 			double dist = GraphicsUtil.getLength(p1, p);
-//			System.out.println("findNearestBoundaryAnchor: point="+p.getX()+","+p.getY()+" anchor="+ba.locationType+" dist="+dist);
-			if (dist < minDist) {
-				minDist = dist;
-				nearestBoundaryAnchor = ba;
+//			System.out.println("  at="+p.getX()+","+p.getY()+" anchor="+ba.locationType+" dist="+dist);
+			if (dist < minDist)
+			{
+				double d1 = 0;
+				if (false) {
+					minDist = dist;
+					nearestBoundaryAnchor = ba;
+				}
+				else {
+					// is this really the best choice?
+					switch (ba.locationType) {
+					case TOP:
+						d1 = p.getY() - p1.getY();
+						break;
+					case BOTTOM:
+						d1 = p1.getY() - p.getY();
+						break;
+					case LEFT:
+						d1 = p.getX() - p1.getX();
+						break;
+					case RIGHT:
+						d1 = p1.getX() - p.getX();
+						break;
+					}
+				}
+				
+				// is this really the best choice?
+				if (nearestBoundaryAnchor==null) {
+					d1Dist = d1;
+					minDist = dist;
+					nearestBoundaryAnchor = ba;
+				}
+				else {
+					p = GraphicsUtil.createPoint(nearestBoundaryAnchor.anchor); 
+					switch (nearestBoundaryAnchor.locationType) {
+					case TOP:
+						d1Dist = p.getY() - p1.getY();
+						break;
+					case BOTTOM:
+						d1Dist = p1.getY() - p.getY();
+						break;
+					case LEFT:
+						d1Dist = p.getX() - p1.getX();
+						break;
+					case RIGHT:
+						d1Dist = p1.getX() - p.getX();
+						break;
+					}
+//					System.out.println("  d1="+d1+" d1Dist="+d1Dist);
+					if (d1 > d1Dist) {
+						d1Dist = d1;
+						minDist = dist;
+						nearestBoundaryAnchor = ba;
+					}
+				}
 			}
 		}
 //		System.out.println("  found="+nearestBoundaryAnchor.locationType);
