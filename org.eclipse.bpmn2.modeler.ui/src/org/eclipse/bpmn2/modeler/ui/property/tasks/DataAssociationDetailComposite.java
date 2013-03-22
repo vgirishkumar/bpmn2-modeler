@@ -173,9 +173,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		
 		Activity activity = null;
 		List<? extends DataAssociation> associations = null;
-		EObject container = be.eContainer();
+		EObject container = ModelUtil.getContainer(be);
 		if (container instanceof InputOutputSpecification || container instanceof MultiInstanceLoopCharacteristics) {
-			EObject containerContainer = container.eContainer();
+			EObject containerContainer = ModelUtil.getContainer(container);
 			if (containerContainer instanceof Activity) {
 				activity = (Activity)containerContainer;
 				if (isInput)
@@ -187,7 +187,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				super.createBindings(be);
 				return;
 			}
-			DataInputOutputDetailComposite details = new DataInputOutputDetailComposite(this,SWT.NONE);
+			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, this,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = (isInput ? "Input" : "Output") +
 				" Parameter Mapping Details";
@@ -200,7 +200,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				association.setTargetRef((ItemAwareElement) be);
 				InsertionAdapter.add(throwEvent, PACKAGE.getThrowEvent_DataInputAssociation(), association);
 			}
-			DataInputOutputDetailComposite details = new DataInputOutputDetailComposite(this,SWT.NONE);
+			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, this,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = "Data Input Mapping Details";
 		}
@@ -212,7 +212,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				association.getSourceRef().add((ItemAwareElement) be);
 				InsertionAdapter.add(catchEvent, PACKAGE.getCatchEvent_DataOutputAssociation(), association);
 			}
-			DataInputOutputDetailComposite details = new DataInputOutputDetailComposite(this,SWT.NONE);
+			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, this,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = "Data Output Mapping Details";
 		}
@@ -264,6 +264,18 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		createWidgets();
 	}
 	
+	/**
+	 * Create the composite which supports editing the DataInput/DataOutput details.
+	 * 
+	 * @param be the selected business object
+	 * @param parent the parent composite
+	 * @param style SWT style bits
+	 * @return a new DataInputOutputDetailComposite.
+	 */
+	protected DataInputOutputDetailComposite createDataInputOutputDetailComposite(EObject be, Composite parent, int style) {
+	    return new DataInputOutputDetailComposite(parent, style);
+	}
+
 	private MapType getMapType() {
 		if (association!=null) {
 			if (association.getAssignment().size()>1) {
@@ -298,6 +310,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				break;
 			}
 		}
+        if (getTabbedPropertySheetPage() != null) {
+            getTabbedPropertySheetPage().resizeScrolledComposite();
+        }
 	}
 
 	private void updateWidgets() {
@@ -370,9 +385,9 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			this.createLabel(this, "The I/O Parameter \""+parameterName+"\" can not have Mappings.");
 			return;
 		} else {
-			EObject container = businessObject.eContainer();
+			EObject container = ModelUtil.getContainer(businessObject);
 			if (container instanceof InputOutputSpecification) {
-				EObject containerContainer = container.eContainer();
+				EObject containerContainer = ModelUtil.getContainer(container);
 				if (containerContainer instanceof Activity) {
 					Activity activity = (Activity)containerContainer;
 
@@ -504,7 +519,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 						@Override
 						public Composite getAttributesParent() {
-							return propertyComposite;
+							return this;
 						}
 
 						@Override

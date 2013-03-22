@@ -102,7 +102,7 @@ public class InsertionAdapter extends EContentAdapter {
 				executeChildren((List)o);
 			}
 			else if (o instanceof EObject) {
-				executeChildren((EObject)o);
+			    executeIfNeeded((EObject)o);
 			}
 		}
 	}

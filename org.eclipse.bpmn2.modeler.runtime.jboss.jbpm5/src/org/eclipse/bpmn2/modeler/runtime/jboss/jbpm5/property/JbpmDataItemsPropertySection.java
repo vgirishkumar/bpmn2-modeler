@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -63,9 +64,9 @@ public class JbpmDataItemsPropertySection extends DataItemsPropertySection {
 					}
 					
 					protected EObject createObject() throws Exception {
-						String name = JbpmModelUtil.showImportDialog(object);
-						if (name!=null) {
-							ImportType it = JbpmModelUtil.addImport(name, object);
+						IType type = JbpmModelUtil.showImportDialog(object);
+						if (type!=null) {
+							ImportType it = JbpmModelUtil.addImport(type, object);
 							if (it==null)
 								throw new OperationCanceledException("Import Already Exists");
 							return it;

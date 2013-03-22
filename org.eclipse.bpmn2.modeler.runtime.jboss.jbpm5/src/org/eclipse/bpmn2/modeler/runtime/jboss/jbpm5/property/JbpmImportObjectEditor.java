@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
@@ -40,8 +41,8 @@ public class JbpmImportObjectEditor extends TextAndButtonObjectEditor {
 
 	@Override
 	protected void buttonClicked(int buttonId) {
-		String name = JbpmModelUtil.showImportDialog(object);
-		ImportType imp = JbpmModelUtil.addImport(name, object);
+	    IType type = JbpmModelUtil.showImportDialog(object);
+		ImportType imp = JbpmModelUtil.addImport(type, object);
 		if (imp!=null)
 			setText(imp.getName());
 	}
