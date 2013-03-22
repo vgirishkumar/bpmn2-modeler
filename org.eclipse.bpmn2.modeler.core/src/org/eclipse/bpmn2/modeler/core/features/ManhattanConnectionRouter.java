@@ -15,15 +15,13 @@ package org.eclipse.bpmn2.modeler.core.features;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 /**
  * A Connection Router that constrains all line segments of a connection to be either
@@ -100,23 +98,13 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					switch (d1) {
 					case UP:
 					case DOWN:
-						if (p2 == movedBendpoint) {
-							// the second point is movable - adjust it so that it is directly above or below p1
-							p2.setX(p1.getX());
-						}
-//						else if (p2 == addedBendpoint) {
-//							p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
-//							newPoints.add(++i,p);
-//						}
-						else if (p0!=null) {
+						if (p0!=null) {
 							if (i+2==newPoints.size()) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.LEFT || d2==Direction.RIGHT){
-									p = GraphicsUtil.createPoint(m.getX(),p0.getY());
-									newPoints.add(++i,p);
-									p = GraphicsUtil.createPoint(m.getX(),p2.getY());
-									newPoints.add(++i,p);
+									insertPoint(++i, m.getX(),p0.getY());
+									insertPoint(++i, m.getX(),p2.getY());
 									break;
 								}
 							}
@@ -128,58 +116,39 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							case LEFT:
 							case RIGHT:
 								if (d1==Direction.DOWN && p2.getY() < p1.getY()) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() + offset);
+									insertPoint(i+2, m.getX(),p1.getY() + offset);
 									break;
 								}
 								if (d1==Direction.UP && p2.getY() > p1.getY()) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() - offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() - offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() - offset);
+									insertPoint(i+2, m.getX(),p1.getY() - offset);
 									break;
 								}
-								p = GraphicsUtil.createPoint(p1.getX(),p2.getY());
-								newPoints.add(i+1,p);
+								insertPoint(i+1, p1.getX(),p2.getY());
 								break;
 							case UP:
 								if (d1==Direction.DOWN) {
-									p = GraphicsUtil.createPoint(p1.getX(),p1.getY() + offset);
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(m.getX(),p1.getY() + offset);
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX(),p1.getY() + offset);
+									insertPoint(i+2, m.getX(),p1.getY() + offset);
 									break;
 								}
 							case DOWN:
-								p = GraphicsUtil.createPoint(p1.getX(),m.getY());
-								newPoints.add(++i,p);
-								p = GraphicsUtil.createPoint(p2.getX(),m.getY());
-								newPoints.add(++i,p);
+								insertPoint(++i, p1.getX(),m.getY());
+								insertPoint(++i, p2.getX(),m.getY());
 								break;
 							}
 						}
 						break;
 					case LEFT:
 					case RIGHT:
-						if (p2 == movedBendpoint) {
-							// the second point is movable - adjust it so that it is directly right or left of p1
-							p2.setY(p1.getY());
-						}
-//						else if (p2 == addedBendpoint) {
-//							p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
-//							newPoints.add(++i,p);
-//						}
-						else if (p0!=null) {
+						if (p0!=null) {
 							if (i+2==newPoints.size()) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.UP || d2==Direction.DOWN){
-									p = GraphicsUtil.createPoint(p0.getX(),m.getY());
-									newPoints.add(++i,p);
-									p = GraphicsUtil.createPoint(p2.getX(),m.getY());
-									newPoints.add(++i,p);
+									insertPoint(++i, p0.getX(),m.getY());
+									insertPoint(++i, p2.getX(),m.getY());
 									break;
 								}
 							}
@@ -191,35 +160,26 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 							case UP:
 							case DOWN:
 								if (d1==Direction.RIGHT && p2.getX() < p1.getX()) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+2, p1.getX() + offset,m.getY());
 									break;
 								}
 								if (d1==Direction.LEFT && p2.getX() > p1.getX()) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+1,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+1, p1.getX() + offset,m.getY());
 									break;
 								}
-								p = GraphicsUtil.createPoint(p2.getX(),p1.getY());
-								newPoints.add(i+1,p);
+								insertPoint(i+1, p2.getX(),p1.getY());
 								break;
 							case LEFT:
 								if (d1==Direction.RIGHT) {
-									p = GraphicsUtil.createPoint(p1.getX() + offset,p1.getY());
-									newPoints.add(i+1,p);
-									p = GraphicsUtil.createPoint(p1.getX() + offset,m.getY());
-									newPoints.add(i+2,p);
+									insertPoint(i+1, p1.getX() + offset,p1.getY());
+									insertPoint(i+2, p1.getX() + offset,m.getY());
 									break;
 								}
 							case RIGHT:
-								p = GraphicsUtil.createPoint(m.getX(),p1.getY());
-								newPoints.add(++i,p);
-								p = GraphicsUtil.createPoint(m.getX(),p2.getY());
-								newPoints.add(++i,p);
+								insertPoint(++i, m.getX(),p1.getY());
+								insertPoint(++i, m.getX(),p2.getY());
 								break;
 							}
 						}
@@ -247,5 +207,143 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		}
 		
 		return changed;
+	}
+	
+	protected boolean fixCollisions() {
+		return false;
+//		detours = null;
+//		boolean changed = false;
+//		for (int i=0; i<newPoints.size()-1; ++i) {
+//			Point p0 = i>0 ? newPoints.get(i-1) : null;
+//			Point p1 = newPoints.get(i);
+//			Point p2 = newPoints.get(i+1);
+//			List<ContainerShape> collisions = findCollisions(p1, p2);
+//			sortCollisions(collisions, p1);
+//
+//			for (ContainerShape shape : collisions) {
+//				DetourPoints detour = new DetourPoints(shape);
+//				// fix it!
+//				try {
+//					// insert a couple of bendpoints to navigate around the shape
+//					Direction d0 = i>0 ? getDirection(i-1) : null;
+//					Direction d1 = getDirection(i);
+//					Direction d2 = getDirection(i+1);
+//					switch (d1) {
+//					case UP:
+//						switch (d2) {
+//						case UP:
+//							if (length(detour.bottomLeft,p1) < length(detour.bottomRight,p1)) {
+//								insertDetour(i+1, detour.bottomLeft);
+//								insertDetour(i+2, detour.topLeft);
+//							}
+//							else {
+//								insertDetour(i+1, detour.bottomRight);
+//								insertDetour(i+2, detour.topRight);
+//							}
+//							i += 2;
+//							break;
+//						case DOWN:
+//							break;
+//						case LEFT:
+//							insertDetour(i+1, detour.bottomLeft);
+//							insertDetour(i+2, detour.topLeft);
+//							i += 2;
+//							break;
+//						case RIGHT:
+//							insertDetour(i+1, detour.bottomRight);
+//							insertDetour(i+2, detour.topRight);
+//							i += 2;
+//							break;
+//						}
+//						break;
+//					case DOWN:
+//						switch (d2) {
+//						case UP:
+//							break;
+//						case DOWN:
+//							if (length(detour.topLeft,p1) < length(detour.topRight,p1)) {
+//								insertDetour(i+1, detour.topLeft);
+//								insertDetour(i+2, detour.bottomLeft);
+//							}
+//							else {
+//								insertDetour(i+1, detour.topRight);
+//								insertDetour(i+2, detour.bottomRight);
+//							}
+//							i += 2;
+//							break;
+//						case LEFT:
+//							insertDetour(i+1, detour.topLeft);
+//							insertDetour(i+2, detour.bottomLeft);
+//							i += 2;
+//							break;
+//						case RIGHT:
+//							insertDetour(i+1, detour.topRight);
+//							insertDetour(i+2, detour.bottomRight);
+//							i += 2;
+//							break;
+//						}
+//						break;
+//					case LEFT:
+//						switch (d2) {
+//						case UP:
+//							insertDetour(i+1, detour.topRight);
+//							insertDetour(i+2, detour.topLeft);
+//							i += 2;
+//							break;
+//						case DOWN:
+//							insertDetour(i+1, detour.bottomRight);
+//							insertDetour(i+2, detour.bottomLeft);
+//							i += 2;
+//							break;
+//						case LEFT:
+//							if (length(detour.topRight,p1) < length(detour.bottomRight,p1)) {
+//								insertDetour(i+1, detour.topRight);
+//								insertDetour(i+2, detour.topLeft);
+//							}
+//							else {
+//								insertDetour(i+1, detour.bottomRight);
+//								insertDetour(i+2, detour.bottomLeft);
+//							}
+//							i += 2;
+//							break;
+//						case RIGHT:
+//							break;
+//						}
+//						break;
+//					case RIGHT:
+//						switch (d2) {
+//						case UP:
+//							insertDetour(i+1, detour.topLeft);
+//							insertDetour(i+2, detour.topRight);
+//							i += 2;
+//							break;
+//						case DOWN:
+//							insertDetour(i+1, detour.bottomLeft);
+//							insertDetour(i+2, detour.bottomRight);
+//							i += 2;
+//							break;
+//						case LEFT:
+//							break;
+//						case RIGHT:
+//							if (length(detour.topLeft,p1) < length(detour.bottomLeft,p1)) {
+//								insertDetour(i+1, detour.topLeft);
+//								insertDetour(i+2, detour.topRight);
+//							}
+//							else {
+//								insertDetour(i+1, detour.bottomLeft);
+//								insertDetour(i+2, detour.bottomRight);
+//							}
+//							i += 2;
+//							break;
+//						}
+//						break;
+//					}
+//					changed = true;
+//				}
+//				catch (Exception e) {
+//				}
+//			}
+//		}
+//		return changed;
 	}
 }

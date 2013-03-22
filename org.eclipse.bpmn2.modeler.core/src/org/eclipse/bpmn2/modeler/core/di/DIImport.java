@@ -530,8 +530,6 @@ public class DIImport {
 		BPMNShape bpmnShape = null;
 		BPMNDiagram bpmnDiagram = createDIDiagram(element);
 		
-//		System.out.println("creating "+element.eClass().getName()+"("+ModelUtil.getDisplayName(element)+") at "+x+", "+y);
-
 		if (element instanceof Lane) {
 			Lane lane = (Lane)element;
 			bpmnShape = createDIShape(bpmnDiagram, lane, x, y);

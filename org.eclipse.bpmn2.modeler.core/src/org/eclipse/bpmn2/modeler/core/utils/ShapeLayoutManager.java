@@ -36,7 +36,6 @@ public class ShapeLayoutManager {
 	private static final int VERT_PADDING = 50;
 	private DiagramEditor editor;
 	private static final ILayoutService layoutService = Graphiti.getLayoutService();
-	private static boolean debug = false;
 	
 	public ShapeLayoutManager(DiagramEditor editor) {
 		this.editor = editor;
@@ -52,7 +51,7 @@ public class ShapeLayoutManager {
 	
 	private void layout(ContainerShape container, int level) {
 
-		dump(level, "layout", container);
+		GraphicsUtil.dump(level, "layout", container);
 		
 		// Collect all child shapes: this excludes any label shapes
 		// (which also happen to be ContainerShape objects); we want ONLY the
@@ -368,27 +367,5 @@ public class ShapeLayoutManager {
 	
 	private boolean isChildShape(PictogramElement pe) {
 		return pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe);
-	}
-	
-	private void dump(String label, ContainerShape shape) {
-		dump(0, label,shape,0,0);
-	}
-	
-	private void dump(int level, String label, ContainerShape shape) {
-		dump(level, label,shape,0,0);
-	}
-	
-	private void dump(int level, String label, ContainerShape shape, int x, int y) {
-		if (debug) {
-			EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
-			for (int i=0; i<level; ++i)
-				System.out.print(".");
-			System.out.print(label+" "+be.eClass().getName()+"("+ModelUtil.getDisplayName(be)+")");
-			if (x>0 && y>0) {
-				System.out.println(" at "+x+", "+y);
-			}
-			else
-				System.out.println("");
-		}
 	}
 }

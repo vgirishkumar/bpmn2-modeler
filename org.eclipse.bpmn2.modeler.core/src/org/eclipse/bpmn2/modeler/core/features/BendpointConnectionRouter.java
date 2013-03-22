@@ -13,18 +13,22 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter.Direction;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -33,6 +37,8 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -54,6 +60,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	Anchor newStart, newEnd;
 	// The Connection passed in to route(), cast as a FreeFormConnection for convenience
 	FreeFormConnection ffc;
+	protected List<ContainerShape> allShapes;
+	protected List<Point> detours;
 
 	public BendpointConnectionRouter(IFeatureProvider fp) {
 		super(fp);
@@ -72,15 +80,19 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		
 		saveOldPoints();
 		
+		boolean changed = false;
 		int tries = 0;
 		do {
 			initialize();
-			calculateRoute();
-		} while ( ++tries<4 && calculateAnchors() );
+			changed = calculateRoute();
+			if (calculateAnchors())
+				changed = true;
+		} while ( ++tries<4 && changed );
 		
 		// check if anything has changed
-		if (pointsChanged()) {
-			updateConnection();
+		updateConnection();
+		if (changed)
+		{
 			return true;
 		}
 
@@ -93,6 +105,16 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @param ffc - the FreeFormConnection
 	 */
 	protected void initialize() {
+		Point movedBendpoint = getMovedBendpoint(ffc);
+		Point addedBendpoint = getAddedBendpoint(ffc);
+		Point removedBendpoint = getRemovedBendpoint(ffc);
+		if (movedBendpoint==null && addedBendpoint==null && removedBendpoint==null) {
+			ffc.getBendpoints().clear();
+		}
+		else if (detours!=null) {
+			ffc.getBendpoints().removeAll(detours);
+		}
+
 		createNewPoints(newStart, newEnd, ffc.getBendpoints());
 	}
 	
@@ -113,6 +135,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			}
 		}
 		if (removeUnusedBendpoints())
+			changed = true;
+
+		// do collision checking to make sure the new route does not run over any shapes
+		if (fixCollisions())
 			changed = true;
 		
 		return changed;
@@ -212,6 +238,14 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		setInterestingBendpoint(connection, "added.", index);
 	}
 
+	public static void setRemovedBendpoint(Connection connection, int index) {
+		setInterestingBendpoint(connection, "removed.", index);
+	}
+
+	public static void setFixedBendpoint(Connection connection, int index) {
+		setInterestingBendpoint(connection, "fixed."+index+".", index);
+	}
+
 	protected static void setInterestingBendpoint(Connection connection, String type, int index) {
 		if (connection instanceof FreeFormConnection) {
 			int size = ((FreeFormConnection)connection).getBendpoints().size();
@@ -238,6 +272,14 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	
 	public static Point getAddedBendpoint(Connection connection) {
 		return getInterestingBendpoint(connection, "added.");
+	}
+	
+	public static Point getRemovedBendpoint(Connection connection) {
+		return getInterestingBendpoint(connection, "removed.");
+	}
+	
+	public static Point getFixedBendpoint(Connection connection, int index) {
+		return getInterestingBendpoint(connection, "fixed."+index+".");
 	}
 	
 	protected static Point getInterestingBendpoint(Connection connection, String type) {
@@ -687,7 +729,262 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 				changed = true;
 			}
 		}
-	
+
 		return changed;
+	}
+	
+	protected static double length(Point p1, Point p2) {
+		return GraphicsUtil.getLength(p1, p2);
+	}
+	
+	protected boolean fixCollisions() {
+		detours = null;
+		boolean changed = false;
+		for (int i=0; i<newPoints.size()-1; ++i) {
+			Point p0 = i>0 ? newPoints.get(i-1) : null;
+			Point p1 = newPoints.get(i);
+			Point p2 = newPoints.get(i+1);
+			List<ContainerShape> collisions = findCollisions(p1, p2);
+			sortCollisions(collisions, p1);
+
+			for (ContainerShape shape : collisions) {
+				DetourPoints detour = new DetourPoints(shape);
+				// fix it!
+				try {
+					// insert a couple of bendpoints to navigate around the shape
+					Direction d0 = i>0 ? getDirection(i-1) : null;
+					Direction d1 = getDirection(i);
+					Direction d2 = getDirection(i+1);
+					switch (d1) {
+					case UP:
+						switch (d2) {
+						case UP:
+							if (length(detour.bottomLeft,p1) < length(detour.bottomRight,p1)) {
+								insertDetour(i+1, detour.bottomLeft);
+								insertDetour(i+2, detour.topLeft);
+							}
+							else {
+								insertDetour(i+1, detour.bottomRight);
+								insertDetour(i+2, detour.topRight);
+							}
+							i += 2;
+							break;
+						case DOWN:
+							break;
+						case LEFT:
+							insertDetour(i+1, detour.bottomLeft);
+							insertDetour(i+2, detour.topLeft);
+							i += 2;
+							break;
+						case RIGHT:
+							insertDetour(i+1, detour.bottomRight);
+							insertDetour(i+2, detour.topRight);
+							i += 2;
+							break;
+						}
+						break;
+					case DOWN:
+						switch (d2) {
+						case UP:
+							break;
+						case DOWN:
+							if (length(detour.topLeft,p1) < length(detour.topRight,p1)) {
+								insertDetour(i+1, detour.topLeft);
+								insertDetour(i+2, detour.bottomLeft);
+							}
+							else {
+								insertDetour(i+1, detour.topRight);
+								insertDetour(i+2, detour.bottomRight);
+							}
+							i += 2;
+							break;
+						case LEFT:
+							insertDetour(i+1, detour.topLeft);
+							insertDetour(i+2, detour.bottomLeft);
+							i += 2;
+							break;
+						case RIGHT:
+							insertDetour(i+1, detour.topRight);
+							insertDetour(i+2, detour.bottomRight);
+							i += 2;
+							break;
+						}
+						break;
+					case LEFT:
+						switch (d2) {
+						case UP:
+							insertDetour(i+1, detour.topRight);
+							insertDetour(i+2, detour.topLeft);
+							i += 2;
+							break;
+						case DOWN:
+							insertDetour(i+1, detour.bottomRight);
+							insertDetour(i+2, detour.bottomLeft);
+							i += 2;
+							break;
+						case LEFT:
+							if (length(detour.topRight,p1) < length(detour.bottomRight,p1)) {
+								insertDetour(i+1, detour.topRight);
+								insertDetour(i+2, detour.topLeft);
+							}
+							else {
+								insertDetour(i+1, detour.bottomRight);
+								insertDetour(i+2, detour.bottomLeft);
+							}
+							i += 2;
+							break;
+						case RIGHT:
+							break;
+						}
+						break;
+					case RIGHT:
+						switch (d2) {
+						case UP:
+							insertDetour(i+1, detour.topLeft);
+							insertDetour(i+2, detour.topRight);
+							i += 2;
+							break;
+						case DOWN:
+							insertDetour(i+1, detour.bottomLeft);
+							insertDetour(i+2, detour.bottomRight);
+							i += 2;
+							break;
+						case LEFT:
+							break;
+						case RIGHT:
+							if (length(detour.topLeft,p1) < length(detour.bottomLeft,p1)) {
+								insertDetour(i+1, detour.topLeft);
+								insertDetour(i+2, detour.topRight);
+							}
+							else {
+								insertDetour(i+1, detour.bottomLeft);
+								insertDetour(i+2, detour.bottomRight);
+							}
+							i += 2;
+							break;
+						}
+						break;
+					}
+					changed = true;
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+		return changed;
+	}
+	
+	protected List<ContainerShape> findAllShapes() {
+		allShapes = new ArrayList<ContainerShape>();
+		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
+		ContainerShape source = (ContainerShape)newStart.getParent();
+		ContainerShape target = (ContainerShape)newEnd.getParent();
+		TreeIterator<EObject> iter = diagram.eAllContents();
+		while (iter.hasNext()) {
+			EObject o = iter.next();
+			if (o instanceof ContainerShape) {
+				// this is a potential collision shape
+				ContainerShape shape = (ContainerShape)o;
+				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
+				if (bpmnShape==null)
+					continue;
+				if (shape==source || shape==target)
+					continue;
+				// ignore containers (like Lane, SubProcess, etc.) if the source
+				// or target shapes are children of the container's hierarchy
+				if (shape==source.eContainer() || shape==target.eContainer())
+					continue;
+				
+				// ignore some containers altogether
+				BaseElement be = bpmnShape.getBpmnElement();
+				if (be instanceof Lane)
+					continue;
+				// TODO: other criteria here?
+
+				allShapes.add(shape);
+			}
+		}
+		GraphicsUtil.dump("All Shapes", allShapes);
+		return allShapes;
+	}
+	
+	protected List<ContainerShape> findCollisions(Point p1, Point p2) {
+		List<ContainerShape> collisions = new ArrayList<ContainerShape>();
+		if (allShapes==null)
+			findAllShapes();
+		for (ContainerShape shape : allShapes) {
+			if (GraphicsUtil.intersectsLine(shape, p1, p2))
+				collisions.add(shape);
+		}
+		if (collisions.size()>0)
+			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);
+		return collisions;
+	}
+
+	protected void sortCollisions(List<ContainerShape> collisions, final Point p) {
+		Collections.sort(collisions, new Comparator<ContainerShape>() {
+
+			@Override
+			public int compare(ContainerShape s1, ContainerShape s2) {
+				LineSegment seg1 = GraphicsUtil.findNearestEdge(s1, p);
+				double d1 = seg1.getDistance(p);
+				LineSegment seg2 = GraphicsUtil.findNearestEdge(s2, p);
+				double d2 = seg2.getDistance(p);
+				return (int) (d1 - d2);
+			}
+		});
+	}
+
+	protected void addDetour(int x, int y) {
+		addDetour(GraphicsUtil.createPoint(x, y));
+	}
+	
+	protected void addDetour(Point p) {
+		if (detours==null)
+			detours = new ArrayList<Point>();
+		detours.add(p);
+	}
+	
+	protected Point insertPoint(int index, int x, int y) {
+		Point p = GraphicsUtil.createPoint(x,y);
+		return insertPoint(index,p);
+	}
+	
+	protected Point insertPoint(int index, Point p) {
+		newPoints.add(index,p);
+		return p;
+	}
+	
+	protected void insertDetour(int index, Point p) {
+		insertPoint(index, p);
+		addDetour(p);
+	}
+	
+	/**
+	 * Calculates detour points for a given shape. These points surround the shape at each of the corners
+	 * of the shape's bounding rectangle, but "just outside" the shape.
+	 */
+	public class DetourPoints {
+		public int leftMargin = 10;
+		public int rightMargin = 10;
+		public int topMargin = 10;
+		public int bottomMargin = 10;
+		public Point topLeft;
+		public Point topRight;
+		public Point bottomLeft;
+		public Point bottomRight;
+		
+		public DetourPoints(ContainerShape shape) {
+			calculate(shape);
+		}
+		
+		protected void calculate(Shape shape) {
+			ILocation loc = peService.getLocationRelativeToDiagram(shape);
+			IDimension size = GraphicsUtil.calculateSize(shape);
+			topLeft = GraphicsUtil.createPoint(loc.getX() - leftMargin, loc.getY() - topMargin);
+			topRight = GraphicsUtil.createPoint(loc.getX() + size.getWidth() + rightMargin, loc.getY() - topMargin);
+			bottomLeft = GraphicsUtil.createPoint(loc.getX() - leftMargin, loc.getY() + size.getHeight() + bottomMargin);
+			bottomRight = GraphicsUtil.createPoint(loc.getX() + size.getWidth() + leftMargin, loc.getY() + size.getHeight() + bottomMargin);
+		}
 	}
 }
