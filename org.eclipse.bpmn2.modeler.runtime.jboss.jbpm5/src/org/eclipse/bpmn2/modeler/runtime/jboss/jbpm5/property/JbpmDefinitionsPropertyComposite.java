@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 
@@ -89,8 +90,8 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 						{
 							@Override
 							protected EObject addListItem(EObject object, EStructuralFeature feature) {
-								String name = JbpmModelUtil.showImportDialog(object);
-								return JbpmModelUtil.addImport(name, object);
+								IType type = JbpmModelUtil.showImportDialog(object);
+								return JbpmModelUtil.addImport(type, object);
 							}
 	
 						};

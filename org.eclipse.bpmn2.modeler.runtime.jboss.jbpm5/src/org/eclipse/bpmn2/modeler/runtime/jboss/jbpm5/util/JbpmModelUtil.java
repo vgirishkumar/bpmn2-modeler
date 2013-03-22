@@ -79,21 +79,20 @@ public class JbpmModelUtil {
 	 *                 ImportType will be created.
 	 * @return an ImportType object if it was created, null if the user canceled the import dialog.
 	 */
-	public static String showImportDialog(EObject object) {
-		String className = null;
+	public static IType showImportDialog(EObject object) {
 		Shell shell = ModelUtil.getEditor(object).getSite().getShell();
 		SchemaImportDialog dialog = new SchemaImportDialog(shell, SchemaImportDialog.ALLOW_JAVA);
 		if (dialog.open() == Window.OK) {
 			Object result[] = dialog.getResult();
 			if (result.length == 1 && result[0] instanceof IType) {
-				className = ((IType)result[0]).getFullyQualifiedName('.');
+				return (IType) result[0];
 			}
 		}
-		return className;
+		return null;
 	}
 	
-	public static ImportType addImport(final String className, final EObject object) {
-		if (className==null || className.isEmpty())
+	public static ImportType addImport(final IType type, final EObject object) {
+		if (type==null)
 			return null;
 		
 		final Definitions definitions = ModelUtil.getDefinitions(object);
@@ -120,6 +119,7 @@ public class JbpmModelUtil {
 			}
 		}
 		
+		final String className = type.getFullyQualifiedName('.');
 		List<ImportType> allImports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
 		for (ImportType it : allImports) {
 			if (className.equals(it.getName())) {
@@ -160,14 +160,17 @@ public class JbpmModelUtil {
 					oldItemDef.setItemKind(ItemKind.PHYSICAL);
 					EObject structureRef = ModelUtil.createStringWrapper(className);
 					oldItemDef.setStructureRef(structureRef);
+                    ImportUtil.createInterface(definitions, null, type);
 				}
 				else {
 					// create a new ItemDefinition
-					ItemDefinition itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
-					itemDef.setItemKind(ItemKind.PHYSICAL);
-					EObject structureRef = ModelUtil.createStringWrapper(className);
-					itemDef.setStructureRef(structureRef);
-					if (ImportUtil.findItemDefinition(definitions, itemDef)==null) {
+                    ImportUtil.createItemDefinition(definitions, null, type);
+                    //ImportUtil.createInterface(definitions, null, type);
+//					ItemDefinition itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
+//					itemDef.setItemKind(ItemKind.PHYSICAL);
+//					EObject structureRef = ModelUtil.createStringWrapper(className);
+//					itemDef.setStructureRef(structureRef);
+//					if (ImportUtil.findItemDefinition(definitions, itemDef)==null) {
 			
 						// create a reference to the ImportType as an extension element to the ItemDefinition?
 //						ImportType ref = (ImportType)ModelFactory.eINSTANCE.create(ModelPackage.eINSTANCE.getImportType());
@@ -182,9 +185,9 @@ public class JbpmModelUtil {
 						// will be unknown in java scripts (FormalExpressions).
 			
 						// add the ItemDefinition to the root elements
-						definitions.getRootElements().add(itemDef);
-						ModelUtil.setID(itemDef);
-					}
+//						definitions.getRootElements().add(itemDef);
+//						ModelUtil.setID(itemDef);
+//					}
 				}
 			}
 		});

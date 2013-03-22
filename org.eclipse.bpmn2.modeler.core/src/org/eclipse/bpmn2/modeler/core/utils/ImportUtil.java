@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -33,10 +34,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Input;
@@ -249,6 +253,8 @@ public class ImportUtil {
 					IType clazz = (IType)importObject;
 
 					createItemDefinition(definitions, imp, clazz);
+					// TODO: automatically create an interface too?
+					//createInterface(definitions, imp, clazz);
 				}
 				else if (importObject instanceof Definitions) {
 					// what to do here?
@@ -369,6 +375,30 @@ public class ImportUtil {
 		return intf;
 	}
 
+    /**
+     * Create a new Interface object. If an identical Interface already exists, a new one is not created.
+     * This also creates all of the Operations and ItemDefinitions that are defined in the "type" element.
+     * 
+     * @param definitions - the BPMN2 Definitions parent object; the new Interface is added to its rootElements 
+     * @param imp - the Import object where the WSDL Port Type is defined
+     * @param type - the Java type that corresponds to this Interface
+     * @return the newly created object, or an existing Interface with the same name and implementation reference
+     */
+    public static Interface createInterface(Definitions definitions, Import imp, IType type) {
+        Interface intf = Bpmn2ModelerFactory.create(Interface.class);
+        intf.setName(type.getElementName());
+        intf.setImplementationRef(ModelUtil.createStringWrapper(type.getFullyQualifiedName('.')));
+        Interface i = findInterface(definitions,intf);
+        if (i!=null)
+            return i;
+        
+        definitions.getRootElements().add(intf);
+        ModelUtil.setID(intf);
+        createOperations(definitions, imp, intf, type);
+        
+        return intf;
+    }
+
 	/**
 	 * Delete an existing Interface object. This also deletes all of the Operations, Messages and ItemDefinitions
 	 * that are referenced by the Interface.
@@ -438,6 +468,119 @@ public class ImportUtil {
 			}
 		}
 	}
+
+    /**
+     * Create a new Operation object and add it to the given Interface. This
+     * also creates all of the ItemDefinitions that are defined in the type.
+     * 
+     * @param definitions - the BPMN2 Definitions parent object
+     * @param imp - the Import object where the Interface is defined
+     * @param intf - the Interface to which this Operation will be added
+     * @param type - the Java type that corresponds to this Interface
+     */
+    public static void createOperations(Definitions definitions, Import imp, Interface intf, IType type) {
+        try {
+            for (IMethod method : type.getMethods()) {
+                org.eclipse.bpmn2.Operation bpmn2op = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Operation.class);
+                bpmn2op.setImplementationRef(ModelUtil.createStringWrapper(method.getElementName()));
+                bpmn2op.setName(method.getElementName());
+
+                String[] parameterTypes = method.getParameterTypes();
+                if (parameterTypes.length > 1) {
+                    // only allow methods with one parameter at most.
+                    continue;
+                }
+                String baseName = intf.getName() + "_" + bpmn2op.getName() + "_";
+                if (parameterTypes.length == 1) {
+                    try {
+                        IType parameterType = resolveType(type, parameterTypes[0]);
+                        org.eclipse.bpmn2.Message bpmn2msg = createMessage(definitions, imp, parameterType, baseName
+                                + method.getParameterNames()[0]);
+                        if (parameterType == null) {
+                            String boxedType = getBoxedType(Signature.toString(parameterTypes[0]));
+                            if (boxedType != null && boxedType.length() > 0) {
+                                bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.PHYSICAL));
+                            }
+                        }
+                        bpmn2op.setInMessageRef(bpmn2msg);
+                    } catch (JavaModelException e) {
+                        Activator.logStatus(e.getStatus());
+                        continue;
+                    } catch (Exception e) {
+                        Activator.logError(e);
+                        continue;
+                    }
+                }
+
+                try {
+                    IType returnType = resolveType(type, method.getReturnType());
+                    org.eclipse.bpmn2.Message bpmn2msg = createMessage(definitions, imp, returnType, baseName
+                            + "Result");
+                    if (returnType == null) {
+                        String boxedType = getBoxedType(Signature.toString(method.getReturnType()));
+                        if (boxedType != null && boxedType.length() > 0) {
+                            bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.PHYSICAL));
+                        }
+                    }
+                    bpmn2op.setOutMessageRef(bpmn2msg);
+                } catch (JavaModelException e) {
+                    Activator.logStatus(e.getStatus());
+                } catch (Exception e) {
+                    Activator.logError(e);
+                }
+
+                try {
+                    for (String exceptionTypeString : method.getExceptionTypes()) {
+                        try {
+                            IType exceptionType = resolveType(type, exceptionTypeString);
+                            bpmn2op.getErrorRefs().add(createError(definitions, imp, exceptionType));
+                        } catch (JavaModelException e) {
+                            Activator.logStatus(e.getStatus());
+                        } catch (Exception e) {
+                            Activator.logError(e);
+                        }
+                    }
+                } catch (JavaModelException e) {
+                    Activator.logStatus(e.getStatus());
+                }
+
+                if (findOperation(definitions, bpmn2op) == null) {
+                    intf.getOperations().add(bpmn2op);
+                    ModelUtil.setID(bpmn2op);
+                }
+            }
+        } catch (JavaModelException e) {
+            Activator.logStatus(e.getStatus());
+        }
+    }
+
+    private static IType resolveType(IType type, String typeSignature) throws JavaModelException,
+            IllegalArgumentException {
+        String typeString = Signature.toString(typeSignature);
+        String[][] resolvedType = type.resolveType(typeString);
+        return resolvedType == null || resolvedType.length == 0 ? null : type.getJavaProject().findType(resolvedType[0][0], resolvedType[0][1]);
+    }
+
+    private static String getBoxedType(String primitiveType) {
+        if ("boolean".equals(primitiveType)) {
+            return Boolean.class.getName();
+        } else if ("byte".equals(primitiveType)) {
+            return Byte.class.getName();
+        } else if ("short".equals(primitiveType)) {
+            return Short.class.getName();
+        } else if ("int".equals(primitiveType)) {
+            return Integer.class.getName();
+        } else if ("long".equals(primitiveType)) {
+            return Long.class.getName();
+        } else if ("char".equals(primitiveType)) {
+            return Character.class.getName();
+        } else if ("float".equals(primitiveType)) {
+            return Float.class.getName();
+        } else if ("double".equals(primitiveType)) {
+            return Double.class.getName();
+        }
+        return null;
+    }
 
 	/**
 	 * Remove all Operations from the given Interface.
@@ -517,6 +660,35 @@ public class ImportUtil {
 		return bpmn2msg;
 	}
 
+    /**
+     * Create a new Message object and add it to the rootElements in the given Definitions.
+     * This also creates all of the ItemDefinitions that are defined in the "wsdlmsg" element.
+     * If a Message that matches the new one already exists, it is returned instead.
+     * 
+     * @param definitions - the BPMN2 Definitions parent object 
+     * @param imp - the Import object where the WSDL Message is defined
+     * @param param - Java type representing the message
+     * @param paramName - the name of the parameter
+     * @return the newly created object, or an existing Message that is identical to the given WSDL Message
+     */
+    public static org.eclipse.bpmn2.Message createMessage(Definitions definitions, Import imp, IType param, String paramName) {
+        org.eclipse.bpmn2.Message bpmn2msg = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Message.class);
+        if (param != null) {
+            ItemDefinition itemDef = createItemDefinition(definitions, imp, param);
+            bpmn2msg.setItemRef(itemDef);
+        }
+        bpmn2msg.setName(paramName);
+        
+        org.eclipse.bpmn2.Message m = findMessage(definitions, bpmn2msg);
+        if (m!=null)
+            return m;
+        
+        definitions.getRootElements().add(bpmn2msg);
+        ModelUtil.setID(bpmn2msg);
+        
+        return bpmn2msg;
+    }
+
 	/**
 	 * Remove the given Message and its related ItemDefinitions.
 	 * 
@@ -575,6 +747,32 @@ public class ImportUtil {
 		return error;
 	}
 	
+    /**
+     * Create a new Error object and add it to the rootElements in the given Definitions.
+     * This also creates all of the ItemDefinitions that are defined in the WSDL "fault" element.
+     * If an Error that matches the new one already exists, it is returned instead.
+     * WSDL Fault types always create "INFORMATION" ItemDefinitions.
+     * 
+     * @param definitions - the BPMN2 Definitions parent object 
+     * @param imp - the Import object where the WSDL Fault is defined
+     * @param exceptionType - Java type of exception thrown by operation
+     * @return the newly created object, or an existing Error that is identical to the given WSDL Fault
+     */
+    public static org.eclipse.bpmn2.Error createError(Definitions definitions, Import imp, IType exceptionType) {
+        org.eclipse.bpmn2.Error error = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Error.class);
+        ItemDefinition itemDef = createItemDefinition(definitions, imp, exceptionType);
+        error.setName(exceptionType.getElementName());
+        error.setStructureRef(itemDef);
+        org.eclipse.bpmn2.Error e = findError(definitions, error);
+        if (e!=null)
+            return e;
+
+        definitions.getRootElements().add(error);
+        ModelUtil.setID(error);
+        
+        return error;
+    }
+    
 	/**
 	 * Search for an existing Error object that is identical to the one specified.
 	 * 
@@ -620,7 +818,9 @@ public class ImportUtil {
 	public static ItemDefinition createItemDefinition(Definitions definitions, Import imp, IType clazz) {
 		try {
             for (IType c : clazz.getTypes()) {
-            	createItemDefinition(definitions, imp, c);
+                if (Flags.isPublic(c.getFlags())) {
+                    createItemDefinition(definitions, imp, c);
+                }
             }
         } catch (JavaModelException e) {
         }

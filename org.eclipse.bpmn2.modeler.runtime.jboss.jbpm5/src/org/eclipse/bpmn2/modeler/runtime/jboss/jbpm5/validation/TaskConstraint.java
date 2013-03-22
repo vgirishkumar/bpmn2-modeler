@@ -38,6 +38,9 @@ public class TaskConstraint extends AbstractModelConstraint {
 				boolean foundStandardDeviation = false;
 				for (ExtensionAttributeValue extattrval : ta.getExtensionValues()) {
 					FeatureMap extensionElements = extattrval.getValue();
+					if (extensionElements == null) {
+					    continue;
+					}
 					@SuppressWarnings("unchecked")
 					List<MetadataType> metadataTypeExtensions = (List<MetadataType>) extensionElements.get(
 							DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, true);

@@ -428,9 +428,14 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				}
 				else if (firstValue instanceof Property)
 				{
-					childObject = createObject(ref.getEReferenceType());
-					setValue(object, feature, childObject, true, property);
-					populateObjectFromValues(childObject,property.getValues(), all);
+                    EClassifier reftype = property.type == null || property.type.length() == 0 ? null : ModelUtil
+                            .getEClassifierFromString(getEPackage(), property.type);
+                    if (reftype == null || !(reftype instanceof EClass)) {
+                        reftype = ref.getEReferenceType();
+                    }
+                    childObject = createObject((EClass) reftype);
+                    setValue(object, feature, childObject, true, property);
+                    populateObjectFromValues(childObject, property.getValues(), all);
 				}
 			}
 		}

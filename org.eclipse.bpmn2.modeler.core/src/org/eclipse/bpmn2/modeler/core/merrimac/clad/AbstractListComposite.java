@@ -47,7 +47,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
@@ -90,7 +89,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	// widgets
 	SashForm sashForm;
 	protected Section tableSection;
+	protected ToolBarManager tableToolBarManager;
 	protected Section detailSection;
+	protected ToolBarManager detailToolBarManager;
 	
 	protected Table table;
 	protected TableViewer tableViewer;
@@ -555,8 +556,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		table.setHeaderVisible(true);
 
 		
-	    ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
-	    ToolBar toolbar = toolBarManager.createControl(section);
+	    tableToolBarManager = new ToolBarManager(SWT.FLAT);
+	    ToolBar toolbar = tableToolBarManager.createControl(section);
 
 	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/add.png");
 		if ((style & ADD_BUTTON)!=0) {
@@ -578,7 +579,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			toolBarManager.add(addAction);
+			tableToolBarManager.add(addAction);
 		}
 		
 		if ((style & DELETE_BUTTON)!=0 || (style & REMOVE_BUTTON)!=0) {
@@ -624,7 +625,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			toolBarManager.add(removeAction);
+			tableToolBarManager.add(removeAction);
 			removeAction.setEnabled(false);
 		}
 		
@@ -646,7 +647,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			toolBarManager.add(upAction);
+			tableToolBarManager.add(upAction);
 			upAction.setEnabled(false);
 	
 			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/down.png");
@@ -666,7 +667,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			toolBarManager.add(downAction);
+			tableToolBarManager.add(downAction);
 			downAction.setEnabled(false);
 		}
 		
@@ -699,11 +700,11 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 				}
 			};
-			toolBarManager.add(editAction);
+			tableToolBarManager.add(editAction);
 			editAction.setEnabled(false);
 		}
 		
-	    toolBarManager.update(true);
+		tableToolBarManager.update(true);
 	    section.setTextClient(toolbar);
 	    
 	    // hook a resource change listener to this Table Control
@@ -719,17 +720,17 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		section.setText(label+" Details");
 		section.setVisible(false);
 
-	    ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
-	    ToolBar toolbar = toolBarManager.createControl(section);
+	    detailToolBarManager = new ToolBarManager(SWT.FLAT);
+	    ToolBar toolbar = detailToolBarManager.createControl(section);
 	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/close.png");
-	    toolBarManager.add( new Action("Close", id) {
+	    detailToolBarManager.add( new Action("Close", id) {
 			@Override
 			public void run() {
 				super.run();
 				showDetails(false);
 			}
 	    });
-	    toolBarManager.update(true);
+	    detailToolBarManager.update(true);
 	    section.setTextClient(toolbar);
 	    return section;
 	}
