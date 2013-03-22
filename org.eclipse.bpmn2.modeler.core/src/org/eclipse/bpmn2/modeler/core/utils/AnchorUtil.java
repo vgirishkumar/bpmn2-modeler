@@ -401,9 +401,7 @@ public class AnchorUtil {
 			if (dist < minDist)
 			{
 				double d1 = 0;
-				double n = Math.abs(dist - minDist);
-				double d = (dist + minDist)/2;
-				if (false) { //n / d > 0.5) {
+				if (false) {
 					minDist = dist;
 					nearestBoundaryAnchor = ba;
 				}

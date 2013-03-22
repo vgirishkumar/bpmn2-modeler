@@ -91,6 +91,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		
 		// check if anything has changed
 		updateConnection();
+		finalizeConnection();
+		
 		if (changed)
 		{
 			return true;
@@ -357,13 +359,21 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	
 	protected boolean removeUnusedBendpoints() {
 		boolean changed = false;
-		
+		Point movedBendpoint = getMovedBendpoint(ffc);
+		Point addedBendpoint = getAddedBendpoint(ffc);
+
 		Point p1 = newPoints.get(0);
 		for (int i=1; i<newPoints.size()-1; ++i) {
 			Point p2 = newPoints.get(i);
 			if (i+1 < newPoints.size()) {
 				// remove unnecessary bendpoints: two consecutive
-				// horizontal or vertical line segments
+				// horizontal or vertical line segments, but not
+				// the "added" or "removed" bendpoint
+				if (movedBendpoint!=null && GraphicsUtil.pointsEqual(p2, movedBendpoint))
+					continue;
+				if (addedBendpoint!=null && GraphicsUtil.pointsEqual(p2, addedBendpoint))
+					continue;
+				
 				Point p3 = newPoints.get(i+1);
 				if ((isVertical(p1,p2) && isVertical(p2,p3)) ||
 						(isHorizontal(p1,p2) && isHorizontal(p2,p3))) {
@@ -381,6 +391,9 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * Set the connection's new start/end point anchors and the newly calculated bendpoints.
 	 */
 	protected void updateConnection() {
+		Point addedBendpoint = getAddedBendpoint(ffc);
+		Point movedBendpoint = getMovedBendpoint(ffc);
+
 		ffc.getBendpoints().clear();
 		
 		ffc.setStart(newStart);
@@ -388,11 +401,24 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		for (int i=1; i<newPoints.size()-1; ++i) {
 			Point p2 = newPoints.get(i);
 			ffc.getBendpoints().add( GraphicsUtil.createPoint(p2.getX(), p2.getY()));
+			
+			// restore the added/removed bendpoint indexes for the next go-round
+			if (movedBendpoint!=null && GraphicsUtil.pointsEqual(p2, movedBendpoint))
+				setAddedBendpoint(ffc, i-1);
+			if (addedBendpoint!=null && GraphicsUtil.pointsEqual(p2, addedBendpoint))
+				setAddedBendpoint(ffc, i-1);
+			
 			p1 = p2;
 		}
 		ffc.setEnd(newEnd);
 		
 		DIUtils.updateDIEdge(ffc);
+	}
+	
+	protected void finalizeConnection() {
+		removeRoutingInfo(ffc);
+		removeUnusedBendpoints();
+		updateConnection();
 	}
 	
 	/**
@@ -708,7 +734,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			FixPointAnchor a = AnchorUtil.findNearestAnchor(source, p1);
 			if (a!=oldStart) {
 				// the start boundary anchor needs to change
+				GraphicsUtil.dump("Old Start anchor", oldStart);
+				GraphicsUtil.dump("new Start anchor", a);
 				oldStart = newStart = a;
+				newPoints.set(0, GraphicsUtil.createPoint(a));
 				changed = true;
 			}
 		}
@@ -725,7 +754,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			FixPointAnchor a = AnchorUtil.findNearestAnchor(target, p1);
 			if (a!=oldEnd) {
 				// the start boundary anchor needs to change
+				GraphicsUtil.dump("Old End anchor", oldEnd);
+				GraphicsUtil.dump("new End anchor", a);
 				oldEnd = newEnd = a;
+				newPoints.set(newSize-1, GraphicsUtil.createPoint(a));
 				changed = true;
 			}
 		}

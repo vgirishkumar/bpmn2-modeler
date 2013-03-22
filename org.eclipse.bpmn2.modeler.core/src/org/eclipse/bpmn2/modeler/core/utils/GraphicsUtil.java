@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -43,6 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -1450,6 +1452,22 @@ public class GraphicsUtil {
 				for (ContainerShape shape : shapes)
 					dump(1, "",shape,0,0);
 				System.out.println("");
+			}
+		}
+	}
+	
+	public static void dump(String label, Anchor anchor) {
+		if (debug) {
+			System.out.print(label+" ");
+			ILocation loc = peService.getLocationRelativeToDiagram(anchor);
+			System.out.print(" at "+loc.getX()+", "+loc.getY());
+			dump(" parent=", (ContainerShape)anchor.getParent());
+			if (AnchorUtil.isBoundaryAnchor(anchor)) {
+				String property = Graphiti.getPeService().getPropertyValue(
+						anchor, AnchorUtil.BOUNDARY_FIXPOINT_ANCHOR);
+				if (property != null && anchor instanceof FixPointAnchor) {
+					System.out.println(" location="+AnchorLocation.getLocation(property));
+				}
 			}
 		}
 	}

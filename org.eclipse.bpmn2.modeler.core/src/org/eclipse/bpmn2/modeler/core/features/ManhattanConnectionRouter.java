@@ -44,13 +44,16 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Point addedBendpoint = getAddedBendpoint(ffc);
 
 		if (addedBendpoint!=null || movedBendpoint!=null) {
-//			createNewPoints(newStart, newEnd, ffc.getBendpoints());
 			List<Point> points = new ArrayList<Point>();
-			for (Point p : ffc.getBendpoints()) {
-				points.add(p);
-				if (p==addedBendpoint || p==movedBendpoint)
-					break;
-			}
+			if (movedBendpoint!=null)
+				points.add(movedBendpoint);
+			if (addedBendpoint!=null)
+				points.add(addedBendpoint);
+//			for (Point p : ffc.getBendpoints()) {
+//				points.add(p);
+//				if (p==addedBendpoint || p==movedBendpoint)
+//					break;
+//			}
 			createNewPoints(newStart, newEnd, points);
 		}
 		else {
@@ -81,6 +84,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		final int offset = 20;
 		
 		for (int tries=0; tries<4; ++tries) {
+			changed = calculateAnchors();
 			for (int i=0; i<newPoints.size()-1; ++i) {
 				p0 = i>0 ? newPoints.get(i-1) : null;
 				p1 = newPoints.get(i);
@@ -88,6 +92,8 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 				if (isSlanted(p1, p2)) {
 					Point m = GraphicsUtil.getMidpoint(p1, p2);
+					boolean isLastBendpoint = (i+2==newPoints.size());
+
 					try {
 						d1 = getDirection(i); 
 						d2 = getDirection(i+1);
@@ -99,7 +105,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					case UP:
 					case DOWN:
 						if (p0!=null) {
-							if (i+2==newPoints.size()) {
+							if (isLastBendpoint) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.LEFT || d2==Direction.RIGHT){
@@ -107,9 +113,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 									insertPoint(++i, m.getX(),p2.getY());
 									break;
 								}
+								else {
+									p1.setX(p2.getX());
+								}
 							}
-							p1.setX(p2.getX());
-							p1.setY(p0.getY());
+							else {
+								p1.setX(p2.getX());
+								p1.setY(p0.getY());
+							}
 						}
 						else {
 							switch (d2) {
@@ -143,7 +154,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					case LEFT:
 					case RIGHT:
 						if (p0!=null) {
-							if (i+2==newPoints.size()) {
+							if (isLastBendpoint) {
 								// this is the last point in the array, so if p2's direction is orthogonal
 								// to p1 we need to insert a couple of bendpoints here before the end
 								if (d2==Direction.UP || d2==Direction.DOWN){
@@ -151,9 +162,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 									insertPoint(++i, p2.getX(),m.getY());
 									break;
 								}
+								else {
+									p1.setY(p2.getY());
+								}
 							}
-							p1.setX(p0.getX());
-							p1.setY(p2.getY());
+							else {
+								p1.setX(p0.getX());
+								p1.setY(p2.getY());
+							}
 						}
 						else {
 							switch (d2) {
@@ -191,159 +207,61 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			
 			// handle the special case of multiple connections with the same bendpoints
 			// by offsetting this connection either horizontally or vertically by a few pixels
-			updateConnection();
 			if (offsetStackedConnections())
 				changed = true;
 			
 			// make sure everything is still OK with the BendpointRouter
 			if (changed) {
 				updateConnection();
-				if (super.calculateRoute() == false) {
-					// super hasn't made any changes so we're done here
-					// otherwise we would have to do our routing again
-					break;
-				}
+				changed = super.calculateRoute();
 			}
+
+			if (!changed)
+				break;
 		}
 		
 		return changed;
 	}
 	
-	protected boolean fixCollisions() {
-		return false;
-//		detours = null;
-//		boolean changed = false;
-//		for (int i=0; i<newPoints.size()-1; ++i) {
-//			Point p0 = i>0 ? newPoints.get(i-1) : null;
+	protected void finalizeConnection() {
+		// TODO: should we keep this???
+		// remove any "short" line segments by adjusting the next
+		// bendpoint either horizontally or vertically by the length
+		// of the short segment
+//		for (int i=1; i<newPoints.size()-2; ++i) {
 //			Point p1 = newPoints.get(i);
 //			Point p2 = newPoints.get(i+1);
-//			List<ContainerShape> collisions = findCollisions(p1, p2);
-//			sortCollisions(collisions, p1);
-//
-//			for (ContainerShape shape : collisions) {
-//				DetourPoints detour = new DetourPoints(shape);
-//				// fix it!
-//				try {
-//					// insert a couple of bendpoints to navigate around the shape
-//					Direction d0 = i>0 ? getDirection(i-1) : null;
-//					Direction d1 = getDirection(i);
-//					Direction d2 = getDirection(i+1);
-//					switch (d1) {
-//					case UP:
-//						switch (d2) {
-//						case UP:
-//							if (length(detour.bottomLeft,p1) < length(detour.bottomRight,p1)) {
-//								insertDetour(i+1, detour.bottomLeft);
-//								insertDetour(i+2, detour.topLeft);
-//							}
-//							else {
-//								insertDetour(i+1, detour.bottomRight);
-//								insertDetour(i+2, detour.topRight);
-//							}
-//							i += 2;
-//							break;
-//						case DOWN:
-//							break;
-//						case LEFT:
-//							insertDetour(i+1, detour.bottomLeft);
-//							insertDetour(i+2, detour.topLeft);
-//							i += 2;
-//							break;
-//						case RIGHT:
-//							insertDetour(i+1, detour.bottomRight);
-//							insertDetour(i+2, detour.topRight);
-//							i += 2;
-//							break;
-//						}
-//						break;
-//					case DOWN:
-//						switch (d2) {
-//						case UP:
-//							break;
-//						case DOWN:
-//							if (length(detour.topLeft,p1) < length(detour.topRight,p1)) {
-//								insertDetour(i+1, detour.topLeft);
-//								insertDetour(i+2, detour.bottomLeft);
-//							}
-//							else {
-//								insertDetour(i+1, detour.topRight);
-//								insertDetour(i+2, detour.bottomRight);
-//							}
-//							i += 2;
-//							break;
-//						case LEFT:
-//							insertDetour(i+1, detour.topLeft);
-//							insertDetour(i+2, detour.bottomLeft);
-//							i += 2;
-//							break;
-//						case RIGHT:
-//							insertDetour(i+1, detour.topRight);
-//							insertDetour(i+2, detour.bottomRight);
-//							i += 2;
-//							break;
-//						}
-//						break;
-//					case LEFT:
-//						switch (d2) {
-//						case UP:
-//							insertDetour(i+1, detour.topRight);
-//							insertDetour(i+2, detour.topLeft);
-//							i += 2;
-//							break;
-//						case DOWN:
-//							insertDetour(i+1, detour.bottomRight);
-//							insertDetour(i+2, detour.bottomLeft);
-//							i += 2;
-//							break;
-//						case LEFT:
-//							if (length(detour.topRight,p1) < length(detour.bottomRight,p1)) {
-//								insertDetour(i+1, detour.topRight);
-//								insertDetour(i+2, detour.topLeft);
-//							}
-//							else {
-//								insertDetour(i+1, detour.bottomRight);
-//								insertDetour(i+2, detour.bottomLeft);
-//							}
-//							i += 2;
-//							break;
-//						case RIGHT:
-//							break;
-//						}
-//						break;
-//					case RIGHT:
-//						switch (d2) {
-//						case UP:
-//							insertDetour(i+1, detour.topLeft);
-//							insertDetour(i+2, detour.topRight);
-//							i += 2;
-//							break;
-//						case DOWN:
-//							insertDetour(i+1, detour.bottomLeft);
-//							insertDetour(i+2, detour.bottomRight);
-//							i += 2;
-//							break;
-//						case LEFT:
-//							break;
-//						case RIGHT:
-//							if (length(detour.topLeft,p1) < length(detour.bottomLeft,p1)) {
-//								insertDetour(i+1, detour.topLeft);
-//								insertDetour(i+2, detour.topRight);
-//							}
-//							else {
-//								insertDetour(i+1, detour.bottomLeft);
-//								insertDetour(i+2, detour.bottomRight);
-//							}
-//							i += 2;
-//							break;
-//						}
-//						break;
-//					}
-//					changed = true;
+//			int d = getShortSegment(p1,p2);
+//			if (d!=0) {
+//				Point p3 = newPoints.get(i+2);
+//				if (isVertical(p1,p2)) {
+//					p3.setY(p3.getY() + d);
 //				}
-//				catch (Exception e) {
+//				else {
+//					p3.setX(p3.getX() + d);
 //				}
 //			}
+//			p1 = p2;
 //		}
-//		return changed;
+		
+		super.finalizeConnection();
+	}
+	
+	private int getShortSegment(Point p1, Point p2) {
+		if (isVertical(p1,p2)) {
+			int d = p2.getY() - p1.getY();
+			if (Math.abs(d) < 10)
+				return d;
+		}
+		else if (isHorizontal(p1,p2)) {
+			int d = p2.getX() - p1.getX();
+			if (Math.abs(d) < 10)
+				return d;
+		}
+		return 0;
+	}
+	
+	protected boolean fixCollisions() {
+		return false;
 	}
 }
