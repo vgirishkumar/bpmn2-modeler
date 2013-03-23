@@ -51,12 +51,15 @@ public class ShapeLayoutManager {
 	private void layout(ContainerShape container, int level) {
 
 		GraphicsUtil.dump(level, "layout", container);
+		if (container==null)
+			return;
 		
 		// Collect all child shapes: this excludes any label shapes
 		// (which also happen to be ContainerShape objects); we want ONLY the
 		// graphical objects that have corresponding BPMNShape objects.
 		List<ContainerShape> childShapes = new ArrayList<ContainerShape>();
-		for (PictogramElement pe : container.getChildren()) {
+		for (int i=0; i<container.getChildren().size(); ++i) {
+			PictogramElement pe = container.getChildren().get(i);
 			if (isChildShape(pe)) {
 				ContainerShape childContainer = (ContainerShape)pe;
 				boolean hasChildren = false;
@@ -213,7 +216,7 @@ public class ShapeLayoutManager {
 		}
 	}
 	
-	private void moveShape(ContainerShape container, ContainerShape shape, int x, int y) {
+	private boolean moveShape(ContainerShape container, ContainerShape shape, int x, int y) {
 		MoveShapeContext context = new MoveShapeContext(shape);
 		context.setLocation(x, y);
 		context.setSourceContainer(container);
@@ -221,14 +224,17 @@ public class ShapeLayoutManager {
 		IMoveShapeFeature moveFeature = editor.getDiagramTypeProvider().getFeatureProvider().getMoveShapeFeature(context);
 		if (moveFeature.canMoveShape(context)) {
 			moveFeature.moveShape(context);
+			return true;
 		}
+		return false;
 	}
 	
 	private Point moveShape(ContainerShape container, ContainerShape child, int x, int y, List<ContainerShape> allChildren) {
 		boolean intersects;
 		do {
 			intersects = false;
-			moveShape(container, child, x, y);
+			if (!moveShape(container, child, x, y))
+				break;
 			for (ContainerShape c : allChildren) {
 				if (c!=child && GraphicsUtil.intersects(child, c)) {
 					intersects = true;
@@ -241,7 +247,7 @@ public class ShapeLayoutManager {
 		return Graphiti.getCreateService().createPoint(x, y);
 	}
 	
-	private void resizeContainerShape(ContainerShape container) {
+	private boolean resizeContainerShape(ContainerShape container) {
 		List<ContainerShape> children = getContainerShapeChildren(container);
 		ILocation containerLocation = layoutService.getLocationRelativeToDiagram(container);
 		int width = 0;
@@ -259,10 +265,10 @@ public class ShapeLayoutManager {
 			if (h>height)
 				height = h;
 		}
-		resizeShape(container, width + HORZ_PADDING, height + VERT_PADDING);
+		return resizeShape(container, width + HORZ_PADDING, height + VERT_PADDING);
 	}
 	
-	private void resizeShape(ContainerShape container, int width, int height) {
+	private boolean resizeShape(ContainerShape container, int width, int height) {
 		ResizeShapeContext context = new ResizeShapeContext(container);
 		int x = container.getGraphicsAlgorithm().getX();
 		int y = container.getGraphicsAlgorithm().getY();
@@ -271,7 +277,9 @@ public class ShapeLayoutManager {
 		IResizeShapeFeature resizeFeature = editor.getDiagramTypeProvider().getFeatureProvider().getResizeShapeFeature(context);
 		if (resizeFeature.canResizeShape(context)) {
 			resizeFeature.resizeShape(context);
+			return true;
 		}
+		return false;
 	}
 	
 	private boolean threadContains(List<ContainerShape[]> thread, ContainerShape shape) {
@@ -335,6 +343,9 @@ public class ShapeLayoutManager {
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(editor, be, true);
 		if (bpmnDiagram != null) {
 			diagram = DIUtils.findDiagram(editor, bpmnDiagram);
+			if (diagram==null) {
+				System.out.println("Diagram is null");
+			}
 		}
 		if (diagram!=null) {
 			List<PictogramElement> list = Graphiti.getLinkService().getPictogramElements(diagram, be);
@@ -349,6 +360,7 @@ public class ShapeLayoutManager {
 			if (bpmnDiagram.getPlane().getBpmnElement() == be)
 				return diagram;
 		}
+		System.out.println("Container is null!");
 		return null;
 	}
 

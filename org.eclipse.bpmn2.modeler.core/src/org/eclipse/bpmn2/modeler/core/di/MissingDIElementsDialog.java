@@ -1,7 +1,5 @@
 package org.eclipse.bpmn2.modeler.core.di;
 
-import org.eclipse.bpmn2.modeler.core.di.DIImport.DiagramElementTree;
-import org.eclipse.bpmn2.modeler.core.di.DIImport.DiagramElementTreeNode;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -24,6 +22,7 @@ public class MissingDIElementsDialog extends CheckedTreeSelectionDialog {
 	public MissingDIElementsDialog(DiagramElementTree missing) {
 		this(Display.getDefault().getActiveShell(), missing, missing);
 		this.missing = missing;
+		setTitle("BPMN2 Modeler - Missing Diagram Elements");
 		setMessage(
 				"These items do not have Diagram Elements and can not be shown in the editor.\n"+
 				"Please select the items for which you would like to create Diagram Elements.");

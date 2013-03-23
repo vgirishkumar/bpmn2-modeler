@@ -54,6 +54,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -61,6 +62,7 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.dc.Point;
@@ -75,6 +77,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.xmi.IllegalValueException;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
@@ -786,7 +789,33 @@ public class ModelHandler {
 		try {
 			resource.load(null);
 		} catch (IOException e) {
-			Activator.logError(e);
+			if (!resource.getErrors().isEmpty()) {
+				ImportDiagnostics diagnostics = new ImportDiagnostics(resource);
+				for (Resource.Diagnostic error : resource.getErrors()) {
+					if (error instanceof IllegalValueException) {
+						IllegalValueException wrappedException = (IllegalValueException) error;
+						IllegalValueException iv = (IllegalValueException) wrappedException;
+						
+						String stringValue;
+						Object value = iv.getValue();
+						if (value instanceof EObject)
+							stringValue = diagnostics.getText((EObject)value);
+						else
+							stringValue = "\"" + value.toString() + "\"";
+						
+						String message = "Cannot assign " +
+								stringValue +
+								" to " +
+								"\"" + iv.getFeature().getName() + "\"";
+								
+						diagnostics.add(IStatus.ERROR, iv.getObject(), message);
+					} else {
+						EObject contents = resource.getContents().get(0);
+						diagnostics.add(IStatus.ERROR, contents, error.getMessage());
+					}
+				}
+				diagnostics.report();
+			}
 		}
 	}
 
