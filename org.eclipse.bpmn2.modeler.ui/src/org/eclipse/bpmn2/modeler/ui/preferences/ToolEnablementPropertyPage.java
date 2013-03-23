@@ -591,4 +591,21 @@ public class ToolEnablementPropertyPage extends PropertyPage {
 		return bindingContext;
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		if (visible) {
+			if (TargetRuntime.DEFAULT_RUNTIME_ID.equals(bpmn2Preferences.getRuntime().getId())) {
+				extensionTree.setVisible(false);
+				GridData data = (GridData)extensionTree.getLayoutData();
+				data.exclude = true;
+			}
+			else {
+				extensionTree.setVisible(true);
+				GridData data = (GridData)extensionTree.getLayoutData();
+				data.exclude = false;
+			}
+		}
+		super.setVisible(visible);
+	}
+
 }

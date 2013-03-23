@@ -426,8 +426,8 @@ public class DIImport {
 				added += findMissingDIElements(parentNode, lane.getChildLaneSet(), laneElements);
 				
 				if (added==0) {
-					missing.removeChild(parentNode.getBaseElement());
-					containerNode.removeChild(container);
+					containerNode.removeChild(lane);
+					missing.removeChild(container);
 				}
 			}
 		}
