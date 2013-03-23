@@ -17,8 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -325,7 +327,22 @@ public class DIUtils {
 									BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
 									if (bpmnElement == baseElement)
 										return bpmnDiagram;
+									if (bpmnElement instanceof Collaboration) {
+										Collaboration collaboration = (Collaboration)bpmnElement;
+										for (Participant p : collaboration.getParticipants()) {
+											if (baseElement==p)
+												return bpmnDiagram;
+											if (baseElement==p.getProcessRef())
+												return bpmnDiagram;
+										}
+									}
 									if (deep) {
+										EObject parent = baseElement.eContainer();
+										if (parent instanceof BaseElement && !(parent instanceof Definitions)) {
+											bpmnDiagram = findBPMNDiagram(editor, (BaseElement)parent, true);
+											if (bpmnDiagram!=null)
+												return bpmnDiagram;
+										}
 										for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
 											if (de instanceof BPMNShape)
 												bpmnElement = ((BPMNShape)de).getBpmnElement();

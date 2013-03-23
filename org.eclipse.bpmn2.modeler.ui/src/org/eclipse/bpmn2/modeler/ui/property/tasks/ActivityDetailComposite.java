@@ -103,8 +103,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"method",
 						"ordering",
 						"protocol",
-						"startQuantity",
-						"completionQuantity",
+						//"startQuantity", // these are "Advanced" features and should be used
+						//"completionQuantity", // with caution, according to the BPMN 2.0 spec
 						"completionCondition",
 						"loopCharacteristics",
 				};

@@ -301,7 +301,7 @@
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
-			features="implementation renderings isForCompensation"
+			features="implementation resources renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
 			label="User Task">
 		</propertyTab>
