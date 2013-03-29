@@ -88,6 +88,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.swt.widgets.Display;
 
 @SuppressWarnings("restriction")
 public class DIImport {
@@ -95,7 +96,7 @@ public class DIImport {
 	public static final String IMPORT_PROPERTY = DIImport.class.getSimpleName().concat(".import");
 
 	private DiagramEditor editor;
-	private Diagram diagram;
+//	private Diagram diagram;
 	private TransactionalEditingDomain domain;
 	private ModelHandler modelHandler;
 	private IFeatureProvider featureProvider;
@@ -120,13 +121,13 @@ public class DIImport {
 		final List<BPMNDiagram> bpmnDiagrams = modelHandler.getAll(BPMNDiagram.class);
 		
 		diagnostics = new ImportDiagnostics(modelHandler.getResource());
-		
+		preferences = (Bpmn2Preferences) editor.getAdapter(Bpmn2Preferences.class);		
 		elements = new HashMap<BaseElement, PictogramElement>();
 		domain.getCommandStack().execute(new RecordingCommand(domain) {
 			@Override
 			protected void doExecute() {
 
-				diagram = editor.getDiagramTypeProvider().getDiagram();
+				Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
 				
 				if (bpmnDiagrams.size() == 0) {
 					BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
@@ -150,17 +151,20 @@ public class DIImport {
 				}
 				
 				// do the import
+				// do the import
 				for (BPMNDiagram d : bpmnDiagrams) {
-					if (preferences==null)
-						preferences = Bpmn2Preferences.getInstance(d);
-					
 					diagram = DIUtils.getOrCreateDiagram(editor,d);
+				}
+				for (BPMNDiagram d : bpmnDiagrams) {
+					
+					diagram = DIUtils.findDiagram(editor,d);
 					editor.getDiagramTypeProvider().init(diagram, editor);
 
 					BPMNPlane plane = d.getPlane();
 					if (plane.getBpmnElement() == null) {
 						plane.setBpmnElement(modelHandler.getOrCreateProcess(modelHandler.getInternalParticipant()));
 					}
+					elements.put(plane.getBpmnElement(), diagram);
 					List<DiagramElement> ownedElement = plane.getPlaneElement();
 
 					importShapes(ownedElement);
@@ -170,11 +174,23 @@ public class DIImport {
 
 					// search for BPMN elements that do not have the DI elements
 					// needed to render them in the editor
-					DIGenerator generator = new DIGenerator(DIImport.this);
-					if (generator.hasMissingDIElements()) {
-						// and generate them
-						generator.generateMissingDIElements();
-					}
+					Display.getDefault().asyncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							final DIGenerator generator = new DIGenerator(DIImport.this);
+							if (generator.hasMissingDIElements()) {
+								// and generate them
+								domain.getCommandStack().execute(new RecordingCommand(domain) {
+									@Override
+									protected void doExecute() {
+										generator.generateMissingDIElements();
+									}
+								});
+							}
+						}
+						
+					});
 				}
 				
 				layoutAll();
@@ -211,7 +227,7 @@ public class DIImport {
 //				}
 //			}
 //		}
-/*
+
 		for (BaseElement be : elements.keySet()) {
 			PictogramElement pe = elements.get(be);
 
@@ -221,22 +237,22 @@ public class DIImport {
 				if (feature!=null && feature.canLayout(context))
 					feature.layout(context);
 			}
-			else if (be instanceof FlowNode) {
-				LayoutContext context = new LayoutContext(pe);
-				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
-				if (feature!=null && feature.canLayout(context))
-					feature.layout(context);
-			}
-
-			if (pe instanceof Connection) {
-				UpdateContext context = new UpdateContext(pe);
-				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
-				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
-					feature.update(context);
-				}
-			}
+//			else if (be instanceof FlowNode) {
+//				LayoutContext context = new LayoutContext(pe);
+//				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
+//				if (feature!=null && feature.canLayout(context))
+//					feature.layout(context);
+//			}
+//
+//			if (pe instanceof Connection) {
+//				UpdateContext context = new UpdateContext(pe);
+//				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
+//				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
+//					feature.update(context);
+//				}
+//			}
 		}
- */
+ 
 	}
 
 	public void setModelHandler(ModelHandler modelHandler) {
@@ -323,16 +339,10 @@ public class DIImport {
 		}
 		
 		if (shapeQueue.size()!=0) {
-			String error;
-			String elementList = "";
 			for (Iterator<BPMNShape> iterator = shapeQueue.iterator(); iterator.hasNext();) {
 				BPMNShape currentShape = iterator.next();
 				BaseElement bpmnElement = currentShape.getBpmnElement();
 				if (bpmnElement!=null) {
-					String id = bpmnElement.getId();
-					if (id!=null) {
-						elementList += bpmnElement.eClass().getName() + " " + id + "\n";
-					}
 					diagnostics.add(IStatus.WARNING, bpmnElement, "Dependency not found");
 				}
 				
@@ -404,8 +414,12 @@ public class DIImport {
 	}
 
 	private void relayoutLanes(List<DiagramElement> ownedElement) {
+		Diagram diagram = null;
 		for (DiagramElement diagramElement : ownedElement) {
 			if (diagramElement instanceof BPMNShape && ((BPMNShape) diagramElement).getBpmnElement() instanceof Lane) {
+				if (diagram==null) {
+					diagram = getDiagram(diagramElement);
+				}
 				BaseElement lane = ((BPMNShape) diagramElement).getBpmnElement();
 				ContainerShape shape = (ContainerShape) BusinessObjectUtil.getFirstBaseElementFromDiagram(diagram, lane);
 				FeatureSupport.redraw(shape);
@@ -413,6 +427,13 @@ public class DIImport {
 		}
 	}
 
+	private Diagram getDiagram(EObject object) {
+		while (object!=null && !(object instanceof BPMNDiagram))
+			object = object.eContainer();
+		return DIUtils.findDiagram(editor, (BPMNDiagram)object);
+	
+	}
+	
 	/**
 	 * Find a Graphiti feature for given shape and generate necessary diagram elements.
 	 * 
@@ -432,6 +453,7 @@ public class DIImport {
 			return;
 		}
 
+		Diagram diagram = getDiagram(shape);
 		context.putProperty(IMPORT_PROPERTY, true);
 		context.setNewObject(bpmnElement);
 		boolean defaultSize = false;
@@ -470,7 +492,7 @@ public class DIImport {
 			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
 		}
 
-		if (addFeature.canAdd(context)) {
+		if (canAdd(addFeature,context)) {
 			PictogramElement newContainer = addFeature.add(context);
 			featureProvider.link(newContainer, new Object[] { bpmnElement, shape });
 			if (bpmnElement instanceof Participant) {
@@ -512,15 +534,16 @@ public class DIImport {
 				context.setTargetContainer((ContainerShape) newContainer);
 				context.setNewObject(obj);
 
-				IAddFeature aFeat = featureProvider.getAddFeature(context);
-				if (aFeat != null && aFeat.canAdd(context)) {
-					aFeat.add(context);
+				IAddFeature addFeature = featureProvider.getAddFeature(context);
+				if (canAdd(addFeature,context)) {
+					addFeature.add(context);
 				}
 			}
 		}
 	}
 
 	private void handleParticipant(Participant participant, AddContext context, BPMNShape shape) {
+		Diagram diagram = getDiagram(shape);
 		context.setTargetContainer(diagram);
 		context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
 		FeatureSupport.setHorizontal(context, shape.isIsHorizontal());
@@ -528,34 +551,36 @@ public class DIImport {
 	
 	private void handleLane(Lane lane, AddContext context, BPMNShape shape) {
 		BaseElement parent = (BaseElement)lane.eContainer().eContainer();
-		ContainerShape cont = diagram;
+		ContainerShape targetContainer = null;
 
 		// find the process this lane belongs to
 		for (BaseElement be : elements.keySet()) {
 			if (be instanceof Participant) {
 				Process processRef = ((Participant) be).getProcessRef();
 				if (processRef != null && parent.getId().equals(processRef.getId())) {
-					cont = (ContainerShape) elements.get(be);
+					targetContainer = (ContainerShape) elements.get(be);
 					break;
 				}
 			} else if (be instanceof Process) {
 				if (be.getId().equals(parent.getId())) {
-					cont = (ContainerShape) elements.get(be);
+					targetContainer = (ContainerShape) elements.get(be);
 					break;
 				}
 			} else if (be instanceof Lane) {
 				if (be.getId().equals(parent.getId())) {
-					cont = (ContainerShape) elements.get(be);
+					targetContainer = (ContainerShape) elements.get(be);
 					break;
 				}
 			}
 		}
-		context.setTargetContainer(cont);
+		if (targetContainer==null)
+			targetContainer = getDiagram(shape);
+		context.setTargetContainer(targetContainer);
 
 		if (shape!=null) {
 			int x = (int) shape.getBounds().getX();
 			int y = (int) shape.getBounds().getY();
-			ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(cont);
+			ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
 			x -= loc.getX();
 			y -= loc.getY();
 	
@@ -565,7 +590,8 @@ public class DIImport {
 	}
 
 	private void handleFlowElement(FlowElement element, AddContext context, BPMNShape shape) {
-		ContainerShape target = diagram;
+		Diagram diagram = getDiagram(shape);
+		ContainerShape targetContainer = diagram;
 		int x = (int) shape.getBounds().getX();
 		int y = (int) shape.getBounds().getY();
 
@@ -596,50 +622,46 @@ public class DIImport {
 				|| parent instanceof SubChoreography)
 				&& lanes.isEmpty()
 		) {
-			ContainerShape containerShape = (ContainerShape) elements.get(parent);
-			if (containerShape==null) {
-				// Maybe this is a Process that is referenced by a Pool
-				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
-					if (entry.getKey() instanceof Participant) {
-						Participant p = (Participant)entry.getKey();
-						if (p.getProcessRef() == parent) {
-							containerShape = (ContainerShape)entry.getValue();
-							break;
-						}
-					}
+			targetContainer = (ContainerShape) elements.get(parent);
+//			if (target==null) {
+//				// Maybe this is a Process that is referenced by a Pool
+//				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
+//					if (entry.getKey() instanceof Participant) {
+//						Participant p = (Participant)entry.getKey();
+//						if (p.getProcessRef() == parent) {
+//							target = (ContainerShape)entry.getValue();
+//							break;
+//						}
+//					}
+//				}
+//			}
+			if (targetContainer == null) {
+				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(editor, element, true);
+				if (childDiagram!=null) {
+					targetContainer = DIUtils.findDiagram(editor, childDiagram);
 				}
 			}
-			if (containerShape != null) {
-				// add the FlowNode to its parent SubProcess, Process or SubChoreography
-				// but only if the node is on the same BPMNDiagram as its parent container
-				BPMNDiagram parentDiagram = DIUtils.findBPMNDiagram(editor, (BaseElement)parent, false);
-				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(editor, element, false);
-				if (parentDiagram == childDiagram) {
-					target = containerShape;
-					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(target);
-					x -= loc.getX();
-					y -= loc.getY();
-				}
-				else if (parentDiagram!=null) {
-					Diagram d = DIUtils.findDiagram(editor, parentDiagram);
-					target = d;
-				}
+			if (!(targetContainer instanceof Diagram)) {
+				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
+				x -= loc.getX();
+				y -= loc.getY();
+			
 			}
 		}
 		else if (!lanes.isEmpty()) {
 			for (Lane lane : lanes) {
-				target = (ContainerShape) elements.get(lane);
-				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(target);
+				targetContainer = (ContainerShape) elements.get(lane);
+				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
 				x -= loc.getX();
 				y -= loc.getY();
 			}
 		}
-		context.setTargetContainer(target);
+		context.setTargetContainer(targetContainer);
 		context.setLocation(x, y);
 	}
 
 	private void handleItemAwareElement(ItemAwareElement element, AddContext context, BPMNShape shape) {
-		ContainerShape target = diagram;
+		ContainerShape targetContainer = null;
 		int x = (int) shape.getBounds().getX();
 		int y = (int) shape.getBounds().getY();
 		int w = (int) shape.getBounds().getWidth();
@@ -651,15 +673,17 @@ public class DIImport {
 			if (entry.getKey() instanceof Lane) {
 				ContainerShape laneShape = (ContainerShape)entry.getValue();
 				if (GraphicsUtil.intersects(laneShape, x, y, w, h)) {
-					target = (ContainerShape) laneShape;
-					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(target);
+					targetContainer = (ContainerShape) laneShape;
+					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
 					x -= loc.getX();
 					y -= loc.getY();
 					break;
 				}
 			}
 		}
-		context.setTargetContainer(target);
+		if (targetContainer==null)
+			targetContainer = getDiagram(shape);
+		context.setTargetContainer(targetContainer);
 		context.setLocation(x, y);
 	}
 	
@@ -772,7 +796,7 @@ public class DIImport {
 		context.setNewObject(bpmnElement);
 
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
-		if (addFeature != null && addFeature.canAdd(context)) {
+		if (canAdd(addFeature,context)) {
 			context.putProperty(IMPORT_PROPERTY, true);
 			Connection connection = (Connection) addFeature.add(context);
 			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
@@ -856,5 +880,17 @@ public class DIImport {
 		p.setY(y);
 
 		anchor.setLocation(p);
+	}
+	
+	private boolean canAdd(IAddFeature addFeature, AddContext context) {
+		if (addFeature==null)
+			return false;
+		
+		if (context.getTargetContainer() instanceof Diagram) {
+			Diagram diagram = (Diagram)context.getTargetContainer();
+			if (diagram!=featureProvider.getDiagramTypeProvider().getDiagram())
+				featureProvider.getDiagramTypeProvider().init(diagram, editor);
+		}
+		return addFeature.canAdd(context);
 	}
 }

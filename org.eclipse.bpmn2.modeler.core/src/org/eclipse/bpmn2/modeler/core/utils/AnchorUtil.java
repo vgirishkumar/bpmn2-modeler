@@ -233,6 +233,18 @@ public class AnchorUtil {
 		
 		Anchor oldStartAnchor = connection.getStart();
 		Anchor oldEndAnchor = connection.getEnd();
+		Point targetLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_TARGET_LOCATION));
+		Point sourceLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_SOURCE_LOCATION));
+		if (targetLoc==null)
+			p2 = GraphicsUtil.getShapeCenter(target);
+		else
+			p2 = targetLoc;
+		Anchor newStartAnchor = findNearestBoundaryAnchor(source, p2).anchor;
+		if (sourceLoc==null)
+			p1 = GraphicsUtil.getShapeCenter(source);
+		else
+			p1 = sourceLoc;
+		Anchor newEndAnchor = findNearestBoundaryAnchor(target, p1).anchor;
 
 		// if the source and target shape are the same, we're done - just return
 		// the existing anchors because the connection router will handle this
@@ -242,25 +254,20 @@ public class AnchorUtil {
 		}
 		
 		if (oldStartAnchor==null) {
-			p2 = GraphicsUtil.getShapeCenter(target);
-			oldStartAnchor = findNearestBoundaryAnchor(source, p2).anchor;
- 
+			oldStartAnchor = newStartAnchor;
 		}
 		if (oldEndAnchor==null) {
-			p1 = GraphicsUtil.getShapeCenter(source);
-			oldEndAnchor = findNearestBoundaryAnchor(target, p1).anchor;
+			oldEndAnchor = newEndAnchor;
 		}
 		Tuple<FixPointAnchor, FixPointAnchor> anchors = new Tuple<FixPointAnchor, FixPointAnchor>(
-				(FixPointAnchor)oldStartAnchor,
-				(FixPointAnchor)oldEndAnchor
+				(FixPointAnchor)newStartAnchor,
+				(FixPointAnchor)newEndAnchor
 		);
 
 		// if the source and/or target anchors are "Ad Hoc" anchors (e.g., the shape is a participant)
 		// the Connection should have the CONNECTION_SOURCE_LOCATION and/or CONNECTION_TARGET_LOCATION
 		// properties set - these are the locations at which the connection was started and/or terminated.
-		Point targetLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_TARGET_LOCATION));
-		Point sourceLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_SOURCE_LOCATION));
-		if (targetLoc!=null) {
+		if (targetLoc!=null && useAdHocAnchors(target,connection)) {
 			FixPointAnchor targetAnchor = anchors.getSecond();
 			if (targetAnchor == targetTop.anchor || targetAnchor == targetBottom.anchor)
 				targetLoc.setY(targetAnchor.getLocation().getY());
@@ -298,7 +305,7 @@ public class AnchorUtil {
 			}
 		}
 
-		if (sourceLoc!=null) {
+		if (sourceLoc!=null && useAdHocAnchors(source,connection)) {
 			FixPointAnchor sourceAnchor = anchors.getFirst();
 			if (sourceAnchor == sourceTop.anchor || sourceAnchor == sourceBottom.anchor)
 				sourceLoc.setY(sourceAnchor.getLocation().getY());

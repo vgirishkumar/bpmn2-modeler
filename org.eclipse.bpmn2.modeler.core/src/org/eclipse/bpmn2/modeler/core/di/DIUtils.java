@@ -312,6 +312,53 @@ public class DIUtils {
 		}	
 	}
 	
+	/**
+	 * Find the BPMNDiagram in the editor's Resource Set that corresponds to the given BaseElement.
+	 * The BaseElement is expected be some kind of container class such as a Process or SubProcess.
+	 * 
+	 * @param editor
+	 * @param baseElement
+	 * @return
+	 */
+	public static BPMNDiagram findBPMNDiagram(final IDiagramEditor editor, final BaseElement baseElement) {
+		if (baseElement!=null) {
+			ResourceSet resourceSet = editor.getResourceSet();
+			if (resourceSet!=null) {
+				for (Resource r : resourceSet.getResources()) {
+					if (r instanceof Bpmn2Resource) {
+						for (EObject o : r.getContents()) {
+							if (o instanceof DocumentRoot) {
+								DocumentRoot root = (DocumentRoot)o;
+								Definitions defs = root.getDefinitions();
+								for (BPMNDiagram d : defs.getDiagrams()) {
+									BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+									BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+									if (bpmnElement == baseElement)
+										return bpmnDiagram;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Find the BPMNDiagram in the editor's Resource Set that either corresponds to, or contains a
+	 * Diagram Element for the given BaseElement.
+	 * 
+	 * The BaseElement may be either a container (i.e. Process, SubProcess, Participant, etc.) or
+	 * a simple shape (Task, Gateway, etc.)
+	 * 
+	 * If the parameter "deep" is TRUE, then the BaseElement's ancestor hierarchy is searched recursively.
+	 * 
+	 * @param editor
+	 * @param baseElement
+	 * @param deep
+	 * @return
+	 */
 	public static BPMNDiagram findBPMNDiagram(final IDiagramEditor editor, final BaseElement baseElement, boolean deep) {
 		if (baseElement!=null) {
 			ResourceSet resourceSet = editor.getResourceSet();
@@ -327,30 +374,34 @@ public class DIUtils {
 									BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
 									if (bpmnElement == baseElement)
 										return bpmnDiagram;
+									for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+										if (de instanceof BPMNShape)
+											bpmnElement = ((BPMNShape)de).getBpmnElement();
+										else if (de instanceof BPMNEdge)
+											bpmnElement = ((BPMNEdge)de).getBpmnElement();
+										else
+											continue;
+										if (bpmnElement == baseElement)
+											return bpmnDiagram;
+									}
+								}
+								if (deep) {
+									EObject parent = baseElement.eContainer();
+									if (parent instanceof BaseElement && !(parent instanceof Definitions)) {
+										BPMNDiagram bpmnDiagram = findBPMNDiagram(editor, (BaseElement)parent, true);
+										if (bpmnDiagram!=null)
+											return bpmnDiagram;
+									}
+								}
+								for (BPMNDiagram d : defs.getDiagrams()) {
+									BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+									BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
 									if (bpmnElement instanceof Collaboration) {
 										Collaboration collaboration = (Collaboration)bpmnElement;
 										for (Participant p : collaboration.getParticipants()) {
 											if (baseElement==p)
 												return bpmnDiagram;
 											if (baseElement==p.getProcessRef())
-												return bpmnDiagram;
-										}
-									}
-									if (deep) {
-										EObject parent = baseElement.eContainer();
-										if (parent instanceof BaseElement && !(parent instanceof Definitions)) {
-											bpmnDiagram = findBPMNDiagram(editor, (BaseElement)parent, true);
-											if (bpmnDiagram!=null)
-												return bpmnDiagram;
-										}
-										for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-											if (de instanceof BPMNShape)
-												bpmnElement = ((BPMNShape)de).getBpmnElement();
-											else if (de instanceof BPMNEdge)
-												bpmnElement = ((BPMNEdge)de).getBpmnElement();
-											else
-												continue;
-											if (bpmnElement == baseElement)
 												return bpmnDiagram;
 										}
 									}

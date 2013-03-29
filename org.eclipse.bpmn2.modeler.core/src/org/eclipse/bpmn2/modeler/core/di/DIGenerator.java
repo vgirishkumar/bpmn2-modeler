@@ -114,6 +114,9 @@ public class DIGenerator {
 		// to these, which *should* be rendered
 		if (be instanceof DataObject || be instanceof DataStore)
 			return false;
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(editor, be, false);
+		if (bpmnDiagram!=null)
+			return false;
 		return elements.get(be) == null && diagnostics.get(be) == null;
 	}
 	

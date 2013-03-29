@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -219,37 +220,10 @@ public class DesignEditor extends BPMN2Editor {
 	}
 	
 	private void reloadTabs() {
-		BPMNDiagram bpmnDiagram = getBpmnDiagram();
 		List<BPMNDiagram> bpmnDiagrams = new ArrayList<BPMNDiagram>();
-		
 		BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-		List<FlowElement> flowElements = null;
-		if (bpmnElement instanceof Process) {
-			flowElements = ((Process)bpmnElement).getFlowElements();
-		}
-		else if (bpmnElement instanceof Collaboration) {
-			((Collaboration)bpmnElement).getParticipants();
-		}
-		else if (bpmnElement instanceof Choreography) {
-			flowElements = ((Choreography)bpmnElement).getFlowElements();
-		}
-		if (flowElements != null) {
-			for (FlowElement fe : flowElements) {
-				BPMNDiagram bd = DIUtils.findBPMNDiagram(this, fe, false);
-				if (bd!=null)
-					bpmnDiagrams.add(bd);
-				TreeIterator<EObject> iter = fe.eAllContents();
-				while (iter.hasNext()) {
-					EObject o = iter.next();
-					if (o instanceof BaseElement) {
-						bd = DIUtils.findBPMNDiagram(this, (BaseElement)o, false);
-						if (bd!=null) {
-							bpmnDiagrams.add(bd);
-						}
-					}
-				}
-			}
-		}
+
+		getSubDiagrams(bpmnElement, bpmnDiagrams);
 		
 		tabFolder.setLayoutDeferred(true);
 		for (int i=tabFolder.getItemCount()-1; i>0; --i) {
@@ -274,6 +248,37 @@ public class DesignEditor extends BPMN2Editor {
 				updateTabs();
 			}
 		});
+	}
+	
+	private void getSubDiagrams(BaseElement bpmnElement, List<BPMNDiagram> bpmnDiagrams) {
+		
+		List<FlowElement> flowElements = null;
+		if (bpmnElement instanceof FlowElementsContainer) {
+			flowElements = ((FlowElementsContainer)bpmnElement).getFlowElements();
+		}
+		else if (bpmnElement instanceof Collaboration) {
+			flowElements = new ArrayList<FlowElement>();
+			for (Participant p : ((Collaboration)bpmnElement).getParticipants()) {
+				if (p.getProcessRef()!=null) {
+					flowElements.addAll(p.getProcessRef().getFlowElements());
+				}
+			}
+		}
+		else if (bpmnElement instanceof Choreography) {
+			flowElements = ((Choreography)bpmnElement).getFlowElements();
+		}
+
+
+		if (flowElements != null) {
+			BPMNDiagram mainBpmnDiagram = ModelUtil.getDefinitions(bpmnResource).getDiagrams().get(0);
+			BPMNDiagram activeBpmnDiagram = getBpmnDiagram();
+			for (FlowElement fe : flowElements) {
+				BPMNDiagram bd = DIUtils.findBPMNDiagram(this, fe);
+				if (bd!=null && !bpmnDiagrams.contains(bd) && bd!=activeBpmnDiagram && bd!=mainBpmnDiagram)
+					bpmnDiagrams.add(bd);
+				getSubDiagrams(fe, bpmnDiagrams);
+			}
+		}
 	}
 	
 	public void createPartControl(Composite parent) {

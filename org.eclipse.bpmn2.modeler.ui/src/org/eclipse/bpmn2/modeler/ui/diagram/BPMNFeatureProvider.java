@@ -406,7 +406,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		// is called during file loading.
 		Object id = CustomTaskFeatureContainer.getId(context); 
 		if (id!=null) {
-			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
+			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 			TargetRuntime rt = editor.getTargetRuntime();
 			for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
 				if (id.equals(ct.getId())) {

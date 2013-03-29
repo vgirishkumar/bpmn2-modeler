@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -186,7 +187,8 @@ public class ShapeLayoutManager {
 		if (unconnectedShapes.size()>0) {
 			List<ContainerShape> children = getContainerShapeChildren(container);
 			for (ContainerShape shape : unconnectedShapes) {
-				if (getContainerShapeChildren(shape).size()==0) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
+				if (getContainerShapeChildren(shape).size()==0 && !(be instanceof Lane)) {
 					IDimension size = GraphicsUtil.calculateSize(shape);
 					Point p = moveShape(container, shape, x, y, children);
 					x = p.getX();
@@ -203,11 +205,15 @@ public class ShapeLayoutManager {
 			x += maxWidth + HORZ_PADDING;
 			y = VERT_PADDING;
 			for (ContainerShape shape : unconnectedShapes) {
-				if (getContainerShapeChildren(shape).size()!=0) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
+				if (getContainerShapeChildren(shape).size()!=0 || be instanceof Lane) {
 					IDimension size = GraphicsUtil.calculateSize(shape);
 					Point p = moveShape(container, shape, x, y, children);
 					x = p.getX();
 					y = p.getY();
+					if (be instanceof Lane) {
+						resizeContainerShape(shape);
+					}
 					y += size.getHeight() + VERT_PADDING;
 					if (size.getWidth() > maxWidth)
 						maxWidth = size.getWidth();
@@ -265,6 +271,13 @@ public class ShapeLayoutManager {
 			if (h>height)
 				height = h;
 		}
+		if ( BusinessObjectUtil.getFirstBaseElement(container) instanceof Lane) {
+			if (width < 800)
+				width = 800;
+			if (height < 100)
+				height = 100;
+		}
+			
 		return resizeShape(container, width + HORZ_PADDING, height + VERT_PADDING);
 	}
 	
