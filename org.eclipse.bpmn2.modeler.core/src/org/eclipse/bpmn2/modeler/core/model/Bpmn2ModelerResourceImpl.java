@@ -108,7 +108,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         uriHandler.setBaseURI(uri);
         
         this.getDefaultLoadOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
-        this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, false);
+        this.getDefaultLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, true);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, true);
         this.getDefaultSaveOptions().put(XMLResource.OPTION_URI_HANDLER, uriHandler);
 

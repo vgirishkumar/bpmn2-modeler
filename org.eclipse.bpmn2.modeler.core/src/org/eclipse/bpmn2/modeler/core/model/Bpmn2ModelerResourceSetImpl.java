@@ -87,7 +87,11 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					o = super.getEObject(newUri, loadOnDemand);
 				}
 				catch (Exception e) {
-					Activator.logError(e);
+					// if the resource does not contain anything, it was probably not found
+					// and has already been reported earlier so don't bother with error log here.
+				    Resource resource = getResource(uri.trimFragment(), loadOnDemand);
+				    if (resource!=null && resource.getContents().size()>0) 
+				    	Activator.logError(e);
 				}
 				finally {
 					restoreTimeoutProperties();

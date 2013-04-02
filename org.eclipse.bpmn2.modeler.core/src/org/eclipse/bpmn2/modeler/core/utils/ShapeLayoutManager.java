@@ -353,7 +353,7 @@ public class ShapeLayoutManager {
 	
 	private ContainerShape getContainerShape(BaseElement be) {
 		Diagram diagram = null;
-		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(editor, be, true);
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be, true);
 		if (bpmnDiagram != null) {
 			diagram = DIUtils.findDiagram(editor, bpmnDiagram);
 			if (diagram==null) {

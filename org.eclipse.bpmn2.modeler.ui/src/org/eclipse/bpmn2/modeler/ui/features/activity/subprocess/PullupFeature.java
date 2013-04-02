@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -27,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -51,6 +53,8 @@ import org.eclipse.graphiti.services.Graphiti;
  */
 public class PullupFeature extends AbstractCustomFeature {
 
+	protected String description;
+
 	/**
 	 * @param fp
 	 */
@@ -65,7 +69,9 @@ public class PullupFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getDescription() {
-	    return "Pull the contents of the Diagram for this Activity Container back into the container";
+		if (description==null)
+			description = "Pull the contents of the Diagram for this Container into the current diagram";
+		return description;
 	}
 
 	@Override
@@ -75,7 +81,16 @@ public class PullupFeature extends AbstractCustomFeature {
 
 	@Override
 	public boolean isAvailable(IContext context) {
-		return true;
+		if (context instanceof ICustomContext) {
+			PictogramElement[] pes = ((ICustomContext)context).getPictogramElements();
+			if (pes != null && pes.length == 1) {
+				PictogramElement pe = pes[0];
+				if (!ChoreographyUtil.isChoreographyParticipantBand(pe)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -84,8 +99,13 @@ public class PullupFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
+			description = "Pull the contents of the Diagram for this "+
+					ModelUtil.getLabel(bo)+" into the current diagram";
+			if (bo instanceof Participant) {
+				bo = ((Participant)bo).getProcessRef();
+			}
 			if (bo instanceof FlowElementsContainer) {
-				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(getDiagramEditor(), (BaseElement)bo);
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)bo);
 				return bpmnDiagram != null;
 			}
 		}
@@ -100,15 +120,25 @@ public class PullupFeature extends AbstractCustomFeature {
 		// we already know there's one and only one PE element in canExecute() and that it's
 		// a ContainerShape for an expandable activity
 		PictogramElement pe = context.getPictogramElements()[0];
-		FlowElementsContainer container = (FlowElementsContainer)getBusinessObjectForPictogramElement(pe);
+		Object bo = getBusinessObjectForPictogramElement(pe);
+
+		BPMNShape bpmnShape = null;
+		if (bo instanceof Participant) {
+			bpmnShape = DIUtils.findBPMNShape((Participant)bo);
+			bo = ((Participant)bo).getProcessRef();
+		}
+		else if (bo instanceof FlowElementsContainer) {
+			bpmnShape = DIUtils.findBPMNShape((FlowElementsContainer)bo);
+		}
+		FlowElementsContainer container = (FlowElementsContainer)bo;
 		
 		// find out which BPMNPlane this sub process lives in - this will be the new home
 		// for the DI elements in the existing BPMNDiagram.
-		BPMNDiagram newBpmnDiagram = (BPMNDiagram)ModelHandler.findDIElement(container).eContainer().eContainer();
+		BPMNDiagram newBpmnDiagram = DIUtils.getBPMNDiagram(bpmnShape);
 		BPMNPlane newPlane = newBpmnDiagram.getPlane();
 		Diagram newDiagram = DIUtils.findDiagram(getDiagramEditor(), newBpmnDiagram);
 		
-		BPMNDiagram oldBpmnDiagram = DIUtils.findBPMNDiagram(getDiagramEditor(), container);
+		BPMNDiagram oldBpmnDiagram = DIUtils.findBPMNDiagram(container);
 		BPMNPlane oldPlane = oldBpmnDiagram.getPlane();
 		Diagram oldDiagram = DIUtils.findDiagram(getDiagramEditor(), oldBpmnDiagram);
 		
@@ -119,7 +149,7 @@ public class PullupFeature extends AbstractCustomFeature {
 		}
 		
 		// copy the Graphiti diagram elements: first find the ContainerShape for the sub process
-		List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(newDiagram, container);
+		List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(newDiagram, bpmnShape);
 		for (PictogramElement p : pes) {
 			if (p instanceof ContainerShape) {
 				if (BusinessObjectUtil.getFirstElementOfType(p, BPMNShape.class)!=null) {

@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -39,8 +40,7 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 		try {
 			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
-			BPMNEdge edge = (BPMNEdge) modelHandler.findDIElement(element);
+			BPMNEdge edge = DIUtils.findBPMNEdge(element);
 			return edge!=null;
 		} catch (Exception e) {
 			Activator.logError(e);
@@ -55,13 +55,12 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 			
 			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
 
 			org.eclipse.dd.dc.Point p = DcFactory.eINSTANCE.createPoint();
 			p.setX(context.getX());
 			p.setY(context.getY());
 
-			BPMNEdge edge = (BPMNEdge) modelHandler.findDIElement(element);
+			BPMNEdge edge = DIUtils.findBPMNEdge(element);
 			int index = context.getBendpointIndex() + 1;
 			edge.getWaypoint().add(index, p);
 			if (index == 1) {

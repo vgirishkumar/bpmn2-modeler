@@ -931,34 +931,6 @@ public class ModelHandler {
 		return l;
 	}
 
-	public static DiagramElement findDIElement(BaseElement element) {
-		String id = element.getId();
-		if (id==null || id.isEmpty())
-			return null;
-
-		List<BPMNDiagram> diagrams = getAll(element.eResource(), BPMNDiagram.class);
-		for (BPMNDiagram d : diagrams) {
-			// Process elements correspond to BPMNPlane DI elements
-			BPMNPlane plane = d.getPlane();
-			BaseElement be = plane.getBpmnElement();
-			if (be!=null && id.equals(be.getId()))
-				return plane;
-			
-			List<DiagramElement> planeElement = plane.getPlaneElement();
-			
-			for (DiagramElement elem : planeElement) {
-				if (elem instanceof BPMNShape && ((BPMNShape) elem).getBpmnElement() != null &&
-						id.equals(((BPMNShape) elem).getBpmnElement().getId())) {
-					return (elem);
-				} else if (elem instanceof BPMNEdge &&
-						id.equals(((BPMNEdge) elem).getBpmnElement().getId())) {
-					return (elem);
-				}
-			}
-		}
-		return null;
-	}
-
 	public BaseElement findElement(String id) {
 		if (id==null || id.isEmpty())
 			return null;

@@ -596,47 +596,19 @@ public class DIImport {
 		int y = (int) shape.getBounds().getY();
 
 		// find a correct container element
-		List<Lane> lanes;
+		List<Lane> lanes = null;
 		if (element instanceof FlowNode)
 			lanes = ((FlowNode)element).getLanes();
-		else {
-			lanes = new ArrayList<Lane>();
-			if (element instanceof DataObject || element instanceof DataObjectReference) {
-				int w = (int) shape.getBounds().getWidth();
-				int h = (int) shape.getBounds().getHeight();
-				// if this Data Object is contained within a Lane, make the Lane the target container
-				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
-					if (entry.getKey() instanceof Lane) {
-						ContainerShape laneShape = (ContainerShape)entry.getValue();
-						if (GraphicsUtil.intersects(laneShape, x, y, w, h)) {
-							lanes.add((Lane)entry.getKey());
-							break;
-						}
-					}
-				}
-			}
-		}
+
 		EObject parent = element.eContainer();
 		if (	(parent instanceof SubProcess
 				|| parent instanceof Process
 				|| parent instanceof SubChoreography)
-				&& lanes.isEmpty()
+				&& (lanes==null || lanes.isEmpty())
 		) {
 			targetContainer = (ContainerShape) elements.get(parent);
-//			if (target==null) {
-//				// Maybe this is a Process that is referenced by a Pool
-//				for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
-//					if (entry.getKey() instanceof Participant) {
-//						Participant p = (Participant)entry.getKey();
-//						if (p.getProcessRef() == parent) {
-//							target = (ContainerShape)entry.getValue();
-//							break;
-//						}
-//					}
-//				}
-//			}
 			if (targetContainer == null) {
-				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(editor, element, true);
+				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(element, true);
 				if (childDiagram!=null) {
 					targetContainer = DIUtils.findDiagram(editor, childDiagram);
 				}
@@ -648,7 +620,7 @@ public class DIImport {
 			
 			}
 		}
-		else if (!lanes.isEmpty()) {
+		else if (lanes!=null && !lanes.isEmpty()) {
 			for (Lane lane : lanes) {
 				targetContainer = (ContainerShape) elements.get(lane);
 				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
@@ -778,10 +750,10 @@ public class DIImport {
 		}
 		
 		if (sourceElement == null) {
-			bpmnEdge.setSourceElement(modelHandler.findDIElement((BaseElement) source));
+			bpmnEdge.setSourceElement(DIUtils.findBPMNEdge((BaseElement) source));
 		}
 		if (targetElement == null) {
-			bpmnEdge.setTargetElement(modelHandler.findDIElement((BaseElement) target));
+			bpmnEdge.setTargetElement(DIUtils.findBPMNEdge((BaseElement) target));
 		}
 	}
 

@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageFlow;
@@ -73,8 +74,8 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 
 	protected BPMNShape findDIShape(BaseElement elem) {
 		try {
-			return (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(elem);
-		} catch (IOException e) {
+			return DIUtils.findBPMNShape(elem);
+		} catch (Exception e) {
 			Activator.logError(e);
 		}
 		return null;
@@ -103,7 +104,7 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 
 	protected BPMNEdge createDIEdge(Connection connection, BaseElement conElement) {
 		try {
-			BPMNEdge edge = (BPMNEdge) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(conElement);
+			BPMNEdge edge = DIUtils.findBPMNEdge(conElement);
 			return createDIEdge(connection, conElement, edge);
 		} catch (IOException e) {
 			Activator.logError(e);
@@ -113,7 +114,6 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 
 	// TODO: move this to DIUtils
 	protected BPMNEdge createDIEdge(Connection connection, BaseElement conElement, BPMNEdge edge) throws IOException {
-		ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
 		if (edge == null) {
 			EList<EObject> businessObjects = Graphiti.getLinkService().getLinkForPictogramElement(getDiagram())
 					.getBusinessObjects();
@@ -126,19 +126,19 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 					edge.setBpmnElement(conElement);
 
 					if (conElement instanceof Association) {
-						edge.setSourceElement(modelHandler.findDIElement(
+						edge.setSourceElement(DIUtils.findBPMNEdge(
 								((Association) conElement).getSourceRef()));
-						edge.setTargetElement(modelHandler.findDIElement(
+						edge.setTargetElement(DIUtils.findBPMNEdge(
 								((Association) conElement).getTargetRef()));
 					} else if (conElement instanceof MessageFlow) {
-						edge.setSourceElement(modelHandler.findDIElement(
+						edge.setSourceElement(DIUtils.findBPMNEdge(
 								(BaseElement) ((MessageFlow) conElement).getSourceRef()));
-						edge.setTargetElement(modelHandler.findDIElement(
+						edge.setTargetElement(DIUtils.findBPMNEdge(
 								(BaseElement) ((MessageFlow) conElement).getTargetRef()));
 					} else if (conElement instanceof SequenceFlow) {
-						edge.setSourceElement(modelHandler.findDIElement(
+						edge.setSourceElement(DIUtils.findBPMNEdge(
 								((SequenceFlow) conElement).getSourceRef()));
-						edge.setTargetElement(modelHandler.findDIElement(
+						edge.setTargetElement(DIUtils.findBPMNEdge(
 								((SequenceFlow) conElement).getTargetRef()));
 					}
 

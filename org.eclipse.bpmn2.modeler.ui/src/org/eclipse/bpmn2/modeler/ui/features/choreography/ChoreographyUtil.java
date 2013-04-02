@@ -795,6 +795,8 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	public static String getMessageName(Message mesg) {
 		if (mesg.getItemRef()==null ||
 				mesg.getItemRef().getStructureRef()==null) {
+			if (mesg.getName()==null)
+				return mesg.getId();
 			return mesg.getName();
 		} else {
 			String type = "(" + ModelUtil.getDisplayName(mesg.getItemRef()) +")";

@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.IS_EXPANDED;
-
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -30,7 +30,6 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 
 public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 
@@ -62,21 +61,12 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		boolean ret = false;
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (AbstractExpandableActivityFeatureContainer.isExpandableElement(bo)) {
-				try {
-					BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement((FlowNode)bo);
-					if (bpmnShape.isIsExpanded())
-						ret = true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			return AbstractExpandableActivityFeatureContainer.isElementExpanded(bo);
 		}
-		return ret;
+		return false;
 	}
 
 	@Override
@@ -89,7 +79,7 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 				ContainerShape containerShape = (ContainerShape)pe0;
 				FlowNode flowNode = (FlowNode)bo;
 				try {
-					BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(flowNode);
+					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
 					if (bpmnShape.isIsExpanded()) {
 						
 						// SubProcess is collapsed - resize to standard modelObject size

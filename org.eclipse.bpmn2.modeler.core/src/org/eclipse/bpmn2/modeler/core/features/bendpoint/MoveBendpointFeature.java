@@ -15,10 +15,9 @@ package org.eclipse.bpmn2.modeler.core.features.bendpoint;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
-import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.dd.dc.Point;
@@ -28,7 +27,6 @@ import org.eclipse.graphiti.features.context.IMoveBendpointContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveBendpointFeature;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
 
 public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 
@@ -42,8 +40,7 @@ public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 		try {
 			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
-			BPMNEdge edge = (BPMNEdge) modelHandler.findDIElement(element);
+			BPMNEdge edge = DIUtils.findBPMNEdge(element);
 			int index = context.getBendpointIndex() + 1;
 			Point p = edge.getWaypoint().get(index);
 			p.setX(context.getX());

@@ -18,12 +18,15 @@ import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProce
 import java.io.IOException;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -50,13 +53,10 @@ public class AddExpandableActivityFeature<T extends Activity>
 		if (businessObject instanceof SubProcess) {
 			SubProcess subprocess = (SubProcess) businessObject;
 			isTriggeredByEvent = subprocess.isTriggeredByEvent();
-			try {
-				BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(subprocess);
-				if (bpmnShape != null) {
-					isExpanded = bpmnShape.isIsExpanded();
-				}
-			} catch (IOException e) {
-				throw new IllegalStateException("Could not get DI shape for subprocess:"+subprocess);
+
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(subprocess);
+			if (bpmnShape != null) {
+				isExpanded = bpmnShape.isIsExpanded();
 			}
 		}
 		peService.setPropertyValue(containerShape, TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));

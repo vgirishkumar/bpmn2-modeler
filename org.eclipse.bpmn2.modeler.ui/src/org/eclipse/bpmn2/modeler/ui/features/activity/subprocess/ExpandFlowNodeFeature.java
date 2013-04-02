@@ -12,11 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.IS_EXPANDED;
-
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -26,11 +24,9 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 
 // NOT USED YET
 public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
@@ -81,16 +77,7 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			if (AbstractExpandableActivityFeatureContainer.isExpandableElement(bo)) {
-				try {
-					BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement((FlowNode)bo);
-					if (!bpmnShape.isIsExpanded())
-						ret = true;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			return !AbstractExpandableActivityFeatureContainer.isElementExpanded(bo);
 		}
 		return ret;
 	}
@@ -110,7 +97,7 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 				ContainerShape containerShape = (ContainerShape)pe0;
 				FlowNode flowNode = (FlowNode)bo;
 				try {
-					BPMNShape bpmnShape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(flowNode);
+					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
 					if (!bpmnShape.isIsExpanded()) {
 						
 						// SubProcess is collapsed - resize to minimum size such that all children are visible

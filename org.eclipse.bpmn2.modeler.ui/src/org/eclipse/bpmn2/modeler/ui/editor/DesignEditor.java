@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 
 public class DesignEditor extends BPMN2Editor {
 	
@@ -129,28 +130,25 @@ public class DesignEditor extends BPMN2Editor {
 				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 				if (object!=null && object.eResource() == bpmnResource) {
 					BPMNDiagram newBpmnDiagram = null;
+					boolean showSelection = true;
 					if (object instanceof BaseElement) {
-						// select the right diagram page
-						newBpmnDiagram = DIUtils.findBPMNDiagram(this, (BaseElement)object, true);
+						// If the selection came from the ContentOutline then navigate to
+						// diagram page corresponds to this flowElementsContainer if one exists
+						if (part instanceof ContentOutline) {
+							newBpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)object, true);
+							Object o = DIUtils.findBPMNDiagram((BaseElement)object, false);
+							if (o==newBpmnDiagram)
+								showSelection = false;
+						}
 					}
 					else if (object instanceof BPMNDiagram) {
 						newBpmnDiagram = (BPMNDiagram)object;
+						showSelection = false;
 					}
 					if (newBpmnDiagram!=null && getBpmnDiagram() != newBpmnDiagram) {
-						BPMNDiagram rootBpmnDiagram = newBpmnDiagram;
-						object = newBpmnDiagram.getPlane().getBpmnElement();
-						while (!(object instanceof RootElement)) {
-							// this is a BPMNDiagram that contains a SubProcess, not a RootElement
-							// so find the BPMNDiagram that contains the RootElement which owns
-							// this SubProcess
-							rootBpmnDiagram = DIUtils.findBPMNDiagram(this, (BaseElement)object, true);
-							object = rootBpmnDiagram.getPlane().getBpmnElement();
-						}
-						if (getBpmnDiagram()!=rootBpmnDiagram) {
-							multipageEditor.showDesignPage(rootBpmnDiagram);
-						}
-						if (rootBpmnDiagram != newBpmnDiagram) {
-							final BPMNDiagram d = newBpmnDiagram;
+						multipageEditor.showDesignPage(newBpmnDiagram);
+						final BPMNDiagram d = newBpmnDiagram;
+						if (showSelection) {
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
 									showDesignPage(d);
@@ -273,7 +271,7 @@ public class DesignEditor extends BPMN2Editor {
 			BPMNDiagram mainBpmnDiagram = ModelUtil.getDefinitions(bpmnResource).getDiagrams().get(0);
 			BPMNDiagram activeBpmnDiagram = getBpmnDiagram();
 			for (FlowElement fe : flowElements) {
-				BPMNDiagram bd = DIUtils.findBPMNDiagram(this, fe);
+				BPMNDiagram bd = DIUtils.findBPMNDiagram(fe);
 				if (bd!=null && !bpmnDiagrams.contains(bd) && bd!=activeBpmnDiagram && bd!=mainBpmnDiagram)
 					bpmnDiagrams.add(bd);
 				getSubDiagrams(fe, bpmnDiagrams);
