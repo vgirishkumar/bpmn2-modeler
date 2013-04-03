@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 
 
 /**
@@ -52,6 +53,8 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 
 	public Bpmn2ModelerResourceSetImpl() {
 		super();
+        getLoadOptions().put(XMLResource.OPTION_DISABLE_NOTIFY, true);
+        getLoadOptions().put(XMLResource.OPTION_DEFER_IDREF_RESOLUTION, true);
 	}
 
 	/**

@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +69,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
@@ -78,6 +80,7 @@ import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
+import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -202,6 +205,19 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	protected static class Bpmn2ModelerXmlHandler extends BpmnXmlHandler {
 
 		Bpmn2Preferences prefs = null;
+		static HashSet<EStructuralFeature> qnameFeatures = new HashSet<EStructuralFeature>();
+		
+		static {
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getMessage_ItemRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getError_StructureRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getOperation_ImplementationRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getOperation_InMessageRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getOperation_OutMessageRef());
+			qnameFeatures.add(Bpmn2Package.eINSTANCE.getOperation_ErrorRefs());
+		};
+
 		
 		public Bpmn2ModelerXmlHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 			super(xmiResource, helper, options);
@@ -222,6 +238,39 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		protected void handleObjectAttribs(EObject obj) {
 			super.handleObjectAttribs(obj);
+			if (attribs != null) {
+				InternalEObject internalEObject = (InternalEObject) obj;
+				for (int i = 0, size = attribs.getLength(); i < size; ++i) {
+					String name = attribs.getQName(i);
+					if (name.equals(XMLResource.XML_NS)) {
+						// create an ns prefix in the prefix map for this default namespace
+						// and qualify any qnameFeatures contained in this object...
+						String namespaceURI = attribs.getValue(i);
+						for (EStructuralFeature f : obj.eClass().getEAllStructuralFeatures()) {
+							if (qnameFeatures.contains(f)) {
+								Object value = obj.eGet(f);
+								if (ModelUtil.isStringWrapper(value)) {
+									String localpart = ModelUtil.getStringWrapperValue(value);
+									if (localpart!=null && !localpart.isEmpty() && !localpart.contains(":")) {
+										String prefix = helper.getPrefix(namespaceURI);
+										if (prefix==null || prefix.isEmpty()) {
+											for (int index = 0; true; ++index) {
+												prefix = "ns" + index;
+												String ns = helper.getPrefixToNamespaceMap().get(prefix);
+												if (ns==null)
+													break;
+											}
+											helper.addPrefix(prefix, namespaceURI);	
+										}
+										ModelUtil.setStringWrapperValue(value, prefix + ":" + localpart);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			if (obj instanceof BPMNShape) {
 				BPMNShape bpmnShape = (BPMNShape)obj;
 
@@ -277,13 +326,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					(object instanceof Operation &&
 							eReference == Bpmn2Package.eINSTANCE.getOperation_ImplementationRef())
 			) {
-				try {
-					// if the ID string is a URI, try to resolve and load the object
-					URI uri = uriHandler.resolve( URI.createURI(ids) );
-					value = resourceSet.getEObject(uri, true);
-				}
-				catch (Exception e) {
-				}
+//				try {
+//					// if the ID string is a URI, try to resolve and load the object
+//					URI uri = uriHandler.resolve( URI.createURI(ids) );
+//					value = resourceSet.getEObject(uri, true);
+//				}
+//				catch (Exception e) {
+//				}
 				if (value==null) {
 					// not a URI or can't find EObject: create a string wrapper EObject
 					object.eSet(eReference, ModelUtil.createStringWrapper(ids));
