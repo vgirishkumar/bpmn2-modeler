@@ -32,16 +32,19 @@ import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.algorithms.styles.Style;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -119,8 +122,8 @@ public class PullupFeature extends AbstractCustomFeature {
 	public void execute(ICustomContext context) {
 		// we already know there's one and only one PE element in canExecute() and that it's
 		// a ContainerShape for an expandable activity
-		PictogramElement pe = context.getPictogramElements()[0];
-		Object bo = getBusinessObjectForPictogramElement(pe);
+		ContainerShape shape = (ContainerShape)context.getPictogramElements()[0];
+		Object bo = getBusinessObjectForPictogramElement(shape);
 
 		BPMNShape bpmnShape = null;
 		if (bo instanceof Participant) {
@@ -148,30 +151,34 @@ public class PullupFeature extends AbstractCustomFeature {
 			newPlane.getPlaneElement().add(de);
 		}
 		
-		// copy the Graphiti diagram elements: first find the ContainerShape for the sub process
-		List <PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(newDiagram, bpmnShape);
-		for (PictogramElement p : pes) {
-			if (p instanceof ContainerShape) {
-				if (BusinessObjectUtil.getFirstElementOfType(p, BPMNShape.class)!=null) {
-					// this is it!
-					((ContainerShape)p).getChildren().addAll( oldDiagram.getChildren() );
-					newDiagram.getConnections().addAll( oldDiagram.getConnections() );
-					
-					newDiagram.getPictogramLinks().addAll(oldDiagram.getPictogramLinks());
-					newDiagram.getColors().addAll(oldDiagram.getColors());
-					newDiagram.getFonts().addAll(oldDiagram.getFonts());
-					newDiagram.getStyles().addAll(oldDiagram.getStyles());
-					
-					break;
+		// copy the Graphiti diagram elements
+		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);
+		shape.getChildren().addAll( oldDiagram.getChildren() );
+		for (Connection c : oldDiagram.getConnections()) {
+			if (c instanceof FreeFormConnection) {
+				// adjust connection bendpoints
+				FreeFormConnection ffc = (FreeFormConnection)c;
+				for (Point pp : ffc.getBendpoints()) {
+					pp.setX( pp.getX() + loc.getX() );
+					pp.setY( pp.getY() + loc.getY() );
 				}
 			}
 		}
+		newDiagram.getConnections().addAll( oldDiagram.getConnections() );
+		
+		newDiagram.getPictogramLinks().addAll(oldDiagram.getPictogramLinks());
+		newDiagram.getColors().addAll(oldDiagram.getColors());
+		newDiagram.getFonts().addAll(oldDiagram.getFonts());
+		newDiagram.getStyles().addAll(oldDiagram.getStyles());
 		
 		// get rid of the old BPMNDiagram
 		DIUtils.deleteDiagram(getDiagramEditor(), oldBpmnDiagram);
 		
-		// now expand the sub process
-		ExpandFlowNodeFeature expandFeature = new ExpandFlowNodeFeature(getFeatureProvider());
-		expandFeature.execute(context);
+		// expand the sub process
+		if (AbstractExpandableActivityFeatureContainer.isExpandableElement(container)) {
+			bpmnShape.setIsExpanded(false);
+			ExpandFlowNodeFeature expandFeature = new ExpandFlowNodeFeature(getFeatureProvider());
+			expandFeature.execute(context);
+		}
 	}
 }

@@ -26,6 +26,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.Property;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -75,16 +76,12 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateFeature {
 		ContainerShape container = (ContainerShape) pe;
 		boolean isExpanded = false;
 		
-		try {
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(subprocess);
-			isExpanded = bpmnShape.isIsExpanded();
-		} catch (Exception e) {
-			throw new IllegalStateException("Could not get DI shape for subprocess:"+subprocess);
-		}
+		BPMNShape bpmnShape = DIUtils.findBPMNShape(subprocess);
+		isExpanded = bpmnShape.isIsExpanded();
 		Graphiti.getPeService().setPropertyValue(pe, TRIGGERED_BY_EVENT, Boolean.toString(subprocess.isTriggeredByEvent()));
 		Graphiti.getPeService().setPropertyValue(pe, IS_EXPANDED, Boolean.toString(isExpanded));
 
-		RoundedRectangle rectangle = (RoundedRectangle) Graphiti.getPeService()
+		GraphicsAlgorithm rectangle = Graphiti.getPeService()
 		        .getAllContainedPictogramElements(pe).iterator().next()
 		        .getGraphicsAlgorithm();
 		LineStyle lineStyle = subprocess.isTriggeredByEvent() ? LineStyle.DOT : LineStyle.SOLID;

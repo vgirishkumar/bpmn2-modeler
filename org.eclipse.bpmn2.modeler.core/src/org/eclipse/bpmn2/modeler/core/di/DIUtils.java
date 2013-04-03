@@ -40,6 +40,7 @@ import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -377,19 +378,19 @@ public class DIUtils {
 									return bpmnDiagram;
 							}
 						}
-						for (BPMNDiagram d : defs.getDiagrams()) {
-							BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-							bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-							if (bpmnElement instanceof Collaboration) {
-								Collaboration collaboration = (Collaboration)bpmnElement;
-								for (Participant p : collaboration.getParticipants()) {
-									if (baseElement==p)
-										return bpmnDiagram;
-									if (baseElement==p.getProcessRef())
-										return bpmnDiagram;
-								}
-							}
-						}
+//						for (BPMNDiagram d : defs.getDiagrams()) {
+//							BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+//							bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+//							if (bpmnElement instanceof Collaboration) {
+//								Collaboration collaboration = (Collaboration)bpmnElement;
+//								for (Participant p : collaboration.getParticipants()) {
+//									if (baseElement==p)
+//										return bpmnDiagram;
+//									if (baseElement==p.getProcessRef())
+//										return bpmnDiagram;
+//								}
+//							}
+//						}
 					}
 				}
 			}
@@ -460,9 +461,12 @@ public class DIUtils {
 			BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
 			BaseElement bpmnElement = null;
 			for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-				bpmnElement = ((BPMNShape)de).getBpmnElement();
-				if (bpmnElement == object)
-					return de;
+				EStructuralFeature f = de.eClass().getEStructuralFeature("bpmnElement");
+				if (f!=null) {
+					bpmnElement = (BaseElement) de.eGet(f);
+					if (bpmnElement == object)
+						return de;
+				}
 			}
 		}
 		return null;
