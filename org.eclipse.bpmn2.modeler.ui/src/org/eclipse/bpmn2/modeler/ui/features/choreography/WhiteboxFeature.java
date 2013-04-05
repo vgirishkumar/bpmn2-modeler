@@ -207,6 +207,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 				String name = "Process for "+ModelUtil.getDisplayName(participant);
 		        process.setName(name);
 		        newDiagram.setName(name);
+		        definitions.getRootElements().add(process);
 				definitions.getDiagrams().add(result);
 			}
 			else {

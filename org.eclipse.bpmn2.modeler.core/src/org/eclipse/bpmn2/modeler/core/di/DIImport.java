@@ -430,7 +430,7 @@ public class DIImport {
 	private Diagram getDiagram(EObject object) {
 		while (object!=null && !(object instanceof BPMNDiagram))
 			object = object.eContainer();
-		return DIUtils.findDiagram(editor, (BPMNDiagram)object);
+		return DIUtils.getOrCreateDiagram(editor, (BPMNDiagram)object);
 	
 	}
 	
