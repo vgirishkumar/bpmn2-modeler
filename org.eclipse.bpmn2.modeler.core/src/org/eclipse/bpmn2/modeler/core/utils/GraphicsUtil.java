@@ -230,6 +230,11 @@ public class GraphicsUtil {
 		public double getDistanceToEnd(Point p) {
 	        return Math.hypot(end.getX()-p.getX(), end.getY()-p.getY());
 		}
+		
+		public String toString() {
+			return "[" + start.getX() + "," + start.getY() +"]" +
+					" [" + end.getX() + "," + end.getY() +"]";
+		}
 	}
 	
 	/* GATEWAY */
@@ -1502,7 +1507,13 @@ public class GraphicsUtil {
 		}
 	}
 	
-	public static LineSegment findNearestEdge(Shape shape, Point p) {
+	public static void dump(String label) {
+		if (debug) {
+			
+		}
+	}
+	
+	public static LineSegment[] getEdges(Shape shape) {
 		ILocation loc = peService.getLocationRelativeToDiagram(shape);
 		IDimension size = GraphicsUtil.calculateSize(shape);
 		LineSegment top = new LineSegment(loc.getX(),loc.getY(),
@@ -1513,6 +1524,15 @@ public class GraphicsUtil {
 				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
 		LineSegment right = new LineSegment(loc.getX()+size.getWidth(), loc.getY(),
 				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
+		return new LineSegment[] {top, bottom, left, right};
+	}
+	
+	public static LineSegment findNearestEdge(Shape shape, Point p) {
+		LineSegment edges[] = getEdges(shape);
+		LineSegment top = edges[0];
+		LineSegment bottom = edges[1];
+		LineSegment left = edges[2];
+		LineSegment right = edges[3];
 		double minDist;
 		double dist;
 		LineSegment result;

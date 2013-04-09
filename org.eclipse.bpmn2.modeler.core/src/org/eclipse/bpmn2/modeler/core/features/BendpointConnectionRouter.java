@@ -13,23 +13,14 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -38,7 +29,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -60,7 +50,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	Anchor newStart, newEnd;
 	// The Connection passed in to route(), cast as a FreeFormConnection for convenience
 	FreeFormConnection ffc;
-	protected List<ContainerShape> allShapes;
 	protected List<Point> detours;
 
 	public BendpointConnectionRouter(IFeatureProvider fp) {
@@ -379,6 +368,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 						(isHorizontal(p1,p2) && isHorizontal(p2,p3))) {
 					changed = true;
 					newPoints.remove(i);
+					--i;
 				}
 			}
 			p1 = p2;
@@ -765,10 +755,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return changed;
 	}
 	
-	protected static double length(Point p1, Point p2) {
-		return GraphicsUtil.getLength(p1, p2);
-	}
-	
 	protected boolean fixCollisions() {
 		detours = null;
 		boolean changed = false;
@@ -906,67 +892,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return changed;
 	}
 	
-	protected List<ContainerShape> findAllShapes() {
-		allShapes = new ArrayList<ContainerShape>();
-		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-		ContainerShape source = (ContainerShape)newStart.getParent();
-		ContainerShape target = (ContainerShape)newEnd.getParent();
-		TreeIterator<EObject> iter = diagram.eAllContents();
-		while (iter.hasNext()) {
-			EObject o = iter.next();
-			if (o instanceof ContainerShape) {
-				// this is a potential collision shape
-				ContainerShape shape = (ContainerShape)o;
-				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
-				if (bpmnShape==null)
-					continue;
-				if (shape==source || shape==target)
-					continue;
-				// ignore containers (like Lane, SubProcess, etc.) if the source
-				// or target shapes are children of the container's hierarchy
-				if (shape==source.eContainer() || shape==target.eContainer())
-					continue;
-				
-				// ignore some containers altogether
-				BaseElement be = bpmnShape.getBpmnElement();
-				if (be instanceof Lane)
-					continue;
-				// TODO: other criteria here?
-
-				allShapes.add(shape);
-			}
-		}
-		GraphicsUtil.dump("All Shapes", allShapes);
-		return allShapes;
-	}
-	
-	protected List<ContainerShape> findCollisions(Point p1, Point p2) {
-		List<ContainerShape> collisions = new ArrayList<ContainerShape>();
-		if (allShapes==null)
-			findAllShapes();
-		for (ContainerShape shape : allShapes) {
-			if (GraphicsUtil.intersectsLine(shape, p1, p2))
-				collisions.add(shape);
-		}
-		if (collisions.size()>0)
-			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);
-		return collisions;
-	}
-
-	protected void sortCollisions(List<ContainerShape> collisions, final Point p) {
-		Collections.sort(collisions, new Comparator<ContainerShape>() {
-
-			@Override
-			public int compare(ContainerShape s1, ContainerShape s2) {
-				LineSegment seg1 = GraphicsUtil.findNearestEdge(s1, p);
-				double d1 = seg1.getDistance(p);
-				LineSegment seg2 = GraphicsUtil.findNearestEdge(s2, p);
-				double d2 = seg2.getDistance(p);
-				return (int) (d1 - d2);
-			}
-		});
-	}
-
 	protected void addDetour(int x, int y) {
 		addDetour(GraphicsUtil.createPoint(x, y));
 	}
@@ -1007,6 +932,18 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		public Point bottomRight;
 		
 		public DetourPoints(ContainerShape shape) {
+			calculate(shape);
+		}
+		
+		public DetourPoints(ContainerShape shape, int margin) {
+			this(shape,margin,margin,margin,margin);
+		}
+		
+		public DetourPoints(ContainerShape shape, int leftMargin, int rightMargin, int topMargin, int bottomMargin) {
+			this.leftMargin = leftMargin;
+			this.rightMargin = rightMargin;
+			this.topMargin = topMargin;
+			this.bottomMargin = bottomMargin;
 			calculate(shape);
 		}
 		
