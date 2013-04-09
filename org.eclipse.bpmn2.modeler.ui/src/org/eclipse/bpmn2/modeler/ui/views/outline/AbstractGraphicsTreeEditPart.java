@@ -13,6 +13,9 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
@@ -68,6 +71,20 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 		return super.getModel();
 	}
 	
+	@Override
+	public Object getAdapter(Class key) {
+		if (PictogramElement.class==key) {
+			Object model = getBpmnModel();
+			if (model instanceof BaseElement) {
+				BaseElement be = (BaseElement)model;
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be);
+				if (bpmnDiagram!=null)
+					return DIUtils.findDiagram(be.eResource().getResourceSet(), bpmnDiagram);
+			}
+		}
+		return super.getAdapter(key);
+	}
+
 	protected void refreshChildren() {
 		if (children!=null) {
 			for (Object child : children) {

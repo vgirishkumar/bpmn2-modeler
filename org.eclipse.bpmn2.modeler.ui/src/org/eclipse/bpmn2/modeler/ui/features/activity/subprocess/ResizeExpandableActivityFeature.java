@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -43,7 +43,7 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		try {
-			BPMNShape shape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(activity);
+			BPMNShape shape = DIUtils.findBPMNShape(activity);
 			
 			if (shape.isIsExpanded()) {
 

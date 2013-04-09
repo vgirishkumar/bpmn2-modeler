@@ -13,38 +13,33 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.CallActivity;
-import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.Choreography;
-import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.dd.di.DiagramElement;
+import org.eclipse.dd.dc.DcFactory;
+import org.eclipse.dd.di.DiFactory;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -53,10 +48,43 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 /**
+ * This Custom Feature associates an existing BPMNDiagram page and its Process or creates a
+ * new Process and BPMNDiagram page for the selected Choreography Participant Band.
+ * The new BPMNDiagram page contains the Process referenced by the Participant Band.
+ *  
  * @author Bob Brodt
- *
  */
 public class WhiteboxFeature extends AbstractCustomFeature {
+	
+	private boolean changesDone = false;;
+	
+	// label provider for the popup menu that displays allowable Activity subclasses
+	private static ILabelProvider labelProvider = new ILabelProvider() {
+
+		public void removeListener(ILabelProviderListener listener) {
+		}
+
+		public boolean isLabelProperty(Object element, String property) {
+			return false;
+		}
+
+		public void dispose() {
+
+		}
+
+		public void addListener(ILabelProviderListener listener) {
+
+		}
+
+		public String getText(Object element) {
+			return ModelUtil.getDisplayName(element);
+		}
+
+		public Image getImage(Object element) {
+			return null;
+		}
+
+	};
 
 	/**
 	 * @param fp
@@ -72,7 +100,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getDescription() {
-	    return "Create a new Diagram for this Participant or CallActivity";
+	    return "Link a Process Diagram to this Participant Band";
 	}
 
 	@Override
@@ -82,7 +110,16 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 
 	@Override
 	public boolean isAvailable(IContext context) {
-		return true;
+		if (context instanceof ICustomContext) {
+			PictogramElement[] pes = ((ICustomContext)context).getPictogramElements();
+			if (pes != null && pes.length == 1) {
+				PictogramElement pe = pes[0];
+				if (ChoreographyUtil.isChoreographyParticipantBand(pe)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -90,27 +127,17 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
-			Process process = null;
-			Object bo = getBusinessObjectForPictogramElement(pe);
-			if (bo instanceof Participant) {
-				process = ((Participant)bo).getProcessRef();
+			if (ChoreographyUtil.isChoreographyParticipantBand(pe)) {
+				Participant participant = (Participant) getBusinessObjectForPictogramElement(pe);
+				Process process = participant.getProcessRef();
+				// if the Participant Band does not reference a Process, or if the referenced
+				// Process does not have its own BPMNDiagram page yet, then we can "whitebox"
+				// this Participant Band.
+				if (process==null)
+					return true;
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(process);
+				return bpmnDiagram==null;
 			}
-			else if (bo instanceof CallActivity) {
-				CallableElement ce = ((CallActivity)bo).getCalledElementRef();
-				if (ce instanceof Process)
-					process = (Process)ce;
-			}
-			
-			if (process!=null) {
-				try {
-					ModelHandler mh = ModelHandlerLocator.getModelHandler(process.eResource());
-					DiagramElement de = mh.findDIElement(process);
-					return de==null;
-				}
-				catch (Exception e){
-				}
-			}
-			return true;
 		}
 		return false;
 	}
@@ -121,35 +148,74 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 	@Override
 	public void execute(ICustomContext context) {
 		PictogramElement pe = context.getPictogramElements()[0];
-		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof Participant) {
-			Participant participant = (Participant)bo;
-			Definitions definitions = ModelUtil.getDefinitions(participant);
-			Resource resource = definitions.eResource();
-			Process process = participant.getProcessRef();
+		Participant participant = (Participant)getBusinessObjectForPictogramElement(pe);
+		Definitions definitions = ModelUtil.getDefinitions(participant);
+		BPMNDiagram bpmnDiagram = selectBPMNDiagram(definitions, participant);
 
-			if (process==null) {
-		        // create a Process for this Participant
-		        process = (Process) ModelUtil.createObject(resource, Bpmn2Package.eINSTANCE.getProcess());
-		        participant.setProcessRef(process);
-		        
-		        // NOTE: this is needed because it fires the InsertionAdapter, which adds the new Process
-		        // to Definitions.rootElements, otherwise the Process would be a dangling object
-		        process.setName("Process for "+participant.getName());
-			}
-			
+		if (bpmnDiagram!=null) {
 	        // add the Participant to the first Choreography or Collaboration we find.
 	        // TODO: when (and if) multipage editor allows additional Choreography or
 	        // Collaboration diagrams to be created, this will be the specific diagram
 	        // that is being rendered on the current page.
-	        List<RootElement> rootElements = definitions.getRootElements();
-	        for (RootElement element : rootElements) {
-	            if (element instanceof Collaboration || element instanceof Choreography) {
-	            	((Collaboration)element).getParticipants().add(participant);
-	                break;
-	            }
-	        }
-			DIUtils.createBPMNDiagram(definitions, process);
+			if (participant!=null) {
+		        for (RootElement element : definitions.getRootElements()) {
+		            if (element instanceof Collaboration) {
+		            	((Collaboration)element).getParticipants().add(participant);
+		                break;
+		            }
+		        }
+			}
 		}
+	}
+	
+	private BPMNDiagram selectBPMNDiagram(Definitions definitions, Participant participant) {
+
+		Resource resource = definitions.eResource();
+		List<BPMNDiagram> diagramList = new ArrayList<BPMNDiagram>();
+		BPMNDiagram newDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
+		ModelUtil.setID(newDiagram, resource);
+        newDiagram.setName("New Process");
+
+		BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
+		ModelUtil.setID(plane, resource);
+		
+		Process process = Bpmn2Factory.eINSTANCE.createProcess();
+		plane.setBpmnElement(process);
+		newDiagram.setPlane(plane);
+
+		diagramList.add(newDiagram);
+		
+		for (BPMNDiagram d : definitions.getDiagrams()) {
+			BaseElement bpmnElement = d.getPlane().getBpmnElement();
+			if (bpmnElement instanceof Process) {
+				diagramList.add(d);
+			}
+		}
+		
+		BPMNDiagram result = newDiagram;
+		if (diagramList.size()>1) {
+			PopupMenu popupMenu = new PopupMenu(diagramList, labelProvider);
+			changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+			if (changesDone) {
+				result = (BPMNDiagram) popupMenu.getResult();
+			}
+			else
+				return null;
+		}
+		if (changesDone) {
+			if (result==newDiagram) { // the new one
+				String name = "Process for "+ModelUtil.getDisplayName(participant);
+		        process.setName(name);
+		        newDiagram.setName(name);
+		        definitions.getRootElements().add(process);
+				definitions.getDiagrams().add(result);
+			}
+			else {
+				process = (Process) result.getPlane().getBpmnElement();
+			}
+		}
+    	participant.setProcessRef(process);
+		
+		return result;
 	}
 }

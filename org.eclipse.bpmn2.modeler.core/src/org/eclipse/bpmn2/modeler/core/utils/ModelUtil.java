@@ -618,6 +618,8 @@ public class ModelUtil {
 		EStructuralFeature attr = null;
 		EStructuralFeature anyAttribute = childObject.eClass().getEStructuralFeature(Bpmn2Package.BASE_ELEMENT__ANY_ATTRIBUTE);
 		List<BasicFeatureMap.Entry> anyMap = (List<BasicFeatureMap.Entry>)childObject.eGet(anyAttribute);
+		if (anyMap==null)
+			return null;
 		for (BasicFeatureMap.Entry fe : anyMap) {
 			if (fe.getEStructuralFeature() instanceof EAttributeImpl) {
 				EAttributeImpl a = (EAttributeImpl) fe.getEStructuralFeature();
@@ -829,7 +831,12 @@ public class ModelUtil {
 	}
 	
 	public static EObject createStringWrapper(String value) {
-		DynamicEObjectImpl de = new DynamicEObjectImpl();
+		DynamicEObjectImpl de = new DynamicEObjectImpl() {
+			// prevent owners from trying to resolve this thing - it's just a string!
+			public boolean eIsProxy() {
+				return false;
+			}
+		};
 		de.eSetClass(EcorePackage.eINSTANCE.getEObject());
 		de.eSetProxyURI(URI.createURI(value));
 		return de;

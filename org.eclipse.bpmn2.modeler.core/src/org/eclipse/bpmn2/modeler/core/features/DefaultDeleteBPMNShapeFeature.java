@@ -24,6 +24,7 @@ import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
@@ -40,6 +41,9 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 	}
 
 	public boolean canDelete(IDeleteContext context) {
+		// don't delete the Diagram!
+		if (context.getPictogramElement() instanceof Diagram)
+			return false;
 		return true;
 	}
 	

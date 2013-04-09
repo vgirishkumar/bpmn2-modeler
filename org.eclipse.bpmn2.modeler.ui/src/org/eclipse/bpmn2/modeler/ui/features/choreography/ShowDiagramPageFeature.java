@@ -67,7 +67,7 @@ public class ShowDiagramPageFeature extends AbstractCustomFeature {
 				baseElement = (BaseElement)bo;
 			}
 			
-			return DIUtils.findBPMNDiagram(getDiagramEditor(), baseElement, false) != null;
+			return DIUtils.findBPMNDiagram(baseElement) != null;
 		}
 		return false;
 	}
@@ -91,7 +91,7 @@ public class ShowDiagramPageFeature extends AbstractCustomFeature {
 			else if (bo instanceof BaseElement) {
 				baseElement = (BaseElement)bo;
 			}
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(getDiagramEditor(), baseElement, false);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(baseElement);
 			if (bpmnDiagram!=null) {
 				BPMN2MultiPageEditor mpe = ((BPMN2Editor)getDiagramEditor()).getMultipageEditor();
 				mpe.showDesignPage(bpmnDiagram);

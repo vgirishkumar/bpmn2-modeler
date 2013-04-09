@@ -12,7 +12,7 @@ package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -46,7 +46,7 @@ public class LayoutLabelFeature extends AbstractLayoutFeature {
 		if (subProcess!=null && pictogramElement instanceof ContainerShape) {
 			try {
 				ContainerShape containerShape = (ContainerShape)pictogramElement;
-				BPMNShape shape = (BPMNShape) ModelHandlerLocator.getModelHandler(getDiagram().eResource()).findDIElement(subProcess);
+				BPMNShape shape = DIUtils.findBPMNShape(subProcess);
 				
 				if (shape.isIsExpanded()) {
 					

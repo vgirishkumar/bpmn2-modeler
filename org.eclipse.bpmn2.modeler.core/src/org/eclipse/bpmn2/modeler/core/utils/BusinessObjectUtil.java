@@ -31,6 +31,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -148,6 +149,9 @@ public class BusinessObjectUtil {
 		EditPart editPart = getEditPartForSelection(selection);
 		if (editPart != null && editPart.getModel() instanceof PictogramElement) {
 			return (PictogramElement) editPart.getModel();
+		}
+		if (editPart instanceof AbstractTreeEditPart) {
+			return (PictogramElement) editPart.getAdapter(PictogramElement.class);
 		}
 		if (selection instanceof IStructuredSelection) {
 			Object o = ((IStructuredSelection)selection).getFirstElement();

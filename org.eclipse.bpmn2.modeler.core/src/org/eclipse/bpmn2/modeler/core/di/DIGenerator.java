@@ -114,6 +114,9 @@ public class DIGenerator {
 		// to these, which *should* be rendered
 		if (be instanceof DataObject || be instanceof DataStore)
 			return false;
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be);
+		if (bpmnDiagram!=null)
+			return false;
 		return elements.get(be) == null && diagnostics.get(be) == null;
 	}
 	
@@ -396,13 +399,13 @@ public class DIGenerator {
 	
 	private BPMNDiagram createDIDiagram(BaseElement bpmnElement) {
 
-		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(editor, bpmnElement, true);
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(bpmnElement, true);
 	
 		// if this container does not have a BPMNDiagram, create one
 		if (bpmnDiagram==null) {
 			FlowElementsContainer container = getRootElementContainer(bpmnElement);
 			if (container==null) {
-				DIUtils.findBPMNDiagram(editor, bpmnElement, true);
+				DIUtils.findBPMNDiagram(bpmnElement, true);
 				diagnostics.add(IStatus.ERROR, bpmnElement, "Cannot find Diagram");
 				return this.bpmnDiagram;
 			}

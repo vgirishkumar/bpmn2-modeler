@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -66,6 +67,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 
 public class DesignEditor extends BPMN2Editor {
 	
@@ -128,28 +130,25 @@ public class DesignEditor extends BPMN2Editor {
 				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 				if (object!=null && object.eResource() == bpmnResource) {
 					BPMNDiagram newBpmnDiagram = null;
+					boolean showSelection = true;
 					if (object instanceof BaseElement) {
-						// select the right diagram page
-						newBpmnDiagram = DIUtils.findBPMNDiagram(this, (BaseElement)object, true);
+						// If the selection came from the ContentOutline then navigate to
+						// diagram page corresponds to this flowElementsContainer if one exists
+						if (part instanceof ContentOutline) {
+							newBpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)object, true);
+							Object o = DIUtils.findBPMNDiagram((BaseElement)object, false);
+							if (o==newBpmnDiagram)
+								showSelection = false;
+						}
 					}
 					else if (object instanceof BPMNDiagram) {
 						newBpmnDiagram = (BPMNDiagram)object;
+						showSelection = false;
 					}
 					if (newBpmnDiagram!=null && getBpmnDiagram() != newBpmnDiagram) {
-						BPMNDiagram rootBpmnDiagram = newBpmnDiagram;
-						object = newBpmnDiagram.getPlane().getBpmnElement();
-						while (!(object instanceof RootElement)) {
-							// this is a BPMNDiagram that contains a SubProcess, not a RootElement
-							// so find the BPMNDiagram that contains the RootElement which owns
-							// this SubProcess
-							rootBpmnDiagram = DIUtils.findBPMNDiagram(this, (BaseElement)object, true);
-							object = rootBpmnDiagram.getPlane().getBpmnElement();
-						}
-						if (getBpmnDiagram()!=rootBpmnDiagram) {
-							multipageEditor.showDesignPage(rootBpmnDiagram);
-						}
-						if (rootBpmnDiagram != newBpmnDiagram) {
-							final BPMNDiagram d = newBpmnDiagram;
+						multipageEditor.showDesignPage(newBpmnDiagram);
+						final BPMNDiagram d = newBpmnDiagram;
+						if (showSelection) {
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
 									showDesignPage(d);
@@ -219,37 +218,10 @@ public class DesignEditor extends BPMN2Editor {
 	}
 	
 	private void reloadTabs() {
-		BPMNDiagram bpmnDiagram = getBpmnDiagram();
 		List<BPMNDiagram> bpmnDiagrams = new ArrayList<BPMNDiagram>();
-		
 		BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-		List<FlowElement> flowElements = null;
-		if (bpmnElement instanceof Process) {
-			flowElements = ((Process)bpmnElement).getFlowElements();
-		}
-		else if (bpmnElement instanceof Collaboration) {
-			((Collaboration)bpmnElement).getParticipants();
-		}
-		else if (bpmnElement instanceof Choreography) {
-			flowElements = ((Choreography)bpmnElement).getFlowElements();
-		}
-		if (flowElements != null) {
-			for (FlowElement fe : flowElements) {
-				BPMNDiagram bd = DIUtils.findBPMNDiagram(this, fe, false);
-				if (bd!=null)
-					bpmnDiagrams.add(bd);
-				TreeIterator<EObject> iter = fe.eAllContents();
-				while (iter.hasNext()) {
-					EObject o = iter.next();
-					if (o instanceof BaseElement) {
-						bd = DIUtils.findBPMNDiagram(this, (BaseElement)o, false);
-						if (bd!=null) {
-							bpmnDiagrams.add(bd);
-						}
-					}
-				}
-			}
-		}
+
+		getSubDiagrams(bpmnElement, bpmnDiagrams);
 		
 		tabFolder.setLayoutDeferred(true);
 		for (int i=tabFolder.getItemCount()-1; i>0; --i) {
@@ -274,6 +246,37 @@ public class DesignEditor extends BPMN2Editor {
 				updateTabs();
 			}
 		});
+	}
+	
+	private void getSubDiagrams(BaseElement bpmnElement, List<BPMNDiagram> bpmnDiagrams) {
+		
+		List<FlowElement> flowElements = null;
+		if (bpmnElement instanceof FlowElementsContainer) {
+			flowElements = ((FlowElementsContainer)bpmnElement).getFlowElements();
+		}
+		else if (bpmnElement instanceof Collaboration) {
+			flowElements = new ArrayList<FlowElement>();
+			for (Participant p : ((Collaboration)bpmnElement).getParticipants()) {
+				if (p.getProcessRef()!=null) {
+					flowElements.addAll(p.getProcessRef().getFlowElements());
+				}
+			}
+		}
+		else if (bpmnElement instanceof Choreography) {
+			flowElements = ((Choreography)bpmnElement).getFlowElements();
+		}
+
+
+		if (flowElements != null) {
+			BPMNDiagram mainBpmnDiagram = ModelUtil.getDefinitions(bpmnResource).getDiagrams().get(0);
+			BPMNDiagram activeBpmnDiagram = getBpmnDiagram();
+			for (FlowElement fe : flowElements) {
+				BPMNDiagram bd = DIUtils.findBPMNDiagram(fe);
+				if (bd!=null && !bpmnDiagrams.contains(bd) && bd!=activeBpmnDiagram && bd!=mainBpmnDiagram)
+					bpmnDiagrams.add(bd);
+				getSubDiagrams(fe, bpmnDiagrams);
+			}
+		}
 	}
 	
 	public void createPartControl(Composite parent) {

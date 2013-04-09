@@ -176,6 +176,7 @@ import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
@@ -406,7 +407,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		// is called during file loading.
 		Object id = CustomTaskFeatureContainer.getId(context); 
 		if (id!=null) {
-			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
+			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 			TargetRuntime rt = editor.getTargetRuntime();
 			for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
 				if (id.equals(ct.getId())) {

@@ -28,7 +28,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	protected static final IPeService peService = Graphiti.getPeService();
 	protected static final IGaService gaService = Graphiti.getGaService();
 	
-	public enum Direction { UP, DOWN, LEFT, RIGHT };
+	public enum Direction { UP, DOWN, LEFT, RIGHT, NONE };
 
 	IFeatureProvider fp;
 
