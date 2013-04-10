@@ -131,7 +131,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	 * @param p2
 	 * @return true if the line segment is horizontal
 	 */
-	protected final boolean isHorizontal(Point p1, Point p2) {
+	protected final static boolean isHorizontal(Point p1, Point p2) {
 		return Math.abs(p1.getY() - p2.getY()) <= 2;
 	}
 
@@ -142,7 +142,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	 * @param p2
 	 * @return true if the line segment is vertical
 	 */
-	protected final boolean isVertical(Point p1, Point p2) {
+	protected final static boolean isVertical(Point p1, Point p2) {
 		return Math.abs(p1.getX() - p2.getX()) <= 2;
 	}
 

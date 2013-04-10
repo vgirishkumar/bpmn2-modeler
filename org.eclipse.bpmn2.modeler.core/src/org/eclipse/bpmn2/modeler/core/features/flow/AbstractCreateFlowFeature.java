@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
@@ -95,7 +96,7 @@ public abstract class AbstractCreateFlowFeature<
 
 		Connection connection = (Connection) getFeatureProvider().addIfPossible(addContext);
 		ModelUtil.setID(bo);
-		
+
 		ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
 
 		changesDone = true;
