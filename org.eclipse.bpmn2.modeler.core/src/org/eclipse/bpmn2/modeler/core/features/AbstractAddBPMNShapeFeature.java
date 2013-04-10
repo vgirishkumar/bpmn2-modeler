@@ -126,19 +126,19 @@ public abstract class AbstractAddBPMNShapeFeature<T extends BaseElement>
 					edge.setBpmnElement(conElement);
 
 					if (conElement instanceof Association) {
-						edge.setSourceElement(DIUtils.findBPMNEdge(
+						edge.setSourceElement(DIUtils.findDiagramElement(
 								((Association) conElement).getSourceRef()));
-						edge.setTargetElement(DIUtils.findBPMNEdge(
+						edge.setTargetElement(DIUtils.findDiagramElement(
 								((Association) conElement).getTargetRef()));
 					} else if (conElement instanceof MessageFlow) {
-						edge.setSourceElement(DIUtils.findBPMNEdge(
+						edge.setSourceElement(DIUtils.findDiagramElement(
 								(BaseElement) ((MessageFlow) conElement).getSourceRef()));
-						edge.setTargetElement(DIUtils.findBPMNEdge(
+						edge.setTargetElement(DIUtils.findDiagramElement(
 								(BaseElement) ((MessageFlow) conElement).getTargetRef()));
 					} else if (conElement instanceof SequenceFlow) {
-						edge.setSourceElement(DIUtils.findBPMNEdge(
+						edge.setSourceElement(DIUtils.findDiagramElement(
 								((SequenceFlow) conElement).getSourceRef()));
-						edge.setTargetElement(DIUtils.findBPMNEdge(
+						edge.setTargetElement(DIUtils.findDiagramElement(
 								((SequenceFlow) conElement).getTargetRef()));
 					}
 

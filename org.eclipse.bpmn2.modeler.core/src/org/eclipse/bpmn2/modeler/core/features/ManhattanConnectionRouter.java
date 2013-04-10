@@ -14,8 +14,6 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,18 +22,12 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
 /**
@@ -65,235 +57,16 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		HORIZONTAL, VERTICAL, NONE
 	};
 	
-	class Route implements Comparable<Route>, Comparator<Route> {
-		class Collision {
-			Shape shape;
-			Point start;
-			Point end;
-			
-			public Collision(Shape shape, Point start, Point end) {
-				this.shape = shape;
-				this.start = start;
-				this.end = end;
-			}
-			
-			public String toString() {
-				Object o = BusinessObjectUtil.getFirstBaseElement(shape);
-				LineSegment ls = GraphicsUtil.findNearestEdge(shape, start);
-				return ModelUtil.getDisplayName(o);
-			}
-		};
-		int id;
-		List<Point> points = new ArrayList<Point>();
-		List<Collision> collisions = new ArrayList<Collision>();
-		Shape source;
-		Shape target;
-		boolean valid = true;
-		
-		public Route(int id, Shape source, Shape target) {
-			this.id = id;
-			this.source = source;
-			this.target = target;
-		}
-
-		public String toString() {
-			String text;
-			if (isValid()) {
-				BoundaryAnchor sa = AnchorUtil.findNearestBoundaryAnchor(source, get(0));
-				BoundaryAnchor ta = AnchorUtil.findNearestBoundaryAnchor(target, get(size()-1));
-				text = id+": length="+getLength()+" # of points="+points.size()+
-						" source anchor="+sa.locationType+" target anchor="+ta.locationType;
-				if (collisions.size()>0) {
-					text += " collisions=";
-					Iterator<Collision> iter=collisions.iterator();
-					while (iter.hasNext()) {
-						Collision c = iter.next();
-						text += "'" + c.toString() + "'";
-						if (iter.hasNext())
-							text += ", ";
-					}
-				}
-			}
-			else
-				text = "not valid";
-			return text;
-		}
-		
-		public boolean add(Point newPoint) {
-			for (Point p : points) {
-				if (GraphicsUtil.pointsEqual(newPoint, p)) {
-					valid = false;
-					return false;
-				}
-			}
-			points.add(newPoint);
-			return true;
-		}
-		
-		public Point get(int index) {
-			return points.get(index);
-		}
-		
-		public int size() {
-			return points.size();
-		}
-		
-		public void addCollision(Shape shape, Point start, Point end) {
-			collisions.add( new Collision(shape, start, end) );
-		}
-		
-		public List<Collision> getCollisions() {
-			return collisions;
-		}
-		
-		public boolean isValid() {
-			if (valid)
-				return getLength() < Integer.MAX_VALUE;
-			return false;
-		}
-		
-		public int getLength() {
-			int length = 0;
-			if (points.size()>1) {
-				Point p1 = points.get(0);
-				for (int i=1; i<points.size(); ++i) {
-					Point p2 = points.get(i);
-//					if (isHorizontal(p1,p2) || isVertical(p1,p2))
-						length += (int)GraphicsUtil.getLength(p1, p2);
-//					else 
-//						return Integer.MAX_VALUE;
-					p1 = p2;
-				}
-			}
-			else {
-				// this route could not be calculated
-				return Integer.MAX_VALUE;
-			}
-			return length;
-		}
-
-		@Override
-		public int compareTo(Route arg0) {
-			return compare(this,arg0);
-		}
-
-		@Override
-		public int compare(Route o1, Route o2) {
-			if (o1.isValid()) {
-				if (o2.isValid()) {
-					List<Collision> c1 = o1.getCollisions();
-					List<Collision> c2 = o2.getCollisions();
-					int i = c1.size() - c2.size();
-					if (i==0) {
-						i = o1.points.size() - o2.points.size();
-						if (i==0) {
-							int l1 = o1.getLength();
-							int l2 = o2.getLength();
-							i = l1 - l2;
-						}
-						return i;
-					}
-					return i;
-				}
-				return -1;
-			}
-			else if (!o2.isValid())
-				return 0;
-			return 1;
-		}
-		
-		public boolean optimize() {
-			boolean changed = false;
-			Point movedBendpoint = getMovedBendpoint(ffc);
-			Point addedBendpoint = getAddedBendpoint(ffc);
-
-			Point p1 = points.get(0);
-			for (int i=1; i<points.size()-1; ++i) {
-				Point p2 = points.get(i);
-				if (i+1 < points.size()) {
-					// remove unnecessary bendpoints: two consecutive
-					// horizontal or vertical line segments, but not
-					// the "added" or "removed" bendpoint
-					if (movedBendpoint!=null && GraphicsUtil.pointsEqual(p2, movedBendpoint))
-						continue;
-					if (addedBendpoint!=null && GraphicsUtil.pointsEqual(p2, addedBendpoint))
-						continue;
-					
-					Point p3 = points.get(i+1);
-					if ((isVertical(p1,p2) && isVertical(p2,p3)) ||
-							(isHorizontal(p1,p2) && isHorizontal(p2,p3))) {
-						changed = true;
-						points.remove(i);
-						// look at these set of points again
-						--i;
-					}
-				}
-				p1 = p2;
-			}
-			return changed;
-		}
-	}
-
 	public ManhattanConnectionRouter(IFeatureProvider fp) {
 		super(fp);
 	}
-
-	@Override
-	protected void initialize() {
-		Point movedBendpoint = getMovedBendpoint(ffc);
-		Point addedBendpoint = getAddedBendpoint(ffc);
-
-		if (addedBendpoint!=null || movedBendpoint!=null) {
-			List<Point> points = new ArrayList<Point>();
-			if (movedBendpoint!=null)
-				points.add(movedBendpoint);
-			if (addedBendpoint!=null)
-				points.add(addedBendpoint);
-//			for (Point p : ffc.getBendpoints()) {
-//				points.add(p);
-//				if (p==addedBendpoint || p==movedBendpoint)
-//					break;
-//			}
-			createNewPoints(newStart, newEnd, points);
-		}
-		else {
-			// calculate new start and end anchors by using the boundary anchors nearest to
-			// the source and target shapes.
-			Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
-					newStart.getParent(), newEnd.getParent(), connection);
-			newStart = anchors.getFirst();
-			newEnd = anchors.getSecond();
-			createNewPoints(newStart, newEnd, null);
-		}
-	}
-
-	@Override
-	public boolean route(Connection connection) {
-		this.connection = connection;
-
-		if (connection instanceof FreeFormConnection)
-			ffc = (FreeFormConnection)connection;
-		else
-			return false;
-		
-		if (isSelfConnection())
-			return routeSelfConnection();
-		
-		boolean changed = calculateRoute();
-		updateConnection();
-		finalizeConnection();
-		return changed;
-	}
 	
 	@Override
-	protected boolean calculateRoute() {
+	protected ConnectionRoute calculateRoute() {
 		
-		Point movedBendpoint = getMovedBendpoint(ffc);
-		Point addedBendpoint = getAddedBendpoint(ffc);
-
-		Shape source = (Shape) ffc.getStart().getParent();
-		Shape target = (Shape) ffc.getEnd().getParent();
-
+		if (isSelfConnection())
+			return super.calculateRoute();
+		
 		LineSegment sourceEdges[] = GraphicsUtil.getEdges(source);
 		sourceTopEdge = sourceEdges[0];
 		sourceBottomEdge = sourceEdges[1];
@@ -309,30 +82,30 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Point start;
 		Point end = GraphicsUtil.createPoint(ffc.getEnd());
 		Point middle = null;
-		if (movedBendpoint!=null)
+		if (movedBendpoint!=null) {
 			middle = movedBendpoint;
-		else if (addedBendpoint!=null)
-			middle = addedBendpoint;
+			findAllShapes();
+			for (ContainerShape shape : allShapes) {
+				if (GraphicsUtil.contains(shape, middle)) {
+					middle = null;
+					break;
+				}
+			}
+		}
 		
 		// The list of all possible routes. The shortest will be used.
-		List<Route> allRoutes = new ArrayList<Route>();
+		List<ConnectionRoute> allRoutes = new ArrayList<ConnectionRoute>();
 		Map<AnchorLocation, BoundaryAnchor> sourceBoundaryAnchors = AnchorUtil.getBoundaryAnchors(source);
 		Map<AnchorLocation, BoundaryAnchor> targetBoundaryAnchors = AnchorUtil.getBoundaryAnchors(target);
-		Anchor sourceAnchor = null;
-		if (AnchorUtil.useAdHocAnchors(source, ffc) && AnchorUtil.isAdHocAnchor(ffc.getStart()))
-			sourceAnchor = ffc.getStart();
-		Anchor targetAnchor = null;
-		if (AnchorUtil.useAdHocAnchors(target, ffc) && AnchorUtil.isAdHocAnchor(ffc.getEnd()))
-			targetAnchor = ffc.getEnd();
 		
-		if (sourceAnchor!=null) {
+		if (sourceAdHocAnchor!=null) {
 			// use ad-hoc anchor for source:
 			// the connection's source location will remain fixed.
-			start = GraphicsUtil.createPoint(sourceAnchor);
-			if (targetAnchor!=null) {
+			start = GraphicsUtil.createPoint(sourceAdHocAnchor);
+			if (targetAdHocAnchor!=null) {
 				// use ad-hoc anchor for target:
 				// the connection's target location will also remain fixed
-				end = GraphicsUtil.createPoint(targetAnchor);
+				end = GraphicsUtil.createPoint(targetAdHocAnchor);
 				calculateRoute(allRoutes, source,start,middle,target,end, Orientation.HORIZONTAL);
 				calculateRoute(allRoutes, source,start,middle,target,end, Orientation.VERTICAL);
 			}
@@ -353,10 +126,10 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			// starting at each of the 4 boundary anchors
 			for (Entry<AnchorLocation, BoundaryAnchor> sourceEntry : sourceBoundaryAnchors.entrySet()) {
 				start = GraphicsUtil.createPoint(sourceEntry.getValue().anchor);
-				if (targetAnchor!=null) {
+				if (targetAdHocAnchor!=null) {
 					// use ad-hoc anchor for target:
 					// the connection's target location will also remain fixed
-					end = GraphicsUtil.createPoint(targetAnchor);
+					end = GraphicsUtil.createPoint(targetAdHocAnchor);
 					calculateRoute(allRoutes, source,start,middle,target,end, Orientation.HORIZONTAL);
 					calculateRoute(allRoutes, source,start,middle,target,end, Orientation.VERTICAL);
 				}
@@ -374,15 +147,39 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		}
 		
 		// pick the shortest route
-		Route route = null;
+		ConnectionRoute route = null;
 		if (allRoutes.size()==1) {
 			route = allRoutes.get(0);
 			GraphicsUtil.dump("Only one valid route: "+route.toString());
 		}
-		else {
+		else if (allRoutes.size()>1) {
 			GraphicsUtil.dump("Optimizing Routes:\n------------------");
-			for (Route r : allRoutes) {
+			for (ConnectionRoute r : allRoutes) {
 				r.optimize();
+			}
+
+			GraphicsUtil.dump("Calculating Crossings:\n------------------");
+			// Connection crossings only participate in determining the best route,
+			// we don't actually try to correct a route crossing a connection.
+			for (ConnectionRoute r : allRoutes) {
+				if (r.points.size()>1) {
+					Point p1 = r.points.get(0);
+					for (int i=1; i<r.points.size(); ++i) {
+						Point p2 = r.points.get(i);
+						List<Connection> crossings = findCrossings(p1, p2);
+						for (Connection c : crossings) {
+							if (c!=this.connection)
+								r.addCrossing(c, p1, p2);
+						}
+						ContainerShape shape = getCollision(p1, p2);
+						if (shape!=null) {
+							r.addCollision(shape, p1, p2);
+						}
+						
+						p1 = p2;
+					}
+
+				}
 				GraphicsUtil.dump("    "+r.toString());
 			}
 
@@ -390,50 +187,19 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			Collections.sort(allRoutes);
 
 			for (int i=0; i<allRoutes.size(); ++i) {
-				Route r = allRoutes.get(i);
+				ConnectionRoute r = allRoutes.get(i);
 				GraphicsUtil.dump("    "+r.toString());
 			}
+			
 			route = allRoutes.get(0);
 		}
 		
-		if (route==null)
-			return false;
-		
-		// set connection's source and target anchors if they are Boundary Anchors
-		if (sourceAnchor==null) {
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, route.get(0));
-			sourceAnchor = ba.anchor;
-			ffc.setStart(sourceAnchor);
-		}
-		
-		if (targetAnchor==null) {
-			// A route with only a starting point indicates that it could not be calculated.
-			// In this case, make the connection a straight line from source to target.
-			Point p;
-			int last = route.size() - 1;
-			if (last>0)
-				p = route.get(last);
-			else
-				p = end;
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, p);
-			targetAnchor = ba.anchor;
-			ffc.setEnd(targetAnchor);
-		}
-		
-		// add the bendpoints
-		ffc.getBendpoints().clear();
-		for (int i=1; i<route.size()-1; ++i) {
-			ffc.getBendpoints().add(route.get(i));
-		}
-		
-		newPoints = route.points;
-		
-		return true;
+		return route;
 	}
 	
-	protected Route calculateRoute(List<Route> allRoutes, Shape source, Point start, Point middle, Shape target, Point end, Orientation orientation) {
+	protected ConnectionRoute calculateRoute(List<ConnectionRoute> allRoutes, Shape source, Point start, Point middle, Shape target, Point end, Orientation orientation) {
 		
-		Route route = new Route(allRoutes.size()+1, source,target);
+		ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
 
 		if (middle!=null) {
 			List<Point> departure = calculateDeparture(source, start, middle);
@@ -459,81 +225,101 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return route;
 	}
 	
-	private Point getVertMidpoint(Point start, Point end) {
+	private Point getVertMidpoint(Point start, Point end, double fract) {
 		Point m = GraphicsUtil.createPoint(start);
-		int d = (end.getY() - start.getY()) / 2;
+		int d = (int)(fract * (double)(end.getY() - start.getY()));
 		m.setY(start.getY()+d);
 		return m;
 	}
 	
-	private Point getHorzMidpoint(Point start, Point end) {
+	private Point getHorzMidpoint(Point start, Point end, double fract) {
 		Point m = GraphicsUtil.createPoint(start);
-		int d = (end.getX() - start.getX()) / 2;
+		int d = (int)(fract * (double)(end.getX() - start.getX()));
 		m.setX(start.getX()+d);
 		return m;
 	}
-	
+
 	protected List<Point> calculateDeparture(Shape source, Point start, Point end) {
 		AnchorLocation sourceEdge = AnchorUtil.findNearestEdge(source, start);
-		List<Point> route = new ArrayList<Point>();
+		List<Point> points = new ArrayList<Point>();
 		
 		Point p = GraphicsUtil.createPoint(start);
+		Point m = end;
 		
-		route.add(start);
 		switch (sourceEdge) {
 		case TOP:
-			p.setY( start.getY() - offset );
-			break;
 		case BOTTOM:
-			p.setY( start.getY() + offset );
+			for (;;) {
+				m = getVertMidpoint(start,m,0.45);
+				ContainerShape shape = getCollision(start,m);
+				if (shape==null || Math.abs(m.getY()-start.getY())<=offset)
+					break;
+			}
+			p.setY( m.getY() );
 			break;
 		case LEFT:
-			p.setX( start.getX() - offset );
-			break;
 		case RIGHT:
-			p.setX( start.getX() + offset );
+			for (;;) {
+				m = getHorzMidpoint(start,m,0.45);
+				ContainerShape shape = getCollision(start,m);
+				if (shape==null || Math.abs(m.getX()-start.getX())<=offset)
+					break;
+			}
+			p.setX( m.getX() );
 			break;
 		default:
-			return route;
+			return points;
 		}
-		route.add(p);
 		
-		return route;
+		points.add(start);
+		points.add(p);
+		
+		return points;
 	}
 	
 	protected List<Point> calculateApproach(Point start, Shape target, Point end) {
 		AnchorLocation targetEdge = AnchorUtil.findNearestEdge(target, end);
-		List<Point> route = new ArrayList<Point>();
+		List<Point> points = new ArrayList<Point>();
 		
 		Point p = GraphicsUtil.createPoint(end);
+		Point m = start;
 		
 		switch (targetEdge) {
 		case TOP:
-			p.setY( end.getY() - offset );
-			break;
 		case BOTTOM:
-			p.setY( end.getY() + offset );
+			for (;;) {
+				m = getVertMidpoint(m,end,0.45);
+				ContainerShape shape = getCollision(m,end);
+				if (shape==null || Math.abs(m.getY()-end.getY())<=offset)
+					break;
+			}
+			p.setY( m.getY() );
 			break;
 		case LEFT:
-			p.setX( end.getX() - offset );
-			break;
 		case RIGHT:
-			p.setX( end.getX() + offset );
+			for (;;) {
+				m = getHorzMidpoint(m,end,0.45);
+				ContainerShape shape = getCollision(m,end);
+				if (shape==null || Math.abs(m.getX()-end.getX())<=offset)
+					break;
+			}
+			p.setX( m.getX() );
 			break;
 		default:
-			return route;
+			return points;
 		}
-		route.add(p);
-		route.add(end);
 		
-		return route;
+		points.add(p);
+		points.add(end);
+		
+		return points;
 	}
 
 	Point createPoint(int x, int y) {
 		return GraphicsUtil.createPoint(x, y); 
 	}
 	
-	protected boolean calculateEnroute(Route route, Point start, Point end, Orientation orientation) {
+	protected boolean calculateEnroute(ConnectionRoute route, Point start, Point end, Orientation orientation) {
 		if (GraphicsUtil.pointsEqual(start, end))
 			return false;
 		
@@ -571,7 +357,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			p = createPoint(end.getX(), start.getY());
 			ContainerShape shape = getCollision(start,p);
 			if (shape!=null) {
-				route.addCollision(shape, start, p);
+//				route.addCollision(shape, start, p);
 				DetourPoints detour = getDetourPoints(shape);
 				// this should be a vertical segment - navigate around the shape
 				// go up or down from here?
@@ -618,7 +404,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			p = createPoint(start.getX(), end.getY());
 			ContainerShape shape = getCollision(start,p);
 			if (shape!=null) {
-				route.addCollision(shape, start, p);
+//				route.addCollision(shape, start, p);
 				DetourPoints detour = getDetourPoints(shape);
 				// this should be a horizontal segment - navigate around the shape
 				// go left or right from here?
@@ -670,31 +456,6 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return route.isValid();
 	}
 	
-	private boolean intersects(DetourPoints d1, DetourPoints d2) {
-		return GraphicsUtil.intersects(
-				d1.topLeft.getX(), d1.topLeft.getY(), d1.topRight.getX() - d1.topLeft.getX(), d1.bottomLeft.getY() - d1.topLeft.getY(),
-				d2.topLeft.getX(), d2.topLeft.getY(), d2.topRight.getX() - d2.topLeft.getX(), d2.bottomLeft.getY() - d2.topLeft.getY()
-		);
-	}
-	
-	private boolean contains(DetourPoints d1, DetourPoints d2) {
-		return	d1.topLeft.getX()<=d2.topLeft.getX() &&
-				d1.topRight.getX()>=d2.topRight.getX() &&
-				d1.topLeft.getY()<=d2.topLeft.getY() && 
-				d1.bottomLeft.getY()>=d2.bottomLeft.getY(); 
-	}
-	
-	private void merge(DetourPoints d1, DetourPoints d2) {
-		d1.topLeft.setX( Math.min(d1.topLeft.getX(), d2.topLeft.getX()) );
-		d1.topLeft.setY( Math.min(d1.topLeft.getY(), d2.topLeft.getY()) );
-		d1.topRight.setX( Math.max(d1.topRight.getX(), d2.topRight.getX()) );
-		d1.topRight.setY( Math.min(d1.topRight.getY(), d2.topRight.getY()) );
-		d1.bottomLeft.setX( Math.min(d1.bottomLeft.getX(), d2.bottomLeft.getX()) );
-		d1.bottomLeft.setY( Math.max(d1.bottomLeft.getY(), d2.bottomLeft.getY()) );
-		d1.bottomRight.setX( Math.max(d1.bottomRight.getX(), d2.bottomRight.getX()) );
-		d1.bottomRight.setY( Math.max(d1.bottomRight.getY(), d2.bottomRight.getY()) );
-	}
-	
 	protected DetourPoints getDetourPoints(ContainerShape shape) {
 		DetourPoints detour = new DetourPoints(shape, offset);
 		if (allShapes==null)
@@ -705,8 +466,8 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			if (shape==s)
 				continue;
 			DetourPoints d = new DetourPoints(s, offset);
-			if (intersects(detour, d) && !contains(detour,d)) {
-				merge(detour, d);
+			if (detour.intersects(d) && !detour.contains(d)) {
+				detour.merge(d);
 				i = -1;
 			}
 		}

@@ -27,10 +27,10 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 /**
  * Router for straight-line connections from source to target.
@@ -39,12 +39,10 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
  */
 public class DefaultConnectionRouter extends AbstractConnectionRouter {
 
-	protected static double length(Point p1, Point p2) {
-		return GraphicsUtil.getLength(p1, p2);
-	}
-
 	protected List<ContainerShape> allShapes;
 	Connection connection;
+	ContainerShape source;
+	ContainerShape target;
 	
 	public DefaultConnectionRouter(IFeatureProvider fp) {
 		super(fp);
@@ -53,7 +51,12 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	@Override
 	public boolean route(Connection connection) {
 		this.connection = connection;
+		this.source = (ContainerShape)connection.getStart().getParent();
+		this.target = (ContainerShape)connection.getEnd().getParent();
 		return false;
+	}
+	
+	protected void initialize() {
 	}
 	
 	@Override
@@ -68,8 +71,6 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 * @return true if connection source == target
 	 */
 	protected boolean isSelfConnection() {
-		AnchorContainer source = connection.getStart().getParent();
-		AnchorContainer target = connection.getEnd().getParent();
 		if (source != target)
 			return false;
 		return true;
@@ -78,8 +79,6 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	protected List<ContainerShape> findAllShapes() {
 		allShapes = new ArrayList<ContainerShape>();
 		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-		ContainerShape source = (ContainerShape)connection.getStart().getParent();
-		ContainerShape target = (ContainerShape)connection.getEnd().getParent();
 		TreeIterator<EObject> iter = diagram.eAllContents();
 		while (iter.hasNext()) {
 			EObject o = iter.next();
@@ -89,8 +88,8 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
 				if (bpmnShape==null)
 					continue;
-				if (shape==source || shape==target)
-					continue;
+//				if (shape==source || shape==target)
+//					continue;
 				// ignore containers (like Lane, SubProcess, etc.) if the source
 				// or target shapes are children of the container's hierarchy
 				if (shape==source.eContainer() || shape==target.eContainer())
@@ -116,7 +115,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		}
 		return null;
 	}
-	
+
 	protected ContainerShape getCollision(Point p1, Point p2) {
 		List<ContainerShape> collisions = findCollisions(p1, p2);
 		if (collisions.size()==0)
@@ -152,5 +151,36 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				return (int) (d2 - d1);
 			}
 		});
+	}
+	
+	protected List<Connection> findCrossings(Point start, Point end) {
+		List<Connection> crossings = new ArrayList<Connection>();
+		List<Connection> allConnections = fp.getDiagramTypeProvider().getDiagram().getConnections();
+		for (Connection connection : allConnections) {
+			Point p1 = GraphicsUtil.createPoint(connection.getStart());
+			Point p3 = GraphicsUtil.createPoint(connection.getEnd());
+			if (connection instanceof FreeFormConnection) {
+				FreeFormConnection ffc = (FreeFormConnection) connection;
+				Point p2 = p1;
+				for (Point p : ffc.getBendpoints()) {
+					if (GraphicsUtil.intersects(start, end, p1, p)) {
+						crossings.add(connection);
+						break;
+					}
+					p2 = p1 = p;
+				}
+				if (GraphicsUtil.intersects(start, end, p2, p3)) {
+					crossings.add(connection);
+				}
+			}
+			else if (GraphicsUtil.intersects(start, end, p1, p3)) {
+				crossings.add(connection);
+			}
+		}
+		return crossings;
+	}
+
+	protected static double length(Point p1, Point p2) {
+		return GraphicsUtil.getLength(p1, p2);
 	}
 }

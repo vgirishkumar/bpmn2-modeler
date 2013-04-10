@@ -23,6 +23,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -79,5 +80,12 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 		ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
+		
+		for (Connection connection : getDiagram().getConnections()) {
+			if (GraphicsUtil.intersects(shape, connection)) {
+				ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
+			}
+		}
+
 	}
 }

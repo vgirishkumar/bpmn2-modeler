@@ -42,9 +42,11 @@ import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
+import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -1253,8 +1255,8 @@ public class GraphicsUtil {
 		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);
 		int x = point.getX();
 		int y = point.getY();
-		return x>=loc.getX() && x<=loc.getX() + size.getWidth() &&
-				y>=loc.getY() && y<loc.getY() + size.getHeight();
+		return x>loc.getX() && x<loc.getX() + size.getWidth() &&
+				y>loc.getY() && y<loc.getY() + size.getHeight();
 	}
 	
 	public static boolean intersects(Shape shape1, Shape shape2) {
@@ -1291,9 +1293,38 @@ public class GraphicsUtil {
 		return true;
 	}
 	
+	public static boolean intersects(Shape shape, Connection connection) {
+		Point p1 = createPoint(connection.getStart());
+		Point p3 = createPoint(connection.getEnd());
+		if (connection instanceof FreeFormConnection) {
+			FreeFormConnection ffc = (FreeFormConnection) connection;
+			Point p2 = p1;
+			for (Point p : ffc.getBendpoints()) {
+				if (intersectsLine(shape, p1, p))
+					return true;
+				p2 = p1 = p;
+			}
+			if (intersectsLine(shape, p2, p3))
+				return true;
+		}
+		else if (intersectsLine(shape, p1, p3))
+			return true;
+		return false;
+	}
+	
 	public static boolean intersectsLine(Shape shape, Point p1, Point p2) {
 		ILocation loc = peService.getLocationRelativeToDiagram(shape);
 		IDimension size = calculateSize(shape);
+		// adjust the shape rectangle so that a point touching one of the edges
+		// is not considered to be "intersecting"
+		if (size.getWidth()>2) {
+			loc.setX(loc.getX()+1);
+			size.setWidth(size.getWidth()-2);
+		}
+		if (size.getHeight()>2) {
+			loc.setY(loc.getY()+1);
+			size.setHeight(size.getHeight()-2);
+		}
 		return RectangleIntersectsLine.intersectsLine(
 				p1.getX(), p1.getY(), p2.getX(), p2.getY(),
 				loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
@@ -1359,7 +1390,76 @@ public class GraphicsUtil {
 	        return true;
 	    }
 	}
+
+	public static boolean intersects(Point p1Start, Point p1End, Point p2Start, Point p2End) {
+		return isLineIntersectingLine(
+				p1Start.getX(), p1Start.getY(),
+				p1End.getX(), p1End.getY(),
+				p2Start.getX(), p2Start.getY(),
+				p2End.getX(), p2End.getY()
+		);
+	}
 	
+	/**
+	 * Check if two line segments intersects. Integer domain.
+	 * 
+	 * @param x0, y0, x1, y1 End points of first line to check.
+	 * @param x2, yy, x3, y3 End points of second line to check.
+	 * @return True if the two lines intersects.
+	 */
+	public static boolean isLineIntersectingLine(int x0, int y0, int x1,
+			int y1, int x2, int y2, int x3, int y3) {
+		int s1 = sameSide(x0, y0, x1, y1, x2, y2, x3, y3);
+		int s2 = sameSide(x2, y2, x3, y3, x0, y0, x1, y1);
+
+		return s1 <= 0 && s2 <= 0;
+	}
+
+	/**
+	 * Check if two points are on the same side of a given line. Algorithm from
+	 * Sedgewick page 350.
+	 * 
+	 * @param x0, y0, x1, y1 The line.
+	 * @param px0, py0 First point.
+	 * @param px1, py1 Second point.
+	 * @return <0 if points on opposite sides. =0 if one of the points is
+	 *         exactly on the line >0 if points on same side.
+	 */
+	private static int sameSide(int x0, int y0, int x1, int y1,
+			int px0, int py0, int px1, int py1) {
+		int sameSide = 0;
+
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+		int dx1 = px0 - x0;
+		int dy1 = py0 - y0;
+		int dx2 = px1 - x1;
+		int dy2 = py1 - y1;
+
+		// Cross product of the vector from the endpoint of the line to the
+		// point
+		int c1 = dx * dy1 - dy * dx1;
+		int c2 = dx * dy2 - dy * dx2;
+
+		if (c1 != 0 && c2 != 0)
+			sameSide = c1 < 0 != c2 < 0 ? -1 : 1;
+		else if (dx == 0 && dx1 == 0 && dx2 == 0)
+			sameSide = !isBetween(y0, y1, py0) && !isBetween(y0, y1, py1) ? 1
+					: 0;
+		else if (dy == 0 && dy1 == 0 && dy2 == 0)
+			sameSide = !isBetween(x0, x1, px0) && !isBetween(x0, x1, px1) ? 1
+					: 0;
+
+		return sameSide;
+	}
+
+	/**
+	 * Return true if c is between a and b.
+	 */
+	private static boolean isBetween(int a, int b, int c) {
+		return b > a ? c >= a && c <= b : c >= b && c <= a;
+	}
+
 	public static Color clone(Color c) {
 		return c;
 	}
@@ -1509,7 +1609,7 @@ public class GraphicsUtil {
 	
 	public static void dump(String label) {
 		if (debug) {
-			
+			System.out.println(label);
 		}
 	}
 	
