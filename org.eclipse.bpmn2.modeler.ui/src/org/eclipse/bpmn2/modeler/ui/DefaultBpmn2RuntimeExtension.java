@@ -122,10 +122,13 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 			// search the "definitions" for a namespace that matches the required namespace
 			if ("definitions".equals(qName.localpart)) {
+				String namespace = attributes.getValue("targetNamespace");
+				if (this.namespace.equals(namespace))
+					throw new AcceptedException(qName.localpart);
 				Enumeration<?> e = fNamespaceContext.getAllPrefixes();
 				while (e.hasMoreElements()) {
 					String prefix = (String)e.nextElement();
-					String namespace = fNamespaceContext.getURI(prefix);
+					namespace = fNamespaceContext.getURI(prefix);
 					if (this.namespace.equals(namespace))
 						throw new AcceptedException(qName.localpart);
 				}
