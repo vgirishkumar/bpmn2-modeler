@@ -934,6 +934,7 @@
 			<enable object="SequenceFlow" feature="priority"/>
 			<enable object="SequenceFlow" feature="sourceRef"/>
 			<enable object="SequenceFlow" feature="targetRef"/>
+			<enable object="StartEvent"/>
 			<enable object="TerminateEventDefinition" feature="id"/>
 		</modelEnablement>
 		
@@ -987,6 +988,8 @@
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Events" name="Events">
+				<tool name="Start" object="StartEvent" icon="StartEvent.png"/>
+				<tool name="End" object="EndEvent" icon="EndEvent.png"/>
 				<tool name="Terminate" object="EndEvent+TerminateEventDefinition" icon="TerminateEndEvent.png"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Gateways" name="Gateways">
