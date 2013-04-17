@@ -69,7 +69,7 @@ public class AnchorUtil {
 	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location";
 	public static final String CONNECTION_CREATED = "connection.created";
 
-	// values for connection points
+	// values for connection cuts
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
 	public static final String CONNECTION_POINT_KEY = "connection.point.key"; //$NON-NLS-1$
 	public static final int CONNECTION_POINT_SIZE = 4;
@@ -176,7 +176,7 @@ public class AnchorUtil {
 			// the anchor container is a Connection which does not have any predefined BoundaryAnchors
 			// so we have to synthesize these by looking for connection point shapes owned by the connection
 			for (Shape connectionPointShape : getConnectionPoints((FreeFormConnection)ac)) {
-				// TODO: if there are multiple connection points, figure out which one to use
+				// TODO: if there are multiple connection cuts, figure out which one to use
 				return getConnectionBoundaryAnchors(connectionPointShape);
 			}
 		}
@@ -629,7 +629,7 @@ public class AnchorUtil {
 		anchor.setLocation(gaService.createPoint(0, h / 2));
 	}
 
-	// Connection points allow creation of anchors on FreeFormConnections
+	// Connection cuts allow creation of anchors on FreeFormConnections
 	
 	public static Shape createConnectionPoint(IFeatureProvider fp,
 			FreeFormConnection connection, ILocation location) {

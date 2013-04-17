@@ -239,7 +239,7 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 			initializeFromTargetRuntime(TargetRuntime.getDefaultRuntime(), featureName, enabled);
 		}
 		else if (className.contains(".")) {
-			// the "object=" attribute points to a Target Runtime ID,
+			// the "object=" attribute cuts to a Target Runtime ID,
 			// use this as the starting point for the current profile.
 			TargetRuntime rt = TargetRuntime.getRuntime(className);
 			initializeFromTargetRuntime(rt, featureName, enabled);

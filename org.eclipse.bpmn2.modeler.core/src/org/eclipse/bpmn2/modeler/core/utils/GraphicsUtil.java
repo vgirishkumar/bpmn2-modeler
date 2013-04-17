@@ -202,12 +202,12 @@ public class GraphicsUtil {
 		public double getDistance(Point p) {
 			// for vertical and horizontal line segments, the distance to a point
 			// is the orthogonal distance if the point lies between the start and end
-			// points of the line segment
-			if (isHorizontal()) {
+			// cuts of the line segment
+			if (isHorizontal(start,end)) {
 				if (p.getX()>=start.getX() && p.getX()<=end.getX())
 					return Math.abs(start.getY() - p.getY());
 			}
-			if (isVertical()) {
+			if (isVertical(start,end)) {
 				if (p.getY()>=start.getY() && p.getY()<=end.getY())
 					return Math.abs(start.getX() - p.getX());
 			}
@@ -216,15 +216,6 @@ public class GraphicsUtil {
 	        double d1 = getDistanceToStart(p);
 	        double d2 = getDistanceToEnd(p);
 	        return Math.min(d1, d2);
-		}
-		public boolean isHorizontal() {
-			return Math.abs(start.getY() - end.getY()) <= 1;
-		}
-		public boolean isVertical() {
-			return Math.abs(start.getX() - end.getX()) <= 1;
-		}
-		public boolean isSlanted() {
-			return !isHorizontal() && !isVertical();
 		}
 		public double getDistanceToStart(Point p) {
 	        return Math.hypot(start.getX()-p.getX(), start.getY()-p.getY());
@@ -1403,8 +1394,8 @@ public class GraphicsUtil {
 	/**
 	 * Check if two line segments intersects. Integer domain.
 	 * 
-	 * @param x0, y0, x1, y1 End points of first line to check.
-	 * @param x2, yy, x3, y3 End points of second line to check.
+	 * @param x0, y0, x1, y1 End cuts of first line to check.
+	 * @param x2, yy, x3, y3 End cuts of second line to check.
 	 * @return True if the two lines intersects.
 	 */
 	public static boolean isLineIntersectingLine(int x0, int y0, int x1,
@@ -1416,14 +1407,14 @@ public class GraphicsUtil {
 	}
 
 	/**
-	 * Check if two points are on the same side of a given line. Algorithm from
+	 * Check if two cuts are on the same side of a given line. Algorithm from
 	 * Sedgewick page 350.
 	 * 
 	 * @param x0, y0, x1, y1 The line.
 	 * @param px0, py0 First point.
 	 * @param px1, py1 Second point.
-	 * @return <0 if points on opposite sides. =0 if one of the points is
-	 *         exactly on the line >0 if points on same side.
+	 * @return <0 if cuts on opposite sides. =0 if one of the cuts is
+	 *         exactly on the line >0 if cuts on same side.
 	 */
 	private static int sameSide(int x0, int y0, int x1, int y1,
 			int px0, int py0, int px1, int py1) {
@@ -1512,12 +1503,73 @@ public class GraphicsUtil {
 		return Math.sqrt(a*a + b*b);
 	}
 
+	public static double getLength(List<Point> points) {
+		double length = 0;
+		int size = points.size();
+		if (size>=2) {
+			Point p1 = points.get(0);
+			for (int i=1; i<size-1; ++i) {
+				Point p2 = points.get(i);
+				length += getLength(p1,p2);
+				p1 = p2;
+			}
+		}
+		return length;
+	}
+	
 	public static double getLength(Point p1, Point p2) {
 		double a = (double)(p1.getX() - p2.getX());
 		double b = (double)(p1.getY() - p2.getY());
 		return Math.sqrt(a*a + b*b);
 	}
+
+	/**
+	 * Check if the line segment defined by the two Points is vertical.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is vertical
+	 */
+	public final static boolean isVertical(Point p1, Point p2) {
+		return Math.abs(p1.getX() - p2.getX()) <= 2;
+	}
 	
+	/**
+	 * Check if the line segment defined by the two Points is horizontal.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is horizontal
+	 */
+	public final static boolean isHorizontal(Point p1, Point p2) {
+		return Math.abs(p1.getY() - p2.getY()) <= 2;
+	}
+
+	/**
+	 * Check if the line segment defined by the two Points is neither horizontal nor vertical.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is slanted
+	 */
+	public final static boolean isSlanted(Point p1, Point p2) {
+		return !isHorizontal(p1, p2) && !isVertical(p1,p2);
+	}
+
+	public static Point getVertMidpoint(Point start, Point end, double fract) {
+		Point m = GraphicsUtil.createPoint(start);
+		int d = (int)(fract * (double)(end.getY() - start.getY()));
+		m.setY(start.getY()+d);
+		return m;
+	}
+	
+	public static Point getHorzMidpoint(Point start, Point end, double fract) {
+		Point m = GraphicsUtil.createPoint(start);
+		int d = (int)(fract * (double)(end.getX() - start.getX()));
+		m.setX(start.getX()+d);
+		return m;
+	}
+
 	public static IDimension calculateSize(AnchorContainer shape) {
 		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 		if (ga!=null)
@@ -1548,7 +1600,7 @@ public class GraphicsUtil {
 		return Graphiti.getPeService().getPropertyValue(shape, LABEL_PROPERTY) != null;
 	}
 	
-	public static boolean debug = false;
+	public static boolean debug = true;
 
 	public static void dump(String label, List<ContainerShape> shapes) {
 		if (shapes!=null) {
@@ -1587,24 +1639,26 @@ public class GraphicsUtil {
 	
 	public static void dump(int level, String label, ContainerShape shape, int x, int y) {
 		if (debug) {
-			EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
-			String id = "";
-			if (be instanceof BaseElement) {
-				id = " " + ((BaseElement)be).getId();
-			}
+			String text = getDebugText(shape);
 			for (int i=0; i<level; ++i)
 				System.out.print("    ");
-			System.out.print(
-					label+" "+
-					be.eClass().getName()+id+": "+
-					ModelUtil.getDisplayName(be)
-			);
+			System.out.print(label+" "+text);
 			if (x>0 && y>0) {
 				System.out.println(" at "+x+", "+y);
 			}
 			else
 				System.out.println("");
 		}
+	}
+	
+	public static String getDebugText(ContainerShape shape) {
+		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+		String id = "";
+		if (be instanceof BaseElement) {
+			id = " " + ((BaseElement)be).getId();
+		}
+		String text = be.eClass().getName()+id+": "+ModelUtil.getDisplayName(be);
+		return text;
 	}
 	
 	public static void dump(String label) {

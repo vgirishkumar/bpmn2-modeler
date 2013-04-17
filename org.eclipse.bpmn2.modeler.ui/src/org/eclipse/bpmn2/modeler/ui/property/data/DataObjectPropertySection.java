@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Composite;
  * "The Data Object class is an item-aware parameter. Data Object elements MUST be contained within Process or Sub-
  * Process elements. Data Object elements are visually displayed on a Process diagram. Data Object References are
  * a way to reuse Data Objects in the same diagram. They can specify different states of the same Data Object at
- * different points in a Process. Data Object Reference cannot specify item definitions, and Data Objects cannot
+ * different cuts in a Process. Data Object Reference cannot specify item definitions, and Data Objects cannot
  * specify states. The names of Data Object References are derived by concatenating the name of the referenced Data
  * Data Object the state of the Data Object Reference in square brackets as follows: <Data Object Name> [ <Data
  * Object Reference State> ]."

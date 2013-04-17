@@ -36,79 +36,16 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  */
 public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
-	/**
-	 * Calculates detour points for a given shape. These points surround the shape at each of the corners
-	 * of the shape's bounding rectangle, but "just outside" the shape.
-	 */
-	public class DetourPoints {
-		public int leftMargin = 10;
-		public int rightMargin = 10;
-		public int topMargin = 10;
-		public int bottomMargin = 10;
-		public Point topLeft;
-		public Point topRight;
-		public Point bottomLeft;
-		public Point bottomRight;
-		
-		public DetourPoints(ContainerShape shape) {
-			calculate(shape);
-		}
-		
-		public DetourPoints(ContainerShape shape, int margin) {
-			this(shape,margin,margin,margin,margin);
-		}
-		
-		public DetourPoints(ContainerShape shape, int leftMargin, int rightMargin, int topMargin, int bottomMargin) {
-			this.leftMargin = leftMargin;
-			this.rightMargin = rightMargin;
-			this.topMargin = topMargin;
-			this.bottomMargin = bottomMargin;
-			calculate(shape);
-		}
-		
-		protected void calculate(Shape shape) {
-			ILocation loc = peService.getLocationRelativeToDiagram(shape);
-			IDimension size = GraphicsUtil.calculateSize(shape);
-			topLeft = GraphicsUtil.createPoint(loc.getX() - leftMargin, loc.getY() - topMargin);
-			topRight = GraphicsUtil.createPoint(loc.getX() + size.getWidth() + rightMargin, loc.getY() - topMargin);
-			bottomLeft = GraphicsUtil.createPoint(loc.getX() - leftMargin, loc.getY() + size.getHeight() + bottomMargin);
-			bottomRight = GraphicsUtil.createPoint(loc.getX() + size.getWidth() + leftMargin, loc.getY() + size.getHeight() + bottomMargin);
-		}
-
-		public boolean intersects(DetourPoints d2) {
-			return GraphicsUtil.intersects(
-					this.topLeft.getX(), this.topLeft.getY(), this.topRight.getX() - this.topLeft.getX(), this.bottomLeft.getY() - this.topLeft.getY(),
-					d2.topLeft.getX(), d2.topLeft.getY(), d2.topRight.getX() - d2.topLeft.getX(), d2.bottomLeft.getY() - d2.topLeft.getY()
-			);
-		}
-		
-		public boolean contains(DetourPoints d2) {
-			return	this.topLeft.getX()<=d2.topLeft.getX() &&
-					this.topRight.getX()>=d2.topRight.getX() &&
-					this.topLeft.getY()<=d2.topLeft.getY() && 
-					this.bottomLeft.getY()>=d2.bottomLeft.getY(); 
-		}
-		
-		public void merge(DetourPoints d2) {
-			this.topLeft.setX( Math.min(this.topLeft.getX(), d2.topLeft.getX()) );
-			this.topLeft.setY( Math.min(this.topLeft.getY(), d2.topLeft.getY()) );
-			this.topRight.setX( Math.max(this.topRight.getX(), d2.topRight.getX()) );
-			this.topRight.setY( Math.min(this.topRight.getY(), d2.topRight.getY()) );
-			this.bottomLeft.setX( Math.min(this.bottomLeft.getX(), d2.bottomLeft.getX()) );
-			this.bottomLeft.setY( Math.max(this.bottomLeft.getY(), d2.bottomLeft.getY()) );
-			this.bottomRight.setX( Math.max(this.bottomRight.getX(), d2.bottomRight.getX()) );
-			this.bottomRight.setY( Math.max(this.bottomRight.getY(), d2.bottomRight.getY()) );
-		}
-	}
-
+	protected static final int margin = 10;
 	// The Connection passed in to route(), cast as a FreeFormConnection for convenience
 	protected FreeFormConnection ffc;
 	// The moved or added bendpoint (if any)
 	protected Point movedBendpoint;
 	protected Point removedBendpoint;
-	// The list of old connection points (including the end points) for determining if a route has changed
+	// The list of old connection cuts (including the end cuts) for determining if a route has changed
 	protected List<Point> oldPoints;
-	protected Anchor sourceAdHocAnchor, targetAdHocAnchor;
+	// flag to disable automatic collision avoidance and optimization
+	protected boolean manual = true;
 	
 	public BendpointConnectionRouter(IFeatureProvider fp) {
 		super(fp);
@@ -134,6 +71,14 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return changed;
 	}
 	
+	public void setManualRouting(boolean manual) {
+		this.manual = manual;
+	}
+	
+	public boolean isManualRouting() {
+		return manual;
+	}
+	
 	/**
 	 * Initialize the newPoints list and set the new start and end anchors
 	 * 
@@ -141,6 +86,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 */
 	@Override
 	protected void initialize() {
+		super.initialize();
+		
 		movedBendpoint = getMovedBendpoint(ffc);
 		if (movedBendpoint==null)
 			movedBendpoint = getAddedBendpoint(ffc);
@@ -156,26 +103,80 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			oldPoints.add(GraphicsUtil.createPoint(p));
 		}
 		oldPoints.add(GraphicsUtil.createPoint(ffc.getEnd()));
-
-		if (AnchorUtil.useAdHocAnchors(source, ffc) && AnchorUtil.isAdHocAnchor(ffc.getStart()))
-			sourceAdHocAnchor = ffc.getStart();
-		else
-			sourceAdHocAnchor = null;
-		if (AnchorUtil.useAdHocAnchors(target, ffc) && AnchorUtil.isAdHocAnchor(ffc.getEnd()))
-			targetAdHocAnchor = ffc.getEnd();
-		else
-			targetAdHocAnchor = null;
 	}
 	
 	protected ConnectionRoute calculateRoute() {
 		if (isSelfConnection()) {
 			return calculateSelfConnectionRoute();
 		}
+		
+		if (manual) {
+			return null;
+		}
 
 		ConnectionRoute route = new ConnectionRoute(this, 1, source, target);
-		for (Point p : oldPoints) {
-			route.add(p);
+		
+		Point pStart;
+		Point pEnd;
+		if (sourceAnchor==null) {
+			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, oldPoints.get(oldPoints.size()-1));
+			pStart = GraphicsUtil.createPoint(ba.anchor);
 		}
+		else {
+			// can't move the original AdHoc anchor - this is our starting point
+			pStart = oldPoints.get(0);
+		}
+		if (targetAnchor==null) {
+			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, oldPoints.get(0));
+			pEnd = GraphicsUtil.createPoint(ba.anchor);
+		}
+		else {
+			// can't move the original target AdHoc anchor - this is our end 
+			pEnd = oldPoints.get( oldPoints.size()-1 );
+		}
+
+		route.add(pStart);
+		
+		oldPoints.clear();
+		oldPoints.add(pStart);
+		if (movedBendpoint!=null)
+			oldPoints.add(movedBendpoint);
+		oldPoints.add(pEnd);
+
+		Point p1 = pStart;
+		Point p2;
+		Point p3;
+		for (int i=1; i<oldPoints.size(); ++i) {
+			p2 = oldPoints.get(i);
+			ContainerShape shape = getCollision(p1,p2);
+			if (shape!=null) {
+				if (shape==target) {
+					// find a better target anchor if possible
+					if (targetAnchor==null) {
+						BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, p1);
+						pEnd = GraphicsUtil.createPoint(ba.anchor);
+					}
+					// and we're done
+					break;
+				}
+				// navigate around this shape
+				DetourPoints detour = new DetourPoints(shape, margin);
+				for (Point d : detour.calculateDetour(p1, p2)) {
+					if (!route.add(d))
+						break;
+					p2 = d;
+				}
+				--i;
+			}
+			else
+				route.add(p2);
+			p1 = p2;
+		}
+		route.add(pEnd);
+		
+		
+		oldPoints.clear();
+		
 		return route;
 	}
 	
@@ -194,7 +195,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		if (movedBendpoint==null) {
 			if (ffc.getStart() != ffc.getEnd() && ffc.getBendpoints().size()>0) {
 				// this connection starts and ends at the same node but it has different
-				// anchor points and at least one bendpoint, which makes it likely that
+				// anchor cuts and at least one bendpoint, which makes it likely that
 				// this connection was already routed previously and the self-connection
 				// is how the user wants it. But, check if the user wants to force routing.
 				if (!forceRouting(ffc))
@@ -217,7 +218,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point corner = gaService.createPoint(x1, y2); // point above the top-right corner 
 		Point top = gaService.createPoint(x2, y2); // point above the node
 		
-		// adjust these points to the moved or added bendpoint if possible
+		// adjust these cuts to the moved or added bendpoint if possible
 		Point p = movedBendpoint;
 		if (p!=null) {
 			int x = p.getX();
@@ -245,9 +246,9 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	
 	/**
 	 * Compare the connection's original start/end locations and all of its bendpoints
-	 * with the newly calculated points.
+	 * with the newly calculated cuts.
 	 * 
-	 * @return true if the connection is different from the newly calculated points
+	 * @return true if the connection is different from the newly calculated cuts
 	 */
 	protected boolean isRouteChanged(ConnectionRoute route) {
 		if (route==null || route.size()==0)
@@ -269,8 +270,27 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * Set the connection's new start/end point anchors and the newly calculated bendpoints.
 	 */
 	protected void applyRoute(ConnectionRoute route) {
-		route.apply(ffc, sourceAdHocAnchor, targetAdHocAnchor);
+		route.apply(ffc, sourceAnchor, targetAnchor);
 		DIUtils.updateDIEdge(ffc);
+	}
+
+	protected DetourPoints getDetourPoints(ContainerShape shape) {
+		DetourPoints detour = new DetourPoints(shape, margin);
+//		if (allShapes==null)
+//			findAllShapes();
+//
+//		for (int i=0; i<allShapes.size(); ++i) {
+//			ContainerShape s = allShapes.get(i);
+//			if (shape==s)
+//				continue;
+//			DetourPoints d = new DetourPoints(s, margin);
+//			if (detour.intersects(d) && !detour.contains(d)) {
+//				detour.merge(d);
+//				i = -1;
+//			}
+//		}
+
+		return detour;
 	}
 
 	/**
