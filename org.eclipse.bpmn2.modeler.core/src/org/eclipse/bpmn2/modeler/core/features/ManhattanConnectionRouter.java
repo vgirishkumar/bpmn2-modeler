@@ -92,8 +92,8 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		}
 		
 		findAllShapes();
-		RouteSolver solver = new RouteSolver(fp, allShapes, source, target);
-		if (solver.solve())
+		RouteSolver solver = new RouteSolver(fp, allShapes);
+		if (solver.solve(source, target))
 			return null;
 		
 		// The list of all possible routes. The shortest will be used.
