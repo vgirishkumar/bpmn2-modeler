@@ -14,12 +14,17 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 
+import java.util.List;
+
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
@@ -107,6 +112,15 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 							newGlobal.setIdentifier(name);
 							addExtensionValue(newGlobal);
 							return newGlobal;
+						}
+
+						public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
+							if (columnProvider==null) {
+								columnProvider = new ListCompositeColumnProvider(this);
+								columnProvider.add(new TableColumn(object,ModelPackage.eINSTANCE.getGlobalType_Identifier()));
+								columnProvider.add(new TableColumn(object,ModelPackage.eINSTANCE.getGlobalType_Type())).setHeaderText("Data Type");
+							}
+							return columnProvider;
 						}
 					};
 					globalsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_Global());

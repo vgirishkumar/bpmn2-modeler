@@ -14,7 +14,10 @@
 package org.eclipse.bpmn2.modeler.ui.features;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -27,6 +30,8 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -36,12 +41,15 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
+import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -50,8 +58,11 @@ import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
+import org.eclipse.graphiti.features.context.impl.MoveContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -60,10 +71,15 @@ import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
+import org.eclipse.graphiti.palette.IToolEntry;
+import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
+import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu.CascadingMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -96,7 +112,15 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		}
 
 		public String getText(Object element) {
-			return ModelUtil.toDisplayName(((EClass)element).getName());
+			if (element instanceof ObjectCreationToolEntry) {
+				ObjectCreationToolEntry te = (ObjectCreationToolEntry)element;
+				return te.getLabel();
+			}
+			else if (element instanceof IPaletteCompartmentEntry) {
+				IPaletteCompartmentEntry ce = (IPaletteCompartmentEntry)element;
+				return ce.getLabel();
+			}
+			return "?";
 		}
 
 		public Image getImage(Object element) {
@@ -114,12 +138,12 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		return getAvailableTypes().size()>0;
+		return getTools().size()>0;
 	}
 
 	@Override
 	public boolean isAvailable(IContext context) {
-		return getAvailableTypes().size()>0;
+		return getTools().size()>0;
 	}
 
 	/* (non-Javadoc)
@@ -141,10 +165,10 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 					// AbstractAppendNodeNodeFeature specializations; for example the class
 					// AppendActivityFeature will construct a popup list of all Activity subclasses
 					// e.g. Task, ScriptTask, SubProcess, etc. 
-					EClass newType = selectNewObjectType();
-					if (newType!=null) {
+					ICreateFeature createFeature = selectNewShape();
+					if (createFeature!=null) {
 						// if user made a selection, then create the new shape...
-						ContainerShape newShape = createNewShape(mh, oldShape, newType);
+						ContainerShape newShape = createNewShape(mh, oldShape, createFeature);
 						// ...and connect this shape to the new one with a SequenceFlow...
 						createNewConnection(mh, oldShape, newShape);
 						
@@ -160,31 +184,80 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		}
 	}
 	
-	protected EClass selectNewObjectType() {
+	protected ICreateFeature selectNewShape() {
 		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
-		ModelEnablementDescriptor enablements =
-				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
-		EClass newType = getBusinessObjectClass();
-
-		// build a list of possible subclasses for the popup menu
-		List<EClass> subtypes = getAvailableTypes();
+		BpmnToolBehaviourFeature toolProvider = getToolProvider();
+		List<IToolEntry> tools = getTools();
+		ICreateFeature feature = null;
+		
 		// show popup menu
-		boolean doit = subtypes.size()>0;
+		boolean doit = tools.size()>0;
 		if (doit) {
-			newType = subtypes.get(0);
-			if (subtypes.size()>1) {
-				PopupMenu popupMenu = new PopupMenu(subtypes, labelProvider);
-				doit = popupMenu.show(Display.getCurrent().getActiveShell());
-				if (doit) {
-					newType = (EClass) popupMenu.getResult();
-					return newType;
+			// figure out if we need a cascading menu: If there are more than one categories
+			// involved for the tools that have been selected, then create a cascading popup menu
+			LinkedHashMap<IPaletteCompartmentEntry, List<IToolEntry>> categories = new LinkedHashMap<IPaletteCompartmentEntry, List<IToolEntry>>();
+			List<IToolEntry> categorizedTools;
+			List<IToolEntry> uncategorizedTools = new ArrayList<IToolEntry>();
+
+			for (IToolEntry te : tools) {
+				IPaletteCompartmentEntry ce = toolProvider.getCategory(te);
+				if (ce!=null) {
+					if (categories.containsKey(ce)) {
+						categorizedTools = categories.get(ce);
+					}
+					else {
+						categorizedTools = new ArrayList<IToolEntry>();
+						categories.put(ce, categorizedTools);
+					}
+					categorizedTools.add(te);
+				}
+				else {
+					uncategorizedTools.add(te);
 				}
 			}
-			else
-				return newType;
+			
+			IToolEntry tool = tools.get(0);
+			feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+			if (tools.size()>1) {
+				PopupMenu popupMenu = null;
+				if (categories.size()>1) {
+					List<CascadingMenu> cascadingMenus = new ArrayList<CascadingMenu>();
+					for (Entry<IPaletteCompartmentEntry, List<IToolEntry>> entry : categories.entrySet()) {
+						PopupMenu subMenu = new PopupMenu(entry.getValue(), labelProvider);
+						CascadingMenu cascadingMenu = new CascadingMenu(entry.getKey(), subMenu);
+						cascadingMenus.add(cascadingMenu);
+					}
+					popupMenu = new PopupMenu(cascadingMenus, labelProvider);
+				}
+				else {
+					popupMenu = new PopupMenu(tools, labelProvider);
+				}
+				
+				doit = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (doit) {
+					Object result = popupMenu.getResult();
+					if (result instanceof List) {
+						for (Object o : (List)result) {
+							if (o instanceof IToolEntry) {
+								tool = (IToolEntry)o;
+								break;
+							}
+						}
+					}
+					else if (result instanceof IToolEntry)
+						tool = (IToolEntry)result;
+					
+					if (tool==null)
+						feature = null;
+					else
+						feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+				}
+				else
+					feature = null;
+			}
 		}
 
-		return null;
+		return feature;
 	}
 
 	protected List<EClass> getAvailableTypes() {
@@ -213,7 +286,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		return subtypes;
 	}
 	
-	protected ContainerShape createNewShape(ModelHandler mh, ContainerShape oldShape, EClass newType) {
+	protected ContainerShape createNewShape(ModelHandler mh, ContainerShape oldShape, ICreateFeature createFeature) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		boolean horz = Bpmn2Preferences.getInstance().isHorizontalDefault();
 
@@ -226,43 +299,39 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		int width = ga.getWidth();
 		int height = ga.getHeight();
 		
-		BPMNFeatureProvider fp = (BPMNFeatureProvider) getFeatureProvider();
-		AbstractCreateFeature createFeature = (AbstractCreateFeature) fp.getCreateFeatureForBusinessObject(newType.getInstanceClass());
-		
 		CreateContext createContext = new CreateContext();
-		createContext.putProperty(AbstractCreateFlowElementFeature.OPTION_DONT_ADD, "true");
 		createContext.setTargetContainer(oldShape.getContainer());
 		
-		FlowElement newObject = null;
-		if (createFeature != null) {
-			newObject = (FlowElement) createFeature.create(createContext)[0];
-		}else {
-			newObject = (FlowElement) mh.create(newType);
-		}
+		Object[] created = createFeature.create(createContext);
+		FlowElement newObject = (FlowElement) created[0];
+		ContainerShape newShape = (ContainerShape) created[1];
 		
 		ContainerShape containerShape = oldShape.getContainer();
 		if (containerShape!=getDiagram()) {
-			// we are adding a new shape to a control (e.g a SubProcess)
+			// we are adding a new shape to a container (e.g a SubProcess)
 			// so we need to adjust the location to be relative to the
-			// control instead of the diagram
+			// container instead of the diagram
 			loc = layoutService.getLocationRelativeToDiagram(containerShape);
 			xOffset = loc.getX();
 			yOffset = loc.getY();
 		}
-		BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
 		
+		BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
 		if (oldObject instanceof Lane) {
 			((Lane)oldObject).getFlowNodeRefs().add((FlowNode)newObject);
 		}
-		AddContext ac = new AddContext(new AreaContext(), newObject);
-		AbstractAddBPMNShapeFeature af = (AbstractAddBPMNShapeFeature)getFeatureProvider().getAddFeature(ac);
+		
+		// move the new shape so that it does not collide with an existing shape
+		MoveShapeContext moveContext = new MoveShapeContext(newShape);//new AreaContext(), newObject);
+		DefaultMoveShapeFeature moveFeature = (DefaultMoveShapeFeature)getFeatureProvider().getMoveShapeFeature(moveContext);
+		IDimension size = GraphicsUtil.calculateSize(newShape);
 		int wOffset = 50;
 		int hOffset = 50;
-		int w = af.getWidth();
-		int h = af.getHeight();
+		int w = size.getWidth();
+		int h = size.getHeight();
 		if (horz) {
 			x += width + wOffset + w/2;
-			y += height/2;
+			y += height/2 - h/2;
 			boolean done = false;
 			while (!done) {
 				done = true;
@@ -277,7 +346,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 			}
 		}
 		else {
-			x += width/2;
+			x += width/2 - w/2;
 			y += height + hOffset + h/2;
 			boolean done = false;
 			while (!done) {
@@ -292,11 +361,15 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 				}
 			}
 		}
-		ac.setX(x - xOffset);
-		ac.setY(y - yOffset);
-		ac.setTargetContainer( oldShape.getContainer() );
+		moveContext.setX(x - xOffset);
+		moveContext.setY(y - yOffset);
+		moveContext.setSourceContainer( oldShape.getContainer() );
+		moveContext.setTargetContainer( oldShape.getContainer() );
 		
-		return (ContainerShape) getFeatureProvider().addIfPossible(ac);
+		if (moveFeature.canMoveShape(moveContext))
+			moveFeature.moveShape(moveContext);
+		
+		return newShape;
 	}
 
 	protected List<Shape> getFlowElementChildren(ContainerShape containerShape) {
@@ -328,7 +401,40 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		Connection connection = (Connection)getFeatureProvider().addIfPossible(acc);
 		return connection;
 	}
+
+	protected BpmnToolBehaviourFeature getToolProvider() {
+		IToolBehaviorProvider[] toolProviders = getFeatureProvider().getDiagramTypeProvider().getAvailableToolBehaviorProviders();
+		BpmnToolBehaviourFeature toolProvider = null;
+		for (IToolBehaviorProvider tp : toolProviders) {
+			if (tp instanceof BpmnToolBehaviourFeature) {
+				return (BpmnToolBehaviourFeature)tp;
+			}
+		}
+		return null;
+	}
 	
+	protected List<IToolEntry> getTools() {
+		List<IToolEntry> tools = new ArrayList<IToolEntry>();
+		BpmnToolBehaviourFeature toolProvider = getToolProvider();
+
+		if (toolProvider!=null) {
+			List<EClass> availableTypes = getAvailableTypes();
+		
+			for (IToolEntry te : toolProvider.getTools()) {
+				if (te instanceof ObjectCreationToolEntry) {
+					ObjectCreationToolEntry cte = (ObjectCreationToolEntry)te;
+					ICreateFeature f = cte.getCreateFeature();
+					if (f instanceof IBpmn2CreateFeature) {
+						EClass type = ((IBpmn2CreateFeature)f).getBusinessObjectClass();
+						if (availableTypes.contains(type))
+							tools.add(te);
+					}
+				}
+			}
+		}
+		return tools;
+	}
+
 	/**
 	 * @return
 	 */

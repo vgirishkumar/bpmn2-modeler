@@ -437,7 +437,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="CallActivity Extensions"
 			type="CallActivity">
-			<property name="waitForCompletion" value="false" type="EBoolean"/>
+			<property name="waitForCompletion" value="true" type="EBoolean"/>
 			<property name="independent" value="false" type="EBoolean"/>
 		</modelExtension>
 		
@@ -868,7 +868,6 @@
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="RuleFlow">
 			<disable object="all" />
 			<enable object="BusinessRuleTask" feature="anyAttribute"/>
-			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<enable object="CallActivity" feature="anyAttribute"/>
@@ -876,8 +875,12 @@
 			<enable object="CallActivity" feature="dataInputAssociations"/>
 			<enable object="CallActivity" feature="dataOutputAssociations"/>
 			<enable object="CallActivity" feature="extensionValues"/>
+			<enable object="CallActivity" feature="independent"/>
 			<enable object="CallActivity" feature="ioSpecification"/>
 			<enable object="CallActivity" feature="name"/>
+			<enable object="CallActivity" feature="waitForCompletion"/>
+			<enable object="DataInput" feature="name"/>
+			<enable object="DataOutput" feature="name"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
 			<enable object="EndEvent" feature="inputSet"/>
 			<enable object="ExclusiveGateway" feature="default"/>
@@ -916,7 +919,6 @@
 			<enable object="Property" feature="id"/>
 			<enable object="Property" feature="itemSubjectRef"/>
 			<enable object="Property" feature="name"/>
-			<enable object="ScriptTask" feature="isForCompensation"/>
 			<enable object="ScriptTask" feature="name"/>
 			<enable object="ScriptTask" feature="script"/>
 			<enable object="ScriptTask" feature="scriptFormat"/>
