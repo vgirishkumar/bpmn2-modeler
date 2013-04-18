@@ -290,7 +290,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		public boolean optimize() {
 			boolean changed = removeUnusedPoints();
-			if (removeUnusedShapes()) {
+			if (removeUnusedSegments()) {
 				// this may cause some unused points to be left over
 				removeUnusedPoints();
 				changed = true;
