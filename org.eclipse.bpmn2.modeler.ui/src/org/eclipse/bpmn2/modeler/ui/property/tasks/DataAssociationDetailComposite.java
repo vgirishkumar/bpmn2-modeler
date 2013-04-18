@@ -290,8 +290,15 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			if (association.getAssignment().size()==1) {
 				return MapType.Expression;
 			}
+			if (isInput) {
+				if (association.getTargetRef()!=null) {
+					return MapType.Property;
+				}
+			}
+			else {
 			if (association.getSourceRef().size()>0) {
 				return MapType.Property;
+				}
 			}
 		}
 		return MapType.None;

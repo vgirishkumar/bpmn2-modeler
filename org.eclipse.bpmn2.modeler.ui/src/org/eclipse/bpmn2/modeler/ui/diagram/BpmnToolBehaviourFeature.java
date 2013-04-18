@@ -86,6 +86,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
+import org.eclipse.graphiti.palette.IToolEntry;
 import org.eclipse.graphiti.palette.impl.ConnectionCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.PaletteCompartmentEntry;
@@ -106,6 +107,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	ModelEnablementDescriptor modelEnablements;
 	ModelDescriptor modelDescriptor;
 	Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
+	List<IPaletteCompartmentEntry> palette;
 	
 	protected class ProfileSelectionToolEntry extends ToolEntry {
 		BPMN2Editor editor;
@@ -172,7 +174,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		Diagram diagram = getDiagramTypeProvider().getDiagram();
 		EObject object = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
 		
-		List<IPaletteCompartmentEntry> palette = new ArrayList<IPaletteCompartmentEntry>();
+		palette = new ArrayList<IPaletteCompartmentEntry>();
 
 		if (object!=null) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(object);
@@ -235,6 +237,32 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		return palette.toArray(new IPaletteCompartmentEntry[palette.size()]);
 	}
 
+	public List<IToolEntry> getTools() {
+		List<IToolEntry> tools = new ArrayList<IToolEntry>();
+		if (palette==null)
+			getPalette();
+		
+		for (IPaletteCompartmentEntry ce : palette) {
+			for (IToolEntry te : ce.getToolEntries()) {
+				tools.add(te);
+			}
+		}
+		return tools;
+	}
+
+	public IPaletteCompartmentEntry getCategory(IToolEntry tool) {
+		if (palette==null)
+			getPalette();
+		
+		for (IPaletteCompartmentEntry ce : palette) {
+			for (IToolEntry te : ce.getToolEntries()) {
+				if (te == tool)
+					return ce;
+			}
+		}
+		return null;
+	}
+	
 	private IFeature getCreateFeature(ToolDescriptor tool) {
 		if (tool.getToolParts().size()==1)
 			return getCreateFeature(tool, null, null, tool.getToolParts().get(0));
@@ -537,14 +565,12 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 
 		// 2. set the expand & collapse buttons
 		CustomContext cc = new CustomContext(new PictogramElement[] { pe });
-		ICustomFeature[] cf = fp.getCustomFeatures(cc);
-		for (int i = 0; i < cf.length; i++) {
-			ICustomFeature iCustomFeature = cf[i];
-			if (iCustomFeature.canExecute(cc)) {
-				ContextButtonEntry button = new ContextButtonEntry(iCustomFeature, cc);
-				button.setText(iCustomFeature.getName()); //$NON-NLS-1$
-				button.setIconId(iCustomFeature.getImageId());
-				button.setDescription(iCustomFeature.getDescription());
+		for (ICustomFeature cf : fp.getCustomFeatures(cc)) {
+			if (cf.canExecute(cc)) {
+				ContextButtonEntry button = new ContextButtonEntry(cf, cc);
+				button.setText(cf.getName()); //$NON-NLS-1$
+				button.setIconId(cf.getImageId());
+				button.setDescription(cf.getDescription());
 				
 				data.getDomainSpecificContextButtons().add(button);
 			}
@@ -566,16 +592,21 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		ccc.setSourceAnchor(anchor);
 
 		// 3.b. create context button and add "Create Connections" feature
-		ICreateConnectionFeature[] features = fp.getCreateConnectionFeatures();
 		ContextButtonEntry button = new ContextButtonEntry(null, context);
 		button.setText("Create Connection"); //$NON-NLS-1$
 		String description = null;
 		ArrayList<String> names = new ArrayList<String>();
 		button.setIconId(ImageProvider.IMG_16_SEQUENCE_FLOW);
-		for (ICreateConnectionFeature feature : features) {
-			if (feature.isAvailable(ccc) && feature.canStartConnection(ccc)) {
-				button.addDragAndDropFeature(feature);
-				names.add(feature.getCreateName());
+		for (IToolEntry te : getTools()) {
+			if (te instanceof ConnectionCreationToolEntry) {
+				ConnectionCreationToolEntry cte = (ConnectionCreationToolEntry)te;
+				for (IFeature f : cte.getCreateConnectionFeatures()) {
+					ICreateConnectionFeature ccf = (ICreateConnectionFeature)f;
+					if (ccf.isAvailable(ccc) && ccf.canStartConnection(ccc)) {
+						button.addDragAndDropFeature(ccf);
+						names.add(ccf.getCreateName());
+					}
+				}
 			}
 		}
 		

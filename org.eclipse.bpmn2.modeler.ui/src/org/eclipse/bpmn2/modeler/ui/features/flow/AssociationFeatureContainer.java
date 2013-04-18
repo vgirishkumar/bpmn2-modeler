@@ -20,7 +20,11 @@ import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.AssociationDirection;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -191,6 +195,13 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 		public CreateAssociationFeature(IFeatureProvider fp) {
 			super(fp, "Association", "Create "+"Association");
+		}
+
+		@Override
+		public boolean isAvailable(IContext context) {
+			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getAssociation()))
+				return false;
+			return super.isAvailable(context);
 		}
 
 		@Override

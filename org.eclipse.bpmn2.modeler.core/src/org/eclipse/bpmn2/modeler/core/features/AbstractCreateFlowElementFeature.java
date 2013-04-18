@@ -32,8 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> extends AbstractBpmn2CreateFeature<T> {
 	
-	public static final String OPTION_DONT_ADD = "DONT_ADD";
-	
 	public AbstractCreateFlowElementFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
 	}
@@ -44,6 +42,10 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
 		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
 		boolean intoFlowElementContainer = FeatureSupport.isTargetFlowElementsContainer(context);
+		/*
+		 * TODO: rethink this: it's causing all kinds of DI import problems
+		 * also see AbstractAddActivityFeature
+		 * 
 		if (intoParticipant) {
 			// don't allow flow elements to be added to a Pool if it is a "whitebox"
 			// (i.e. if it has its own BPMNDiagram page.) Flow elements should be added
@@ -57,6 +59,7 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 			if (FeatureSupport.hasBpmnDiagram(flowElementsContainer))
 				return false;
 		}
+		*/
 		return intoDiagram || intoLane || intoParticipant || intoFlowElementContainer;
 	}
 
@@ -75,12 +78,8 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 			Activator.logError(e);
 		}
 		PictogramElement pe = null;
-		if (context.getProperty(OPTION_DONT_ADD) == null) {
 			pe = addGraphicalRepresentation(context, element);
-		}
-		if (pe!=null)
 			return new Object[] { element, pe };
-		return new Object[] { element };
 	}
 	
 	protected abstract String getStencilImageId();

@@ -316,6 +316,9 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public boolean isAvailable(IContext context) {
+			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getMessageFlow()))
+				return false;
+			
 			if (context instanceof ICreateConnectionContext) {
 				ICreateConnectionContext ccc = (ICreateConnectionContext) context;
 				if (ccc.getSourcePictogramElement() != null) {

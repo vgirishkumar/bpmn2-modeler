@@ -202,12 +202,12 @@ public class GraphicsUtil {
 		public double getDistance(Point p) {
 			// for vertical and horizontal line segments, the distance to a point
 			// is the orthogonal distance if the point lies between the start and end
-			// cuts of the line segment
-			if (isHorizontal(start,end)) {
+			// points of the line segment
+			if (isHorizontal()) {
 				if (p.getX()>=start.getX() && p.getX()<=end.getX())
 					return Math.abs(start.getY() - p.getY());
 			}
-			if (isVertical(start,end)) {
+			if (isVertical()) {
 				if (p.getY()>=start.getY() && p.getY()<=end.getY())
 					return Math.abs(start.getX() - p.getX());
 			}
@@ -216,6 +216,15 @@ public class GraphicsUtil {
 	        double d1 = getDistanceToStart(p);
 	        double d2 = getDistanceToEnd(p);
 	        return Math.min(d1, d2);
+		}
+		public boolean isHorizontal() {
+			return Math.abs(start.getY() - end.getY()) <= 1;
+		}
+		public boolean isVertical() {
+			return Math.abs(start.getX() - end.getX()) <= 1;
+		}
+		public boolean isSlanted() {
+			return !isHorizontal() && !isVertical();
 		}
 		public double getDistanceToStart(Point p) {
 	        return Math.hypot(start.getX()-p.getX(), start.getY()-p.getY());
@@ -1394,8 +1403,8 @@ public class GraphicsUtil {
 	/**
 	 * Check if two line segments intersects. Integer domain.
 	 * 
-	 * @param x0, y0, x1, y1 End cuts of first line to check.
-	 * @param x2, yy, x3, y3 End cuts of second line to check.
+	 * @param x0, y0, x1, y1 End points of first line to check.
+	 * @param x2, yy, x3, y3 End points of second line to check.
 	 * @return True if the two lines intersects.
 	 */
 	public static boolean isLineIntersectingLine(int x0, int y0, int x1,
@@ -1407,14 +1416,14 @@ public class GraphicsUtil {
 	}
 
 	/**
-	 * Check if two cuts are on the same side of a given line. Algorithm from
+	 * Check if two points are on the same side of a given line. Algorithm from
 	 * Sedgewick page 350.
 	 * 
 	 * @param x0, y0, x1, y1 The line.
 	 * @param px0, py0 First point.
 	 * @param px1, py1 Second point.
-	 * @return <0 if cuts on opposite sides. =0 if one of the cuts is
-	 *         exactly on the line >0 if cuts on same side.
+	 * @return <0 if points on opposite sides. =0 if one of the points is
+	 *         exactly on the line >0 if points on same side.
 	 */
 	private static int sameSide(int x0, int y0, int x1, int y1,
 			int px0, int py0, int px1, int py1) {
@@ -1600,7 +1609,7 @@ public class GraphicsUtil {
 		return Graphiti.getPeService().getPropertyValue(shape, LABEL_PROPERTY) != null;
 	}
 	
-	public static boolean debug = true;
+	public static boolean debug = false;
 
 	public static void dump(String label, List<ContainerShape> shapes) {
 		if (shapes!=null) {

@@ -100,7 +100,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			if (isValid()) {
 				BoundaryAnchor sa = AnchorUtil.findNearestBoundaryAnchor(source, get(0));
 				BoundaryAnchor ta = AnchorUtil.findNearestBoundaryAnchor(target, get(size()-1));
-				text = id+": length="+getLength()+" cuts="+points.size()+
+				text = id+": length="+getLength()+" points="+points.size()+
 						" source="+sa.locationType+" target="+ta.locationType;
 				if (collisions.size()>0) {
 					text += " collisions=";
@@ -232,7 +232,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							(GraphicsUtil.isHorizontal(p1,p2) && GraphicsUtil.isHorizontal(p2,p3) && ((x1<x2 && x2<x3) || x1>x2 && x2>x3))
 					) {
 						points.remove(i);
-						// look at these set of cuts again
+						// look at these set of points again
 						--i;
 						changed = true;
 					}
@@ -290,8 +290,8 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		public boolean optimize() {
 			boolean changed = removeUnusedPoints();
-			if (removeUnusedSegments()) {
-				// this may cause some unused cuts to be left over
+			if (removeUnusedShapes()) {
+				// this may cause some unused points to be left over
 				removeUnusedPoints();
 				changed = true;
 			}

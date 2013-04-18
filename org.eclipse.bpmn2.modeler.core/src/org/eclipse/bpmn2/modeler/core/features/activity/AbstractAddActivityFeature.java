@@ -57,6 +57,10 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
 		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
 		boolean intoFlowElementContainer = FeatureSupport.isTargetFlowElementsContainer(context);
+		/*
+		 * TODO: rethink this: it's causing all kinds of DI import problems
+		 * also see AbstractCreateFlowElementFeature
+		 * 
 		if (intoParticipant) {
 			// don't allow flow elements to be added to a Pool if it is a "whitebox"
 			// (i.e. if it has its own BPMNDiagram page.) Flow elements should be added
@@ -70,6 +74,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 			if (FeatureSupport.hasBpmnDiagram(flowElementsContainer))
 				return false;
 		}
+		*/
 		return intoDiagram || intoLane || intoParticipant || intoFlowElementContainer;
 	}
 

@@ -693,7 +693,7 @@ public class DIImport {
 			se = elements.get(source);
 			te = elements.get(target);
 		} else if (bpmnElement instanceof DataAssociation) {
-			// Data Association allows connections for multiple starting cuts, we don't support it yet
+			// Data Association allows connections for multiple starting points, we don't support it yet
 			List<ItemAwareElement> sourceRef = ((DataAssociation) bpmnElement).getSourceRef();
 			ItemAwareElement targetRef = ((DataAssociation) bpmnElement).getTargetRef();
 			if (sourceRef != null) {

@@ -50,6 +50,7 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -174,6 +175,13 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			return FlowNode.class;
 		}
 
+		@Override
+		public boolean isAvailable(IContext context) {
+			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getSequenceFlow()))
+				return false;
+			return super.isAvailable(context);
+		}
+		
 		/* (non-Javadoc)
 		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#getBusinessObjectClass()
 		 */
