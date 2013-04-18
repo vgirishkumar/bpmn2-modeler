@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
@@ -27,6 +28,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -43,6 +45,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	Connection connection;
 	ContainerShape source;
 	ContainerShape target;
+	protected Anchor sourceAnchor, targetAnchor;
 	
 	public DefaultConnectionRouter(IFeatureProvider fp) {
 		super(fp);
@@ -53,6 +56,15 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		this.connection = connection;
 		this.source = (ContainerShape)connection.getStart().getParent();
 		this.target = (ContainerShape)connection.getEnd().getParent();
+
+		if (AnchorUtil.useAdHocAnchors(source, connection) && AnchorUtil.isAdHocAnchor(connection.getStart()))
+			sourceAnchor = connection.getStart();
+		else
+			sourceAnchor = null;
+		if (AnchorUtil.useAdHocAnchors(target, connection) && AnchorUtil.isAdHocAnchor(connection.getEnd()))
+			targetAnchor = connection.getEnd();
+		else
+			targetAnchor = null;
 		return false;
 	}
 	
@@ -134,8 +146,8 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 			if (GraphicsUtil.intersectsLine(shape, p1, p2))
 				collisions.add(shape);
 		}
-		if (collisions.size()>0)
-			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);
+//		if (collisions.size()>0)
+//			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);
 		return collisions;
 	}
 

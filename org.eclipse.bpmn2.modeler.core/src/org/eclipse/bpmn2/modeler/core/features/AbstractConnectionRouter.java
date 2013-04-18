@@ -123,37 +123,4 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	public static boolean forceRouting(Connection connection) {
 		return getRoutingInfo(connection).contains(ROUTING_INFO_FORCE);
 	}
-	
-	/**
-	 * Check if the line segment defined by the two Points is horizontal.
-	 * 
-	 * @param p1
-	 * @param p2
-	 * @return true if the line segment is horizontal
-	 */
-	protected final static boolean isHorizontal(Point p1, Point p2) {
-		return Math.abs(p1.getY() - p2.getY()) <= 2;
-	}
-
-	/**
-	 * Check if the line segment defined by the two Points is vertical.
-	 * 
-	 * @param p1
-	 * @param p2
-	 * @return true if the line segment is vertical
-	 */
-	protected final static boolean isVertical(Point p1, Point p2) {
-		return Math.abs(p1.getX() - p2.getX()) <= 2;
-	}
-
-	/**
-	 * Check if the line segment defined by the two Points is neither horizontal nor vertical.
-	 * 
-	 * @param p1
-	 * @param p2
-	 * @return true if the line segment is slanted
-	 */
-	protected final boolean isSlanted(Point p1, Point p2) {
-		return !isHorizontal(p1, p2) && !isVertical(p1,p2);
-	}
 }
