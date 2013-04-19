@@ -5,35 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.features.RouteSolver.Aisle.Adjacence;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.graphiti.datatypes.IDimension;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IAddConnectionContext;
-import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.DeleteContext;
-import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
-import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
-import org.eclipse.graphiti.util.ColorConstant;
-import org.eclipse.graphiti.util.IColorConstant;
 
 public class RouteSolver {
 
@@ -49,243 +27,9 @@ public class RouteSolver {
 	ContainerShape source; 
 	ContainerShape target;
 	int top, left, bottom, right;
-	AisleList verticalAisles;
-	AisleList horizontalAisles;
+	RoutingNet verticalNet;
+	RoutingNet horizontalNet;
 	private boolean rotate = false;
-	
-	/**
-	 * This class represents an "aisle" or blank space between shapes, which can
-	 * be used to lay connection lines. Aisles are linked together in a network;
-	 * the linkage is created when two Aisle nodes share a common left or right
-	 * edge. See also AisleList.
-	 */
-	public static class Aisle {
-		protected final static AisleList EMPTY_LIST = new AisleList();
-		protected Rectangle rect;
-		protected List<Aisle> leftAdjacent;
-		protected List<Aisle> rightAdjacent;
-		public String type;
-		protected ContainerShape shape;
-
-		public static enum Adjacence { LEFT, TOP, BOTTOM, RIGHT, NONE };
-		
-		public Aisle(String type, int x, int y, int width, int height) {
-			this(new Rectangle(x,y,width,height));
-			this.type = type;
-		}
-		
-		public Aisle(Rectangle r) {
-			rect = new Rectangle(r);
-		}
-		
-		public Adjacence adjacent(Aisle node) {
-			return adjacent(node.rect);
-		}
-		
-		public Adjacence adjacent(Rectangle other) {
-			if (rect.y==other.bottom()) {
-				if (rect.right()<=other.x || other.right()<=rect.x)
-					return Adjacence.NONE;
-				return Adjacence.TOP;
-			}
-			if (rect.x==other.right()) {
-				if (rect.bottom()<=other.y || other.bottom()<=rect.y)
-					return Adjacence.NONE;
-				return Adjacence.LEFT;
-			}
-			if (rect.right()==other.x) {
-				if (rect.bottom()<=other.y || other.bottom()<=rect.y)
-					return Adjacence.NONE;
-				return Adjacence.RIGHT;
-			}
-			if (rect.bottom()==other.y) {
-				if (rect.right()<=other.x || other.right()<=rect.x)
-					return Adjacence.NONE;
-				return Adjacence.BOTTOM;
-			}
-			return Adjacence.NONE;
-		}
-		
-		public void addLeft(Aisle node) {
-			if (leftAdjacent==null)
-				leftAdjacent = new ArrayList<Aisle>();
-			if (!leftAdjacent.contains(node))
-				leftAdjacent.add(node);
-			if (node.rightAdjacent==null)
-				node.rightAdjacent = new ArrayList<Aisle>();
-			if (!node.rightAdjacent.contains(this))
-				node.rightAdjacent.add(this);
-		}
-		
-		public boolean hasLeft() {
-			return leftAdjacent!=null && leftAdjacent.size()>0;
-		}
-		
-		public List<Aisle> getLeft() {
-			if (hasLeft())
-				return leftAdjacent;
-			return EMPTY_LIST;
-		}
-		
-		public void addRight(Aisle node) {
-			if (rightAdjacent==null)
-				rightAdjacent = new ArrayList<Aisle>();
-			if (!rightAdjacent.contains(node))
-				rightAdjacent.add(node);
-			if (node.leftAdjacent==null)
-				node.leftAdjacent = new ArrayList<Aisle>();
-			if (!node.leftAdjacent.contains(this))
-				node.leftAdjacent.add(this);
-		}
-		
-		public boolean hasRight() {
-			return rightAdjacent!=null && rightAdjacent.size()>0;
-		}
-		
-		public List<Aisle> getRight() {
-			if (hasRight())
-				return rightAdjacent;
-			return EMPTY_LIST;
-		}
-
-		public int getX() {
-			return rect.x;
-		}
-
-		public int getY() {
-			return rect.y;
-		}
-
-		public void setX(int i) {
-			rect.x = i;
-		}
-		
-		public void setY(int i) {
-			rect.y = i;
-		}
-		
-		public int getWidth() {
-			return rect.width;
-		}
-
-		public int getHeight() {
-			return rect.height;
-		}
-		
-		public void setWidth(int i) {
-			rect.width = i;
-		}
-
-		public void setHeight(int i) {
-			rect.height = i;
-		}
-
-		public void setShape(PictogramElement shape) {
-			this.shape = (ContainerShape)shape;
-		}
-		
-		public ContainerShape getShape() {
-			return shape;
-		}
-
-		@Override
-		public boolean equals(Object that) {
-			if (that instanceof Aisle)
-				return this.rect.equals(((Aisle)that).rect);
-			return false;
-		}
-
-		public void rotate(boolean b) {
-			rotateRectangle(rect);
-		}
-	}
-	
-	/**
-	 * This class manages a network of Aisle nodes. The nodes are linked if their
-	 * physical rectangles share an edge. Depending on the orientation in which the net was created,
-	 * only the left/right (for a "vertical" or non-rotated net) or top/bottom (a "horizontal"
-	 * or rotated net) edges are tested for adjacency.
-	 */
-	protected static class AisleList extends ArrayList<Aisle> {
-		
-		private static final long serialVersionUID = -3041403111796385182L;
-		boolean isRotated = false;
-		ContainerShape source;
-		ContainerShape target;
-		List<Aisle> sourceAdjacentAisles = new ArrayList<Aisle>();
-		List<Aisle> targetAdjacentAisles = new ArrayList<Aisle>();
-		
-		@Override
-		public boolean add(Aisle a) {
-			if (!contains(a) && a.getWidth()>0 && a.getHeight()>0)
-				return super.add(a);
-			return false;
-		}
-		
-		public void link(ContainerShape source, ContainerShape target) {
-			this.source = source;
-			this.target = target;
-			Rectangle sourceBounds = getBounds(isRotated, source);
-			Rectangle targetBounds = getBounds(isRotated, target);
-			sourceAdjacentAisles.clear();
-			targetAdjacentAisles.clear();
-			for (Aisle a1 : this) {
-				for (Aisle a2 : this) {
-					if (a1!=a2) {
-						switch (a1.adjacent(a2)) {
-						case LEFT:
-						case TOP:
-							a1.addLeft(a2);
-							break;
-						case RIGHT:
-						case BOTTOM:
-							a1.addRight(a2);
-							break;
-						case NONE:
-							break;
-						}
-					}
-				}
-				
-				if (a1.adjacent(sourceBounds) != Aisle.Adjacence.NONE) {
-					sourceAdjacentAisles.add(a1);
-				}
-				
-				if (a1.adjacent(targetBounds) != Aisle.Adjacence.NONE) {
-					targetAdjacentAisles.add(a1);
-				}
-			}
-		}
-
-		public void rotate(boolean b) {
-			if (isRotated!=b) {
-				for (Aisle node : this) {
-					node.rotate(b);
-				}
-				isRotated = b;
-			}
-		}
-		
-		public List<Aisle> getAislesAdjacentTo(ContainerShape shape, Adjacence adjacence) {
-			List<Aisle> adjacentAisles;
-			List<Aisle> list = new ArrayList<Aisle>();
-			if (shape==source) {
-				adjacentAisles = sourceAdjacentAisles;
-			}
-			else if (shape==target) {
-				adjacentAisles = targetAdjacentAisles;
-			}
-			else
-				return list;
-			
-			Rectangle bounds = getBounds(isRotated, shape);
-			for (Aisle a : adjacentAisles) {
-				if (a.adjacent(bounds) == adjacence)
-					list.add(a);
-			}
-			return list;
-		}
-	}
 	
 	/**
 	 * RouteSolver constructor.
@@ -299,69 +43,62 @@ public class RouteSolver {
 		this.allShapes.addAll(allShapes);
 		initialize();
 	}
-
-	protected void clear() {
-		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-		List<ContainerShape> delete = new ArrayList<ContainerShape>();
-		TreeIterator iter = diagram.eAllContents();
-		while (iter.hasNext()) {
-			Object o = iter.next();
-			if (o instanceof ContainerShape) {
-				ContainerShape s = (ContainerShape)o;
-				if (peService.getPropertyValue(s, "CONNECTION_ROUTING_AISLE")!=null) {
-					delete.add(s);
-				}
-			}
-		}
-		for (ContainerShape s : delete) {
-			DeleteContext context = new DeleteContext(s);
-			DeleteAisleFeature feature = new DeleteAisleFeature(fp);
-			feature.delete(context);
-		}
-
-	}
 	
 	public boolean solve(ContainerShape source, ContainerShape target) {
 		this.source = source;
 		this.target = target;
-
-		verticalAisles.link(source, target);
-		List<Aisle> list = verticalAisles.getAislesAdjacentTo(source, Adjacence.RIGHT);
-		drawAisles(verticalAisles);
-		drawAisleConnections(verticalAisles);
+		List< List<RoutingLane> > solutions;
 		
-		horizontalAisles.link(source, target);
-		drawAisles(horizontalAisles);
-		drawAisleConnections(horizontalAisles);
+		verticalNet.eraseLanes();
+		horizontalNet.eraseLanes();
+		
+		solutions = verticalNet.findSolutions(source, target);
+		verticalNet.drawLanes();
+//		verticalNet.drawConnections();
+		if (solutions.size()>0) {
+			verticalNet.drawSolution(solutions.get(0));
+		}
+		
+		solutions = horizontalNet.findSolutions(source, target);
+//		horizontalNet.drawLanes();
+//		horizontalNet.drawConnections();
+//		if (solutions.size()>0) {
+//			horizontalNet.drawSolution(solutions.get(1));
+//		}
 		return true;
 	}
 	
 	public boolean initialize() {
 		
-		clear();
-		
 		if (allShapes.size()<2)
 			return false;
-		
+
 		rotate = false;
+		
+		verticalNet = new RoutingNet(fp);
 		Rectangle r = calculateDiagramBounds();
 		sortAllShapes();
 		top = r.y;
 		left = r.x;
 		bottom = top + r.height;
 		right = left + r.width;
-		verticalAisles = calculateAisles();
+		calculateRoutingNet(verticalNet);
+		verticalNet.link();
 
 		rotate = true;
+		
+		horizontalNet = new RoutingNet(fp);
 		r = calculateDiagramBounds();
 		sortAllShapes();
 		top = r.y;
 		left = r.x;
 		bottom = top + r.height;
 		right = left + r.width;
-		horizontalAisles = calculateAisles();
+		calculateRoutingNet(horizontalNet);
+		horizontalNet.link();
+
 		rotate = false;
-		
+
 		return true;
 	}
 
@@ -396,11 +133,9 @@ public class RouteSolver {
 		return new Rectangle(left, top, right-left, bottom-top);
 	}
 	
-	protected AisleList calculateAisles() {
+	protected void calculateRoutingNet(RoutingNet net) {
 
-		AisleList aisles = new AisleList();
-		
-		aisles.add(new Aisle("start", left, top, leftMargin, bottom-top));
+		net.add(left, top, leftMargin, bottom-top);
 		for (int i=0; i<allShapes.size(); ++i) {
 			ContainerShape shape = allShapes.get(i);
 			if (GraphicsUtil.getDebugText(shape).contains("Task_1")) {
@@ -412,7 +147,7 @@ public class RouteSolver {
 			// get bounding rectangle for current shape
 			Rectangle shapeBounds = getBounds(shape);
 			// The rectangular region below the current shape will be sliced
-			// into smaller rectangles (a.k.a. "aisle"). To do this we'll
+			// into smaller rectangles (a.k.a. "Routing Lanes"). To do this we'll
 			// create a horizontal slicer that keeps track of the location
 			// and width of each void defined by the top edge of the current
 			// shape, and the left/right edges of the shapes below it.
@@ -428,24 +163,27 @@ public class RouteSolver {
 			int c1 = cuts.get(0);
 			for (int ic=1; ic<cuts.size(); ++ic) {
 				int c2 = cuts.get(ic);
-				Aisle newAisle = new Aisle("below",c1,shapeBounds.y+shapeBounds.height,c2-c1,Integer.MIN_VALUE);
+				int x = c1;
+				int y = shapeBounds.y+shapeBounds.height;
+				int w = c2-c1;
+				int h = Integer.MIN_VALUE;
 				
 				for (ContainerShape shapeBelow : below) {
 					Rectangle shapeBelowBounds = getBounds(shapeBelow);
 					if (shapeBelowBounds.x<=c1 && c1<shapeBelowBounds.right()) {
-						newAisle.setHeight(shapeBelowBounds.y - shapeBounds.y - shapeBounds.height);
+						h = shapeBelowBounds.y - shapeBounds.y - shapeBounds.height;
 						break;
 					}
 				}
-				if (newAisle.getHeight()==Integer.MIN_VALUE) {
-					newAisle.setHeight(bottom - shapeBounds.y - shapeBounds.height);
+				if (h==Integer.MIN_VALUE) {
+					h = bottom - shapeBounds.y - shapeBounds.height;
 				}
 				
-				aisles.add(newAisle);
+				net.add(x, y, w, h);
 				c1 = c2;
 			}
 
-			// calculate aisle above the current shape
+			// calculate lanes above the current shape
 			slice = new Slice(shapeBounds.x, shapeBounds.right());
 			List<ContainerShape> above = getShapesAbove(shape);
 			for (ContainerShape shapeAbove : above) {
@@ -454,44 +192,43 @@ public class RouteSolver {
 					break;
 			}
 
-			// Now we'll do the same thing for aisle above the current shape,
+			// Now we'll do the same thing for lane above the current shape,
 			// but only those that extend all the way to the top of the diagram.
-			// We don't want any overlapping aisle.
+			// We don't want any overlapping lane.
 			cuts = slice.getCuts();
 			c1 = cuts.get(0);
 			for (int ic=1; ic<cuts.size(); ++ic) {
 				int c2 = cuts.get(ic);
-				Aisle newAisle = new Aisle("above",c1,top,c2-c1,Integer.MIN_VALUE);
+				int x = c1;
+				int y = top;
+				int w = c2-c1;
+				int h = Integer.MIN_VALUE;
 				
 				for (ContainerShape shapeAbove : above) {
 					Rectangle shapeAboveBounds = getBounds(shapeAbove);
 					if (shapeAboveBounds.x<=c1 && c1<shapeAboveBounds.right()) {
-						newAisle.setHeight(shapeAboveBounds.y - shapeBounds.y - shapeBounds.height);
+						h = shapeAboveBounds.y - shapeBounds.y - shapeBounds.height;
 						break;
 					}
 				}
-				if (newAisle.getHeight()==Integer.MIN_VALUE) {
-					newAisle.setHeight(shapeBounds.y - top);
-					// only add the void if there is no shape above this region.
-					aisles.add(newAisle);
+				if (h==Integer.MIN_VALUE) {
+					h = shapeBounds.y - top;
+					// only add the lane if there is no shape above this region.
+					net.add(x, y, w, h);
 				}
 				
 				c1 = c2;
 			}
 
-			Aisle a = getTrailingAisle(shape);
-			if (a!=null)
-				aisles.add(a);
+			addTrailingAisle(net, shape);
 		}
-		aisles.add(new Aisle("end",right-rightMargin, top, rightMargin, bottom-top));
+		net.add(right-rightMargin, top, rightMargin, bottom-top);
 		
-		// rotate the horizontal aisle nodes
-		aisles.rotate(rotate);
-
-		return aisles;
+		// rotate the horizontal lane nodes
+		net.rotate(rotate);
 	}
 	
-	protected Aisle getTrailingAisle(ContainerShape shape) {
+	protected void addTrailingAisle(RoutingNet net, ContainerShape shape) {
 		Rectangle shapeBounds = getBounds(shape);
 		int x = shapeBounds.right();
 		int size = allShapes.size();
@@ -500,7 +237,7 @@ public class RouteSolver {
 			if (s!=shape) {
 				Rectangle b = getBounds(s);
 				if (b.x<=x && x<b.right())
-					return null;
+					return;
 			}
 		}
 		
@@ -511,12 +248,12 @@ public class RouteSolver {
 					ContainerShape nextShape = allShapes.get(n);
 					Rectangle nextShapeBounds = getBounds(nextShape);
 					if (nextShapeBounds.x>shapeBounds.right()) {
-						return new Aisle("trailing",shapeBounds.right(),top, nextShapeBounds.x - shapeBounds.right(), bottom-top);
+						net.add(shapeBounds.right(),top, nextShapeBounds.x - shapeBounds.right(), bottom-top);
+						return;
 					}
 				}
 			}
 		}
-		return null;
 	}
 
 	protected List<ContainerShape> getShapesBelow(ContainerShape shape) {
@@ -723,213 +460,6 @@ public class RouteSolver {
 	}
 
 	private Rectangle getBounds(ContainerShape shape) {
-		return getBounds(rotate,shape);
-	}
-
-	protected static Rectangle getBounds(boolean rotate, ContainerShape shape) {
-		ILocation loc = peService.getLocationRelativeToDiagram(shape);
-		IDimension size = GraphicsUtil.calculateSize(shape);
-		if (rotate) {
-			return rotateRectangle(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
-		}
-		return new Rectangle(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
-	}
-
-	protected static Rectangle rotateRectangle(int x, int y, int width, int height) {
-		return rotateRectangle(new Rectangle(x,y,width,height));
-	}
-	
-	public static Rectangle rotateRectangle(Rectangle r) {
-		int y = r.x;
-		int x = r.y;
-		int w = r.height;
-		int h = r.width;
-		r.x = x;
-		r.y = y;
-		r.width = w;
-		r.height = h;
-		return r;
-	}
-	
-	protected void drawAisles(AisleList aisle) {
-		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-		for (Aisle node : aisle) {
-			AddContext context = new AddContext();
-			context.setTargetContainer(diagram);
-			context.setNewObject(node);
-			context.setX(node.getX());
-			context.setY(node.getY());
-			context.setSize(node.getWidth(), node.getHeight());
-			AddAisleFeature feature = new AddAisleFeature(fp);
-			node.setShape(feature.add(context));
-		}
-	}
-	
-	protected void drawAisleConnections(AisleList aisles) {
-		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-		ContainerShape sourceShape;
-		Anchor sourceAnchor;
-		ContainerShape targetShape;
-		Anchor targetAnchor;
-		
-		for (Aisle n1 : aisles) {
-			for (Aisle n2 : n1.getRight()) {
-				if (n1!=n2) {
-					sourceShape = n1.getShape();
-					targetShape = n2.getShape();
-					if (sourceShape!=null && targetShape!=null) {
-						if (sourceShape.getAnchors().size()>0)
-							sourceAnchor = sourceShape.getAnchors().get(0);
-						else {
-							FixPointAnchor a = peService.createFixPointAnchor(sourceShape);
-							Rectangle r = getBounds(sourceShape);
-							a.setLocation(GraphicsUtil.createPoint(r.width/2, r.height/2));
-							gaService.createInvisibleRectangle(a);
-							sourceAnchor = a;
-						}
-
-						if (targetShape.getAnchors().size()>0)
-							targetAnchor = targetShape.getAnchors().get(0);
-						else {
-							FixPointAnchor a = peService.createFixPointAnchor(targetShape);
-							Rectangle r = getBounds(targetShape);
-							a.setLocation(GraphicsUtil.createPoint(r.width/2, r.height/2));
-							gaService.createInvisibleRectangle(a);
-							targetAnchor = a;
-						}
-						AddConnectionContext context = new AddConnectionContext(sourceAnchor, targetAnchor);
-						context.setTargetContainer(diagram);
-						context.setNewObject(new Object[] {n1, n2});
-						AddAisleConnectionFeature feature = new AddAisleConnectionFeature(fp);
-						feature.add(context);
-					}
-				}
-			}
-		}
-	}
-
-	protected class AddAisleFeature extends AbstractAddShapeFeature {
-		
-		public AddAisleFeature(IFeatureProvider fp) {
-			super(fp);
-		}
-
-		@Override
-		public boolean canAdd(IAddContext context) {
-			return true;
-		}
-		@Override
-		public PictogramElement add(IAddContext context) {
-			int x = context.getX();
-			int y = context.getY();
-			int width = context.getWidth();
-			int height = context.getHeight();
-			IColorConstant foreground = new ColorConstant(0,0,255);
-			Aisle aisle = (Aisle)context.getNewObject();
-			IColorConstant background = new ColorConstant(128,128,128);
-			double transparency = 0.75;
-//			if ("start".equals(aisle.type))
-//				background = new ColorConstant(0,255,150);
-//			if ("end".equals(aisle.type))
-//				background = new ColorConstant(150,255,0);
-//			if ("above".equals(aisle.type))
-//				background = new ColorConstant(0,0,255);
-//			if ("below".equals(aisle.type))
-//				background = new ColorConstant(150,150,0);
-//			if ("trailing".equals(aisle.type))
-//				background = new ColorConstant(250,200,50);
-			
-			Rectangle bounds = getBounds(source);
-			boolean sourceAdjacent = false;
-			if (aisle.adjacent(bounds) != Aisle.Adjacence.NONE) {
-				background = new ColorConstant(0,255,0);
-				transparency = 0.25;
-				sourceAdjacent = true;
-			}
-			bounds = getBounds(target);
-			if (aisle.adjacent(bounds) != Aisle.Adjacence.NONE) {
-				if (sourceAdjacent) {
-					background = new ColorConstant(255,255,0);
-				}
-				else {
-					background = new ColorConstant(255,0,0);
-				}
-				transparency = 0.25;
-			}
-			
-			Diagram diagram = getDiagram();
-			
-			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
-			org.eclipse.graphiti.mm.algorithms.Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
-			gaService.setLocationAndSize(invisibleRect, x, y, width, height);
-
-			Shape rectShape = peService.createShape(containerShape, false);
-			RoundedRectangle roundedRect = gaService.createRoundedRectangle(rectShape, 1, 1);
-			roundedRect.setForeground(gaService.manageColor(diagram, foreground));
-			roundedRect.setBackground(gaService.manageColor(diagram, background));
-			roundedRect.setFilled(true);
-			roundedRect.setTransparency(transparency);
-			roundedRect.setLineWidth(2);
-
-//			link(rectShape, context.getNewObject());
-			peService.setPropertyValue(containerShape, "CONNECTION_ROUTING_AISLE", "true");
-			
-			gaService.setLocationAndSize(roundedRect, 0, 0, width, height);
-			peService.sendToFront(containerShape);
-			return containerShape;
-		}
-	}
-	
-	private class DeleteAisleFeature extends DefaultDeleteFeature {
-
-		public DeleteAisleFeature(IFeatureProvider fp) {
-			super(fp);
-		}
-		
-	}
-	
-	private class AddAisleConnectionFeature extends AbstractAddShapeFeature {
-
-		public AddAisleConnectionFeature(IFeatureProvider fp) {
-			super(fp);
-		}
-
-		@Override
-		public boolean canAdd(IAddContext ac) {
-			return true;
-		}
-
-		@Override
-		public PictogramElement add(IAddContext ac) {
-			IAddConnectionContext context = (IAddConnectionContext) ac;
-			Anchor sourceAnchor = context.getSourceAnchor();
-			Anchor targetAnchor = context.getTargetAnchor();
-			ContainerShape sourceShape = (ContainerShape) sourceAnchor.getParent();
-			ContainerShape targetShape = (ContainerShape) targetAnchor.getParent();
-			Object[] newObject = (Object[]) context.getNewObject();
-			Aisle sourceNode = (Aisle)newObject[0];
-			Aisle targetNode = (Aisle)newObject[1];
-			
-			Diagram diagram = getDiagram();
-			Connection connection = peService.createFreeFormConnection(diagram);
-			connection.setStart(sourceAnchor);
-			connection.setEnd(targetAnchor);
-			peService.setPropertyValue(connection, "CONNECTION_ROUTING_LINK", "true");
-
-			Polyline connectionLine = Graphiti.getGaService().createPolyline(connection);
-
-			connectionLine.setLineWidth(1);
-			IColorConstant foreground = new ColorConstant(0,0,255);
-			
-			int w = 3;
-			int l = 15;
-			
-			ConnectionDecorator decorator = peService.createConnectionDecorator(connection, false, 1.0, true);
-			Polyline arrowhead = gaService.createPolygon(decorator, new int[] { -l, w, 0, 0, -l, -w, -l, w });
-			arrowhead.setForeground(gaService.manageColor(diagram, foreground));
-			connectionLine.setForeground(gaService.manageColor(diagram, foreground));
-
-			return connection;
-		}
+		return RoutingNet.getBounds(rotate,shape);
 	}
 }

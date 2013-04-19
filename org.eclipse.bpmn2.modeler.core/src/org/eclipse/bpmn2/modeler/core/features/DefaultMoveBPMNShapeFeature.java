@@ -40,11 +40,11 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	}
 
 	public boolean canMoveShape(IMoveShapeContext context) {
-		if (Graphiti.getPeService().getProperty(context.getShape(), "CONNECTION_ROUTING_AISLE")!=null) {
+		if (Graphiti.getPeService().getProperty(context.getShape(), RoutingNet.LANE)!=null) {
 			return false;
 		}
 		ContainerShape targetContainer = context.getTargetContainer();
-		if (Graphiti.getPeService().getProperty(targetContainer, "CONNECTION_ROUTING_AISLE")!=null) {
+		if (Graphiti.getPeService().getProperty(targetContainer, RoutingNet.LANE)!=null) {
 			int x = context.getX();
 			int y = context.getY();
 			ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(targetContainer);
@@ -103,7 +103,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			if (GraphicsUtil.intersects(shape, connection)) {
-				if (Graphiti.getPeService().getProperty(connection, "CONNECTION_ROUTING_LINK")!=null) {
+				if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
 				ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
 				}
 			}
