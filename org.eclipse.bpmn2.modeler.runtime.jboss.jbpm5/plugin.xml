@@ -686,11 +686,13 @@
 			<enable object="Expression" feature="extensionValues"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
+			<enable object="GlobalType"/>
 			<enable object="Group" feature="anyAttribute"/>
 			<enable object="Group" feature="documentation"/>
 			<enable object="Group" feature="extensionDefinitions"/>
 			<enable object="Group" feature="extensionValues"/>
 			<enable object="Group" feature="id"/>
+			<enable object="ImportType"/>
 			<enable object="InclusiveGateway" feature="default"/>
 			<enable object="InclusiveGateway" feature="gatewayDirection"/>
 			<enable object="InclusiveGateway" feature="name"/>
@@ -741,6 +743,8 @@
 			<enable object="MessageEventDefinition" feature="messageRef"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="inputDataItem"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataInputRef"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 			<enable object="Operation" feature="anyAttribute"/>
 			<enable object="Operation" feature="documentation"/>
 			<enable object="Operation" feature="extensionDefinitions"/>
@@ -890,6 +894,7 @@
 			<enable object="ExclusiveGateway" feature="outgoing"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
+			<enable object="GlobalType"/>
 			<enable object="InputOutputSpecification" feature="anyAttribute"/>
 			<enable object="InputOutputSpecification" feature="dataInputs"/>
 			<enable object="InputOutputSpecification" feature="dataOutputs"/>
@@ -901,6 +906,8 @@
 			<enable object="InputOutputSpecification" feature="outputSets"/>
 			<enable object="ItemDefinition" feature="id"/>
 			<enable object="ItemDefinition" feature="structureRef"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="id"/>
 			<enable object="ParallelGateway" feature="name"/>
