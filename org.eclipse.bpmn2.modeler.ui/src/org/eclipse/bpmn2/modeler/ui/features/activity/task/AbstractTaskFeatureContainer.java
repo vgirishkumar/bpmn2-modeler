@@ -12,10 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.LayoutActivityFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -23,33 +20,12 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureCon
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
-import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 public abstract class AbstractTaskFeatureContainer extends AbstractActivityFeatureContainer {
-
-	@Override
-	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		IUpdateFeature updateFeature =  super.getUpdateFeature(fp);
-		if (updateFeature instanceof MultiUpdateFeature) {
-			MultiUpdateFeature multiUpdate = (MultiUpdateFeature)updateFeature;
-			AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
-	
-				@Override
-				public boolean canUpdate(IUpdateContext context) {
-					Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-					return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-				}
-			};
-			multiUpdate.addUpdateFeature(nameUpdateFeature);
-			updateFeature = multiUpdate;
-		}
-		return updateFeature;
-	}
 
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {

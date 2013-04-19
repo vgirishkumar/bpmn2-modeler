@@ -32,8 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> extends AbstractBpmn2CreateFeature<T> {
 	
-	public static final String OPTION_DONT_ADD = "DONT_ADD";
-	
 	public AbstractCreateFlowElementFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
 	}
@@ -80,12 +78,8 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 			Activator.logError(e);
 		}
 		PictogramElement pe = null;
-		if (context.getProperty(OPTION_DONT_ADD) == null) {
-			pe = addGraphicalRepresentation(context, element);
-		}
-		if (pe!=null)
-			return new Object[] { element, pe };
-		return new Object[] { element };
+		pe = addGraphicalRepresentation(context, element);
+		return new Object[] { element, pe };
 	}
 	
 	protected abstract String getStencilImageId();

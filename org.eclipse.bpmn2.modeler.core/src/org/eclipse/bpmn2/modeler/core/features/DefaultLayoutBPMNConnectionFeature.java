@@ -64,8 +64,14 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 						IConnectionRouter router = null;
 						if (ss.getRoutingStyle() == RoutingStyle.Manhattan)
 							router = new ManhattanConnectionRouter(fp);
-						else if (ss.getRoutingStyle() == RoutingStyle.Bendpoint)
+						else if (ss.getRoutingStyle() == RoutingStyle.ManualBendpoint) {
 							router = new BendpointConnectionRouter(fp);
+							((BendpointConnectionRouter)router).setManualRouting(true);
+						}
+						else if (ss.getRoutingStyle() == RoutingStyle.AutomaticBendpoint) {
+							router = new BendpointConnectionRouter(fp);
+							((BendpointConnectionRouter)router).setManualRouting(false);
+						}
 
 						if (router!=null) {
 							hasDoneChanges = router.route(connection);

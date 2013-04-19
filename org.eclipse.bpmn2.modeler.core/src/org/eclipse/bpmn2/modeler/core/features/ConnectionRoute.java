@@ -228,8 +228,8 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 					int y2 = p2.getY();
 					int y3 = p3.getY();
 					if (
-							(ManhattanConnectionRouter.isVertical(p1,p2) && ManhattanConnectionRouter.isVertical(p2,p3) && ((y1<y2 && y2<y3) || y1>y2 && y2>y3)) ||
-							(ManhattanConnectionRouter.isHorizontal(p1,p2) && ManhattanConnectionRouter.isHorizontal(p2,p3) && ((x1<x2 && x2<x3) || x1>x2 && x2>x3))
+							(GraphicsUtil.isVertical(p1,p2) && GraphicsUtil.isVertical(p2,p3) && ((y1<y2 && y2<y3) || y1>y2 && y2>y3)) ||
+							(GraphicsUtil.isHorizontal(p1,p2) && GraphicsUtil.isHorizontal(p2,p3) && ((x1<x2 && x2<x3) || x1>x2 && x2>x3))
 					) {
 						points.remove(i);
 						// look at these set of points again
@@ -242,7 +242,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return changed;
 		}
 		
-		private boolean removeUnusedShapes() {
+		private boolean removeUnusedSegments() {
 			boolean changed = false;
 
 			// remove unnecessary "U" shapes
@@ -252,7 +252,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 				if (i+2 < points.size()) {
 					Point p3 = points.get(i+1);
 					Point p4 = points.get(i+2);
-					if (ManhattanConnectionRouter.isHorizontal(p1,p2) && ManhattanConnectionRouter.isVertical(p2,p3) && ManhattanConnectionRouter.isHorizontal(p3,p4)) {
+					if (GraphicsUtil.isHorizontal(p1,p2) && GraphicsUtil.isVertical(p2,p3) && GraphicsUtil.isHorizontal(p3,p4)) {
 						int x1 = p1.getX();
 						int x2 = p2.getX();
 						int x4 = p4.getX();
@@ -267,7 +267,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							}
 						}
 					}
-					else if (ManhattanConnectionRouter.isVertical(p1,p2) && ManhattanConnectionRouter.isHorizontal(p2,p3) && ManhattanConnectionRouter.isVertical(p3,p4)) {
+					else if (GraphicsUtil.isVertical(p1,p2) && GraphicsUtil.isHorizontal(p2,p3) && GraphicsUtil.isVertical(p3,p4)) {
 						int y1 = p1.getY();
 						int y2 = p2.getY();
 						int y4 = p4.getY();
@@ -290,7 +290,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		public boolean optimize() {
 			boolean changed = removeUnusedPoints();
-			if (removeUnusedShapes()) {
+			if (removeUnusedSegments()) {
 				// this may cause some unused points to be left over
 				removeUnusedPoints();
 				changed = true;

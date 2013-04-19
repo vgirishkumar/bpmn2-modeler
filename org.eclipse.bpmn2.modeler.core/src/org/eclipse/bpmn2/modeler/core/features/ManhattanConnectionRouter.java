@@ -98,14 +98,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Map<AnchorLocation, BoundaryAnchor> sourceBoundaryAnchors = AnchorUtil.getBoundaryAnchors(source);
 		Map<AnchorLocation, BoundaryAnchor> targetBoundaryAnchors = AnchorUtil.getBoundaryAnchors(target);
 		
-		if (sourceAdHocAnchor!=null) {
+		if (sourceAnchor!=null) {
 			// use ad-hoc anchor for source:
 			// the connection's source location will remain fixed.
-			start = GraphicsUtil.createPoint(sourceAdHocAnchor);
-			if (targetAdHocAnchor!=null) {
+			start = GraphicsUtil.createPoint(sourceAnchor);
+			if (targetAnchor!=null) {
 				// use ad-hoc anchor for target:
 				// the connection's target location will also remain fixed
-				end = GraphicsUtil.createPoint(targetAdHocAnchor);
+				end = GraphicsUtil.createPoint(targetAnchor);
 				calculateRoute(allRoutes, source,start,middle,target,end, Orientation.HORIZONTAL);
 				calculateRoute(allRoutes, source,start,middle,target,end, Orientation.VERTICAL);
 			}
@@ -126,10 +126,10 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			// starting at each of the 4 boundary anchors
 			for (Entry<AnchorLocation, BoundaryAnchor> sourceEntry : sourceBoundaryAnchors.entrySet()) {
 				start = GraphicsUtil.createPoint(sourceEntry.getValue().anchor);
-				if (targetAdHocAnchor!=null) {
+				if (targetAnchor!=null) {
 					// use ad-hoc anchor for target:
 					// the connection's target location will also remain fixed
-					end = GraphicsUtil.createPoint(targetAdHocAnchor);
+					end = GraphicsUtil.createPoint(targetAnchor);
 					calculateRoute(allRoutes, source,start,middle,target,end, Orientation.HORIZONTAL);
 					calculateRoute(allRoutes, source,start,middle,target,end, Orientation.VERTICAL);
 				}
@@ -327,7 +327,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		
 		// special case: if start and end can be connected with a horizontal or vertical line
 		// check if there's a collision in the way. If so, we need to navigate around it.
-		if (!isSlanted(start,end)) {
+		if (!GraphicsUtil.isSlanted(start,end)) {
 			ContainerShape shape = getCollision(start,end);
 			if (shape==null) {
 				return true;

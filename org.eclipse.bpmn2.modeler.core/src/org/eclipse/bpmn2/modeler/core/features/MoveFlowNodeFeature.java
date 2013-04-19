@@ -76,7 +76,7 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			ModelHandler handler = ModelHandler.getInstance(getDiagram());
 			Object[] node = getAllBusinessObjectsForPictogramElement(context.getShape());
 			for (Object object : node) {
-				if (object instanceof FlowNode && !algorithmContainer.isEmpty()) {
+				if (object instanceof FlowNode && algorithmContainer!=null && !algorithmContainer.isEmpty()) {
 					algorithmContainer.move(((FlowNode) object), getSourceBo(context, handler),
 							getTargetBo(context, handler));
 				}

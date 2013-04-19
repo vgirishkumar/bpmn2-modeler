@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
@@ -27,6 +28,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 
 public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
@@ -35,6 +37,24 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	
 	public DefaultMoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public boolean canMoveShape(IMoveShapeContext context) {
+		if (Graphiti.getPeService().getProperty(context.getShape(), "CONNECTION_ROUTING_AISLE")!=null) {
+			return false;
+		}
+		ContainerShape targetContainer = context.getTargetContainer();
+		if (Graphiti.getPeService().getProperty(targetContainer, "CONNECTION_ROUTING_AISLE")!=null) {
+			int x = context.getX();
+			int y = context.getY();
+			ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(targetContainer);
+			((MoveShapeContext)context).setX(x + loc.getX());
+			((MoveShapeContext)context).setY(y + loc.getY());
+			((MoveShapeContext)context).setSourceContainer(targetContainer.getContainer());
+			((MoveShapeContext)context).setTargetContainer(targetContainer.getContainer());
+		}
+		return context.getSourceContainer() != null
+				&& context.getSourceContainer().equals(context.getTargetContainer());
 	}
 
 	@Override
@@ -83,7 +103,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			if (GraphicsUtil.intersects(shape, connection)) {
+				if (Graphiti.getPeService().getProperty(connection, "CONNECTION_ROUTING_LINK")!=null) {
 				ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
+				}
 			}
 		}
 

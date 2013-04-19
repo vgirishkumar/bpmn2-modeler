@@ -249,12 +249,13 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			else if (feature instanceof AbstractBpmn2CreateConnectionFeature) {
 				eClass = ((AbstractBpmn2CreateConnectionFeature)feature).getBusinessObjectClass();
 			}
-			
-			for (CreateFeatureNode child : children) {
-				EClass ec = child.getBusinessObjectClass();
-				if (ec!=null) {
-					eClass = ec;
-					break;
+			if (eClass==null) {
+				for (CreateFeatureNode child : children) {
+					EClass ec = child.getBusinessObjectClass();
+					if (ec!=null) {
+						eClass = ec;
+						break;
+					}
 				}
 			}
 			return eClass;
@@ -417,19 +418,38 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 
 	@Override
 	public BaseElement createBusinessObject(CONTEXT context) {
-		assert(false);
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof IBpmn2CreateFeature) {
+				IBpmn2CreateFeature f = (IBpmn2CreateFeature)ft.getFeature();
+				BaseElement be = (BaseElement)f.createBusinessObject(context);
+				if (be!=null)
+					return be;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public BaseElement getBusinessObject(CONTEXT context) {
-		assert(false);
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof IBpmn2CreateFeature) {
+				IBpmn2CreateFeature f = (IBpmn2CreateFeature)ft.getFeature();
+				BaseElement be = (BaseElement)f.getBusinessObject(context);
+				if (be!=null)
+					return be;
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public void putBusinessObject(CONTEXT context, BaseElement businessObject) {
-		assert(false);
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof IBpmn2CreateFeature) {
+				IBpmn2CreateFeature f = (IBpmn2CreateFeature)ft.getFeature();
+				f.putBusinessObject(context, businessObject);
+			}
+		}
 	}
 
 	@Override
@@ -442,6 +462,12 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof IBpmn2CreateFeature) {
+				IBpmn2CreateFeature f = (IBpmn2CreateFeature)ft.getFeature();
+				f.postExecute(executionInfo);
+			}
+		}
 	}
 
 	public List<CreateFeatureNode> getChildren() {
@@ -450,18 +476,49 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
+				if (!f.canStartConnection(context))
+					return false;
+			}
+		}
 		return true;
 	}
 
 	public void startConnecting() {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
+				f.startConnecting();
+			}
+		}
 	}
 
 	public void endConnecting() {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
+				f.endConnecting();
+			}
+		}
 	}
 
 	public void attachedToSource(ICreateConnectionContext context) {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
+				f.attachedToSource(context);
+			}
+		}
 	}
 
 	public void canceledAttaching(ICreateConnectionContext context) {
+		for (CreateFeatureNode ft : children) {
+			if (ft.getFeature() instanceof ICreateConnectionFeature) {
+				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
+				f.canceledAttaching(context);
+			}
+		}
 	}
 }

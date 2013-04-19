@@ -1512,12 +1512,73 @@ public class GraphicsUtil {
 		return Math.sqrt(a*a + b*b);
 	}
 
+	public static double getLength(List<Point> points) {
+		double length = 0;
+		int size = points.size();
+		if (size>=2) {
+			Point p1 = points.get(0);
+			for (int i=1; i<size-1; ++i) {
+				Point p2 = points.get(i);
+				length += getLength(p1,p2);
+				p1 = p2;
+			}
+		}
+		return length;
+	}
+	
 	public static double getLength(Point p1, Point p2) {
 		double a = (double)(p1.getX() - p2.getX());
 		double b = (double)(p1.getY() - p2.getY());
 		return Math.sqrt(a*a + b*b);
 	}
 	
+	/**
+	 * Check if the line segment defined by the two Points is vertical.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is vertical
+	 */
+	public final static boolean isVertical(Point p1, Point p2) {
+		return Math.abs(p1.getX() - p2.getX()) <= 2;
+	}
+	
+	/**
+	 * Check if the line segment defined by the two Points is horizontal.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is horizontal
+	 */
+	public final static boolean isHorizontal(Point p1, Point p2) {
+		return Math.abs(p1.getY() - p2.getY()) <= 2;
+	}
+
+	/**
+	 * Check if the line segment defined by the two Points is neither horizontal nor vertical.
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @return true if the line segment is slanted
+	 */
+	public final static boolean isSlanted(Point p1, Point p2) {
+		return !isHorizontal(p1, p2) && !isVertical(p1,p2);
+	}
+
+	public static Point getVertMidpoint(Point start, Point end, double fract) {
+		Point m = GraphicsUtil.createPoint(start);
+		int d = (int)(fract * (double)(end.getY() - start.getY()));
+		m.setY(start.getY()+d);
+		return m;
+	}
+	
+	public static Point getHorzMidpoint(Point start, Point end, double fract) {
+		Point m = GraphicsUtil.createPoint(start);
+		int d = (int)(fract * (double)(end.getX() - start.getX()));
+		m.setX(start.getX()+d);
+		return m;
+	}
+
 	public static IDimension calculateSize(AnchorContainer shape) {
 		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 		if (ga!=null)
@@ -1587,24 +1648,26 @@ public class GraphicsUtil {
 	
 	public static void dump(int level, String label, ContainerShape shape, int x, int y) {
 		if (debug) {
-			EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
-			String id = "";
-			if (be instanceof BaseElement) {
-				id = " " + ((BaseElement)be).getId();
-			}
+			String text = getDebugText(shape);
 			for (int i=0; i<level; ++i)
 				System.out.print("    ");
-			System.out.print(
-					label+" "+
-					be.eClass().getName()+id+": "+
-					ModelUtil.getDisplayName(be)
-			);
+			System.out.print(label+" "+text);
 			if (x>0 && y>0) {
 				System.out.println(" at "+x+", "+y);
 			}
 			else
 				System.out.println("");
 		}
+	}
+	
+	public static String getDebugText(ContainerShape shape) {
+		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+		String id = "";
+		if (be instanceof BaseElement) {
+			id = " " + ((BaseElement)be).getId();
+		}
+		String text = be.eClass().getName()+id+": "+ModelUtil.getDisplayName(be);
+		return text;
 	}
 	
 	public static void dump(String label) {

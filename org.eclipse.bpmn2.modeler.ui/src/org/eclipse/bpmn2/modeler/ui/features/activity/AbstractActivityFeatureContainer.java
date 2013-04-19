@@ -13,6 +13,8 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -30,6 +32,7 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -45,6 +48,15 @@ public abstract class AbstractActivityFeatureContainer extends BaseElementFeatur
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addUpdateFeature(compensateMarkerUpdateFeature);
 		multiUpdate.addUpdateFeature(loopAndMultiInstanceUpdateFeature);
+		AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
+			
+			@Override
+			public boolean canUpdate(IUpdateContext context) {
+				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
+			}
+		};
+		multiUpdate.addUpdateFeature(nameUpdateFeature);
 		return multiUpdate;
 	}
 

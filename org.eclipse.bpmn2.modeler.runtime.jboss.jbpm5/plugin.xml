@@ -437,7 +437,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="CallActivity Extensions"
 			type="CallActivity">
-			<property name="waitForCompletion" value="false" type="EBoolean"/>
+			<property name="waitForCompletion" value="true" type="EBoolean"/>
 			<property name="independent" value="false" type="EBoolean"/>
 		</modelExtension>
 		
@@ -686,11 +686,13 @@
 			<enable object="Expression" feature="extensionValues"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
+			<enable object="GlobalType"/>
 			<enable object="Group" feature="anyAttribute"/>
 			<enable object="Group" feature="documentation"/>
 			<enable object="Group" feature="extensionDefinitions"/>
 			<enable object="Group" feature="extensionValues"/>
 			<enable object="Group" feature="id"/>
+			<enable object="ImportType"/>
 			<enable object="InclusiveGateway" feature="default"/>
 			<enable object="InclusiveGateway" feature="gatewayDirection"/>
 			<enable object="InclusiveGateway" feature="name"/>
@@ -741,6 +743,8 @@
 			<enable object="MessageEventDefinition" feature="messageRef"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="inputDataItem"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataInputRef"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 			<enable object="Operation" feature="anyAttribute"/>
 			<enable object="Operation" feature="documentation"/>
 			<enable object="Operation" feature="extensionDefinitions"/>
@@ -868,7 +872,6 @@
 		<modelEnablement runtimeId="org.jboss.runtime.jbpm5" type="Process" profile="RuleFlow">
 			<disable object="all" />
 			<enable object="BusinessRuleTask" feature="anyAttribute"/>
-			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<enable object="CallActivity" feature="anyAttribute"/>
@@ -876,8 +879,12 @@
 			<enable object="CallActivity" feature="dataInputAssociations"/>
 			<enable object="CallActivity" feature="dataOutputAssociations"/>
 			<enable object="CallActivity" feature="extensionValues"/>
+			<enable object="CallActivity" feature="independent"/>
 			<enable object="CallActivity" feature="ioSpecification"/>
 			<enable object="CallActivity" feature="name"/>
+			<enable object="CallActivity" feature="waitForCompletion"/>
+			<enable object="DataInput" feature="name"/>
+			<enable object="DataOutput" feature="name"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
 			<enable object="EndEvent" feature="inputSet"/>
 			<enable object="ExclusiveGateway" feature="default"/>
@@ -887,6 +894,7 @@
 			<enable object="ExclusiveGateway" feature="outgoing"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
+			<enable object="GlobalType"/>
 			<enable object="InputOutputSpecification" feature="anyAttribute"/>
 			<enable object="InputOutputSpecification" feature="dataInputs"/>
 			<enable object="InputOutputSpecification" feature="dataOutputs"/>
@@ -898,6 +906,8 @@
 			<enable object="InputOutputSpecification" feature="outputSets"/>
 			<enable object="ItemDefinition" feature="id"/>
 			<enable object="ItemDefinition" feature="structureRef"/>
+			<enable object="OnEntryScriptType"/>
+			<enable object="OnExitScriptType"/>
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="id"/>
 			<enable object="ParallelGateway" feature="name"/>
@@ -916,7 +926,6 @@
 			<enable object="Property" feature="id"/>
 			<enable object="Property" feature="itemSubjectRef"/>
 			<enable object="Property" feature="name"/>
-			<enable object="ScriptTask" feature="isForCompensation"/>
 			<enable object="ScriptTask" feature="name"/>
 			<enable object="ScriptTask" feature="script"/>
 			<enable object="ScriptTask" feature="scriptFormat"/>
