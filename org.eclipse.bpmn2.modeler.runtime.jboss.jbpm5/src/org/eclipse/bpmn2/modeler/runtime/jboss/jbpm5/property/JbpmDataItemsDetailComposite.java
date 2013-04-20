@@ -21,9 +21,9 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsDetailComposite;
 import org.eclipse.emf.ecore.EObject;
@@ -103,13 +103,13 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 								name = base + ++suffix;
 							}
 							
-							GlobalType newGlobal = (GlobalType)ModelFactory.eINSTANCE.create(listItemClass);
+							GlobalType newGlobal = (GlobalType)DroolsFactory.eINSTANCE.create(listItemClass);
 							newGlobal.setIdentifier(name);
 							addExtensionValue(newGlobal);
 							return newGlobal;
 						}
 					};
-					globalsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_Global());
+					globalsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_Global());
 					globalsTable.setTitle("Global List for "+ModelUtil.getLongDisplayName(process));
 				}
 			}

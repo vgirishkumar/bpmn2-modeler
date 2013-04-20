@@ -15,13 +15,11 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters;
 
 import java.util.Hashtable;
 
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -41,7 +39,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 	public JbpmGlobalTypePropertiesAdapter(AdapterFactory adapterFactory, GlobalType object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature feature = ModelPackage.eINSTANCE.getGlobalType_Identifier();
+    	EStructuralFeature feature = DroolsPackage.eINSTANCE.getGlobalType_Identifier();
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
 				@Override
@@ -50,7 +48,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 				}
     		});	
 
-    	feature = ModelPackage.eINSTANCE.getGlobalType_Type();
+    	feature = DroolsPackage.eINSTANCE.getGlobalType_Type();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	

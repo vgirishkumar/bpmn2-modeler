@@ -13,11 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnExitScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -34,7 +33,7 @@ public class JbpmOnExitScriptPropertiesAdapter extends ExtendedPropertiesAdapter
 	public JbpmOnExitScriptPropertiesAdapter(AdapterFactory adapterFactory, OnExitScriptType object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature ref = ModelPackage.eINSTANCE.getOnExitScriptType_Script();
+    	EStructuralFeature ref = DroolsPackage.eINSTANCE.getOnExitScriptType_Script();
     	setFeatureDescriptor(ref,
 			new FeatureDescriptor<OnExitScriptType>(adapterFactory,object,ref) {
     		

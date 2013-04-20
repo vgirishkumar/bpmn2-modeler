@@ -4,7 +4,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ElementParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ServiceTaskFeatureContainer;
 import org.eclipse.graphiti.features.IAddFeature;
