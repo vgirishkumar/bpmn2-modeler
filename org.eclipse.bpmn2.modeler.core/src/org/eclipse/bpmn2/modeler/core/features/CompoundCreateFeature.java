@@ -490,7 +490,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		for (CreateFeatureNode ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
-				f.startConnecting();
+				// not available in Graphiti 0.8.2
+//				f.startConnecting();
 			}
 		}
 	}
@@ -499,7 +500,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		for (CreateFeatureNode ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
-				f.endConnecting();
+				// not available in Graphiti 0.8.2
+//				f.endConnecting();
 			}
 		}
 	}
@@ -508,7 +510,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		for (CreateFeatureNode ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
-				f.attachedToSource(context);
+				// not available in Graphiti 0.8.2
+//				f.attachedToSource(context);
 			}
 		}
 	}
@@ -517,7 +520,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		for (CreateFeatureNode ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature f = (ICreateConnectionFeature)ft.getFeature();
-				f.canceledAttaching(context);
+				// not available in Graphiti 0.8.2
+//				f.canceledAttaching(context);
 			}
 		}
 	}
