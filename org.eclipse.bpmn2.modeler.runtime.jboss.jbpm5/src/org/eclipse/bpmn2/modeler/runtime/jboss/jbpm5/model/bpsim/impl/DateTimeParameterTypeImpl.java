@@ -6,11 +6,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DateTimeParameterType;
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 /**

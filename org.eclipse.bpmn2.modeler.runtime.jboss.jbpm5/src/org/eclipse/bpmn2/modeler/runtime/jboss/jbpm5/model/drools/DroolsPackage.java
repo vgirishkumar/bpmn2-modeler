@@ -3,7 +3,6 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;

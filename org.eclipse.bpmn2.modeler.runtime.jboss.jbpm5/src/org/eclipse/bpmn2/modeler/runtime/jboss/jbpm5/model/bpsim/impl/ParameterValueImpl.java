@@ -5,11 +5,8 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ParameterValue;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResultType;
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 

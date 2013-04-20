@@ -15,7 +15,6 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection;
 import org.eclipse.swt.widgets.Composite;

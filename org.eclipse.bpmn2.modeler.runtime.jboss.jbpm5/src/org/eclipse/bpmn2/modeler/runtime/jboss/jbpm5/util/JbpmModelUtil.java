@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util;
 
-import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
@@ -38,26 +37,26 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatyp
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeRegistry;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.EnumDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.UndefinedDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.FloatingParameterType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DistributionParameter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.FloatingParameterType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NormalDistributionType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Parameter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PoissonDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ScenarioParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeUnit;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;

@@ -3,7 +3,6 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim;
 
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.emf.ecore.util.FeatureMap;
 
 /**

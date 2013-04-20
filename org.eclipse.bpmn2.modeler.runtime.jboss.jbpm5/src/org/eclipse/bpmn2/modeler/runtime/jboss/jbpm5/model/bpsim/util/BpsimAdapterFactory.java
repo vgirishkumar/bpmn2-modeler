@@ -2,13 +2,52 @@
  */
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.util;
 
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.*;
-
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BetaDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BinomialDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BooleanParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Calendar;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ConstantParameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DateTimeParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DistributionParameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DocumentRoot;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DurationParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParametersType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.EnumParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ErlangDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ExpressionParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.FloatingParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.GammaDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.LogNormalDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NegativeExponentialDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NormalDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NumericParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Parameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ParameterValue;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PoissonDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PriorityParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PropertyParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PropertyType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ScenarioParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ScenarioParametersType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.StringParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TriangularDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TruncatedNormalDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UserDistributionDataPointType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UserDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.VendorExtension;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.WeibullDistributionType;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**

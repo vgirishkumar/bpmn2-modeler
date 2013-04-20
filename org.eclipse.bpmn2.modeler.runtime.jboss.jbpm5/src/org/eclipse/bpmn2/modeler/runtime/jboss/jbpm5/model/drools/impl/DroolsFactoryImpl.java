@@ -4,17 +4,22 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import java.math.BigInteger;
 
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
-
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 

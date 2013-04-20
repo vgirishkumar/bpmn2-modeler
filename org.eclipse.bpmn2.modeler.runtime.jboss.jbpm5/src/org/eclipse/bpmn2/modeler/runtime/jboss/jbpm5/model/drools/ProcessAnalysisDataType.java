@@ -3,11 +3,8 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.emf.ecore.util.FeatureMap;
 
 /**

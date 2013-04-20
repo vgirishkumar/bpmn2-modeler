@@ -3,7 +3,6 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.util;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 
 /**

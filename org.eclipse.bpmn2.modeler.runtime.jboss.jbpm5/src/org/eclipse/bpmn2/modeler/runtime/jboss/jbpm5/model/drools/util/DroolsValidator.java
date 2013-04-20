@@ -3,18 +3,21 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
 import java.math.BigInteger;
-
 import java.util.Map;
 
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
-
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.common.util.ResourceLocator;
-
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.EObjectValidator;
-
 import org.eclipse.emf.ecore.xml.type.util.XMLTypeValidator;
 
 /**

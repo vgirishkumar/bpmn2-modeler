@@ -4,7 +4,6 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl;
 
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ScenarioParametersType;
-
 import org.eclipse.emf.ecore.EClass;
 
 /**

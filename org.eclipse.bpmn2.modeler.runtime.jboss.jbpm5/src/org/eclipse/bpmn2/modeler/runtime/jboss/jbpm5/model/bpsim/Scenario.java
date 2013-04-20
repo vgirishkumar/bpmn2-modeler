@@ -5,7 +5,6 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**
