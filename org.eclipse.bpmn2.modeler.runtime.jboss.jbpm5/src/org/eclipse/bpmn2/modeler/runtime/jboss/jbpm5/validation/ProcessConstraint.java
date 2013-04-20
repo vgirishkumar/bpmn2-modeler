@@ -12,9 +12,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 
 import java.util.Iterator;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;

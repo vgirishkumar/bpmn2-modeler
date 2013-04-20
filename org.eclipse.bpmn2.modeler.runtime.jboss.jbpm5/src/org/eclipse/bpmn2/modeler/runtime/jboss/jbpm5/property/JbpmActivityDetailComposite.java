@@ -20,10 +20,10 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnEntryScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnExitScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityDetailComposite;
 import org.eclipse.emf.ecore.EClass;
@@ -72,7 +72,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	
 	protected void bindEntryExitScripts(EObject be) {
 //		onEntryScriptTable = new ScriptTableComposite(this);
-//		onEntryScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
+//		onEntryScriptTable.bindList(be, DroolsPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
 //		onEntryScriptTable.setTitle("On Entry Scripts");
 		boolean enable = isModelObjectEnabled(be.eClass().getName(), "onEntryScript");
 		onEntryScriptEditor = new JbpmScriptTaskDetailComposite(this, SWT.NONE);
@@ -81,7 +81,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 		onEntryScriptEditor.setTitle("On Entry Script");
 		
 //		onExitScriptTable = new ScriptTableComposite(this);
-//		onExitScriptTable.bindList(be, ModelPackage.eINSTANCE.getDocumentRoot_OnExitScript());
+//		onExitScriptTable.bindList(be, DroolsPackage.eINSTANCE.getDocumentRoot_OnExitScript());
 //		onExitScriptTable.setTitle("On Exit Scripts");
 		onExitScriptEditor = new JbpmScriptTaskDetailComposite(this, SWT.NONE);
 		OnExitScriptType onExitScript = getOrCreateEntryExitScript((Activity)be, OnExitScriptType.class);
@@ -100,8 +100,8 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
 				protected void doExecute() {
-					EClass eclass = (EClass)ModelPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
-					T script = (T) ModelFactory.eINSTANCE.create(eclass);
+					EClass eclass = (EClass)DroolsPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
+					T script = (T) DroolsFactory.eINSTANCE.create(eclass);
 					EStructuralFeature f = script.eClass().getEStructuralFeature("script");
 					if (f!=null)
 						script.eSet(f, "");
@@ -109,9 +109,9 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 					if (f!=null)
 						script.eSet(f,"http://www.java.com/java");
 					if (clazz == OnEntryScriptType.class)
-						f = ModelPackage.eINSTANCE.getDocumentRoot_OnEntryScript();
+						f = DroolsPackage.eINSTANCE.getDocumentRoot_OnEntryScript();
 					else
-						f = ModelPackage.eINSTANCE.getDocumentRoot_OnExitScript();
+						f = DroolsPackage.eINSTANCE.getDocumentRoot_OnExitScript();
 					ModelUtil.addExtensionAttributeValue(be, f, script);
 					result[0] = script;
 				}
@@ -136,7 +136,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 		 */
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
-			EObject newScript = ModelFactory.eINSTANCE.create(listItemClass);
+			EObject newScript = DroolsFactory.eINSTANCE.create(listItemClass);
 			EStructuralFeature f = newScript.eClass().getEStructuralFeature("script");
 			if (f!=null)
 				newScript.eSet(f, "");

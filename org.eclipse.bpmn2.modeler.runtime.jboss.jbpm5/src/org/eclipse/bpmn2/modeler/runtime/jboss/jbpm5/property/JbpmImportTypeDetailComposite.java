@@ -10,19 +10,11 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ItemDefinitionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.swt.widgets.Composite;
 
 public class JbpmImportTypeDetailComposite extends DefaultDetailComposite {

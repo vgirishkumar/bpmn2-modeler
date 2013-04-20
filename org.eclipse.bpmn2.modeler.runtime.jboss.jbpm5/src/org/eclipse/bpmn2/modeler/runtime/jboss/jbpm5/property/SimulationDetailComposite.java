@@ -13,16 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import java.math.BigDecimal;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.CatchEvent;
-import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.Relationship;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
@@ -34,31 +28,24 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ControlParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.CostParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DecimalParameterType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ElementParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.FloatingParameterType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.NormalDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.Parameter;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ParameterValue;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.PoissonDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ProcessAnalysisDataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.RandomDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ResourceParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.Scenario;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.TimeParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.FloatingParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NormalDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Parameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ParameterValue;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PoissonDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil.DistributionType;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.util.BasicFeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -140,13 +127,13 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 			Scenario scenario = pad.getScenario().get(0);
 			scenario.getScenarioParameters().getBaseTimeUnit();
 			bindAttribute(getAttributesParent(), scenario,
-					ModelPackage.eINSTANCE.getScenario_Name(),
+					BpsimPackage.eINSTANCE.getScenario_Name(),
 					"Scenario");
 			bindAttribute(getAttributesParent(), scenario.getScenarioParameters(),
-					ModelPackage.eINSTANCE.getScenarioParameters_BaseTimeUnit(),
+					BpsimPackage.eINSTANCE.getScenarioParameters_BaseTimeUnit(),
 					"Base Time Units");
 			bindAttribute(getAttributesParent(), scenario.getScenarioParameters(),
-					ModelPackage.eINSTANCE.getScenarioParameters_BaseCurrencyUnit(),
+					BpsimPackage.eINSTANCE.getScenarioParameters_BaseCurrencyUnit(),
 					"Base Currency Unit");
 		}
 		else if (be instanceof Task) {
@@ -157,14 +144,14 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 				Parameter param = resourceParams.getQuantity();
 				FloatingParameterType quantity = (FloatingParameterType) param.getParameterValue().get(0);
 				bindAttribute(getAttributesParent(), quantity,
-						ModelPackage.eINSTANCE.getFloatingParameterType_Value(),
+						BpsimPackage.eINSTANCE.getFloatingParameterType_Value(),
 						"Quantity");
 
-				param = resourceParams.getWorkinghours();
+				param = resourceParams.getAvailability();
 				FloatingParameterType workingHours = (FloatingParameterType) param.getParameterValue().get(0);
 				bindAttribute(getAttributesParent(), workingHours,
-						ModelPackage.eINSTANCE.getFloatingParameterType_Value(),
-						"Working Hours");
+						BpsimPackage.eINSTANCE.getFloatingParameterType_Value(),
+						"Availability");
 			}
 		}
 		else if (be instanceof CatchEvent) {
@@ -174,11 +161,8 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 			Parameter param = timeParams.getWaitTime();
 			FloatingParameterType waitTime = (FloatingParameterType) param.getParameterValue().get(0);
 			bindAttribute(getAttributesParent(), waitTime,
-					ModelPackage.eINSTANCE.getFloatingParameterType_Value(),
+					BpsimPackage.eINSTANCE.getFloatingParameterType_Value(),
 					"Wait Time");
-			bindAttribute(getAttributesParent(), timeParams,
-					ModelPackage.eINSTANCE.getTimeParameters_TimeUnit(),
-					"Time Unit");
 		}
 		else if (be instanceof ThrowEvent) {
 			// TimeParameters = distribution type
@@ -191,7 +175,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 			Parameter param = controlParams.getProbability();
 			FloatingParameterType probability = (FloatingParameterType) param.getParameterValue().get(0);
 			bindAttribute(getAttributesParent(), probability,
-					ModelPackage.eINSTANCE.getFloatingParameterType_Value(),
+					BpsimPackage.eINSTANCE.getFloatingParameterType_Value(),
 					"Probability");
 		}
 	}
@@ -205,8 +189,8 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 		
 		if (costParams!=null) {
 			param = costParams.getUnitCost();
-			final DecimalParameterType decimalValue = (DecimalParameterType)param.getParameterValue().get(0);
-			editor = new IntObjectEditor(this,decimalValue,ModelPackage.eINSTANCE.getDecimalParameterType_Value()) {
+			final FloatingParameterType decimalValue = (FloatingParameterType)param.getParameterValue().get(0);
+			editor = new IntObjectEditor(this,decimalValue,BpsimPackage.eINSTANCE.getFloatingParameterType_Value()) {
 
 				@Override
 				protected boolean setValue(final Object result) {
@@ -214,7 +198,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
-							decimalValue.setValue(BigDecimal.valueOf((Integer)result));
+							decimalValue.setValue(Double.valueOf((Double)result));
 						}
 					});
 					return true;
@@ -226,7 +210,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 		
 		editor = new ComboObjectEditor(this,
 				timeParams,
-				ModelPackage.eINSTANCE.getTimeParameters_ProcessingTime()) {
+				BpsimPackage.eINSTANCE.getTimeParameters_ProcessingTime()) {
 			
 				Hashtable<String,Object> choices = null;
 
@@ -279,10 +263,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 						Parameter param = timeParams.getProcessingTime();
 						ParameterValue value = param.getParameterValue().get(0);
 						StructuredSelection currentSelection = null;
-						if (value instanceof RandomDistributionType) {
-							currentSelection = new StructuredSelection(JbpmModelUtil.DistributionType.Random.name());
-						}
-						else if (value instanceof UniformDistributionType) {
+						if (value instanceof UniformDistributionType) {
 							currentSelection = new StructuredSelection(JbpmModelUtil.DistributionType.Uniform.name());
 						}
 						else if (value instanceof NormalDistributionType) {
@@ -300,38 +281,26 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 		
 		param = timeParams.getProcessingTime();
 		value = param.getParameterValue().get(0);
-		if (value instanceof RandomDistributionType) {
+		if (value instanceof UniformDistributionType) {
 			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getRandomDistributionType_Min(),
+					BpsimPackage.eINSTANCE.getUniformDistributionType_Min(),
 					"Processing time (min)");
 			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getRandomDistributionType_Max(),
-					"Processing time (max)");
-		}
-		else if (value instanceof UniformDistributionType) {
-			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getUniformDistributionType_Min(),
-					"Processing time (min)");
-			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getUniformDistributionType_Max(),
+					BpsimPackage.eINSTANCE.getUniformDistributionType_Max(),
 					"Processing time (max)");
 		}
 		else if (value instanceof NormalDistributionType) {
 			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getNormalDistributionType_Mean(),
+					BpsimPackage.eINSTANCE.getNormalDistributionType_Mean(),
 					"Processing time (mean)");
 			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getNormalDistributionType_StandardDeviation(),
+					BpsimPackage.eINSTANCE.getNormalDistributionType_StandardDeviation(),
 					"Standard Deviation");
 		}
 		else if (value instanceof PoissonDistributionType) {
 			bindAttribute(getAttributesParent(), value,
-					ModelPackage.eINSTANCE.getPoissonDistributionType_Mean(),
+					BpsimPackage.eINSTANCE.getPoissonDistributionType_Mean(),
 					"Processing time (mean)");
 		}
-		
-		bindAttribute(getAttributesParent(), timeParams,
-				ModelPackage.eINSTANCE.getTimeParameters_TimeUnit(),
-				"Time Unit");
 	}
 }

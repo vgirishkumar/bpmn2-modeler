@@ -27,9 +27,12 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features,
- org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model,
- org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.impl,
- org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl,
+ org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.util,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters,
  org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid

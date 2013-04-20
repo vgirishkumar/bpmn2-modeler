@@ -52,6 +52,7 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	protected LineSegment targetRightEdge;
 	
 	static final int offset = 10;
+	static boolean testRouteSolver = false;
 	
 	enum Orientation {
 		HORIZONTAL, VERTICAL, NONE
@@ -92,6 +93,14 @@ public final class ManhattanConnectionRouter extends BendpointConnectionRouter {
 				}
 			}
 		}
+
+		if (testRouteSolver) {
+			findAllShapes();
+			RouteSolver solver = new RouteSolver(fp, allShapes);
+			if (solver.solve(source, target))
+				return null;
+		}
+		
 		
 		// The list of all possible routes. The shortest will be used.
 		List<ConnectionRoute> allRoutes = new ArrayList<ConnectionRoute>();

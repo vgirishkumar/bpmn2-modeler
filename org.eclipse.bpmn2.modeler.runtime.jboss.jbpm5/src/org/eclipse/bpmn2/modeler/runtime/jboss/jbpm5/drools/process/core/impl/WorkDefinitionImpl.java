@@ -17,9 +17,9 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 

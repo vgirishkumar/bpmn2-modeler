@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 
 /**

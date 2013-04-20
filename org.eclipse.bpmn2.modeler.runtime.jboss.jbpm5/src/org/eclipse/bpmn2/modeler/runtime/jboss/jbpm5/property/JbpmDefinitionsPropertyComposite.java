@@ -19,18 +19,14 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertyComposite;
-import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -95,7 +91,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 							}
 	
 						};
-						importsTable.bindList(process, ModelPackage.eINSTANCE.getDocumentRoot_ImportType());
+						importsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_ImportType());
 						importsTable.setTitle("Imports");
 						return importsTable;
 					}

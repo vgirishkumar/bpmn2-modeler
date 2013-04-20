@@ -4,7 +4,7 @@
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <package
-            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage"
             genModel="model/jBPM5Extensions.genmodel"
             uri="http://www.jboss.org/drools">
       </package>
@@ -19,7 +19,7 @@
 
 		<model runtimeId="org.jboss.runtime.jbpm5"
 			uri="http://www.jboss.org/drools"
-			resourceFactory="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.util.ModelResourceFactoryImpl">
+			resourceFactory="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util.DroolsResourceFactoryImpl">
 		</model>
 
 <!-- Property Tabs -->
@@ -218,14 +218,14 @@
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnEntryScript"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnEntryScriptType"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmOnEntryScriptPropertiesAdapter">
 		</propertyExtension>
 
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.OnExitScript"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.OnExitScriptType"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmOnExitScriptPropertiesAdapter">
 		</propertyExtension>
 
@@ -267,7 +267,7 @@
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.GlobalType"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGlobalTypePropertiesAdapter">
 		</propertyExtension>
 

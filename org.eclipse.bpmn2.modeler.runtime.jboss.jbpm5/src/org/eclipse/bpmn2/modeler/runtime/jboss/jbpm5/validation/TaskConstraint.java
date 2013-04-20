@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.ExtensionAttributeValue;

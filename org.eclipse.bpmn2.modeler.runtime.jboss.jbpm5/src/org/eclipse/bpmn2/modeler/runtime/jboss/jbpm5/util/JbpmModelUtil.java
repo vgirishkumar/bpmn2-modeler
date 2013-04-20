@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util;
 
-import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
@@ -38,27 +37,26 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatyp
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeRegistry;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.EnumDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.UndefinedDataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ControlParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.CostParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DecimalParameterType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.DistributionParameter;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ElementParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.FloatingParameterType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.GlobalType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ModelPackage;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.NormalDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.Parameter;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.PoissonDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ProcessAnalysisDataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.RandomDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ResourceParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.Scenario;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.ScenarioParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.TimeParameters;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.TimeUnit;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DistributionParameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ElementParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.FloatingParameterType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.NormalDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Parameter;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.PoissonDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ScenarioParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeUnit;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -130,7 +128,7 @@ public class JbpmModelUtil {
 		}
 		
 		final Process fProcess = process;
-		final ImportType newImport = (ImportType)ModelFactory.eINSTANCE.create(ModelPackage.eINSTANCE.getImportType());
+		final ImportType newImport = (ImportType)DroolsFactory.eINSTANCE.create(DroolsPackage.eINSTANCE.getImportType());
 		newImport.setName(className);
 
 		TransactionalEditingDomain domain = ModelUtil.getEditor(object).getEditingDomain();
@@ -139,7 +137,7 @@ public class JbpmModelUtil {
 			protected void doExecute() {
 				
 				ModelUtil.addExtensionAttributeValue(fProcess,
-						ModelPackage.eINSTANCE.getDocumentRoot_ImportType(), newImport);
+						DroolsPackage.eINSTANCE.getDocumentRoot_ImportType(), newImport);
 				
 				if (object instanceof ItemDefinition) {
 					// update the ItemDefinition passed to us...
@@ -173,7 +171,7 @@ public class JbpmModelUtil {
 //					if (ImportUtil.findItemDefinition(definitions, itemDef)==null) {
 			
 						// create a reference to the ImportType as an extension element to the ItemDefinition?
-//						ImportType ref = (ImportType)ModelFactory.eINSTANCE.create(ModelPackage.eINSTANCE.getImportType());
+//						ImportType ref = (ImportType)DroolsFactory.eINSTANCE.create(DroolsPackage.eINSTANCE.getImportType());
 //						((InternalEObject)ref).eSetProxyURI(EcoreUtil.getURI(newImport));
 //						ModelUtil.addExtensionAttributeValue(itemDef, feature, ref);
 						// Nope, don't need this! The ItemDefinition needs to stick around, otherwise the data types
@@ -382,15 +380,15 @@ public class JbpmModelUtil {
 			}
 		}
 		if (processAnalysisData==null) {
-			processAnalysisData = ModelFactory.eINSTANCE.createProcessAnalysisDataType();
-			ModelUtil.addExtensionAttributeValue(rel, ModelPackage.eINSTANCE.getDocumentRoot_ProcessAnalysisData(), processAnalysisData);
+			processAnalysisData = DroolsFactory.eINSTANCE.createProcessAnalysisDataType();
+			ModelUtil.addExtensionAttributeValue(rel, DroolsPackage.eINSTANCE.getDocumentRoot_ProcessAnalysisData(), processAnalysisData);
 		}
 		
 		if (processAnalysisData.getScenario().size()==0) {
-			Scenario scenario = ModelFactory.eINSTANCE.createScenario();
+			Scenario scenario = BpsimFactory.eINSTANCE.createScenario();
 			ModelUtil.setID(scenario, resource);
 			scenario.setName("Scenario 1");
-			ScenarioParameters scenarioParams = ModelFactory.eINSTANCE.createScenarioParameters();
+			ScenarioParameters scenarioParams = BpsimFactory.eINSTANCE.createScenarioParameters();
 			scenarioParams.setBaseTimeUnit(TimeUnit.MS);
 			scenario.setScenarioParameters(scenarioParams);
 			processAnalysisData.getScenario().add(scenario);
@@ -408,29 +406,29 @@ public class JbpmModelUtil {
 		String id = be.getId();
 		for (ElementParameters ep : scenario.getElementParameters()) {
 			
-			if (id.equals(ep.getElementId())) {
+			if (id.equals(ep.getId())) {
 				elementParams = ep;
 				break;
 			}
 		}
 		if (elementParams==null) {
-			elementParams = ModelFactory.eINSTANCE.createElementParameters();
-			elementParams.setElementId(id);
+			elementParams = BpsimFactory.eINSTANCE.createElementParameters();
+			elementParams.setId(id);
 			ModelUtil.setID(elementParams, resource);
 			
 			if (be instanceof Task) {
-				TimeParameters timeParams = createTimeParameters(DistributionType.Random, 0.0, 1.0, TimeUnit.S);
+				TimeParameters timeParams = createTimeParameters(DistributionType.Uniform, 0.0, 1.0, TimeUnit.S);
 				elementParams.setTimeParameters(timeParams);
 				
-				CostParameters costParams = ModelFactory.eINSTANCE.createCostParameters();
+				CostParameters costParams = BpsimFactory.eINSTANCE.createCostParameters();
 				costParams.setUnitCost( createParameter(0) );
 				elementParams.setCostParameters(costParams);
 			}
 			
 			if (be instanceof UserTask) {
-				ResourceParameters resourceParams = ModelFactory.eINSTANCE.createResourceParameters();
+				ResourceParameters resourceParams = BpsimFactory.eINSTANCE.createResourceParameters();
 				resourceParams.setQuantity( createParameter(0.0));
-				resourceParams.setWorkinghours( createParameter(0.0) );
+				resourceParams.setAvailability( createParameter(0.0) );
 				elementParams.setResourceParameters(resourceParams);
 			}
 			else if (be instanceof CatchEvent){
@@ -438,11 +436,11 @@ public class JbpmModelUtil {
 				elementParams.setTimeParameters(timeParams);
 			}
 			else if (be instanceof ThrowEvent) {
-				TimeParameters timeParams = createTimeParameters(DistributionType.Random, 0.0, 1.0, TimeUnit.S); 
+				TimeParameters timeParams = createTimeParameters(DistributionType.Uniform, 0.0, 1.0, TimeUnit.S); 
 				elementParams.setTimeParameters(timeParams);
 			}
 			else if (be instanceof SequenceFlow) {
-				ControlParameters controlParams = ModelFactory.eINSTANCE.createControlParameters();
+				ControlParameters controlParams = BpsimFactory.eINSTANCE.createControlParameters();
 				controlParams.setProbability( createParameter(100.0) );
 				elementParams.setControlParameters(controlParams);
 			}
@@ -453,46 +451,41 @@ public class JbpmModelUtil {
 	}
 	
 	public static Parameter createParameter(double f) {
-		Parameter param = ModelFactory.eINSTANCE.createParameter();
-		FloatingParameterType value = ModelFactory.eINSTANCE.createFloatingParameterType();
+		Parameter param = BpsimFactory.eINSTANCE.createParameter();
+		FloatingParameterType value = BpsimFactory.eINSTANCE.createFloatingParameterType();
 		value.setValue(f);
 		param.getParameterValue().add(value);
 		return param;
 	}
 	
 	public static Parameter createParameter(long i) {
-		Parameter param = ModelFactory.eINSTANCE.createParameter();
-		DecimalParameterType value = ModelFactory.eINSTANCE.createDecimalParameterType();
-		value.setValue(BigDecimal.valueOf(i));
+		Parameter param = BpsimFactory.eINSTANCE.createParameter();
+		FloatingParameterType value = BpsimFactory.eINSTANCE.createFloatingParameterType();
+		value.setValue(Double.valueOf(i));
 		param.getParameterValue().add(value);
 		return param;
 	}
 	
 	public enum DistributionType {
-		Random, Uniform, Normal, Poisson
+		Uniform, Normal, Poisson
 	};
 	
 	public static Parameter createParameter(DistributionType distType, double v1, double v2) {
-		Parameter param = ModelFactory.eINSTANCE.createParameter();
+		Parameter param = BpsimFactory.eINSTANCE.createParameter();
 		DistributionParameter value = null;
 		switch (distType) {
-		case Random:
-			value = ModelFactory.eINSTANCE.createRandomDistributionType();
-			((RandomDistributionType)value).setMin(v1);
-			((RandomDistributionType)value).setMax(v2);
-			break;
 		case Uniform:
-			value = ModelFactory.eINSTANCE.createUniformDistributionType();
+			value = BpsimFactory.eINSTANCE.createUniformDistributionType();
 			((UniformDistributionType)value).setMin(v1);
 			((UniformDistributionType)value).setMax(v2);
 			break;
 		case Normal:
-			value = ModelFactory.eINSTANCE.createNormalDistributionType();
+			value = BpsimFactory.eINSTANCE.createNormalDistributionType();
 			((NormalDistributionType)value).setMean(v1);
 			((NormalDistributionType)value).setStandardDeviation(v2);
 			break;
 		case Poisson:
-			value = ModelFactory.eINSTANCE.createPoissonDistributionType();
+			value = BpsimFactory.eINSTANCE.createPoissonDistributionType();
 			((PoissonDistributionType)value).setMean(v1);
 			break;
 		}
@@ -501,20 +494,20 @@ public class JbpmModelUtil {
 	}
 
 	public static TimeParameters createTimeParameters(double t, TimeUnit tu) {
-		TimeParameters timeParams = ModelFactory.eINSTANCE.createTimeParameters();
-		Parameter param = ModelFactory.eINSTANCE.createParameter();
-		FloatingParameterType value = ModelFactory.eINSTANCE.createFloatingParameterType();
+		TimeParameters timeParams = BpsimFactory.eINSTANCE.createTimeParameters();
+		Parameter param = BpsimFactory.eINSTANCE.createParameter();
+		FloatingParameterType value = BpsimFactory.eINSTANCE.createFloatingParameterType();
 		value.setValue(t);
 		param.getParameterValue().add(value);
 		timeParams.setWaitTime(param);
-		timeParams.setTimeUnit(tu);
+//		timeParams.setTimeUnit(tu);
 		return timeParams;
 	}
 
 	public static TimeParameters createTimeParameters(DistributionType dt, double v1, double v2, TimeUnit tu) {
-		TimeParameters timeParams = ModelFactory.eINSTANCE.createTimeParameters();
+		TimeParameters timeParams = BpsimFactory.eINSTANCE.createTimeParameters();
 		timeParams.setProcessingTime( createParameter(dt, v1, v2) ); 
-		timeParams.setTimeUnit(tu);
+//		timeParams.setTimeUnit(tu);
 		return timeParams;
 	}
 }
