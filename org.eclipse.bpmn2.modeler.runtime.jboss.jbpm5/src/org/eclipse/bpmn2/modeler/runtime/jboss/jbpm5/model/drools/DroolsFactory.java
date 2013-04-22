@@ -85,13 +85,13 @@ public interface DroolsFactory extends EFactory {
 	OnExitScriptType createOnExitScriptType();
 
 	/**
-	 * Returns a new object of class '<em>Process Analysis Data Type</em>'.
+	 * Returns a new object of class '<em>BP Sim Data Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Process Analysis Data Type</em>'.
+	 * @return a new object of class '<em>BP Sim Data Type</em>'.
 	 * @generated
 	 */
-	ProcessAnalysisDataType createProcessAnalysisDataType();
+	BPSimDataType createBPSimDataType();
 
 	/**
 	 * Returns the package supported by this factory.

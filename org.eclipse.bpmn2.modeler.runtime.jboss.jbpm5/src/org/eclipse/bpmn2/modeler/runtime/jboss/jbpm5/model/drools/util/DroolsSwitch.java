@@ -4,6 +4,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -12,7 +13,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
@@ -119,9 +119,10 @@ public class DroolsSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case DroolsPackage.PROCESS_ANALYSIS_DATA_TYPE: {
-				ProcessAnalysisDataType processAnalysisDataType = (ProcessAnalysisDataType)theEObject;
-				T result = caseProcessAnalysisDataType(processAnalysisDataType);
+			case DroolsPackage.BP_SIM_DATA_TYPE: {
+				BPSimDataType bpSimDataType = (BPSimDataType)theEObject;
+				T result = caseBPSimDataType(bpSimDataType);
+				if (result == null) result = caseBpsim_BPSimDataType(bpSimDataType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -235,17 +236,17 @@ public class DroolsSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Process Analysis Data Type</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>BP Sim Data Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Process Analysis Data Type</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>BP Sim Data Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseProcessAnalysisDataType(ProcessAnalysisDataType object) {
+	public T caseBPSimDataType(BPSimDataType object) {
 		return null;
 	}
 
@@ -291,6 +292,21 @@ public class DroolsSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseItemAwareElement(ItemAwareElement object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>BP Sim Data Type</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>BP Sim Data Type</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBpsim_BPSimDataType(org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType object) {
 		return null;
 	}
 

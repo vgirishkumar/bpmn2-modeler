@@ -3,6 +3,7 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools;
 
 import java.math.BigInteger;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 
 /**
  * <!-- begin-user-doc -->
@@ -18,7 +19,7 @@ import java.math.BigInteger;
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaentry <em>Metaentry</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getOnEntryScript <em>On Entry Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getOnExitScript <em>On Exit Script</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getProcessAnalysisData <em>Process Analysis Data</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getBpsimData <em>Bpsim Data</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getPackageName <em>Package Name</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getPriority <em>Priority</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getRuleFlowGroup <em>Rule Flow Group</em>}</li>
@@ -195,31 +196,31 @@ public interface DocumentRoot extends org.eclipse.bpmn2.DocumentRoot {
 	void setOnExitScript(OnExitScriptType value);
 
 	/**
-	 * Returns the value of the '<em><b>Process Analysis Data</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Bpsim Data</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Process Analysis Data</em>' containment reference isn't clear,
+	 * If the meaning of the '<em>Bpsim Data</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Process Analysis Data</em>' containment reference.
-	 * @see #setProcessAnalysisData(ProcessAnalysisDataType)
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_ProcessAnalysisData()
+	 * @return the value of the '<em>Bpsim Data</em>' containment reference.
+	 * @see #setBpsimData(BPSimDataType)
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_BpsimData()
 	 * @model containment="true" upper="-2" transient="true" volatile="true" derived="true"
-	 *        extendedMetaData="kind='element' name='ProcessAnalysisData' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='element' name='BPSimData' namespace='##targetNamespace'"
 	 * @generated
 	 */
-	ProcessAnalysisDataType getProcessAnalysisData();
+	BPSimDataType getBpsimData();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getProcessAnalysisData <em>Process Analysis Data</em>}' containment reference.
+	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getBpsimData <em>Bpsim Data</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Process Analysis Data</em>' containment reference.
-	 * @see #getProcessAnalysisData()
+	 * @param value the new value of the '<em>Bpsim Data</em>' containment reference.
+	 * @see #getBpsimData()
 	 * @generated
 	 */
-	void setProcessAnalysisData(ProcessAnalysisDataType value);
+	void setBpsimData(BPSimDataType value);
 
 	/**
 	 * Returns the value of the '<em><b>Package Name</b></em>' attribute.

@@ -4,6 +4,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import java.math.BigInteger;
 
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -12,7 +13,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -33,7 +33,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getMetaentry <em>Metaentry</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getOnEntryScript <em>On Entry Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getOnExitScript <em>On Exit Script</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getProcessAnalysisData <em>Process Analysis Data</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getBpsimData <em>Bpsim Data</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getPackageName <em>Package Name</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getPriority <em>Priority</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getRuleFlowGroup <em>Rule Flow Group</em>}</li>
@@ -331,8 +331,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ProcessAnalysisDataType getProcessAnalysisData() {
-		return (ProcessAnalysisDataType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA, true);
+	public BPSimDataType getBpsimData() {
+		return (BPSimDataType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__BPSIM_DATA, true);
 	}
 
 	/**
@@ -340,8 +340,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetProcessAnalysisData(ProcessAnalysisDataType newProcessAnalysisData, NotificationChain msgs) {
-		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA, newProcessAnalysisData, msgs);
+	public NotificationChain basicSetBpsimData(BPSimDataType newBpsimData, NotificationChain msgs) {
+		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__BPSIM_DATA, newBpsimData, msgs);
 	}
 
 	/**
@@ -349,8 +349,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setProcessAnalysisData(ProcessAnalysisDataType newProcessAnalysisData) {
-		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA, newProcessAnalysisData);
+	public void setBpsimData(BPSimDataType newBpsimData) {
+		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__BPSIM_DATA, newBpsimData);
 	}
 
 	/**
@@ -478,8 +478,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return basicSetOnEntryScript(null, msgs);
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
 				return basicSetOnExitScript(null, msgs);
-			case DroolsPackage.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA:
-				return basicSetProcessAnalysisData(null, msgs);
+			case DroolsPackage.DOCUMENT_ROOT__BPSIM_DATA:
+				return basicSetBpsimData(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -504,8 +504,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getOnEntryScript();
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
 				return getOnExitScript();
-			case DroolsPackage.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA:
-				return getProcessAnalysisData();
+			case DroolsPackage.DOCUMENT_ROOT__BPSIM_DATA:
+				return getBpsimData();
 			case DroolsPackage.DOCUMENT_ROOT__PACKAGE_NAME:
 				return getPackageName();
 			case DroolsPackage.DOCUMENT_ROOT__PRIORITY:
@@ -546,8 +546,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
 				setOnExitScript((OnExitScriptType)newValue);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA:
-				setProcessAnalysisData((ProcessAnalysisDataType)newValue);
+			case DroolsPackage.DOCUMENT_ROOT__BPSIM_DATA:
+				setBpsimData((BPSimDataType)newValue);
 				return;
 			case DroolsPackage.DOCUMENT_ROOT__PACKAGE_NAME:
 				setPackageName((String)newValue);
@@ -594,8 +594,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
 				setOnExitScript((OnExitScriptType)null);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA:
-				setProcessAnalysisData((ProcessAnalysisDataType)null);
+			case DroolsPackage.DOCUMENT_ROOT__BPSIM_DATA:
+				setBpsimData((BPSimDataType)null);
 				return;
 			case DroolsPackage.DOCUMENT_ROOT__PACKAGE_NAME:
 				setPackageName(PACKAGE_NAME_EDEFAULT);
@@ -636,8 +636,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getOnEntryScript() != null;
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
 				return getOnExitScript() != null;
-			case DroolsPackage.DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA:
-				return getProcessAnalysisData() != null;
+			case DroolsPackage.DOCUMENT_ROOT__BPSIM_DATA:
+				return getBpsimData() != null;
 			case DroolsPackage.DOCUMENT_ROOT__PACKAGE_NAME:
 				return PACKAGE_NAME_EDEFAULT == null ? packageName != null : !PACKAGE_NAME_EDEFAULT.equals(packageName);
 			case DroolsPackage.DOCUMENT_ROOT__PRIORITY:

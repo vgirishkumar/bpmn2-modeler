@@ -41,7 +41,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParamet
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil.DistributionType;
 import org.eclipse.emf.ecore.EObject;
@@ -123,7 +123,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 		setTitle( ModelUtil.getLabel(be.eClass())+" Simulation Parameters");
 		if (be instanceof BPMNDiagram)
 		{
-			ProcessAnalysisDataType pad = JbpmModelUtil.getProcessAnalysisData(be);
+			BPSimDataType pad = JbpmModelUtil.getBPSimData(be);
 			Scenario scenario = pad.getScenario().get(0);
 			scenario.getScenarioParameters().getBaseTimeUnit();
 			bindAttribute(getAttributesParent(), scenario,

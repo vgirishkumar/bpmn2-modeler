@@ -589,6 +589,7 @@
 			<enable object="Association" feature="id"/>
 			<enable object="BaseElement" feature="anyAttribute"/>
 			<enable object="BaseElement" feature="extensionValues"/>
+			<enable object="BPSimDataType"/>
 			<enable object="BoundaryEvent" feature="attachedToRef"/>
 			<enable object="BoundaryEvent" feature="cancelActivity"/>
 			<enable object="BoundaryEvent" feature="eventDefinitions"/>
@@ -837,6 +838,7 @@
 			<!-- and then disable these objects and features -->
 			<disable object="AdHocSubProcess"/>
 			<disable object="Assignment"/>
+			<disable object="BPSimDataType"/>
 			<disable object="BoundaryEvent"/>
 			<disable object="CallActivity" feature="extensionValues"/>
 			<disable object="CompensateEventDefinition"/>

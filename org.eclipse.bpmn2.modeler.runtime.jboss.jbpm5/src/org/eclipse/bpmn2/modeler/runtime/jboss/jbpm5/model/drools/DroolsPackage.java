@@ -3,6 +3,7 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
@@ -1364,13 +1365,13 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__ON_EXIT_SCRIPT = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 5;
 
 	/**
-	 * The feature id for the '<em><b>Process Analysis Data</b></em>' containment reference.
+	 * The feature id for the '<em><b>Bpsim Data</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 6;
+	int DOCUMENT_ROOT__BPSIM_DATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Package Name</b></em>' attribute.
@@ -1694,14 +1695,14 @@ public interface DroolsPackage extends EPackage {
 	int ON_EXIT_SCRIPT_TYPE_FEATURE_COUNT = 2;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ProcessAnalysisDataTypeImpl <em>Process Analysis Data Type</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.BPSimDataTypeImpl <em>BP Sim Data Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ProcessAnalysisDataTypeImpl
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getProcessAnalysisDataType()
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.BPSimDataTypeImpl
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getBPSimDataType()
 	 * @generated
 	 */
-	int PROCESS_ANALYSIS_DATA_TYPE = 7;
+	int BP_SIM_DATA_TYPE = 7;
 
 	/**
 	 * The feature id for the '<em><b>Group</b></em>' attribute list.
@@ -1710,7 +1711,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESS_ANALYSIS_DATA_TYPE__GROUP = 0;
+	int BP_SIM_DATA_TYPE__GROUP = BpsimPackage.BP_SIM_DATA_TYPE__GROUP;
 
 	/**
 	 * The feature id for the '<em><b>Scenario</b></em>' containment reference list.
@@ -1719,16 +1720,16 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESS_ANALYSIS_DATA_TYPE__SCENARIO = 1;
+	int BP_SIM_DATA_TYPE__SCENARIO = BpsimPackage.BP_SIM_DATA_TYPE__SCENARIO;
 
 	/**
-	 * The number of structural features of the '<em>Process Analysis Data Type</em>' class.
+	 * The number of structural features of the '<em>BP Sim Data Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROCESS_ANALYSIS_DATA_TYPE_FEATURE_COUNT = 2;
+	int BP_SIM_DATA_TYPE_FEATURE_COUNT = BpsimPackage.BP_SIM_DATA_TYPE_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '<em>Package Name Type</em>' data type.
@@ -1858,15 +1859,15 @@ public interface DroolsPackage extends EPackage {
 	EReference getDocumentRoot_OnExitScript();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getProcessAnalysisData <em>Process Analysis Data</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getBpsimData <em>Bpsim Data</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Process Analysis Data</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getProcessAnalysisData()
+	 * @return the meta object for the containment reference '<em>Bpsim Data</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getBpsimData()
 	 * @see #getDocumentRoot()
 	 * @generated
 	 */
-	EReference getDocumentRoot_ProcessAnalysisData();
+	EReference getDocumentRoot_BpsimData();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getPackageName <em>Package Name</em>}'.
@@ -2094,36 +2095,14 @@ public interface DroolsPackage extends EPackage {
 	EAttribute getOnExitScriptType_ScriptFormat();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType <em>Process Analysis Data Type</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType <em>BP Sim Data Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Process Analysis Data Type</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType
+	 * @return the meta object for class '<em>BP Sim Data Type</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType
 	 * @generated
 	 */
-	EClass getProcessAnalysisDataType();
-
-	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType#getGroup <em>Group</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Group</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType#getGroup()
-	 * @see #getProcessAnalysisDataType()
-	 * @generated
-	 */
-	EAttribute getProcessAnalysisDataType_Group();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType#getScenario <em>Scenario</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Scenario</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType#getScenario()
-	 * @see #getProcessAnalysisDataType()
-	 * @generated
-	 */
-	EReference getProcessAnalysisDataType_Scenario();
+	EClass getBPSimDataType();
 
 	/**
 	 * Returns the meta object for data type '{@link java.lang.String <em>Package Name Type</em>}'.
@@ -2266,12 +2245,12 @@ public interface DroolsPackage extends EPackage {
 		EReference DOCUMENT_ROOT__ON_EXIT_SCRIPT = eINSTANCE.getDocumentRoot_OnExitScript();
 
 		/**
-		 * The meta object literal for the '<em><b>Process Analysis Data</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Bpsim Data</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA = eINSTANCE.getDocumentRoot_ProcessAnalysisData();
+		EReference DOCUMENT_ROOT__BPSIM_DATA = eINSTANCE.getDocumentRoot_BpsimData();
 
 		/**
 		 * The meta object literal for the '<em><b>Package Name</b></em>' attribute feature.
@@ -2454,30 +2433,14 @@ public interface DroolsPackage extends EPackage {
 		EAttribute ON_EXIT_SCRIPT_TYPE__SCRIPT_FORMAT = eINSTANCE.getOnExitScriptType_ScriptFormat();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ProcessAnalysisDataTypeImpl <em>Process Analysis Data Type</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.BPSimDataTypeImpl <em>BP Sim Data Type</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ProcessAnalysisDataTypeImpl
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getProcessAnalysisDataType()
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.BPSimDataTypeImpl
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getBPSimDataType()
 		 * @generated
 		 */
-		EClass PROCESS_ANALYSIS_DATA_TYPE = eINSTANCE.getProcessAnalysisDataType();
-
-		/**
-		 * The meta object literal for the '<em><b>Group</b></em>' attribute list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute PROCESS_ANALYSIS_DATA_TYPE__GROUP = eINSTANCE.getProcessAnalysisDataType_Group();
-
-		/**
-		 * The meta object literal for the '<em><b>Scenario</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference PROCESS_ANALYSIS_DATA_TYPE__SCENARIO = eINSTANCE.getProcessAnalysisDataType_Scenario();
+		EClass BP_SIM_DATA_TYPE = eINSTANCE.getBPSimDataType();
 
 		/**
 		 * The meta object literal for the '<em>Package Name Type</em>' data type.
