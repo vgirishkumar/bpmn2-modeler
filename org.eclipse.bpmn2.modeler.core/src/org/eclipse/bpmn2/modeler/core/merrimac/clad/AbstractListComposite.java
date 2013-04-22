@@ -599,14 +599,14 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							int i = table.getSelectionIndex();
+                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+							int i = list.indexOf(((IStructuredSelection)tableViewer.getSelection()).getFirstElement());
 							Object item;
 							if (removeIsDelete)
 								item = deleteListItem(businessObject,feature,i);
 							else
 								item = removeListItem(businessObject,feature,i);
 							
-							final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
 							tableViewer.setInput(list);
 							if (item!=null) {
 								if (i>=list.size())
@@ -638,9 +638,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							int i = table.getSelectionIndex();
+                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+                            int i = list.indexOf(((IStructuredSelection)tableViewer.getSelection()).getFirstElement());
 							Object item = moveListItemUp(businessObject,feature,i);
-							final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
 							tableViewer.setInput(list);
 							tableViewer.setSelection(new StructuredSelection(item));
 						}
@@ -658,9 +658,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-							int i = table.getSelectionIndex();
+                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+                            int i = list.indexOf(((IStructuredSelection)tableViewer.getSelection()).getFirstElement());
 							Object item = moveListItemDown(businessObject,feature,i);
-							final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
 							tableViewer.setInput(list);
 							tableViewer.setSelection(new StructuredSelection(item));
 						}
