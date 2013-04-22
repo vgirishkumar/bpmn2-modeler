@@ -4,6 +4,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl;
 
 import java.math.BigInteger;
 
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
@@ -13,7 +14,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
@@ -74,7 +74,7 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 			case DroolsPackage.METAENTRY_TYPE: return createMetaentryType();
 			case DroolsPackage.ON_ENTRY_SCRIPT_TYPE: return createOnEntryScriptType();
 			case DroolsPackage.ON_EXIT_SCRIPT_TYPE: return createOnExitScriptType();
-			case DroolsPackage.PROCESS_ANALYSIS_DATA_TYPE: return createProcessAnalysisDataType();
+			case DroolsPackage.BP_SIM_DATA_TYPE: return createBPSimDataType();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -201,9 +201,9 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ProcessAnalysisDataType createProcessAnalysisDataType() {
-		ProcessAnalysisDataTypeImpl processAnalysisDataType = new ProcessAnalysisDataTypeImpl();
-		return processAnalysisDataType;
+	public BPSimDataType createBPSimDataType() {
+		BPSimDataTypeImpl bpSimDataType = new BPSimDataTypeImpl();
+		return bpSimDataType;
 	}
 
 	/**

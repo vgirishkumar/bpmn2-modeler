@@ -74,4 +74,3 @@ Import-Package: org.eclipse.core.expressions,
  org.eclipse.emf.workspace,
  org.eclipse.emf.workspace.util,
  org.eclipse.wst.validation
-

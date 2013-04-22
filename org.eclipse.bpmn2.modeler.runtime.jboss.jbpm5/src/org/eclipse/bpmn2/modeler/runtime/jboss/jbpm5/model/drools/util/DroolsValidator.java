@@ -5,6 +5,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 import java.math.BigInteger;
 import java.util.Map;
 
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -13,7 +14,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.common.util.DiagnosticChain;
 import org.eclipse.emf.common.util.ResourceLocator;
 import org.eclipse.emf.ecore.EPackage;
@@ -115,8 +115,8 @@ public class DroolsValidator extends EObjectValidator {
 				return validateOnEntryScriptType((OnEntryScriptType)value, diagnostics, context);
 			case DroolsPackage.ON_EXIT_SCRIPT_TYPE:
 				return validateOnExitScriptType((OnExitScriptType)value, diagnostics, context);
-			case DroolsPackage.PROCESS_ANALYSIS_DATA_TYPE:
-				return validateProcessAnalysisDataType((ProcessAnalysisDataType)value, diagnostics, context);
+			case DroolsPackage.BP_SIM_DATA_TYPE:
+				return validateBPSimDataType((BPSimDataType)value, diagnostics, context);
 			case DroolsPackage.PACKAGE_NAME_TYPE:
 				return validatePackageNameType((String)value, diagnostics, context);
 			case DroolsPackage.PRIORITY_TYPE:
@@ -200,8 +200,8 @@ public class DroolsValidator extends EObjectValidator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean validateProcessAnalysisDataType(ProcessAnalysisDataType processAnalysisDataType, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		return validate_EveryDefaultConstraint(processAnalysisDataType, diagnostics, context);
+	public boolean validateBPSimDataType(BPSimDataType bpSimDataType, DiagnosticChain diagnostics, Map<Object, Object> context) {
+		return validate_EveryDefaultConstraint(bpSimDataType, diagnostics, context);
 	}
 
 	/**

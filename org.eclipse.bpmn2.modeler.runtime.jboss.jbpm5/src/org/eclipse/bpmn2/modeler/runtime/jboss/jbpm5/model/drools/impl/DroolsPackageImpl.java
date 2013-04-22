@@ -8,6 +8,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.BpsimPackageImpl;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
@@ -17,7 +18,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util.DroolsValidator;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
@@ -91,7 +91,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass processAnalysisDataTypeEClass = null;
+	private EClass bpSimDataTypeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -278,7 +278,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getDocumentRoot_ProcessAnalysisData() {
+	public EReference getDocumentRoot_BpsimData() {
 		return (EReference)documentRootEClass.getEStructuralFeatures().get(6);
 	}
 
@@ -476,26 +476,8 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getProcessAnalysisDataType() {
-		return processAnalysisDataTypeEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getProcessAnalysisDataType_Group() {
-		return (EAttribute)processAnalysisDataTypeEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getProcessAnalysisDataType_Scenario() {
-		return (EReference)processAnalysisDataTypeEClass.getEStructuralFeatures().get(1);
+	public EClass getBPSimDataType() {
+		return bpSimDataTypeEClass;
 	}
 
 	/**
@@ -578,7 +560,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 		createEReference(documentRootEClass, DOCUMENT_ROOT__METAENTRY);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__ON_ENTRY_SCRIPT);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__ON_EXIT_SCRIPT);
-		createEReference(documentRootEClass, DOCUMENT_ROOT__PROCESS_ANALYSIS_DATA);
+		createEReference(documentRootEClass, DOCUMENT_ROOT__BPSIM_DATA);
 		createEAttribute(documentRootEClass, DOCUMENT_ROOT__PACKAGE_NAME);
 		createEAttribute(documentRootEClass, DOCUMENT_ROOT__PRIORITY);
 		createEAttribute(documentRootEClass, DOCUMENT_ROOT__RULE_FLOW_GROUP);
@@ -607,9 +589,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 		createEAttribute(onExitScriptTypeEClass, ON_EXIT_SCRIPT_TYPE__SCRIPT);
 		createEAttribute(onExitScriptTypeEClass, ON_EXIT_SCRIPT_TYPE__SCRIPT_FORMAT);
 
-		processAnalysisDataTypeEClass = createEClass(PROCESS_ANALYSIS_DATA_TYPE);
-		createEAttribute(processAnalysisDataTypeEClass, PROCESS_ANALYSIS_DATA_TYPE__GROUP);
-		createEReference(processAnalysisDataTypeEClass, PROCESS_ANALYSIS_DATA_TYPE__SCENARIO);
+		bpSimDataTypeEClass = createEClass(BP_SIM_DATA_TYPE);
 
 		// Create data types
 		packageNameTypeEDataType = createEDataType(PACKAGE_NAME_TYPE);
@@ -644,8 +624,8 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 
 		// Obtain other dependent packages
 		Bpmn2Package theBpmn2Package = (Bpmn2Package)EPackage.Registry.INSTANCE.getEPackage(Bpmn2Package.eNS_URI);
-		XMLTypePackage theXMLTypePackage = (XMLTypePackage)EPackage.Registry.INSTANCE.getEPackage(XMLTypePackage.eNS_URI);
 		BpsimPackage theBpsimPackage = (BpsimPackage)EPackage.Registry.INSTANCE.getEPackage(BpsimPackage.eNS_URI);
+		XMLTypePackage theXMLTypePackage = (XMLTypePackage)EPackage.Registry.INSTANCE.getEPackage(XMLTypePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -654,6 +634,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 		// Add supertypes to classes
 		documentRootEClass.getESuperTypes().add(theBpmn2Package.getDocumentRoot());
 		globalTypeEClass.getESuperTypes().add(theBpmn2Package.getItemAwareElement());
+		bpSimDataTypeEClass.getESuperTypes().add(theBpsimPackage.getBPSimDataType());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(documentRootEClass, DocumentRoot.class, "DocumentRoot", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -663,7 +644,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 		initEReference(getDocumentRoot_Metaentry(), this.getMetaentryType(), null, "metaentry", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_OnEntryScript(), this.getOnEntryScriptType(), null, "onEntryScript", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_OnExitScript(), this.getOnExitScriptType(), null, "onExitScript", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
-		initEReference(getDocumentRoot_ProcessAnalysisData(), this.getProcessAnalysisDataType(), null, "processAnalysisData", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEReference(getDocumentRoot_BpsimData(), theBpsimPackage.getBPSimDataType(), null, "bpsimData", null, 0, -2, null, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDocumentRoot_PackageName(), this.getPackageNameType(), "packageName", null, 0, 1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDocumentRoot_Priority(), this.getPriorityType(), "priority", null, 0, 1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDocumentRoot_RuleFlowGroup(), this.getRuleFlowGroupType(), "ruleFlowGroup", null, 0, 1, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -692,9 +673,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 		initEAttribute(getOnExitScriptType_Script(), theXMLTypePackage.getString(), "script", null, 1, 1, OnExitScriptType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getOnExitScriptType_ScriptFormat(), theXMLTypePackage.getString(), "scriptFormat", null, 1, 1, OnExitScriptType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(processAnalysisDataTypeEClass, ProcessAnalysisDataType.class, "ProcessAnalysisDataType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getProcessAnalysisDataType_Group(), ecorePackage.getEFeatureMapEntry(), "group", null, 0, -1, ProcessAnalysisDataType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProcessAnalysisDataType_Scenario(), theBpsimPackage.getScenario(), null, "scenario", null, 1, -1, ProcessAnalysisDataType.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
+		initEClass(bpSimDataTypeEClass, BPSimDataType.class, "BPSimDataType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Initialize data types
 		initEDataType(packageNameTypeEDataType, String.class, "PackageNameType", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
@@ -775,11 +754,11 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
-		  (getDocumentRoot_ProcessAnalysisData(), 
+		  (getDocumentRoot_BpsimData(), 
 		   source, 
 		   new String[] {
 			 "kind", "element",
-			 "name", "ProcessAnalysisData",
+			 "name", "BPSimData",
 			 "namespace", "##targetNamespace"
 		   });		
 		addAnnotation
@@ -953,29 +932,6 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 			 "name", "priority_._type",
 			 "baseType", "http://www.eclipse.org/emf/2003/XMLType#integer",
 			 "minInclusive", "1"
-		   });		
-		addAnnotation
-		  (processAnalysisDataTypeEClass, 
-		   source, 
-		   new String[] {
-			 "name", "ProcessAnalysisData_._type",
-			 "kind", "elementOnly"
-		   });		
-		addAnnotation
-		  (getProcessAnalysisDataType_Group(), 
-		   source, 
-		   new String[] {
-			 "kind", "group",
-			 "name", "group:0"
-		   });		
-		addAnnotation
-		  (getProcessAnalysisDataType_Scenario(), 
-		   source, 
-		   new String[] {
-			 "kind", "element",
-			 "name", "Scenario",
-			 "namespace", "##targetNamespace",
-			 "group", "#group:0"
 		   });		
 		addAnnotation
 		  (ruleFlowGroupTypeEDataType, 

@@ -4,6 +4,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.*;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -12,7 +13,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
@@ -103,8 +103,8 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 				return createOnExitScriptTypeAdapter();
 			}
 			@Override
-			public Adapter caseProcessAnalysisDataType(ProcessAnalysisDataType object) {
-				return createProcessAnalysisDataTypeAdapter();
+			public Adapter caseBPSimDataType(BPSimDataType object) {
+				return createBPSimDataTypeAdapter();
 			}
 			@Override
 			public Adapter caseBpmn2_DocumentRoot(org.eclipse.bpmn2.DocumentRoot object) {
@@ -117,6 +117,10 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseItemAwareElement(ItemAwareElement object) {
 				return createItemAwareElementAdapter();
+			}
+			@Override
+			public Adapter caseBpsim_BPSimDataType(org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType object) {
+				return createBpsim_BPSimDataTypeAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -237,16 +241,16 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType <em>Process Analysis Data Type</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType <em>BP Sim Data Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.BPSimDataType
 	 * @generated
 	 */
-	public Adapter createProcessAnalysisDataTypeAdapter() {
+	public Adapter createBPSimDataTypeAdapter() {
 		return null;
 	}
 
@@ -289,6 +293,20 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createItemAwareElementAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType <em>BP Sim Data Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType
+	 * @generated
+	 */
+	public Adapter createBpsim_BPSimDataTypeAdapter() {
 		return null;
 	}
 

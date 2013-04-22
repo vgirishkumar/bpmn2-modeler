@@ -38,6 +38,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatyp
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.EnumDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.UndefinedDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.DistributionParameter;
@@ -56,7 +57,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ProcessAnalysisDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -355,8 +356,8 @@ public class JbpmModelUtil {
 		return itemDef;
 	}
 	
-	public static ProcessAnalysisDataType getProcessAnalysisData(EObject object) {
-		ProcessAnalysisDataType processAnalysisData = null;
+	public static BPSimDataType getBPSimData(EObject object) {
+		BPSimDataType processAnalysisData = null;
 		Relationship rel = null;
 		Resource resource = object.eResource();
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
@@ -373,15 +374,15 @@ public class JbpmModelUtil {
 		
 		for (ExtensionAttributeValue v : ModelUtil.getExtensionAttributeValues(rel)) {
 			for (org.eclipse.emf.ecore.util.FeatureMap.Entry entry : v.getValue()) {
-				if (entry.getValue() instanceof ProcessAnalysisDataType) {
-					processAnalysisData = (ProcessAnalysisDataType)entry.getValue();
+				if (entry.getValue() instanceof BPSimDataType) {
+					processAnalysisData = (BPSimDataType)entry.getValue();
 					break;
 				}
 			}
 		}
 		if (processAnalysisData==null) {
-			processAnalysisData = DroolsFactory.eINSTANCE.createProcessAnalysisDataType();
-			ModelUtil.addExtensionAttributeValue(rel, DroolsPackage.eINSTANCE.getDocumentRoot_ProcessAnalysisData(), processAnalysisData);
+			processAnalysisData = BpsimFactory.eINSTANCE.createBPSimDataType();
+			ModelUtil.addExtensionAttributeValue(rel, BpsimPackage.eINSTANCE.getDocumentRoot_BPSimData(), processAnalysisData);
 		}
 		
 		if (processAnalysisData.getScenario().size()==0) {
@@ -401,7 +402,7 @@ public class JbpmModelUtil {
 	public static ElementParameters getElementParameters(BaseElement be) {
 		ElementParameters elementParams = null;
 		Resource resource = be.eResource();
-		ProcessAnalysisDataType processAnalysisData = getProcessAnalysisData(be);
+		BPSimDataType processAnalysisData = getBPSimData(be);
 		Scenario scenario = processAnalysisData.getScenario().get(0);
 		String id = be.getId();
 		for (ElementParameters ep : scenario.getElementParameters()) {
@@ -467,7 +468,7 @@ public class JbpmModelUtil {
 	}
 	
 	public enum DistributionType {
-		Uniform, Normal, Poisson
+		Normal, Uniform, Poisson
 	};
 	
 	public static Parameter createParameter(DistributionType distType, double v1, double v2) {

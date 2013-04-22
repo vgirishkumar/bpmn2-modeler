@@ -41,4 +41,3 @@ Import-Package: org.eclipse.bpmn2.modeler.ui,
  org.eclipse.bpmn2.modeler.ui.features.activity.task,
  org.eclipse.bpmn2.modeler.ui.property,
  org.eclipse.bpmn2.modeler.ui.property.providers
- 
