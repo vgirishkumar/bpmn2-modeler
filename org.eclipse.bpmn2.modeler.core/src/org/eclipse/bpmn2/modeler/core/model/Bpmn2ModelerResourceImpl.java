@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
@@ -376,7 +377,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			// "Official" BPMN 2.0 xsd says these SHOULD be QNames, the bpmn2 EMF
 			// model has these defined as "resolveProxies=false" which means they
 			// will NOT get resolved.
-			if (!eReference.isResolveProxies() && ids.contains(":")) {
+			if (/*!eReference.isResolveProxies() && */ids.contains(":")) {
 				// Resolve QNames here: if they are internal objects,
 				// simply replace the ID string with the URI fragment.
 				// If they are not internal objects, then there's a
@@ -409,7 +410,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			for (BPMNDiagram bpmnDiagram : diagrams) {
 				findMinXY(bpmnDiagram);
 			}
-			
 		}
 
         @Override
@@ -427,8 +427,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				documentRoot.setDeliver(true);
 			}
 		}
-		  
-        @Override
+
+		@Override
         protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
             if (o instanceof BPMNShape && f==BpmnDiPackage.eINSTANCE.getBPMNShape_IsHorizontal()) {
             	BPMNShape s = (BPMNShape)o;
@@ -771,27 +771,192 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 	}
 	
-	public class Bpmn2ModelerXmlHelper extends BpmnXmlHelper {
-		
+	public static class Bpmn2ModelerXmlHelper extends BpmnXmlHelper {
+
+		// List of all EReferences that are defined as type="xsd:QName" in the BPMN 2.0 Schema
+		// This information is not represented in the MDT BPMN2 project metamodel. 
+		private static HashSet<EStructuralFeature> qnameMap = new HashSet<EStructuralFeature>();
+		static {
+			qnameMap.add(Bpmn2Package.eINSTANCE.getExtension_Definition());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getRelationship_Sources());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getRelationship_Targets());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getAssociation_SourceRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getAssociation_TargetRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getGroup_CategoryValueRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCorrelationKey_CorrelationPropertyRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCorrelationProperty_Type());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCorrelationPropertyBinding_CorrelationPropertyRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCorrelationPropertyRetrievalExpression_MessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCorrelationSubscription_CorrelationPropertyBinding());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getError_StructureRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getEscalation_StructureRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getFlowElement_CategoryValueRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getFlowNode_Incoming());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getFlowNode_Outgoing());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getFormalExpression_EvaluatesToTypeRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getInputOutputBinding_OperationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessage_ItemRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getResourceParameter_Type());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getOperation_InMessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getOperation_OutMessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getOperation_ErrorRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getOperation_ImplementationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCallConversation_CalledCollaborationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationAssociation_InnerConversationNodeRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationAssociation_OuterConversationNodeRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationLink_SourceRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationLink_TargetRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationNode_MessageFlowRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationNode_ParticipantRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getConversationNode_CorrelationKeys());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageFlow_SourceRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageFlow_TargetRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageFlow_MessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageFlowAssociation_InnerMessageFlowRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageFlowAssociation_OuterMessageFlowRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getParticipant_InterfaceRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getParticipant_EndPointRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getParticipant_ProcessRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getParticipantAssociation_InnerParticipantRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getParticipantAssociation_OuterParticipantRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCallableElement_SupportedInterfaceRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCallActivity_CalledElementRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataInputRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataOutputRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_OneBehaviorEventRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_NoneBehaviorEventRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getReceiveTask_OperationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getResourceRole_ResourceRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getSendTask_MessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getSendTask_OperationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getServiceTask_OperationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getBoundaryEvent_AttachedToRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCatchEvent_EventDefinitionRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition_ActivityRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition_ErrorRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Source());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition_OperationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition_MessageRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getSignal_StructureRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition_SignalRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getThrowEvent_EventDefinitionRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getProcess_Supports());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getProcess_DefinitionalCollaborationRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getLane_PartitionElementRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getGlobalChoreographyTask_InitiatingParticipantRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getChoreographyActivity_ParticipantRefs());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getChoreographyActivity_InitiatingParticipantRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getChoreographyTask_MessageFlowRef());
+			qnameMap.add(Bpmn2Package.eINSTANCE.getCallChoreography_CalledChoreographyRef());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNPlane_BpmnElement());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNShape_BpmnElement());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNShape_ChoreographyActivityShape());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_BpmnElement());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_SourceElement());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_TargetElement());
+			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNLabel_LabelStyle());
+		}
+		boolean isQName = false;
+
 		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
 		}		
-		  
-		public void pushContext() {
-			boolean isTopLevelContext = false;
-			try {
-				namespaceSupport.getDeclaredPrefixCount();
-			}
-			catch (ArrayIndexOutOfBoundsException e) {
-				isTopLevelContext = true;
-			}
-			namespaceSupport.pushContext();
-			// add the "bpmn2" namespace as the top-level default XML namespace
-			if (isTopLevelContext) {
-				addPrefix("", Bpmn2Package.eNS_URI);
-			}
+		
+		@Override
+		public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
+			Object o = super.getValue(eObject, eStructuralFeature);
+			if (qnameMap.contains(eStructuralFeature))
+				isQName = true;
+			else
+				isQName = false;
+			return o;
 		}
 
+		@Override
+		public String getHREF(EObject obj) {
+			// convert the attribute ID references to a QName
+			String s = super.getHREF(obj);
+			if (isQName)
+				s = convertToQName(s);
+			return s;
+		}
+
+		public String getIDREF(EObject obj) {
+			// convert the element ID references to a QName
+			String s = super.getIDREF(obj);
+			if (isQName)
+				s = convertToQName(s);
+			return s;
+		}
+
+		/**
+		 * Returns the targetNamespace defined in the <definitions> root element.
+		 * 
+		 * @return a namespace URI or null if targetNamespace is not defined.
+		 */
+		private String getTargetNamespace() {
+			Definitions definitions = ImportHelper.getDefinitions(getResource());
+			if (definitions==null)
+				return null;
+			return definitions.getTargetNamespace();
+		}
+		
+		/**
+		 * Get the namespace prefix for the targetNamespace.
+		 * 
+		 * @return null if the document does not define a targetNamespace,
+		 * an empty string if there is a targetNamespace, but no prefix has been
+		 * defined for it, or the prefix for the targetNamespace
+		 * 
+		 * Examples:
+		 * 
+		 * <bpmn2:definitions tns="http://eclipse.org/example" targetNamespace="http://eclipse.org/example"/>
+		 *   return "tns"
+		 *   
+		 * <bpmn2:definitions targetNamespace="http://eclipse.org/example"/>
+		 *   returns ""
+		 *   
+		 * <bpmn2:definitions tns="http://eclipse.org/example"/>
+		 *   returns null
+		 */
+		private String getTargetNamespacePrefix() {
+			String targetNamespace = getTargetNamespace();
+			if (targetNamespace!=null && !targetNamespace.isEmpty()) {
+				String prefix = getPrefix(targetNamespace);
+				if (prefix==null || prefix.isEmpty()) {
+					for (Entry<String, String> e : this.getPrefixToNamespaceMap().entrySet()) {
+						if (targetNamespace.equals(e.getValue()) && !e.getKey().isEmpty()) {
+							return e.getKey();
+						}
+					}
+				}
+				return "";
+			}
+			return null;
+		}
+		
+		/**
+		 * Converts the NCName "s" to a QName that maps to the targetNamespace
+		 * 
+		 * @param s - a non-colonized name string
+		 * @return the string "s" prefixed with the NS prefix for the targetNamespace.
+		 */
+		private String convertToQName(String s) {
+			if (!s.contains(":")) {
+				String prefix = getTargetNamespacePrefix();
+				if (prefix!=null && !prefix.isEmpty()) {
+					s = prefix + ":" + s;
+				}
+			}
+			return s;
+		}
+		
 		public void setValue(EObject object, EStructuralFeature feature,
 				Object value, int position) {
 			// fix some kind of bug which causes duplicate entries in objects that have

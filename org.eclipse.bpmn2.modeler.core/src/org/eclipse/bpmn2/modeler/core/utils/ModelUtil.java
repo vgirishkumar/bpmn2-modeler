@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
@@ -31,6 +32,9 @@ import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
@@ -550,6 +554,8 @@ public class ModelUtil {
 			BPMNPlane plane = diagram.getPlane();
 			if (plane!=null) {
 				BaseElement be = plane.getBpmnElement();
+				if (be==null)
+					be = getDefaultBPMNPlaneReference(diagram);
 				if (be instanceof Choreography)
 					return Bpmn2DiagramType.CHOREOGRAPHY;
 				else if (be instanceof Collaboration)
@@ -560,6 +566,33 @@ public class ModelUtil {
 			}
 		}
 		return Bpmn2DiagramType.NONE;
+	}
+	
+	/**
+	 * Return the first Process, SubProcess, AdHocSubProcess, Transaction, Collaboration,
+	 * Choreography or SubChoreography defined in this document.
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public static BaseElement getDefaultBPMNPlaneReference(EObject object) {
+		Definitions definitions = getDefinitions(object);
+		if (definitions!=null) {
+			for (RootElement re : definitions.getRootElements()) {
+				if (	re instanceof Process ||
+						re instanceof SubProcess ||
+						re instanceof AdHocSubProcess ||
+						re instanceof Transaction ||
+						re instanceof Collaboration ||
+						re instanceof Choreography ||
+						re instanceof SubChoreography
+				) {
+					return re;
+				}
+			}
+
+		}
+		return null;
 	}
 	
 	public static String getDiagramTypeName(BPMNDiagram object) {

@@ -20,10 +20,13 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
@@ -39,9 +42,11 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -128,10 +133,11 @@ public class DIImport {
 			protected void doExecute() {
 
 				Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
+				Definitions definitions = modelHandler.getDefinitions();
 				
 				if (bpmnDiagrams.size() == 0) {
 					BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
-					plane.setBpmnElement(modelHandler.getOrCreateProcess(modelHandler.getInternalParticipant()));
+					plane.setBpmnElement(ModelUtil.getDefaultBPMNPlaneReference(definitions));
 
 					BPMNDiagram d = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
 					d.setPlane(plane);
@@ -144,7 +150,6 @@ public class DIImport {
 				featureProvider.link(diagram, bpmnDiagrams.get(0));
 				
 				// First: add all IDs to our ID mapping table
-				Definitions definitions = modelHandler.getDefinitions();
 				TreeIterator<EObject> iter = definitions.eAllContents();
 				while (iter.hasNext()) {
 					ModelUtil.addID( iter.next() );
@@ -162,7 +167,10 @@ public class DIImport {
 
 					BPMNPlane plane = d.getPlane();
 					if (plane.getBpmnElement() == null) {
-						plane.setBpmnElement(modelHandler.getOrCreateProcess(modelHandler.getInternalParticipant()));
+						// Set the actual bpmnElement reference to the default if it is null.
+						// The editor relies on this to determine whether the BaseElement has
+						// its own diagram page or not.
+						plane.setBpmnElement(ModelUtil.getDefaultBPMNPlaneReference(definitions));
 					}
 					elements.put(plane.getBpmnElement(), diagram);
 					List<DiagramElement> ownedElement = plane.getPlaneElement();
