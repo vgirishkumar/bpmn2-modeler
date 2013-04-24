@@ -81,7 +81,6 @@ import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
-import org.eclipse.emf.ecore.xml.type.util.XMLTypeUtil;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -107,7 +106,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		super(uri);
 		
 		// override helper and uri handler in options map
-		this.xmlHelper = new Bpmn2ModelerXmlHelper(this);
+		this.xmlHelper = (BpmnXmlHelper)createXMLHelper();
         this.uriHandler = new FragmentQNameURIHandler(xmlHelper);
         uriHandler.setBaseURI(uri);
         
@@ -139,7 +138,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
     @Override
     protected XMLHelper createXMLHelper() {
-        return this.xmlHelper;
+        return new Bpmn2ModelerXmlHelper(this);
     }
 
 	/**
@@ -775,8 +774,11 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		// List of all EReferences that are defined as type="xsd:QName" in the BPMN 2.0 Schema
 		// This information is not represented in the MDT BPMN2 project metamodel. 
-		private static HashSet<EStructuralFeature> qnameMap = new HashSet<EStructuralFeature>();
-		static {
+		protected HashSet<EStructuralFeature> qnameMap = new HashSet<EStructuralFeature>();
+		boolean isQNameFeature = false;
+
+		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
+			super(resource);
 			qnameMap.add(Bpmn2Package.eINSTANCE.getExtension_Definition());
 			qnameMap.add(Bpmn2Package.eINSTANCE.getRelationship_Sources());
 			qnameMap.add(Bpmn2Package.eINSTANCE.getRelationship_Targets());
@@ -861,11 +863,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_SourceElement());
 			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_TargetElement());
 			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNLabel_LabelStyle());
-		}
-		boolean isQNameFeature = false;
-
-		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
-			super(resource);
 		}		
 		
 		@Override
