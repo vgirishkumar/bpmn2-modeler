@@ -862,7 +862,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNEdge_TargetElement());
 			qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNLabel_LabelStyle());
 		}
-		boolean isQName = false;
+		boolean isQNameFeature = false;
 
 		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
@@ -872,9 +872,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
 			Object o = super.getValue(eObject, eStructuralFeature);
 			if (qnameMap.contains(eStructuralFeature))
-				isQName = true;
+				isQNameFeature = true;
 			else
-				isQName = false;
+				isQNameFeature = false;
 			return o;
 		}
 
@@ -882,7 +882,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public String getHREF(EObject obj) {
 			// convert the attribute ID references to a QName
 			String s = super.getHREF(obj);
-			if (isQName)
+			if (isQNameFeature && !ModelUtil.isStringWrapper(obj))
 				s = convertToQName(s);
 			return s;
 		}
@@ -890,7 +890,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public String getIDREF(EObject obj) {
 			// convert the element ID references to a QName
 			String s = super.getIDREF(obj);
-			if (isQName)
+			if (isQNameFeature && !ModelUtil.isStringWrapper(obj))
 				s = convertToQName(s);
 			return s;
 		}

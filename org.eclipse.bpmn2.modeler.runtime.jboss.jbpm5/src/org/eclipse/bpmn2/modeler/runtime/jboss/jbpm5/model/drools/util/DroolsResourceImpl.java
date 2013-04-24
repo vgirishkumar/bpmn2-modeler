@@ -32,11 +32,13 @@ import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.Relationship;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -103,6 +105,10 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				// see ModelXmlHandler.processElement() for details...
 				if (o instanceof Property) {
 					if (f.getName().equals("name"))
+						return false;
+				}
+				if (f== Bpmn2Package.eINSTANCE.getDefinitions_Relationships()) {
+					if (!JbpmPreferencePage.isEnableSimulation())
 						return false;
 				}
 				return super.shouldSaveFeature(o, f);
