@@ -127,7 +127,9 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 		        		if ("targetNamespace".equals(name))
 		        			needTargetNamespace = false;
 		        		else if (XSI_SCHEMA_LOCATION.equals(name)) {
-		        			value = "http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd";
+		        			value = "http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" +
+		        					" http://www.jboss.org/drools drools.xsd"+
+		        					" http://www.bpsim.org/schemas/1.0 bpsim.xsd";
 		        		}
 		        		super.addAttribute(name, value);
 		        	}
