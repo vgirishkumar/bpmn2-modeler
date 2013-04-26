@@ -141,6 +141,14 @@ public class AnchorUtil {
 		return anchor;
 	}
 	
+	public static AnchorLocation getBoundaryAnchorLocation(Anchor anchor) {
+		String property = Graphiti.getPeService().getPropertyValue(anchor, BOUNDARY_FIXPOINT_ANCHOR);
+		if (property != null && anchor instanceof FixPointAnchor) {
+			return AnchorLocation.getLocation(property);
+		}
+		return null;
+	}
+	
 	public static FixPointAnchor createAdHocAnchor(AnchorContainer ac, int x, int y) {
 		return createAdHocAnchor(ac, gaService.createPoint(x, y));
 	}

@@ -79,6 +79,8 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 
     @Override
     protected XMLHelper createXMLHelper() {
+    	if (xmlHelper!=null)
+    		return xmlHelper;
     	return new DroolsXmlHelper(this);
     }
 
@@ -149,9 +151,10 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 
 		public DroolsXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
-			qnameMap.remove(Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef());
-			qnameMap.remove(Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
-			qnameMap.remove(Bpmn2Package.eINSTANCE.getOperation_ImplementationRef());
+			qnameMap.clear();
+//			qnameMap.remove(Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef());
+//			qnameMap.remove(Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
+//			qnameMap.remove(Bpmn2Package.eINSTANCE.getOperation_ImplementationRef());
 		}
     }
     
