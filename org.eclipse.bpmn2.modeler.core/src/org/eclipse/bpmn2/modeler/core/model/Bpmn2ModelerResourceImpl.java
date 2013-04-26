@@ -138,6 +138,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
     @Override
     protected XMLHelper createXMLHelper() {
+    	if (xmlHelper!=null)
+    		return xmlHelper;
         return new Bpmn2ModelerXmlHelper(this);
     }
 
