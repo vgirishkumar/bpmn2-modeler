@@ -644,13 +644,9 @@
 			<enable object="Definitions" feature="diagrams"/>
 			<enable object="Definitions" feature="exporter"/>
 			<enable object="Definitions" feature="exporterVersion"/>
-			<enable object="Definitions" feature="expressionLanguage"/>
 			<enable object="Definitions" feature="extensionValues"/>
 			<enable object="Definitions" feature="extensions"/>
-			<enable object="Definitions" feature="name"/>
 			<enable object="Definitions" feature="rootElements"/>
-			<enable object="Definitions" feature="targetNamespace"/>
-			<enable object="Definitions" feature="typeLanguage"/>
 			<enable object="Documentation" feature="anyAttribute"/>
 			<enable object="Documentation" feature="extensionValues"/>
 			<enable object="Documentation" feature="text"/>
@@ -752,6 +748,9 @@
 			<enable object="Operation" feature="extensionValues"/>
 			<enable object="Operation" feature="id"/>
 			<enable object="Operation" feature="name"/>
+			<enable object="Operation" feature="inMessageRef"/>
+			<enable object="Operation" feature="outMessageRef"/>
+			<enable object="Operation" feature="errorRefs"/>
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="name"/>
 			<enable object="Process" feature="adHoc"/>
@@ -792,6 +791,7 @@
 			<enable object="ServiceTask" feature="dataOutputAssociations"/>
 			<enable object="ServiceTask" feature="ioSpecification"/>
 			<enable object="ServiceTask" feature="isForCompensation"/>
+			<enable object="ServiceTask" feature="implementation"/>
 			<enable object="ServiceTask" feature="name"/>
 			<enable object="ServiceTask" feature="operationRef"/>
 			<enable object="Signal" feature="id"/>
@@ -839,8 +839,9 @@
 			<disable object="AdHocSubProcess"/>
 			<disable object="Assignment"/>
 			<disable object="BPSimDataType"/>
-			<disable object="BoundaryEvent"/>
+			<disable object="BusinessRuleTask" feature="isForCompensation"/>
 			<disable object="CallActivity" feature="extensionValues"/>
+			<disable object="CallActivity" feature="isForCompensation"/>
 			<disable object="CompensateEventDefinition"/>
 			<disable object="ConditionalEventDefinition"/>
 			<disable object="DataInputAssociation"/>
@@ -850,6 +851,8 @@
 			<disable object="Documentation"/>
 			<disable object="Error"/>
 			<disable object="ErrorEventDefinition"/>
+			<disable object="Escalation"/>
+			<disable object="Interface"/>
 			<disable object="InputSet"/>
 			<disable object="IntermediateThrowEvent"/>
 			<disable object="Lane"/>
@@ -858,12 +861,19 @@
 			<disable object="Message"/>
 			<disable object="MessageEventDefinition"/>
 			<disable object="OutputSet"/>
-			<disable object="Property"/>
+			<disable object="Process" feature="isExecutable"/>
 			<disable object="ReceiveTask"/>
+			<disable object="ScriptTask" feature="isForCompensation"/>
 			<disable object="SendTask"/>
+			<disable object="SubProcess" feature="isForCompensation"/>
 			<disable object="Task" feature="extensionValues"/>
 			<disable object="UserTask" feature="extensionValues"/>
 			<disable object="Process" feature="adHoc"/>
+
+			<enable object="BoundaryEvent" feature="attachedToRef"/>
+			<enable object="BoundaryEvent" feature="cancelActivity"/>
+			<enable object="BoundaryEvent" feature="eventDefinitions"/>
+			<enable object="BoundaryEvent" feature="name"/>
 			
 			<enable object="GlobalType"/>
 			<enable object="ImportType"/>
@@ -945,7 +955,7 @@
 			<enable object="SequenceFlow" feature="priority"/>
 			<enable object="SequenceFlow" feature="sourceRef"/>
 			<enable object="SequenceFlow" feature="targetRef"/>
-			<enable object="StartEvent"/>
+			<enable object="StartEvent" feature="name"/>
 			<enable object="TerminateEventDefinition" feature="id"/>
 		</modelEnablement>
 		
@@ -960,14 +970,16 @@
 				<tool name="AdHoc Subprocess" object="AdHocSubProcess"/>
 				<tool name="Subprocess" object="SubProcess"/>
 				<tool name="Reusable Subprocess" object="CallActivity"/>
-				<tool name="Task" object="Task"/>
 				<tool name="Manual Task" object="ManualTask"/>
 				<tool name="User Task" object="UserTask"/>
 				<tool name="Script Task" object="ScriptTask"/>
 				<tool name="Business Rule Task" object="BusinessRuleTask"/>
-				<tool name="Service Task" object="ServiceTask"/>
 				<tool name="Send Task" object="SendTask"/>
 				<tool name="Receive Task" object="ReceiveTask"/>
+			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.BoundaryEvents" name="Boundary Events">
+				<tool name="Error" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
+				<tool name="Timer" object="BoundaryEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Connection" name="Connections">
 				<tool name="Sequence Flow" object="SequenceFlow"/>
@@ -980,8 +992,11 @@
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Gateways" name="Gateways">
 				<tool name="Data-based Exclusive (XOR)" object="ExclusiveGateway"/>
-				<tool name="Inclusive" object="InclusiveGateway"/>
 				<tool name="Parallel" object="ParallelGateway"/>
+			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.CatchEvents" name="Intermediate Catch Events">
+				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
+				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
 			</category>
 		</toolPalette>
 		
@@ -1124,7 +1139,7 @@
 		
 		
 	</extension>
-	
+
  <extension
        point="org.eclipse.graphiti.ui.imageProviders">
     <imageProvider
