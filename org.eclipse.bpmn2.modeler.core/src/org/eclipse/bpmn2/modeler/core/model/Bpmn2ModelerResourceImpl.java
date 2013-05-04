@@ -60,6 +60,7 @@ import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -870,8 +871,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
 			Object o = super.getValue(eObject, eStructuralFeature);
-			if (qnameMap.contains(eStructuralFeature))
-				isQNameFeature = true;
+			if (qnameMap.contains(eStructuralFeature)) {
+				List<String> prefixes = urisToPrefixes.get(getTargetNamespace());
+				if (prefixes.contains(""))
+					isQNameFeature = false;
+				else
+					isQNameFeature = true;
+			}
 			else
 				isQNameFeature = false;
 			return o;
