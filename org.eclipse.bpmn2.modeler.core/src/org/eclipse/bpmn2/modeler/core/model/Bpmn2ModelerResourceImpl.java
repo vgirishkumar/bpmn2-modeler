@@ -873,7 +873,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			Object o = super.getValue(eObject, eStructuralFeature);
 			if (qnameMap.contains(eStructuralFeature)) {
 				List<String> prefixes = urisToPrefixes.get(getTargetNamespace());
-				if (prefixes.contains(""))
+				if (prefixes!=null && prefixes.contains(""))
 					isQNameFeature = false;
 				else
 					isQNameFeature = true;

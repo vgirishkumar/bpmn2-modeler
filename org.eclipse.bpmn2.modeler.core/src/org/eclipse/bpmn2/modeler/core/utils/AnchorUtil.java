@@ -292,10 +292,15 @@ public class AnchorUtil {
 		// properties set - these are the locations at which the connection was started and/or terminated.
 		if (targetLoc!=null && useAdHocAnchors(target,connection)) {
 			// ensure that the new anchor is located on the edge of the shape
-			if (newEndAnchor == targetTop.anchor || newEndAnchor == targetBottom.anchor)
-				targetLoc.setY(newEndAnchor.getLocation().getY());
-			else if (newEndAnchor == targetLeft.anchor || newEndAnchor == targetRight.anchor)
-				targetLoc.setX(newEndAnchor.getLocation().getX());
+			AnchorLocation endLocation = findNearestEdge((Shape) target,p1);
+			if (endLocation==AnchorLocation.TOP)
+				targetLoc.setY(targetTop.anchor.getLocation().getY());
+			else if (endLocation==AnchorLocation.BOTTOM)
+				targetLoc.setY(targetBottom.anchor.getLocation().getY());
+			else if (endLocation==AnchorLocation.LEFT)
+				targetLoc.setX(targetLeft.anchor.getLocation().getX());
+			else if (endLocation==AnchorLocation.RIGHT)
+				targetLoc.setX(targetRight.anchor.getLocation().getX());
 			adjustPoint(target,targetLoc);
 			// if this is a newly created connection, adjust the source location if necessary:
 			// if the calculated boundary of the source and target figures are above/below or
@@ -330,10 +335,15 @@ public class AnchorUtil {
 		}
 
 		if (sourceLoc!=null && useAdHocAnchors(source,connection)) {
-			if (newStartAnchor == sourceTop.anchor || newStartAnchor == sourceBottom.anchor)
-				sourceLoc.setY(newStartAnchor.getLocation().getY());
-			else if (newStartAnchor == sourceLeft.anchor || newStartAnchor == sourceRight.anchor)
-				sourceLoc.setX(newStartAnchor.getLocation().getX());
+			AnchorLocation startLocation = findNearestEdge((Shape) source,p2);
+			if (startLocation==AnchorLocation.TOP)
+				sourceLoc.setY(sourceTop.anchor.getLocation().getY());
+			else if (startLocation==AnchorLocation.BOTTOM)
+				sourceLoc.setY(sourceBottom.anchor.getLocation().getY());
+			else if (startLocation==AnchorLocation.LEFT)
+				sourceLoc.setX(sourceLeft.anchor.getLocation().getX());
+			else if (startLocation==AnchorLocation.RIGHT)
+				sourceLoc.setX(sourceRight.anchor.getLocation().getX());
 			adjustPoint(source, sourceLoc);
 			newStartAnchor = createAdHocAnchor(source, sourceLoc);
 			
@@ -536,6 +546,8 @@ public class AnchorUtil {
 		p.setY(loc.getY());
 
 		relocateConnection(source, target, anchors);
+		connection.setStart(anchors.getFirst());
+		connection.setEnd(anchors.getSecond());
 		deleteEmptyAdHocAnchors(source);
 		deleteEmptyAdHocAnchors(target);
 		
@@ -867,6 +879,21 @@ public class AnchorUtil {
 		IDimension size = GraphicsUtil.calculateSize(shape);
 		int minDist = Integer.MAX_VALUE;
 		int dist;
+		
+		if (loc.getX()<=p.getX() && p.getX()<=loc.getX() + size.getWidth()) {
+			// Point lies between left & right edge of shape so nearest edge
+			// is either the top or bottom edge
+			if (p.getY()<=loc.getY() + size.getHeight()/2)
+				return AnchorLocation.TOP;
+			return AnchorLocation.BOTTOM;
+		}
+		if (loc.getY()<=p.getY() && p.getY()<=loc.getY() + size.getHeight()) {
+			// Point lies between top & bottom edge of shape so nearest edge
+			// is either the left or right edge
+			if (p.getX()<=loc.getX() + size.getWidth()/2)
+				return AnchorLocation.LEFT;
+			return AnchorLocation.RIGHT;
+		}
 		
 		// check top edge first:
 		dist = Math.abs(p.getY() - loc.getY());
