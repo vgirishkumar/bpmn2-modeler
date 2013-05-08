@@ -174,10 +174,7 @@
 
 		<repository>
 			<id>eclipse-graphiti-kepler</id>
-			<!-- continue to use graphiti 0.9.2 until kepler is released, by then we'll have a new branch for the editor
-			<url>http://download.eclipse.org/graphiti/updates/milestones/S-0.10.0M6-201303191346/</url>
-			-->
-			<url>http://download.eclipse.org/graphiti/updates/0.9.2</url>
+			<url>http://download.eclipse.org/graphiti/updates/milestones/S-0.10.0M7-201305080709/</url>
 			<layout>p2</layout>
 			<snapshots>
 				<enabled>true</enabled>
