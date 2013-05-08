@@ -24,6 +24,9 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
+ * 
+ * 
+ * This class needs to go into the SwitchYard extension for the jBPM Target Runtime extension
  *
  */
 public class JbpmServiceTaskPropertiesAdapter extends ServiceTaskPropertiesAdapter{
@@ -44,8 +47,7 @@ public class JbpmServiceTaskPropertiesAdapter extends ServiceTaskPropertiesAdapt
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues(Object context) {
 					if (choiceOfValues==null) {
-						choiceOfValues = new Hashtable<String,Object>();
-						choiceOfValues.put("Web Service", "##WebService");
+						choiceOfValues = super.getChoiceOfValues(context);
 						choiceOfValues.put("SwitchYard Service", "##SwitchYard");
 					}
 					return choiceOfValues;
