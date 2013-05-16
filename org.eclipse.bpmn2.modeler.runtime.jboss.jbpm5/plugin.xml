@@ -806,6 +806,7 @@
 			<enable object="Signal" feature="name"/>
 			<enable object="SignalEventDefinition" feature="signalRef"/>
 			<enable object="StartEvent" feature="name"/>
+			<enable object="StartEvent" feature="eventDefinitions"/>
 			<enable object="SubProcess" feature="flowElements"/>
 			<enable object="SubProcess" feature="isForCompensation"/>
 			<enable object="SubProcess" feature="loopCharacteristics"/>
