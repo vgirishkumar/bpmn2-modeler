@@ -17,10 +17,10 @@ public class RouteSolver {
 
 	protected final static IGaService gaService = Graphiti.getGaService();
 	protected static final IPeService peService = Graphiti.getPeService();
-	static final int topMargin = 50;
-	static final int bottomMargin = 50;
-	static final int leftMargin = 50;
-	static final int rightMargin = 50;
+	static final int topMargin = 20;
+	static final int bottomMargin = 20;
+	static final int leftMargin = 20;
+	static final int rightMargin = 20;
 
 	IFeatureProvider fp;
 	List<ContainerShape> allShapes;
@@ -47,24 +47,25 @@ public class RouteSolver {
 	public boolean solve(ContainerShape source, ContainerShape target) {
 		this.source = source;
 		this.target = target;
-		List< List<RoutingLane> > solutions;
+		List< List<RoutingLane> > verticalSolutions;
+		List< List<RoutingLane> > horizontalSolutions;
 		
 		verticalNet.eraseLanes();
 		horizontalNet.eraseLanes();
 		
-		solutions = verticalNet.findSolutions(source, target);
-		verticalNet.drawLanes();
+		verticalSolutions = verticalNet.findSolutions(source, target);
+//		verticalNet.drawLanes();
 //		verticalNet.drawConnections();
-		if (solutions.size()>0) {
-			verticalNet.drawSolution(solutions.get(0));
+		if (verticalSolutions.size()>0) {
+			verticalNet.drawSolution(verticalSolutions.get(0));
 		}
 		
-		solutions = horizontalNet.findSolutions(source, target);
+		horizontalSolutions = horizontalNet.findSolutions(source, target);
 //		horizontalNet.drawLanes();
 //		horizontalNet.drawConnections();
-//		if (solutions.size()>0) {
-//			horizontalNet.drawSolution(solutions.get(1));
-//		}
+		if (horizontalSolutions.size()>0) {
+			horizontalNet.drawSolution(horizontalSolutions.get(1));
+		}
 		return true;
 	}
 	

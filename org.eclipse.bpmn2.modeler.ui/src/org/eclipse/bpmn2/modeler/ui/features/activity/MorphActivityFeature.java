@@ -25,7 +25,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
  *
  */
 public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
-	// TODO: MORPH FEATURE 
 
 	/**
 	 * @param fp

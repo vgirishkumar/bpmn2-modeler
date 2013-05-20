@@ -25,7 +25,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
  *
  */
 public class MorphGatewayFeature extends AbstractMorphNodeFeature<Gateway> {
-	// TODO: MORPH FEATURE 
 
 	/**
 	 * @param fp
