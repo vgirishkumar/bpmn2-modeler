@@ -247,23 +247,25 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		ModelEnablementDescriptor enablements =
 				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
 		EClass newType = getBusinessObjectClass();
-		ContainerShape oldShape = getOldShape(context);
-		BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
-		EClass oldType = oldObject.eClass();
-
-		// build a list of possible subclasses for the popup menu
 		List<EClass> subtypes = new ArrayList<EClass>();
-		for (EClassifier ec : Bpmn2Package.eINSTANCE.getEClassifiers() ) {
-			if (ec instanceof EClass) {
-				if ( ((EClass) ec).isAbstract()) {
-					continue;
-				}
-				EList<EClass>superTypes = ((EClass)ec).getEAllSuperTypes(); 
-				if (superTypes.contains(newType) &&
-						enablements.isEnabled((EClass)ec)) {
-					if (ec!=Bpmn2Package.eINSTANCE.getBoundaryEvent() &&
-							ec!=Bpmn2Package.eINSTANCE.getStartEvent() && ec!=oldType) {
-						subtypes.add((EClass)ec);
+		ContainerShape oldShape = getOldShape(context);
+		if (oldShape!=null) {
+			BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
+			EClass oldType = oldObject.eClass();
+	
+			// build a list of possible subclasses for the popup menu
+			for (EClassifier ec : Bpmn2Package.eINSTANCE.getEClassifiers() ) {
+				if (ec instanceof EClass) {
+					if ( ((EClass) ec).isAbstract()) {
+						continue;
+					}
+					EList<EClass>superTypes = ((EClass)ec).getEAllSuperTypes(); 
+					if (superTypes.contains(newType) &&
+							enablements.isEnabled((EClass)ec)) {
+						if (ec!=Bpmn2Package.eINSTANCE.getBoundaryEvent() &&
+								ec!=Bpmn2Package.eINSTANCE.getStartEvent() && ec!=oldType) {
+							subtypes.add((EClass)ec);
+						}
 					}
 				}
 			}

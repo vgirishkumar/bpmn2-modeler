@@ -412,7 +412,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	}
 	
 	private void createEntry(IFeature feature, PaletteCompartmentEntry compartmentEntry) {
-		if (modelEnablements.isEnabled(feature)) {
+		if (modelEnablements.isEnabled(feature) || feature instanceof CompoundCreateFeature) {
 			IFeature targetFeature = feature;
 			if (feature instanceof CompoundCreateFeature) {
 				CompoundCreateFeature cf = (CompoundCreateFeature)feature;
