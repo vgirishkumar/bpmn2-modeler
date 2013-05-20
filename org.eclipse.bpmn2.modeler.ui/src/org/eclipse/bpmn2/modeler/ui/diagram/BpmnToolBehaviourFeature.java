@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
-import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature.CreateFeatureNode;
+import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
@@ -277,7 +277,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		}
 	}
 	
-	private IFeature getCreateFeature(ToolDescriptor tool, CompoundCreateFeature root, CreateFeatureNode node, ToolPart toolPart) {
+	private IFeature getCreateFeature(ToolDescriptor tool, CompoundCreateFeature root, CompoundCreateFeaturePart node, ToolPart toolPart) {
 		IFeature parentFeature = null;
 		String name = toolPart.getName();
 		EClassifier eClass = modelDescriptor.getClassifier(name);
@@ -286,7 +286,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		}
 		if (root!=null) {
 			if (node!=null) {
-				CreateFeatureNode n = node.addChild(parentFeature);
+				CompoundCreateFeaturePart n = node.addChild(parentFeature);
 				if (toolPart.hasProperties()) {
 					n.setProperties(toolPart.getProperties());
 				}
@@ -412,11 +412,11 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 	}
 	
 	private void createEntry(IFeature feature, PaletteCompartmentEntry compartmentEntry) {
-		if (modelEnablements.isEnabled(feature)) {
+		if (modelEnablements.isEnabled(feature) || feature instanceof CompoundCreateFeature) {
 			IFeature targetFeature = feature;
 			if (feature instanceof CompoundCreateFeature) {
 				CompoundCreateFeature cf = (CompoundCreateFeature)feature;
-				targetFeature = ((CreateFeatureNode)cf.getChildren().get(0)).getFeature();
+				targetFeature = ((CompoundCreateFeaturePart)cf.getChildren().get(0)).getFeature();
 			}
 			if (targetFeature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;

@@ -146,8 +146,36 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			public int compare(List<RoutingLane> arg0, List<RoutingLane> arg1) {
 				int i;
 				i = getManhattanDistance(arg0) - getManhattanDistance(arg1);
-				if (i==0)
-					i = arg0.size() - arg1.size();
+				if (i==0) {
+					// find the lane with the easiest passage
+					int arg0min = Integer.MAX_VALUE;
+					int arg1min = Integer.MAX_VALUE;
+					if (isRotated) {
+						for (RoutingLane a : arg0) {
+							int d = a.getHeight();
+							if (d<arg0min)
+								arg0min = d;
+						}
+						for (RoutingLane a : arg1) {
+							int d = a.getHeight();
+							if (d<arg1min)
+								arg1min = d;
+						}
+					}
+					else {
+						for (RoutingLane a : arg0) {
+							int d = a.getWidth();
+							if (d<arg0min)
+								arg0min = d;
+						}
+						for (RoutingLane a : arg1) {
+							int d = a.getWidth();
+							if (d<arg1min)
+								arg1min = d;
+						}
+					}
+					i = arg1min - arg0min;
+				}
 				return i;
 			}
 		});
@@ -221,6 +249,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		else {
 			if (dx>a0.getWidth())
 				dist += a0.getWidth();
+			double dd = (double) a0.getWidth() / (double) a0.getHeight();
 			dist += dy;
 			for (int i=1; i<lanes.size(); ++i) {
 				a1 = lanes.get(i);
