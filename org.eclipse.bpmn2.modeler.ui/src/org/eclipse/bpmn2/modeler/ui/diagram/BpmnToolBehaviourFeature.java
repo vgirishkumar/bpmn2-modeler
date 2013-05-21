@@ -138,7 +138,8 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 
 		@Override
 		public ImageDescriptor getSmallIcon() {
-			if (getLabel().equals(editor.getModelEnablementProfile()))
+			String profile = editor.getModelEnablementProfile();
+			if (getLabel().equals(profile))
 				return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_CHECKED_16);
 			return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_UNCHECKED_16);
 		}
