@@ -103,6 +103,8 @@ import org.eclipse.swt.widgets.Display;
 
 public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
+	public final static String DEFAULT_PALETTE_ID = "org.bpmn2.modeler.toolpalette.default.categories";
+	
 	BPMNFeatureProvider featureProvider;
 	ModelEnablementDescriptor modelEnablements;
 	ModelDescriptor modelDescriptor;
@@ -190,9 +192,15 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			ToolPaletteDescriptor toolPaletteDescriptor = rt.getToolPalette(diagramType, profile);
 			if (toolPaletteDescriptor!=null) {
 				for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
+					if (DEFAULT_PALETTE_ID.equals(category.getId())) {
+						createDefaultpalette();
+						continue;
+					}
+					
+					category = getRealCategory(rt, category);
 					compartmentEntry = categories.get(category.getName());
 					for (ToolDescriptor tool : category.getTools()) {
-						
+						tool = getRealTool(rt, tool);
 						IFeature feature = getCreateFeature(tool);
 						if (feature!=null) {
 							if (compartmentEntry==null) {
@@ -224,18 +232,66 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			else
 			{
 				// create a default toolpalette
-				createConnectors(palette);
-				createTasksCompartments(palette);
-				createGatewaysCompartments(palette);
-				createEventsCompartments(palette);
-				createEventDefinitionsCompartments(palette);
-				createDataCompartments(palette);
-				createOtherCompartments(palette);
-				createCustomTasks(palette);
+				createDefaultpalette();
 			}
 		}
 		
 		return palette.toArray(new IPaletteCompartmentEntry[palette.size()]);
+	}
+	
+	private CategoryDescriptor getRealCategory(TargetRuntime rt, CategoryDescriptor category) {
+		String fromPalette = category.getFromPalette();
+		String id = category.getId();
+		if (fromPalette!=null && id!=null) {
+			for (TargetRuntime otherRt : TargetRuntime.getAllRuntimes()) {
+				if (otherRt!=rt) {
+					for (ToolPaletteDescriptor tp : otherRt.getToolPalettes()) {
+						if ( fromPalette.equals(tp.getId())) {
+							for (CategoryDescriptor c : tp.getCategories()) {
+								if (id.equals(c.getId())) {
+									return c;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return category;
+	}
+	
+	private ToolDescriptor getRealTool(TargetRuntime rt, ToolDescriptor tool) {
+		String fromPalette = tool.getFromPalette();
+		String id = tool.getId();
+		if (fromPalette!=null && id!=null) {
+			for (TargetRuntime otherRt : TargetRuntime.getAllRuntimes()) {
+				if (otherRt!=rt) {
+					for (ToolPaletteDescriptor tp : otherRt.getToolPalettes()) {
+						if ( fromPalette.equals(tp.getId())) {
+							for (CategoryDescriptor c : tp.getCategories()) {
+								for (ToolDescriptor t : c.getTools()) {
+									if (id.equals(t.getId())) {
+										return t;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return tool;
+	}
+	
+	private void createDefaultpalette() {
+		createConnectors(palette);
+		createTasksCompartments(palette);
+		createGatewaysCompartments(palette);
+		createEventsCompartments(palette);
+		createEventDefinitionsCompartments(palette);
+		createDataCompartments(palette);
+		createOtherCompartments(palette);
+		createCustomTasks(palette);
 	}
 	
 	public List<IToolEntry> getTools() {
