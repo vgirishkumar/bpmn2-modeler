@@ -724,7 +724,7 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="name" type="string" use="required">
+         <attribute name="name" type="string">
             <annotation>
                <documentation>
                   Toolpalette &quot;drawer&quot; label.
@@ -756,6 +756,13 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
             <annotation>
                <documentation>
                   Inserts this category after the category whose name is equal to this attribute&apos;s value.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="fromPalette" type="string">
+            <annotation>
+               <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>
@@ -799,6 +806,13 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
             <annotation>
                <documentation>
                   Name of the BPMN2 element that this tool will create.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="fromPalette" type="string">
+            <annotation>
+               <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>

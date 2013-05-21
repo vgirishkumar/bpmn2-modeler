@@ -237,11 +237,13 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		// This should be done within the same transaction so that a single
 		// "Undo" can be used to delete all pictogram elements without having
 		// to cycle through each transaction created by an Update.
-		UpdateContext updateContext = new UpdateContext(updatePE);
-		IUpdateFeature updateFeature = feature.getFeatureProvider().getUpdateFeature(updateContext);
-		if ( updateFeature.updateNeeded(updateContext).toBoolean() )
-			updateFeature.update(updateContext);
-
+		if (updatePE!=null) {
+			UpdateContext updateContext = new UpdateContext(updatePE);
+			IUpdateFeature updateFeature = feature.getFeatureProvider().getUpdateFeature(updateContext);
+			if ( updateFeature.updateNeeded(updateContext).toBoolean() )
+				updateFeature.update(updateContext);
+		}
+		
 		businessObjects.add(result);
 	}
 	

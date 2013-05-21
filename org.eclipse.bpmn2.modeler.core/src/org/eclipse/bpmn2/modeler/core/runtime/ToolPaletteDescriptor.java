@@ -22,6 +22,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		private String name;
 		private String description;
 		private String icon;
+		private String fromPalette;
 		private List<ToolDescriptor> tools = new ArrayList<ToolDescriptor>();
 		
 		public CategoryDescriptor(ToolPaletteDescriptor parent, String id, String name, String description, String icon) {
@@ -32,14 +33,14 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			this.icon = icon;
 		}
 		
-		public ToolDescriptor addTool(String name, String description, String icon, String object) {
-			ToolDescriptor tool = new ToolDescriptor(this, name, description, icon, object);
+		public ToolDescriptor addTool(String id, String name, String description, String icon, String object) {
+			ToolDescriptor tool = new ToolDescriptor(this, id, name, description, icon, object);
 			tools.add(tool);
 			return tool;
 		}
 		
-		public ToolDescriptor addTool(String name, String description, String icon) {
-			ToolDescriptor tool = new ToolDescriptor(this, name, description, icon);
+		public ToolDescriptor addTool(String id, String name, String description, String icon) {
+			ToolDescriptor tool = new ToolDescriptor(this, id, name, description, icon);
 			tools.add(tool);
 			return tool;
 		}
@@ -80,6 +81,14 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			return icon;
 		}
 		
+		public String getFromPalette() {
+			return fromPalette;
+		}
+
+		public void setFromPalette(String fromPalette) {
+			this.fromPalette = fromPalette;
+		}
+
 		public ToolPaletteDescriptor getParent() {
 			return parent;
 		}
@@ -88,9 +97,11 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	// The Tools
 	public static class ToolDescriptor {
 		private CategoryDescriptor parent;
+		private String id;
 		private String name;
 		private String description;
 		private String icon;
+		private String fromPalette;
 		private List<ToolPart> toolParts = new ArrayList<ToolPart>() {
 			@Override
 			public boolean add(ToolPart tp) {
@@ -100,11 +111,16 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			}
 		};
 		
-		public ToolDescriptor(CategoryDescriptor parent, String name, String description, String icon, String object) {
+		public ToolDescriptor(CategoryDescriptor parent, String id, String name, String description, String icon) {
 			this.parent = parent;
+			this.id = id;
 			this.name = name;
 			this.description = description;
 			this.icon = icon;
+		}
+		
+		public ToolDescriptor(CategoryDescriptor parent, String id, String name, String description, String icon, String object) {
+			this(parent, id, name, description, icon);
 			parseToolObjectString(object);
 		}
 		
@@ -130,6 +146,8 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						if (result==null)
 							result = toolPart;
 					}
+					else if (parentToolPart==null)
+						parentToolPart = toolPart;
 					toolPartStack.push(parentToolPart);
 					toolPartName = "";
 				}
@@ -234,6 +252,10 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			return toolParts;
 		}
 		
+		public String getId() {
+			return id;
+		}
+		
 		public String getName() {
 			return name;
 		}
@@ -246,6 +268,14 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			return icon;
 		}
 		
+		public String getFromPalette() {
+			return fromPalette;
+		}
+
+		public void setFromPalette(String fromPalette) {
+			this.fromPalette = fromPalette;
+		}
+
 		public CategoryDescriptor getParent() {
 			return parent;
 		}
@@ -322,18 +352,23 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 				cid = c.getAttribute("after");
 				if (cid!=null)
 					category.setAfter(cid);
+				cid = c.getAttribute("fromPalette");
+				if (cid!=null)
+					category.setFromPalette(cid);
 				for (IConfigurationElement t : c.getChildren()) {
 					if (t.getName().equals("tool")) {
+						String tid = t.getAttribute("id");
 						name = t.getAttribute("name");
 						description = t.getAttribute("description");
 						icon = t.getAttribute("icon");
 						String object = t.getAttribute("object");
 						ToolDescriptor tool = null;
 						
-						if (object!=null && !object.isEmpty())
-							tool = category.addTool(name, description, icon, object);
+						if (object!=null && !object.isEmpty()) {
+							tool = category.addTool(tid, name, description, icon, object);
+						}
 						else {
-							tool = category.addTool(name, description, icon);
+							tool = category.addTool(tid, name, description, icon);
 							for (IConfigurationElement tc : t.getChildren()) {
 								if ("object".equals(tc.getName())) {
 									String id = tc.getAttribute("id");
@@ -347,6 +382,9 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 								}
 							}
 						}
+						tid = c.getAttribute("fromPalette");
+						if (tid!=null)
+							tool.setFromPalette(cid);
 					}
 				}
 			}
@@ -406,6 +444,10 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			categories.clear();
 			categories.addAll(sorted);
 		}
+	}
+
+	public String getId() {
+		return id;
 	}
 	
 	public String getProfile() {
