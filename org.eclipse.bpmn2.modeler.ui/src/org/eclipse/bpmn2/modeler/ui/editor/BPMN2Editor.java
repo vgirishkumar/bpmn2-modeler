@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -552,6 +553,12 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	public String getModelEnablementProfile() {
 		if (modelEnablementProfile==null) {
 			modelEnablementProfile = getPreferences().getDefaultModelEnablementProfile();
+		}
+		if (modelEnablementProfile==null || modelEnablementProfile.isEmpty()) {
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(this);
+			List<ModelEnablementDescriptor> med = getTargetRuntime().getModelEnablements(diagramType);
+			if (med.size()>0)
+				modelEnablementProfile = med.get(0).getProfile();
 		}
 		return modelEnablementProfile;
 	}
