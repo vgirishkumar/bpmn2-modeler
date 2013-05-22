@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -456,6 +457,12 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (modelEnablementProfile==null) {
 			modelEnablementProfile = getPreferences().getDefaultModelEnablementProfile();
 		}
+		if (modelEnablementProfile==null || modelEnablementProfile.isEmpty()) {
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(this);
+			List<ModelEnablementDescriptor> med = getTargetRuntime().getModelEnablements(diagramType);
+			if (med.size()>0)
+				modelEnablementProfile = med.get(0).getProfile();
+		}
 		return modelEnablementProfile;
 	}
 	
@@ -464,7 +471,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {
-		if (targetRuntime==null) {
+		if (targetRuntime==null && input!=null) {
 			 // If the project has not been configured for a specific runtime through the "BPMN2"
 			 // project properties page (i.e. the target is "None") then allow the runtime extension
 			 // plug-ins an opportunity to identify the given process file contents as their own.
@@ -483,6 +490,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			if (targetRuntime==null)
 				targetRuntime = TargetRuntime.getDefaultRuntime();
 
+			TargetRuntime.setCurrentRuntime(targetRuntime);
 			String profile = getPreferences().getDefaultModelEnablementProfile();
 			setModelEnablementProfile(profile);
 		}

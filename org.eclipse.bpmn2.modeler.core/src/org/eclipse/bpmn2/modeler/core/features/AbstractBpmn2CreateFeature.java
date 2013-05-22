@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -118,13 +119,13 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	@Override
 	protected PictogramElement addGraphicalRepresentation(IAreaContext context, Object newObject) {
 		AddContext newContext = new AddContext(context, newObject);
+		// copy properties into the new context
 		Object value = context.getProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID);
 		newContext.putProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID, value);
-// TODO: MORPH FEATURE 
-//		value = context.getProperty(DIImport.IMPORT_PROPERTY);
-//		newContext.putProperty(DIImport.IMPORT_PROPERTY, value);
-//		value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-//		newContext.putProperty(ContextConstants.BUSINESS_OBJECT, value);
+		value = context.getProperty(DIImport.IMPORT_PROPERTY);
+		newContext.putProperty(DIImport.IMPORT_PROPERTY, value);
+		value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		newContext.putProperty(ContextConstants.BUSINESS_OBJECT, value);
 		return getFeatureProvider().addIfPossible(newContext);
 	}
 	

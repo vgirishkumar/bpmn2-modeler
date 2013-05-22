@@ -806,6 +806,7 @@
 			<enable object="Signal" feature="name"/>
 			<enable object="SignalEventDefinition" feature="signalRef"/>
 			<enable object="StartEvent" feature="name"/>
+			<enable object="StartEvent" feature="eventDefinitions"/>
 			<enable object="SubProcess" feature="flowElements"/>
 			<enable object="SubProcess" feature="isForCompensation"/>
 			<enable object="SubProcess" feature="loopCharacteristics"/>
@@ -1054,6 +1055,15 @@
 				<tool name="Group" object="Group"/>
 				<tool name="Text Annotation" object="TextAnnotation"/>
 			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.BoundaryEvents" name="Boundary Events">
+				<tool name="Boundary" object="BoundaryEvent" icon="IntermediateEvent.png"/>
+				<tool name="Conditional" object="BoundaryEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
+				<tool name="Error" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
+				<tool name="Escalation" object="BoundaryEvent+EscalationEventDefinition" icon="EscalationCatchEvent.png"/>
+				<tool name="Message" object="BoundaryEvent+MessageEventDefinition" icon="MessageCatchEvent.png"/>
+				<tool name="Signal" object="BoundaryEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
+				<tool name="Timer" object="BoundaryEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
+			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Connections" name="Connections">
 				<tool name="Association (undirected)" object="Association[$associationDirection=None]"/>
 				<tool name="Association (one-way)" object="Association[$associationDirection=One]"/>
@@ -1088,7 +1098,7 @@
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.ThrowEvents" name="Intermediate Throw Events">
 				<tool name="Escalation" object="IntermediateThrowEvent+EscalationEventDefinition" icon="EscalationThrowEvent.png"/>
-				<tool name="Intermediate" object="IntermediateThrowEvent" icon="ThrowEvent.png"/>
+				<tool name="Intermediate" object="IntermediateThrowEvent" icon="IntermediateEvent.png"/>
 				<tool name="Message" object="IntermediateThrowEvent+MessageEventDefinition" icon="MessageThrowEvent.png"/>
 				<tool name="Signal" object="IntermediateThrowEvent+SignalEventDefinition" icon="SignalThrowEvent.png"/>
 			</category>
@@ -1106,42 +1116,7 @@
 				<tool name="Lane" object="Lane"/>
 			</category>
 			
-			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Patterns" name="Workflow Patterns">
-				<tool name="Sub Process with Start-&gt;End"
-					object="SubProcess+StartEvent[x=100,y=100],EndEvent[x=200,y=100],SequenceFlow"/>
-			
-			<!-- TODO: not yet implemented
-				<tool name="Arbitrary Cycles">
-					<composite id="arbitrary.cycles">
-						<object type="Task" id="arbitrary.cycles.taskA" name="Task A"/>
-						<object type="Task" id="arbitrary.cycles.taskB" name="Task B"/>
-						<object type="Task" id="arbitrary.cycles.taskC" name="Task C"/>
-						<object type="Task" id="arbitrary.cycles.taskD" name="Task D"/>
-						<object type="Task" id="arbitrary.cycles.taskE" name="Task E"/>
-						<object type="Task" id="arbitrary.cycles.taskF" name="Task F"/>
-						<object type="Task" id="arbitrary.cycles.taskG" name="Task G"/>
-						<object type="ExclusiveGateway" id="arbitrary.cycles.xor1"/>
-						<object type="ExclusiveGateway" id="arbitrary.cycles.xor2"/>
-						<object type="ExclusiveGateway" id="arbitrary.cycles.xor3"/>
-						<object type="ExclusiveGateway" id="arbitrary.cycles.xor4"/>
-						<object type="ExclusiveGateway" id="arbitrary.cycles.xor5"/>
-						<connection id="arbitrary.cycles.c1" type="SequenceFlow" source="arbitrary.cycles.taskA" target="arbitrary.cycles.xor1"/>
-						<connection id="arbitrary.cycles.c2" type="SequenceFlow" source="arbitrary.cycles.xor1" target="arbitrary.cycles.taskB"/>
-						<connection id="arbitrary.cycles.c3" type="SequenceFlow" source="arbitrary.cycles.xor1" target="arbitrary.cycles.xor2"/>
-						<connection id="arbitrary.cycles.c4" type="SequenceFlow" source="arbitrary.cycles.xor2" target="arbitrary.cycles.taskC"/>
-						<connection id="arbitrary.cycles.c5" type="SequenceFlow" source="arbitrary.cycles.taskB" target="arbitrary.cycles.xor3"/>
-						<connection id="arbitrary.cycles.c6" type="SequenceFlow" source="arbitrary.cycles.taskC" target="arbitrary.cycles.xor3"/>
-						<connection id="arbitrary.cycles.c7" type="SequenceFlow" source="arbitrary.cycles.xor3" target="arbitrary.cycles.taskD"/>
-						<connection id="arbitrary.cycles.c8" type="SequenceFlow" source="arbitrary.cycles.taskD" target="arbitrary.cycles.xor4"/>
-						<connection id="arbitrary.cycles.c9" type="SequenceFlow" source="arbitrary.cycles.xor4" target="arbitrary.cycles.taskE"/>
-						<connection id="arbitrary.cycles.c10" type="SequenceFlow" source="arbitrary.cycles.xor4" target="arbitrary.cycles.taskF"/>
-						<connection id="arbitrary.cycles.c11" type="SequenceFlow" source="arbitrary.cycles.taskF" target="arbitrary.cycles.xor5"/>
-						<connection id="arbitrary.cycles.c12" type="SequenceFlow" source="arbitrary.cycles.xor5" target="arbitrary.cycles.taskG"/>
-						<connection id="arbitrary.cycles.c13" type="SequenceFlow" source="arbitrary.cycles.xor5" target="arbitrary.cycles.xor2"/>
-					</composite>
-				</tool>
-			-->
-			</category>
+			<category id="org.bpmn2.modeler.toolpalette.process.patterns" fromPalette="org.bpmn2.modeler.toolpalette.process.default"/>
 			
 		</toolPalette>
 		

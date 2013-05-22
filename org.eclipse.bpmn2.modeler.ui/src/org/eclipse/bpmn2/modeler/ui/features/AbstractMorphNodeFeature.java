@@ -40,11 +40,13 @@ import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReconnectionFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -70,7 +72,6 @@ import org.eclipse.swt.widgets.Display;
  *
  */
 public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
-	// TODO: MORPH FEATURE 
 
 	private boolean changesDone = false;;
 	
@@ -143,6 +144,11 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 			if (createFeature!=null) {
 				// if user made a selection, then create the new shape
 				ContainerShape newShape = createNewShape(oldShape, createFeature);
+				UpdateContext updateContext = new UpdateContext(newShape);
+				IUpdateFeature updateFeature = getFeatureProvider().getUpdateFeature(updateContext);
+				if ( updateFeature.updateNeeded(updateContext).toBoolean() )
+					updateFeature.update(updateContext);
+				
 				changesDone = true;
 			}
 		}
@@ -241,23 +247,25 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		ModelEnablementDescriptor enablements =
 				(ModelEnablementDescriptor)editor.getAdapter(ModelEnablementDescriptor.class);
 		EClass newType = getBusinessObjectClass();
-		ContainerShape oldShape = getOldShape(context);
-		BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
-		EClass oldType = oldObject.eClass();
-
-		// build a list of possible subclasses for the popup menu
 		List<EClass> subtypes = new ArrayList<EClass>();
-		for (EClassifier ec : Bpmn2Package.eINSTANCE.getEClassifiers() ) {
-			if (ec instanceof EClass) {
-				if ( ((EClass) ec).isAbstract()) {
-					continue;
-				}
-				EList<EClass>superTypes = ((EClass)ec).getEAllSuperTypes(); 
-				if (superTypes.contains(newType) &&
-						enablements.isEnabled((EClass)ec)) {
-					if (ec!=Bpmn2Package.eINSTANCE.getBoundaryEvent() &&
-							ec!=Bpmn2Package.eINSTANCE.getStartEvent() && ec!=oldType) {
-						subtypes.add((EClass)ec);
+		ContainerShape oldShape = getOldShape(context);
+		if (oldShape!=null) {
+			BaseElement oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, BaseElement.class);
+			EClass oldType = oldObject.eClass();
+	
+			// build a list of possible subclasses for the popup menu
+			for (EClassifier ec : Bpmn2Package.eINSTANCE.getEClassifiers() ) {
+				if (ec instanceof EClass) {
+					if ( ((EClass) ec).isAbstract()) {
+						continue;
+					}
+					EList<EClass>superTypes = ((EClass)ec).getEAllSuperTypes(); 
+					if (superTypes.contains(newType) &&
+							enablements.isEnabled((EClass)ec)) {
+						if (ec!=Bpmn2Package.eINSTANCE.getBoundaryEvent() &&
+								ec!=Bpmn2Package.eINSTANCE.getStartEvent() && ec!=oldType) {
+							subtypes.add((EClass)ec);
+						}
 					}
 				}
 			}
