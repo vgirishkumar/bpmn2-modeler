@@ -1055,6 +1055,15 @@
 				<tool name="Group" object="Group"/>
 				<tool name="Text Annotation" object="TextAnnotation"/>
 			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.BoundaryEvents" name="Boundary Events">
+				<tool name="Boundary" object="BoundaryEvent" icon="IntermediateEvent.png"/>
+				<tool name="Conditional" object="BoundaryEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
+				<tool name="Error" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
+				<tool name="Escalation" object="BoundaryEvent+EscalationEventDefinition" icon="EscalationCatchEvent.png"/>
+				<tool name="Message" object="BoundaryEvent+MessageEventDefinition" icon="MessageCatchEvent.png"/>
+				<tool name="Signal" object="BoundaryEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
+				<tool name="Timer" object="BoundaryEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
+			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Connections" name="Connections">
 				<tool name="Association (undirected)" object="Association[$associationDirection=None]"/>
 				<tool name="Association (one-way)" object="Association[$associationDirection=One]"/>
@@ -1089,7 +1098,7 @@
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.ThrowEvents" name="Intermediate Throw Events">
 				<tool name="Escalation" object="IntermediateThrowEvent+EscalationEventDefinition" icon="EscalationThrowEvent.png"/>
-				<tool name="Intermediate" object="IntermediateThrowEvent" icon="ThrowEvent.png"/>
+				<tool name="Intermediate" object="IntermediateThrowEvent" icon="IntermediateEvent.png"/>
 				<tool name="Message" object="IntermediateThrowEvent+MessageEventDefinition" icon="MessageThrowEvent.png"/>
 				<tool name="Signal" object="IntermediateThrowEvent+SignalEventDefinition" icon="SignalThrowEvent.png"/>
 			</category>

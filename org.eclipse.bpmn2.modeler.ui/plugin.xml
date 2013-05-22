@@ -540,7 +540,7 @@
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 			
 			<category id="org.bpmn2.modeler.toolpalette.process.patterns" name="Workflow Patterns">
-				<tool name="Arbitrary Cycles" id="org.bpmn2.modeler.tool.arbitrary.cycles">
+				<tool name="Arbitrary Cycles" id="org.bpmn2.modeler.tool.arbitrary.cycles" description="Arbitrary Cycles Pattern">
 					<object type="Task[$name='Task A']" id="arbitrary.cycles.taskA" optional="true"/>
 					<object type="Task[$name='Task B',x=200]" id="arbitrary.cycles.taskB"/>
 					<object type="Task[$name='Task C',x=200,y=100]" id="arbitrary.cycles.taskC"/>
