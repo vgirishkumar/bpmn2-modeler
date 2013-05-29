@@ -434,14 +434,16 @@ public class DIUtils {
 	
 	public static BPMNEdge findBPMNEdge(EObject baseElement) {
 		Definitions definitions = ModelUtil.getDefinitions(baseElement);
-		for (BPMNDiagram d : definitions.getDiagrams()) {
-			BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-			BaseElement bpmnElement = null;
-			for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-				if (de instanceof BPMNEdge) {
-					bpmnElement = ((BPMNEdge)de).getBpmnElement();
-					if (bpmnElement == baseElement)
-						return (BPMNEdge)de;
+		if (definitions!=null) {
+			for (BPMNDiagram d : definitions.getDiagrams()) {
+				BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+				BaseElement bpmnElement = null;
+				for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+					if (de instanceof BPMNEdge) {
+						bpmnElement = ((BPMNEdge)de).getBpmnElement();
+						if (bpmnElement == baseElement)
+							return (BPMNEdge)de;
+					}
 				}
 			}
 		}

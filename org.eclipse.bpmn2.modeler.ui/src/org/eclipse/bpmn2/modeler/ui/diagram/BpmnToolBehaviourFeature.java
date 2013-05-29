@@ -45,6 +45,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureCont
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -78,11 +79,13 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
@@ -98,6 +101,8 @@ import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IImageDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
@@ -736,6 +741,22 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			if (iCustomFeature instanceof ShowPropertiesFeature &&
 					iCustomFeature.canExecute(context)) {
 				return iCustomFeature;
+			}
+		}
+		// temp debugging stuff to dump connection routing info
+		for (PictogramElement pe : context.getPictogramElements()) {
+			String id = Graphiti.getPeService().getPropertyValue(pe, "ROUTING_NET_CONNECTION");
+			System.out.println("id="+id);
+			if (pe instanceof FreeFormConnection) {
+				FreeFormConnection c = (FreeFormConnection)pe;
+				int i=0;
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(c.getStart());
+				System.out.println("0: "+loc.getX()+","+loc.getY());
+				for (Point p : c.getBendpoints()) {
+					System.out.println(++i+": "+p.getX()+","+p.getY());
+				}
+				loc = Graphiti.getPeService().getLocationRelativeToDiagram(c.getEnd());
+				System.out.println(++i+": "+loc.getX()+","+loc.getY());
 			}
 		}
 		return null;
