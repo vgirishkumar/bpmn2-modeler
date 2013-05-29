@@ -441,6 +441,7 @@ public class DIUtils {
 	
 	public static BPMNEdge findBPMNEdge(EObject baseElement) {
 		Definitions definitions = ModelUtil.getDefinitions(baseElement);
+		if (definitions!=null) {
 		for (BPMNDiagram d : definitions.getDiagrams()) {
 			BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
 			BaseElement bpmnElement = null;
@@ -449,6 +450,7 @@ public class DIUtils {
 					bpmnElement = ((BPMNEdge)de).getBpmnElement();
 					if (bpmnElement == baseElement)
 						return (BPMNEdge)de;
+					}
 				}
 			}
 		}
