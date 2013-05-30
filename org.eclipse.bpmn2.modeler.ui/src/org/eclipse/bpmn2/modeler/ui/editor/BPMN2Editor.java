@@ -204,6 +204,7 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
@@ -347,12 +348,22 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			
 		setActiveEditor(this);
 		
-		super.init(site, input);
-		// add a listener so we get notified if the workbench is shutting down.
-		// in this case we don't want to delete the temp file!
-		addWorkbenchListener();
-		addSelectionListener();
-		addMarkerChangeListener();
+		if (this.getDiagramBehavior()==null) {
+			super.init(site, input);
+			// add a listener so we get notified if the workbench is shutting down.
+			// in this case we don't want to delete the temp file!
+			addWorkbenchListener();
+			addSelectionListener();
+			addMarkerChangeListener();
+		}
+		else {
+			if (input instanceof Bpmn2DiagramEditorInput) {
+				bpmnDiagram = ((Bpmn2DiagramEditorInput)input).getBpmnDiagram();
+				if (bpmnDiagram!=null) {
+					setBpmnDiagram(bpmnDiagram);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -379,22 +390,12 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	@Override
 	protected void setInput(IEditorInput input) {
 		try {
-			Bpmn2DiagramType diagramType = Bpmn2DiagramType.NONE;
-			String targetNamespace = null;
 			if (input instanceof Bpmn2DiagramEditorInput) {
+				Bpmn2DiagramType diagramType = Bpmn2DiagramType.NONE;
+				String targetNamespace = null;
 				diagramType = ((Bpmn2DiagramEditorInput)input).getInitialDiagramType();
 				targetNamespace = ((Bpmn2DiagramEditorInput)input).getTargetNamespace();
-				bpmnDiagram = ((Bpmn2DiagramEditorInput)input).getBpmnDiagram();
-			}
-			if (bpmnDiagram==null) {
-				// This was incorrectly constructed input, we ditch the old one and make a new and clean one instead
-				// This code path comes in from the New File Wizard
 				input = createNewDiagramEditorInput(input, diagramType, targetNamespace);
-			}
-			else {
-				BPMNDiagram d = bpmnDiagram;
-				bpmnDiagram = null;
-				setBpmnDiagram(d);
 			}
 		}
 		catch (Exception e) {
@@ -457,14 +458,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	protected DiagramEditorInput convertToDiagramEditorInput(IEditorInput input) throws PartInitException {
-		IEditorInput newInput = null;
-		
-		if (input instanceof IStorageEditorInput)
-			newInput = createNewDiagramEditorInput(input, Bpmn2DiagramType.NONE, "");
-		
+		IEditorInput newInput = createNewDiagramEditorInput(input, Bpmn2DiagramType.NONE, "");
 		if (newInput==null)
 			newInput = super.convertToDiagramEditorInput(input);
-		
 		return (DiagramEditorInput) newInput;
 	}
 	

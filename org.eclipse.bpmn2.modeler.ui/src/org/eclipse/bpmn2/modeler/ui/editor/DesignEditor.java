@@ -180,8 +180,10 @@ public class DesignEditor extends BPMN2Editor {
 	
 	public void selectBpmnDiagram(BPMNDiagram bpmnDiagram) {
 		Diagram diagram = DIUtils.findDiagram(DesignEditor.this.getDiagramBehavior(), bpmnDiagram);
-		if (diagram != null)
+		if (diagram != null) {
 			selectPictogramElements(new PictogramElement[] {(PictogramElement)diagram});
+			getDiagramBehavior().refreshContent();
+		}
 	}
 
 	public void showDesignPage(final BPMNDiagram bpmnDiagram) {
