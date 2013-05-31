@@ -18,10 +18,11 @@ import java.lang.reflect.Constructor;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.swt.widgets.Composite;
 
 /**
  * @author Bob Brodt
@@ -29,21 +30,24 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 	
-	protected String type;
-	protected String adapterClassName;
+    protected String type;
+    protected String adapterClassName;
+	private final IConfigurationElement element;
 
 	/**
 	 * @param rt
 	 */
-	public PropertyExtensionDescriptor(TargetRuntime rt) {
+	public PropertyExtensionDescriptor(TargetRuntime rt, IConfigurationElement element) {
 		super(rt);
+		this.element = element;
 	}
 
 	public Class getInstanceClass() {
+	    if (type == null) {
+	        return null;
+	    }
 		try {
-			ClassLoader cl = this.getRuntime().getRuntimeExtension().getClass().getClassLoader();
-			Constructor ctor = null;
-			return Class.forName(type, true, cl);
+			return Platform.getBundle(element.getContributor().getName()).loadClass(type);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,10 +56,12 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 	
 	public ExtendedPropertiesAdapter getAdapter(AdapterFactory adapterFactory, EObject object) {
+        if (adapterClassName == null) {
+            return null;
+        }
 		try {
-			ClassLoader cl = this.getRuntime().getRuntimeExtension().getClass().getClassLoader();
 			Constructor ctor = null;
-			Class adapterClass = Class.forName(adapterClassName, true, cl);
+			Class adapterClass = Platform.getBundle(element.getContributor().getName()).loadClass(adapterClassName);
 			EClass eclass = null;
 			if (object instanceof EClass) {
 				eclass = (EClass)object;
