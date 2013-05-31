@@ -254,7 +254,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 						}
 						else if (e.getName().equals("propertyExtension")) {
 							String id = e.getAttribute("id");
-							PropertyExtensionDescriptor pe = new PropertyExtensionDescriptor(currentRuntime);
+							PropertyExtensionDescriptor pe = new PropertyExtensionDescriptor(currentRuntime, e);
 							pe.type = e.getAttribute("type");
 							pe.adapterClassName = e.getAttribute("class");
 							currentRuntime.addPropertyExtension(pe);
