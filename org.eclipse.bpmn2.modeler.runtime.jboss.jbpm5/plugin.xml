@@ -489,6 +489,11 @@
 			
 			<property name="ioSpecification">
 				<value>
+					<property name="outputSets">
+						<value>
+							<property name="name" value="Output Set" type="EString"/>
+						</value>
+					</property>
 					<property name="dataInputs">
 						<value>
 							<property name="name" value="TaskName" type="EString"/>
@@ -1090,13 +1095,12 @@
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.CatchEvents" name="Intermediate Catch Events">
 				<tool name="Conditional" object="IntermediateCatchEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
-				<tool name="Error" object="IntermediateCatchEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
-				<tool name="Escalation" object="IntermediateCatchEvent+EscalationEventDefinition" icon="EscalationCatchEvent.png"/>
 				<tool name="Message" object="IntermediateCatchEvent+MessageEventDefinition" icon="MessageCatchEvent.png"/>
 				<tool name="Signal" object="IntermediateCatchEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
 				<tool name="Timer" object="IntermediateCatchEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.ThrowEvents" name="Intermediate Throw Events">
+				<tool name="Compensation" object="IntermediateThrowEvent+CompensateEventDefinition" icon="CompensationEndEvent.png"/>
 				<tool name="Escalation" object="IntermediateThrowEvent+EscalationEventDefinition" icon="EscalationThrowEvent.png"/>
 				<tool name="Intermediate" object="IntermediateThrowEvent" icon="IntermediateEvent.png"/>
 				<tool name="Message" object="IntermediateThrowEvent+MessageEventDefinition" icon="MessageThrowEvent.png"/>

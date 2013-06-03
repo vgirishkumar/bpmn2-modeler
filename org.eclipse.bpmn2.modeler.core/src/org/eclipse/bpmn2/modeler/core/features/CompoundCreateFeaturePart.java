@@ -124,7 +124,10 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		// any creation properties from the ToolPart definition.
 		if (feature instanceof ICreateFeature) {
 			CreateContext cc = new CreateContext();
+			if (targetContainer==null)
+				targetContainer = ((ICreateContext)context).getTargetContainer();
 			cc.setTargetContainer(targetContainer);
+			cc.setTargetConnection(((ICreateContext)context).getTargetConnection());
 			value = this.getProperty("x");
 			if (value!=null) {
 				if (targetContainer instanceof Diagram)
@@ -166,8 +169,11 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 					}
 				}
 			}
-			else
+			else if (index-2>=0 && index-2<pictogramElements.size())
 				source = pictogramElements.get(index-2);
+			
+			if (source==null)
+				source = ((ICreateConnectionContext)context).getSourcePictogramElement();
 			
 			value = this.getProperty("target");
 			if (value!=null) {
@@ -179,8 +185,11 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 					}
 				}
 			}
-			else
+			else if (index-1>=0 && index-1<pictogramElements.size())
 				target = pictogramElements.get(index-1);
+
+			if (target==null)
+				target = ((ICreateConnectionContext)context).getTargetPictogramElement();
 			
 			Point sp = AnchorUtil.getCenterPoint((Shape)source);
 			Point tp = AnchorUtil.getCenterPoint((Shape)target);
