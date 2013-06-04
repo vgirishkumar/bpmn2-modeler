@@ -302,9 +302,19 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		CreateContext createContext = new CreateContext();
 		createContext.setTargetContainer(oldShape.getContainer());
 		
+		FlowElement newObject;
+		ContainerShape newShape;
 		Object[] created = createFeature.create(createContext);
-		FlowElement newObject = (FlowElement) created[0];
-		ContainerShape newShape = (ContainerShape) created[1];
+		if (created[0] instanceof List) {
+			// this will happen if the createFeature is a CompoundCreateFeature
+			// for example an Event with an EventDefinition child element
+			newObject = (FlowElement) ((List)created[0]).get(0);
+			newShape = (ContainerShape) ((List)created[0]).get(1);
+		}
+		else {
+			newObject = (FlowElement) created[0];
+			newShape = (ContainerShape) created[1];
+		}
 		
 		ContainerShape containerShape = oldShape.getContainer();
 		if (containerShape!=getDiagram()) {

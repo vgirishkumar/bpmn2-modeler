@@ -89,6 +89,10 @@ public class IoParametersListComposite extends DefaultListComposite {
 		
 		param = super.addListItem(object, feature);
 		if (param instanceof DataInput) {
+			List<OutputSet> outputSets = ioSpecification.getOutputSets();
+			if (outputSets.size()==0) {
+				outputSets.add(FACTORY.createOutputSet());
+			}
 			// add the new parameter to the InputSet
 			List<InputSet> inputSets = ioSpecification.getInputSets();
 			if (inputSets.size()==0) {
@@ -119,6 +123,10 @@ public class IoParametersListComposite extends DefaultListComposite {
 		}
 		else if (param instanceof DataOutput)
 		{
+			List<InputSet> inputSets = ioSpecification.getInputSets();
+			if (inputSets.size()==0) {
+				inputSets.add(FACTORY.createInputSet());
+			}
 			// add the new parameter to the OutputSet
 			List<OutputSet> outputSets = ioSpecification.getOutputSets();
 			if (outputSets.size()==0) {
