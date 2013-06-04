@@ -78,6 +78,11 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		StyleUtil.applyStyle(rect, businessObject);
 		
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		
+		int width = this.getWidth(context);
+		int height = this.getHeight(context);
+		
+		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height); ///
 		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		
 		if (FeatureSupport.isTargetLane(context)) {
@@ -107,11 +112,6 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 
 		boolean horz = bpmnShape.isIsHorizontal();
 		FeatureSupport.setHorizontal(containerShape, horz);
-		
-		int width = this.getWidth(context);
-		int height = this.getHeight(context);
-		
-		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height); ///
 		
 		if (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context)) {
 			for (Shape s : getFlowNodeShapes(context, businessObject)) {

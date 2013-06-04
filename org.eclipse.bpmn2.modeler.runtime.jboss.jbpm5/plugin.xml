@@ -611,6 +611,7 @@
 			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
+			<enable object="CancelEventDefinition"/>
 			<enable object="CallActivity" feature="anyAttribute"/>
 			<enable object="CallActivity" feature="calledElementRef"/>
 			<enable object="CallActivity" feature="dataInputAssociations"/>
@@ -831,6 +832,7 @@
 			<enable object="TextAnnotation" feature="id"/>
 			<enable object="TextAnnotation" feature="text"/>
 			<enable object="TextAnnotation" feature="textFormat"/>
+			<enable object="TerminateEventDefinition"/>
 			<enable object="ThrowEvent" feature="dataInputAssociation"/>
 			<enable object="TimerEventDefinition" feature="timeCycle"/>
 			<enable object="TimerEventDefinition" feature="timeDuration"/>

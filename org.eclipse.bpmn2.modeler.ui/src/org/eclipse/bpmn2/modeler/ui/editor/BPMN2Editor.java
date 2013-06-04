@@ -177,6 +177,7 @@ import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -1047,6 +1048,33 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		super.selectionChanged(part,selection); // Graphiti's DiagramEditorInternal
 		// but apparently GEF doesn't
 		updateActions(getSelectionActions()); // usually done in GEF's GraphicalEditor
+		for (PictogramElement pe : getSelectedPictogramElements()) {
+			if (pe instanceof ContainerShape && !(pe instanceof Diagram)) {
+				final ContainerShape shape = (ContainerShape)pe;
+				ContainerShape container = shape.getContainer();
+				int size = container.getChildren().size();
+				if (size>1) {
+					container.getChildren().move(size-1, shape);
+					// if the selected shape is an Activity, it may have Boundary Event shapes
+					// attached to it - these will have to be moved to the top so they're
+					// not obscured by the Activity.
+					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
+					if (baseElement instanceof Activity) {
+						List<ContainerShape> moved = new ArrayList<ContainerShape>();
+						for (BoundaryEvent be : ((Activity)baseElement).getBoundaryEventRefs()) {
+							for (PictogramElement child : container.getChildren()) {
+								if (child instanceof ContainerShape && BusinessObjectUtil.getFirstBaseElement(child) == be) {
+									moved.add((ContainerShape)child);
+								}
+							}
+						}
+						for (ContainerShape child : moved) {
+							container.getChildren().move(size-1, child);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/* (non-Javadoc)
