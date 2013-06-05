@@ -93,7 +93,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask
 						"operationRef", // SendTask, ReceiveTask, ServiceTask
 						"messageRef", // SendTask, ReceiveTask
-						"isInstantiate", // ReceiveTask
+						"instantiate", // ReceiveTask
 						"isForCompensation",
 						"script", "scriptFormat", // ScriptTask
 						"triggeredByEvent",
