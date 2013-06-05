@@ -137,6 +137,15 @@
 		</propertyTab>
 
 		<propertyTab
+	        id="bpmn2.jbpm.serviceTask.tab"
+	        replaceTab="org.eclipse.bpmn2.modeler.serviceTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmServiceTaskPropertySection"
+		    type="org.eclipse.bpmn2.ServiceTask"
+		    label="Service Task">
+		</propertyTab>
+
+		<propertyTab
 	        id="bpmn2.jbpm.receiveTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.receiveTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -780,10 +789,13 @@
 			<enable object="Property" feature="itemSubjectRef"/>
 			<enable object="Property" feature="name"/>
 			<enable object="ReceiveTask" feature="dataOutputAssociations"/>
+			<enable object="ReceiveTask" feature="implementation"/>
+			<enable object="ReceiveTask" feature="instantiate"/>
 			<enable object="ReceiveTask" feature="ioSpecification"/>
 			<enable object="ReceiveTask" feature="isForCompensation"/>
 			<enable object="ReceiveTask" feature="messageRef"/>
 			<enable object="ReceiveTask" feature="name"/>
+			<enable object="ReceiveTask" feature="operationRef"/>
 			<enable object="RootElement" feature="anyAttribute"/>
 			<enable object="RootElement" feature="extensionValues"/>
 			<enable object="ScriptTask" feature="isForCompensation"/>
@@ -792,9 +804,11 @@
 			<enable object="ScriptTask" feature="scriptFormat"/>
 			<enable object="SendTask" feature="dataInputAssociations"/>
 			<enable object="SendTask" feature="ioSpecification"/>
+			<enable object="SendTask" feature="implementation"/>
 			<enable object="SendTask" feature="isForCompensation"/>
 			<enable object="SendTask" feature="messageRef"/>
 			<enable object="SendTask" feature="name"/>
+			<enable object="SendTask" feature="operationRef"/>
 			<enable object="SequenceFlow" feature="conditionExpression"/>
 			<enable object="SequenceFlow" feature="name"/>
 			<enable object="SequenceFlow" feature="priority"/>

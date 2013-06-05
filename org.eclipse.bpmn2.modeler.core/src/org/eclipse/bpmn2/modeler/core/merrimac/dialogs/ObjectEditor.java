@@ -13,9 +13,12 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.core.runtime.IStatus;
@@ -138,6 +141,38 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	}
 	
 	protected void updateLabelDecorator() {
+		String tooltip = label.getToolTipText();
+		
+		if (tooltip==null && object!=null && feature!=null) {
+			String fieldName;
+			Field field;
+    		String text = "";
+	    	Class messages = JavaReflectionUtil.findClass(parent, "Messages");
+	    	if (messages!=null) {
+	    		try {
+	    			// fetch the description for this EClass and feature
+		    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description";
+//					text += "\n" + fieldName + "\n";
+		    		field = messages.getField(fieldName);
+		    		text += (String)field.get(null);
+	    		}
+	    		catch (Exception e) {
+		    		try {
+		    			// if a description is not found for this EClass, try "Any"
+			    		fieldName = "UI_Any_" + feature.getName() + "_description";
+//		    			text += "\n" + fieldName + "\n";
+			    		field = messages.getField(fieldName);
+			    		text += (String)field.get(null);
+		    		}
+		    		catch (Exception e2) {
+		    		}
+	    		}
+	    		if (text!=null && !text.isEmpty())
+	    			label.setToolTipText(text);
+	    	}
+		}
+		
+		
 		boolean applies = false;
     	String image = null;
     	String text = null;
