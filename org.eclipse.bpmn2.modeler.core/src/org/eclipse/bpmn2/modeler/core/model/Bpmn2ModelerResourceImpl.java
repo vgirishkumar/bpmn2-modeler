@@ -439,7 +439,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             }
             
             // we also want to store x and y with value zero, would be skipped because of default value otherwise
-            if (o instanceof Bounds) {
+            if (o instanceof Bounds || o instanceof Point) {
             	return true;
             }
             
