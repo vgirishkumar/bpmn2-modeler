@@ -1,5 +1,6 @@
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
@@ -20,8 +21,15 @@ public class BPMN2EditorOutlineTreeViewer extends TreeViewer {
 		Object model = part.getModel();
 		if (model instanceof PictogramElement) {
 			PictogramElement pe = (PictogramElement)model;
-			EObject baseElement = BusinessObjectUtil.getFirstBaseElement(pe);
-			return (EditPart)getEditPartRegistry().get(baseElement);
+			EObject bpmnModel = BusinessObjectUtil.getFirstBaseElement(pe);
+			if (bpmnModel==null)
+				bpmnModel = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
+			if (bpmnModel instanceof BPMNDiagram) {
+				BPMNDiagram bpmnDiagram = (BPMNDiagram)bpmnModel;
+				bpmnModel = bpmnDiagram.getPlane().getBpmnElement();
+			}
+
+			return (EditPart)getEditPartRegistry().get(bpmnModel);
 		}
 		return part;
 	}
