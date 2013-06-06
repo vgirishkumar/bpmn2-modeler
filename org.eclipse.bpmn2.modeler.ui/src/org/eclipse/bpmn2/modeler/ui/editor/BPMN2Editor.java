@@ -147,6 +147,7 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorOutlinePage;
+import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorSelectionSynchronizer;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -316,6 +317,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private TargetRuntime targetRuntime;
 	private String modelEnablementProfile;
 //	private Hashtable<BPMNDiagram, GraphicalViewer> mapDiagramToViewer = new Hashtable<BPMNDiagram, GraphicalViewer>();
+	private BPMN2EditorSelectionSynchronizer synchronizer;
 
 	protected DiagramEditorAdapter editorAdapter;
 	protected BPMN2MultiPageEditor multipageEditor;
@@ -773,6 +775,13 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return getEditingDomainListener().getDiagnostics();
 	}
 	
+	@Override
+	protected SelectionSynchronizer getSelectionSynchronizer() {
+		if (synchronizer == null)
+			synchronizer = new BPMN2EditorSelectionSynchronizer();
+		return synchronizer;
+	}
+
 	@Override
 	public Object getAdapter(Class required) {
 		if (required==ITabDescriptorProvider.class) {

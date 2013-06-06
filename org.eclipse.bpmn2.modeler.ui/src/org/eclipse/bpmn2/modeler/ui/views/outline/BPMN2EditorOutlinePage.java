@@ -116,7 +116,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	 * @since 0.9
 	 */
 	public BPMN2EditorOutlinePage(DiagramEditor diagramEditor) {
-		super(new TreeViewer());
+		super(new BPMN2EditorOutlineTreeViewer(diagramEditor));
 		graphicalViewer = diagramEditor.getGraphicalViewer();
 		actionRegistry = (ActionRegistry) diagramEditor.getAdapter(ActionRegistry.class);
 		editDomain = diagramEditor.getEditDomain();
@@ -240,7 +240,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 				}
 			};
 		}
-		refreshJob.schedule(500);
+		refreshJob.schedule(5);
 	}
 
 	/**

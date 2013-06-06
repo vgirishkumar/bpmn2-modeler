@@ -23,7 +23,7 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	}
 
 	public FlowElement getFlowElement() {
-		return (FlowElement) getBpmnModel();
+		return (FlowElement) getModel();
 	}
 
 	// ======================= overwriteable behaviour ========================

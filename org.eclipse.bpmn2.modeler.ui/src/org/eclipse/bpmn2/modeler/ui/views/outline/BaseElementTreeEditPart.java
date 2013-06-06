@@ -19,7 +19,7 @@ public class BaseElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	}
 
 	public BaseElement getBaseElement() {
-		return (BaseElement) getBpmnModel();
+		return (BaseElement) getModel();
 	}
 
 	// ======================= overwriteable behaviour ========================

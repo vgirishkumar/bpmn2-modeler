@@ -24,7 +24,7 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	}
 
 	public RootElement getRootElement() {
-		return (RootElement) getBpmnModel();
+		return (RootElement) getModel();
 	}
 
 	// ======================= overwriteable behaviour ========================

@@ -32,7 +32,7 @@ public class DiagramTreeEditPart extends AbstractGraphicsTreeEditPart {
 	}
 
 	public Diagram getDiagram() {
-		return (Diagram) getBpmnModel();
+		return (Diagram) getModel();
 	}
 
 	public List<Diagram> getAllDiagrams() {
