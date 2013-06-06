@@ -10,12 +10,8 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
-import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Viewport;
@@ -31,11 +27,9 @@ import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
-import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.fixed.FixedScrollableThumbnail;
-import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -43,13 +37,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.PageBook;
 
@@ -211,36 +202,12 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		return pageBook;
 	}
 
-	Job refreshJob;
-	
 	/**
 	 * Refreshes the outline on any change of the diagram editor. Most
 	 * importantly, there is a property change event editor-dirty.
 	 */
 	public void propertyChanged(Object source, int propId) {
-		if (refreshJob != null) {
-			refreshJob.cancel();
-			refreshJob.sleep();
-		}
-		else {
-			refreshJob = new Job("") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					if (getState()==Job.RUNNING) {
-						Display.getDefault().asyncExec(new Runnable() {
-	
-							@Override
-							public void run() {
-								refresh();
-							}
-							
-						});
-					}
-					return Status.OK_STATUS;
-				}
-			};
-		}
-		refreshJob.schedule(5);
+		refresh();
 	}
 
 	/**

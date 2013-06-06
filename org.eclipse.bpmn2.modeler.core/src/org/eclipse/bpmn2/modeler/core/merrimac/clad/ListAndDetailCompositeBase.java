@@ -142,7 +142,9 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 
 	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
-		return getPropertySection().getTabbedPropertySheetPage();
+		if (getPropertySection()!=null)
+			return getPropertySection().getTabbedPropertySheetPage();
+		return null;
 	}
 
 	public FormToolkit getToolkit() {
