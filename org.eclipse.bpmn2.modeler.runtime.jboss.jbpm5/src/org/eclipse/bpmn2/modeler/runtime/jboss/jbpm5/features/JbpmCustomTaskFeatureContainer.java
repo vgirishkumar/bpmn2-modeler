@@ -72,12 +72,6 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 			public IAddFeature getAddFeature(IFeatureProvider fp) {
 				return new JbpmAddCustomTaskFeature(fp);
 			}
-			
-			@Override
-			public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-				return new ICustomFeature[] {new ConfigureWorkItemFeature(fp)};
-			}
-
 		};
 	}
 	
@@ -145,6 +139,8 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 		return null;
 	}
 
+	@Deprecated
+	// This class is no longer used. Custom Task parameters are now configured in the I/O Parameters property tab 
 	public class ConfigureWorkItemFeature implements ICustomFeature {
 
 		protected IFeatureProvider fp;

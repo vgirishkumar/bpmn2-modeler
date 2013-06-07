@@ -43,6 +43,7 @@ import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -289,10 +290,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 						IResource icon = icons.get(0);
 						URL url = icon.getLocationURI().toURL();
 						ImageDescriptor image = ImageDescriptor.createFromURL(url);
-	
-						ImageRegistry imageRegistry = GraphitiUIPlugin.getDefault().getImageRegistry();
-						if (imageRegistry.get(iconPath) == null)
-							imageRegistry.put(iconPath, image);
+						CustomTaskImageProvider.registerImage(iconPath, image);
 					}
 				} catch (CoreException e1) {
 					e1.printStackTrace();

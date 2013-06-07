@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -102,7 +104,14 @@ public class TextObjectEditor extends ObjectEditor {
 			}
 		});
 
-		
+		// ask the object if this feature is read-only
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		if (adapter!=null) {
+			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
+			if (result instanceof Boolean)
+				setEditable((Boolean)result);
+		}
+
 		return text;
 	}
 	

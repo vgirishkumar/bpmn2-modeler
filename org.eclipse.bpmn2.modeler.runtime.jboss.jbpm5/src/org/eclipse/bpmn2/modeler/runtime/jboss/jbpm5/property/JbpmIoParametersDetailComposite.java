@@ -6,10 +6,15 @@ import java.util.List;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
+import org.eclipse.bpmn2.modeler.core.merrimac.providers.ColumnTableProvider.Column;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
+import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParameterNameColumn;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersListComposite;
 import org.eclipse.emf.common.util.EList;
@@ -53,7 +58,7 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 				dataOutputsTable.setTitle("Output Parameter Mapping");
 			}
 		}
-	}	
+	}
 
 	public class JbpmIoParametersListComposite extends IoParametersListComposite {
 
@@ -62,7 +67,24 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 				InputOutputSpecification ioSpecification,
 				EStructuralFeature ioFeature) {
 			super(detailComposite, container, ioSpecification, ioFeature);
-			
+		}
+
+		@Override
+		protected int createColumnProvider(EObject object, EStructuralFeature feature) {
+			super.createColumnProvider(object, feature);
+			EObject activity = JbpmIoParametersDetailComposite.this.getBusinessObject();
+			// if the owning Activity is a Custom Task, then make this table read-only
+			if (CustomTaskDescriptor.getDescriptor(activity) != null) {
+				for (TableColumn tc : (List<TableColumn>) columnProvider.getColumns()) {
+					if (tc instanceof IoParameterNameColumn) {
+						tc.setEditable(false);
+					}
+				}
+				// and don't allow any rows to be added or removed;
+				// user can only open the details panel.
+				style = EDIT_BUTTON | SHOW_DETAILS;
+			}
+			return columnProvider.getColumns().size();
 		}
 
 		@Override
@@ -76,7 +98,7 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 						List<Property> props = null;
 						ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(
 								JbpmIoParametersDetailComposite.this.getBusinessObject());
-						if (adapter!=null ) {
+						if (adapter!=null && !(adapter.getDescriptor() instanceof CustomTaskDescriptor)) {
 							if (JbpmIoParametersListComposite.this.isInput)
 								props = adapter.getProperties("ioSpecification/dataInputs/name");
 							else
