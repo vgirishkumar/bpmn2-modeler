@@ -73,7 +73,7 @@ public class IoParameterMappingColumn extends TableColumn {
 						FormalExpression expr  = getTargetExpression(da, assign);
 						String body = ModelUtil.getDisplayName(expr);
 						if (text2==null)
-							text2 = "Expression: " + body;
+							text2 = "\"" + body + "\"";
 						else
 							text2 += ",\n" + body;
 					}

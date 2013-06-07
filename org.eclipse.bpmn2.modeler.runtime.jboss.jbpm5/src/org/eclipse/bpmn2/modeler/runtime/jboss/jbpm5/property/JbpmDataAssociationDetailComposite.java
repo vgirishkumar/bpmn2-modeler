@@ -13,11 +13,16 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
@@ -44,6 +49,19 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 
 	@Override
 	public void createBindings(EObject be) {
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(be, ExtendedPropertiesAdapter.class);
+		if (adapter!=null) {
+			// if the Activity that owns this DataInputAssociation or DataOutputAssociation is
+			// a Custom Task, then make the "name" feature read-only. Custom Task I/O parameters
+			// are defined in either the target runtime contributing plugin itself, or dynamically
+			// by the target runtime plugin invoked during editor startup.
+			Activity activity = findActivity(be);
+			if (CustomTaskDescriptor.getDescriptor(activity)!=null) {
+				EStructuralFeature f = be.eClass().getEStructuralFeature("name");
+				adapter.setProperty(f, ExtendedPropertiesAdapter.UI_CAN_EDIT, Boolean.FALSE);
+			}
+		}
+		
 		super.createBindings(be);
 		if (mapTransformationButton!=null) {
 			((GridData)mapTransformationButton.getLayoutData()).exclude = true;
@@ -57,5 +75,12 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 				mapPropertyButton.setVisible(false);
 			}
 		}
+	}
+	
+	private Activity findActivity(EObject be) {
+		while (be!=null && !(be instanceof Activity)) {
+			be = be.eContainer();
+		}
+		return (Activity)be;
 	}
 }
