@@ -1061,6 +1061,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			if (pe instanceof ContainerShape && !(pe instanceof Diagram)) {
 				final ContainerShape shape = (ContainerShape)pe;
 				ContainerShape container = shape.getContainer();
+				// make sure this shape has not been deleted
+				if (container==null)
+					continue;
 				int size = container.getChildren().size();
 				if (size>1) {
 					container.getChildren().move(size-1, shape);
