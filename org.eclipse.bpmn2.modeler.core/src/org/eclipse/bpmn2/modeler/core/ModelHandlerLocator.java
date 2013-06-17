@@ -21,6 +21,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.xml.sax.SAXParseException;
 
 public class ModelHandlerLocator {
 
@@ -80,12 +81,17 @@ public class ModelHandlerLocator {
 					&& !resource.isLoaded()) {
 				handler.loadResource();
 			}
-		} catch (IllegalStateException e) {
-
+		}
+		catch (IllegalStateException e) {
+			// TODO: what does this mean???
 			// Workspace is not initialized so we must be running tests!
 			if (!resource.isLoaded()) {
 				handler.loadResource();
 			}
+		}
+		catch (Exception spe) {
+			// we're here because of an xml parse exception:
+			// try to recover if possible by creating an empty <definitions> element.
 		}
 
 		handler.createDefinitionsIfMissing();
