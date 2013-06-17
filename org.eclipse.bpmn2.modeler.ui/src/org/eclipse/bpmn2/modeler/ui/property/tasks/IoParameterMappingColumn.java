@@ -154,6 +154,7 @@ public class IoParameterMappingColumn extends TableColumn {
 		// the real object to be modified is the DataAssociation
 		EStructuralFeature f = getTargetFeature((ItemAwareElement)element);
 		super.modify(association, f, value);
+		tableViewer.refresh(element);
 	}
 	
 	protected List<DataAssociation> getDataAssociations(ItemAwareElement element) {
