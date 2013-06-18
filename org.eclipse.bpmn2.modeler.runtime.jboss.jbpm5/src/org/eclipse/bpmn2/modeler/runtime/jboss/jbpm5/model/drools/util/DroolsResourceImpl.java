@@ -182,6 +182,10 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 
 			boolean found = false;
 			List<String> prefixes = urisToPrefixes.get(nsURI);
+			if (prefixes==null) {
+				prefixes = new ArrayList<String>();
+				urisToPrefixes.put(nsURI, prefixes);
+			}
 			for (int i = 0; i < prefixes.size(); ++i) {
 				String prefix = prefixes.get(i);
 				if ("".equals(prefix)) {
