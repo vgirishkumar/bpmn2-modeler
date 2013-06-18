@@ -79,6 +79,7 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 				}
 			}
 		}
+		refreshVisuals();
 		super.refreshChildren();
 	}
 	
