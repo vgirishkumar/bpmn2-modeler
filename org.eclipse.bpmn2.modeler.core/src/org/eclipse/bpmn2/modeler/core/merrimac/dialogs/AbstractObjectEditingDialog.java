@@ -169,8 +169,9 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 			result[0] = open(domain);
 			if (result[0]!=Window.OK) {
 				if (isAbortOnCancel()) {
-					if (domain!=null && domain.getActiveTransaction()!=null)
-						domain.getActiveTransaction().abort(new Status(IStatus.INFO, Activator.PLUGIN_ID, cancelMsg));
+					throw new OperationCanceledException(cancelMsg);
+//					if (domain!=null && domain.getActiveTransaction()!=null)
+//						domain.getActiveTransaction().rollback();//.abort(new Status(IStatus.INFO, Activator.PLUGIN_ID, cancelMsg));
 				}
 			}
 		}
