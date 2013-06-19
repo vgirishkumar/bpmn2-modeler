@@ -98,12 +98,12 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	protected TableViewer tableViewer;
 	protected AbstractDetailComposite detailComposite;
 	
-	boolean removeIsDelete = false;
-	Action addAction;
-	Action removeAction;
-	Action upAction;
-	Action downAction;
-	Action editAction;
+	protected boolean removeIsDelete = false;
+	protected Action addAction;
+	protected Action removeAction;
+	protected Action upAction;
+	protected Action downAction;
+	protected Action editAction;
 	
 	protected ListCompositeColumnProvider columnProvider;
 	protected ListCompositeContentProvider contentProvider;
