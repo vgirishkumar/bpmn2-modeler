@@ -299,7 +299,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 				getAllChildWidgets(parent, kids);
 				for (Notification n : notifications) {
 					for (Control c : kids) {
-						if (!c.isDisposed()) {
+						if (!c.isDisposed() && c.isVisible()) {
 							INotifyChangedListener listener = (INotifyChangedListener)c.getData(
 									IConstants.NOTIFY_CHANGE_LISTENER_KEY);
 							if (listener!=null) {

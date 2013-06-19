@@ -214,7 +214,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 				List<DataInputAssociation> dataInputAssociations = activity.getDataInputAssociations();
 				List<DataInputAssociation> removed = new ArrayList<DataInputAssociation>();
 				for (DataInputAssociation dia : dataInputAssociations) {
-					if (dia.getSourceRef()!=null && dia.getSourceRef().contains(item))
+					if (dia.getTargetRef()!=null && dia.getTargetRef().equals(item))
 						removed.add(dia);
 				}
 				dataInputAssociations.removeAll(removed);
@@ -223,7 +223,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 				List<DataOutputAssociation> dataOutputAssociations = activity.getDataOutputAssociations();
 				List<DataOutputAssociation> removed = new ArrayList<DataOutputAssociation>();
 				for (DataOutputAssociation doa : dataOutputAssociations) {
-					if (doa.getTargetRef()!=null && doa.getTargetRef().equals(item))
+					if (doa.getSourceRef()!=null && doa.getSourceRef().contains(item))
 						removed.add(doa);
 				}
 				dataOutputAssociations.removeAll(removed);

@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -55,8 +56,7 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 			// a Custom Task, then make the "name" feature read-only. Custom Task I/O parameters
 			// are defined in either the target runtime contributing plugin itself, or dynamically
 			// by the target runtime plugin invoked during editor startup.
-			Activity activity = findActivity(be);
-			if (CustomTaskDescriptor.getDescriptor(activity)!=null) {
+			if (JbpmIoParametersDetailComposite.isCustomTaskIOParameter((ItemAwareElement)be)) {
 				EStructuralFeature f = be.eClass().getEStructuralFeature("name");
 				adapter.setProperty(f, ExtendedPropertiesAdapter.UI_CAN_EDIT, Boolean.FALSE);
 			}
@@ -75,12 +75,5 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 				mapPropertyButton.setVisible(false);
 			}
 		}
-	}
-	
-	private Activity findActivity(EObject be) {
-		while (be!=null && !(be instanceof Activity)) {
-			be = be.eContainer();
-		}
-		return (Activity)be;
 	}
 }
