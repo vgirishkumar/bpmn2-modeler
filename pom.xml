@@ -138,7 +138,7 @@
 
 		<repository>
 			<id>eclipse-graphiti-helios</id>
-			<url>http://download.eclipse.org/graphiti/updates/0.8.2</url>
+			<url>http://archive.eclipse.org/graphiti/updates/0.8.2</url>
 			<layout>p2</layout>
 			<snapshots>
 				<enabled>true</enabled>
