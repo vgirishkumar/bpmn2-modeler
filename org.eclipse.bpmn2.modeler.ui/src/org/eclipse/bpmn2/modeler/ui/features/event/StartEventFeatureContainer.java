@@ -36,6 +36,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -161,11 +162,13 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 			ContainerShape container = (ContainerShape) context.getPictogramElement();
 			StartEvent event = (StartEvent) getBusinessObjectForPictogramElement(container);
 
-			Ellipse ellipse = (Ellipse) peService.getAllContainedShapes(container).iterator().next()
-					.getGraphicsAlgorithm();
-			LineStyle style = event.isIsInterrupting() ? LineStyle.SOLID : LineStyle.DASH;
-			ellipse.setLineStyle(style);
-
+			GraphicsAlgorithm ga = peService.getAllContainedShapes(container).iterator().next().getGraphicsAlgorithm();
+			if (ga instanceof Ellipse) {
+			Ellipse ellipse = (Ellipse) ga;
+				LineStyle style = event.isIsInterrupting() ? LineStyle.SOLID : LineStyle.DASH;
+				ellipse.setLineStyle(style);
+			}
+			
 			peService.setPropertyValue(container, INTERRUPTING, Boolean.toString(event.isIsInterrupting()));
 			return true;
 		}

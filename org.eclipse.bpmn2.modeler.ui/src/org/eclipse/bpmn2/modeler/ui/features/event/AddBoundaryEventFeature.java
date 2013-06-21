@@ -70,7 +70,8 @@ public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<Boundar
 		// FIXME: what's going on here?
 		ContainerShape target = isImport ? context.getTargetContainer() : (ContainerShape) context
 		        .getTargetContainer().eContainer();
-
+		if (target==null)
+			target = context.getTargetContainer();
 		ContainerShape containerShape = peService.createContainerShape(target, true);
 		Ellipse ellipse = gaService.createEllipse(containerShape);
 		StyleUtil.applyStyle(ellipse, businessObject);

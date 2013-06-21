@@ -55,7 +55,7 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 		boolean updated = false;
 
 		for (IUpdateFeature p : features) {
-			if (p.updateNeeded(context).toBoolean() && p.update(context)) {
+			if (p.update(context)) {
 				updated = true;
 			}
 		}

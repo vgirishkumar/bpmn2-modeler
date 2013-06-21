@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -125,7 +126,16 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 
 	@Override
 	public boolean isAvailable(IContext context) {
-		return context instanceof ICustomContext && getTools((ICustomContext)context).size()>0;
+		if (context instanceof ICustomContext && getTools((ICustomContext)context).size()>0) {
+			PictogramElement pe[] = ((ICustomContext)context).getPictogramElements();
+			if (pe.length==1) {
+				EObject o = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe[0]);
+				if (o!=null) {
+					return o.eClass() == getBusinessObjectClass();
+				}
+			}
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)

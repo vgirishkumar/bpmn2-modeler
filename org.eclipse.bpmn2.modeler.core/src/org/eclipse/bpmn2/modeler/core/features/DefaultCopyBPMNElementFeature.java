@@ -7,7 +7,9 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICopyContext;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
 
@@ -45,6 +47,45 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
     			copied.add(pe);
             }
         }
+        
+        // include all connections between the selected shapes, even if they
+        // are not selected.
+        List<PictogramElement> connections = new ArrayList<PictogramElement>();
+        for (PictogramElement pe : copied) {
+        	if (pe instanceof ContainerShape) {
+        		ContainerShape shape = (ContainerShape)pe;
+        		for (Anchor a : shape.getAnchors()) {
+        			for (Connection c : a.getIncomingConnections()) {
+        				if (	copied.contains(c.getStart().getParent()) &&
+        						copied.contains(c.getEnd().getParent()) &&
+        						!copied.contains(c) && !connections.contains(c)) {
+        					connections.add(c);
+        				}
+        			}
+        			for (Connection c : a.getOutgoingConnections()) {
+        				if (	copied.contains(c.getStart().getParent()) &&
+        						copied.contains(c.getEnd().getParent()) &&
+        						!copied.contains(c) && !connections.contains(c)) {
+        					connections.add(c);
+        				}
+        			}
+        		}
+        	}
+        }
+        copied.addAll(connections);
+
+        // remove PEs that are contained in FlowElementsContainers
+        List<PictogramElement> ignored = new ArrayList<PictogramElement>();
+        for (PictogramElement pe : copied) {
+        	if (pe instanceof ContainerShape) {
+        		for (PictogramElement childPe : ((ContainerShape) pe).getChildren()) {
+        			if (copied.contains(childPe))
+        				ignored.add(childPe);
+        		}
+        	}
+        }
+        copied.removeAll(ignored);
+        
         // copy all PictogramElements to the clipboard
         putToClipboard(copied.toArray());
 	}
