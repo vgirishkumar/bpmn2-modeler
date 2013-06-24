@@ -44,7 +44,7 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		if (elem != null && elem.eResource() != null) {
 			if (elem instanceof FlowElementsContainer) {
 				FlowElementsContainer container = (FlowElementsContainer)elem;
-				retList.addAll(container.getFlowElements());
+				return FlowElementTreeEditPart.getFlowElementsContainerChildren(container);
 			}
 			if (elem instanceof Collaboration) {
 				Collaboration collaboration = (Collaboration)elem;

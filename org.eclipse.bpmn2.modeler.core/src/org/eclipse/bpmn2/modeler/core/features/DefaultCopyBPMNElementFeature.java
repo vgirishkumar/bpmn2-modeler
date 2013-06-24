@@ -18,7 +18,24 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
 	public DefaultCopyBPMNElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
-	
+
+	@Override
+	public boolean canCopy(ICopyContext context) {
+        final PictogramElement[] pes = context.getPictogramElements();
+        if (pes == null || pes.length == 0) {  // nothing selected
+            return false;
+        }
+       
+        // return true if all selected elements have linked BaseElements
+        for (PictogramElement pe : pes) {
+            final Object bo = BusinessObjectUtil.getFirstBaseElement(pe);
+            if (!(bo instanceof BaseElement)) {
+                return false;
+            }
+        }
+        return true;
+	}
+
 	@Override
 	public void copy(ICopyContext context) {
         PictogramElement[] pes = context.getPictogramElements();
@@ -50,29 +67,7 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
         
         // include all connections between the selected shapes, even if they
         // are not selected.
-        List<PictogramElement> connections = new ArrayList<PictogramElement>();
-        for (PictogramElement pe : copied) {
-        	if (pe instanceof ContainerShape) {
-        		ContainerShape shape = (ContainerShape)pe;
-        		for (Anchor a : shape.getAnchors()) {
-        			for (Connection c : a.getIncomingConnections()) {
-        				if (	copied.contains(c.getStart().getParent()) &&
-        						copied.contains(c.getEnd().getParent()) &&
-        						!copied.contains(c) && !connections.contains(c)) {
-        					connections.add(c);
-        				}
-        			}
-        			for (Connection c : a.getOutgoingConnections()) {
-        				if (	copied.contains(c.getStart().getParent()) &&
-        						copied.contains(c.getEnd().getParent()) &&
-        						!copied.contains(c) && !connections.contains(c)) {
-        					connections.add(c);
-        				}
-        			}
-        		}
-        	}
-        }
-        copied.addAll(connections);
+        copied.addAll(findAllConnections(copied));
 
         // remove PEs that are contained in FlowElementsContainers
         List<PictogramElement> ignored = new ArrayList<PictogramElement>();
@@ -89,21 +84,30 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
         // copy all PictogramElements to the clipboard
         putToClipboard(copied.toArray());
 	}
-
-	@Override
-	public boolean canCopy(ICopyContext context) {
-        final PictogramElement[] pes = context.getPictogramElements();
-        if (pes == null || pes.length == 0) {  // nothing selected
-            return false;
+	
+	public static List<Connection> findAllConnections(List<PictogramElement> shapes) {
+        List<Connection> connections = new ArrayList<Connection>();
+        for (PictogramElement pe : shapes) {
+        	if (pe instanceof ContainerShape) {
+        		ContainerShape shape = (ContainerShape)pe;
+        		for (Anchor a : shape.getAnchors()) {
+        			for (Connection c : a.getIncomingConnections()) {
+        				if (	(shapes.contains(c.getStart().getParent()) ||
+        						shapes.contains(c.getEnd().getParent())) &&
+        						!shapes.contains(c) && !connections.contains(c)) {
+        					connections.add(c);
+        				}
+        			}
+        			for (Connection c : a.getOutgoingConnections()) {
+        				if (	(shapes.contains(c.getStart().getParent()) ||
+        						shapes.contains(c.getEnd().getParent())) &&
+        						!shapes.contains(c) && !connections.contains(c)) {
+        					connections.add(c);
+        				}
+        			}
+        		}
+        	}
         }
-       
-        // return true if all selected elements have linked BaseElements
-        for (PictogramElement pe : pes) {
-            final Object bo = BusinessObjectUtil.getFirstBaseElement(pe);
-            if (!(bo instanceof BaseElement)) {
-                return false;
-            }
-        }
-        return true;
+        return connections;
 	}
 }
