@@ -92,15 +92,15 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
         		ContainerShape shape = (ContainerShape)pe;
         		for (Anchor a : shape.getAnchors()) {
         			for (Connection c : a.getIncomingConnections()) {
-        				if (	shapes.contains(c.getStart().getParent()) &&
-        						shapes.contains(c.getEnd().getParent()) &&
+        				if (	(shapes.contains(c.getStart().getParent()) ||
+        						shapes.contains(c.getEnd().getParent())) &&
         						!shapes.contains(c) && !connections.contains(c)) {
         					connections.add(c);
         				}
         			}
         			for (Connection c : a.getOutgoingConnections()) {
-        				if (	shapes.contains(c.getStart().getParent()) &&
-        						shapes.contains(c.getEnd().getParent()) &&
+        				if (	(shapes.contains(c.getStart().getParent()) ||
+        						shapes.contains(c.getEnd().getParent())) &&
         						!shapes.contains(c) && !connections.contains(c)) {
         					connections.add(c);
         				}

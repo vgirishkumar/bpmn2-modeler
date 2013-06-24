@@ -656,16 +656,16 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 	@Override
 	public ICopyFeature getCopyFeature(ICopyContext context) {
 		// TODO: COPY-PASTE enable this once copy-paste functionality is working
-		if (defaultCopyFeature.canCopy(context))
-			return defaultCopyFeature;
+//		if (defaultCopyFeature.canCopy(context))
+//			return defaultCopyFeature;
 		return null;
 	}
 
 	@Override
 	public IPasteFeature getPasteFeature(IPasteContext context) {
 		// TODO: COPY-PASTE enable this once copy-paste functionality is working
-		if (defaultPasteFeature.canPaste(context))
-			return defaultPasteFeature;
+//		if (defaultPasteFeature.canPaste(context))
+//			return defaultPasteFeature;
 		return null;
 	}
 }

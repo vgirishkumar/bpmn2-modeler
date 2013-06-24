@@ -19,9 +19,6 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.modeler.core.features.DefaultCopyBPMNElementFeature;
-import org.eclipse.emf.ecore.EObject;
 
 public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	

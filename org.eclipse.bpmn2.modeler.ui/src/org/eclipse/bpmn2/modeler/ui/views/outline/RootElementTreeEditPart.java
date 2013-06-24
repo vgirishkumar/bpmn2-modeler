@@ -14,13 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Collaboration;
-import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.SequenceFlow;
 
 public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	

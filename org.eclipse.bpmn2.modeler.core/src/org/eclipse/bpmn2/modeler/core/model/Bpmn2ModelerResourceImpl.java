@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
@@ -467,6 +469,26 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 				return false;
             
+			// don't save Assignments if they are invalid: Assignments must have
+			// both a "from" and "to" expression and they may not be empty strings.
+			if (o instanceof DataAssociation && "assignment".equals(f.getName())) {
+				System.out.println();
+				DataAssociation da = (DataAssociation)o;
+				for (Assignment a : da.getAssignment()) {
+					Expression from = a.getFrom();
+					if (from instanceof FormalExpression) {
+						String body = ((FormalExpression)from).getBody();
+						if (body==null || body.isEmpty())
+							return false;
+					}
+					Expression to = a.getTo();
+					if (to instanceof FormalExpression) {
+						String body = ((FormalExpression)to).getBody();
+						if (body==null || body.isEmpty())
+							return false;
+					}
+				}
+			}
             return super.shouldSaveFeature(o, f);
         }
 		

@@ -1,6 +1,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
@@ -21,6 +23,7 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -62,11 +65,11 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
 	protected Resource resource;
 	protected Definitions definitions;
-	protected Hashtable<String, String> idMap = new Hashtable<String, String>();
-	protected Hashtable<ContainerShape, ContainerShape> shapeMap = new Hashtable<ContainerShape, ContainerShape>();
-	protected Hashtable<Connection, Connection> connectionMap = new Hashtable<Connection, Connection>();
-	protected int xReference = 0;
-	protected int yReference = 0;
+	protected Hashtable<String, String> idMap;
+	protected HashMap<ContainerShape, ContainerShape> shapeMap;
+	protected HashMap<Connection, Connection> connectionMap;
+	protected int xReference;
+	protected int yReference;
 	protected Diagram diagram;
 
 	public DefaultPasteBPMNElementFeature(IFeatureProvider fp) {
@@ -96,7 +99,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			}
 			PictogramElement pe = (PictogramElement) object;
 			BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
-			if (!(be instanceof FlowElement) && !(be instanceof Lane)) {
+			if (!(be instanceof FlowElement) && !(be instanceof Lane) && !(be instanceof Participant)) {
 				return false;
 			}
 			// can't paste Boundary Events directly - these are "carried along"
@@ -119,13 +122,18 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
 		resource = targetContainerObject.eResource();
 		definitions = ModelUtil.getDefinitions(resource);
+		idMap = new Hashtable<String, String>();
+		shapeMap = new HashMap<ContainerShape, ContainerShape>();
+		connectionMap = new HashMap<Connection, Connection>();
+		xReference = 0;
+		yReference = 0;
 		
 		Object[] fromClipboard = getFromClipboard();
 		for (Object object : fromClipboard) {
 			if (object instanceof ContainerShape) {
 				ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram((ContainerShape) object);
-				xReference = loc.getX();
-				yReference = loc.getY();
+//				xReference = loc.getX();
+//				yReference = loc.getY();
 				break;
 			}
 		}
@@ -152,6 +160,13 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		for (Object object : fromClipboard) {
 			if (object instanceof Connection) {
 				copyConnection((Connection) object, targetContainerShape, x, y);
+			}
+		}
+		
+		// handle any connections that were not created because of missing source/target
+		for (Entry<Connection, Connection> entry : connectionMap.entrySet()) {
+			if (entry.getValue()==null) {
+				copyConnection(entry.getKey(), targetContainerShape, x, y);
 			}
 		}
 	}
@@ -193,7 +208,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		else if (newObject instanceof FlowElement) {
 			if (targetContainerObject instanceof Lane) {
 				Lane ln = (Lane)targetContainerObject;
-				targetContainerObject = (BaseElement)ln.eContainer().eContainer();
+				targetContainerObject = getFlowElementsContainer(ln);
 				// newObject could be either a Shape (FlowNode) or a Connection;
 				// only add FlowNodes to the Lane's FlowNodeRefs list.
 				if (newObject instanceof FlowNode)
@@ -201,6 +216,18 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			}
 			if (targetContainerObject instanceof FlowElementsContainer) {
 				((FlowElementsContainer)targetContainerObject).getFlowElements().add((FlowElement) newObject);
+			}
+		}
+		else if (newObject instanceof Participant) {
+			Participant participant = (Participant)newObject;
+			if (((Participant) newObject).getProcessRef()!=null) {
+				// need to create a new Process for this thing
+				Process process = (Process) ModelUtil.createObject(resource,Bpmn2Package.eINSTANCE.getProcess());
+				participant.setProcessRef(process);
+			}
+			if (targetContainerObject instanceof Collaboration) {
+				Collaboration collab = (Collaboration)targetContainerObject;
+				collab.getParticipants().add((Participant)newObject);
 			}
 		}
 
@@ -239,8 +266,16 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 					String oldId = getId(oldRefObject);
 					if (oldId!=null) {
 						String newId = idMap.get(oldId);
-						EObject newRefObject = findObjectById(newId);
-						newObject.eSet(ref, newRefObject);
+						if (newId!=null) {
+							EObject newRefObject = findObjectById(newId);
+							newObject.eSet(ref, newRefObject);
+						}
+						else if (newObject.eGet(ref) != null){
+							EObject newRefObject = (EObject) newObject.eGet(ref);
+							newId = getId(newRefObject);
+							if (newId!=null)
+								idMap.put(oldId, newId);
+						}
 					}
 				}
 			}
@@ -308,7 +343,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	}
 
 	protected BaseElement copyShape(ContainerShape oldShape, ContainerShape targetContainerShape, int x, int y) {
-		if (shapeMap.contains(oldShape))
+		if (shapeMap.get(oldShape)!=null)
 			return null;
 		
 		BaseElement targetContainerObject = getContainerObject(targetContainerShape);
@@ -322,8 +357,12 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		// center is at the target location; for copy/paste we want to use the
 		// top-left corner instead so that copied connection bendpoints (if any)
 		// line up properly.
-		int deltaX = loc.getX() - xReference + size.getWidth() / 2;
-		int deltaY = loc.getY() - yReference + size.getHeight() / 2;
+		int deltaX = 0;
+		int deltaY = 0;
+		if (oldObject instanceof FlowNode) {
+			deltaX = loc.getX() - xReference + size.getWidth() / 2;
+			deltaY = loc.getY() - yReference + size.getHeight() / 2;
+		}
 		ac.setLocation(x + deltaX, y + deltaY);
 		ac.setSize(size.getWidth(), size.getHeight());
 		ac.setTargetContainer(targetContainerShape);
@@ -332,6 +371,11 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		ContainerShape newShape = (ContainerShape) af.add(ac);
 
 		shapeMap.put(oldShape, newShape);
+
+		if (oldObject instanceof Participant) {
+			// copy the contained Process elements
+			oldObject = ((Participant)oldObject).getProcessRef();
+		}
 
 		// create shapes and connections for children if this is a FlowElementsContainer
 		if (oldObject instanceof FlowElementsContainer) {
@@ -366,7 +410,16 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		}
 		else if (oldObject instanceof Lane) {
 	        List<PictogramElement> shapes = new ArrayList<PictogramElement>();
-			for (FlowNode oldChildObject : ((Lane)oldObject).getFlowNodeRefs()) {
+	        Lane oldLane = (Lane)oldObject;
+	        if (oldLane.getChildLaneSet()!=null) {
+	        	for (Lane oldChildLaneObject : oldLane.getChildLaneSet().getLanes()) {
+	        		ContainerShape oldChildLaneShape = findShape(oldChildLaneObject);
+	        		if (oldChildLaneShape != null) {
+	        			copyShape(oldChildLaneShape, newShape, 0, 0);
+	        		}
+	        	}
+	        }
+			for (FlowNode oldChildObject : oldLane.getFlowNodeRefs()) {
 				ContainerShape oldChildShape = findShape(oldChildObject);
 				if (oldChildShape != null) {
 					copyShape(oldChildShape, newShape, 0, 0);
@@ -416,7 +469,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	}
 
 	protected BaseElement copyConnection(Connection oldConnection, ContainerShape targetContainerShape, int x, int y) {
-		if (connectionMap.contains(oldConnection))
+		if (connectionMap.get(oldConnection)!=null)
 			return null;
 		
 		BaseElement targetContainerObject = getContainerObject(targetContainerShape);
@@ -427,6 +480,12 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		Anchor oldEnd = oldConnection.getEnd();
 		ContainerShape newSource = shapeMap.get(oldStart.getParent());
 		ContainerShape newTarget = shapeMap.get(oldEnd.getParent());
+		if (newSource==null || newTarget==null) {
+			// source or target does not exist yet - handle this connection later
+			connectionMap.put(oldConnection, null);
+			return null;
+		}
+		
 		Anchor newStart;
 		Anchor newEnd;
 		if (AnchorUtil.isBoundaryAnchor(oldStart)) {
@@ -509,5 +568,12 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		if (bo instanceof BaseElement)
 			return (BaseElement) bo;
 		return null;
+	}
+	
+	protected FlowElementsContainer getFlowElementsContainer(Lane lane) {
+		EObject container = lane.eContainer();
+		while (!(container instanceof FlowElementsContainer) && container!=null)
+			container = container.eContainer();
+		return (FlowElementsContainer)container;
 	}
 }
