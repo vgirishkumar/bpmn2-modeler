@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Lane;
 
 public class BaseElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 

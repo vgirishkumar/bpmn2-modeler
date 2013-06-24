@@ -14,8 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.SequenceFlow;
 
 public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	
@@ -44,7 +49,7 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		if (elem != null && elem.eResource() != null) {
 			if (elem instanceof FlowElementsContainer) {
 				FlowElementsContainer container = (FlowElementsContainer)elem;
-				retList.addAll(container.getFlowElements());
+				return FlowElementTreeEditPart.getFlowElementsContainerChildren(container);
 			}
 			if (elem instanceof Collaboration) {
 				Collaboration collaboration = (Collaboration)elem;
