@@ -472,7 +472,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			// don't save Assignments if they are invalid: Assignments must have
 			// both a "from" and "to" expression and they may not be empty strings.
 			if (o instanceof DataAssociation && "assignment".equals(f.getName())) {
-				System.out.println();
 				DataAssociation da = (DataAssociation)o;
 				for (Assignment a : da.getAssignment()) {
 					Expression from = a.getFrom();

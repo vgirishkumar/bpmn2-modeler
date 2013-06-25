@@ -165,6 +165,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.BasicCommandStack;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -172,6 +173,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
@@ -321,6 +323,14 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	protected DiagramEditorAdapter editorAdapter;
 	protected BPMN2MultiPageEditor multipageEditor;
+	
+	protected boolean saveInProgress = false;
+	private static NotificationFilter filterNone = new NotificationFilter.Custom() {
+		@Override
+		public boolean matches(Notification notification) {
+			return false;
+		}
+	};
 	
 	public BPMN2Editor(BPMN2MultiPageEditor mpe) {
 		multipageEditor = mpe;
@@ -803,6 +813,12 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
 			return getTargetRuntime().getToolPalette(diagramType, getModelEnablementProfile());
 		}
+		if (required == NotificationFilter.class) {
+			if (saveInProgress)
+				return filterNone;
+			else
+				return null;
+		}
 		
 		return super.getAdapter(required);
 	}
@@ -922,8 +938,18 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		super.doSave(monitor);
-
+		getSite().getShell().getChildren()[1].setFocus();
+		
+		long start = System.currentTimeMillis();
+		try {
+			saveInProgress = true;
+			System.out.print("Saving...");
+			super.doSave(monitor);
+		}
+		finally {
+			saveInProgress = false;
+		}
+		System.out.println("done in "+(System.currentTimeMillis()-start)+" ms");
 		Resource resource = getResourceSet().getResource(modelUri, false);
 		BPMN2ProjectValidator.validateOnSave(resource, monitor);
 	}
