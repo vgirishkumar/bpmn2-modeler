@@ -938,18 +938,16 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		getSite().getShell().getChildren()[1].setFocus();
-		
-		long start = System.currentTimeMillis();
+//		long start = System.currentTimeMillis();
 		try {
 			saveInProgress = true;
-			System.out.print("Saving...");
+//			System.out.print("Saving...");
 			super.doSave(monitor);
 		}
 		finally {
 			saveInProgress = false;
 		}
-		System.out.println("done in "+(System.currentTimeMillis()-start)+" ms");
+//		System.out.println("done in "+(System.currentTimeMillis()-start)+" ms");
 		Resource resource = getResourceSet().getResource(modelUri, false);
 		BPMN2ProjectValidator.validateOnSave(resource, monitor);
 	}
