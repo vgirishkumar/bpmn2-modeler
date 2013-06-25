@@ -13,6 +13,9 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -21,6 +24,10 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -33,6 +40,7 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -42,8 +50,9 @@ import org.eclipse.swt.widgets.Text;
 public class TextObjectEditor extends ObjectEditor {
 
 	protected Text text;
-	boolean multiLine = false;
-	boolean testMultiLine = true;
+	protected boolean multiLine = false;
+	protected boolean testMultiLine = true;
+	protected Timer timer;
 	
 	/**
 	 * @param parent
@@ -137,8 +146,42 @@ public class TextObjectEditor extends ObjectEditor {
 		updateText();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor#setValue(java.lang.Object)
+	 * 
+	 * Schedule a timer to do the actual update in a "little while".
+	 * If another change comes in before the timer has actually
+	 * completed, cancel it and reschedule it with the new value.
+	 */
 	@Override
-	protected boolean setValue(Object result) {
+	protected boolean setValue(final Object result) {
+		if (timer!=null)
+			timer.cancel();
+		timer = new Timer();
+		timer.schedule( new TimerTask() {
+
+			@Override
+			public void run() {
+				Display.getDefault().asyncExec( new Runnable() {
+					@Override
+					public void run() {
+						internalSetValue(result);
+					}
+				});
+			}
+			
+		}, 800);
+		return true;
+	}
+	
+	/**
+	 * Called by the SetValueJob to do the real work of setting the
+	 * text widget with the given value.
+	 * 
+	 * @param result - new string value to set into the text widget.
+	 * @return
+	 */
+	private boolean internalSetValue(Object result) {
 		if (super.setValue(result)) {
 			updateText();
 			return true;
@@ -147,11 +190,9 @@ public class TextObjectEditor extends ObjectEditor {
 		text.setText(ModelUtil.getDisplayName(object, feature));
 		return false;
 	}
-
+	
 	/**
-	 * Update the read-only text field with the give value
-	 * 
-	 * @param value - new value for the text field
+	 * Update the text field widget after its underlying value has changed.
 	 */
 	protected void updateText() {
 		if (!text.getText().equals(getText())) {
@@ -161,6 +202,11 @@ public class TextObjectEditor extends ObjectEditor {
 		}
 	}
 	
+	/**
+	 * Set the text field with the given value
+	 * 
+	 * @param value - new value for the text field
+	 */
 	protected void setText(String value) {
 		if (value==null)
 			value = "";
@@ -189,7 +235,8 @@ public class TextObjectEditor extends ObjectEditor {
 		if (this.object == notification.getNotifier()) {
 			if (notification.getFeature() instanceof EStructuralFeature) {
 				EStructuralFeature f = (EStructuralFeature)notification.getFeature();
-				if (f!=null && f.getName().equals(this.feature.getName()) )
+				if (f!=null && (f.getName().equals(this.feature.getName()) ||
+						f.getName().equals("mixed")) ) // handle the case of FormalExpression.body
 					updateText();
 			}
 		}
