@@ -28,21 +28,26 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl.Bpmn2ModelerXMLSave;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -51,7 +56,9 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
+import org.eclipse.emf.ecore.util.BasicInternalEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -141,6 +148,55 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 		        	}
 		        };
 		        ((DroolsXmlHelper)helper).setDefaultNamespace();
+		        
+		        featureTable = new Bpmn2ModelerXMLSave.Bpmn2Lookup(map, extendedMetaData, elementHandler) {
+		        	@Override
+		    		protected EStructuralFeature[] reorderFeatureList(EClass cls, EStructuralFeature[] featureList) {
+		        		EStructuralFeature[] newList = null;
+		    			if (cls.getName().equalsIgnoreCase("Process")) {
+		    				/*
+		    				 * Semantic.xsd sequence definition for Process:
+		    				 * 
+		    				 * <xsd:sequence>
+		    				 * <xsd:element ref="auditing" minOccurs="0" maxOccurs="1"/>
+		    				 * <xsd:element ref="monitoring" minOccurs="0" maxOccurs="1"/>
+		    				 * <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element ref="laneSet" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element ref="flowElement" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element ref="artifact" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element ref="resourceRole" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element ref="correlationSubscription" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * <xsd:element name="supports" type="xsd:QName" minOccurs="0" maxOccurs="unbounded"/>
+		    				 * </xsd:sequence>
+		    				 */
+		    				String[] featureNames = {
+		    					"auditing",
+		    					"monitoring",
+		    					"properties",
+		    					"laneSets",
+		    					"flowElements",
+		    					"artifacts",
+		    					"resources",
+		    					"correlationSubscriptions",
+		    					"supports"
+		    				};
+		    				newList = reorderFeatureList(cls, featureList, featureNames);
+		    			}
+		    			else
+		    				newList = featureList;
+		    			
+		    			// for BaseElements, "documentation" always comes before "extensionValues"
+		    			if (Bpmn2Package.eINSTANCE.getBaseElement().isSuperTypeOf(cls)) {
+		    				String[] featureNames = {
+		    					"documentation",
+		    					"extensionValues"
+		    				};
+			    			newList = reorderFeatureList(cls, newList, featureNames);
+		    			}
+		    			
+		    			return newList;
+		        	}
+		        };
 			}
 			  
 			@Override
@@ -253,6 +309,34 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				result.add("");
 			}
 			return result;
+	    }
+
+	    @Override
+	    public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
+	    	
+	    	if (eObject instanceof Definitions && eStructuralFeature == Bpmn2Package.eINSTANCE.getDefinitions_RootElements()) {
+	    		// reorder the root elements so that ItemDefinitions are first, Process is last
+	    		// and everything else is in between
+	    		List<RootElement> oldList = ((Definitions)eObject).getRootElements();
+	    		List<RootElement> newList = new ArrayList<RootElement>();
+	    		for (RootElement re : oldList) {
+	    			if (re instanceof ItemDefinition) {
+	    				newList.add(re);
+	    			}
+	    		}
+	    		for (RootElement re : oldList) {
+	    			if (!(re instanceof ItemDefinition) && !(re instanceof Process)) {
+	    				newList.add(re);
+	    			}
+	    		}
+	    		for (RootElement re : oldList) {
+	    			if (re instanceof Process) {
+	    				newList.add(re);
+	    			}
+	    		}
+	    		return new BasicInternalEList<RootElement>(RootElement.class, newList);
+	    	}
+	    	return super.getValue(eObject, eStructuralFeature);
 	    }
     }
     

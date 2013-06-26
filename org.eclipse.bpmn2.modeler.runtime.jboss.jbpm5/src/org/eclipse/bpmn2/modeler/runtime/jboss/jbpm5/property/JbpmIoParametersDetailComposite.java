@@ -13,9 +13,11 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.swt.widgets.Composite;
 
 public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite {
@@ -30,12 +32,13 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 	
 	@Override
 	public void createBindings(final EObject be) {
+		Resource resource = ModelUtil.getResource(be);
 		final EStructuralFeature ioSpecificationFeature = be.eClass().getEStructuralFeature("ioSpecification");
 		if (ioSpecificationFeature != null) {
 			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)
 			InputOutputSpecification ioSpecification = (InputOutputSpecification)be.eGet(ioSpecificationFeature);
 			if (ioSpecification==null) {
-				ioSpecification = (InputOutputSpecification) FACTORY.createInputOutputSpecification();
+				ioSpecification = createModelObject(InputOutputSpecification.class);
 				InsertionAdapter.add(be, ioSpecificationFeature, ioSpecification);
 			}
 			

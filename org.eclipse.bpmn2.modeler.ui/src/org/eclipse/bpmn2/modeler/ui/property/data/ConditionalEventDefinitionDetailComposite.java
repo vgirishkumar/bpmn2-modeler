@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.property.data;
 
 import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -38,7 +39,7 @@ public class ConditionalEventDefinitionDetailComposite extends ExpressionDetailC
 		if (object instanceof ConditionalEventDefinition) {
 			ConditionalEventDefinition ced = (ConditionalEventDefinition)object;
 			if (ced.getCondition()==null) {
-				object = FACTORY.createFormalExpression();
+				object = createModelObject(FormalExpression.class);
 				InsertionAdapter.add(ced,
 						PACKAGE.getConditionalEventDefinition_Condition(),
 						object);

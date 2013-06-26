@@ -91,12 +91,12 @@ public class IoParametersListComposite extends DefaultListComposite {
 		if (param instanceof DataInput) {
 			List<OutputSet> outputSets = ioSpecification.getOutputSets();
 			if (outputSets.size()==0) {
-				outputSets.add(FACTORY.createOutputSet());
+				outputSets.add((OutputSet) createModelObject(OutputSet.class));
 			}
 			// add the new parameter to the InputSet
 			List<InputSet> inputSets = ioSpecification.getInputSets();
 			if (inputSets.size()==0) {
-				inputSets.add(FACTORY.createInputSet());
+				inputSets.add((InputSet) createModelObject(InputSet.class));
 			}
 			InputSet inputSet = inputSets.get(0);
 			
@@ -119,18 +119,17 @@ public class IoParametersListComposite extends DefaultListComposite {
 			((DataInput)param).setName(name);
 
 			inputSet.getDataInputRefs().add((DataInput) param);
-			ModelUtil.setID(inputSet);
 		}
 		else if (param instanceof DataOutput)
 		{
 			List<InputSet> inputSets = ioSpecification.getInputSets();
 			if (inputSets.size()==0) {
-				inputSets.add(FACTORY.createInputSet());
+				inputSets.add((InputSet) createModelObject(InputSet.class));
 			}
 			// add the new parameter to the OutputSet
 			List<OutputSet> outputSets = ioSpecification.getOutputSets();
 			if (outputSets.size()==0) {
-				outputSets.add(FACTORY.createOutputSet());
+				outputSets.add((OutputSet) createModelObject(OutputSet.class));
 			}
 			OutputSet outputSet = outputSets.get(0);
 			
@@ -153,25 +152,21 @@ public class IoParametersListComposite extends DefaultListComposite {
 			((DataOutput)param).setName(name);
 
 			outputSet.getDataOutputRefs().add((DataOutput) param);
-			ModelUtil.setID(outputSet);
 		}
 		
 		if (activity!=null) {
 			// this is an Activity - create an Input or Output DataAssociation
 			if (param instanceof DataInput) {
-				DataInputAssociation inputAssociation = FACTORY.createDataInputAssociation();
+				DataInputAssociation inputAssociation = createModelObject(DataInputAssociation.class);
 				activity.getDataInputAssociations().add(inputAssociation);
 				inputAssociation.setTargetRef((DataInput) param);
-				ModelUtil.setID(inputAssociation);
 			}
 			else if (param instanceof DataOutput)
 			{
-				DataOutputAssociation outputAssociation = (DataOutputAssociation) ModelUtil.createObject(PACKAGE.getDataOutputAssociation());
-				//FACTORY.createDataOutputAssociation();
+				DataOutputAssociation outputAssociation = createModelObject(DataOutputAssociation.class);
 				activity.getDataOutputAssociations().add(outputAssociation);
 				outputAssociation.getSourceRef().clear();
 				outputAssociation.getSourceRef().add((DataOutput) param);
-				ModelUtil.setID(outputAssociation);
 			}
 		}
 		else if (element!=null) {

@@ -215,7 +215,8 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 			}
 		}
     	participant.setProcessRef(process);
-		
+		ModelUtil.setID(process);
+
 		return result;
 	}
 }

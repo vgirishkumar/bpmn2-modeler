@@ -167,9 +167,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								StandardLoopCharacteristics loopChar = FACTORY.createStandardLoopCharacteristics();
+								StandardLoopCharacteristics loopChar = createModelObject(StandardLoopCharacteristics.class);
 								activity.setLoopCharacteristics(loopChar);
-								ModelUtil.setID(loopChar);
 								setBusinessObject(activity);
 							}
 						});
@@ -188,9 +187,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
-								MultiInstanceLoopCharacteristics loopChar = FACTORY.createMultiInstanceLoopCharacteristics();
+								MultiInstanceLoopCharacteristics loopChar = createModelObject(MultiInstanceLoopCharacteristics.class);
 								activity.setLoopCharacteristics(loopChar);
-								ModelUtil.setID(loopChar);
 								setBusinessObject(activity);
 							}
 						});

@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
@@ -33,6 +34,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -617,7 +619,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 				// create a new Loop Cardinality FormalExpression if necessary
 				Expression expression = getBO().getCompletionCondition();
 				if (expression==null) {
-					expression = FACTORY.createFormalExpression();
+					expression = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(getBO(), PACKAGE.getMultiInstanceLoopCharacteristics_CompletionCondition(), expression);
 				}
 				completionConditionEditor.setBusinessObject(expression);
@@ -673,7 +675,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 				// create a new Loop Cardinality FormalExpression if necessary
 				Expression expression = getBO().getLoopCardinality();
 				if (expression==null) {
-					expression = FACTORY.createFormalExpression();
+					expression = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(getBO(), PACKAGE.getMultiInstanceLoopCharacteristics_LoopCardinality(), expression);
 				}
 				loopCardinalityEditor.setBusinessObject(expression);
