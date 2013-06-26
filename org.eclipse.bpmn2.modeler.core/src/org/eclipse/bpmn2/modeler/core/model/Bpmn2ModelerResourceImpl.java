@@ -636,7 +636,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			super.traverse(contents);
 		}
 
-		public static class Bpmn2Lookup extends XMLSaveImpl.Lookup {
+		public class Bpmn2Lookup extends XMLSaveImpl.Lookup {
 			public Bpmn2Lookup(XMLMap map, ExtendedMetaData extendedMetaData, ElementHandler elementHandler) {
 				super(map, extendedMetaData, elementHandler);
 			}
@@ -651,67 +651,114 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 
 				EStructuralFeature[] featureList = listFeatures(cls);
+				EStructuralFeature[] newFeatureList = featureList;
 				if (c == null) {
+					newFeatureList = reorderFeatureList(cls, featureList);
 					classes[index] = cls;
-					features[index] = featureList;
-					featureKinds[index] = listKinds(featureList);
+					features[index] = newFeatureList;
+					featureKinds[index] = listKinds(newFeatureList);
 				}
+				return newFeatureList;
+			}
 
-				if (cls.getName().equalsIgnoreCase("Process")) {
-					EStructuralFeature[] modifiedFeatureList = getModifiedProcessFeatureSet(featureList);
-					if (c == null) {
-						classes[index] = cls;
-						features[index] = modifiedFeatureList;
-						featureKinds[index] = listKinds(modifiedFeatureList);
-					}
-					return modifiedFeatureList;
-				}
+			/**
+			 * Specifies the serialization order of features for a given ECLass.
+			 * Subclasses should override this behavior.
+			 * The default implementation simply returns the original list.
+			 * 
+			 * @param cls - EClass whose features need to be reordered
+			 * @param featureList - the original feature list as provided by the Bpmn2Package
+			 * @return a feature list that specifies the new ordering
+			 */
+			protected EStructuralFeature[] reorderFeatureList(EClass cls, EStructuralFeature[] featureList) {
 				return featureList;
 			}
-		}
-
-		private static EStructuralFeature[] getModifiedProcessFeatureSet(EStructuralFeature[] processFeatureList) {
+			
 			/**
-			 * Feature list for Process provided by eclipse.bpmn2: -
-			 * extensionDefinitions (0) - id (1) - anyAttribute (2) - name (3) -
-			 * definitionalCollaborationRef (4) - isClosed (5) - isExecutable
-			 * (6) - processType (7) - extensionValues (8) - documentation (9) -
-			 * supportedInterfaceRefs (10) - ioSpecification (11) - ioBinding
-			 * (12) - laneSets (13) - flowElements (14) - auditing (15) -
-			 * monitoring (16) - properties (17) - artifacts (18) - resources
-			 * (19) - correlationSubscriptions (20) - supports (21) Semantic.xsd
-			 * sequence definition for Process: <xsd:sequence> <xsd:element
-			 * ref="auditing" minOccurs="0" maxOccurs="1"/> <xsd:element
-			 * ref="monitoring" minOccurs="0" maxOccurs="1"/> <xsd:element
-			 * ref="property" minOccurs="0" maxOccurs="unbounded"/> <xsd:element
-			 * ref="laneSet" minOccurs="0" maxOccurs="unbounded"/> <xsd:element
-			 * ref="flowElement" minOccurs="0" maxOccurs="unbounded"/>
-			 * <xsd:element ref="artifact" minOccurs="0" maxOccurs="unbounded"/>
-			 * <xsd:element ref="resourceRole" minOccurs="0"
-			 * maxOccurs="unbounded"/> <xsd:element
-			 * ref="correlationSubscription" minOccurs="0"
-			 * maxOccurs="unbounded"/> <xsd:element name="supports"
-			 * type="xsd:QName" minOccurs="0" maxOccurs="unbounded"/>
-			 * </xsd:sequence>
+			 * Change the serialization order of features for a given EClass. The string array "featureNames"
+			 * specifies a new ordering for some or all of the features in the feature list; these names must
+			 * be contiguous in the original list. For example, given the following original feature list:
 			 * 
-			 * Moving auditing, monitoring, property above flowElements...
+			 * "w"
+			 * "x"
+			 * "a"
+			 * "b"
+			 * "c"
+			 * "d"
+			 * "e"
+			 * "y"
+			 * "z"
+			 * 
+			 * The featureNames list may not contain this:
+			 * 
+			 * "b"
+			 * "a"
+			 * "e"
+			 * "d"
+			 * 
+			 * because the two sets "b", "a" and "e", "d" are not contiguous. The correct way of specifying this is:
+			 * 
+			 * "b"
+			 * "a"
+			 * "c"
+			 * "e"
+			 * "d"
+			 * 
+			 * Alternatively, the client could call this method twice, the first time with the first set ("b" and "a")
+			 * and a second time with the second set ("e" and "d).
+			 * 
+			 * @param cls
+			 * @param featureList
+			 * @param featureNames
+			 * @return
 			 */
+			protected EStructuralFeature[] reorderFeatureList(EClass cls, EStructuralFeature[] featureList, String[] featureNames) {
+				// the reordered list of features
+				EStructuralFeature[] newFeatureList = new EStructuralFeature[featureList.length];
+				// map of old to new array indexes
+				int[] indexMap = new int[featureList.length];
+				for (int i=0; i<indexMap.length; ++i)
+					indexMap[i] = -1;
 
-			EStructuralFeature[] retArray = new EStructuralFeature[processFeatureList.length];
-			for (int i = 0; i < 13; i++) {
-				retArray[i] = processFeatureList[i];
+				int startIndex = Integer.MAX_VALUE;
+				for (int i=0; i<featureList.length; ++i) {
+					for (int j=0; j<featureNames.length; ++j) {
+						if (featureList[i].getName().equals(featureNames[j])) {
+							if (i<startIndex) {
+								startIndex = i;
+								break;
+							}
+						}
+					}
+				}
+				
+				for (int newIndex=0; newIndex<featureNames.length; ++newIndex) {
+					String fn = featureNames[newIndex];
+					for (int oldIndex=0; oldIndex<featureList.length; ++oldIndex) {
+						EStructuralFeature f = featureList[oldIndex];
+						if (f.getName().equalsIgnoreCase(fn)) {
+							indexMap[oldIndex] = newIndex + startIndex;
+							break;
+						}
+					}
+				}
+				
+				for (int oldIndex=0; oldIndex<featureList.length; ++oldIndex) {
+					EStructuralFeature f = featureList[oldIndex];
+					int newIndex = indexMap[oldIndex];
+					if (newIndex>=0) {
+						newFeatureList[newIndex] = featureList[oldIndex];
+					}
+					else
+						newFeatureList[oldIndex] = featureList[oldIndex];
+				}
+				
+//				System.out.println("Reordered features for "+cls.getName());
+//				for (int newIndex=0; newIndex<newFeatureList.length; ++newIndex) {
+//					System.out.println("  "+newIndex+": "+newFeatureList[newIndex].getName()+" was "+featureList[newIndex].getName());
+//				}
+				return newFeatureList;
 			}
-			retArray[13] = processFeatureList[15]; // auditing
-			retArray[14] = processFeatureList[16]; // monitoring
-			retArray[15] = processFeatureList[17]; // properties
-			retArray[16] = processFeatureList[13]; // lanesets
-			retArray[17] = processFeatureList[14]; // flow elements
-			retArray[18] = processFeatureList[18]; // artifacts
-			retArray[19] = processFeatureList[19]; // resources
-			retArray[20] = processFeatureList[20]; // correlationSubscriptions
-			retArray[21] = processFeatureList[21]; // supports
-
-			return retArray;
 		}
 	}
 	

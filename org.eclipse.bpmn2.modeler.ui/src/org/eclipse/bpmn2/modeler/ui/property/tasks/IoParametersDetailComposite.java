@@ -71,7 +71,7 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)
 			InputOutputSpecification ioSpecification = (InputOutputSpecification)be.eGet(ioSpecificationFeature);
 			if (ioSpecification==null) {
-				ioSpecification = (InputOutputSpecification) FACTORY.createInputOutputSpecification();
+				ioSpecification = createModelObject(InputOutputSpecification.class);
 				InsertionAdapter.add(be, ioSpecificationFeature, ioSpecification);
 			}
 

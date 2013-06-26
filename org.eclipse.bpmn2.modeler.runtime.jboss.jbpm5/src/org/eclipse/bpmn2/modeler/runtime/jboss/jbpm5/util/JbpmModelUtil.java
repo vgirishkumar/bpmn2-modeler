@@ -407,6 +407,7 @@ public class JbpmModelUtil {
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);
 			rel.setType("Simulation");
+			ModelUtil.setID(rel);
 		}
 		else {
 			rel = relationships.get(0);

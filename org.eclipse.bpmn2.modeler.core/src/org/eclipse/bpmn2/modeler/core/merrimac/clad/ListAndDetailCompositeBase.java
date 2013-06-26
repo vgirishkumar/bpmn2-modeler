@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
@@ -55,6 +56,8 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 public class ListAndDetailCompositeBase extends Composite implements ResourceSetListener {
 
 	public final static Bpmn2Package PACKAGE = Bpmn2Package.eINSTANCE;
+	@Deprecated
+	// use createModelObject() instead
 	public final static Bpmn2ModelerFactory FACTORY = Bpmn2ModelerFactory.getInstance();
 	protected AbstractBpmn2PropertySection propertySection;
 	protected FormToolkit toolkit;
@@ -199,6 +202,16 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return (ModelEnablementDescriptor)getDiagramEditor().getAdapter(ModelEnablementDescriptor.class);
 	}
 
+	protected <T extends EObject> T createModelObject(Class clazz) {
+		T object = null;
+		EClass eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
+		if (eClass!=null) {
+			object = (T)Bpmn2Factory.eINSTANCE.create(eClass);
+			ModelUtil.setID(object, ModelUtil.getResource(businessObject));
+		}
+		return object;
+	}
+	
 	public TargetRuntime getTargetRuntime() {
 		return (TargetRuntime) getDiagramEditor().getAdapter(TargetRuntime.class);
 	}

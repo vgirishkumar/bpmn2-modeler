@@ -45,6 +45,7 @@ import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposit
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -212,7 +213,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			ThrowEvent throwEvent = (ThrowEvent)container;
 			associations = throwEvent.getDataInputAssociation();
 			if (associations.size()==0) {
-				association = FACTORY.createDataInputAssociation();
+				association = createModelObject(DataInputAssociation.class);
 				association.setTargetRef((ItemAwareElement) be);
 				InsertionAdapter.add(throwEvent, PACKAGE.getThrowEvent_DataInputAssociation(), association);
 			}
@@ -224,7 +225,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			CatchEvent catchEvent = (CatchEvent)container;
 			associations = catchEvent.getDataOutputAssociation();
 			if (associations.size()==0) {
-				association = FACTORY.createDataOutputAssociation();
+				association = createModelObject(DataOutputAssociation.class);
 				association.getSourceRef().add((ItemAwareElement) be);
 				InsertionAdapter.add(catchEvent, PACKAGE.getCatchEvent_DataOutputAssociation(), association);
 			}
@@ -266,12 +267,12 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			if (association==null && activity!=null) {
 				// create a new DataAssociation
 				if (isInput) {
-					association = FACTORY.createDataInputAssociation();
+					association = createModelObject(DataInputAssociation.class);
 					association.setTargetRef((ItemAwareElement) be);
 					InsertionAdapter.add(activity, PACKAGE.getActivity_DataInputAssociations(), association);
 				}
 				else {
-					association = FACTORY.createDataOutputAssociation();
+					association = createModelObject(DataOutputAssociation.class);
 					association.getSourceRef().add((ItemAwareElement) be);
 					InsertionAdapter.add(activity, PACKAGE.getActivity_DataOutputAssociations(), association);
 				}
@@ -631,7 +632,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				// create a new Transformation FormalExpression
 				FormalExpression transformation = association.getTransformation();
 				if (!updatingWidgets && transformation==null) {
-					transformation = FACTORY.createFormalExpression();
+					transformation = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(association, PACKAGE.getDataAssociation_Transformation(), transformation);
 				}
 				if (transformationDetailsComposite==null) {
@@ -688,8 +689,8 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				if (!updatingWidgets) {
 					if (assignment==null) {
-						assignment = FACTORY.createAssignment();
-						FormalExpression paramExpression = FACTORY.createFormalExpression();
+						assignment = createModelObject(Assignment.class);
+						FormalExpression paramExpression = createModelObject(FormalExpression.class);
 						paramExpression.setBody(parameter.getId());
 						if (isInput)
 							assignment.setTo(paramExpression);
@@ -698,7 +699,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						InsertionAdapter.add(association, PACKAGE.getDataAssociation_Assignment(), assignment);
 					}
 					if (expression==null) {
-						expression = FACTORY.createFormalExpression();
+						expression = createModelObject(FormalExpression.class);
 						if (isInput)
 							InsertionAdapter.add(assignment, PACKAGE.getAssignment_From(), expression);
 						else
@@ -750,7 +751,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				// create a new Transformation FormalExpression
 				FormalExpression transformation = association.getTransformation();
 				if (!updatingWidgets && transformation==null) {
-					transformation = FACTORY.createFormalExpression();
+					transformation = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(association, PACKAGE.getDataAssociation_Transformation(), transformation);
 				}
 	
