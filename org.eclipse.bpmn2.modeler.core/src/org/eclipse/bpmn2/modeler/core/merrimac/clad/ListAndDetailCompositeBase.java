@@ -320,7 +320,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 					return;
 				}
 
-				parent.setRedraw(false);
 				boolean firstTime = true;
 				for (Notification n : notifications) {
 					if (getFilter().matches(n)) {
@@ -356,7 +355,6 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 						}
 					}
 				}
-				parent.setRedraw(true);
 			}
 		});
 	}
