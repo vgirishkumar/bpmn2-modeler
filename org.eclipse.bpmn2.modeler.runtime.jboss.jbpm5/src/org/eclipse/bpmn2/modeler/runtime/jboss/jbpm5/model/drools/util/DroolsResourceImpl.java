@@ -506,9 +506,9 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 					LoopCharacteristics lc = activity.getLoopCharacteristics();
 					if (lc instanceof MultiInstanceLoopCharacteristics) {
 						MultiInstanceLoopCharacteristics mlc = (MultiInstanceLoopCharacteristics)lc;
-						if (ids.equals(mlc.getInputDataItem().getName()))
+						if (mlc.getInputDataItem()!=null && ids.equals(mlc.getInputDataItem().getName()))
 							return mlc.getInputDataItem();
-						if (ids.equals(mlc.getOutputDataItem().getName()))
+						if (mlc.getOutputDataItem()!=null && ids.equals(mlc.getOutputDataItem().getName()))
 							return mlc.getOutputDataItem();
 					}
 				}
