@@ -39,6 +39,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
@@ -156,7 +157,6 @@ public class DIImport {
 					ModelUtil.addID( iter.next() );
 				}
 				
-				// do the import
 				// do the import
 				for (BPMNDiagram d : bpmnDiagrams) {
 					diagram = DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(),d);
@@ -334,6 +334,40 @@ public class DIImport {
 							}
 						}
 					}
+				} else if (bpmnElement instanceof Lane) {
+					// if this Lane is a child of another Lane, wait until the parent
+					// is materialized, regardless of what the Z-order implied by the
+					// order of BPMNShape elements is.
+					Lane lane = (Lane)bpmnElement;
+					if (lane.eContainer() instanceof LaneSet) {
+						LaneSet ls = (LaneSet)lane.eContainer();
+						if (ls.eContainer() instanceof Lane) {
+							Lane parentLane = (Lane)ls.eContainer();
+							if (!elements.containsKey(parentLane)) {
+								postpone = true;
+							}
+						}
+						else if (ls.eContainer() instanceof Process) {
+							// The Lane's container is a Process: if there is a Participant
+							// (Pools) that references this process, wait until that Participant
+							// shape is materialized.
+							Process process = (Process)ls.eContainer();
+							Definitions definitions = modelHandler.getDefinitions();
+							TreeIterator<EObject> iter = definitions.eAllContents();
+							while (iter.hasNext()) {
+								EObject next = iter.next();
+								if (next instanceof Participant) {
+									Participant participant = (Participant)next;
+									if (participant.getProcessRef() == process) {
+										if (!elements.containsKey(participant)) {
+											postpone = true;
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 	
 				if (postpone) {
@@ -450,6 +484,11 @@ public class DIImport {
 	 */
 	private void createShape(BPMNShape shape) {
 		BaseElement bpmnElement = shape.getBpmnElement();
+		if (bpmnElement==null) {
+			diagnostics.add(IStatus.ERROR, shape, "The referenced BPMN element does not exist");
+			return;
+		}
+
 		if (shape.getChoreographyActivityShape() != null) {
 			// FIXME: we currently generate participant bands automatically
 			return;
@@ -717,6 +756,10 @@ public class DIImport {
 				te = elements.get(target);
 				target = target.eContainer();
 			} while (te == null && target.eContainer() != null);
+		}
+		else if (bpmnElement==null) {
+			diagnostics.add(IStatus.ERROR, bpmnEdge, "The referenced BPMN element does not exist");
+			return;
 		}
 
 		ModelUtil.addID(bpmnElement);

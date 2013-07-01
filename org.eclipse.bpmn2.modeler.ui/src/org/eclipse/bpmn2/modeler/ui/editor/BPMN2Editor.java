@@ -82,6 +82,7 @@ import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
@@ -1145,12 +1146,17 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		}
 		if (!moved.isEmpty()) {
-			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+			Display.getDefault().asyncExec(new Runnable() {
 				@Override
-				protected void doExecute() {
-					for (ContainerShape child : moved) {
-						Graphiti.getPeService().sendToFront(child);
-					}
+				public void run() {
+					getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+						@Override
+						protected void doExecute() {
+							for (ContainerShape child : moved) {
+								GraphicsUtil.sendToFront(child);
+							}
+						}
+					});
 				}
 			});
 		}

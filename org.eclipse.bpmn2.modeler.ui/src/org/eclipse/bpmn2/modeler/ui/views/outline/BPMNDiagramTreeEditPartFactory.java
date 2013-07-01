@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -58,6 +59,8 @@ public class BPMNDiagramTreeEditPartFactory implements EditPartFactory {
 				ret = new RootElementTreeEditPart(dep, (RootElement) model);
 			} else if (model instanceof FlowElement) {
 				ret = new FlowElementTreeEditPart(dep, (FlowElement) model);
+			} else if (model instanceof Participant) {
+				ret = new PoolTreeEditPart(dep, (Participant) model);
 			} else if (model instanceof Lane) {
 				ret = new LaneTreeEditPart(dep, (Lane) model);
 			} else if (model instanceof BaseElement) {

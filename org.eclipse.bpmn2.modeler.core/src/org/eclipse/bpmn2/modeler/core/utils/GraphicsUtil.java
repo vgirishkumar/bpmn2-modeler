@@ -24,6 +24,9 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.di.BPMNPlane;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -1720,4 +1723,13 @@ public class GraphicsUtil {
 		return result;
 	}
 
+	public static void sendToFront(Shape shape) {
+		peService.sendToFront(shape);
+		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
+		if (bpmnShape!=null) {
+			BPMNPlane plane = (BPMNPlane)bpmnShape.eContainer();
+			plane.getPlaneElement().remove(bpmnShape);
+			plane.getPlaneElement().add(bpmnShape);
+		}
+	}
 }

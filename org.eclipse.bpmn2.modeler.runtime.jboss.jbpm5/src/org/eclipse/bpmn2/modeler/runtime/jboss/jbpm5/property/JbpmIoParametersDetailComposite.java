@@ -32,7 +32,6 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 	
 	@Override
 	public void createBindings(final EObject be) {
-		Resource resource = ModelUtil.getResource(be);
 		final EStructuralFeature ioSpecificationFeature = be.eClass().getEStructuralFeature("ioSpecification");
 		if (ioSpecificationFeature != null) {
 			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)

@@ -14,8 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EObject;
 
 public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	

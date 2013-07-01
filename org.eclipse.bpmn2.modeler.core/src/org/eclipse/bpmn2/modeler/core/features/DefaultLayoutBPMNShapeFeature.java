@@ -10,16 +10,9 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.di.BPMNEdge;
-import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class DefaultLayoutBPMNShapeFeature extends AbstractLayoutFeature {
