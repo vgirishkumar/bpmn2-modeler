@@ -20,13 +20,14 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.emf.ecore.EObject;
@@ -115,7 +116,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 		
 		if (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context)) {
 			for (Shape s : getFlowNodeShapes(context, businessObject)) {
-				Graphiti.getPeService().sendToFront(s);
+				GraphicsUtil.sendToFront(s);
 				s.setContainer(containerShape);
 				
 				for (EObject linkedObj : s.getLink().getBusinessObjects()) {
@@ -146,10 +147,9 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 			FeatureSupport.redraw(context.getTargetContainer());
 		}
 		
-		peService.sendToBack(containerShape);
-		if (context.getTargetContainer().getContainer() != null) { // only children may be sent back
-			peService.sendToBack(context.getTargetContainer());
-		}
+//		if (context.getTargetContainer().getContainer() != null) { // only children may be sent back
+//			peService.sendToBack(context.getTargetContainer());
+//		}
 
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);

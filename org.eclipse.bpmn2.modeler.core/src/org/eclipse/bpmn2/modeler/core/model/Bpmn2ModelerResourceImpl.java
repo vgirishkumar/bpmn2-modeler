@@ -84,6 +84,7 @@ import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMLString;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -396,10 +397,44 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 	}
 	
-	public static class Bpmn2ModelerXMLSave extends XMLSaveImpl {
+	public class Bpmn2ModelerXMLSave extends XMLSaveImpl {
 		protected float minX = Float.MAX_VALUE;
 		protected float minY = Float.MAX_VALUE;
 
+		protected class Bpmn2ModelerXMLString extends XMLString {
+			public Bpmn2ModelerXMLString(String publicId, String systemId) {
+				super(Integer.MAX_VALUE, publicId, systemId, null);
+			}
+        	@Override
+        	public void addAttribute(String name, String value) {
+        		// This special little hack removes namespace declarations
+        		// and schemaLocation attributes for the XSI namespace if the prefix
+        		// is anything other than "xsi". The EMF serializers rely on the fact
+        		// that the XSI namespace prefix is ALWAYS "xsi" and they WILL create
+        		// a duplicate namespace declaration if one already existed under a
+        		// different prefix. This would result a nasty warning from the parser.
+        		if (XSI_URI.equals(value) && name.startsWith("xmlns:")) {
+        			int i = name.indexOf(":");
+        			String prefix = name.substring(i+1);
+        			if (!ExtendedMetaData.XSI_PREFIX.equals(prefix))
+        				return;
+        		}
+        		if (name.contains(":schemaLocation")) {
+        			if (!XSI_SCHEMA_LOCATION.equals(name))
+        				return;
+        		}
+        		super.addAttribute(name, value);
+        	}
+
+			@Override
+			public void addAttributeNS(String prefix, String localName, String value) {
+				// Same hack as above - see comments.
+				if (XSI_URI.equals(value) && !ExtendedMetaData.XSI_PREFIX.equals(localName))
+					return;
+				super.addAttributeNS(prefix, localName, value);
+			}
+		};
+		
 		public Bpmn2ModelerXMLSave(XMLHelper helper) {
 			super(helper);
 			helper.getPrefixToNamespaceMap().clear();
@@ -414,8 +449,14 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			for (BPMNDiagram bpmnDiagram : diagrams) {
 				findMinXY(bpmnDiagram);
 			}
+			
+			doc = createXMLString();
 		}
 
+		protected XMLString createXMLString() {
+			return new Bpmn2ModelerXMLString(publicId, systemId);
+		}
+		
         @Override
 		protected void endSave(List<? extends EObject> contents) throws IOException
 		{

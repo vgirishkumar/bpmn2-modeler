@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.activity.MoveActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -125,7 +126,7 @@ public class MoveBoundaryEventFeature extends MoveFlowNodeFeature {
 			BoundaryEventPositionHelper.assignPositionOnLineProperty(containerShape, newPos);
 		}
 		
-		Graphiti.getPeService().sendToFront(context.getShape());
+		GraphicsUtil.sendToFront(context.getShape());
 		
 		super.postMoveShape(context);
 	}

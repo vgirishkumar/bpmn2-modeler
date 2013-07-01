@@ -1153,12 +1153,17 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		}
 		if (!moved.isEmpty()) {
-			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+			Display.getDefault().asyncExec(new Runnable() {
 				@Override
-				protected void doExecute() {
-					for (ContainerShape child : moved) {
-						Graphiti.getPeService().sendToFront(child);
-					}
+				public void run() {
+					getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+						@Override
+						protected void doExecute() {
+							for (ContainerShape child : moved) {
+								GraphicsUtil.sendToFront(child);
+							}
+						}
+					});
 				}
 			});
 		}
