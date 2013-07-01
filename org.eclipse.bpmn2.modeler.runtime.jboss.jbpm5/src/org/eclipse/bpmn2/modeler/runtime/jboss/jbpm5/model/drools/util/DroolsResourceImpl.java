@@ -133,22 +133,9 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 			@Override
 			protected void init(XMLResource resource, Map<?, ?> options) {
 				super.init(resource, options);
-		        doc = new XMLString(Integer.MAX_VALUE, publicId, systemId, null) {
-		        	@Override
-		        	public void addAttribute(String name, String value) {
-		        		if ("targetNamespace".equals(name))
-		        			needTargetNamespace = false;
-		        		else if (XSI_SCHEMA_LOCATION.equals(name)) {
-		        			value = "http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" +
-		        					" http://www.jboss.org/drools drools.xsd"+
-		        					" http://www.bpsim.org/schemas/1.0 bpsim.xsd";
-		        		}
-		        			
-		        		super.addAttribute(name, value);
-		        	}
-		        };
-		        ((DroolsXmlHelper)helper).setDefaultNamespace();
-		        
+
+				((DroolsXmlHelper)helper).setDefaultNamespace();
+	        
 		        featureTable = new Bpmn2ModelerXMLSave.Bpmn2Lookup(map, extendedMetaData, elementHandler) {
 		        	@Override
 		    		protected EStructuralFeature[] reorderFeatureList(EClass cls, EStructuralFeature[] featureList) {
@@ -198,7 +185,24 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 		        	}
 		        };
 			}
-			  
+			
+			protected XMLString createXMLString() {
+		        return new Bpmn2ModelerXMLString(publicId, systemId) {
+		        	@Override
+		        	public void addAttribute(String name, String value) {
+		        		if ("targetNamespace".equals(name))
+		        			needTargetNamespace = false;
+		        		else if (XSI_SCHEMA_LOCATION.equals(name)) {
+		        			value = "http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" +
+		        					" http://www.jboss.org/drools drools.xsd"+
+		        					" http://www.bpsim.org/schemas/1.0 bpsim.xsd";
+		        		}
+		        			
+		        		super.addAttribute(name, value);
+		        	}
+		        };
+			}
+			
 			@Override
 			protected void addNamespaceDeclarations() {
 				if (needTargetNamespace)
