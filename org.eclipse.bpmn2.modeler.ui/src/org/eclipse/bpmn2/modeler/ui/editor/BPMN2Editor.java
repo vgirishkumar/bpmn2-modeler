@@ -104,6 +104,7 @@ import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
+import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
@@ -1096,6 +1097,10 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					continue;
 				int size = container.getChildren().size();
 				if (size>1) {
+					// don't send Choreography Participant bands to front
+					// they're already there...
+					if (ChoreographyUtil.isChoreographyParticipantBand(pe))
+						continue;
 					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
 					boolean obscured = false;
 					int index = container.getChildren().indexOf(shape);
