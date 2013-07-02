@@ -81,7 +81,7 @@ public class TextObjectEditor extends ObjectEditor {
 			}
 			
 		});
-		setText(ModelUtil.getDisplayName(object, feature));
+		setText(getText());
 
 		IObservableValue textObserver = SWTObservables.observeText(text, SWT.Modify);
 		textObserver.addValueChangeListener(new IValueChangeListener() {
@@ -106,7 +106,7 @@ public class TextObjectEditor extends ObjectEditor {
 
 		// ask the object if this feature is read-only
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
-		if (adapter!=null) {
+		if (adapter!=null && feature!=null) {
 			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
 			if (result instanceof Boolean)
 				setEditable((Boolean)result);
@@ -147,7 +147,7 @@ public class TextObjectEditor extends ObjectEditor {
 			return true;
 		}
 		// revert the change on error
-		text.setText(ModelUtil.getDisplayName(object, feature));
+		text.setText(getText());
 		return false;
 	}
 	

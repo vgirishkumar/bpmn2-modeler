@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
@@ -48,6 +49,10 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		if (elem instanceof FlowElementsContainer) {
 			FlowElementsContainer container = (FlowElementsContainer)elem;
 			return getFlowElementsContainerChildren(container);
+		}
+		else if (elem instanceof ChoreographyActivity) {
+			ChoreographyActivity ca = (ChoreographyActivity)elem;
+			retList.addAll(ca.getParticipantRefs());
 		}
 		return retList;
 	}
