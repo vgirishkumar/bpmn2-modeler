@@ -230,7 +230,8 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			// of imports or references to external Resources. We want to track
 			// changes to those and also make sure they don't get saved by Graphiti's
 			// EmfService class.
-			resource.setTrackingModification(true);
+			if (!resource.isTrackingModification())
+				resource.setTrackingModification(true);
 		}
 		return resource;
 	}
