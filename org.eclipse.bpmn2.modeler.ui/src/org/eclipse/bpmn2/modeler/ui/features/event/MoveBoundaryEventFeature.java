@@ -79,16 +79,18 @@ public class MoveBoundaryEventFeature extends MoveFlowNodeFeature {
 		
 		BoundaryEvent event = (BoundaryEvent) context.getShape().getLink().getBusinessObjects().get(0);
 		List<PictogramElement> activityPictogramElements = Graphiti.getLinkService().getPictogramElements(getDiagram(), event.getAttachedToRef());
-		for (PictogramElement activityElement : activityPictogramElements) {
-			if (!singleSelection && ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), activityElement)){
-				if (!ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), context.getPictogramElement())) {
-					context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, false);
-					context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, true);
-				} else {
-					context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, true);
-					context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, false);
+		if (!singleSelection) {
+			for (PictogramElement activityElement : activityPictogramElements) {
+				if (ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), activityElement)){
+					if (!ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), context.getPictogramElement())) {
+						context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, false);
+						context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, true);
+					} else {
+						context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, true);
+						context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, false);
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		
