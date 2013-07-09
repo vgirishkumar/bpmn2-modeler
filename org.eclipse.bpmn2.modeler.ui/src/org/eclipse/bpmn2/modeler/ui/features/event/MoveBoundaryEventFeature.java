@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.MoveActivityFeature;
+import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -78,16 +79,18 @@ public class MoveBoundaryEventFeature extends MoveFlowNodeFeature {
 		
 		BoundaryEvent event = (BoundaryEvent) context.getShape().getLink().getBusinessObjects().get(0);
 		List<PictogramElement> activityPictogramElements = Graphiti.getLinkService().getPictogramElements(getDiagram(), event.getAttachedToRef());
-		for (PictogramElement activityElement : activityPictogramElements) {
-			if (!singleSelection && ModelUtil.isElementSelected(getDiagramEditor(), activityElement)){
-				if (!ModelUtil.isElementSelected(getDiagramEditor(), context.getPictogramElement())) {
-					context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, false);
-					context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, true);
-				} else {
-					context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, true);
-					context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, false);
+		if (!singleSelection) {
+			for (PictogramElement activityElement : activityPictogramElements) {
+				if (ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), activityElement)){
+					if (!ModelUtil.isElementSelected(getDiagramBehavior().getDiagramContainer(), context.getPictogramElement())) {
+						context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, false);
+						context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, true);
+					} else {
+						context.putProperty(MoveActivityFeature.SELECTION_MOVE_PROPERTY, true);
+						context.putProperty(MoveActivityFeature.ACTIVITY_MOVE_PROPERTY, false);
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 		

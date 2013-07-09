@@ -162,8 +162,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 				// navigate around this shape
 				DetourPoints detour = new DetourPoints(shape, margin);
 				for (Point d : detour.calculateDetour(p1, p2)) {
-					if (!route.add(d))
+					if (!route.add(d)) {
+						++i;
 						break;
+					}
 					p2 = d;
 				}
 				--i;
