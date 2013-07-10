@@ -55,8 +55,8 @@ import org.eclipse.swt.widgets.Display;
  * @author Bob Brodt
  */
 public class WhiteboxFeature extends AbstractCustomFeature {
-	
-	private boolean changesDone = false;;
+
+	private boolean changesDone = false;
 	
 	// label provider for the popup menu that displays allowable Activity subclasses
 	private static ILabelProvider labelProvider = new ILabelProvider() {
@@ -168,6 +168,11 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		}
 	}
 	
+	@Override
+	public boolean hasDoneChanges() {
+		return changesDone;
+	}
+
 	private BPMNDiagram selectBPMNDiagram(Definitions definitions, Participant participant) {
 
 		Resource resource = definitions.eResource();
@@ -202,6 +207,9 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 			else
 				return null;
 		}
+		else
+			changesDone = true;
+		
 		if (changesDone) {
 			if (result==newDiagram) { // the new one
 				String name = "Process for "+ModelUtil.getDisplayName(participant);
