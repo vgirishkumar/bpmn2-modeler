@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.participant;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -34,12 +35,19 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
     }
 
 	@Override
-    public Object[] create(ICreateContext context) {
+	public Object[] create(ICreateContext context) {
 		Participant participant = createBusinessObject(context);
-		participant.setName("Pool "+ModelUtil.getIDNumber(participant.getId()));
-        addGraphicalRepresentation(context, participant);
+		participant.setName("Pool " + ModelUtil.getIDNumber(participant.getId()));
+
+		Process process = (Process) ModelUtil
+				.createObject(participant.eResource(), Bpmn2Package.eINSTANCE.getProcess());
+		participant.setProcessRef(process);
+
+		process.setName(participant.getName() + " Process");
+
+		addGraphicalRepresentation(context, participant);
 		return new Object[] { participant };
-    }
+	}
 	
 	@Override
 	public String getCreateImageId() {

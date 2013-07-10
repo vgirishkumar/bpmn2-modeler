@@ -161,10 +161,18 @@
 		</propertyTab>
 
 		<propertyTab
+			id="org.eclipse.bpmn2.modeler.participant.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			type="org.eclipse.bpmn2.Participant"
+			label="Participant">
+		</propertyTab>
+
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
+			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
 			label="Definitions">
 		</propertyTab>
 
@@ -402,8 +410,16 @@
 			id="org.eclipse.bpmn2.modeler.interface.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
+			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
 			label="Interfaces">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.interface.details.tab"
+			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
+			type="org.eclipse.bpmn2.Interface"
+			label="Interface Details">
 		</propertyTab>
 
 		<propertyTab
@@ -465,7 +481,7 @@
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
+			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
 			label="Data Items">
 		</propertyTab>
 
@@ -805,8 +821,18 @@
 			<enable object="default" feature="Process"/>
 			
 			<!-- and then change these objects -->
-			<disable object="DataObjectReference"/>
+			<!--
 			<disable object="DataObject"/>
+			<disable object="DataObjectReference"/>
+			<disable object="DataState"/>
+			<disable object="DataStore"/>
+			<disable object="DataStoreReference"/>
+			<disable object="DataInput"/>
+			<disable object="DataInputAssociation"/>
+			<disable object="DataOutput"/>
+			<disable object="DataOutputAssociation"/>
+			-->
+			
 			<enable object="Participant"/>
 			<enable object="Lane"/>
 			<enable object="MessageFlow"/>
@@ -827,6 +853,16 @@
 			<enable object="StartEvent"/>
 			<enable object="EndEvent"/>
 
+			<disable object="DataObject"/>
+			<disable object="DataObjectReference"/>
+			<disable object="DataState"/>
+			<disable object="DataStore"/>
+			<disable object="DataStoreReference"/>
+			<disable object="DataInput"/>
+			<disable object="DataInputAssociation"/>
+			<disable object="DataOutput"/>
+			<disable object="DataOutputAssociation"/>
+			
 			<enable object="TextAnnotation"/>
 			<enable object="SequenceFlow"/>
 			<enable object="Choreography"/>

@@ -67,6 +67,7 @@ public interface IConstants {
 	public final String ICON_BUSINESSRULETASK = "16/BusinessRuleTask.png";
 	public final String ICON_CALLACTIVITY = "16/CallActivity.png";
 	public final String ICON_CANCEL = "16/Cancel.png";
+	public final String ICON_CATEGORY = "16/Category.png";
 	public final String ICON_CHOREOGRAPHYTASK = "16/ChoreographyTask.png";
 	public final String ICON_COMPENSATE = "16/Compensate.png";
 	public final String ICON_COMPLEXGATEWAY = "16/ComplexGateway.png";
@@ -113,6 +114,7 @@ public interface IConstants {
 	public final String ICON_BPMNDIAGRAM = "16/BPMNDiagram.png";
 	public final String ICON_BPMNSUBDIAGRAM = "16/BPMNSubDiagram.png";
 	public final String ICON_PROCESS = "16/Process.png";
+	public final String ICON_RESOURCE = "16/Resource.png";
 	public final String ICON_COLLABORATION = "16/Collaboration.png";
 	public final String ICON_CHOREOGRAPHY = "16/Choreography.png";
 	public final String ICON_INTERFACE = "16/Interface.png";

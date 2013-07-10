@@ -216,11 +216,8 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
          <attribute name="type" type="string">
             <annotation>
                <documentation>
-                  The BPMN2 element class or interface that, when its graphical element is selected, will enable the display of this property sheet tab. This must be a fully qualified class name, e.g. &quot;org.eclipse.bpmn2.SequenceFlow&quot;.
+                  A space-delimited list of BPMN2 element classes or interfaces that will enable the display of this property sheet tab. These must be fully qualified class names, e.g. &quot;org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process&quot;
                </documentation>
-               <appinfo>
-                  <meta.attribute kind="java"/>
-               </appinfo>
             </annotation>
          </attribute>
          <attribute name="popup" type="boolean">

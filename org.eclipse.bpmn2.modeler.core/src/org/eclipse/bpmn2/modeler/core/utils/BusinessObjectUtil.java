@@ -163,7 +163,22 @@ public class BusinessObjectUtil {
 
 	public static EObject getBusinessObjectForSelection(ISelection selection) {
 		PictogramElement pe = getPictogramElementForSelection(selection);
-		return getBusinessObjectForPictogramElement(pe);
+		if (pe!=null)
+			return getBusinessObjectForPictogramElement(pe);
+		
+		if (selection instanceof IStructuredSelection &&
+				((IStructuredSelection) selection).isEmpty()==false) {
+		
+			Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+			EditPart editPart = null;
+			if (firstElement instanceof EditPart) {
+				editPart = (EditPart) firstElement;
+				if (editPart.getModel() instanceof EObject) {
+					return (EObject)editPart.getModel();
+				}
+			}
+		}
+		return null;
 	}
 
 	public static EObject getBusinessObjectForPictogramElement(PictogramElement pe) {

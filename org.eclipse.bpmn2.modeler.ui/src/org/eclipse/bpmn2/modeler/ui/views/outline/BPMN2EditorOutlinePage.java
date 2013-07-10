@@ -12,6 +12,8 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Viewport;
@@ -52,7 +54,7 @@ import org.eclipse.ui.part.PageBook;
  * default-behaviour.
  */
 @SuppressWarnings("restriction")
-public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPropertyListener {
+public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPropertyListener, IAdaptable {
 
 	// The IDs to identify the outline and the thunbnail
 	public static final int ID_BUSINESS_MODEL_OUTLINE = 0;
@@ -209,7 +211,14 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	public void propertyChanged(Object source, int propId) {
 		refresh();
 	}
-
+	
+	public Object getAdapter(Class key) {
+		if (key==BPMN2Editor.class) {
+			return diagramEditor;
+		}
+		return null;
+	}
+	
 	/**
 	 * Toggles the page to display between hierarchical Outline and graphical
 	 * Thumbnail.

@@ -37,12 +37,4 @@ public class ActivityPropertySection extends DefaultPropertySection {
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		return new ActivityDetailComposite(parent,style);
 	}
-
-	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
-		EObject be = super.getBusinessObjectForSelection(selection);
-		if (appliesToClass!=null && appliesToClass.isInstance(be))
-			return be;
-		return null;
-	}
 }
