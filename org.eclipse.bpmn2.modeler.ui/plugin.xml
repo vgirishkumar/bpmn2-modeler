@@ -160,14 +160,18 @@
 			label="Process">
 		</propertyTab>
 
+		<!-- TODO: write a property details class to handle Participant features -->
+		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.participant.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
+			features="interfaceRefs endPointRefs participantMultiplicity"
 			type="org.eclipse.bpmn2.Participant"
 			label="Participant">
 		</propertyTab>
-
+		-->
+		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
