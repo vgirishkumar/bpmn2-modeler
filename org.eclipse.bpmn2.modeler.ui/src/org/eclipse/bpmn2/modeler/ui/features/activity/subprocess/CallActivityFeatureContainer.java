@@ -24,12 +24,13 @@ import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.MorphActivityFeature;
+import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -139,16 +140,10 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
-		ICustomFeature[] thisFeatures = new ICustomFeature[superFeatures.length];
-		int index = 1;
-		for (int i = 0; i < superFeatures.length; ++i) {
-			if (superFeatures[i] instanceof ShowPropertiesFeature) {
-				thisFeatures[0] = superFeatures[i];
-				index = 0;
-			}
-			else {
-				thisFeatures[index + i] = superFeatures[i];
-			}
+		ICustomFeature[] thisFeatures = new ICustomFeature[1 + superFeatures.length];
+		thisFeatures[0] = new ShowDiagramPageFeature(fp);
+		for (int superIndex=0, thisIndex=1; superIndex<superFeatures.length; ++superIndex) {
+			thisFeatures[thisIndex++] = superFeatures[superIndex];
 		}
 		return thisFeatures;
 	}

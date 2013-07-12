@@ -13,6 +13,8 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
@@ -53,6 +55,14 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		else if (elem instanceof ChoreographyActivity) {
 			ChoreographyActivity ca = (ChoreographyActivity)elem;
 			retList.addAll(ca.getParticipantRefs());
+		}
+		else if (elem instanceof CallActivity) {
+			// render a Call Activity with its called activity target
+			// (a Process or Global Task) as the child node.
+			CallableElement target = ((CallActivity)elem).getCalledElementRef();
+			if (target!=null) {
+				retList.add(target);
+			}
 		}
 		return retList;
 	}

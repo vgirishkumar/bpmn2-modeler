@@ -66,8 +66,8 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			else if (feature.getEType() instanceof EClass)
 				featureEType = (EClass)feature.getEType();
 		}
-		
-		super.create();
+		if (!cancel)
+			super.create();
 	}
 	
 	protected Composite createDialogContent(Composite parent) {

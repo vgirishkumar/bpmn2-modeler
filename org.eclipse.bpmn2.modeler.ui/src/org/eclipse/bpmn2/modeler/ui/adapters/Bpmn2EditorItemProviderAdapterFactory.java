@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
@@ -86,6 +87,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.EscalationPropertiesAdap
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.EventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FlowElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.GlobalScriptTaskPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ImportPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter;
@@ -628,6 +630,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 				return adapter;
         	return new DefinitionsPropertiesAdapter(adapterFactory,object);
 		}
+        
+		@Override
+        public ExtendedPropertiesAdapter caseGlobalScriptTask(GlobalScriptTask object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+			return new GlobalScriptTaskPropertiesAdapter(adapterFactory,object);
+        }
 
     };
 }

@@ -35,6 +35,8 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -70,14 +72,22 @@ public class BPMN2DiagramCreator {
 		return editorInput;
 	}
 
-	private static void openEditor(final DiagramEditorInput editorInput) {
+	public static IEditorPart openEditor(final DiagramEditorInput editorInput) {
+		final Object result[] = { new Object() };
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-							.openEditor(editorInput, BPMN2Editor.EDITOR_ID);
-
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IEditorPart part = null;
+					part = page.findEditor(editorInput);
+					if (part!=null) {
+						page.activate(part);
+					}
+					else {
+						part = page.openEditor(editorInput, BPMN2Editor.EDITOR_ID);
+					}
+					result[0] = part;
 				} catch (PartInitException e) {
 					String error = "Error while opening diagram editor";
 					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, error, e);
@@ -85,5 +95,6 @@ public class BPMN2DiagramCreator {
 				}
 			}
 		});
+		return (IEditorPart)result[0];
 	}
 }

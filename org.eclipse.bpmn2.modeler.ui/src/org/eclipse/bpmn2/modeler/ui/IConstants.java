@@ -83,6 +83,10 @@ public interface IConstants {
 	public final String ICON_ESCALATION = "16/Escalation.png";
 	public final String ICON_EVENTBASEDGATEWAY = "16/EventBasedGateway.png";
 	public final String ICON_EXCLUSIVEGATEWAY = "16/ExclusiveGateway.png";
+	public final String ICON_GLOBALBUSINESSRULETASK = "16/GlobalBusinessRuleTask.png";
+	public final String ICON_GLOBALMANUALTASK = "16/GlobalManualTask.png";
+	public final String ICON_GLOBALSCRIPTTASK = "16/GlobalScriptTask.png";
+	public final String ICON_GLOBALUSERTASK = "16/GlobalUserTask.png";
 	public final String ICON_GROUP = "16/Group.png";
 	public final String ICON_INCLUSIVEGATEWAY = "16/InclusiveGateway.png";
 	public final String ICON_INTERMEDIATECATCHEVENT = "16/IntermediateCatchEvent.png";

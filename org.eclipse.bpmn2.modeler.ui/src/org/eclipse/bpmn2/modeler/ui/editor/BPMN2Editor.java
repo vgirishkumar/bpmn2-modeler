@@ -889,6 +889,10 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return null;
 	}
 	
+	public URI getModelUri() {
+		return modelUri;
+	}
+	
 	public ModelHandler getModelHandler() {
 		return modelHandler;
 	}
@@ -1201,5 +1205,18 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				}
 			});
 		}
+	}
+	
+	public static IEditorPart openEditor(URI modelURI) {
+		IEditorPart part = null;
+		try {
+			Bpmn2DiagramEditorInput input = BPMN2DiagramCreator.createDiagram(modelURI, Bpmn2DiagramType.NONE, "");
+			part = BPMN2DiagramCreator.openEditor(input);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return part;
 	}
 }
