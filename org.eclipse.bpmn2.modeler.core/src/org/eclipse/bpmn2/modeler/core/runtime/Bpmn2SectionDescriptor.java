@@ -21,7 +21,9 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.ISelection;
@@ -134,6 +136,14 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 					}
 					if (count>0 && selected==0)
 						return false;
+				}
+				
+				// check if the selected business object (a BPMN2 model element)
+				// is contained in this editor's Resource
+				Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
+				EObject o = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
+				if (o==null || o.eResource() != businessObject.eResource()) {
+					return false;
 				}
 			}
 

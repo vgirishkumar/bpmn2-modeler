@@ -20,8 +20,12 @@
 		<editor
 			class="org.eclipse.bpmn2.modeler.ui.editor.BPMN2MultiPageEditor"
 			contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
-			default="true" extensions="bpmn,bpmn2" icon="icons/bpmn2_editor_16.png"
-			id="org.eclipse.bpmn2.modeler.ui.bpmn2editor" name="Bpmn2 Diagram Editor">
+			default="true"
+			extensions="bpmn,bpmn2"
+			icon="icons/bpmn2_editor_16.png"
+			id="org.eclipse.bpmn2.modeler.ui.bpmn2editor"
+			name="Bpmn2 Diagram Editor"
+			matchingStrategy="org.eclipse.bpmn2.modeler.ui.editor.BPMN2EditorMatchingStrategy">
 			<contentTypeBinding contentTypeId="org.eclipse.bpmn2.content-type.xml">
 			</contentTypeBinding>
 		</editor>
@@ -160,14 +164,18 @@
 			label="Process">
 		</propertyTab>
 
+		<!-- TODO: write a property details class to handle Participant features -->
+		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.participant.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
+			features="interfaceRefs endPointRefs participantMultiplicity"
 			type="org.eclipse.bpmn2.Participant"
 			label="Participant">
 		</propertyTab>
-
+		-->
+		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
@@ -312,6 +320,44 @@
 			features="implementation resources renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
 			label="User Task">
+		</propertyTab>
+
+		<!-- ============  Global Tasks ============ -->
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.globalBusinessRuleTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="implementation resources"
+			type="org.eclipse.bpmn2.GlobalBusinessRuleTask"
+			label="Global Business Rule Task">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.globalManualTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="resources"
+			type="org.eclipse.bpmn2.GlobalManualTask"
+			label="Global Manual Task">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.globalScriptTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="scriptLanguage script resources"
+			type="org.eclipse.bpmn2.GlobalScriptTask"
+			label="Global Script Task">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.globalUserTask.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="implementation resources"
+			type="org.eclipse.bpmn2.GlobalUserTask"
+			label="Global User Task">
 		</propertyTab>
 
 		<!-- ============  Choreography Activities ============ -->
