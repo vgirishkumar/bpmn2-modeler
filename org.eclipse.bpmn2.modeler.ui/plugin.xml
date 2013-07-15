@@ -222,14 +222,13 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.subProcess.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
+			class="org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessPropertySection"
 			type="org.eclipse.bpmn2.SubProcess"
 			label="Sub Process">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.adHocSubProcess.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.subProcess.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.AdHocSubProcess"
@@ -238,7 +237,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.transaction.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.subProcess.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.Transaction"
@@ -960,7 +958,7 @@
 		<style object="EventBasedGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
 		<style object="ExclusiveGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
 		<style object="Group" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="InclusiveGateway" foreground="7F7F00" background="FFFF80" textColor="7F7F00" font="arial,10,-,-"/>
+		<style object="InclusiveGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
 		<style object="IntermediateCatchEvent" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="IntermediateThrowEvent" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="Lane" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>

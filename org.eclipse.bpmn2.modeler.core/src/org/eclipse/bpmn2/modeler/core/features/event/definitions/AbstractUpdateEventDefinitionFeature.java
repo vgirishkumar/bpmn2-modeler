@@ -43,7 +43,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 		int size = eventDefinitions.size();
 
 		GraphicsUtil.deleteEventShape(container);
-		if (Graphiti.getPeService().getPropertyValue(container, GraphicsUtil.LABEL_PROPERTY) != null) {
+		if (GraphicsUtil.isLabelShape(container)) {
 			// don't draw decorators on Labels
 			return;
 		}
