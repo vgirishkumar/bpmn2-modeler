@@ -87,6 +87,10 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateFeature {
 	}
 
 	private void drawEventBased(ContainerShape container) {
+		if (GraphicsUtil.isLabelShape(container)) {
+			// don't draw decorators on Labels
+			return;
+		}
 		Ellipse outer = GraphicsUtil.createGatewayOuterCircle(container);
 		Ellipse inner = GraphicsUtil.createGatewayInnerCircle(outer);
 		Polygon pentagon = GraphicsUtil.createGatewayPentagon(container);
@@ -94,12 +98,20 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateFeature {
 	}
 
 	private void drawExclusiveEventBased(ContainerShape container) {
+		if (GraphicsUtil.isLabelShape(container)) {
+			// don't draw decorators on Labels
+			return;
+		}
 		Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(container);
 		Polygon pentagon = GraphicsUtil.createGatewayPentagon(container);
 		pentagon.setFilled(false);
 	}
 
 	private void drawParallelMultipleEventBased(ContainerShape container) {
+		if (GraphicsUtil.isLabelShape(container)) {
+			// don't draw decorators on Labels
+			return;
+		}
 		Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(container);
 		Polygon cross = GraphicsUtil.createEventGatewayParallelCross(container);
 	}
