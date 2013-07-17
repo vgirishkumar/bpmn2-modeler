@@ -72,6 +72,7 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 	}
 
 	protected void refreshChildren() {
+		super.refreshChildren();
 		if (children!=null) {
 			for (Object child : children) {
 				if (child instanceof AbstractGraphicsTreeEditPart) {
@@ -80,7 +81,6 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 			}
 		}
 		refreshVisuals();
-		super.refreshChildren();
 	}
 	
 	/**
