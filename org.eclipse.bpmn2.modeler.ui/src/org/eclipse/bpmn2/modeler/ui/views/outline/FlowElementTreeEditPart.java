@@ -13,15 +13,25 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
+import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.swt.graphics.Image;
 
 public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	
@@ -64,20 +74,41 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 				retList.add(target);
 			}
 		}
+		else if (elem instanceof BoundaryEvent) {
+			retList.addAll(((BoundaryEvent)elem).getEventDefinitions());
+		}
+		
+		if (elem instanceof Activity) {
+			// Boundary Events are children nodes of Activities
+			Definitions definitions = ModelUtil.getDefinitions(elem);
+			TreeIterator<EObject> iter = definitions.eAllContents();
+			while (iter.hasNext()) {
+				EObject o = iter.next();
+				if (o instanceof BoundaryEvent && ((BoundaryEvent)o).getAttachedToRef() == elem) {
+					retList.add(o);
+				}
+			}
+		}
 		return retList;
 	}
 	
 	public static List<Object> getFlowElementsContainerChildren(FlowElementsContainer container) {
 		List<Object> retList = new ArrayList<Object>();
+		List<FlowElement> flowElements = new ArrayList<FlowElement>();
+		for (FlowElement fe : container.getFlowElements()) {
+			if (!(fe instanceof BoundaryEvent))
+				flowElements.add(fe);
+		}
+		
 		if (container.getLaneSets().size()==0)
-			retList.addAll(container.getFlowElements());
+			retList.addAll(flowElements);
 		else {
 			for (LaneSet ls : container.getLaneSets()) {
 				retList.addAll(ls.getLanes());
 			}
 			// only add the flow element if it's not contained in a Lane
 			List<Object> laneElements = new ArrayList<Object>();
-			for (FlowElement fe : container.getFlowElements()) {
+			for (FlowElement fe : flowElements) {
 				boolean inLane = false;
 				for (LaneSet ls : container.getLaneSets()) {
 					if (isInLane(fe,ls)) {
