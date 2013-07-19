@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.property.PropertyLabelProvider;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -33,6 +34,7 @@ import org.eclipse.swt.graphics.Image;
 public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 
 	DiagramTreeEditPart diagramEditPart;
+	PropertyLabelProvider labelProvider = new PropertyLabelProvider();
 	
 	public AbstractGraphicsTreeEditPart(DiagramTreeEditPart dep, Object model) {
 		super(model);
@@ -95,6 +97,9 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 	@Override
 	protected Image getImage() {
 		EObject o = (EObject)getModel();
+		Image img = labelProvider.getImage(o);
+		if (img!=null)
+			return img;
 		return PropertyUtil.getImage(o);
 	}
 
@@ -118,13 +123,17 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 	}
 	
 	protected String getText(EObject o) {
-		if (o==null)
-			return "";
-		String text = ModelUtil.getDisplayName(o);
-		if (text==null || text.isEmpty()) {
-			EStructuralFeature f = o.eClass().getEStructuralFeature("id");
-			if (f!=null)
-				text = o.eGet(f).toString();
+		String text = "";
+		if (o!=null) {
+			text = labelProvider.getText(o);
+			if (text==null) {
+				text = ModelUtil.getDisplayName(o);
+				if (text==null || text.isEmpty()) {
+					EStructuralFeature f = o.eClass().getEStructuralFeature("id");
+					if (f!=null)
+						text = o.eGet(f).toString();
+				}
+			}
 		}
 		return text;
 	}
