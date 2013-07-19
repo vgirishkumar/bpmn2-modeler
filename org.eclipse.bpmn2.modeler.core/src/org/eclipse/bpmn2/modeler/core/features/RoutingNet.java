@@ -621,7 +621,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 				context.setNewObject( null );
 				context.setLocation(a.getX(), a.getY());
 				context.setSize(a.getWidth(), a.getHeight());
-				context.putProperty("background", new ColorConstant(32+i*(i%3),32+i*(i%6),32+i*(i%9)));
+//				context.putProperty("background", new ColorConstant(32+i*(i%3),32+i*(i%6),32+i*(i%9)));
 				AddRoutingLaneFeature feature = new AddRoutingLaneFeature(fp);
 				a.setShape(feature.add(context));
 			}

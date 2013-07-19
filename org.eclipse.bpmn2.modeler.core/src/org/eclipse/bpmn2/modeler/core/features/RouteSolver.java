@@ -54,15 +54,15 @@ public class RouteSolver {
 		horizontalNet.eraseLanes();
 		
 		verticalSolutions = verticalNet.findSolutions(source, target);
-//		verticalNet.drawLanes();
-//		verticalNet.drawConnections();
-		if (verticalSolutions.size()>0) {
-			for (int i=0; i<verticalSolutions.size(); ++i) {
-				verticalNet.drawSolution(verticalSolutions.get(i), i);
-				if (i>16)
-					break;
-			}
-		}
+		verticalNet.drawLanes();
+		verticalNet.drawConnections();
+//		if (verticalSolutions.size()>0) {
+//			for (int i=0; i<verticalSolutions.size(); ++i) {
+//				verticalNet.drawSolution(verticalSolutions.get(i), i);
+//				if (i>16)
+//					break;
+//			}
+//		}
 		
 //		horizontalSolutions = horizontalNet.findSolutions(source, target);
 //		horizontalNet.drawLanes();

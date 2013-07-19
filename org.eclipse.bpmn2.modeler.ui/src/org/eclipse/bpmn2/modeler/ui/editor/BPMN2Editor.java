@@ -46,6 +46,7 @@ import org.eclipse.bpmn2.GlobalManualTask;
 import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.GlobalTask;
 import org.eclipse.bpmn2.GlobalUserTask;
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.HumanPerformer;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
@@ -1150,6 +1151,17 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					}
 					if (obscured) {
 						moved.add(0,shape);
+					}
+				}
+				// don't allow anything to be sent in front of Group artifacts
+				// Groups are always created as child shapes of the Diagram
+				container = getDiagramTypeProvider().getDiagram();
+				for (PictogramElement sibling : container.getChildren()) {
+					if (sibling!=shape && BusinessObjectUtil.getFirstBaseElement(sibling) instanceof Group) {
+						if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
+							if (moved.size()>0)
+								moved.add((ContainerShape)sibling);
+						}
 					}
 				}
 			}

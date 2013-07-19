@@ -11,7 +11,6 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.impl.TaskImpl;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
@@ -19,8 +18,8 @@ import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -43,7 +42,6 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;

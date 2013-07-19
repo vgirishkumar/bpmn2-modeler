@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.artifact;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
@@ -21,10 +24,13 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -36,11 +42,19 @@ import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
+import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
+import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
@@ -63,6 +77,11 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 	}
 
 	@Override
+	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
+		return new AbstractDefaultDeleteFeature(fp);
+	}
+
+	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return null;
 	}
@@ -78,13 +97,23 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 	}
 
 	@Override
+	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
+		return null;
+	}
+
+	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
-		return new DefaultMoveBPMNShapeFeature(fp);
+		return new MoveGroupFeature(fp);
 	}
 
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
-		return new DefaultResizeBPMNShapeFeature(fp);
+		return new DefaultResizeBPMNShapeFeature(fp) {
+			@Override
+			public boolean canResizeShape(IResizeShapeContext context) {
+				return true;
+			}
+		};
 	}
 
 	public class AddGroupFeature extends AbstractAddBPMNShapeFeature<Group> {
@@ -103,8 +132,17 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			IPeService peService = Graphiti.getPeService();
 			Group businessObject = getBusinessObject(context);
 
+			int x = context.getX();
+			int y = context.getY();
 			int width = this.getWidth(context);
 			int height = this.getHeight(context);
+			
+			if (!(context.getTargetContainer() instanceof Diagram)) {
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(context.getTargetContainer());
+				x += loc.getX();
+				y += loc.getY();
+				((AddContext)context).setTargetContainer(this.getDiagram());
+			}
 
 			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 			RoundedRectangle rect = gaService.createRoundedRectangle(containerShape, 5, 5);
@@ -112,8 +150,14 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			rect.setLineWidth(2);
 			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			rect.setLineStyle(LineStyle.DASHDOT);
-			gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
+			gaService.setLocationAndSize(rect, x, y, width, height);
 
+//			int xy[] = new int[] {x, y, x+width, y, x+width, y+height, x, y+height, x, y};
+//			Polyline rect = gaService.createPolyline(containerShape, xy);
+//			rect.setLineWidth(4);
+//			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+//			rect.setLineStyle(LineStyle.DASHDOT);
+			
 			link(containerShape, businessObject);
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
@@ -131,12 +175,12 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public int getHeight() {
-			return 400;
+			return 200;
 		}
 
 		@Override
 		public int getWidth() {
-			return 400;
+			return 200;
 		}
 	}
 
@@ -164,9 +208,85 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			return Bpmn2Package.eINSTANCE.getGroup();
 		}
 	}
+	
+	public static class MoveGroupFeature extends DefaultMoveBPMNShapeFeature {
 
-	@Override
-	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
-		return new AbstractDefaultDeleteFeature(fp);
+		public MoveGroupFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+		List<ContainerShape> containedShapes = new ArrayList<ContainerShape>();
+
+		@Override
+		public boolean canMoveShape(IMoveShapeContext context) {
+			return true;
+		}
+
+		@Override
+		protected void preMoveShape(IMoveShapeContext context) {
+			super.preMoveShape(context);
+			ContainerShape groupShape = (ContainerShape) context.getShape();
+			ContainerShape container = context.getTargetContainer();
+			if (!(container instanceof Diagram)) {
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(container);
+				int x = context.getX() + loc.getX();
+				int y = context.getY() + loc.getY();
+				((MoveShapeContext)context).setX(x);
+				((MoveShapeContext)context).setY(y);
+				((MoveShapeContext)context).setDeltaX(x - preShapeX);
+				((MoveShapeContext)context).setDeltaY(y - preShapeY);
+				((MoveShapeContext)context).setTargetContainer(getDiagram());
+			}
+
+			// find all shapes that are inside this Group
+			// these will be moved along with the Group
+			containedShapes = findContainedShapes(groupShape);
+		}
+
+		@Override
+		protected void postMoveShape(IMoveShapeContext context) {
+
+			super.postMoveShape(context);
+			
+			for (ContainerShape shape : containedShapes) {
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+				int x = loc.getX() + context.getDeltaX();
+				int y = loc.getY() + context.getDeltaY();
+				Graphiti.getLayoutService().setLocation(shape.getGraphicsAlgorithm(), x, y);
+			}
+		}
+		
+		protected List<ContainerShape> findContainedShapes(ContainerShape groupShape) {
+			// find all shapes that are inside this Group
+			// these will be moved along with the Group
+			List<ContainerShape> list = new ArrayList<ContainerShape>();
+			for (PictogramElement child : getDiagram().getChildren()) {
+				if (child instanceof ContainerShape
+						&& child!=groupShape
+						&& !list.contains(child)) {
+					ContainerShape shape = (ContainerShape)child;
+					if (isGroupShape(shape)) {
+						if (GraphicsUtil.contains(groupShape, shape)) {
+							if (!list.contains(shape)) {
+								list.add(shape);
+							}
+						}
+					}
+					else if (GraphicsUtil.contains(groupShape, shape)) {
+						// find this shape's parent ContainerShape if it has one
+						while (!(shape.getContainer() instanceof Diagram)) {
+							shape = shape.getContainer();
+						}
+						if (!list.contains(shape)) {
+							list.add(shape);
+						}
+					}
+				}
+			}
+			return list;
+		}
+		
+		private boolean isGroupShape(Shape shape) {
+			return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
+		}
 	}
 }

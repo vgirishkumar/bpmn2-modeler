@@ -1252,6 +1252,15 @@ public class GraphicsUtil {
 		return new Size(TASK_DEFAULT_WIDTH,TASK_DEFAULT_HEIGHT);
 	}
 	
+	public static boolean contains(Shape parent, Shape child) {
+		IDimension size = calculateSize(child);
+		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(child);
+		return contains(parent, createPoint(loc.getX(), loc.getY()))
+				&& contains(parent, createPoint(loc.getX() + size.getWidth(), loc.getY()))
+				&& contains(parent, createPoint(loc.getX() + size.getWidth(), loc.getY() + size.getHeight()))
+				&& contains(parent, createPoint(loc.getX(), loc.getY() + size.getHeight()));
+	}
+	
 	public static boolean contains(Shape shape, Point point) {
 		IDimension size = calculateSize(shape);
 		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);

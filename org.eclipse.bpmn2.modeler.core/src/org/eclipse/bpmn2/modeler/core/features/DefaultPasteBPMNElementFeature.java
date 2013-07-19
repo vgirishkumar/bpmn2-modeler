@@ -132,8 +132,8 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		for (Object object : fromClipboard) {
 			if (object instanceof ContainerShape) {
 				ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram((ContainerShape) object);
-//				xReference = loc.getX();
-//				yReference = loc.getY();
+				xReference = loc.getX();
+				yReference = loc.getY();
 				break;
 			}
 		}
@@ -169,6 +169,13 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 				copyConnection(entry.getKey(), targetContainerShape, x, y);
 			}
 		}
+		PictogramElement newPes[] = new PictogramElement[shapeMap.size()];
+		int i = 0;
+		for (Entry<ContainerShape, ContainerShape> entry : shapeMap.entrySet()) {
+			newPes[i++] = entry.getValue();
+		}
+		
+		this.getDiagramEditor().setPictogramElementsForSelection(newPes);
 	}
 	
 	protected BaseElement createNewObject(BaseElement oldObject, BaseElement targetContainerObject) {
