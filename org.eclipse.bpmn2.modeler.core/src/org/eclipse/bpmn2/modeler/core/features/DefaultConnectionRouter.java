@@ -58,9 +58,9 @@ import org.eclipse.graphiti.util.IColorConstant;
 public class DefaultConnectionRouter extends AbstractConnectionRouter {
 
 	protected List<ContainerShape> allShapes;
-	Connection connection;
-	Shape source;
-	Shape target;
+	protected Connection connection;
+	protected Shape source;
+	protected Shape target;
 	protected Anchor sourceAnchor, targetAnchor;
 	
 	public DefaultConnectionRouter(IFeatureProvider fp) {

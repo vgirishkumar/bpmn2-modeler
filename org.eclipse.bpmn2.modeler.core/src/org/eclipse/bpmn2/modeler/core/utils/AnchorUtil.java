@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -597,7 +598,7 @@ public class AnchorUtil {
 	}
 	
 	public static boolean useAdHocAnchors(BaseElement baseElement, BaseElement flowElement) {
-		if (baseElement instanceof Participant || baseElement instanceof SequenceFlow) {
+		if (baseElement instanceof Participant || baseElement instanceof SequenceFlow || baseElement instanceof Group) {
 			return true;
 		}
 		return false;

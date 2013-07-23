@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -159,6 +160,8 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			rect.setLineStyle(LineStyle.DASHDOT);
 			gaService.setLocationAndSize(rect, x, y, width, height);
+			peService.createChopboxAnchor(containerShape);
+			AnchorUtil.addFixedPointAnchors(containerShape, rect);
 //
 			
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;

@@ -17,21 +17,20 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.swt.graphics.Image;
 
 public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 	
@@ -146,6 +145,17 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 				}
 			}
 			retList.removeAll(flows);
+		}
+		
+		// add the list of Artifacts
+		if (container instanceof Process) {
+			retList.addAll(((Process)container).getArtifacts());
+		}
+		else if (container instanceof SubProcess) {
+			retList.addAll(((SubProcess)container).getArtifacts());
+		}
+		if (container instanceof SubChoreography) {
+			retList.addAll(((SubChoreography)container).getArtifacts());
 		}
 		return retList;
 	}
