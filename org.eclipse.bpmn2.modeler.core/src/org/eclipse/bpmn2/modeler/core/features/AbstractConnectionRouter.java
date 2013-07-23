@@ -30,7 +30,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	
 	public enum Direction { UP, DOWN, LEFT, RIGHT, NONE };
 
-	IFeatureProvider fp;
+	protected IFeatureProvider fp;
 
 	public AbstractConnectionRouter(IFeatureProvider fp) {
 		this.fp = fp;

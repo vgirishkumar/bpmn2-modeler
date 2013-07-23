@@ -53,13 +53,13 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		DefaultConnectionRouter router;
 		int id;
-		List<Point> points = new ArrayList<Point>();
+		private List<Point> points = new ArrayList<Point>();
 		List<Collision> collisions = new ArrayList<Collision>();
 		List<Crossing> crossings = new ArrayList<Crossing>();
 		Shape source;
 		Shape target;
 		boolean valid = true;
-		int rank = 0;
+		private int rank = 0;
 		
 		public ConnectionRoute(DefaultConnectionRouter router, int id, Shape source, Shape target) {
 			this.router = router;
@@ -102,7 +102,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			if (isValid()) {
 				BoundaryAnchor sa = AnchorUtil.findNearestBoundaryAnchor(source, get(0));
 				BoundaryAnchor ta = AnchorUtil.findNearestBoundaryAnchor(target, get(size()-1));
-				text = id+": length="+getLength()+" points="+points.size()+
+				text = id+": length="+getLength()+" points="+getPoints().size()+
 						" source="+sa.locationType+" target="+ta.locationType;
 				if (collisions.size()>0) {
 					text += " collisions=";
@@ -131,22 +131,22 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		}
 		
 		public boolean add(Point newPoint) {
-			for (Point p : points) {
+			for (Point p : getPoints()) {
 				if (GraphicsUtil.pointsEqual(newPoint, p)) {
 					valid = false;
 					return false;
 				}
 			}
-			points.add(newPoint);
+			getPoints().add(newPoint);
 			return true;
 		}
 		
 		public Point get(int index) {
-			return points.get(index);
+			return getPoints().get(index);
 		}
 		
 		public int size() {
-			return points.size();
+			return getPoints().size();
 		}
 		
 		public void addCollision(Shape shape, Point start, Point end) {
@@ -165,10 +165,10 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		public int getLength() {
 			int length = 0;
-			if (points.size()>1) {
-				Point p1 = points.get(0);
-				for (int i=1; i<points.size(); ++i) {
-					Point p2 = points.get(i);
+			if (getPoints().size()>1) {
+				Point p1 = getPoints().get(0);
+				for (int i=1; i<getPoints().size(); ++i) {
+					Point p2 = getPoints().get(i);
 //					if (isHorizontal(p1,p2) || isVertical(p1,p2))
 						length += (int)GraphicsUtil.getLength(p1, p2);
 //					else 
@@ -192,7 +192,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		public int compare(ConnectionRoute o1, ConnectionRoute o2) {
 			if (o1.isValid()) {
 				if (o2.isValid()) {
-					int i = o1.rank - o2.rank;
+					int i = o1.getRank() - o2.getRank();
 					if (i==0) {
 						i = o1.collisions.size() - o2.collisions.size();
 						if (i==0) {
@@ -200,7 +200,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							if (i==0) {
 								i = o1.getLength() - o2.getLength();
 								if (Math.abs(i)<=10) {
-									i = o1.points.size() - o2.points.size();
+									i = o1.getPoints().size() - o2.getPoints().size();
 //									if (i==0) {
 //										BoundaryAnchor ba1 = AnchorUtil.findNearestBoundaryAnchor(source, o1.get(0));
 //										BoundaryAnchor ba2 = AnchorUtil.findNearestBoundaryAnchor(source, o2.get(0));
@@ -223,13 +223,13 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		private boolean removeUnusedPoints() {
 			boolean changed = false;
 
-			Point p1 = points.get(0);
-			for (int i=1; i<points.size()-1; ++i) {
-				Point p2 = points.get(i);
-				if (i+1 < points.size()) {
+			Point p1 = getPoints().get(0);
+			for (int i=1; i<getPoints().size()-1; ++i) {
+				Point p2 = getPoints().get(i);
+				if (i+1 < getPoints().size()) {
 					// remove unnecessary bendpoints: two consecutive
 					// horizontal or vertical line segments
-					Point p3 = points.get(i+1);
+					Point p3 = getPoints().get(i+1);
 					int x1 = p1.getX();
 					int x2 = p2.getX();
 					int x3 = p3.getX();
@@ -240,7 +240,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							(GraphicsUtil.isVertical(p1,p2) && GraphicsUtil.isVertical(p2,p3) && ((y1<y2 && y2<y3) || y1>y2 && y2>y3)) ||
 							(GraphicsUtil.isHorizontal(p1,p2) && GraphicsUtil.isHorizontal(p2,p3) && ((x1<x2 && x2<x3) || x1>x2 && x2>x3))
 					) {
-						points.remove(i);
+						getPoints().remove(i);
 						// look at these set of points again
 						--i;
 						changed = true;
@@ -255,12 +255,12 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			boolean changed = false;
 
 			// remove unnecessary "U" shapes
-			Point p1 = points.get(0);
-			for (int i=1; i<points.size()-1; ++i) {
-				Point p2 = points.get(i);
-				if (i+2 < points.size()) {
-					Point p3 = points.get(i+1);
-					Point p4 = points.get(i+2);
+			Point p1 = getPoints().get(0);
+			for (int i=1; i<getPoints().size()-1; ++i) {
+				Point p2 = getPoints().get(i);
+				if (i+2 < getPoints().size()) {
+					Point p3 = getPoints().get(i+1);
+					Point p4 = getPoints().get(i+2);
 					if (GraphicsUtil.isHorizontal(p1,p2) && GraphicsUtil.isVertical(p2,p3) && GraphicsUtil.isHorizontal(p3,p4)) {
 						int x1 = p1.getX();
 						int x2 = p2.getX();
@@ -269,8 +269,8 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							// this forms a vertical "U" - remove if the new configuration does not cause a collision
 							Point p = GraphicsUtil.createPoint(x4, p2.getY());
 							if (router.getCollision(p,p4)==null) {
-								points.set(i, p);
-								points.remove(p3);
+								getPoints().set(i, p);
+								getPoints().remove(p3);
 								--i;
 								changed = true;
 							}
@@ -284,8 +284,8 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							// this forms a horizontal "U"
 							Point p = GraphicsUtil.createPoint(p2.getX(), y4);
 							if (router.getCollision(p,p4)==null) {
-								points.set(i, p);
-								points.remove(p3);
+								getPoints().set(i, p);
+								getPoints().remove(p3);
 								--i;
 								changed = true;
 							}
@@ -296,16 +296,16 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			}
 			
 			// remove "T" shapes
-			p1 = points.get(0);
-			for (int i=1; i<points.size()-1; ++i) {
-				Point p2 = points.get(i);
-				if (i+1 < points.size()) {
-					Point p3 = points.get(i+1);
+			p1 = getPoints().get(0);
+			for (int i=1; i<getPoints().size()-1; ++i) {
+				Point p2 = getPoints().get(i);
+				if (i+1 < getPoints().size()) {
+					Point p3 = getPoints().get(i+1);
 					if (p1.getX() == p2.getX() && p2.getX() == p3.getX()) {
 						if (	(p2.getY() < p1.getY() && p2.getY() < p3.getY()) ||
 								(p2.getY() > p1.getY() && p2.getY() > p3.getY())
 						) {
-							points.remove(p2);
+							getPoints().remove(p2);
 							--i;
 							changed = true;
 						}
@@ -314,7 +314,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 						if (	(p2.getX() < p1.getX() && p2.getX() < p3.getX()) ||
 								(p2.getX() > p1.getX() && p2.getX() > p3.getX())
 						) {
-							points.remove(p2);
+							getPoints().remove(p2);
 							--i;
 							changed = true;
 						}
@@ -333,5 +333,21 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 				changed = true;
 			}
 			return changed;
+		}
+
+		public int getRank() {
+			return rank;
+		}
+
+		public void setRank(int rank) {
+			this.rank = rank;
+		}
+
+		public List<Point> getPoints() {
+			return points;
+		}
+
+		public void setPoints(List<Point> points) {
+			this.points = points;
 		}
 	}

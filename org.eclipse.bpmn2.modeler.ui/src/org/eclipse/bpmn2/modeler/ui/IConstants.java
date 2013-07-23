@@ -74,6 +74,7 @@ public interface IConstants {
 	public final String ICON_CONDITIONALEVENTDEFINITION = "16/ConditionalEventDefinition.png";
 	public final String ICON_CONVERSATION = "16/Conversation.png";
 	public final String ICON_CONVERSATIONLINK = "16/ConversationLink.png";
+	public final String ICON_CUSTOMTASK = "16/CustomTask.png";
 	public final String ICON_DATAINPUT = "16/DataInput.png";
 	public final String ICON_DATAOBJECT = "16/DataObject.png";
 	public final String ICON_DATAOUTPUT = "16/DataOutput.png";
@@ -95,6 +96,7 @@ public interface IConstants {
 	public final String ICON_LANE = "16/Lane.png";
 	public final String ICON_LINKEVENTDEFINITION = "16/LinkEventDefinition.png";
 	public final String ICON_MANUALTASK = "16/ManualTask.png";
+	public final String ICON_MESSAGE = "16/Message.png";
 	public final String ICON_MESSAGEEVENTDEFINITION = "16/MessageEventDefinition.png";
 	public final String ICON_MESSAGEFLOW = "16/MessageFlow.png";
 	public final String ICON_PARALLELGATEWAY = "16/ParallelGateway.png";

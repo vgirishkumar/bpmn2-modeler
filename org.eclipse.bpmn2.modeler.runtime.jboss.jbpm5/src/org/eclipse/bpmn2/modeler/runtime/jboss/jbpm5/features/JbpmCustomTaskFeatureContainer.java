@@ -48,6 +48,7 @@ import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
@@ -95,6 +96,15 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 			return getCreateImageId();
 		}
 		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		public Task createBusinessObject(ICreateContext context) {
+			Task task = super.createBusinessObject(context);
+			final String name = customTaskDescriptor.getName();
+			if (name!=null && !name.isEmpty()) {
+				task.setName(name.trim());
+			}
+			return task;
+		}
 	}
 	
 	protected class JbpmAddCustomTaskFeature extends JbpmAddTaskFeature {

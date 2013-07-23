@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart;
@@ -32,6 +34,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -45,7 +48,6 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureCont
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -101,8 +103,7 @@ import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IImageDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
@@ -570,7 +571,23 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		} else if (ChoreographySelectionBehavior.canApplyTo(pe)) {
 			return ChoreographySelectionBehavior.getClickArea(pe);
 		}
+		else {
+			if (pe instanceof ContainerShape) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement((ContainerShape)pe);
+				if (be instanceof Group) {
+					System.out.println();
+				}
+			}
+		}
 		return super.getClickArea(pe);
+	}
+
+	@Override
+	public int getLineSelectionWidth(Polyline polyline) {
+		PictogramElement pe = polyline.getPictogramElement();
+		if (pe!=null && BusinessObjectUtil.getFirstBaseElement(pe) instanceof Group)
+			return 20;
+		return super.getLineSelectionWidth(polyline);
 	}
 
 	@Override
@@ -599,6 +616,14 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		return super.getSelectionBorder(pe);
 	}
 
+	public static Point getMouseLocation(IFeatureProvider fp) {
+		DiagramEditor editor = (DiagramEditor) fp.getDiagramTypeProvider().getDiagramEditor();
+		org.eclipse.draw2d.geometry.Point p = editor.getMouseLocation();
+		p = editor.calculateRealMouseLocation(p);
+		Point point = GraphicsUtil.createPoint(p.x, p.y);
+		return point;
+	}
+	
 	@Override
 	public IContextButtonPadData getContextButtonPad(IPictogramElementContext context) {
 		IContextButtonPadData data = super.getContextButtonPad(context);

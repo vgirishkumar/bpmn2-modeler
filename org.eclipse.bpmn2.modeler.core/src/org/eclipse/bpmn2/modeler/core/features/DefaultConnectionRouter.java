@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -43,6 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.util.ColorConstant;
@@ -56,9 +58,9 @@ import org.eclipse.graphiti.util.IColorConstant;
 public class DefaultConnectionRouter extends AbstractConnectionRouter {
 
 	protected List<ContainerShape> allShapes;
-	Connection connection;
-	ContainerShape source;
-	ContainerShape target;
+	protected Connection connection;
+	protected Shape source;
+	protected Shape target;
 	protected Anchor sourceAnchor, targetAnchor;
 	
 	public DefaultConnectionRouter(IFeatureProvider fp) {
@@ -68,8 +70,8 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	@Override
 	public boolean route(Connection connection) {
 		this.connection = connection;
-		this.source = (ContainerShape)connection.getStart().getParent();
-		this.target = (ContainerShape)connection.getEnd().getParent();
+		this.source = (Shape) connection.getStart().getParent();
+		this.target = (Shape) connection.getEnd().getParent();
 
 		if (AnchorUtil.useAdHocAnchors(source, connection) && AnchorUtil.isAdHocAnchor(connection.getStart()))
 			sourceAnchor = connection.getStart();
@@ -157,8 +159,9 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (GraphicsUtil.intersectsLine(shape, p1, p2))
-				collisions.add(shape);
+			if (!FeatureSupport.isGroupShape(shape))
+				if (GraphicsUtil.intersectsLine(shape, p1, p2))
+					collisions.add(shape);
 		}
 //		if (collisions.size()>0)
 //			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);

@@ -53,8 +53,8 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 	public static final String LANE = "ROUTING_NET_LANE";
 	
 	boolean isRotated = false;
-	ContainerShape source;
-	ContainerShape target;
+	Shape source;
+	Shape target;
 	List<RoutingLane> sourceAdjacentLanes = new ArrayList<RoutingLane>();
 	List<RoutingLane> targetAdjacentLanes = new ArrayList<RoutingLane>();
 	Stack<RoutingLane> solutionStack;
@@ -113,15 +113,15 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			allSolutions.clear();
 	}
 	
-	public List< List<RoutingLane> > findSolutions(ContainerShape source, ContainerShape target) {
+	public List< List<RoutingLane> > findSolutions(Shape source2, Shape target2) {
 		allSolutions = new ArrayList< List<RoutingLane> >();
-		this.source = source;
-		this.target = target;
-		if (source==null || target==null) {
+		this.source = source2;
+		this.target = target2;
+		if (source2==null || target2==null) {
 			return allSolutions;
 		}
-		Rectangle sourceBounds = getBounds(false, source);
-		Rectangle targetBounds = getBounds(false, target);
+		Rectangle sourceBounds = getBounds(false, source2);
+		Rectangle targetBounds = getBounds(false, target2);
 		sourceAdjacentLanes.clear();
 		targetAdjacentLanes.clear();
 		
@@ -392,13 +392,13 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return list;
 	}
 
-	private Rectangle getBounds(ContainerShape shape) {
-		return getBounds(isRotated,shape);
+	private Rectangle getBounds(Shape target2) {
+		return getBounds(isRotated,target2);
 	}
 
-	protected static Rectangle getBounds(boolean rotate, ContainerShape shape) {
-		ILocation loc = peService.getLocationRelativeToDiagram(shape);
-		IDimension size = GraphicsUtil.calculateSize(shape);
+	protected static Rectangle getBounds(boolean rotate, Shape source2) {
+		ILocation loc = peService.getLocationRelativeToDiagram(source2);
+		IDimension size = GraphicsUtil.calculateSize(source2);
 		if (rotate) {
 			return rotateRectangle(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 		}
@@ -621,7 +621,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 				context.setNewObject( null );
 				context.setLocation(a.getX(), a.getY());
 				context.setSize(a.getWidth(), a.getHeight());
-				context.putProperty("background", new ColorConstant(32+i*(i%3),32+i*(i%6),32+i*(i%9)));
+//				context.putProperty("background", new ColorConstant(32+i*(i%3),32+i*(i%6),32+i*(i%9)));
 				AddRoutingLaneFeature feature = new AddRoutingLaneFeature(fp);
 				a.setShape(feature.add(context));
 			}

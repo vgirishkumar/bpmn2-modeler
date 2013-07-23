@@ -32,6 +32,7 @@
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
             uri="http://org.eclipse.bpmn2.modeler.examples.customtask">
       </model>
+      
       <customTask
             category="My Task"
             description="This is a Custom Task that has been extended with runtime-specific configuration parameters. These parameters are defined in the &quot;My Task&quot; Property Tab"
@@ -67,6 +68,24 @@
 				</value>
 			</property>
       </customTask>
+
+      <customTask
+            category="My Task"
+            description="This is a Custom Task that has been extended with runtime-specific configuration parameters. These parameters are defined in the &quot;My Task&quot; Property Tab"
+            featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MyBoundaryEventFeatureContainer"
+            icon="MyTask.png"
+            id="org.eclipse.bpmn2.modeler.examples.customtask.boundaryEvent1"
+            name="My Boundary Event"
+            propertyTabs="org.eclipse.bpmn2.modeler.examples.customtask.myBoundaryEvent.tab"
+            runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
+            type="BoundaryEvent">
+         <property
+               name="type"
+               value="MyBoundaryEvent">
+         </property>
+      </customTask>
+      
+      
       <propertyTab
             class="default"
             features="extensionValues#TaskConfig.parameters"
@@ -74,6 +93,15 @@
             label="My Task"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime">
       </propertyTab>
+      
+      <propertyTab
+            class="default"
+            features="extensionValues#TaskConfig.parameters"
+            id="org.eclipse.bpmn2.modeler.examples.customtask.myBoundaryEvent.tab"
+            label="My Boundary Event"
+            runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime">
+      </propertyTab>
+
       <modelEnablement
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
             type="Process" profile="default">
