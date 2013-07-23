@@ -17,7 +17,6 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 
 public class MoveLaneFeature extends DefaultMoveBPMNShapeFeature {
 
