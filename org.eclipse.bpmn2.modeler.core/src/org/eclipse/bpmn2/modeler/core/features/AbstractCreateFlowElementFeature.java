@@ -38,10 +38,6 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		boolean intoDiagram = context.getTargetContainer().equals(getDiagram());
-		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
-		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
-		boolean intoFlowElementContainer = FeatureSupport.isTargetFlowElementsContainer(context);
 		/*
 		 * TODO: rethink this: it's causing all kinds of DI import problems
 		 * also see AbstractAddActivityFeature
@@ -60,7 +56,7 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 				return false;
 		}
 		*/
-		return intoDiagram || intoLane || intoParticipant || intoFlowElementContainer;
+		return FeatureSupport.isValidFlowElementTarget(context);
 	}
 
 	@Override

@@ -58,12 +58,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		boolean isLane = getBusinessObject(context) instanceof Lane;
-		boolean intoDiagram = context.getTargetContainer().equals(getDiagram());
-		boolean intoLane = FeatureSupport.isTargetLane(context);
-		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
-		boolean intoSubprocess = FeatureSupport.isTargetSubProcess(context);
-		return isLane && (intoDiagram || intoLane || intoParticipant || intoSubprocess);
+		return FeatureSupport.isValidFlowElementTarget(context);
 	}
 
 	@Override

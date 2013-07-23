@@ -31,10 +31,7 @@ public abstract class AbstractCreateArtifactFeature<T extends Artifact> extends 
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		boolean intoDiagram = context.getTargetContainer().equals(getDiagram());
-		boolean intoLane = FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context);
-		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
-		return intoDiagram || intoLane || intoParticipant;
+		return FeatureSupport.isValidArtifactTarget(context);
 	}
 
 	@Override

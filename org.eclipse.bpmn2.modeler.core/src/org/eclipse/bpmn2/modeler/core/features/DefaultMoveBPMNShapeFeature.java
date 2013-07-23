@@ -55,17 +55,6 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			((MoveShapeContext)context).setSourceContainer(targetContainer.getContainer());
 			((MoveShapeContext)context).setTargetContainer(targetContainer.getContainer());
 		}
-		BaseElement be = BusinessObjectUtil.getFirstBaseElement(targetContainer);
-		if (be instanceof Group) {
-			if (context.getSourceContainer() instanceof Diagram) {
-				int x = context.getX();
-				int y = context.getY();
-				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(targetContainer);
-				((MoveShapeContext)context).setX(x + loc.getX());
-				((MoveShapeContext)context).setY(y + loc.getY());
-			}
-			((MoveShapeContext)context).setTargetContainer(context.getSourceContainer());
-		}
 		return context.getSourceContainer() != null
 				&& context.getSourceContainer().equals(context.getTargetContainer());
 	}

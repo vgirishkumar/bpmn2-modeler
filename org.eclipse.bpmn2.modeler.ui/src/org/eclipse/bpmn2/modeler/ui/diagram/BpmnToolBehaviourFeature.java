@@ -50,6 +50,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureCont
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -80,9 +81,13 @@ import org.eclipse.graphiti.features.context.impl.MoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.MmFactory;
+import org.eclipse.graphiti.mm.MmPackage;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.impl.RectangleImpl;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -573,7 +578,23 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		} else if (ChoreographySelectionBehavior.canApplyTo(pe)) {
 			return ChoreographySelectionBehavior.getClickArea(pe);
 		}
+		else {
+			if (pe instanceof ContainerShape) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement((ContainerShape)pe);
+				if (be instanceof Group) {
+					System.out.println();
+				}
+			}
+		}
 		return super.getClickArea(pe);
+	}
+
+	@Override
+	public int getLineSelectionWidth(Polyline polyline) {
+		PictogramElement pe = polyline.getPictogramElement();
+		if (pe!=null && BusinessObjectUtil.getFirstBaseElement(pe) instanceof Group)
+			return 20;
+		return super.getLineSelectionWidth(polyline);
 	}
 
 	@Override
@@ -602,33 +623,12 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		return super.getSelectionBorder(pe);
 	}
 
-	@Override
-	public PictogramElement getSelection(PictogramElement originalPe, PictogramElement[] oldSelection) {
-		BaseElement be = BusinessObjectUtil.getFirstBaseElement(originalPe);
-		if (be instanceof Group) {
-			return findShapeAtPoint(getDiagramTypeProvider().getDiagram(), getMouseLocation());
-		}
-		return super.getSelection(originalPe, oldSelection);
-	}
-
-	private Point getMouseLocation() {
-		org.eclipse.draw2d.geometry.Point p = ((DiagramBehavior)getDiagramTypeProvider().getDiagramBehavior()).getMouseLocation();
-		p = ((DiagramBehavior)getDiagramTypeProvider().getDiagramBehavior()).calculateRealMouseLocation(p);
+	public static Point getMouseLocation(IFeatureProvider fp) {
+		DiagramBehavior db = (DiagramBehavior) fp.getDiagramTypeProvider().getDiagramBehavior();
+		org.eclipse.draw2d.geometry.Point p = db.getMouseLocation();
+		p = db.calculateRealMouseLocation(p);
 		Point point = GraphicsUtil.createPoint(p.x, p.y);
 		return point;
-	}
-	
-	private Shape findShapeAtPoint(Shape shape, Point point) {
-		if (shape instanceof ContainerShape) {
-			for (Shape child : ((ContainerShape)shape).getChildren()) {
-				Shape s = findShapeAtPoint(child,point);
-				if (s!=null)
-					return s;
-			}
-		}
-		if (shape instanceof ContainerShape && GraphicsUtil.contains(shape, point))
-			return shape;
-		return null;
 	}
 	
 	@Override

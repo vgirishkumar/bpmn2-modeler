@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
@@ -38,13 +39,20 @@ import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.CreateContext;
+import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -61,10 +69,45 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
+import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
+import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
 public class FeatureSupport {
 	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal";
 
+	public static boolean isValidFlowElementTarget(ITargetContext context) {
+		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
+		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
+		boolean intoParticipant = isTargetParticipant(context);
+		boolean intoFlowElementContainer = isTargetFlowElementsContainer(context);
+		boolean intoGroup = isTargetGroup(context);
+		return (intoDiagram || intoLane || intoParticipant || intoFlowElementContainer) && !intoGroup;
+	}
+	
+	public static boolean isValidArtifactTarget(ITargetContext context) {
+		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
+		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
+		boolean intoParticipant = isTargetParticipant(context);
+		boolean intoSubProcess = isTargetSubProcess(context);
+		boolean intoGroup = isTargetGroup(context);
+		return (intoDiagram || intoLane || intoParticipant || intoSubProcess) && !intoGroup;
+	}
+	
+	public static boolean isValidDataTarget(ITargetContext context) {
+		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
+		boolean intoDiagram = containerBO instanceof BPMNDiagram;
+		if (intoDiagram) {
+			// SubProcess are not allowed to define their own DataInputs or DataOutputs
+			BPMNDiagram bpmnDiagram = (BPMNDiagram) containerBO;
+			if (bpmnDiagram.getPlane().getBpmnElement() instanceof SubProcess)
+				intoDiagram = false;
+		}
+		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
+		boolean intoParticipant = isTargetParticipant(context);
+		boolean intoGroup = isTargetGroup(context);
+		return (intoDiagram || intoLane || intoParticipant) && !intoGroup;
+	}
+	
 	public static boolean isTargetSubProcess(ITargetContext context) {
 		return BusinessObjectUtil.containsElementOfType(context.getTargetContainer(), SubProcess.class);
 	}
@@ -80,6 +123,11 @@ public class FeatureSupport {
 	public static Lane getTargetLane(ITargetContext context) {
 		PictogramElement element = context.getTargetContainer();
 		return BusinessObjectUtil.getFirstElementOfType(element, Lane.class);
+	}
+
+	public static boolean isTargetGroup(ITargetContext context) {
+		Group group = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), Group.class);
+		return group != null;
 	}
 	
 	public static boolean isTargetParticipant(ITargetContext context) {
@@ -725,4 +773,51 @@ public class FeatureSupport {
 		return false;
 		
 	}
+
+	public static List<ContainerShape> findGroupedShapes(ContainerShape groupShape) {
+		Diagram diagram = null;
+		EObject parent = groupShape.eContainer();
+		while (parent!=null) {
+			if (parent instanceof Diagram) {
+				diagram = (Diagram)parent;
+				break;
+			}
+			parent = parent.eContainer();
+		}
+	
+		// find all shapes that are inside this Group
+		// these will be moved along with the Group
+		List<ContainerShape> list = new ArrayList<ContainerShape>();
+		if (diagram!=null && isGroupShape(groupShape)) {
+			for (PictogramElement child : diagram.getChildren()) {
+				if (child instanceof ContainerShape
+						&& child!=groupShape
+						&& !list.contains(child)) {
+					ContainerShape shape = (ContainerShape)child;
+					if (isGroupShape(shape)) {
+						if (GraphicsUtil.contains(groupShape, shape)) {
+							if (!list.contains(shape)) {
+								list.add(shape);
+							}
+						}
+					}
+					else if (GraphicsUtil.contains(groupShape, shape)) {
+						// find this shape's parent ContainerShape if it has one
+						while (!(shape.getContainer() instanceof Diagram)) {
+							shape = shape.getContainer();
+						}
+						if (!list.contains(shape)) {
+							list.add(shape);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public static boolean isGroupShape(Shape shape) {
+		return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
+	}
+
 }

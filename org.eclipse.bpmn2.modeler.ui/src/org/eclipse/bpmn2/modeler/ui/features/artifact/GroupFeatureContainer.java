@@ -18,13 +18,13 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -47,10 +47,10 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.algorithms.Polygon;
+import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -108,12 +108,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
-		return new DefaultResizeBPMNShapeFeature(fp) {
-			@Override
-			public boolean canResizeShape(IResizeShapeContext context) {
-				return true;
-			}
-		};
+		return new ResizeGroupFeature(fp);
 	}
 
 	public class AddGroupFeature extends AbstractAddBPMNShapeFeature<Group> {
@@ -145,20 +140,27 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			}
 
 			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
-			RoundedRectangle rect = gaService.createRoundedRectangle(containerShape, 5, 5);
-			rect.setFilled(false);
+			link(containerShape, businessObject);
+			
+			// NOTE: We do not want a Group Shape to be a graphiti shape container for
+			// anything that is added or moved into the Group, so instead of using a
+			// rectangle for the Group shape, we'll use a polyline instead.
+//			RoundedRectangle rect = gaService.createRoundedRectangle(containerShape, 5, 5);
+//			rect.setFilled(false);
+//			rect.setLineWidth(2);
+//			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+//			rect.setLineStyle(LineStyle.DASHDOT);
+//			gaService.setLocationAndSize(rect, x, y, width, height);
+//			peService.createChopboxAnchor(containerShape);
+//			AnchorUtil.addFixedPointAnchors(containerShape, rect);
+			int xy[] = new int[] {0, 0, width, 0, width, height, 0, height, 0, 0};
+			Polyline rect = gaService.createPolyline(containerShape, xy);
 			rect.setLineWidth(2);
 			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			rect.setLineStyle(LineStyle.DASHDOT);
 			gaService.setLocationAndSize(rect, x, y, width, height);
-
-//			int xy[] = new int[] {x, y, x+width, y, x+width, y+height, x, y+height, x, y};
-//			Polyline rect = gaService.createPolyline(containerShape, xy);
-//			rect.setLineWidth(4);
-//			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-//			rect.setLineStyle(LineStyle.DASHDOT);
+//
 			
-			link(containerShape, businessObject);
 			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
 			
@@ -167,8 +169,6 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			((AddContext)context).setHeight(height);
 			decorateShape(context, containerShape, businessObject);
 
-			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 			return containerShape;
 		}
@@ -239,7 +239,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 			// find all shapes that are inside this Group
 			// these will be moved along with the Group
-			containedShapes = findContainedShapes(groupShape);
+			containedShapes = FeatureSupport.findGroupedShapes(groupShape);
 		}
 
 		@Override
@@ -248,45 +248,50 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			super.postMoveShape(context);
 			
 			for (ContainerShape shape : containedShapes) {
-				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
-				int x = loc.getX() + context.getDeltaX();
-				int y = loc.getY() + context.getDeltaY();
-				Graphiti.getLayoutService().setLocation(shape.getGraphicsAlgorithm(), x, y);
-			}
-		}
-		
-		protected List<ContainerShape> findContainedShapes(ContainerShape groupShape) {
-			// find all shapes that are inside this Group
-			// these will be moved along with the Group
-			List<ContainerShape> list = new ArrayList<ContainerShape>();
-			for (PictogramElement child : getDiagram().getChildren()) {
-				if (child instanceof ContainerShape
-						&& child!=groupShape
-						&& !list.contains(child)) {
-					ContainerShape shape = (ContainerShape)child;
-					if (isGroupShape(shape)) {
-						if (GraphicsUtil.contains(groupShape, shape)) {
-							if (!list.contains(shape)) {
-								list.add(shape);
-							}
-						}
-					}
-					else if (GraphicsUtil.contains(groupShape, shape)) {
-						// find this shape's parent ContainerShape if it has one
-						while (!(shape.getContainer() instanceof Diagram)) {
-							shape = shape.getContainer();
-						}
-						if (!list.contains(shape)) {
-							list.add(shape);
-						}
-					}
+				if (!GraphicsUtil.isLabelShape(shape)) {
+					ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+					int x = loc.getX() + context.getDeltaX();
+					int y = loc.getY() + context.getDeltaY();
+					MoveShapeContext mc = new MoveShapeContext(shape);
+					mc.setSourceContainer(shape.getContainer());
+					mc.setTargetContainer(shape.getContainer());
+					mc.setX(x);
+					mc.setY(y);
+					IMoveShapeFeature mf = getFeatureProvider().getMoveShapeFeature(mc);
+					mf.moveShape(mc);
 				}
 			}
-			return list;
 		}
-		
-		private boolean isGroupShape(Shape shape) {
-			return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
+	}
+
+	public class ResizeGroupFeature extends DefaultResizeShapeFeature {
+
+		public ResizeGroupFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public void resizeShape(IResizeShapeContext context) {
+			Shape shape = (Shape) context.getPictogramElement();
+
+			int x = context.getX();
+			int y = context.getY();
+			int w = context.getWidth();
+			int h = context.getHeight();
+			Polyline rect = (Polyline) shape.getGraphicsAlgorithm();
+			Point p;
+			p = rect.getPoints().get(1);
+			p.setX(w);
+			p = rect.getPoints().get(2);
+			p.setX(w);
+			p.setY(h);
+			p = rect.getPoints().get(3);
+			p.setY(h);
+			Graphiti.getGaService().setLocationAndSize(rect, x, y, w, h);
+
+			DIUtils.updateDIShape(context.getPictogramElement());
+
+			ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
 		}
 	}
 }

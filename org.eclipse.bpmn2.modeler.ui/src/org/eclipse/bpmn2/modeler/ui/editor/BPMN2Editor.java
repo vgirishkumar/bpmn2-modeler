@@ -1153,17 +1153,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 						moved.add(0,shape);
 					}
 				}
-				// don't allow anything to be sent in front of Group artifacts
-				// Groups are always created as child shapes of the Diagram
-				container = getDiagramTypeProvider().getDiagram();
-				for (PictogramElement sibling : container.getChildren()) {
-					if (sibling!=shape && BusinessObjectUtil.getFirstBaseElement(sibling) instanceof Group) {
-						if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
-							if (moved.size()>0)
-								moved.add((ContainerShape)sibling);
-						}
-					}
-				}
 			}
 		}
 		if (!moved.isEmpty()) {
