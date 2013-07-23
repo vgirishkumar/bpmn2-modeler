@@ -34,7 +34,7 @@
       </model>
       
       <customTask
-            category="My Task"
+            category="My Tools"
             description="This is a Custom Task that has been extended with runtime-specific configuration parameters. These parameters are defined in the &quot;My Task&quot; Property Tab"
             featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MyTaskFeatureContainer"
             icon="MyTask.png"
@@ -43,6 +43,8 @@
             propertyTabs="org.eclipse.bpmn2.modeler.examples.customtask.mytask.tab"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
             type="Task">
+         <!-- this extension feature used by the MyTaskFeatureContainer to determine this object's Custom Task ID -->
+         <!-- which is the "customTask.id" value, above --> 
          <property
                name="type"
                value="MyTask">
@@ -70,34 +72,40 @@
       </customTask>
 
       <customTask
-            category="My Task"
+            category="My Tools"
             description="This is a Custom Task that has been extended with runtime-specific configuration parameters. These parameters are defined in the &quot;My Task&quot; Property Tab"
             featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MyBoundaryEventFeatureContainer"
-            icon="MyTask.png"
+            icon="MyBoundaryEvent.png"
             id="org.eclipse.bpmn2.modeler.examples.customtask.boundaryEvent1"
             name="My Boundary Event"
             propertyTabs="org.eclipse.bpmn2.modeler.examples.customtask.myBoundaryEvent.tab"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
             type="BoundaryEvent">
+         <!-- this extension feature used by the MyTaskFeatureContainer to determine this object's Custom Task ID -->
+         <!-- which is the "customTask.id" value, above --> 
          <property
                name="type"
                value="MyBoundaryEvent">
          </property>
+         <property
+         		name="isEnabled"
+         		value="true"
+         		type="EBoolean">
+         </property>
       </customTask>
       
-      
       <propertyTab
-            class="default"
-            features="extensionValues#TaskConfig.parameters"
             id="org.eclipse.bpmn2.modeler.examples.customtask.mytask.tab"
+            class="org.eclipse.bpmn2.modeler.examples.customtask.MyTaskPropertySection"
             label="My Task"
+			type="org.eclipse.bpmn2.Task"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime">
       </propertyTab>
       
       <propertyTab
-            class="default"
-            features="extensionValues#TaskConfig.parameters"
             id="org.eclipse.bpmn2.modeler.examples.customtask.myBoundaryEvent.tab"
+            class="org.eclipse.bpmn2.modeler.examples.customtask.MyBoundaryEventPropertySection"
+			type="org.eclipse.bpmn2.Event"
             label="My Boundary Event"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime">
       </propertyTab>
@@ -112,6 +120,9 @@
 			<enable object="Task" feature="taskConfig"/>
 			<enable object="TaskConfig"/>
 			<enable object="Parameter"/>
+			
+			<enable object="BoundaryEvent" feature="isEnabled"/>
+			
       </modelEnablement>
    </extension>
 
