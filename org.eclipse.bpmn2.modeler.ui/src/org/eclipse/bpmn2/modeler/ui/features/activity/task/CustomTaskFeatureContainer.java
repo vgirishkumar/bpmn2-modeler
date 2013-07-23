@@ -318,12 +318,17 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 						break;
 					}
 				}
-				for (GraphicsAlgorithm g : ga.getGraphicsAlgorithmChildren()) {
-					if (g instanceof Image) {
-						addImage = false;
-						break;
+				if (ga!=null) {
+					for (GraphicsAlgorithm g : ga.getGraphicsAlgorithmChildren()) {
+						if (g instanceof Image) {
+							addImage = false;
+							break;
+						}
 					}
 				}
+				else
+					addImage = false;
+				
 				if (addImage) {
 					Image img = CustomTaskImageProvider.createImage(customTaskDescriptor, ga, icon, 24, 24);
 					Graphiti.getGaService().setLocationAndSize(img, 2, 2, 24, 24);
