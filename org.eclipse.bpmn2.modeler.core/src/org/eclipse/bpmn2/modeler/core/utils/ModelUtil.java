@@ -212,6 +212,23 @@ public class ModelUtil {
 		return generateDefaultID(obj, name);
 	}
 	
+	public static void unsetID(EObject obj) {
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		if (feature!=null) {
+			Object value = obj.eGet(feature);
+			if (value instanceof String) {
+				String id = (String)value;
+				Object key = getKey(obj);
+				if (key!=null) {
+					Hashtable<String, EObject> tab = ids.get(key);
+					if (tab!=null) {
+						tab.remove(id);
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Add an ID string to the ID mapping table(s). This must be used during model import
 	 * to add existing BPMN2 element IDs to the table so we don't generate duplicates.

@@ -66,6 +66,7 @@ public interface IConstants {
 	public final String ICON_BOUNDARYEVENT = "16/BoundaryEvent.png";
 	public final String ICON_BUSINESSRULETASK = "16/BusinessRuleTask.png";
 	public final String ICON_CALLACTIVITY = "16/CallActivity.png";
+	public final String ICON_CANCEL = "16/Cancel.png";
 	public final String ICON_CANCELEVENTDEFINITION = "16/CancelEventDefinition.png";
 	public final String ICON_CATEGORY = "16/Category.png";
 	public final String ICON_CHOREOGRAPHYTASK = "16/ChoreographyTask.png";
@@ -80,7 +81,9 @@ public interface IConstants {
 	public final String ICON_DATAOUTPUT = "16/DataOutput.png";
 	public final String ICON_DATASTORE = "16/DataStore.png";
 	public final String ICON_ENDEVENT = "16/EndEvent.png";
+	public final String ICON_ERROR = "16/Error.png";
 	public final String ICON_ERROREVENTDEFINITION = "16/ErrorEventDefinition.png";
+	public final String ICON_ESCALATION = "16/Escalation.png";
 	public final String ICON_ESCALATIONEVENTDEFINITION = "16/EscalationEventDefinition.png";
 	public final String ICON_EVENTBASEDGATEWAY = "16/EventBasedGateway.png";
 	public final String ICON_EXCLUSIVEGATEWAY = "16/ExclusiveGateway.png";
@@ -99,6 +102,7 @@ public interface IConstants {
 	public final String ICON_MESSAGE = "16/Message.png";
 	public final String ICON_MESSAGEEVENTDEFINITION = "16/MessageEventDefinition.png";
 	public final String ICON_MESSAGEFLOW = "16/MessageFlow.png";
+	public final String ICON_OPERATION = "16/Operation.png";
 	public final String ICON_PARALLELGATEWAY = "16/ParallelGateway.png";
 	public final String ICON_PARTICIPANT = "16/Participant.png";
 	public final String ICON_RECEIVETASK = "16/ReceiveTask.png";
@@ -106,6 +110,7 @@ public interface IConstants {
 	public final String ICON_SENDTASK = "16/SendTask.png";
 	public final String ICON_SEQUENCEFLOW = "16/SequenceFlow.png";
 	public final String ICON_SERVICETASK = "16/ServiceTask.png";
+	public final String ICON_SIGNAL = "16/Signal.png";
 	public final String ICON_SIGNALEVENTDEFINITION = "16/SignalEventDefinition.png";
 	public final String ICON_STARTEVENT = "16/StartEvent.png";
 	public final String ICON_SUBPROCESS = "16/SubProcess.png";
