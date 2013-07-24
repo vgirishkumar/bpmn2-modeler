@@ -22,9 +22,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.LaneSet;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -198,23 +195,27 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
 				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
 				dataObject.setName("Create a new Data Object");
-				Object container = getBusinessObjectForPictogramElement(context.getTargetContainer());
-				Object containerBO = container;
-				if (container instanceof BPMNDiagram) {
-					containerBO = ((BPMNDiagram)container).getPlane().getBpmnElement();
-				}
-				if (container instanceof Lane) {
-					EObject laneSet = ((Lane)container).eContainer();
-					if (laneSet instanceof LaneSet)
-						containerBO = laneSet.eContainer();
-				}
+				EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
+				
+				// NOTE: this code removed. A DataObjectReference may reference DataObjects
+				// from any other container (Process) in the BPMN file, not just those defined
+				// within the same container as the target (context.getTargetContainer())
+//				Object containerBO = container;
+//				if (container instanceof BPMNDiagram) {
+//					containerBO = ((BPMNDiagram)container).getPlane().getBpmnElement();
+//				}
+//				if (container instanceof Lane) {
+//					EObject laneSet = ((Lane)container).eContainer();
+//					if (laneSet instanceof LaneSet)
+//						containerBO = laneSet.eContainer();
+//				}
 
 				List<DataObject> dataObjectList = new ArrayList<DataObject>();
 				dataObjectList.add(dataObject);
-				TreeIterator<EObject> iter = mh.getDefinitions().eAllContents();
+				TreeIterator<EObject> iter = ModelUtil.getDefinitions(targetBusinessObject).eAllContents();
 				while (iter.hasNext()) {
 					EObject obj = iter.next();
-					if (obj instanceof DataObject && obj.eContainer() == containerBO)
+					if (obj instanceof DataObject) // removed, see above: && obj.eContainer() == containerBO)
 						dataObjectList.add((DataObject) obj);
 				}
 
@@ -227,15 +228,14 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 					}
 				}
 				if (result == dataObject) { // the new one
-					mh.addFlowElement(container,dataObject);
+					mh.addFlowElement(targetBusinessObject,dataObject);
 					dataObject.setId(null);
 					ModelUtil.setID(dataObject);
 					dataObject.setIsCollection(false);
 					dataObject.setName(ModelUtil.toDisplayName(dataObject.getId()));
-					dataObjectReference.setName(dataObject.getName());
 					bo = dataObject;
 				} else {
-					mh.addFlowElement(container,dataObjectReference);
+					mh.addFlowElement(targetBusinessObject,dataObjectReference);
 					ModelUtil.setID(dataObjectReference);
 					dataObjectReference.setName(result.getName() + " Ref");
 					dataObjectReference.setDataObjectRef(result);

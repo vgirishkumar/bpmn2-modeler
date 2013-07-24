@@ -221,7 +221,19 @@ public class DIImport {
 	public DiagramEditor getEditor() {
 		return editor;
 	}
-	
+
+	public static boolean isChoreographyParticipantBand(PictogramElement element) {
+		EObject container = element.eContainer();
+		if (container instanceof PictogramElement) {
+			PictogramElement containerElem = (PictogramElement) container;
+			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(containerElem);
+			if (bo instanceof ChoreographyActivity) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void layoutAll() {
 		final List<BPMNDiagram> diagrams = modelHandler.getAll(BPMNDiagram.class);
 //		for (BPMNDiagram d : diagrams) {
@@ -241,6 +253,12 @@ public class DIImport {
 			PictogramElement pe = elements.get(be);
 
 			if (be instanceof SubProcess) { // we need the layout to hide children if collapsed
+				LayoutContext context = new LayoutContext(pe);
+				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
+				if (feature!=null && feature.canLayout(context))
+					feature.layout(context);
+			}
+			else if (be instanceof Participant) {
 				LayoutContext context = new LayoutContext(pe);
 				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
 				if (feature!=null && feature.canLayout(context))

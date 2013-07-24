@@ -46,7 +46,6 @@ import org.eclipse.bpmn2.GlobalManualTask;
 import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.GlobalTask;
 import org.eclipse.bpmn2.GlobalUserTask;
-import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.HumanPerformer;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
@@ -83,7 +82,6 @@ import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
@@ -203,7 +201,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -212,7 +209,6 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
@@ -1111,7 +1107,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					int index = container.getChildren().indexOf(shape);
 					for (int i=index+1; i<container.getChildren().size(); ++i) {
 						PictogramElement sibling = container.getChildren().get(i);
-						if (sibling instanceof ContainerShape) {
+						if (sibling instanceof ContainerShape &&
+								!GraphicsUtil.isLabelShape((ContainerShape)sibling)) {
 							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
 								boolean siblingIsBoundaryEvent = false;
 								if (baseElement instanceof Activity) {
@@ -1123,8 +1120,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 										}
 									}
 								}
-								if (!siblingIsBoundaryEvent)
+								if (!siblingIsBoundaryEvent) {
 									obscured = true;
+								}
 							}
 						}
 					}

@@ -52,6 +52,9 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 	public EObject createFeature(Resource resource, Object context, EClass eClass) {
 		final T object = adopt(context);
 
+		if (resource==null && object.eResource()!=null)
+			resource = object.eResource();
+		
 		EObject rootElement = null;
 		if (eClass==null)
 			eClass = (EClass)feature.getEType();
@@ -66,9 +69,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 			rootElement = this.createObject(resource, eClass);
 		}
 		
-		Definitions definitions = ModelUtil.getDefinitions(object);
-		if (definitions==null)
-			definitions = (Definitions) resource.getContents().get(0).eContents().get(0);
+		Definitions definitions = ModelUtil.getDefinitions(resource);
 		definitions.getRootElements().add((RootElement)rootElement);
 		return rootElement;
 	}
