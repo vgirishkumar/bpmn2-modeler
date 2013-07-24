@@ -222,18 +222,6 @@ public class DIImport {
 		return editor;
 	}
 
-	public static boolean isChoreographyParticipantBand(PictogramElement element) {
-		EObject container = element.eContainer();
-		if (container instanceof PictogramElement) {
-			PictogramElement containerElem = (PictogramElement) container;
-			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(containerElem);
-			if (bo instanceof ChoreographyActivity) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private void layoutAll() {
 		final List<BPMNDiagram> diagrams = modelHandler.getAll(BPMNDiagram.class);
 //		for (BPMNDiagram d : diagrams) {
