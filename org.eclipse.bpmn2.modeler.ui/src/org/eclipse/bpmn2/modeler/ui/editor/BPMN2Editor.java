@@ -1117,7 +1117,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					int index = container.getChildren().indexOf(shape);
 					for (int i=index+1; i<container.getChildren().size(); ++i) {
 						PictogramElement sibling = container.getChildren().get(i);
-						if (sibling instanceof ContainerShape) {
+						if (sibling instanceof ContainerShape &&
+								!GraphicsUtil.isLabelShape((ContainerShape)sibling)) {
 							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
 								boolean siblingIsBoundaryEvent = false;
 								if (baseElement instanceof Activity) {
@@ -1129,8 +1130,9 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 										}
 									}
 								}
-								if (!siblingIsBoundaryEvent)
+								if (!siblingIsBoundaryEvent) {
 									obscured = true;
+								}
 							}
 						}
 					}

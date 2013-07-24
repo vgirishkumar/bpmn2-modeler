@@ -1741,4 +1741,14 @@ public class GraphicsUtil {
 			plane.getPlaneElement().add(bpmnShape);
 		}
 	}
+
+	public static void sendToBack(Shape shape) {
+		peService.sendToBack(shape);
+		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
+		if (bpmnShape!=null) {
+			BPMNPlane plane = (BPMNPlane)bpmnShape.eContainer();
+			plane.getPlaneElement().remove(bpmnShape);
+			plane.getPlaneElement().add(0,bpmnShape);
+		}
+	}
 }

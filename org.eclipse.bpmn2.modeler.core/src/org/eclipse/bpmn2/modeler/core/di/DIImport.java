@@ -246,6 +246,12 @@ public class DIImport {
 				if (feature!=null && feature.canLayout(context))
 					feature.layout(context);
 			}
+			else if (be instanceof Participant) {
+				LayoutContext context = new LayoutContext(pe);
+				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
+				if (feature!=null && feature.canLayout(context))
+					feature.layout(context);
+			}
 //			else if (be instanceof FlowNode) {
 //				LayoutContext context = new LayoutContext(pe);
 //				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
