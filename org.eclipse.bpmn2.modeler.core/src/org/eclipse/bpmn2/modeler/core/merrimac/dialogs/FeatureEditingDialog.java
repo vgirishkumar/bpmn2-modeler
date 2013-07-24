@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
@@ -114,6 +115,17 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	@Override
 	protected void cancelPressed() {
 		super.cancelPressed();
+		if (createNew) {
+			ModelUtil.unsetID(newObject);
+			final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
+			if (domain!=null) {
+				if (domain.getCommandStack().canUndo())
+					domain.getCommandStack().undo();
+			}
+			else {
+				EcoreUtil.delete(newObject);
+			}
+		}
 		newObject = null;
 	}
 	
