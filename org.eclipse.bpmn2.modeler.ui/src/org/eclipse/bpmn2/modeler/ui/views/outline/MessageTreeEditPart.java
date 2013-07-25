@@ -10,15 +10,15 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
+import org.eclipse.swt.graphics.Image;
 
-public class OperationTreeEditPart extends AbstractGraphicsTreeEditPart {
+public class MessageTreeEditPart extends AbstractGraphicsTreeEditPart {
 
-	public OperationTreeEditPart(DiagramTreeEditPart dep, Operation baseElement) {
+	public MessageTreeEditPart(DiagramTreeEditPart dep, Message baseElement) {
 		super(dep, baseElement);
 	}
 
@@ -26,8 +26,8 @@ public class OperationTreeEditPart extends AbstractGraphicsTreeEditPart {
 		return (BaseElement) getModel();
 	}
 
-	public Operation getOperation() {
-		return (Operation) getModel();
+	public Message getMessage() {
+		return (Message) getModel();
 	}
 	
 	// ======================= overwriteable behaviour ========================
@@ -41,14 +41,15 @@ public class OperationTreeEditPart extends AbstractGraphicsTreeEditPart {
 	}
 
 	@Override
-	protected List<Object> getModelChildren() {
-		List<Object> retList = new ArrayList<Object>();
-		Operation operation = getOperation();
-		if (operation.getInMessageRef()!=null)
-			retList.add(operation.getInMessageRef());
-		if (operation.getOutMessageRef()!=null)
-			retList.add(operation.getOutMessageRef());
-		retList.addAll(operation.getErrorRefs());
-		return retList;
+	protected Image getImage() {
+		Message message = getMessage();
+		if (getParent() instanceof OperationTreeEditPart) {
+			Operation operation = ((OperationTreeEditPart)getParent()).getOperation();
+			if (operation.getInMessageRef()==message)
+				return PropertyUtil.getImage("InMessage");
+			if (operation.getOutMessageRef()==message)
+				return PropertyUtil.getImage("OutMessage");
+		}
+		return super.getImage();
 	}
 }

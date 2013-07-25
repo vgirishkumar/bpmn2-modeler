@@ -58,6 +58,32 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 		ModelUtil.addExtensionAttributeValue(businessObject, extensionValueFeature, value);
 	}
 	
+	protected Object getListItem(EObject object, EStructuralFeature feature, int index) {
+		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		int i = 0;
+		int iGet = -1;
+		FeatureMap fmGet = null;
+		for (EObject o : list) {
+			ExtensionAttributeValue eav = (ExtensionAttributeValue)o;
+			FeatureMap fm = eav.getValue();
+			for (Entry e : fm) {
+				EStructuralFeature sf = e.getEStructuralFeature();
+				if (sf == extensionValueFeature) {
+					if (i==index) {
+						iGet = fm.indexOf(e);
+						fmGet = fm;
+					}
+					++i;
+				}
+			}
+		}
+		if (fmGet!=null) {
+			Entry entry = fmGet.get(iGet);
+			return entry.getValue();
+		}
+		return null;
+	}
+
 	protected Object deleteListItem(EObject object, EStructuralFeature feature, int index) {
 		return removeListItem(object, feature, index);
 	}
@@ -218,4 +244,5 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 		}
 		return contentProvider;
 	}
+	
 }

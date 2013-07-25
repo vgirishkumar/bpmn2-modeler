@@ -231,6 +231,15 @@ public class JbpmModelUtil {
 		
 		return newImport;
 	}
+
+	public static void removeImport(ImportType importType) {
+		Definitions definitions = ModelUtil.getDefinitions(importType);
+		Import imp = Bpmn2Factory.eINSTANCE.createImport();
+		imp.setImportType(ImportUtil.IMPORT_TYPE_JAVA);
+		imp.setLocation(importType.getName());
+		definitions.getImports().add(imp);
+		ImportHandler.removeImport(imp);
+	}
 	
 	/**
 	 * This method compiles a list of all known "data types" (a.k.a. ItemDefinitions) that

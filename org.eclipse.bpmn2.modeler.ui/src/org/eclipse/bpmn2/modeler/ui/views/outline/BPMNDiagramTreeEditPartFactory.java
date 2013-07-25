@@ -15,6 +15,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
@@ -70,6 +71,8 @@ public class BPMNDiagramTreeEditPartFactory implements EditPartFactory {
 				ret = new OperationTreeEditPart(dep, (Operation) model);
 			} else if (model instanceof Group) {
 				ret = new GroupTreeEditPart(dep, (Group) model);
+			} else if (model instanceof Message) {
+				ret = new MessageTreeEditPart(dep, (Message) model);
 			} else if (model instanceof RootElement) {
 				ret = new RootElementTreeEditPart(dep, (RootElement) model);
 			} else if (model instanceof FlowElement) {
