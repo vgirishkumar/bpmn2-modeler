@@ -100,6 +100,8 @@ public interface IConstants {
 	public final String ICON_LINKEVENTDEFINITION = "16/LinkEventDefinition.png";
 	public final String ICON_MANUALTASK = "16/ManualTask.png";
 	public final String ICON_MESSAGE = "16/Message.png";
+	public final String ICON_INMESSAGE = "16/InMessage.png";
+	public final String ICON_OUTMESSAGE = "16/OutMessage.png";
 	public final String ICON_MESSAGEEVENTDEFINITION = "16/MessageEventDefinition.png";
 	public final String ICON_MESSAGEFLOW = "16/MessageFlow.png";
 	public final String ICON_OPERATION = "16/Operation.png";

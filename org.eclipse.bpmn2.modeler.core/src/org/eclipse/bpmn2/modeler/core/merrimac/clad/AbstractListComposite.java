@@ -377,22 +377,6 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 				});
 				
-				tableSection.addExpansionListener(new IExpansionListener() {
-	
-					@Override
-					public void expansionStateChanging(ExpansionEvent e) {
-						if (!e.getState() && detailSection!=null) {
-							detailSection.setVisible(false);
-						}
-					}
-	
-					@Override
-					public void expansionStateChanged(ExpansionEvent e) {
-						preferenceStore.setValue(prefName, e.getState());
-						redrawPage();
-					}
-				});
-			
 				sashForm.setWeights(new int[] { 50, 50 });
 			}					
 			else
@@ -401,6 +385,22 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		else {
 			tableSection = createListSection(sashForm,label);
 		}
+		
+		tableSection.addExpansionListener(new IExpansionListener() {
+			
+			@Override
+			public void expansionStateChanging(ExpansionEvent e) {
+				if (!e.getState() && detailSection!=null) {
+					detailSection.setVisible(false);
+				}
+			}
+
+			@Override
+			public void expansionStateChanged(ExpansionEvent e) {
+				preferenceStore.setValue(prefName, e.getState());
+				redrawPage();
+			}
+		});
 		
 		////////////////////////////////////////////////////////////
 		// Create table viewer and cell editors
@@ -748,7 +748,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	public void notifyChanged(Notification notification) {
 		EList<EObject> table = (EList<EObject>)businessObject.eGet(feature);
 		Object n = notification.getNotifier();
-		if (table.contains(n)) {
+		// if the table contains the notifier, or if this notification is coming from
+		// AbstractDetailComposite.refresh(), then set the new input into the table
+		if (table.contains(n) || notification.getEventType() == -1) {
 			tableViewer.setInput(table);
 			return; // quick exit before the exhaustive search that follows
 		}

@@ -579,7 +579,9 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				}
 				catch (Exception e) {
 				}
-				Notification n = new ENotificationImpl(null, Notification.SET, -1, 0, 0);
+				// Send a notification to all listeners about this refresh event.
+				// This will cause all children to be refreshed when a property tab switch happens.
+				Notification n = new ENotificationImpl(null, -1, -1, 0, 0);
 				getAllChildWidgets(parent, kids);
 				for (Control c : kids) {
 					INotifyChangedListener listener = (INotifyChangedListener)c.getData(

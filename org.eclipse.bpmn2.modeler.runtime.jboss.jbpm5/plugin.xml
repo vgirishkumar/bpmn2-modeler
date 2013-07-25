@@ -316,6 +316,13 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
 		</propertyExtension>
 		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.ItemDefinition"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ItemDefinition"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmItemDefinitionPropertiesAdapter">
+		</propertyExtension>
+		
 <!-- Graphiti Feature Container Overrides -->
 		
 		<featureContainer

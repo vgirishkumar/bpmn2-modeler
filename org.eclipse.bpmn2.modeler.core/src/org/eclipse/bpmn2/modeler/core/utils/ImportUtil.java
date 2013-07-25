@@ -503,22 +503,37 @@ public class ImportUtil {
 				}
 			}
 			else if (IMPORT_TYPE_JAVA.equals(type)) {
+				List<Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
+				for (Interface intf : list) {
+					Object ref = intf.getImplementationRef();
+					if (ref instanceof EObject) {
+						URI uri = EcoreUtil.getURI((EObject) ref);
+						String uriString = uri.trimFragment().toString();
+						if (loc.equals(uriString))
+							deleteInterface(definitions, intf);
+					}
+				}
+
+				// If the imported Java type did not create an interface, it may still have
+				// created some ItemDefinitions which need to be deleted 
 				String className = imp.getLocation();
 				boolean deleted = false;
-		        String filename = definitions.eResource().getURI().trimFragment().toPlatformString(true);
-		        if (filename!=null) {
-		        IJavaProject project = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().findMember(filename).getProject());
-				if (project != null) {
-					try {
-                        IType clazz = project.findType(className);
-                        if (clazz!=null) {
-                        	deleteItemDefinition(definitions, imp, clazz);
-                        	deleted = true;
-                        }
-                    } catch (JavaModelException e) {
-                    }
+				String filename = definitions.eResource().getURI().trimFragment().toPlatformString(true);
+				if (filename != null) {
+					IJavaProject project = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot()
+							.findMember(filename).getProject());
+					if (project != null) {
+						try {
+							IType clazz = project.findType(className);
+							if (clazz != null) {
+								deleteItemDefinition(definitions, imp, clazz);
+								deleted = true;
+							}
+						}
+						catch (JavaModelException e) {
+						}
+					}
 				}
-		        }
 				if (!deleted)
 					deleteItemDefinition(definitions, imp, className);
 			}
