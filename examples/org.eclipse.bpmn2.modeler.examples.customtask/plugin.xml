@@ -133,7 +133,6 @@
             class="default"
             features="value"
             label="My Event Definition"
-			type="org.eclipse.bpmn2.modeler.examples.customtask.MyEventDefinition"
             runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime">
       </propertyTab>
 		
