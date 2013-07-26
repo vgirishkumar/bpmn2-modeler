@@ -61,7 +61,6 @@ public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFea
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(event);
 		int size = eventDefinitions.size();
 		
-		GraphicsUtil.deleteEventShape(container);
 		if (size!=0) {
 			EventDefinition eventDefinition = eventDefinitions.get(0);
 
@@ -96,7 +95,9 @@ public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFea
 				upateFeature.update(context);
 			}
 		}
-		
+		else {
+			GraphicsUtil.deleteEventShape(container);
+		}
 		
 	}
 
