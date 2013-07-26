@@ -15,18 +15,19 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.emf.transaction.RollbackException;
+import org.eclipse.emf.transaction.Transaction;
+import org.eclipse.emf.transaction.impl.InternalTransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -44,7 +45,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 	protected EObject object;
 	protected boolean cancel = false;
 	protected boolean abortOnCancel = true;
-
+	protected Transaction transaction;
 	protected Composite dialogContent;
 	
 	public AbstractObjectEditingDialog(DiagramEditor editor, EObject object) {
@@ -86,6 +87,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		
 		form.setContent(body);
 		getShell().pack();
+        initializeTransaction();
 	}
 	
 	abstract protected Composite createDialogContent(Composite parent);
@@ -149,37 +151,6 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		addControlListener();
 		aboutToOpen();
 
-		final int result[] = new int[1];
-		final String cancelMsg = getShell().getText()+" Dialog canceled by user";
-		final TransactionalEditingDomainImpl domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
-		if (domain!=null && domain.getActiveTransaction()==null) {
-			domain.getCommandStack().execute(new RecordingCommand(domain) {
-				@Override
-				protected void doExecute() {
-					result[0] = open(domain);
-					if (result[0]!=Window.OK) {
-						if (isAbortOnCancel()) {
-							throw new OperationCanceledException(cancelMsg);
-						}
-					}
-				}
-			});
-		}
-		else {
-			result[0] = open(domain);
-			if (result[0]!=Window.OK) {
-				if (isAbortOnCancel()) {
-					throw new OperationCanceledException(cancelMsg);
-//					if (domain!=null && domain.getActiveTransaction()!=null)
-//						domain.getActiveTransaction().rollback();//.abort(new Status(IStatus.INFO, Activator.PLUGIN_ID, cancelMsg));
-				}
-			}
-		}
-		
-		return result[0];
-	}
-	
-	protected int open(TransactionalEditingDomain domain) {
 		return super.open();
 	}
 	
@@ -205,13 +176,49 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 
 	@Override
 	protected void cancelPressed() {
+		cancel = true;
 		dialogContent.dispose();
 		super.cancelPressed();
 	}
 	
 	@Override
 	protected void okPressed() {
+		cancel = false;
 		dialogContent.dispose();
 		super.okPressed();
+	}
+
+	public boolean hasDoneChanges() {
+		return transaction==null || !transaction.getChangeDescription().isEmpty();
+	}
+	
+	private void initializeTransaction() {
+		try {
+			final InternalTransactionalEditingDomain transactionalDomain = (InternalTransactionalEditingDomain) editor
+					.getEditingDomain();
+			transaction = transactionalDomain.startTransaction(false, null);
+			getShell().addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent event) {
+					if (transaction.isActive()) {
+						if (cancel) {
+							transaction.rollback();
+						}
+						else {
+							try {
+								transaction.commit();
+							}
+							catch (RollbackException e) {
+								ErrorDialog.openError(getShell(), "Error Commiting Model Changes",
+										"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
+												Activator.PLUGIN_ID, e.getMessage(), e));
+							}
+						}
+					}
+				}
+			});
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

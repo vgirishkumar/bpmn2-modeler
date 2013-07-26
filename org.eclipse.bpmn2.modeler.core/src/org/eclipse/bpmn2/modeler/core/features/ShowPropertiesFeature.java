@@ -22,9 +22,12 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.window.Window;
 
 public class ShowPropertiesFeature extends AbstractCustomFeature {
 
+	protected boolean changesDone = false;
+	
 	public ShowPropertiesFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -63,7 +66,15 @@ public class ShowPropertiesFeature extends AbstractCustomFeature {
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
 		ObjectEditingDialog dialog =
 				new ObjectEditingDialog(editor, businessObject);
-		dialog.open();
+		if (dialog.open() == Window.OK)
+			changesDone = dialog.hasDoneChanges();
+		else
+			changesDone = false;
+	}
+
+	@Override
+	public boolean hasDoneChanges() {
+		return changesDone;
 	}
 
 	@Override
