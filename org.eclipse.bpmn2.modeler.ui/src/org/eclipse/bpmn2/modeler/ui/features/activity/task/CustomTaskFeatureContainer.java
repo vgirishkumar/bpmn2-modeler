@@ -303,7 +303,8 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		public PictogramElement add(IAddContext context) {
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
-			Graphiti.getPeService().setPropertyValue(pe,CUSTOM_TASK_ID,getId());
+			if (pe!=null)
+				Graphiti.getPeService().setPropertyValue(pe,CUSTOM_TASK_ID,getId());
 			
 			// add an icon to the top-left corner if applicable, and if the implementing
 			// addFeatureDelegate hasn't already done so.
