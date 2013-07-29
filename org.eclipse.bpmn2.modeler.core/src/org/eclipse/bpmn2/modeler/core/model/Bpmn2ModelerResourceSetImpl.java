@@ -56,7 +56,8 @@ import org.eclipse.ui.progress.IProgressService;
 public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IResourceChangeListener {
 	// this ID identifies the BPMN file content type
 	public static final String BPMN2_CONTENT_TYPE = "org.eclipse.bpmn2.content-type.xml"; //$NON-NLS-1$
-	 
+	public static final String OPTION_PROGRESS_MONITOR = "PROGRESS_MONITOR";
+	
 	private String connectionTimeout;
 	private String readTimeout;
 
@@ -327,17 +328,30 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 	}
 
 	protected void demandLoadHelper(final Resource resource) {
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IProgressService ps = wb.getProgressService();
 		try {
 			setDefaultTimeoutProperties();
-			ps.busyCursorWhile(new IRunnableWithProgress() {
-				public void run(IProgressMonitor pm) {
-					String taskName = "Loading Resource " + resource.getURI();
-					pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
-					Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
-				}
-			});
+
+			// If there is a Progress Monitor in the ResourceSet load options
+			// use it instead of creating our own - this happens if we are being
+			// called from the background Project Validation builder thread.
+			Map<Object,Object> options = resource.getResourceSet().getLoadOptions();
+			Object o = options.get(Bpmn2ModelerResourceSetImpl.OPTION_PROGRESS_MONITOR);
+			if (o instanceof IProgressMonitor) {
+				IProgressMonitor pm = (IProgressMonitor)o;
+				String taskName = "Loading Resource " + resource.getURI();
+				pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
+				Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+			}
+			else {
+				IProgressService ps = PlatformUI.getWorkbench().getProgressService();
+				ps.busyCursorWhile(new IRunnableWithProgress() {
+					public void run(IProgressMonitor pm) {
+						String taskName = "Loading Resource " + resource.getURI();
+						pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
+						Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+					}
+				});
+			}
 		}
 		catch (final Exception e) {
 			System.out.println(e);

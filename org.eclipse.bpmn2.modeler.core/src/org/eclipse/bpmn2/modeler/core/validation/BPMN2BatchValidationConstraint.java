@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.core.validation;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
@@ -19,6 +20,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
@@ -34,13 +36,16 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.GatewayDirection;
+import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InclusiveGateway;
+import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
@@ -49,7 +54,6 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.AbstractModelConstraint;
@@ -78,9 +82,6 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 		
 		// In the case of batch mode.
 		if (eType == EMFEventType.NULL) {
-			if (eObj instanceof BPMNDiagram) {
-				return validateDiagram(ctx, (BPMNDiagram) eObj);
-			}
 			if (eObj instanceof Definitions) {
 				return validateDefinitions(ctx, (Definitions) eObj);
 			}
@@ -93,95 +94,115 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
-	private IStatus validateDiagram(IValidationContext ctx, BPMNDiagram obj) {
-		Definitions defs = (Definitions) obj.eContainer();
-		return validateDefinitions(ctx, defs);
-	}
-
 	private IStatus validateDefinitions(IValidationContext ctx, Definitions def) {
-		List<RootElement> rootElements = def.getRootElements();
-		for (RootElement root : rootElements) {
-			if (root instanceof Process) {
-				Process process = (Process) root;
-
-				if (warnings) {
-					// report warnings only
-					boolean foundStartEvent = false;
-					boolean foundEndEvent = false;
-					List<FlowElement> flowElements = process.getFlowElements();
-					for (FlowElement fe : flowElements) {
-						if (fe instanceof StartEvent) {
-							foundStartEvent = true;
-						}
-						if (fe instanceof EndEvent) {
-							foundEndEvent = true;
-						}
-					}
-					if (!foundStartEvent) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Process has no Start Event");
-					}
-					if (!foundEndEvent) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Process has no End Event");
-					}
-				}
-				else {
-					// report errors only
-					if (isEmpty(process.getName())) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Process has no name");
-					}
-				}
+		if (def.getTargetNamespace()==null || def.getTargetNamespace().isEmpty()) {
+			if (warnings) {
 			}
-			else if (root instanceof Error) {
-				if (warnings) {
-					if (((Error)root).getStructureRef()==null) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Error has no type definition");
-					}
-				}
-			}
-			else if (root instanceof Escalation) {
-				if (warnings) {
-					if (((Escalation)root).getStructureRef()==null) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Escalation has no type definition");
-					}
-				}
-			}
-			else if (root instanceof Message) {
-				if (warnings) {
-					if (((Message)root).getItemRef()==null) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Message has no type definition");
-					}
-				}
-			}
-			else if (root instanceof Signal) {
-				if (warnings) {
-					if (((Signal)root).getStructureRef()==null) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Signal has no type definition");
-					}
-				}
-			}
-			else if (root instanceof ItemDefinition) {
-				if (!warnings) {
-					if (((ItemDefinition)root).getStructureRef()==null) {
-						ctx.addResult(root);
-						return ctx.createFailureStatus("Item Definition has no structure");
-					}
-				}
-			}
+			else {
+				ctx.addResult(def);
+				return ctx.createFailureStatus("No targetNamespace defined");
+			}			
 		}
+		
 		return ctx.createSuccessStatus();
 	}
 
-	private IStatus validateBaseElement(IValidationContext ctx, BaseElement fe) {
+	private IStatus validateBaseElement(IValidationContext ctx, BaseElement be) {
 
-		if (fe instanceof StartEvent) {
-			StartEvent se = (StartEvent) fe;
+		if (be instanceof Process) {
+			Process process = (Process) be;
+
+			if (warnings) {
+				// report warnings only
+				boolean foundStartEvent = false;
+				boolean foundEndEvent = false;
+				List<FlowElement> flowElements = process.getFlowElements();
+				for (FlowElement fe : flowElements) {
+					if (fe instanceof StartEvent) {
+						foundStartEvent = true;
+					}
+					if (fe instanceof EndEvent) {
+						foundEndEvent = true;
+					}
+				}
+				if (!foundStartEvent) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Process has no Start Event");
+				}
+				if (!foundEndEvent) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Process has no End Event");
+				}
+				if (isEmpty(process.getName())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Process has no name");
+				}
+			}
+			else {
+				// report errors only
+			}
+		}
+		else if (be instanceof Import) {
+			Import imp = (Import)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(imp.getLocation())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Import has no location");
+				}
+				if (isEmpty(imp.getNamespace())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Import has no namespace");
+				}
+				if (isEmpty(imp.getImportType())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Import has no import type");
+				}
+			}
+		}
+		else if (be instanceof Error) {
+			if (warnings) {
+				if (((Error)be).getStructureRef()==null) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Error has no type definition");
+				}
+			}
+		}
+		else if (be instanceof Escalation) {
+			if (warnings) {
+				if (((Escalation)be).getStructureRef()==null) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Escalation has no type definition");
+				}
+			}
+		}
+		else if (be instanceof Message) {
+			if (warnings) {
+				if (((Message)be).getItemRef()==null) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Message has no type definition");
+				}
+			}
+		}
+		else if (be instanceof Signal) {
+			if (warnings) {
+				if (((Signal)be).getStructureRef()==null) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Signal has no type definition");
+				}
+			}
+		}
+		else if (be instanceof ItemDefinition) {
+			if (!warnings) {
+				if (((ItemDefinition)be).getStructureRef()==null) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Item Definition has no structure");
+				}
+			}
+		}
+		else if (be instanceof StartEvent) {
+			StartEvent se = (StartEvent) be;
 			
 			if (!warnings) {
 				if (se.getOutgoing() == null || se.getOutgoing().size() < 1) {
@@ -189,8 +210,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof EndEvent) {
-			EndEvent ee = (EndEvent) fe;
+		else if (be instanceof EndEvent) {
+			EndEvent ee = (EndEvent) be;
 			
 			if (!warnings) {
 				if (ee.getIncoming() == null || ee.getIncoming().size() < 1) {
@@ -198,8 +219,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof ScriptTask) {
-			ScriptTask st = (ScriptTask) fe;
+		else if (be instanceof ScriptTask) {
+			ScriptTask st = (ScriptTask) be;
 			
 			if (warnings) {
 				if (isEmpty(st.getScript())) {
@@ -210,8 +231,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof SendTask) {
-			SendTask st = (SendTask) fe;
+		else if (be instanceof SendTask) {
+			SendTask st = (SendTask) be;
 
 			if (!warnings) {
 				if (st.getOperationRef() == null) {
@@ -222,8 +243,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof CatchEvent) {
-			CatchEvent event = (CatchEvent) fe;
+		else if (be instanceof CatchEvent) {
+			CatchEvent event = (CatchEvent) be;
 
 			if (!warnings) {
 				List<EventDefinition> eventdefs = event.getEventDefinitions();
@@ -270,8 +291,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof ThrowEvent) {
-			ThrowEvent event = (ThrowEvent) fe;
+		else if (be instanceof ThrowEvent) {
+			ThrowEvent event = (ThrowEvent) be;
 
 			if (!warnings) {
 				List<EventDefinition> eventdefs = event.getEventDefinitions();
@@ -318,8 +339,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof SequenceFlow) {
-			SequenceFlow sf = (SequenceFlow) fe;
+		else if (be instanceof SequenceFlow) {
+			SequenceFlow sf = (SequenceFlow) be;
 
 			if (!warnings) {
 				if (sf.getSourceRef() == null) {
@@ -330,8 +351,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof Gateway) {
-			Gateway gw = (Gateway) fe;
+		else if (be instanceof Gateway) {
+			Gateway gw = (Gateway) be;
 
 			if (!warnings) {
 				if (gw.getGatewayDirection() == null
@@ -375,8 +396,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof CallActivity) {
-			CallActivity ca = (CallActivity) fe;
+		else if (be instanceof CallActivity) {
+			CallActivity ca = (CallActivity) be;
 
 			if (!warnings) {
 				if (ca.getCalledElementRef() == null) {
@@ -385,8 +406,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
-		else if (fe instanceof DataObject) {
-			DataObject dao = (DataObject) fe;
+		else if (be instanceof DataObject) {
+			DataObject dao = (DataObject) be;
 
 			if (!warnings) {
 				if (dao.getName() == null || dao.getName().length() < 1) {
@@ -394,10 +415,81 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				}
 			}
 		}
+		else if (be instanceof Interface) {
+			Interface iface = (Interface)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(iface.getOperations())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Interface has no Operations");
+				}
+				if (isEmpty(iface.getName())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Import has no name");
+				}
+			}
+		}
+		else if (be instanceof Operation) {
+			Operation op = (Operation)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(op.getInMessageRef())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Operation has no input message");
+				}
+				if (isEmpty(op.getName())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Operation has no name");
+				}
+			}
+		}
+		else if (be instanceof DataAssociation) {
+			DataAssociation assoc = (DataAssociation)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(assoc.getTargetRef())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Data Mapping has no target");
+				}
+			}
+		}
+		else if (be instanceof Assignment) {
+			Assignment assign = (Assignment)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(assign.getFrom())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Assignment has no source");
+				}
+				if (isEmpty(assign.getTo())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("Assignment has no target");
+				}
+			}
+		}
+		else if (be instanceof InputOutputSpecification) {
+			InputOutputSpecification iospec = (InputOutputSpecification)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(iospec.getInputSets())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("I/O Specification has no input sets");
+				}
+				if (isEmpty(iospec.getOutputSets())) {
+					ctx.addResult(be);
+					return ctx.createFailureStatus("I/O Specification has no output sets");
+				}
+			}
+		}
 		
 		
-		if (fe instanceof FlowNode) {
-			return validateFlowNode(ctx, (FlowNode) fe);
+		if (be instanceof FlowNode) {
+			return validateFlowNode(ctx, (FlowNode) be);
 		}
 
 		return ctx.createSuccessStatus();
@@ -427,8 +519,17 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
-	private static boolean isEmpty(String str) {
-		return str == null || str.isEmpty();
+	private static boolean isEmpty(Object object) {
+		if (object instanceof String) {
+			String str = (String) object;
+			return str == null || str.isEmpty();
+		}
+		else if (object instanceof List) {
+			return ((List)object).isEmpty();
+		}
+		else if (object==null)
+			return true;
+		return false;
 	}
 
 	private boolean containsWhiteSpace(String testString) {
