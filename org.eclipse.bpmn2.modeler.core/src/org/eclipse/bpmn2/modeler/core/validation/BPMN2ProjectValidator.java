@@ -11,9 +11,13 @@
 package org.eclipse.bpmn2.modeler.core.validation;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.builder.BPMN2Nature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
@@ -85,9 +89,12 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 			e1.printStackTrace();
 		}
 
-        ResourceSet rs = new Bpmn2ModelerResourceSetImpl();
+    	Bpmn2ModelerResourceSetImpl rs = new Bpmn2ModelerResourceSetImpl();
 		getTargetRuntime().setResourceSet(rs);
 		rs.setURIConverter(new ProxyURIConverterImplExtension());
+    	Map<Object,Object> options = new HashMap<Object,Object>();
+    	options.put(Bpmn2ModelerResourceSetImpl.OPTION_PROGRESS_MONITOR, monitor);
+    	rs.setLoadOptions(options);
 
 		Resource resource = rs.createResource(
                 URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true),
@@ -205,7 +212,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		}
 		
 		if (needValidation) {
-			validate(file, monitor);
+//			validate(file, monitor);
 			return true;
 		}
 		
@@ -239,7 +246,16 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 
         if (status instanceof IConstraintStatus) {
             IConstraintStatus ics = (IConstraintStatus) status;
-            message.setAttribute(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(ics.getTarget()).toString());
+            EObject object = ics.getTarget();
+			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+			if (adapter!=null) {
+				Object lineNumber = adapter.getProperty(ExtendedPropertiesAdapter.LINE_NUMBER);
+				if (lineNumber!=null) {
+					message.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+				}
+			}
+
+            message.setAttribute(EValidator.URI_ATTRIBUTE, EcoreUtil.getURI(object).toString());
             message.setAttribute(MarkerUtil.RULE_ATTRIBUTE, ics.getConstraint().getDescriptor().getId());
             if (ics.getResultLocus().size() > 0) {
                 StringBuffer relatedUris = new StringBuffer();

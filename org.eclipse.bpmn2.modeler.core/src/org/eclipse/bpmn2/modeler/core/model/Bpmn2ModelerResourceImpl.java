@@ -41,6 +41,8 @@ import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -71,6 +73,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -93,6 +96,8 @@ import org.eclipse.wst.wsdl.PortType;
 import org.eclipse.wst.wsdl.WSDLElement;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
 import org.eclipse.xsd.XSDElementDeclaration;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -325,6 +330,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 
 		@Override
+		protected void createObject(EObject peekObject, EStructuralFeature feature) {
+			super.createObject(peekObject, feature);
+			EObject newObject = objects.peekEObject();
+			if (newObject!=null && newObject!=peekObject) {
+				ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(newObject, ExtendedPropertiesAdapter.class);
+				if (adapter!=null) {
+					adapter.setProperty(ExtendedPropertiesAdapter.LINE_NUMBER, getLineNumber());
+				}
+			}
+		}
+
+		@Override
 		protected void handleObjectAttribs(EObject obj) {
 			super.handleObjectAttribs(obj);
 			if (attribs != null) {
@@ -469,7 +486,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	public class Bpmn2ModelerXMLSave extends XMLSaveImpl {
 		protected float minX = Float.MAX_VALUE;
 		protected float minY = Float.MAX_VALUE;
+		protected int lineNum = 1;
+		protected int lineOffset = 0;
 
+		@SuppressWarnings("serial")
 		protected class Bpmn2ModelerXMLString extends XMLString {
 			public Bpmn2ModelerXMLString(String publicId, String systemId) {
 				super(Integer.MAX_VALUE, publicId, systemId, null);
@@ -502,6 +522,21 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					return;
 				super.addAttributeNS(prefix, localName, value);
 			}
+			
+			@Override
+			public void addLine() {
+				++lineNum;
+				super.addLine();
+				lineOffset = getLength();
+			}
+			
+			public int getLineNum() {
+				return lineNum;
+			}
+			
+			public int getColumnNum() {
+				return getLength() - lineOffset + 1;
+			}
 		};
 		
 		public Bpmn2ModelerXMLSave(XMLHelper helper) {
@@ -524,6 +559,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		protected XMLString createXMLString() {
 			return new Bpmn2ModelerXMLString(publicId, systemId);
+		}
+		
+		protected Bpmn2ModelerXMLString getXMLString() {
+			if (doc==null) {
+				createXMLString();
+			}
+			return (Bpmn2ModelerXMLString)doc;
 		}
 		
         @Override
@@ -685,7 +727,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 				}
 			}
-			
+
 			super.saveElement(o, f);
 			
 			if (minX<0 || minY<0) {

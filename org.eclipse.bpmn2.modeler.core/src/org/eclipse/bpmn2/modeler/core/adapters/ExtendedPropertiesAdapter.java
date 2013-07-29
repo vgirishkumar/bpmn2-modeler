@@ -42,6 +42,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	public final static String UI_CAN_SET_NULL = "ui.can.set.null";
 	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice";
 	public static final String PROPERTY_DESCRIPTOR = "property.descriptor";
+	// Line number in XML document where this object is defined
+	public static final String LINE_NUMBER = "line.number";
 	
 	protected Hashtable<
 		EStructuralFeature, // feature ID

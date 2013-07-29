@@ -24,7 +24,7 @@
             <constraint
                   lang="Java"
                   class="org.eclipse.bpmn2.modeler.core.validation.ValidIdConstraint"
-                  severity="CANCEL"
+                  severity="WARNING"
                   mode="Batch"
                   name="Valid IDs"
                   id="org.eclipse.bpmn2.modeler.core.validation.ValidId"
@@ -46,7 +46,7 @@
             </constraint>
             <constraint
 			        lang="OCL"
-			         severity="CANCEL"
+			         severity="ERROR"
 			         mode="Live"
 			         name="StartEventIncoming"
 			         id="org.eclipse.bpmn2.modeler.core.validation.StartEvent.incoming"
@@ -60,7 +60,7 @@
 			</constraint>
 			<constraint
 			        lang="OCL"
-			         severity="CANCEL"
+			         severity="ERROR"
 			         mode="Live"
 			         name="EndEventOutgoing"
 			         id="org.eclipse.bpmn2.modeler.core.validation.EndEvent.outgoing"
@@ -97,7 +97,6 @@
 					statusCode="1">
 				<message>{0}</message>
 				<description>Diagram Validation Errors</description>
-				<target class="BPMNDiagram"/>
 				<target class="Definitions"/>
 				<target class="BaseElement"/>
 			</constraint>
@@ -112,7 +111,6 @@
 					statusCode="1">
 				<message>{0}</message>
 				<description>Diagram Validation Warnings</description>
-				<target class="BPMNDiagram"/>
 				<target class="Definitions"/>
 				<target class="BaseElement"/>
 			</constraint>
