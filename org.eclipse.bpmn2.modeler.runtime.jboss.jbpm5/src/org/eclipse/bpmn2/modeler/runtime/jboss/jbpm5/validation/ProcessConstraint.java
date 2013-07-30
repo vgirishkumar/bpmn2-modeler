@@ -13,7 +13,16 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 import java.util.Iterator;
 
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.validation.AbstractModelConstraint;
@@ -25,6 +34,24 @@ public class ProcessConstraint extends AbstractModelConstraint {
 	public IStatus validate(IValidationContext ctx) {
 		EObject eObj = ctx.getTarget();
 		if (eObj instanceof Process) {
+			URI modelUri = eObj.eResource().getURI();
+			String uriString = modelUri.toPlatformString(true);
+			if (uriString!=null) {
+				IPath fullPath = new Path(uriString);
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fullPath);
+				try {
+					IMarker[] markers = file.findMarkers(BPMN2ProjectValidator.BPMN2_MARKER_ID, true, IResource.DEPTH_ZERO);
+					for (IMarker m : markers) {
+						System.out.println(m);
+					}
+				}
+				catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			
 			Process process = (Process)eObj;
 			
 			String name = null;

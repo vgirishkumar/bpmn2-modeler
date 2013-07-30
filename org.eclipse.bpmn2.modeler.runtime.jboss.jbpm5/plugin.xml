@@ -1161,10 +1161,10 @@
          point="org.eclipse.emf.validation.constraintProviders">
       <category
             name="jBPM Constraints"
-            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5"/>
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory"/>
       <constraintProvider cache="true">
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
-         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5">
+         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
             <constraint
                   lang="Java"
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessConstraint"
@@ -1269,13 +1269,18 @@
          point="org.eclipse.emf.validation.constraintBindings">
       <clientContext
             default="false"
-            id="org.eclipse.bpmn2.modeler.core.validationContext">
-         <selector class="org.eclipse.bpmn2.modeler.core.validation.ValidationDelegateClientSelector"/>
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext">
+         <enablement>
+         	<test
+                property="org.eclipse.bpmn2.modeler.property.targetRuntimeId"
+                value="org.jboss.runtime.jbpm5"/>
+         </enablement>
       </clientContext>
       <binding
-            context="org.eclipse.bpmn2.modeler.core.validationContext"
-            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5"/>
+            context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext"
+            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory"/>
    </extension>
+   
    <extension
          point="org.eclipse.ui.newWizards">
       <category

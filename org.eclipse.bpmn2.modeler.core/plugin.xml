@@ -251,4 +251,14 @@
            value="true">
      </persistent>
   </extension>
+  <extension
+        point="org.eclipse.core.expressions.propertyTesters">
+     <propertyTester
+           class="org.eclipse.bpmn2.modeler.core.validation.ResourcePropertyTester"
+           id="org.eclipse.bpmn2.modeler.core.targetRuntimePropertyTester"
+           namespace="org.eclipse.bpmn2.modeler.property"
+           properties="targetRuntimeId,toolPaletteProfile"
+           type="org.eclipse.emf.ecore.EObject">
+     </propertyTester>
+  </extension>
 </plugin>

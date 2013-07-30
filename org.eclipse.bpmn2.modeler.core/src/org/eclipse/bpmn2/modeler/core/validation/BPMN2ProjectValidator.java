@@ -212,7 +212,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		}
 		
 		if (needValidation) {
-//			validate(file, monitor);
+			// validation will be done by the Project Validation builder
 			return true;
 		}
 		
