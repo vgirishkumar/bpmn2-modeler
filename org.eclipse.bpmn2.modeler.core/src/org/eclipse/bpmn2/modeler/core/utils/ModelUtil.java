@@ -1301,7 +1301,7 @@ public class ModelUtil {
 		boolean valueChanged = (newValue != oldValue);
 		if (newValue!=null && oldValue!=null)
 			valueChanged = !newValue.equals(oldValue);
-		if (!object.eIsSet(feature))
+		if (newValue!=feature.getDefaultValue())
 			valueChanged = true;
 		
 		if (valueChanged) {

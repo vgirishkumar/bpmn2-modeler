@@ -57,7 +57,8 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected ControlDecoration decoration;
 	protected int style;
 	protected Class messages;
-	
+	protected boolean isWidgetUpdating = false;
+
 	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
 		this.object = object;

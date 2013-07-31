@@ -671,8 +671,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	        BPMN2ValidationStatusLoader vsl = new BPMN2ValidationStatusLoader(this);
 	
 	        try {
-	            vsl.load(Arrays.asList(getModelFile().findMarkers(
-	            		BPMN2ProjectValidator.BPMN2_MARKER_ID, true, IResource.DEPTH_ZERO)));
+	            vsl.load(Arrays.asList(getModelFile().findMarkers(null, true, IResource.DEPTH_ZERO)));
 	        } catch (CoreException e) {
 	            Activator.logStatus(e.getStatus());
 	        }
