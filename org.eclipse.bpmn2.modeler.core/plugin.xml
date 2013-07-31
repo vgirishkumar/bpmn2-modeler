@@ -160,7 +160,16 @@
       <clientContext
             default="false"
             id="org.eclipse.bpmn2.modeler.core.validationContext">
-         <selector class="org.eclipse.bpmn2.modeler.core.validation.ValidationDelegateClientSelector"/>
+         <enablement>
+            <or>
+	         	<test
+	                property="org.eclipse.bpmn2.modeler.property.targetRuntimeId"
+	                value="org.eclipse.bpmn2.modeler.runtime.none"/>
+	         	<test
+	                property="org.eclipse.bpmn2.modeler.property.doCoreValidation"
+	                value="true"/>
+            </or>
+         </enablement>
       </clientContext>
       <binding
             context="org.eclipse.bpmn2.modeler.core.validationContext"
@@ -174,7 +183,7 @@
 	</extension>
 
   <extension
-        id="projectValidator"
+        id="org.eclipse.bpmn2.modeler.core.projectValidator"
         name="BPMN 2.0 Project Validator"
         point="org.eclipse.wst.validation.validatorV2">
      <validator
@@ -207,7 +216,7 @@
   
   <extension
         id="org.eclipse.bpmn2.modeler.core.problemMarker"
-        name="BPMN 2.0 Modeler"
+        name="Core BPMN 2.0 Problem"
         point="org.eclipse.core.resources.markers">
      <persistent
            value="true">
@@ -216,6 +225,7 @@
            type="org.eclipse.emf.validation.problem">
      </super>
   </extension>
+  
   <extension
         id="org.eclipse.bpmn2.modeler.core.bpmn2Builder"
         name="BPMN2 Validation Builder"
@@ -257,7 +267,7 @@
            class="org.eclipse.bpmn2.modeler.core.validation.ResourcePropertyTester"
            id="org.eclipse.bpmn2.modeler.core.targetRuntimePropertyTester"
            namespace="org.eclipse.bpmn2.modeler.property"
-           properties="targetRuntimeId,toolPaletteProfile"
+           properties="targetRuntimeId,toolPaletteProfile,doCoreValidation"
            type="org.eclipse.emf.ecore.EObject">
      </propertyTester>
   </extension>

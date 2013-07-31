@@ -1278,8 +1278,21 @@
       </clientContext>
       <binding
             context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext"
-            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory"/>
+            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
+      </binding>
    </extension>
+  
+  <extension
+        id="org.jboss.runtime.jbpm5.problemMarker"
+        name="jBPM Process Problem"
+        point="org.eclipse.core.resources.markers">
+     <persistent
+           value="true">
+     </persistent>
+     <super
+           type="org.eclipse.emf.validation.problem">
+     </super>
+  </extension>
    
    <extension
          point="org.eclipse.ui.newWizards">

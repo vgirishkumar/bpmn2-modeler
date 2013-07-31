@@ -37,6 +37,13 @@ public class ResourcePropertyTester extends PropertyTester {
 					}
 				}
 			}
+			if ("doCoreValidation".equals(property)) {
+				if (prefs!=null) {
+					String value = Boolean.toString( prefs.getDoCoreValidation() );
+					expectedValue = expectedValue.toString();
+					return value.equals(expectedValue);
+				}
+			}
 		}
 		return false;
 	}

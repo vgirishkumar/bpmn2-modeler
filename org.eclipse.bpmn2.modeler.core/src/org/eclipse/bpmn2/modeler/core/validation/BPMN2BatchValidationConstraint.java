@@ -13,10 +13,13 @@ package org.eclipse.bpmn2.modeler.core.validation;
 import java.util.List;
 
 import org.eclipse.bpmn2.Assignment;
+import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
@@ -39,13 +42,16 @@ import org.eclipse.bpmn2.GatewayDirection;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
@@ -54,8 +60,10 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.validation.AbstractModelConstraint;
 import org.eclipse.emf.validation.EMFEventType;
 import org.eclipse.emf.validation.IValidationContext;
@@ -93,7 +101,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 
 		return ctx.createSuccessStatus();
 	}
-
+	
 	private IStatus validateDefinitions(IValidationContext ctx, Definitions def) {
 		if (def.getTargetNamespace()==null || def.getTargetNamespace().isEmpty()) {
 			if (warnings) {
@@ -105,6 +113,20 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 		}
 		
 		return ctx.createSuccessStatus();
+	}
+
+	public IStatus createFailureStatus(IValidationContext ctx, EObject object, Object... messageArgs) {
+		IStatus status = ctx.createFailureStatus(messageArgs);
+		ctx.addResult(object);
+		return status;
+	}
+
+	public IStatus createMissingFeatureStatus(IValidationContext ctx, EObject object, String featureName) {
+		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+		String message = ModelUtil.getLabel(object) + " has no " + ModelUtil.getLabel(object, feature);
+		IStatus status = ctx.createFailureStatus(message);
+		ctx.addResult(object);
+		return status;
 	}
 
 	private IStatus validateBaseElement(IValidationContext ctx, BaseElement be) {
@@ -126,16 +148,13 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 					}
 				}
 				if (!foundStartEvent) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Process has no Start Event");
+					return createFailureStatus(ctx, be, "Process has no Start Event");
 				}
 				if (!foundEndEvent) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Process has no End Event");
+					return createFailureStatus(ctx, be, "Process has no End Event");
 				}
 				if (isEmpty(process.getName())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Process has no name");
+					return createMissingFeatureStatus(ctx,be,"name");
 				}
 			}
 			else {
@@ -143,113 +162,105 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			}
 		}
 		else if (be instanceof Import) {
-			Import imp = (Import)be;
+			Import elem = (Import)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(imp.getLocation())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Import has no location");
+				if (isEmpty(elem.getLocation())) {
+					return createMissingFeatureStatus(ctx,be,"location");
 				}
-				if (isEmpty(imp.getNamespace())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Import has no namespace");
+				if (isEmpty(elem.getNamespace())) {
+					return createMissingFeatureStatus(ctx,be,"namespace");
 				}
-				if (isEmpty(imp.getImportType())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Import has no import type");
+				if (isEmpty(elem.getImportType())) {
+					return createMissingFeatureStatus(ctx,be,"importType");
 				}
 			}
 		}
 		else if (be instanceof Error) {
 			if (warnings) {
 				if (((Error)be).getStructureRef()==null) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Error has no type definition");
+					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof Escalation) {
 			if (warnings) {
 				if (((Escalation)be).getStructureRef()==null) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Escalation has no type definition");
+					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof Message) {
 			if (warnings) {
 				if (((Message)be).getItemRef()==null) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Message has no type definition");
+					return createMissingFeatureStatus(ctx,be,"itemRef");
 				}
 			}
 		}
 		else if (be instanceof Signal) {
 			if (warnings) {
 				if (((Signal)be).getStructureRef()==null) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Signal has no type definition");
+					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof ItemDefinition) {
 			if (!warnings) {
 				if (((ItemDefinition)be).getStructureRef()==null) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Item Definition has no structure");
+					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof StartEvent) {
-			StartEvent se = (StartEvent) be;
+			StartEvent elem = (StartEvent) be;
 			
 			if (!warnings) {
-				if (se.getOutgoing() == null || se.getOutgoing().size() < 1) {
-					return ctx.createFailureStatus("Start Event has no outgoing connections");
+				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
+					return createFailureStatus(ctx,be,"Start Event has no outgoing connections");
 				}
 			}
 		}
 		else if (be instanceof EndEvent) {
-			EndEvent ee = (EndEvent) be;
+			EndEvent elem = (EndEvent) be;
 			
 			if (!warnings) {
-				if (ee.getIncoming() == null || ee.getIncoming().size() < 1) {
-					return ctx.createFailureStatus("End Event has no incoming connections");
+				if (elem.getIncoming() == null || elem.getIncoming().size() < 1) {
+					return createFailureStatus(ctx,be,"End Event has no incoming connections");
 				}
 			}
 		}
 		else if (be instanceof ScriptTask) {
-			ScriptTask st = (ScriptTask) be;
+			ScriptTask elem = (ScriptTask) be;
 			
 			if (warnings) {
-				if (isEmpty(st.getScript())) {
-					return ctx.createFailureStatus("Script Task has no script");
+				if (isEmpty(elem.getScript())) {
+					return createMissingFeatureStatus(ctx,be,"script");
 				}
-				if (isEmpty(st.getScriptFormat())) {
-					return ctx.createFailureStatus("Script Task has no script format");
+				if (isEmpty(elem.getScriptFormat())) {
+					return createMissingFeatureStatus(ctx,be,"scriptFormat");
 				}
 			}
 		}
 		else if (be instanceof SendTask) {
-			SendTask st = (SendTask) be;
+			SendTask elem = (SendTask) be;
 
 			if (!warnings) {
-				if (st.getOperationRef() == null) {
-					return ctx.createFailureStatus("Send Task has no operation");
+				if (elem.getOperationRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"operationRef");
 				}
-				if (st.getMessageRef() == null) {
-					return ctx.createFailureStatus("Send Task has no message");
+				if (elem.getMessageRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"messageRef");
 				}
 			}
 		}
 		else if (be instanceof CatchEvent) {
-			CatchEvent event = (CatchEvent) be;
+			CatchEvent elem = (CatchEvent) be;
 
 			if (!warnings) {
-				List<EventDefinition> eventdefs = event.getEventDefinitions();
+				List<EventDefinition> eventdefs = elem.getEventDefinitions();
 				if (eventdefs.size()==0) {
-					return ctx.createFailureStatus("Catch Event has no event definitions");
+					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
 				}
 				
 				for (EventDefinition ed : eventdefs) {
@@ -259,45 +270,45 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 								&& ted.getTimeDuration() == null
 								&& ted.getTimeCycle() == null
 						) {
-							return ctx.createFailureStatus("Timer Event has no timer definition");
+							return createFailureStatus(ctx,be,"Timer Event has no Timer definition");
 						}
 					} else if (ed instanceof SignalEventDefinition) {
 						if (((SignalEventDefinition) ed).getSignalRef() == null) {
-							return ctx.createFailureStatus("Signal Event has no signal definition");
+							return createFailureStatus(ctx,be,"Signal Event has no Signal definition");
 						}
 					} else if (ed instanceof ErrorEventDefinition) {
 						if (((ErrorEventDefinition) ed).getErrorRef() == null) {
-							return ctx.createFailureStatus("Error Event has no error definition");
+							return createFailureStatus(ctx,be,"Error Event has no Error definition");
 						}
 					} else if (ed instanceof ConditionalEventDefinition) {
 						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
 								.getCondition();
 						if (conditionalExp.getBody() == null) {
-							return ctx.createFailureStatus("Conditional Event has no condition expression");
+							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
 						if (((EscalationEventDefinition) ed).getEscalationRef() == null) {
-							return ctx.createFailureStatus("Escalation Event has no escalation definition");
+							return createFailureStatus(ctx,be,"Escalation Event has no Escalation definition");
 						}
 					} else if (ed instanceof MessageEventDefinition) {
 						if (((MessageEventDefinition) ed).getMessageRef() == null) {
-							return ctx.createFailureStatus("Message Event has no message definition");
+							return createFailureStatus(ctx,be,"Message Event has no Message definition");
 						}
 					} else if (ed instanceof CompensateEventDefinition) {
 						if (((CompensateEventDefinition) ed).getActivityRef() == null) {
-							return ctx.createFailureStatus("Compensate Event has no activity definition");
+							return createFailureStatus(ctx,be,"Compensate Event has no Activity definition");
 						}
 					}
 				}
 			}
 		}
 		else if (be instanceof ThrowEvent) {
-			ThrowEvent event = (ThrowEvent) be;
+			ThrowEvent elem = (ThrowEvent) be;
 
 			if (!warnings) {
-				List<EventDefinition> eventdefs = event.getEventDefinitions();
+				List<EventDefinition> eventdefs = elem.getEventDefinitions();
 				if (eventdefs.size()==0) {
-					return ctx.createFailureStatus("Throw Event has no event definitions");
+					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
 				}
 
 				for (EventDefinition ed : eventdefs) {
@@ -307,182 +318,212 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 								&& ted.getTimeDuration() == null
 								&& ted.getTimeCycle() == null
 						) {
-							return ctx.createFailureStatus("Timer Event has no timer definition");
+							return createFailureStatus(ctx,be,"Timer Event has no Timer definition");
 						}
 					} else if (ed instanceof SignalEventDefinition) {
 						if (((SignalEventDefinition) ed).getSignalRef() == null) {
-							return ctx.createFailureStatus("Signal Event has no signal definition");
+							return createFailureStatus(ctx,be,"Signal Event has no Signal definition");
 						}
 					} else if (ed instanceof ErrorEventDefinition) {
 						if (((ErrorEventDefinition) ed).getErrorRef() == null) {
-							return ctx.createFailureStatus("Error Event has no error definition");
+							return createFailureStatus(ctx,be,"Error Event has no Error definition");
 						}
 					} else if (ed instanceof ConditionalEventDefinition) {
 						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
 								.getCondition();
 						if (conditionalExp.getBody() == null) {
-							return ctx.createFailureStatus("Conditional Event has no condition expression");
+							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
 						if (((EscalationEventDefinition) ed).getEscalationRef() == null) {
-							return ctx.createFailureStatus("Escalation Event has no conditional escalation definition");
+							return createFailureStatus(ctx,be,"Escalation Event has no conditional Escalation definition");
 						}
 					} else if (ed instanceof MessageEventDefinition) {
 						if (((MessageEventDefinition) ed).getMessageRef() == null) {
-							return ctx.createFailureStatus("Message Event has no conditional message definition");
+							return createFailureStatus(ctx,be,"Message Event has no Message definition");
 						}
 					} else if (ed instanceof CompensateEventDefinition) {
 						if (((CompensateEventDefinition) ed).getActivityRef() == null) {
-							return ctx.createFailureStatus("Compensate Event has no conditional activity definition");
+							return createFailureStatus(ctx,be,"Compensate Event has no Activity definition");
 						}
 					}
 				}
 			}
 		}
 		else if (be instanceof SequenceFlow) {
-			SequenceFlow sf = (SequenceFlow) be;
+			SequenceFlow elem = (SequenceFlow) be;
 
 			if (!warnings) {
-				if (sf.getSourceRef() == null) {
-					return ctx.createFailureStatus("Sequence Flow is not connected to a source");
+				if (elem.getSourceRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"sourceRef");
 				}
-				if (sf.getTargetRef() == null) {
-					return ctx.createFailureStatus("Sequence Flow is not connected to a target");
+				if (elem.getTargetRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"targetRef");
+				}
+			}
+		}
+		else if (be instanceof Association) {
+			Association elem = (Association) be;
+
+			if (!warnings) {
+				if (elem.getSourceRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"sourceRef");
+				}
+				if (elem.getTargetRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"targetRef");
 				}
 			}
 		}
 		else if (be instanceof Gateway) {
-			Gateway gw = (Gateway) be;
+			Gateway elem = (Gateway) be;
 
 			if (!warnings) {
-				if (gw.getGatewayDirection() == null
-						|| gw.getGatewayDirection().getValue() == GatewayDirection.UNSPECIFIED.getValue()) {
+				if (elem.getGatewayDirection() == null
+						|| elem.getGatewayDirection().getValue() == GatewayDirection.UNSPECIFIED.getValue()) {
 					ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
-					return ctx.createFailureStatus("Gateway does not specify a valid direction");
+					return createMissingFeatureStatus(ctx,be,"gatewayDirection");
 				}
-				if (gw instanceof ExclusiveGateway) {
-					if (gw.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& gw.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return ctx.createFailureStatus(
+				if (elem instanceof ExclusiveGateway) {
+					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
+							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+						return createFailureStatus(ctx,be,
 								"Invalid Gateway direction for Exclusing Gateway. It should be 'Converging' or 'Diverging'");
 					}
 				}
-				if (gw instanceof EventBasedGateway) {
-					if (gw.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()) {
-						return ctx.createFailureStatus(
+				if (elem instanceof EventBasedGateway) {
+					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()) {
+						return createFailureStatus(ctx,be,
 								"Invalid Gateway direction for EventBased Gateway. It should be 'Diverging'");
 					}
 				}
-				if (gw instanceof ParallelGateway) {
-					if (gw.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& gw.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return ctx.createFailureStatus(
+				if (elem instanceof ParallelGateway) {
+					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
+							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+						return createFailureStatus(ctx,be,
 								"Invalid Gateway direction for Parallel Gateway. It should be 'Converging' or 'Diverging'");
 					}
 				}
-				if (gw instanceof InclusiveGateway) {
-					if (gw.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& gw.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return ctx.createFailureStatus(
+				if (elem instanceof InclusiveGateway) {
+					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
+							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+						return createFailureStatus(ctx,be,
 								"Invalid Gateway direction for Inclusive Gateway. It should be 'Converging' or 'Diverging'");
 					}
 				}
-				if (gw instanceof ComplexGateway) {
-					if (gw.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& gw.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return ctx.createFailureStatus(
+				if (elem instanceof ComplexGateway) {
+					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
+							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+						return createFailureStatus(ctx,be,
 								"Invalid Gateway direction for Complex Gateway. It should be 'Converging' or 'Diverging'");
 					}
 				}
 			}
 		}
 		else if (be instanceof CallActivity) {
-			CallActivity ca = (CallActivity) be;
+			CallActivity elem = (CallActivity) be;
 
 			if (!warnings) {
-				if (ca.getCalledElementRef() == null) {
-					return ctx.createFailureStatus(
-							"Reusable Subprocess has no called element specified");
+				if (elem.getCalledElementRef() == null) {
+					return createMissingFeatureStatus(ctx,be,"calledElementRef");
 				}
 			}
 		}
 		else if (be instanceof DataObject) {
-			DataObject dao = (DataObject) be;
+			DataObject elem = (DataObject) be;
 
 			if (!warnings) {
-				if (dao.getName() == null || dao.getName().length() < 1) {
-					return ctx.createFailureStatus("Data Object has no name");
+				if (elem.getName() == null || elem.getName().length() < 1) {
+					return createMissingFeatureStatus(ctx,be,"name");
 				}
 			}
 		}
 		else if (be instanceof Interface) {
-			Interface iface = (Interface)be;
+			Interface elem = (Interface)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(iface.getOperations())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Interface has no Operations");
+				if (isEmpty(elem.getOperations())) {
+					return createMissingFeatureStatus(ctx,be,"operations");
 				}
-				if (isEmpty(iface.getName())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Import has no name");
+				if (isEmpty(elem.getName())) {
+					return createMissingFeatureStatus(ctx,be,"name");
 				}
 			}
 		}
 		else if (be instanceof Operation) {
-			Operation op = (Operation)be;
+			Operation elem = (Operation)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(op.getInMessageRef())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Operation has no input message");
+				if (isEmpty(elem.getInMessageRef())) {
+					return createMissingFeatureStatus(ctx,be,"inMessageRef");
 				}
-				if (isEmpty(op.getName())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Operation has no name");
+				if (isEmpty(elem.getName())) {
+					return createMissingFeatureStatus(ctx,be,"name");
 				}
 			}
 		}
 		else if (be instanceof DataAssociation) {
-			DataAssociation assoc = (DataAssociation)be;
+			DataAssociation elem = (DataAssociation)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(assoc.getTargetRef())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Data Mapping has no target");
+				if (isEmpty(elem.getTargetRef())) {
+					return createMissingFeatureStatus(ctx,be,"targetRef");
 				}
 			}
 		}
 		else if (be instanceof Assignment) {
-			Assignment assign = (Assignment)be;
+			Assignment elem = (Assignment)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(assign.getFrom())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Assignment has no source");
+				if (isEmpty(elem.getFrom())) {
+					return createMissingFeatureStatus(ctx,be,"from");
 				}
-				if (isEmpty(assign.getTo())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("Assignment has no target");
+				if (isEmpty(elem.getTo())) {
+					return createMissingFeatureStatus(ctx,be,"to");
 				}
 			}
 		}
 		else if (be instanceof InputOutputSpecification) {
-			InputOutputSpecification iospec = (InputOutputSpecification)be;
+			InputOutputSpecification elem = (InputOutputSpecification)be;
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(iospec.getInputSets())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("I/O Specification has no input sets");
+				if (isEmpty(elem.getInputSets())) {
+					return createMissingFeatureStatus(ctx,be,"inputSets");
 				}
-				if (isEmpty(iospec.getOutputSets())) {
-					ctx.addResult(be);
-					return ctx.createFailureStatus("I/O Specification has no output sets");
+				if (isEmpty(elem.getOutputSets())) {
+					return createMissingFeatureStatus(ctx,be,"outputSets");
+				}
+			}
+		}
+		else if (be instanceof ChoreographyActivity) {
+			ChoreographyActivity elem = (ChoreographyActivity)be;
+			if (elem.getParticipantRefs().size()<2) {
+				return createFailureStatus(ctx,be,"ChoreographyActivity must have at least two Participants");
+			}
+			if (elem.getInitiatingParticipantRef()==null) {
+				return createFailureStatus(ctx,be,"ChoreographyActivity has no initiating Participant");
+			}
+		}
+		else if (be instanceof Resource) {
+			Resource elem = (Resource)be;
+			if (isEmpty(elem.getName())) {
+				return createMissingFeatureStatus(ctx,be,"name");
+			}
+		}
+		else if (be instanceof ChoreographyTask) {
+			ChoreographyTask elem = (ChoreographyTask)be;
+			for (MessageFlow mf : elem.getMessageFlowRef()) {
+				InteractionNode in = mf.getSourceRef();
+				if (!elem.getParticipantRefs().contains(in)) {
+					createFailureStatus(ctx,be,"Message Flow source is not a Participant of the Choreography Task");
+				}
+				in = mf.getTargetRef();
+				if (!elem.getParticipantRefs().contains(in)) {
+					createFailureStatus(ctx,be,"Message Flow target is not a Participant of the Choreography Task");
 				}
 			}
 		}
@@ -506,12 +547,12 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			
 			if (needOutgoing) {
 				if ((fn.getOutgoing() == null || fn.getOutgoing().size() < 1)) {
-					return ctx.createFailureStatus("Node has no outgoing connections");
+					return createMissingFeatureStatus(ctx,fn,"outgoing");
 				}
 			}
 			if (needIncoming) {
 				if ((fn.getIncoming() == null || fn.getIncoming().size() < 1)) {
-					return ctx.createFailureStatus("Node has no incoming connections");
+					return createMissingFeatureStatus(ctx,fn,"incoming");
 				}
 			}
 		}
