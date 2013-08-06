@@ -87,8 +87,6 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	final static IGaService gaService = Graphiti.getGaService();
 
 	public Object getApplyObject(IContext context) {
-		// FIXME: move the Participant Band Message delete functionality into a Custom Feature
-		// the same way the "Add Message" is handled currently
 		Object object = super.getApplyObject(context);
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext) context).getPictogramElement();
@@ -97,13 +95,6 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			MessageFlow mf = getMessageFlow(pe);
 			if (mf!=null)
 				return mf;
-		}
-		if (context instanceof IAddConnectionContext)
-			return object;
-		if (context instanceof IAddContext) {
-			PictogramElement pe = ((IAddContext)context).getTargetConnection();
-			MessageFlow mf = getMessageFlow(pe);
-			return mf;
 		}
 		return object;
 	}
