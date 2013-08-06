@@ -84,7 +84,7 @@ public class BusinessObjectUtil {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends EObject> T getFirstElementOfType(PictogramElement elem, Class<T> clazz, boolean searchParents) {
-		if (elem.getLink() == null) {
+		if (elem==null || elem.getLink() == null) {
 			if (searchParents) {
 				while (elem!=null && elem.getLink()==null && elem.eContainer() instanceof PictogramElement)
 					elem = (PictogramElement)elem.eContainer();

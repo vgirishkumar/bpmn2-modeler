@@ -259,13 +259,13 @@ public class DIImport {
 //					feature.layout(context);
 //			}
 //
-//			if (pe instanceof Connection) {
-//				UpdateContext context = new UpdateContext(pe);
-//				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
-//				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
-//					feature.update(context);
-//				}
-//			}
+			else if (pe instanceof Connection) {
+				UpdateContext context = new UpdateContext(pe);
+				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
+				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
+					feature.update(context);
+				}
+			}
 		}
  
 	}

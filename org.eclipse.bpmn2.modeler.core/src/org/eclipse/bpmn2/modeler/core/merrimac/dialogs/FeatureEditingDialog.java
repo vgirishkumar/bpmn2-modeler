@@ -113,20 +113,34 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	}
 	
 	@Override
-	protected void cancelPressed() {
-		super.cancelPressed();
-		if (createNew) {
+	public int open() {
+		int result = super.open();
+		if (result!=Window.OK){
+			undoCreateNewObject();
+		}
+		return result;
+	}
+
+	private void undoCreateNewObject() {
+		if (createNew && newObject!=null) {
 			ModelUtil.unsetID(newObject);
 			final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 			if (domain!=null) {
-				if (domain.getCommandStack().canUndo())
+				if (domain.getCommandStack().canUndo()) {
 					domain.getCommandStack().undo();
+				}
 			}
 			else {
 				EcoreUtil.delete(newObject);
 			}
 		}
 		newObject = null;
+	}
+	
+	@Override
+	protected void cancelPressed() {
+		super.cancelPressed();
+		undoCreateNewObject();
 	}
 	
 	public EObject getNewObject() {

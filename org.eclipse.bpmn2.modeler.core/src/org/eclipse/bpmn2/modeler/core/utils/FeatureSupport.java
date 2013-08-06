@@ -24,13 +24,20 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.MessageFlow;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -41,6 +48,7 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -820,4 +828,59 @@ public class FeatureSupport {
 		return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
 	}
 
+	public static boolean isLabelShape(Shape shape) {
+		return Graphiti.getPeService().getPropertyValue(shape, GraphicsUtil.LABEL_PROPERTY) != null;
+	}
+
+	public static List<EObject> findMessageReferences(Diagram diagram, Message message) {
+		List<EObject> result = new ArrayList<EObject>();
+		Definitions definitions = ModelUtil.getDefinitions(message);
+		TreeIterator<EObject> iter = definitions.eAllContents();
+		while (iter.hasNext()) {
+			EObject o = iter.next();
+			if (o instanceof MessageFlow) {
+				if (((MessageFlow)o).getMessageRef() == message) {
+					result.add(o);
+				}
+			}
+			if (o instanceof MessageEventDefinition) {
+				if (((MessageEventDefinition)o).getMessageRef() == message) {
+					result.add(o);
+				}
+			}
+			if (o instanceof Operation) {
+				if (((Operation)o).getInMessageRef() == message ||
+						((Operation)o).getOutMessageRef() == message) {
+					result.add(o);
+				}
+			}
+			if (o instanceof ReceiveTask) {
+				if (((ReceiveTask)o).getMessageRef() == message) {
+					result.add(o);
+				}
+			}
+			if (o instanceof SendTask) {
+				if (((SendTask)o).getMessageRef() == message) {
+					result.add(o);
+				}
+			}
+			if (o instanceof CorrelationPropertyRetrievalExpression) {
+				if (((CorrelationPropertyRetrievalExpression)o).getMessageRef() == message) {
+					result.add(o);
+				}
+			}
+		}
+
+		if (diagram!=null) {
+			iter = diagram.eResource().getAllContents();
+			while (iter.hasNext()) {
+				EObject o = iter.next();
+				if (o instanceof ContainerShape && !isLabelShape((ContainerShape)o)) {
+					if (BusinessObjectUtil.getFirstBaseElement((ContainerShape)o) == message)
+						result.add(o);
+				}
+			}
+		}
+		return result;
+	}
 }

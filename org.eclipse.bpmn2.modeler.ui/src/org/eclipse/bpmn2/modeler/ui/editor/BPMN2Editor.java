@@ -94,6 +94,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -1107,7 +1108,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					for (int i=index+1; i<container.getChildren().size(); ++i) {
 						PictogramElement sibling = container.getChildren().get(i);
 						if (sibling instanceof ContainerShape &&
-								!GraphicsUtil.isLabelShape((ContainerShape)sibling)) {
+								!FeatureSupport.isLabelShape((ContainerShape)sibling)) {
 							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
 								boolean siblingIsBoundaryEvent = false;
 								if (baseElement instanceof Activity) {
