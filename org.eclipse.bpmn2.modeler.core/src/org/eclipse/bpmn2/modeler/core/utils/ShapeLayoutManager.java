@@ -425,6 +425,6 @@ public class ShapeLayoutManager {
 	}
 	
 	private boolean isChildShape(PictogramElement pe) {
-		return pe instanceof ContainerShape && !GraphicsUtil.isLabelShape((Shape)pe);
+		return pe instanceof ContainerShape && !FeatureSupport.isLabelShape((Shape)pe);
 	}
 }

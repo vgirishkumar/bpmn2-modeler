@@ -26,7 +26,6 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
@@ -251,7 +250,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			super.postMoveShape(context);
 			
 			for (ContainerShape shape : containedShapes) {
-				if (!GraphicsUtil.isLabelShape(shape)) {
+				if (!FeatureSupport.isLabelShape(shape)) {
 					ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
 					int x = loc.getX() + context.getDeltaX();
 					int y = loc.getY() + context.getDeltaY();

@@ -51,6 +51,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LinkEventDefinition;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
@@ -58,6 +59,7 @@ import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.Process;
@@ -94,6 +96,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -1112,12 +1115,14 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					if (ChoreographyUtil.isChoreographyParticipantBand(pe))
 						continue;
 					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
+					if (baseElement instanceof Participant || baseElement instanceof Lane)
+						continue;
 					boolean obscured = false;
 					int index = container.getChildren().indexOf(shape);
 					for (int i=index+1; i<container.getChildren().size(); ++i) {
 						PictogramElement sibling = container.getChildren().get(i);
 						if (sibling instanceof ContainerShape &&
-								!GraphicsUtil.isLabelShape((ContainerShape)sibling)) {
+								!FeatureSupport.isLabelShape((ContainerShape)sibling)) {
 							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
 								boolean siblingIsBoundaryEvent = false;
 								if (baseElement instanceof Activity) {
