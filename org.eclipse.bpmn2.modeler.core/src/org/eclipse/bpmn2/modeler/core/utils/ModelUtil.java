@@ -37,7 +37,6 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
-import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
@@ -47,6 +46,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.INamespaceMap;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.notify.Adapter;
@@ -144,12 +144,12 @@ public class ModelUtil {
 //			System.out.println("The object type "+obj.getClass().getName()+" is not contained in a Resource");
 			return null;
 		}
-		assert(obj!=null);
+		Assert.isTrue(obj!=null);
 		return getKey(resource);
 	}
 	
 	private static Object getKey(Resource res) {
-		assert(res!=null);
+		Assert.isTrue(res!=null);
 		return res.getResourceSet();
 	}
 	

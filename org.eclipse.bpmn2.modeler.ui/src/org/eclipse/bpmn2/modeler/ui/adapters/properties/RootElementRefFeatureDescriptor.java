@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.core.runtime.Assert;
 
 /**
  * @author Bob Brodt
@@ -45,7 +46,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 		super(adapterFactory, object, feature);
 		// I found a couple of instances where this class was used for references that were NOT
 		// RootElements - just check to make sure here...
-		assert RootElement.class.isInstance( feature.eClass().getInstanceClass() );
+		Assert.isTrue( RootElement.class.isAssignableFrom(feature.getEType().getInstanceClass()) );
 	}
 	
 	@Override

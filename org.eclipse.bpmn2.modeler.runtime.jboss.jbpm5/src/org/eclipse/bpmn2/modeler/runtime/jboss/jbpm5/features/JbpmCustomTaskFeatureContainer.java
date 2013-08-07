@@ -62,7 +62,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 	
 	@Override
 	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
-		
+
 		return new TaskFeatureContainer() {
 			@Override
 			public ICreateFeature getCreateFeature(IFeatureProvider fp) {

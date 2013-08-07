@@ -14,7 +14,6 @@
 package org.eclipse.bpmn2.modeler.ui.features;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -22,27 +21,20 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -54,21 +46,15 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.AreaContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
-import org.eclipse.graphiti.features.context.impl.MoveContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
@@ -91,7 +77,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
 	
-	private boolean changesDone = false;;
+	private boolean changesDone = false;
 	
 	// label provider for the popup menu that displays allowable Activity subclasses
 	private static ILabelProvider labelProvider = new ILabelProvider() {
@@ -138,7 +124,20 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		return getTools().size()>0;
+		CreateContext createContext = prepareCreateContext(context);
+		if (createContext==null)
+			return false;
+		
+		List<IToolEntry> tools = getTools();
+		if (tools.size()==0)
+			return false;
+		
+		for (IToolEntry tool : tools) {
+			ICreateFeature feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+			if (!feature.canCreate(createContext))
+				return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -156,36 +155,34 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof FlowNode) {
-				try {
-					ContainerShape oldShape = (ContainerShape)pe;
-					ModelHandler mh = ModelHandler.getInstance(getDiagram());
-					
-					// Let user select the new type of object to append. The selection will
-					// be from a list of subtypes of <code>T</code> as defined by the various
-					// AbstractAppendNodeNodeFeature specializations; for example the class
-					// AppendActivityFeature will construct a popup list of all Activity subclasses
-					// e.g. Task, ScriptTask, SubProcess, etc. 
-					ICreateFeature createFeature = selectNewShape();
-					if (createFeature!=null) {
+				ContainerShape oldShape = (ContainerShape)pe;
+				
+				// Let user select the new type of object to append. The selection will
+				// be from a list of subtypes of <code>T</code> as defined by the various
+				// AbstractAppendNodeNodeFeature specializations; for example the class
+				// AppendActivityFeature will construct a popup list of all Activity subclasses
+				// e.g. Task, ScriptTask, SubProcess, etc. 
+				ICreateFeature createFeature = selectNewShape();
+				if (createFeature!=null) {
+					CreateContext createContext = prepareCreateContext(context);
+
+					if (createFeature.canCreate(createContext)) {
 						// if user made a selection, then create the new shape...
-						ContainerShape newShape = createNewShape(mh, oldShape, createFeature);
+						ContainerShape newShape = createNewShape(oldShape, createFeature, createContext);
 						// ...and connect this shape to the new one with a SequenceFlow...
-						createNewConnection(mh, oldShape, newShape);
+						createNewConnection(oldShape, newShape);
 						
 						// .. then reroute the connection
 						ConnectionFeatureContainer.updateConnections(getFeatureProvider(), newShape);
 
 						changesDone = true;
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
 	}
 	
 	protected ICreateFeature selectNewShape() {
-		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
 		BpmnToolBehaviourFeature toolProvider = getToolProvider();
 		List<IToolEntry> tools = getTools();
 		ICreateFeature feature = null;
@@ -247,10 +244,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 					else if (result instanceof IToolEntry)
 						tool = (IToolEntry)result;
 					
-					if (tool==null)
-						feature = null;
-					else
-						feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+					feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
 				}
 				else
 					feature = null;
@@ -286,7 +280,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		return subtypes;
 	}
 	
-	protected ContainerShape createNewShape(ModelHandler mh, ContainerShape oldShape, ICreateFeature createFeature) {
+	protected ContainerShape createNewShape(ContainerShape oldShape, ICreateFeature createFeature, CreateContext createContext) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		boolean horz = Bpmn2Preferences.getInstance().isHorizontalDefault();
 
@@ -298,9 +292,6 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		GraphicsAlgorithm ga = oldShape.getGraphicsAlgorithm();
 		int width = ga.getWidth();
 		int height = ga.getHeight();
-		
-		CreateContext createContext = new CreateContext();
-		createContext.setTargetContainer(oldShape.getContainer());
 		
 		FlowElement newObject;
 		ContainerShape newShape;
@@ -393,7 +384,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		return children;
 	}
 	
-	protected Connection createNewConnection(ModelHandler mh, ContainerShape oldShape, ContainerShape newShape) {
+	protected Connection createNewConnection(ContainerShape oldShape, ContainerShape newShape) {
 		Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(oldShape, newShape, null);
 
 		CreateConnectionContext ccc = new CreateConnectionContext();
@@ -404,17 +395,24 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 
 		FlowNode oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, FlowNode.class);
 		FlowNode newObject = BusinessObjectUtil.getFirstElementOfType(newShape, FlowNode.class);
-		
+
+		// create a new SequenceFlow to connect the old and new FlowNodes
+		SequenceFlow sequenceFlow = (SequenceFlow) ModelUtil.createObject(
+				oldObject.eResource(), Bpmn2Package.eINSTANCE.getSequenceFlow());
+		FlowElementsContainer container = (FlowElementsContainer) oldObject.eContainer();
+		container.getFlowElements().add(sequenceFlow);
+		sequenceFlow.setSourceRef(oldObject);
+		sequenceFlow.setTargetRef(newObject);
+		sequenceFlow.setName(null);
+
 		AddConnectionContext acc = new AddConnectionContext(ccc.getSourceAnchor(), ccc.getTargetAnchor());
-		SequenceFlow flow = mh.createSequenceFlow(oldObject, newObject);
-		acc.setNewObject(flow);
+		acc.setNewObject(sequenceFlow);
 		Connection connection = (Connection)getFeatureProvider().addIfPossible(acc);
 		return connection;
 	}
 
 	protected BpmnToolBehaviourFeature getToolProvider() {
 		IToolBehaviorProvider[] toolProviders = getFeatureProvider().getDiagramTypeProvider().getAvailableToolBehaviorProviders();
-		BpmnToolBehaviourFeature toolProvider = null;
 		for (IToolBehaviorProvider tp : toolProviders) {
 			if (tp instanceof BpmnToolBehaviourFeature) {
 				return (BpmnToolBehaviourFeature)tp;
@@ -453,5 +451,18 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 	@Override
 	public boolean hasDoneChanges() {
 		return changesDone;
+	}
+
+	private CreateContext prepareCreateContext(ICustomContext context) {
+		CreateContext cc = new CreateContext();
+		PictogramElement[] pes = context.getPictogramElements();
+		if (pes==null || pes.length!=1)
+			return null;
+		EObject container = pes[0].eContainer();
+		if (!(container instanceof ContainerShape))
+			return null;
+		
+		cc.setTargetContainer((ContainerShape)container);
+		return cc;
 	}
 }

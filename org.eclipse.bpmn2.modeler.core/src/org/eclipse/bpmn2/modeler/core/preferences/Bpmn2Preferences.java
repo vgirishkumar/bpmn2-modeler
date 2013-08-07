@@ -46,13 +46,13 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.internal.resources.ProjectPreferences;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
@@ -568,7 +568,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 
 	public void setRuntime(TargetRuntime rt) {
 		
-		assert(rt!=null);
+		Assert.isTrue(rt!=null);
 		overrideGlobalString(PREF_TARGET_RUNTIME, rt.getId());
 		targetRuntime = rt;
 	}
