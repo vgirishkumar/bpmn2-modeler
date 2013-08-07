@@ -53,7 +53,7 @@ public class JbpmImportDialog extends DefaultSchemaImportDialog {
 	
 	public IType getIType() {
 		Object result[] = getResult();
-		if (result.length == 1 && result[0] instanceof IType) {
+		if (result!=null && result.length == 1 && result[0] instanceof IType) {
 			return (IType) result[0];
 		}
 		return null;

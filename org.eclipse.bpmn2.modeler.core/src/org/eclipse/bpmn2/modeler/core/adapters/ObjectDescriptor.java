@@ -28,6 +28,7 @@ import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.core.runtime.Assert;
 
 /**
  * @author Bob Brodt
@@ -226,7 +227,7 @@ public class ObjectDescriptor<T extends EObject> {
 		else {
 			eClass = object.eClass();
 		}
-		assert(object.eClass().isSuperTypeOf(eClass));
+		Assert.isTrue(object.eClass().isSuperTypeOf(eClass));
 
 		T newObject = (T) eClass.getEPackage().getEFactoryInstance().create(eClass);
 		

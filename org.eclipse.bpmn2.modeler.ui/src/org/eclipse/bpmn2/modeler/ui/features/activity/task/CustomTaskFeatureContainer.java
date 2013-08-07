@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.core.runtime.Assert;
 
 public class CustomTaskFeatureContainer extends TaskFeatureContainer implements ICustomTaskFeatureContainer {
 	
@@ -211,13 +212,13 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		public CreateCustomTaskFeature(IFeatureProvider fp, String name, String description) {
 			super(fp, name, description);
 			createFeatureDelegate = (AbstractBpmn2CreateFeature)getFeatureContainer(fp).getCreateFeature(fp);
-			assert createFeatureDelegate != null;
+			Assert.isNotNull(createFeatureDelegate);
 		}
 
 		public CreateCustomTaskFeature(IFeatureProvider fp) {
 			super(fp, customTaskDescriptor.getName(), customTaskDescriptor.getDescription());
 			createFeatureDelegate = (AbstractBpmn2CreateFeature)getFeatureContainer(fp).getCreateFeature(fp);
-			assert createFeatureDelegate != null;
+			Assert.isNotNull(createFeatureDelegate);
 		}
 
 		@Override
@@ -243,9 +244,10 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 
 		@Override
 		public BaseElement createBusinessObject(ICreateContext context) {
-			EObject target = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(context.getTargetContainer());
-			BaseElement businessObject = (BaseElement)customTaskDescriptor.createObject(target);
-			putBusinessObject(context, businessObject);
+//			EObject target = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(context.getTargetContainer());
+//			BaseElement businessObject = (BaseElement)customTaskDescriptor.createObject(target);
+//			putBusinessObject(context, businessObject);
+			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
 			customTaskDescriptor.populateObject(businessObject, false);
 			return businessObject;
 		}
@@ -260,6 +262,10 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 
 		@Override
 		public Object[] create(ICreateContext context) {
+			// Our Custom Task ID should have already been set in canCreate()
+			// if not, we have a problem; in other words, canCreate() MUST have
+			// been called by the framework before create()
+			Assert.isNotNull(getId(context));
 			return createFeatureDelegate.create(context);
 		}
 
@@ -296,7 +302,7 @@ public class CustomTaskFeatureContainer extends TaskFeatureContainer implements 
 		public AddCustomTaskFeature(IFeatureProvider fp) {
 			super(fp);
 			addFeatureDelegate = (AbstractBpmn2AddFeature)getFeatureContainer(fp).getAddFeature(fp);
-			assert addFeatureDelegate != null;
+			Assert.isNotNull(addFeatureDelegate);
 		}
 
 		@Override

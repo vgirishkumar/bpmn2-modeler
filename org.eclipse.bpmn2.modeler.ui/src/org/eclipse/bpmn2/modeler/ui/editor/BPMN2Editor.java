@@ -1110,10 +1110,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					continue;
 				int size = container.getChildren().size();
 				if (size>1) {
-					// don't send Choreography Participant bands to front
+					// don't send Choreography Participant bands, Pools or Lanes to front
 					// they're already there...
-					if (ChoreographyUtil.isChoreographyParticipantBand(pe))
-						continue;
 					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
 					if (baseElement instanceof Participant || baseElement instanceof Lane)
 						continue;
