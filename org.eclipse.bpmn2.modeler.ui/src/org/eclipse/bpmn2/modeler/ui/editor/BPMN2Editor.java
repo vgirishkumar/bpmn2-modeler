@@ -51,6 +51,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LinkEventDefinition;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
@@ -58,6 +59,7 @@ import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.Process;
@@ -1098,11 +1100,11 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 					continue;
 				int size = container.getChildren().size();
 				if (size>1) {
-					// don't send Choreography Participant bands to front
+					// don't send Choreography Participant bands, Pools or Lanes to front
 					// they're already there...
-					if (ChoreographyUtil.isChoreographyParticipantBand(pe))
-						continue;
 					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
+					if (baseElement instanceof Participant || baseElement instanceof Lane)
+						continue;
 					boolean obscured = false;
 					int index = container.getChildren().indexOf(shape);
 					for (int i=index+1; i<container.getChildren().size(); ++i) {
