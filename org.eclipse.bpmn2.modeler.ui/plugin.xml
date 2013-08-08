@@ -808,7 +808,7 @@
 			<enable object="MessageEventDefinition"/>
 			<enable object="EscalationEventDefinition"/>
 			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition"/>
+			<enable object="LinkEventDefinition" feature="name"/>
 			<enable object="ErrorEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>
@@ -935,7 +935,7 @@
 			<enable object="MessageEventDefinition"/>
 			<enable object="EscalationEventDefinition"/>
 			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition"/>
+			<enable object="LinkEventDefinition" feature="name"/>
 			<enable object="ErrorEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>

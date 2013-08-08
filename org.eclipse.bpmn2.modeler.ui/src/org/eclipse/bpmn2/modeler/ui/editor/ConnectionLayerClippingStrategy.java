@@ -1,9 +1,6 @@
 package org.eclipse.bpmn2.modeler.ui.editor;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -31,17 +28,13 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 	protected GraphicalViewer graphicalViewer;
 	
 	public static void applyTo(GraphicalViewer graphicalViewer) {
-		try {
-			ScalableFreeformRootEditPart rootEditPart = (ScalableFreeformRootEditPart) graphicalViewer.getRootEditPart();
-			Figure connectionLayer = (Figure) rootEditPart.getLayer(LayerConstants.CONNECTION_LAYER);
-			if (connectionLayer.getClippingStrategy()==null) {
-				EditPart editPart = graphicalViewer.getContents();
-				Diagram diagram = (Diagram)editPart.getModel();
-				IClippingStrategy clippingStrategy = new ConnectionLayerClippingStrategy(graphicalViewer, diagram);
-				connectionLayer.setClippingStrategy(clippingStrategy);
-			}
-		}
-		catch (Exception e) {
+		ScalableFreeformRootEditPart rootEditPart = (ScalableFreeformRootEditPart) graphicalViewer.getRootEditPart();
+		Figure connectionLayer = (Figure) rootEditPart.getLayer(LayerConstants.CONNECTION_LAYER);
+		if (connectionLayer.getClippingStrategy()==null) {
+			EditPart editPart = graphicalViewer.getContents();
+			Diagram diagram = (Diagram)editPart.getModel();
+			IClippingStrategy clippingStrategy = new ConnectionLayerClippingStrategy(graphicalViewer, diagram);
+			connectionLayer.setClippingStrategy(clippingStrategy);
 		}
 	}
 
@@ -61,9 +54,11 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 					BaseElement businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
 					if (businessObject instanceof MessageFlow) {
 						ContainerShape messageShape = MessageFlowFeatureContainer.findMessageShape(connection);
-						Rectangle inner = getClip(messageShape)[0];
-						Rectangle outer = childFigure.getBounds();
-						return getClip(outer,inner);
+						if (messageShape!=null) {
+							Rectangle inner = getClip(messageShape)[0];
+							Rectangle outer = childFigure.getBounds();
+							return getClip(outer,inner);
+						}
 					}
 					else {
 						EObject container = businessObject.eContainer();
@@ -82,7 +77,7 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 		return new Rectangle[] {childFigure.getBounds()};
 	}
 	
-	public Rectangle[] getClip(Rectangle outer, Rectangle inner) {
+	private Rectangle[] getClip(Rectangle outer, Rectangle inner) {
 		if (outer.width > inner.width) {
 			if (outer.height > inner.height) {
 				Rectangle[] clip = new Rectangle[4];
@@ -109,7 +104,7 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 		return new Rectangle[] {outer};
 	}
 	
-	public Rectangle[] getClip(ContainerShape pe) {
+	private Rectangle[] getClip(ContainerShape pe) {
 		GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
 		return new Rectangle[] { new Rectangle(ga.getX(), ga.getY(), ga.getWidth(), ga.getHeight()) };
 	}
