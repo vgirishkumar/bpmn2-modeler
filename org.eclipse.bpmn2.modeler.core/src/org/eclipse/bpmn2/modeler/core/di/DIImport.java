@@ -750,18 +750,22 @@ public class DIImport {
 			// Data Association allows connections for multiple starting points, we don't support it yet
 			List<ItemAwareElement> sourceRef = ((DataAssociation) bpmnElement).getSourceRef();
 			ItemAwareElement targetRef = ((DataAssociation) bpmnElement).getTargetRef();
-			if (sourceRef != null) {
+			if (sourceRef != null && sourceRef.size()>0) {
 				source = sourceRef.get(0);
 			}
 			target = targetRef;
-			do {
-				se = elements.get(source);
-				source = source.eContainer();
-			} while (se == null && source.eContainer() != null);
-			do {
-				te = elements.get(target);
-				target = target.eContainer();
-			} while (te == null && target.eContainer() != null);
+			if (source!=null) {
+				do {
+					se = elements.get(source);
+					source = source.eContainer();
+				} while (se == null && source.eContainer() != null);
+			}
+			if (target!=null) {
+				do {
+					te = elements.get(target);
+					target = target.eContainer();
+				} while (te == null && target.eContainer() != null);
+			}
 		}
 		else if (bpmnElement==null) {
 			diagnostics.add(IStatus.ERROR, bpmnEdge, "The referenced BPMN element does not exist");

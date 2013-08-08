@@ -1369,6 +1369,13 @@ public class ModelUtil {
 		return null;
 	}
 
+	public static EObject createFeature(EObject object, String featureName) {
+		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+		if (feature!=null)
+			return createFeature(object, feature);
+		return null;
+	}
+	
 	public static EObject createFeature(EObject object, EStructuralFeature feature) {
 		return createFeature(object, feature, null);
 	}
