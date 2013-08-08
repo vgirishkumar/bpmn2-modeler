@@ -22,9 +22,12 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -255,34 +258,162 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			return Bpmn2Package.eINSTANCE.getDataAssociation();
 		}
 
+		private DataInputAssociation selectInput(BaseElement target, List<DataInput> dataInputs, List<DataInputAssociation> dataInputAssociations, InputSet inputSet) {
+			EStructuralFeature diaFeature = null;
+			if (target instanceof Activity)
+				diaFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
+			else if (target instanceof ThrowEvent)
+				diaFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
+
+			// allow user to select a dataInput
+			DataInputAssociation dataInputAssoc = null;
+			DataInput dataInput = (DataInput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataInput());
+			String oldName = dataInput.getName();
+			dataInput.setName("Create new input parameter");
+			DataInput result = dataInput;
+			List<DataInput> list = new ArrayList<DataInput>();
+			list.add(dataInput);
+			list.addAll(dataInputs);
+			if (list.size()>1) {
+				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (b) {
+					result = (DataInput) popupMenu.getResult();
+				}
+			}
+			if (result == dataInput) {
+				// the new one
+				dataInputs.add(dataInput);
+				dataInput.setId(null);
+				ModelUtil.setID(dataInput);
+				dataInput.setName(oldName);
+				inputSet.getDataInputRefs().add(dataInput);
+				dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
+				dataInputAssoc.setTargetRef(dataInput);
+			} else {
+				// and existing one
+				dataInput = result;
+				// find the DataInputAssociation for this DataInput
+				for (DataInputAssociation d : dataInputAssociations) {
+					if (d.getTargetRef() == dataInput) {
+						dataInputAssoc = d;
+						break;
+					}
+				}
+				if (dataInputAssoc==null) {
+					// none found, create a new one
+					dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
+					dataInputAssoc.setTargetRef(dataInput);
+				}
+			}
+			return dataInputAssoc;
+		}
+
+		private DataOutputAssociation selectOutput(BaseElement source, List<DataOutput> dataOutputs, List<DataOutputAssociation> dataOutputAssociations, OutputSet outputSet) {
+			EStructuralFeature doaFeature = null;
+			if (source instanceof Activity)
+				doaFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
+			else if (source instanceof CatchEvent)
+				doaFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
+
+			// allow user to select a dataOutput
+			DataOutputAssociation dataOutputAssoc = null;
+			DataOutput dataOutput = (DataOutput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataOutput());
+			String oldName = dataOutput.getName();
+			dataOutput.setName("Create new output parameter");
+			DataOutput result = dataOutput;
+			List<DataOutput> list = new ArrayList<DataOutput>();
+			list.add(dataOutput);
+			list.addAll(dataOutputs);
+			if (list.size()>1) {
+				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (b) {
+					result = (DataOutput) popupMenu.getResult();
+				}
+			}
+			if (result == dataOutput) {
+				// the new one
+				dataOutputs.add(dataOutput);
+				dataOutput.setId(null);
+				ModelUtil.setID(dataOutput);
+				dataOutput.setName(oldName);
+				outputSet.getDataOutputRefs().add(dataOutput);
+				dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
+				dataOutputAssoc.setTargetRef(dataOutput);
+			} else {
+				// and existing one
+				dataOutput = result;
+				// find the DataOutputAssociation for this DataOutput
+				for (DataOutputAssociation d : dataOutputAssociations) {
+					if (d.getTargetRef() == dataOutput) {
+						dataOutputAssoc = d;
+						break;
+					}
+				}
+				if (dataOutputAssoc==null) {
+					// none found, create a new one
+					dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
+					dataOutputAssoc.setTargetRef(dataOutput);
+				}
+			}
+			return dataOutputAssoc;
+		}
+		
 		@Override
 		public DataAssociation createBusinessObject(ICreateConnectionContext context) {
 			// Instead of creating a new object, we will try to discover a DataAssociation
 			// (input or output) already defined within the context of the source or
 			// target object. This will be a DataInputAssociation or DataOutputAssociation
-			// of an Activity.
-			DataAssociation bo = null;
+			// of an Activity or Throw/Catch Event. If none exists, we'll create a new one
+			// as well as the surrounding elements (ioSpecification, input/output sets and
+			// data input/output elements) as needed.
+			DataAssociation dataAssoc = null;
 			BaseElement source = getSourceBo(context);
 			BaseElement target = getTargetBo(context);
-			String doaFeatureName = "dataOutputAssociations";
-			if (source instanceof CatchEvent)
-				doaFeatureName = "dataOutputAssociation";
-			EStructuralFeature doaFeature = source.eClass().getEStructuralFeature(doaFeatureName);
-			String diaFeatureName = "dataInputAssociations";
-			if (target instanceof ThrowEvent)
-				diaFeatureName = "dataInputAssociation";
-			EStructuralFeature diaFeature = target.eClass().getEStructuralFeature(diaFeatureName);
-			
-			if (doaFeature!=null) {
-				List<DataAssociation> list = (List<DataAssociation>) source.eGet(doaFeature);
-				if (list.size()>0)
-					bo = list.get(0);
+
+			if (target instanceof ItemAwareElement) {
+				// Target is the DataObject.
+				DataOutputAssociation dataOutputAssoc = null;
+				if (source instanceof Activity) {
+					// if the source is an Activity, create an ioSpecification if it doesn't have one yet
+					Activity activity = (Activity) source;
+					InputOutputSpecification ioSpec = activity.getIoSpecification();
+					if (ioSpec==null) {
+						ioSpec = (InputOutputSpecification) ModelUtil.createFeature(activity, "ioSpecification");
+					}
+					OutputSet outputSet = null;
+					if (ioSpec.getOutputSets().size()==0) {
+						outputSet = (OutputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getOutputSet());
+						ioSpec.getOutputSets().add(outputSet);
+					}
+					else {
+						// add to first output set we find
+						// TODO: support output set selection if there are more than one
+						outputSet = ioSpec.getOutputSets().get(0);
+					}
+					dataOutputAssoc = selectOutput(source, ioSpec.getDataOutputs(), activity.getDataOutputAssociations(), outputSet);
+				}
+				else if (source instanceof CatchEvent) {
+					// if the source is an Event, create an output set if it doesn't have one yet
+					CatchEvent event = (CatchEvent)source;
+					OutputSet outputSet = event.getOutputSet();
+					if (outputSet==null) {
+						outputSet = (OutputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getOutputSet());
+						event.setOutputSet(outputSet);
+					}
+					dataOutputAssoc = selectOutput(source, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
+				}
+				dataOutputAssoc.setTargetRef((ItemAwareElement) target);
+
+				dataAssoc = dataOutputAssoc;
 			}
-			else if (diaFeature!=null) {
-				// if the target is an Activity, create an ioSpecification if it doesn have one yet
-				DataInput dataInput = null;
+			else if (source instanceof ItemAwareElement)
+			{
+				// Source is the DataObject.
 				DataInputAssociation dataInputAssoc = null;
 				if (target instanceof Activity) {
+					// if the target is an Activity, create an ioSpecification if it doesn't have one yet
 					Activity activity = (Activity) target;
 					InputOutputSpecification ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
@@ -298,104 +429,25 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 						// TODO: support input set selection if there are more than one
 						inputSet = ioSpec.getInputSets().get(0);
 					}
-					// allow user to select a dataInput
-					dataInput = (DataInput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataInput());
-					String oldName = dataInput.getName();
-					dataInput.setName("Create new input parameter");
-					DataInput result = dataInput;
-					List<DataInput> dataInputs = ioSpec.getDataInputs();
-					List<DataInput> list = new ArrayList<DataInput>();
-					list.add(dataInput);
-					list.addAll(dataInputs);
-					if (list.size()>1) {
-						PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-						boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-						if (b) {
-							result = (DataInput) popupMenu.getResult();
-						}
-					}
-					if (result == dataInput) {
-						// the new one
-						dataInputs.add(dataInput);
-						dataInput.setId(null);
-						ModelUtil.setID(dataInput);
-						dataInput.setName(oldName);
-						inputSet.getDataInputRefs().add(dataInput);
-						dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
-						dataInputAssoc.setTargetRef(dataInput);
-					} else {
-						// and existing one
-						dataInput = result;
-						// find the DataInputAssociation for this DataInput
-						for (DataInputAssociation d : activity.getDataInputAssociations()) {
-							if (d.getTargetRef() == dataInput) {
-								dataInputAssoc = d;
-								break;
-							}
-						}
-						if (dataInputAssoc==null) {
-							// none found, create a new one
-							dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
-							dataInputAssoc.setTargetRef(dataInput);
-						}
-					}
+					dataInputAssoc = selectInput(target, ioSpec.getDataInputs(), activity.getDataInputAssociations(), inputSet);
 				}
 				else if (target instanceof ThrowEvent) {
-					ThrowEvent throwEvent = (ThrowEvent)target;
-					InputSet inputSet = throwEvent.getInputSet();
+					// if the target is an Event, create an input set if it doesn't have one yet
+					ThrowEvent event = (ThrowEvent)target;
+					InputSet inputSet = event.getInputSet();
 					if (inputSet==null) {
 						inputSet = (InputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getInputSet());
-						throwEvent.setInputSet(inputSet);
+						event.setInputSet(inputSet);
 					}
-					// allow user to select a dataInput
-					dataInput = (DataInput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataInput());
-					String oldName = dataInput.getName();
-					dataInput.setName("Create new input parameter");
-					DataInput result = dataInput;
-					List<DataInput> dataInputs = throwEvent.getDataInputs();
-					List<DataInput> list = new ArrayList<DataInput>();
-					list.add(dataInput);
-					list.addAll(dataInputs);
-					if (list.size()>1) {
-						PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-						boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-						if (b) {
-							result = (DataInput) popupMenu.getResult();
-						}
-					}
-					if (result == dataInput) {
-						// the new one
-						dataInputs.add(dataInput);
-						dataInput.setId(null);
-						ModelUtil.setID(dataInput);
-						dataInput.setName(oldName);
-						inputSet.getDataInputRefs().add(dataInput);
-						dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
-						dataInputAssoc.setTargetRef(dataInput);
-					} else {
-						// and existing one
-						dataInput = result;
-						// find the DataInputAssociation for this DataInput
-						for (DataInputAssociation d : throwEvent.getDataInputAssociation()) {
-							if (d.getTargetRef() == dataInput) {
-								dataInputAssoc = d;
-								break;
-							}
-						}
-						if (dataInputAssoc==null) {
-							// none found, create a new one
-							dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
-							dataInputAssoc.setTargetRef(dataInput);
-						}
-					}
+					dataInputAssoc = selectInput(target, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
 				}
 				dataInputAssoc.getSourceRef().clear();
 				dataInputAssoc.getSourceRef().add((ItemAwareElement) source);
 
-				bo = dataInputAssoc;
+				dataAssoc = dataInputAssoc;
 			}
-			putBusinessObject(context, bo);
-			return bo;
+			putBusinessObject(context, dataAssoc);
+			return dataAssoc;
 		}
 	}
 
