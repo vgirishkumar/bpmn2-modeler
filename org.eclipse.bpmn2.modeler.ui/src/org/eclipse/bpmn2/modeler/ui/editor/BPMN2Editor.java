@@ -936,6 +936,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		// set Diagram as contents for the graphical viewer and refresh
 		getGraphicalViewer().setContents(diagram);
 		
+		ConnectionLayerClippingStrategy.applyTo(getGraphicalViewer());
+		
 		getDiagramBehavior().refreshContent();
 		
 		// remember this for later
