@@ -340,7 +340,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				dataOutput.setName(oldName);
 				outputSet.getDataOutputRefs().add(dataOutput);
 				dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
-				dataOutputAssoc.setTargetRef(dataOutput);
+				dataOutputAssoc.getSourceRef().add(dataOutput);
 			} else {
 				// and existing one
 				dataOutput = result;
@@ -354,7 +354,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				if (dataOutputAssoc==null) {
 					// none found, create a new one
 					dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
-					dataOutputAssoc.setTargetRef(dataOutput);
+					dataOutputAssoc.getSourceRef().add(dataOutput);
 				}
 			}
 			return dataOutputAssoc;
