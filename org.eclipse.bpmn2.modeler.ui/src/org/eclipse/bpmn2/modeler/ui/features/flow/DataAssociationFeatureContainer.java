@@ -118,10 +118,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		// and the other must be either an Activity or a Catch or Throw Event
 		// depending on whether it's the target or the source.
 		if ((source instanceof Activity || source instanceof CatchEvent) && target instanceof ItemAwareElement) {
-			return true;
+			if (!(target instanceof DataInput))
+				return true;
 		}
 		if ((target instanceof Activity || target instanceof ThrowEvent) && source instanceof ItemAwareElement) {
-			return true;
+			if (!(source instanceof DataOutput))
+				return true;
 		}
 		return false;
 	}
@@ -143,14 +145,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		}
 
 		public String getText(Object object) {
-			ItemAwareElement element = (ItemAwareElement)object;
-			EStructuralFeature f = element.eClass().getEStructuralFeature("name");
-			if (f!=null) {
-				String name = (String) element.eGet(f);
-				if (name!=null && !name.isEmpty())
-					return name;
-			}
-			return element.getId();
+			ItemAwareElement element = (ItemAwareElement) object;
+			if (element.getId()==null)
+				return ModelUtil.getDisplayName(object);
+			return "Map existing \"" + ModelUtil.getDisplayName(object) + "\"";
 		}
 
 		public Image getImage(Object element) {
@@ -168,6 +166,19 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		@Override
 		public boolean isAvailable(IContext context) {
 			return true;
+		}
+
+		@Override
+		public boolean canStartConnection(ICreateConnectionContext context) {
+			BaseElement source = getSourceBo(context);
+			if (source instanceof Activity || source instanceof CatchEvent)
+				return true;
+			if (source instanceof ItemAwareElement) {
+				if (source instanceof DataInput)
+					return false;
+				return true;
+			}
+			return false;
 		}
 
 		@Override
@@ -268,8 +279,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			// allow user to select a dataInput
 			DataInputAssociation dataInputAssoc = null;
 			DataInput dataInput = (DataInput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataInput());
+			dataInput.setId(null);
 			String oldName = dataInput.getName();
-			dataInput.setName("Create new input parameter");
+			dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
 			DataInput result = dataInput;
 			List<DataInput> list = new ArrayList<DataInput>();
 			list.add(dataInput);
@@ -284,7 +296,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (result == dataInput) {
 				// the new one
 				dataInputs.add(dataInput);
-				dataInput.setId(null);
 				ModelUtil.setID(dataInput);
 				dataInput.setName(oldName);
 				inputSet.getDataInputRefs().add(dataInput);
@@ -319,8 +330,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			// allow user to select a dataOutput
 			DataOutputAssociation dataOutputAssoc = null;
 			DataOutput dataOutput = (DataOutput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataOutput());
+			dataOutput.setId(null);
 			String oldName = dataOutput.getName();
-			dataOutput.setName("Create new output parameter");
+			dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
 			DataOutput result = dataOutput;
 			List<DataOutput> list = new ArrayList<DataOutput>();
 			list.add(dataOutput);
@@ -335,7 +347,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (result == dataOutput) {
 				// the new one
 				dataOutputs.add(dataOutput);
-				dataOutput.setId(null);
 				ModelUtil.setID(dataOutput);
 				dataOutput.setName(oldName);
 				outputSet.getDataOutputRefs().add(dataOutput);

@@ -97,6 +97,7 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
 		layoutPictogramElement(containerShape);
+		updatePictogramElement(containerShape);
 		this.prepareAddContext(context, containerShape, width, height);
 		this.getFeatureProvider().getAddFeature(context).add(context);
 		
