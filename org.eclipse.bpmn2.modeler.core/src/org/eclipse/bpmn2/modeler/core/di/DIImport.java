@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
@@ -340,6 +341,15 @@ public class DIImport {
 							}
 						}
 					}
+				} else if (bpmnElement instanceof DataObject ||
+						bpmnElement instanceof DataObjectReference ||
+						bpmnElement instanceof DataStoreReference) {
+					
+					EObject container = bpmnElement.eContainer();
+					if ((container instanceof SubProcess || container instanceof SubChoreography)
+							&& !elements.containsKey(container)) {
+						postpone = true;
+					}
 				} else if (bpmnElement instanceof Lane) {
 					// if this Lane is a child of another Lane, wait until the parent
 					// is materialized, regardless of what the Z-order implied by the
@@ -541,6 +551,10 @@ public class DIImport {
 			handleParticipant((Participant) bpmnElement, context, shape);
 		} else if (bpmnElement instanceof DataInput || bpmnElement instanceof DataOutput) {
 			handleItemAwareElement((ItemAwareElement)bpmnElement, context, shape);
+		} else if (bpmnElement instanceof DataStoreReference){
+			// Even though Data Stores are not Flow Elements, they need to be handled the same
+			// way because they may be contained in a SubProcesses
+			handleFlowElement((FlowElement) bpmnElement, context, shape);
 		} else {
 			context.setTargetContainer(diagram);
 			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
@@ -750,18 +764,22 @@ public class DIImport {
 			// Data Association allows connections for multiple starting points, we don't support it yet
 			List<ItemAwareElement> sourceRef = ((DataAssociation) bpmnElement).getSourceRef();
 			ItemAwareElement targetRef = ((DataAssociation) bpmnElement).getTargetRef();
-			if (sourceRef != null) {
+			if (sourceRef != null && sourceRef.size()>0) {
 				source = sourceRef.get(0);
 			}
 			target = targetRef;
-			do {
-				se = elements.get(source);
-				source = source.eContainer();
-			} while (se == null && source.eContainer() != null);
-			do {
-				te = elements.get(target);
-				target = target.eContainer();
-			} while (te == null && target.eContainer() != null);
+			if (source!=null) {
+				do {
+					se = elements.get(source);
+					source = source.eContainer();
+				} while (se == null && source.eContainer() != null);
+			}
+			if (target!=null) {
+				do {
+					te = elements.get(target);
+					target = target.eContainer();
+				} while (te == null && target.eContainer() != null);
+			}
 		}
 		else if (bpmnElement==null) {
 			diagnostics.add(IStatus.ERROR, bpmnEdge, "The referenced BPMN element does not exist");

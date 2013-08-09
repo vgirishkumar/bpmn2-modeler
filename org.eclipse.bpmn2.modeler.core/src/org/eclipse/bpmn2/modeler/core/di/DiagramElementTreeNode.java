@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.core.runtime.Assert;
 
 public class DiagramElementTreeNode {
 	private static List<DiagramElementTreeNode> EMPTY = new ArrayList<DiagramElementTreeNode>();
@@ -65,7 +64,6 @@ public class DiagramElementTreeNode {
 	}
 	
 	public DiagramElementTreeNode addChild(BaseElement element) {
-		Assert.isTrue( element.eContainer() == baseElement );
 		DiagramElementTreeNode child = getChild(element);
 		if (child!=null)
 			return child;

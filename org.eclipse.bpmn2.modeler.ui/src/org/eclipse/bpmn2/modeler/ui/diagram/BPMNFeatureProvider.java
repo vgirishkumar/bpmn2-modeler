@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataObject;
@@ -134,8 +135,7 @@ import org.eclipse.bpmn2.modeler.ui.features.event.definitions.SignalEventDefini
 import org.eclipse.bpmn2.modeler.ui.features.event.definitions.TerminateEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.event.definitions.TimerEventDefinitionContainer;
 import org.eclipse.bpmn2.modeler.ui.features.flow.AssociationFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.flow.DataInputAssociationFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.flow.DataOutputAssociationFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.flow.DataAssociationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.flow.SequenceFlowFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.ComplexGatewayFeatureContainer;
@@ -257,8 +257,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		containers.put(Association.class,new AssociationFeatureContainer());
 		containers.put(Conversation.class,new ConversationFeatureContainer());
 		containers.put(ConversationLink.class,new ConversationLinkFeatureContainer());
-		containers.put(DataInputAssociation.class,new DataInputAssociationFeatureContainer());
-		containers.put(DataOutputAssociation.class,new DataOutputAssociationFeatureContainer());
+		containers.put(DataAssociation.class,new DataAssociationFeatureContainer());
 		containers.put(SubChoreography.class,new SubChoreographyFeatureContainer());
 		containers.put(CallChoreography.class,new CallChoreographyFeatureContainer());
 		containers.put(Participant.class,new ParticipantFeatureContainer());

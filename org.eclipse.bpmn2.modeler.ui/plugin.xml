@@ -574,7 +574,7 @@
 			id="org.eclipse.bpmn2.modeler.datastore.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection"
-			type="org.eclipse.bpmn2.DataStore"
+			type="org.eclipse.bpmn2.DataStore org.eclipse.bpmn2.DataStoreReference"
 			label="Data Store">
 		</propertyTab>
 		
@@ -788,6 +788,7 @@
 			<!-- connections -->
 			<enable object="SequenceFlow"/>
 			<enable object="Association"/>
+			<enable object="DataAssociation"/>
 
 			<!-- events -->
 			<enable object="StartEvent"/>
@@ -808,7 +809,7 @@
 			<enable object="MessageEventDefinition"/>
 			<enable object="EscalationEventDefinition"/>
 			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition"/>
+			<enable object="LinkEventDefinition" feature="name"/>
 			<enable object="ErrorEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>
@@ -935,7 +936,7 @@
 			<enable object="MessageEventDefinition"/>
 			<enable object="EscalationEventDefinition"/>
 			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition"/>
+			<enable object="LinkEventDefinition" feature="name"/>
 			<enable object="ErrorEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>

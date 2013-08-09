@@ -496,6 +496,16 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	public ShapeStyle getShapeStyle(Class clazz) {
 		ShapeStyle ss = shapeStyles.get(clazz);
 		if (ss==null) {
+			// maybe the given class is a subclass of one that we know about?
+			for (Entry<Class, ShapeStyle> entry : shapeStyles.entrySet()) {
+				Class c = entry.getKey();
+				if (c.isAssignableFrom(clazz)) {
+					ss = entry.getValue();
+					break;
+				}
+			}
+		}
+		if (ss==null) {
 			String key = getShapeStyleId(clazz);
 			String value;
 			if (hasProjectPreference(key)) {

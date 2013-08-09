@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
@@ -80,6 +81,7 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_16_TEXT_ANNOTATION = PREFIX + TextAnnotation.class.getSimpleName().toLowerCase()
 	        + dot16;
 	public static final String IMG_16_ASSOCIATION = PREFIX + Association.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_DATA_ASSOCIATION = PREFIX + DataAssociation.class.getSimpleName().toLowerCase() + dot16;
 	public static final String IMG_16_INCLUSIVE_GATEWAY = PREFIX + InclusiveGateway.class.getSimpleName().toLowerCase()
 	        + dot16;
 	public static final String IMG_16_PARALLEL_GATEWAY = PREFIX + ParallelGateway.class.getSimpleName().toLowerCase()
@@ -171,6 +173,7 @@ public class ImageProvider extends AbstractImageProvider {
 		addImageFilePath(IMG_16_LANE, ICONS_16 + "Lane.png");
 		addImageFilePath(IMG_16_TEXT_ANNOTATION, ICONS_16 + "TextAnnotation.png");
 		addImageFilePath(IMG_16_ASSOCIATION, ICONS_16 + "Association.png");
+		addImageFilePath(IMG_16_DATA_ASSOCIATION, ICONS_16 + "DataAssociation.png");
 		addImageFilePath(IMG_16_INCLUSIVE_GATEWAY, ICONS_16 + "InclusiveGateway.png");
 		addImageFilePath(IMG_16_PARALLEL_GATEWAY, ICONS_16 + "ParallelGateway.png");
 		addImageFilePath(IMG_16_EVENT_BASED_GATEWAY, ICONS_16 + "EventBasedGateway.png");
