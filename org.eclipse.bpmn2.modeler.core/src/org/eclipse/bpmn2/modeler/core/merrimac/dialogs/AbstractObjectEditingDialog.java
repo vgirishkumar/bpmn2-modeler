@@ -87,7 +87,6 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		
 		form.setContent(body);
 		getShell().pack();
-        initializeTransaction();
 	}
 	
 	abstract protected Composite createDialogContent(Composite parent);
@@ -134,12 +133,20 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 			}
 	
 		});
+		
+        hookTransaction();
 	}
 	
 	protected void aboutToOpen() {
 		dialogContent.setData(object);
 	}
 
+	@Override
+	public void create() {
+		super.create();
+		startTransaction();
+	}
+	
 	@Override
 	public int open() {
 		if (getShell()==null)
@@ -192,33 +199,44 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		return transaction==null || !transaction.getChangeDescription().isEmpty();
 	}
 	
-	private void initializeTransaction() {
-		try {
-			final InternalTransactionalEditingDomain transactionalDomain = (InternalTransactionalEditingDomain) editor
-					.getEditingDomain();
-			transaction = transactionalDomain.startTransaction(false, null);
-			getShell().addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent event) {
-					if (transaction.isActive()) {
-						if (cancel) {
-							transaction.rollback();
+	protected void startTransaction() {
+		if (transaction==null) {
+			try {
+				final InternalTransactionalEditingDomain transactionalDomain = (InternalTransactionalEditingDomain) editor
+						.getEditingDomain();
+				transaction = transactionalDomain.startTransaction(false, null);
+			}
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void hookTransaction() {
+		getShell().addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (transaction!=null && transaction.isActive()) {
+					if (cancel) {
+						transaction.rollback();
+					}
+					else {
+						try {
+							transaction.commit();
 						}
-						else {
-							try {
-								transaction.commit();
-							}
-							catch (RollbackException e) {
-								ErrorDialog.openError(getShell(), "Error Commiting Model Changes",
-										"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
-												Activator.PLUGIN_ID, e.getMessage(), e));
-							}
+						catch (RollbackException e) {
+							ErrorDialog.openError(getShell(), "Error Commiting Model Changes",
+									"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
+											Activator.PLUGIN_ID, e.getMessage(), e));
 						}
 					}
 				}
-			});
-		}
-		catch (InterruptedException e) {
-			e.printStackTrace();
+			}
+		});
+	}
+	
+	protected void rollbackTransaction() {
+		if (transaction!=null) {
+			transaction.rollback();
 		}
 	}
 }

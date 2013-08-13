@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -40,8 +41,7 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
 		Participant participant = createBusinessObject(context);
 		participant.setName("Pool " + ModelUtil.getIDNumber(participant.getId()));
 
-		Process process = (Process) ModelUtil
-				.createObject(participant.eResource(), Bpmn2Package.eINSTANCE.getProcess());
+		Process process = Bpmn2ModelerFactory.create(participant.eResource(), Process.class);
 		participant.setProcessRef(process);
 
 		process.setName(participant.getName() + " Process");

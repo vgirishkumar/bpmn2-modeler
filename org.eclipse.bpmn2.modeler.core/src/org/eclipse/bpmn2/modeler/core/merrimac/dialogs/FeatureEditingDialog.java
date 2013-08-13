@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -46,6 +47,7 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	}
 
 	public void create() {
+		startTransaction();
 		if (newObject==null) {
 			// create the new object
 			createNew = true;
@@ -67,8 +69,13 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			else if (feature.getEType() instanceof EClass)
 				featureEType = (EClass)feature.getEType();
 		}
-		if (!cancel)
+		
+		if (cancel) {
+			rollbackTransaction();
+		}
+		else {
 			super.create();
+		}
 	}
 	
 	protected Composite createDialogContent(Composite parent) {
@@ -84,12 +91,12 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
 				protected void doExecute() {
-					result[0] = ModelUtil.createFeature(object, feature, eclass);
+					result[0] = Bpmn2ModelerFactory.createFeature(object, feature, eclass);
 				}
 			});
 		}
 		else {
-			result[0] = ModelUtil.createFeature(object, feature, eclass);
+			result[0] = Bpmn2ModelerFactory.createFeature(object, feature, eclass);
 		}
 		return result[0];
 	}

@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
@@ -198,7 +199,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 					fc.getLaneSets().get(0).getLanes().add((Lane)newObject);
 				}
 				else {
-					LaneSet ls = (LaneSet) ModelUtil.createObject(resource, Bpmn2Package.eINSTANCE.getLaneSet());
+					LaneSet ls = Bpmn2ModelerFactory.create(resource, LaneSet.class);
 					fc.getLaneSets().add(ls);
 					ls.getLanes().add((Lane)newObject);
 				}
@@ -206,7 +207,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			else if (targetContainerObject instanceof Lane) {
 				Lane ln = (Lane)targetContainerObject;
 				if (ln.getChildLaneSet()==null) {
-					LaneSet ls = (LaneSet) ModelUtil.createObject(resource, Bpmn2Package.eINSTANCE.getLaneSet());
+					LaneSet ls = Bpmn2ModelerFactory.create(resource, LaneSet.class);
 					ln.setChildLaneSet(ls);
 				}
 				ln.getChildLaneSet().getLanes().add((Lane)newObject);
@@ -229,7 +230,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			Participant participant = (Participant)newObject;
 			if (((Participant) newObject).getProcessRef()!=null) {
 				// need to create a new Process for this thing
-				Process process = (Process) ModelUtil.createObject(resource,Bpmn2Package.eINSTANCE.getProcess());
+				Process process = Bpmn2ModelerFactory.create(resource, Process.class);
 				participant.setProcessRef(process);
 			}
 			if (targetContainerObject instanceof Collaboration) {

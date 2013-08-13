@@ -264,6 +264,8 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 				bo = Bpmn2ModelerFactory.create(DataStoreReference.class);
 
 				DataStore dataStore = Bpmn2ModelerFactory.create(DataStore.class);
+				dataStore.setId(null);
+				String oldName = dataStore.getName();
 				dataStore.setName("Create a new Data Store");
 
 				List<DataStore> dataStoreList = new ArrayList<DataStore>();
@@ -286,7 +288,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 				if (result == dataStore) { // the new one
 					mh.addRootElement(dataStore);
 					ModelUtil.setID(dataStore);
-					dataStore.setName(ModelUtil.toDisplayName(dataStore.getId()));
+					dataStore.setName(ModelUtil.toDisplayName(oldName));
 					bo.setName(dataStore.getName());
 				} else
 					bo.setName(result.getName() + " Ref");

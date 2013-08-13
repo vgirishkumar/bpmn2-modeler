@@ -16,10 +16,10 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -126,7 +126,7 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 				
 				Participant participant = null;
 				List<Participant> participantList = new ArrayList<Participant>();
-				participant = Bpmn2Factory.eINSTANCE.createParticipant();
+				participant = Bpmn2ModelerFactory.create(Participant.class);
 				participant.setName("New Participant");
 				ModelUtil.setID(participant, task.eResource());
 				

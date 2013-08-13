@@ -412,6 +412,87 @@
 			label="Event">
 		</propertyTab>
 
+		<!-- ============  Event Definitionss ============ -->
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.conditionalEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionPropertySection"
+			type="org.eclipse.bpmn2.ConditionalEventDefinition"
+			label="Conditional Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.compensateEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="activityRef waitForCompletion"
+			type="org.eclipse.bpmn2.CompensateEventDefinition"
+			label="Compensate Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.errorEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="errorRef"
+			type="org.eclipse.bpmn2.ErrorEventDefinition"
+			label="Error Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.escalationEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="escalationRef"
+			type="org.eclipse.bpmn2.EscalationEventDefinition"
+			label="Escalation Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.errorEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="errorRef"
+			type="org.eclipse.bpmn2.ErrorEventDefinition"
+			label="Error Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.linkEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="name"
+			type="org.eclipse.bpmn2.LinkEventDefinition"
+			label="Link Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.messageEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="messageRef operationReft"
+			type="org.eclipse.bpmn2.MessageEventDefinition"
+			label="Message Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.signalEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="signalRef"
+			type="org.eclipse.bpmn2.SignalEventDefinition"
+			label="Signal Event">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.timerEvent.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionPropertySection"
+			type="org.eclipse.bpmn2.TimerEventDefinition"
+			label="Timer Event">
+		</propertyTab>
+		
 		<!-- ============  Artifacts ============ -->
 
 		<propertyTab
@@ -479,7 +560,7 @@
 			id="org.eclipse.bpmn2.modeler.itemDefinition.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="default"
-			features="itemKind structureRef isCollection import"
+			features="itemKind structureRef isCollection"
 			type="org.eclipse.bpmn2.ItemDefinition"
 			label="Item Definition">
 		</propertyTab>
@@ -813,6 +894,9 @@
 			<enable object="ErrorEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>
+			<enable object="ComplexBehaviorDefinition"/>
+			<enable object="ImplicitThrowEvent"/>
+			
 
 			<!-- data definitions -->
 			<enable object="Import"/>

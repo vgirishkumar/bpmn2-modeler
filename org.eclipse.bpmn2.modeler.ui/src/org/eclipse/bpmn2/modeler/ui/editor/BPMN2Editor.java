@@ -111,7 +111,6 @@ import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.SequenceFlowDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.data.DataAssignmentDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.data.DataObjectPropertySection.DataObjectDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.data.DataObjectReferencePropertySection.DataObjectReferenceDetailComposite;
@@ -136,6 +135,7 @@ import org.eclipse.bpmn2.modeler.ui.property.events.BoundaryEventDetailComposite
 import org.eclipse.bpmn2.modeler.ui.property.events.CatchEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventPropertySection.EventDefinitionDialogComposite;
+import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EndEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.StartEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ThrowEventDetailComposite;

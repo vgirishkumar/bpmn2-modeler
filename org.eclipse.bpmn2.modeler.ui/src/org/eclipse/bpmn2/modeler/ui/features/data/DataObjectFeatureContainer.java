@@ -136,6 +136,8 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				ModelHandler mh = ModelHandler.getInstance(getDiagram());
 				dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
 				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
+				dataObject.setId(null);
+				String oldName = dataObject.getName();
 				dataObject.setName("Create a new Data Object");
 				EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
 				
@@ -171,10 +173,9 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				}
 				if (result == dataObject) { // the new one
 					mh.addFlowElement(targetBusinessObject,dataObject);
-					dataObject.setId(null);
 					ModelUtil.setID(dataObject);
 					dataObject.setIsCollection(false);
-					dataObject.setName(ModelUtil.toDisplayName(dataObject.getId()));
+					dataObject.setName(ModelUtil.toDisplayName(oldName));
 					bo = dataObject;
 				} else {
 					mh.addFlowElement(targetBusinessObject,dataObjectReference);

@@ -139,7 +139,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					eClass = Bpmn2Package.eINSTANCE.getDataStore();
 			}			
 			if (eClass!=null) {
-				return ModelUtil.createObject(resource, eClass);
+				return Bpmn2ModelerFactory.create(resource, eClass);
 			}
 			return null;
 		}

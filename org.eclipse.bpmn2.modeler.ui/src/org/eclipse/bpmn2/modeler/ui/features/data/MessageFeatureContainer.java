@@ -317,6 +317,8 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		public Message createBusinessObject(ICreateContext context) {
 			Message message = null;
 			message = Bpmn2ModelerFactory.create(Message.class);
+			String oldName = message.getName();
+			message.setId(null);
 			message.setName("Create a new Message");
 			EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
 			Definitions definitions = ModelUtil.getDefinitions(targetBusinessObject);
@@ -338,7 +340,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 				definitions.getRootElements().add(message);
 				message.setId(null);
 				ModelUtil.setID(message);
-				message.setName(ModelUtil.toDisplayName(message.getId()));
+				message.setName(ModelUtil.toDisplayName(oldName));
 			} else {
 				// and existing one
 				message = result;

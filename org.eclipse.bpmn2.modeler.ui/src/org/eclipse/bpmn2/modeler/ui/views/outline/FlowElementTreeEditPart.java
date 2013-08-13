@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
@@ -28,6 +29,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -73,8 +75,11 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 				retList.add(target);
 			}
 		}
-		else if (elem instanceof BoundaryEvent) {
-			retList.addAll(((BoundaryEvent)elem).getEventDefinitions());
+		else if (elem instanceof CatchEvent) {
+			retList.addAll(((CatchEvent)elem).getEventDefinitions());
+		}
+		else if (elem instanceof ThrowEvent) {
+			retList.addAll(((ThrowEvent)elem).getEventDefinitions());
 		}
 		
 		if (elem instanceof Activity) {

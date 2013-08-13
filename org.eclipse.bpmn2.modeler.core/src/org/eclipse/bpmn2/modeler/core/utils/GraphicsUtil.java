@@ -675,7 +675,7 @@ public class GraphicsUtil {
 		
 		final float heightRatio = calculateRatio(eventHeight, Float.valueOf(EVENT_SIZE));
 		final float widthRatio = calculateRatio(eventWidth, Float.valueOf(EVENT_SIZE));
-		
+
 		Polygon polygon = gaService.createPolygon(shape, 
 				new int[] { generateRatioPointValue(16, widthRatio), generateRatioPointValue(4, heightRatio),
 							generateRatioPointValue(28, widthRatio), generateRatioPointValue(26, heightRatio),

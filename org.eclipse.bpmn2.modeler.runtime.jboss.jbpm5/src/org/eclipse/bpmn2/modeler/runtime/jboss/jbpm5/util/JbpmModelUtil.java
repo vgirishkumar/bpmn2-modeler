@@ -112,7 +112,7 @@ public class JbpmModelUtil {
 									}
 								}
 							} while (!done);
-							Property var = (Property) ModelUtil.createFeature(processes.get(0), Bpmn2Package.eINSTANCE.getProcess_Properties());
+							Property var = (Property) Bpmn2ModelerFactory.createFeature(processes.get(0), "properties");
 							var.setName(varName);
 							var.setId(varName);
 							var.setItemSubjectRef(itemDef);
@@ -234,7 +234,7 @@ public class JbpmModelUtil {
 
 	public static void removeImport(ImportType importType) {
 		Definitions definitions = ModelUtil.getDefinitions(importType);
-		Import imp = Bpmn2Factory.eINSTANCE.createImport();
+		Import imp = Bpmn2ModelerFactory.create(Import.class);
 		imp.setImportType(ImportUtil.IMPORT_TYPE_JAVA);
 		imp.setLocation(importType.getName());
 		definitions.getImports().add(imp);
@@ -282,7 +282,7 @@ public class JbpmModelUtil {
 			}
 			if (itemDef==null) {
 				// create a new ItemDefinition for the jBPM data type
-				itemDef = Bpmn2Factory.eINSTANCE.createItemDefinition();
+				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
 				itemDef.setItemKind(ItemKind.PHYSICAL);
 				ModelUtil.setID(itemDef,defs.eResource());
 				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
@@ -411,7 +411,7 @@ public class JbpmModelUtil {
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {
-			rel = Bpmn2Factory.eINSTANCE.createRelationship();
+			rel = Bpmn2ModelerFactory.create(Relationship.class);
 			definitions.getRelationships().add(rel);
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);

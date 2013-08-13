@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureConta
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -278,7 +279,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 			// allow user to select a dataInput
 			DataInputAssociation dataInputAssoc = null;
-			DataInput dataInput = (DataInput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataInput());
+			DataInput dataInput = Bpmn2ModelerFactory.create(DataInput.class);
 			dataInput.setId(null);
 			String oldName = dataInput.getName();
 			dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
@@ -299,7 +300,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				ModelUtil.setID(dataInput);
 				dataInput.setName(oldName);
 				inputSet.getDataInputRefs().add(dataInput);
-				dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
+				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, diaFeature);
 				dataInputAssoc.setTargetRef(dataInput);
 			} else {
 				// and existing one
@@ -313,7 +314,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				}
 				if (dataInputAssoc==null) {
 					// none found, create a new one
-					dataInputAssoc = (DataInputAssociation) ModelUtil.createFeature(target, diaFeature);
+					dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, diaFeature);
 					dataInputAssoc.setTargetRef(dataInput);
 				}
 			}
@@ -329,7 +330,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 			// allow user to select a dataOutput
 			DataOutputAssociation dataOutputAssoc = null;
-			DataOutput dataOutput = (DataOutput) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getDataOutput());
+			DataOutput dataOutput = Bpmn2ModelerFactory.create(DataOutput.class);
 			dataOutput.setId(null);
 			String oldName = dataOutput.getName();
 			dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
@@ -350,7 +351,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				ModelUtil.setID(dataOutput);
 				dataOutput.setName(oldName);
 				outputSet.getDataOutputRefs().add(dataOutput);
-				dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
+				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, doaFeature);
 				dataOutputAssoc.getSourceRef().add(dataOutput);
 			} else {
 				// and existing one
@@ -364,7 +365,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				}
 				if (dataOutputAssoc==null) {
 					// none found, create a new one
-					dataOutputAssoc = (DataOutputAssociation) ModelUtil.createFeature(source, doaFeature);
+					dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, doaFeature);
 					dataOutputAssoc.getSourceRef().add(dataOutput);
 				}
 			}
@@ -391,11 +392,11 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					Activity activity = (Activity) source;
 					InputOutputSpecification ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
-						ioSpec = (InputOutputSpecification) ModelUtil.createFeature(activity, "ioSpecification");
+						ioSpec = Bpmn2ModelerFactory.createFeature(activity, "ioSpecification", InputOutputSpecification.class);
 					}
 					OutputSet outputSet = null;
 					if (ioSpec.getOutputSets().size()==0) {
-						outputSet = (OutputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getOutputSet());
+						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						ioSpec.getOutputSets().add(outputSet);
 					}
 					else {
@@ -410,7 +411,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					CatchEvent event = (CatchEvent)source;
 					OutputSet outputSet = event.getOutputSet();
 					if (outputSet==null) {
-						outputSet = (OutputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getOutputSet());
+						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						event.setOutputSet(outputSet);
 					}
 					dataOutputAssoc = selectOutput(source, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
@@ -428,11 +429,11 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					Activity activity = (Activity) target;
 					InputOutputSpecification ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
-						ioSpec = (InputOutputSpecification) ModelUtil.createFeature(activity, "ioSpecification");
+						ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
 					}
 					InputSet inputSet = null;
 					if (ioSpec.getInputSets().size()==0) {
-						inputSet = (InputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getInputSet());
+						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						ioSpec.getInputSets().add(inputSet);
 					}
 					else {
@@ -447,7 +448,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					ThrowEvent event = (ThrowEvent)target;
 					InputSet inputSet = event.getInputSet();
 					if (inputSet==null) {
-						inputSet = (InputSet) ModelUtil.createObject(Bpmn2Package.eINSTANCE.getInputSet());
+						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						event.setInputSet(inputSet);
 					}
 					dataInputAssoc = selectInput(target, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
