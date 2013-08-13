@@ -138,9 +138,11 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 				}
 				else {
 					intf = Bpmn2ModelerFactory.create(resource, Interface.class);
-					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), intf);
+//					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), intf);
+					definitions.getRootElements().add(intf);
 				}
-				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
+//				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
+				intf.getOperations().add(operation);
 				return operation;
 			}
     		

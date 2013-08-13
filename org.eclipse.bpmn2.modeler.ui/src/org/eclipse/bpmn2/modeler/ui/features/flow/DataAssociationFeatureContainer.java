@@ -298,7 +298,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				// the new one
 				dataInputs.add(dataInput);
 				ModelUtil.setID(dataInput);
-				dataInput.setName(oldName);
+				dataInput.setName( ModelUtil.getDisplayName(dataInput) );
 				inputSet.getDataInputRefs().add(dataInput);
 				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, diaFeature);
 				dataInputAssoc.setTargetRef(dataInput);

@@ -35,6 +35,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
@@ -91,6 +92,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.GlobalScriptTaskProperti
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ImportPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.IoSpecificationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemAwareElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.LinkEventDefinitionPropertiesAdapter;
@@ -605,7 +607,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 				return adapter;
         	return new LinkEventDefinitionPropertiesAdapter(adapterFactory,object);
 		}
-//
+
+		@Override
+		public ExtendedPropertiesAdapter caseInputOutputSpecification(InputOutputSpecification object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new IoSpecificationPropertiesAdapter(adapterFactory,object);
+		}
 
 		@Override
 		public ExtendedPropertiesAdapter caseInputSet(InputSet object) {
