@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataAssociation;
@@ -271,19 +272,26 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		}
 
 		private DataInputAssociation selectInput(BaseElement target, List<DataInput> dataInputs, List<DataInputAssociation> dataInputAssociations, InputSet inputSet) {
-			EStructuralFeature diaFeature = null;
-			if (target instanceof Activity)
-				diaFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
-			else if (target instanceof ThrowEvent)
-				diaFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
+			EObject object = null;
+			EStructuralFeature objectFeature = null;
+			EStructuralFeature targetFeature = null;
+			if (target instanceof Activity) {
+				object = ((Activity)target).getIoSpecification();
+				objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs();
+				targetFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
+			}
+			else if (target instanceof ThrowEvent) {
+				object = target;
+				objectFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputs();
+				targetFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
+			}
 
-			// allow user to select a dataInput
-			DataInputAssociation dataInputAssoc = null;
-			DataInput dataInput = Bpmn2ModelerFactory.create(DataInput.class);
-			dataInput.setId(null);
-			String oldName = dataInput.getName();
+			// allow user to select a dataInput:
+			// create a throw away object as a placeholder in our popup list
+			DataInput dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
 			dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
 			DataInput result = dataInput;
+			// build the popup list
 			List<DataInput> list = new ArrayList<DataInput>();
 			list.add(dataInput);
 			list.addAll(dataInputs);
@@ -294,16 +302,17 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					result = (DataInput) popupMenu.getResult();
 				}
 			}
+
+			DataInputAssociation dataInputAssoc = null;
 			if (result == dataInput) {
-				// the new one
+				// create the new one
+				dataInput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataInput.class);
 				dataInputs.add(dataInput);
-				ModelUtil.setID(dataInput);
-				dataInput.setName( ModelUtil.getDisplayName(dataInput) );
 				inputSet.getDataInputRefs().add(dataInput);
-				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, diaFeature);
+				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
 				dataInputAssoc.setTargetRef(dataInput);
 			} else {
-				// and existing one
+				// select an existing one
 				dataInput = result;
 				// find the DataInputAssociation for this DataInput
 				for (DataInputAssociation d : dataInputAssociations) {
@@ -314,7 +323,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				}
 				if (dataInputAssoc==null) {
 					// none found, create a new one
-					dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, diaFeature);
+					dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
 					dataInputAssoc.setTargetRef(dataInput);
 				}
 			}
@@ -322,19 +331,26 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		}
 
 		private DataOutputAssociation selectOutput(BaseElement source, List<DataOutput> dataOutputs, List<DataOutputAssociation> dataOutputAssociations, OutputSet outputSet) {
-			EStructuralFeature doaFeature = null;
-			if (source instanceof Activity)
-				doaFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
-			else if (source instanceof CatchEvent)
-				doaFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
+			EObject object = null;
+			EStructuralFeature objectFeature = null;
+			EStructuralFeature sourceFeature = null;
+			if (source instanceof Activity) {
+				object = ((Activity)source).getIoSpecification();
+				objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs();
+				sourceFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
+			}
+			else if (source instanceof CatchEvent) {
+				object = source;
+				objectFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputs();
+				sourceFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
+			}
 
-			// allow user to select a dataOutput
-			DataOutputAssociation dataOutputAssoc = null;
-			DataOutput dataOutput = Bpmn2ModelerFactory.create(DataOutput.class);
-			dataOutput.setId(null);
-			String oldName = dataOutput.getName();
+			// allow user to select a dataOutput:
+			// create a throw away object as a placeholder in our popup list
+			DataOutput dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
 			dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
 			DataOutput result = dataOutput;
+			// build the popup list
 			List<DataOutput> list = new ArrayList<DataOutput>();
 			list.add(dataOutput);
 			list.addAll(dataOutputs);
@@ -345,16 +361,17 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					result = (DataOutput) popupMenu.getResult();
 				}
 			}
+
+			DataOutputAssociation dataOutputAssoc = null;
 			if (result == dataOutput) {
-				// the new one
+				// create the new one
+				dataOutput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataOutput.class);
 				dataOutputs.add(dataOutput);
-				ModelUtil.setID(dataOutput);
-				dataOutput.setName(oldName);
 				outputSet.getDataOutputRefs().add(dataOutput);
-				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, doaFeature);
+				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
 				dataOutputAssoc.getSourceRef().add(dataOutput);
 			} else {
-				// and existing one
+				// select an existing one
 				dataOutput = result;
 				// find the DataOutputAssociation for this DataOutput
 				for (DataOutputAssociation d : dataOutputAssociations) {
@@ -365,7 +382,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				}
 				if (dataOutputAssoc==null) {
 					// none found, create a new one
-					dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, doaFeature);
+					dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
 					dataOutputAssoc.getSourceRef().add(dataOutput);
 				}
 			}

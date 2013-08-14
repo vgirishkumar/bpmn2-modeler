@@ -85,7 +85,7 @@ public class DefaultListComposite extends AbstractListComposite {
 						" because its Object Factory is unknown."
 				);
 			}
-			else
+			else if (!list.contains(newItem))
 				list.add(newItem);
 		}
 		return newItem;

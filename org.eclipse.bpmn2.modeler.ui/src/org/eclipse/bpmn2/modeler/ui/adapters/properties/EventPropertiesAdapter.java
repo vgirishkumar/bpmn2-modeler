@@ -13,7 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
-import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
@@ -27,24 +27,22 @@ import org.eclipse.emf.ecore.resource.Resource;
  * @author Bob Brodt
  *
  */
-public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPropertiesAdapter<T> {
+public class EventPropertiesAdapter<T extends Event> extends ExtendedPropertiesAdapter<T> {
 
 	/**
 	 * @param adapterFactory
 	 * @param object
 	 */
-	public ActivityPropertiesAdapter(AdapterFactory adapterFactory, T object) {
+	public EventPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
-    	setProperty(Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), UI_CAN_CREATE_NEW, Boolean.FALSE);
-    	setProperty(Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), UI_CAN_EDIT, Boolean.FALSE);
 
-		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getActivity_Properties();
+		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getEvent_Properties();
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(adapterFactory,object,feature) {
 				@Override
 				public EObject createFeature(Resource resource, Object context, EClass eclass) {
-					T activity = adopt(context);
-					return PropertyPropertiesAdapter.createProperty(activity.getProperties());
+					T event = adopt(context);
+					return PropertyPropertiesAdapter.createProperty(event.getProperties());
 				}
 			}
 		);

@@ -24,7 +24,6 @@ import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -57,27 +56,8 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					inputSets.add(Bpmn2ModelerFactory.create(InputSet.class));
 				}
 				InputSet inputSet = inputSets.get(0);
-				
-				String base = "input";
-				int suffix = 1;
-				String name = base + suffix;
-				for (;;) {
-					boolean found = false;
-					for (DataInput p : inputSet.getDataInputRefs()) {
-						if (name.equals(p.getName())) {
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-						break;
-					name = base + ++suffix;
-				}
-				
-				DataInput dataInput = Bpmn2ModelerFactory.create(resource,DataInput.class);
-				dataInput.setName(name);
+				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, ioSpecification.getDataInputs());
 				inputSet.getDataInputRefs().add(dataInput);
-				ioSpecification.getDataInputs().add(dataInput);
 
 				return dataInput;
 			}
@@ -94,31 +74,11 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					outputSets.add(Bpmn2ModelerFactory.create(OutputSet.class));
 				}
 				OutputSet outputSet = outputSets.get(0);
-				
-				String base = "output";
-				int suffix = 1;
-				String name = base + suffix;
-				for (;;) {
-					boolean found = false;
-					for (DataOutput p : outputSet.getDataOutputRefs()) {
-						if (name.equals(p.getName())) {
-							found = true;
-							break;
-						}
-					}
-					if (!found)
-						break;
-					name = base + ++suffix;
-				}
-				
-				DataOutput dataOutput = Bpmn2ModelerFactory.create(resource,DataOutput.class);
-				dataOutput.setName(name);
+				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, ioSpecification.getDataOutputs());
 				outputSet.getDataOutputRefs().add(dataOutput);
-				ioSpecification.getDataOutputs().add(dataOutput);
 
 				return dataOutput;
 			}
     	});
 	}
-
 }
