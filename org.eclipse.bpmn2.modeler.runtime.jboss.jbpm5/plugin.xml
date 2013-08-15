@@ -640,6 +640,7 @@
 			<enable object="CatchEvent" feature="dataOutputAssociation"/>
 			<enable object="CompensateEventDefinition" feature="activityRef"/>
 			<enable object="ConditionalEventDefinition" feature="condition"/>
+			<enable object="DataAssociation"/>
 			<enable object="DataInput" feature="anyAttribute"/>
 			<enable object="DataInput" feature="documentation"/>
 			<enable object="DataInput" feature="extensionDefinitions"/>
@@ -1094,6 +1095,7 @@
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Connections" name="Connections">
 				<tool name="Association (undirected)" object="Association[$associationDirection=None]"/>
 				<tool name="Association (one-way)" object="Association[$associationDirection=One]"/>
+				<tool name="Data Association" object="DataAssociation"/>
 				<tool name="Sequence Flow" object="SequenceFlow"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.DataObjects" name="Data Objects">
