@@ -136,9 +136,9 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				ModelHandler mh = ModelHandler.getInstance(getDiagram());
 				dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
 				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
-				dataObject.setId(null);
 				String oldName = dataObject.getName();
 				dataObject.setName("Create a new Data Object");
+				dataObject.setId(null);
 				EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
 				
 				// NOTE: this code removed. A DataObjectReference may reference DataObjects
@@ -175,7 +175,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 					mh.addFlowElement(targetBusinessObject,dataObject);
 					ModelUtil.setID(dataObject);
 					dataObject.setIsCollection(false);
-					dataObject.setName(ModelUtil.toDisplayName(oldName));
+					dataObject.setName(oldName);
 					bo = dataObject;
 				} else {
 					mh.addFlowElement(targetBusinessObject,dataObjectReference);
