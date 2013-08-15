@@ -117,7 +117,7 @@ public class DroolsValidator extends EObjectValidator {
 				return validateOnExitScriptType((OnExitScriptType)value, diagnostics, context);
 			case DroolsPackage.BP_SIM_DATA_TYPE:
 				return validateBPSimDataType((BPSimDataType)value, diagnostics, context);
-			case DroolsPackage.CALLABLE_ELEMENT_PROXY:
+			case DroolsPackage.EXTERNAL_PROCESS:
 				return validateExternalProcess((ExternalProcess)value, diagnostics, context);
 			case DroolsPackage.PACKAGE_NAME_TYPE:
 				return validatePackageNameType((String)value, diagnostics, context);

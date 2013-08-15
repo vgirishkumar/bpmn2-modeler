@@ -608,7 +608,7 @@ public class DroolsPackageImpl extends EPackageImpl implements DroolsPackage {
 
 		bpSimDataTypeEClass = createEClass(BP_SIM_DATA_TYPE);
 
-		callableElementProxyEClass = createEClass(CALLABLE_ELEMENT_PROXY);
+		callableElementProxyEClass = createEClass(EXTERNAL_PROCESS);
 
 		// Create data types
 		packageNameTypeEDataType = createEDataType(PACKAGE_NAME_TYPE);

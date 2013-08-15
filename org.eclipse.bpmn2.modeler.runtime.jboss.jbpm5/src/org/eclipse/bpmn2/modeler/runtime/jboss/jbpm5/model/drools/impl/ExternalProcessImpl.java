@@ -35,7 +35,7 @@ public class ExternalProcessImpl extends CallableElementImpl implements External
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return DroolsPackage.Literals.CALLABLE_ELEMENT_PROXY;
+		return DroolsPackage.Literals.EXTERNAL_PROCESS;
 	}
 
 } //ExternalProcessImpl

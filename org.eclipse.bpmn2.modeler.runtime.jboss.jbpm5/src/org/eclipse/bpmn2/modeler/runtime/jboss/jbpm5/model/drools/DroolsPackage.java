@@ -1739,7 +1739,7 @@ public interface DroolsPackage extends EPackage {
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getExternalProcess()
 	 * @generated
 	 */
-	int CALLABLE_ELEMENT_PROXY = 8;
+	int EXTERNAL_PROCESS = 8;
 
 	/**
 	 * The feature id for the '<em><b>Extension Values</b></em>' containment reference list.
@@ -1748,7 +1748,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__EXTENSION_VALUES = Bpmn2Package.CALLABLE_ELEMENT__EXTENSION_VALUES;
+	int EXTERNAL_PROCESS__EXTENSION_VALUES = Bpmn2Package.CALLABLE_ELEMENT__EXTENSION_VALUES;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' containment reference list.
@@ -1757,7 +1757,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__DOCUMENTATION = Bpmn2Package.CALLABLE_ELEMENT__DOCUMENTATION;
+	int EXTERNAL_PROCESS__DOCUMENTATION = Bpmn2Package.CALLABLE_ELEMENT__DOCUMENTATION;
 
 	/**
 	 * The feature id for the '<em><b>Extension Definitions</b></em>' reference list.
@@ -1766,7 +1766,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__EXTENSION_DEFINITIONS = Bpmn2Package.CALLABLE_ELEMENT__EXTENSION_DEFINITIONS;
+	int EXTERNAL_PROCESS__EXTENSION_DEFINITIONS = Bpmn2Package.CALLABLE_ELEMENT__EXTENSION_DEFINITIONS;
 
 	/**
 	 * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -1775,7 +1775,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__ID = Bpmn2Package.CALLABLE_ELEMENT__ID;
+	int EXTERNAL_PROCESS__ID = Bpmn2Package.CALLABLE_ELEMENT__ID;
 
 	/**
 	 * The feature id for the '<em><b>Any Attribute</b></em>' attribute list.
@@ -1784,7 +1784,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__ANY_ATTRIBUTE = Bpmn2Package.CALLABLE_ELEMENT__ANY_ATTRIBUTE;
+	int EXTERNAL_PROCESS__ANY_ATTRIBUTE = Bpmn2Package.CALLABLE_ELEMENT__ANY_ATTRIBUTE;
 
 	/**
 	 * The feature id for the '<em><b>Supported Interface Refs</b></em>' reference list.
@@ -1793,7 +1793,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__SUPPORTED_INTERFACE_REFS = Bpmn2Package.CALLABLE_ELEMENT__SUPPORTED_INTERFACE_REFS;
+	int EXTERNAL_PROCESS__SUPPORTED_INTERFACE_REFS = Bpmn2Package.CALLABLE_ELEMENT__SUPPORTED_INTERFACE_REFS;
 
 	/**
 	 * The feature id for the '<em><b>Io Specification</b></em>' containment reference.
@@ -1802,7 +1802,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__IO_SPECIFICATION = Bpmn2Package.CALLABLE_ELEMENT__IO_SPECIFICATION;
+	int EXTERNAL_PROCESS__IO_SPECIFICATION = Bpmn2Package.CALLABLE_ELEMENT__IO_SPECIFICATION;
 
 	/**
 	 * The feature id for the '<em><b>Io Binding</b></em>' containment reference list.
@@ -1811,7 +1811,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__IO_BINDING = Bpmn2Package.CALLABLE_ELEMENT__IO_BINDING;
+	int EXTERNAL_PROCESS__IO_BINDING = Bpmn2Package.CALLABLE_ELEMENT__IO_BINDING;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1820,7 +1820,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY__NAME = Bpmn2Package.CALLABLE_ELEMENT__NAME;
+	int EXTERNAL_PROCESS__NAME = Bpmn2Package.CALLABLE_ELEMENT__NAME;
 
 	/**
 	 * The number of structural features of the '<em>Callable Element Proxy</em>' class.
@@ -1829,7 +1829,7 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int CALLABLE_ELEMENT_PROXY_FEATURE_COUNT = Bpmn2Package.CALLABLE_ELEMENT_FEATURE_COUNT + 0;
+	int EXTERNAL_PROCESS_FEATURE_COUNT = Bpmn2Package.CALLABLE_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The meta object id for the '<em>Package Name Type</em>' data type.
@@ -2560,7 +2560,7 @@ public interface DroolsPackage extends EPackage {
 		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getExternalProcess()
 		 * @generated
 		 */
-		EClass CALLABLE_ELEMENT_PROXY = eINSTANCE.getExternalProcess();
+		EClass EXTERNAL_PROCESS = eINSTANCE.getExternalProcess();
 
 		/**
 		 * The meta object literal for the '<em>Package Name Type</em>' data type.

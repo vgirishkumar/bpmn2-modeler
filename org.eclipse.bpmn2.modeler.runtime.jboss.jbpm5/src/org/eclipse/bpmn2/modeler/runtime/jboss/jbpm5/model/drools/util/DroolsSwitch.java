@@ -128,7 +128,7 @@ public class DroolsSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case DroolsPackage.CALLABLE_ELEMENT_PROXY: {
+			case DroolsPackage.EXTERNAL_PROCESS: {
 				ExternalProcess callableElementProxy = (ExternalProcess)theEObject;
 				T result = caseExternalProcess(callableElementProxy);
 				if (result == null) result = caseCallableElement(callableElementProxy);
