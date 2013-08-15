@@ -738,7 +738,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 				if (!(pe instanceof Connection)) {
 					editor.setPictogramElementForSelection(pe);
 				}
-//				editor.refresh();
+				editor.refresh();
 			}
 			else if (context instanceof MoveShapeContext) {
 				PictogramElement pe = ((MoveShapeContext)context).getPictogramElement();

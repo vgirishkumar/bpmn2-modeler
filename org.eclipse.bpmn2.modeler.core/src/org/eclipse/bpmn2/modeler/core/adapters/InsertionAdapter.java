@@ -71,7 +71,6 @@ public class InsertionAdapter extends EContentAdapter {
 		if (object!=null) {
 			value.eAdapters().add(
 					new InsertionAdapter(resource, object, feature, value));
-			executeIfNeeded(object);
 		}
 		return value;
 	}
@@ -80,7 +79,6 @@ public class InsertionAdapter extends EContentAdapter {
 		if (object!=null) {
 			value.eAdapters().add(
 					new InsertionAdapter(object, feature, value));
-			executeIfNeeded(object);
 		}
 		return value;
 	}
@@ -89,7 +87,6 @@ public class InsertionAdapter extends EContentAdapter {
 		if (object!=null) {
 			value.eAdapters().add(
 					new InsertionAdapter(object, featureName, value));
-			executeIfNeeded(object);
 		}
 		return value;
 	}
