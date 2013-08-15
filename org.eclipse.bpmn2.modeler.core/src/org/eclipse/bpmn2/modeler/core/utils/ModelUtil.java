@@ -1199,12 +1199,12 @@ public class ModelUtil {
 		return object;
 	}
 
-	private static EClass getFeatureClass(EObject object, EStructuralFeature feature) {
+	private static EObject getFeatureClass(EObject object, EStructuralFeature feature) {
 		EClass eclass = null;
 		if (feature!=null && feature.eContainer() instanceof EClass)
 			eclass = (EClass)feature.eContainer();
 		if (eclass==null || eclass.isAbstract()) {
-			eclass = object.eClass();
+			return object;
 		}
 		return eclass;
 	}
@@ -1216,8 +1216,8 @@ public class ModelUtil {
 	
 	@SuppressWarnings("rawtypes")
 	private static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
-		EClass eclass = getFeatureClass(object,feature);
-		return (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+		EObject eclass = getFeatureClass(object,feature);
+		return (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
 	}
 	
 	/*

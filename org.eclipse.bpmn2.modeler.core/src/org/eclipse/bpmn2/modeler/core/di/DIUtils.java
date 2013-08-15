@@ -332,7 +332,7 @@ public class DIUtils {
 	 * @return
 	 */
 	public static BPMNDiagram findBPMNDiagram(final BaseElement baseElement, boolean contains) {
-		if (baseElement==null)
+		if (baseElement==null || baseElement.eResource()==null)
 			return null;
 		ResourceSet resourceSet = baseElement.eResource().getResourceSet();
 		if (resourceSet==null)
