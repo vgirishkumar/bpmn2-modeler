@@ -80,6 +80,7 @@ public interface IConstants {
 	public final String ICON_DATAOBJECT = "16/DataObject.png";
 	public final String ICON_DATAOUTPUT = "16/DataOutput.png";
 	public final String ICON_DATASTORE = "16/DataStore.png";
+	public final String ICON_DATASTOREREFERENCE = "16/DataStoreReference.png";
 	public final String ICON_ENDEVENT = "16/EndEvent.png";
 	public final String ICON_ERROR = "16/Error.png";
 	public final String ICON_ERROREVENTDEFINITION = "16/ErrorEventDefinition.png";

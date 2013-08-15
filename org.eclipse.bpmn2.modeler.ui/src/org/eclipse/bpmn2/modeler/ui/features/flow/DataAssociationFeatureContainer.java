@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
@@ -45,6 +46,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
+import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
@@ -55,15 +57,13 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
@@ -85,8 +85,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 	// or empty string is the same as "None")
 	public static final String ASSOCIATION_DIRECTION = "association.direction";
 	public static final String ARROWHEAD_DECORATOR = "arrowhead.decorator";
-	
-	protected CreateConnectionContext createContext;
 	
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -114,7 +112,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		return new ReconnectDataAssociationFeature(fp);
 	}
 
-	private boolean canConnect(BaseElement source, BaseElement target) {
+	private static boolean canConnect(BaseElement source, BaseElement target) {
 		// Connection rules:
 		// either the source or target must be an ItemAwareElement,
 		// and the other must be either an Activity or a Catch or Throw Event
@@ -128,6 +126,161 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				return true;
 		}
 		return false;
+	}
+
+	private static void deleteReplacedDataAssociation(IFeatureProvider fp, Connection connection) {
+
+		DataAssociation newAssociation = (DataAssociation) BusinessObjectUtil.getBusinessObjectForPictogramElement(connection);
+		List<Connection> deleted = new ArrayList<Connection>();
+		for (Connection c : fp.getDiagramTypeProvider().getDiagram().getConnections()) {
+			// if this new DataAssociation replaces another one, delete it
+			if (c!=connection) {
+				if (newAssociation instanceof DataInputAssociation) {
+					DataInputAssociation dia = BusinessObjectUtil.getFirstElementOfType(c, DataInputAssociation.class);
+					if (dia!=null) {
+						if (newAssociation.getTargetRef() == dia.getTargetRef())
+							deleted.add(c);
+					}
+					
+				}
+				else {
+					DataOutputAssociation doa = BusinessObjectUtil.getFirstElementOfType(c, DataOutputAssociation.class);
+					if (doa!=null) {
+						for (ItemAwareElement d : newAssociation.getSourceRef()) {
+							if (doa.getSourceRef().contains(d)) {
+								deleted.add(c);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for (Connection c : deleted) {
+			DeleteContext dc = new DeleteContext(c);
+			c.getLink().getBusinessObjects().remove(0);
+			IDeleteFeature df = fp.getDeleteFeature(dc);
+			df.delete(dc);
+		}
+	}
+	
+	private static DataInputAssociation selectInput(BaseElement target, List<DataInput> dataInputs, List<DataInputAssociation> dataInputAssociations, InputSet inputSet) {
+		EObject object = null;
+		EStructuralFeature objectFeature = null;
+		EStructuralFeature targetFeature = null;
+		if (target instanceof Activity) {
+			object = ((Activity)target).getIoSpecification();
+			objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs();
+			targetFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
+		}
+		else if (target instanceof ThrowEvent) {
+			object = target;
+			objectFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputs();
+			targetFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
+		}
+
+		// allow user to select a dataInput:
+		// create a throw away object as a placeholder in our popup list
+		DataInput dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
+		dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
+		DataInput result = dataInput;
+		// build the popup list
+		List<DataInput> list = new ArrayList<DataInput>();
+		list.add(dataInput);
+		list.addAll(dataInputs);
+		if (list.size()>1) {
+			PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+			boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+			if (b) {
+				result = (DataInput) popupMenu.getResult();
+			}
+		}
+
+		DataInputAssociation dataInputAssoc = null;
+		if (result == dataInput) {
+			// create the new one
+			dataInput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataInput.class);
+			dataInputs.add(dataInput);
+			inputSet.getDataInputRefs().add(dataInput);
+			dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
+			dataInputAssoc.setTargetRef(dataInput);
+		} else {
+			// select an existing one
+			dataInput = result;
+			// find the DataInputAssociation for this DataInput
+			for (DataInputAssociation d : dataInputAssociations) {
+				if (d.getTargetRef() == dataInput) {
+					dataInputAssoc = d;
+					break;
+				}
+			}
+			if (dataInputAssoc==null) {
+				// none found, create a new one
+				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
+				dataInputAssoc.setTargetRef(dataInput);
+			}
+		}
+		return dataInputAssoc;
+	}
+
+	private static DataOutputAssociation selectOutput(BaseElement source, List<DataOutput> dataOutputs, List<DataOutputAssociation> dataOutputAssociations, OutputSet outputSet) {
+		EObject object = null;
+		EStructuralFeature objectFeature = null;
+		EStructuralFeature sourceFeature = null;
+		if (source instanceof Activity) {
+			object = ((Activity)source).getIoSpecification();
+			objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs();
+			sourceFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
+		}
+		else if (source instanceof CatchEvent) {
+			object = source;
+			objectFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputs();
+			sourceFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
+		}
+
+		// allow user to select a dataOutput:
+		// create a throw away object as a placeholder in our popup list
+		DataOutput dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
+		dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
+		DataOutput result = dataOutput;
+		// build the popup list
+		List<DataOutput> list = new ArrayList<DataOutput>();
+		list.add(dataOutput);
+		list.addAll(dataOutputs);
+		if (list.size()>1) {
+			PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+			boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+			if (b) {
+				result = (DataOutput) popupMenu.getResult();
+			}
+		}
+
+		DataOutputAssociation dataOutputAssoc = null;
+		if (result == dataOutput) {
+			// create the new one
+			dataOutput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataOutput.class);
+			dataOutputs.add(dataOutput);
+			outputSet.getDataOutputRefs().add(dataOutput);
+			dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
+			dataOutputAssoc.getSourceRef().add(dataOutput);
+		} else {
+			// select an existing one
+			dataOutput = result;
+			// find the DataOutputAssociation for this DataOutput
+			for (DataOutputAssociation d : dataOutputAssociations) {
+				if (d.getSourceRef().contains(dataOutput)) {
+					dataOutputAssoc = d;
+					break;
+				}
+			}
+			if (dataOutputAssoc==null) {
+				// none found, create a new one
+				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
+				dataOutputAssoc.getSourceRef().add(dataOutput);
+			}
+		}
+		return dataOutputAssoc;
 	}
 
 	
@@ -150,7 +303,49 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			ItemAwareElement element = (ItemAwareElement) object;
 			if (element.getId()==null)
 				return ModelUtil.getDisplayName(object);
-			return "Map existing \"" + ModelUtil.getDisplayName(object) + "\"";
+			String text = "Use \"" + ModelUtil.getDisplayName(object) + "\"";
+			String mapping = " (unmapped)";
+			if (element instanceof DataOutput) {
+				List<DataOutputAssociation> doa = null;
+				if (element.eContainer() instanceof InputOutputSpecification) {
+					InputOutputSpecification ioSpec = (InputOutputSpecification)element.eContainer();
+					Activity activity = (Activity)ioSpec.eContainer();
+					doa = activity.getDataOutputAssociations();
+				}
+				else {
+					CatchEvent event = (CatchEvent)element.eContainer();
+					doa = event.getDataOutputAssociation();
+				}
+				for (DataOutputAssociation d : doa) {
+					if (d.getSourceRef().contains(element)) {
+						if (d.getTargetRef()!=null) {
+							mapping = " (mapped to " + ModelUtil.getDisplayName(d.getTargetRef()) + ")";
+						}
+						break;
+					}
+				}
+			}
+			else if (element instanceof DataInput) {
+				List<DataInputAssociation> dia = null;
+				if (element.eContainer() instanceof InputOutputSpecification) {
+					InputOutputSpecification ioSpec = (InputOutputSpecification)element.eContainer();
+					Activity activity = (Activity)ioSpec.eContainer();
+					dia = activity.getDataInputAssociations();
+				}
+				else {
+					ThrowEvent event = (ThrowEvent)element.eContainer();
+					dia = event.getDataInputAssociation();
+				}
+				for (DataInputAssociation d : dia) {
+					if (d.getTargetRef()==element) {
+						if (d.getSourceRef().size()>0) {
+							mapping = " (mapped to " + ModelUtil.getDisplayName(d.getSourceRef().get(0)) + ")";
+						}
+						break;
+					}
+				}
+			}
+			return text + mapping;
 		}
 
 		public Image getImage(Object element) {
@@ -191,33 +386,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				return canConnect(source, target);
 			}
 			return false;
-		}
-
-		@Override
-		public Connection create(ICreateConnectionContext context) {
-			// save the CreateContext because we'll need it in AddFeature
-			createContext = (CreateConnectionContext)context;
-			Anchor sourceAnchor = createContext.getSourceAnchor();
-			Anchor targetAnchor = createContext.getTargetAnchor();
-			PictogramElement source = createContext.getSourcePictogramElement();
-			PictogramElement target = createContext.getTargetPictogramElement();
-			
-			if (sourceAnchor==null && source instanceof FreeFormConnection) {
-				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-						(FreeFormConnection)source,
-						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)source, 0.5));
-				sourceAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-				createContext.setSourceAnchor(sourceAnchor);
-			}
-			if (targetAnchor==null && target instanceof FreeFormConnection) {
-				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-						(FreeFormConnection)target,
-						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)target, 0.5));
-				targetAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-				createContext.setTargetAnchor(targetAnchor);
-			}
-
-			return super.create(context);
 		}
 
 		@Override
@@ -269,124 +437,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		@Override
 		public EClass getBusinessObjectClass() {
 			return Bpmn2Package.eINSTANCE.getDataAssociation();
-		}
-
-		private DataInputAssociation selectInput(BaseElement target, List<DataInput> dataInputs, List<DataInputAssociation> dataInputAssociations, InputSet inputSet) {
-			EObject object = null;
-			EStructuralFeature objectFeature = null;
-			EStructuralFeature targetFeature = null;
-			if (target instanceof Activity) {
-				object = ((Activity)target).getIoSpecification();
-				objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs();
-				targetFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
-			}
-			else if (target instanceof ThrowEvent) {
-				object = target;
-				objectFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputs();
-				targetFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
-			}
-
-			// allow user to select a dataInput:
-			// create a throw away object as a placeholder in our popup list
-			DataInput dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
-			dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
-			DataInput result = dataInput;
-			// build the popup list
-			List<DataInput> list = new ArrayList<DataInput>();
-			list.add(dataInput);
-			list.addAll(dataInputs);
-			if (list.size()>1) {
-				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-				if (b) {
-					result = (DataInput) popupMenu.getResult();
-				}
-			}
-
-			DataInputAssociation dataInputAssoc = null;
-			if (result == dataInput) {
-				// create the new one
-				dataInput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataInput.class);
-				dataInputs.add(dataInput);
-				inputSet.getDataInputRefs().add(dataInput);
-				dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
-				dataInputAssoc.setTargetRef(dataInput);
-			} else {
-				// select an existing one
-				dataInput = result;
-				// find the DataInputAssociation for this DataInput
-				for (DataInputAssociation d : dataInputAssociations) {
-					if (d.getTargetRef() == dataInput) {
-						dataInputAssoc = d;
-						break;
-					}
-				}
-				if (dataInputAssoc==null) {
-					// none found, create a new one
-					dataInputAssoc = (DataInputAssociation) Bpmn2ModelerFactory.createFeature(target, targetFeature);
-					dataInputAssoc.setTargetRef(dataInput);
-				}
-			}
-			return dataInputAssoc;
-		}
-
-		private DataOutputAssociation selectOutput(BaseElement source, List<DataOutput> dataOutputs, List<DataOutputAssociation> dataOutputAssociations, OutputSet outputSet) {
-			EObject object = null;
-			EStructuralFeature objectFeature = null;
-			EStructuralFeature sourceFeature = null;
-			if (source instanceof Activity) {
-				object = ((Activity)source).getIoSpecification();
-				objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs();
-				sourceFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
-			}
-			else if (source instanceof CatchEvent) {
-				object = source;
-				objectFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputs();
-				sourceFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
-			}
-
-			// allow user to select a dataOutput:
-			// create a throw away object as a placeholder in our popup list
-			DataOutput dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
-			dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
-			DataOutput result = dataOutput;
-			// build the popup list
-			List<DataOutput> list = new ArrayList<DataOutput>();
-			list.add(dataOutput);
-			list.addAll(dataOutputs);
-			if (list.size()>1) {
-				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-				if (b) {
-					result = (DataOutput) popupMenu.getResult();
-				}
-			}
-
-			DataOutputAssociation dataOutputAssoc = null;
-			if (result == dataOutput) {
-				// create the new one
-				dataOutput = Bpmn2ModelerFactory.createFeature(object, objectFeature, DataOutput.class);
-				dataOutputs.add(dataOutput);
-				outputSet.getDataOutputRefs().add(dataOutput);
-				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
-				dataOutputAssoc.getSourceRef().add(dataOutput);
-			} else {
-				// select an existing one
-				dataOutput = result;
-				// find the DataOutputAssociation for this DataOutput
-				for (DataOutputAssociation d : dataOutputAssociations) {
-					if (d.getTargetRef() == dataOutput) {
-						dataOutputAssoc = d;
-						break;
-					}
-				}
-				if (dataOutputAssoc==null) {
-					// none found, create a new one
-					dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
-					dataOutputAssoc.getSourceRef().add(dataOutput);
-				}
-			}
-			return dataOutputAssoc;
 		}
 		
 		@Override
@@ -487,55 +537,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public PictogramElement add(IAddContext context) {
-			AddConnectionContext addConContext = (AddConnectionContext)context;
-			Anchor sourceAnchor = addConContext.getSourceAnchor();
-			Anchor targetAnchor = addConContext.getTargetAnchor();
-			PictogramElement source = sourceAnchor==null ? null : sourceAnchor.getParent();
-			PictogramElement target = targetAnchor==null ? null : targetAnchor.getParent();
-			boolean anchorChanged = false;
-			
-			if (createContext!=null) {
-				if (source==null) {
-					source = createContext.getSourcePictogramElement();
-					sourceAnchor = createContext.getSourceAnchor();
-				}
-				if (target==null) {
-					target = createContext.getTargetPictogramElement();
-					targetAnchor = createContext.getTargetAnchor();
-				}
-			}
-			
-			if (sourceAnchor==null && source instanceof FreeFormConnection) {
-				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-						(FreeFormConnection)source,
-						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)source, 0.5));
-				sourceAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-				anchorChanged = true;
-			}
-			if (targetAnchor==null && target instanceof FreeFormConnection) {
-				Shape connectionPointShape = AnchorUtil.createConnectionPoint(getFeatureProvider(),
-						(FreeFormConnection)target,
-						Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)target, 0.5));
-				targetAnchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
-				anchorChanged = true;
-			}
-			
-			// this is silly! why are there no setters for sourceAnchor and targetAnchor in AddConnectionContext???
-			if (anchorChanged) {
-				AddConnectionContext newContext = new AddConnectionContext(sourceAnchor, targetAnchor);
-				newContext.setSize(addConContext.getHeight(), addConContext.getWidth());
-				newContext.setLocation(addConContext.getX(), addConContext.getY());
-				newContext.setNewObject(getBusinessObject(addConContext));
-				newContext.setTargetConnection(addConContext.getTargetConnection());
-				newContext.setTargetConnectionDecorator(addConContext.getTargetConnectionDecorator());
-				newContext.setTargetContainer(addConContext.getTargetContainer());
-				
-				context = newContext;
-			}
-			// we're done with this
-			createContext = null;
-			
-			return super.add(context);
+			Connection connection = (Connection) super.add(context);
+			deleteReplacedDataAssociation(getFeatureProvider(), connection);
+			return connection;
 		}
 
 		@Override
@@ -662,16 +666,18 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public boolean canReconnect(IReconnectionContext context) {
-			DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getConnection(),
-					DataAssociation.class);
-			BaseElement targetElement = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
-			if (targetElement instanceof DataAssociation)
-				return false;
-			PictogramElement targetPictogramElement = context.getTargetPictogramElement();
-			if (targetPictogramElement instanceof FreeFormConnection) {
-				return true;
+			Connection connection = context.getConnection();
+			BaseElement source = null;
+			BaseElement target = null;
+			if (ReconnectionContext.RECONNECT_SOURCE.equals(context.getReconnectType())) {
+				source = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+				target = BusinessObjectUtil.getFirstElementOfType(connection.getEnd().getParent(), BaseElement.class);
 			}
-			return super.canReconnect(context);
+			else {
+				target = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+				source = BusinessObjectUtil.getFirstElementOfType(connection.getStart().getParent(), BaseElement.class);
+			}
+			return canConnect(source, target);
 		}
 
 		@Override
@@ -704,9 +710,171 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public void postReconnect(IReconnectionContext context) {
-			Anchor oldAnchor = context.getOldAnchor();
-			AnchorContainer oldAnchorContainer = oldAnchor.getParent();
-			AnchorUtil.deleteConnectionPointIfPossible(getFeatureProvider(), (Shape) oldAnchorContainer);
+			Connection connection = context.getConnection();
+			BPMNEdge edge = BusinessObjectUtil.getFirstElementOfType(context.getConnection(), BPMNEdge.class);
+			BaseElement oldElement = null;
+			BaseElement newElement = null;
+			BaseElement otherElement = null;
+			DataAssociation oldAssociation = BusinessObjectUtil.getFirstElementOfType(connection, DataAssociation.class);
+			DataAssociation newAssociation = null;
+			boolean isInput = true;
+
+			if (ReconnectionContext.RECONNECT_SOURCE.equals(context.getReconnectType())) {
+				isInput = false;
+				otherElement = BusinessObjectUtil.getFirstElementOfType(connection.getEnd().getParent(), BaseElement.class);
+			}
+			else {
+				otherElement = BusinessObjectUtil.getFirstElementOfType(connection.getStart().getParent(), BaseElement.class);
+			}
+			oldElement = BusinessObjectUtil.getFirstElementOfType(context.getOldAnchor().getParent(), BaseElement.class);
+			newElement = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+			if (oldElement instanceof Activity) {
+				// disconnect the DataAssociation
+				if (isInput) {
+					((Activity)oldElement).getDataInputAssociations().remove(otherElement);
+					List<DataInputAssociation> dataInputAssociations = ((Activity)oldElement).getDataInputAssociations();
+					for (DataInputAssociation dia : dataInputAssociations) {
+						if (dia.getSourceRef().contains(otherElement)) {
+							dataInputAssociations.remove(dia);
+							break;
+						}
+					}
+				}
+				else {
+					List<DataOutputAssociation> dataOutputAssociations = ((Activity)oldElement).getDataOutputAssociations();
+					for (DataOutputAssociation doa : dataOutputAssociations) {
+						if (doa.getTargetRef()==otherElement) {
+							dataOutputAssociations.remove(doa);
+							break;
+						}
+					}
+				}
+			}
+			else if (oldElement instanceof CatchEvent) {
+				if (isInput)
+					throw new IllegalArgumentException("Invalid Source");
+				else {
+					List<DataOutputAssociation> dataOutputAssociations = ((CatchEvent)oldElement).getDataOutputAssociation();
+					for (DataOutputAssociation doa : dataOutputAssociations) {
+						if (doa.getTargetRef()==otherElement) {
+							dataOutputAssociations.remove(doa);
+							break;
+						}
+					}
+				}
+			}
+			else if (oldElement instanceof ThrowEvent) {
+				if (isInput) {
+					List<DataInputAssociation> dataInputAssociations = ((ThrowEvent)oldElement).getDataInputAssociation();
+					for (DataInputAssociation dia : dataInputAssociations) {
+						if (dia.getSourceRef().contains(otherElement)) {
+							dataInputAssociations.remove(dia);
+							break;
+						}
+					}
+				}
+				else
+					throw new IllegalArgumentException("Invalid Target");
+			}
+			else if (oldElement instanceof ItemAwareElement) {
+				newAssociation = oldAssociation;
+				if (isInput) {
+					oldAssociation.setTargetRef(null);
+					newAssociation.setTargetRef((ItemAwareElement) newElement);
+				}
+				else {
+					oldAssociation.getSourceRef().remove(oldElement);
+					newAssociation.getSourceRef().add((ItemAwareElement) newElement);
+				}
+			}
+
+			if (newElement instanceof Activity) {
+				Activity activity = (Activity) newElement;
+				InputOutputSpecification ioSpec = activity.getIoSpecification();
+				if (ioSpec==null) {
+					ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
+				}
+				if (isInput) {
+					List<DataInput> dataInputs = null;
+					List<DataInputAssociation> dataInputAssociations = null;
+					InputSet inputSet = null;
+					if (ioSpec.getInputSets().size()==0) {
+						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						ioSpec.getInputSets().add(inputSet);
+					}
+					else {
+						// add to first input set we find
+						// TODO: support input set selection if there are more than one
+						inputSet = ioSpec.getInputSets().get(0);
+					}
+					dataInputs = ioSpec.getDataInputs();
+					dataInputAssociations = activity.getDataInputAssociations();
+					newAssociation = selectInput(newElement, dataInputs, dataInputAssociations, inputSet);
+					newAssociation.getSourceRef().clear();
+					newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+				}
+				else {
+					List<DataOutput> dataOutputs = null;
+					List<DataOutputAssociation> dataOutputAssociations = null;
+					OutputSet outputSet = null;
+					if (ioSpec.getOutputSets().size()==0) {
+						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						ioSpec.getOutputSets().add(outputSet);
+					}
+					else {
+						// add to first output set we find
+						// TODO: support output set selection if there are more than one
+						outputSet = ioSpec.getOutputSets().get(0);
+					}
+					dataOutputs = ioSpec.getDataOutputs();
+					dataOutputAssociations = activity.getDataOutputAssociations();
+					newAssociation = selectOutput(newElement, dataOutputs, dataOutputAssociations, outputSet);
+					newAssociation.setTargetRef((ItemAwareElement) otherElement);
+				}
+			}
+			else if (newElement instanceof CatchEvent) {
+				if (isInput)
+					throw new IllegalArgumentException("Invalid Source");
+				else {
+					CatchEvent event = (CatchEvent)newElement;
+					OutputSet outputSet = event.getOutputSet();
+					if (outputSet==null) {
+						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
+						event.setOutputSet(outputSet);
+					}
+					newAssociation = selectOutput(event, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
+					newAssociation.setTargetRef((ItemAwareElement) otherElement);
+				}
+			}
+			else if (newElement instanceof ThrowEvent) {
+				if (isInput) {
+					ThrowEvent event = (ThrowEvent)newElement;
+					InputSet inputSet = event.getInputSet();
+					if (inputSet==null) {
+						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
+						event.setInputSet(inputSet);
+					}
+					newAssociation = selectInput(newElement, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
+					newAssociation.getSourceRef().clear();
+					newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+				}
+				else
+					throw new IllegalArgumentException("Invalid Target");
+			}
+			else if (newElement instanceof ItemAwareElement) {
+				
+			}
+			
+			if (!(newElement instanceof ItemAwareElement)) {
+				List<EObject> businessObjects = connection.getLink().getBusinessObjects();
+				int index = businessObjects.indexOf(oldAssociation);
+				businessObjects.remove(index);
+				businessObjects.add(index, newAssociation);
+				edge.setBpmnElement(newAssociation);
+	
+				deleteReplacedDataAssociation(getFeatureProvider(), connection);
+			}
+			
 			super.postReconnect(context);
 		}
 	} 
