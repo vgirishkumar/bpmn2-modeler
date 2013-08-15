@@ -500,15 +500,8 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 
 	private void createCustomTasks(List<IPaletteCompartmentEntry> ret) {
 
-		// Custom Tasks will only appear in Process diagrams.
 		PaletteCompartmentEntry compartmentEntry = null;
 		BPMN2Editor editor = (BPMN2Editor) getDiagramTypeProvider().getDiagramEditor();
-		Diagram diagram = getDiagramTypeProvider().getDiagram();
-		// We already know this link is valid or we wouldn't be here:
-		BPMNDiagram bpmnDiagram = (BPMNDiagram)Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(diagram);
-		if (ModelUtil.getDiagramType(bpmnDiagram) != Bpmn2DiagramType.PROCESS) {
-			return;
-		}
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {
