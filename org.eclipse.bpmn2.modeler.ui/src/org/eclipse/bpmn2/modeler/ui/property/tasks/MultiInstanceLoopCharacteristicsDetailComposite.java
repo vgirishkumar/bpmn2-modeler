@@ -57,9 +57,9 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		LoopCardinality
 	};
 
-	ObjectEditor throwBehaviorEditor;
-	ObjectEditor noneBehaviorEventEditor;
-	ObjectEditor oneBehaviorEventEditor;
+	ComboObjectEditor throwBehaviorEditor;
+	ComboObjectEditor noneBehaviorEventEditor;
+	ComboObjectEditor oneBehaviorEventEditor;
 	AbstractListComposite complexBehaviorList;
 
 	ObjectEditor isSequentialEditor;
@@ -686,6 +686,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			if (isModelObjectEnabled(lc.eClass(), reference)) {
 				String displayName = ModelUtil.getLabel(object, reference);
 				noneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
+				noneBehaviorEventEditor.setStyle(SWT.READ_ONLY);
 				noneBehaviorEventEditor.createControl(parent,displayName);
 				noneBehaviorEventEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.NONE );
 			}				
@@ -694,6 +695,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			if (isModelObjectEnabled(lc.eClass(), reference)) {
 				String displayName = ModelUtil.getLabel(object, reference);
 				oneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
+				oneBehaviorEventEditor.setStyle(SWT.READ_ONLY);
 				oneBehaviorEventEditor.createControl(parent,displayName);
 				oneBehaviorEventEditor.setVisible( lc.getBehavior() == MultiInstanceBehavior.ONE );
 			}

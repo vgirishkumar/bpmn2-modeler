@@ -206,7 +206,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		T object = null;
 		EClass eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
 		if (eClass!=null) {
-			object = (T)Bpmn2Factory.eINSTANCE.create(eClass);
+			object = (T)Bpmn2ModelerFactory.eINSTANCE.create(eClass);
 			ModelUtil.setID(object, ModelUtil.getResource(businessObject));
 		}
 		return object;

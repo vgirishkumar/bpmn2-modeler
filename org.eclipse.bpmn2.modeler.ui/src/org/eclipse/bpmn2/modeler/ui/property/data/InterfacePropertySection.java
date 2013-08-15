@@ -25,12 +25,11 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
@@ -160,7 +159,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
-			Interface iface = (Interface) ModelUtil.createObject(object.eResource(), PACKAGE.getInterface());
+			Interface iface = Bpmn2ModelerFactory.create(object.eResource(), Interface.class);
 			
 			EList<EObject> list = (EList<EObject>)object.eGet(feature);
 			list.add(iface);

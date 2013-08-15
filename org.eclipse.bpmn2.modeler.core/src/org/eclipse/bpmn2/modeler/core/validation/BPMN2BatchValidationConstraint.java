@@ -217,7 +217,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			
 			if (!warnings) {
 				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
-					return createFailureStatus(ctx,be,"Start Event has no outgoing connections");
+					return createMissingFeatureStatus(ctx,be,"outgoing");
 				}
 			}
 		}
@@ -226,7 +226,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			
 			if (!warnings) {
 				if (elem.getIncoming() == null || elem.getIncoming().size() < 1) {
-					return createFailureStatus(ctx,be,"End Event has no incoming connections");
+					return createMissingFeatureStatus(ctx,be,"incoming");
 				}
 			}
 		}
@@ -257,7 +257,12 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 		else if (be instanceof CatchEvent) {
 			CatchEvent elem = (CatchEvent) be;
 
-			if (!warnings) {
+			if (warnings) {
+				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
+					return createMissingFeatureStatus(ctx,be,"outgoing");
+				}
+			}
+			else {
 				List<EventDefinition> eventdefs = elem.getEventDefinitions();
 				if (eventdefs.size()==0) {
 					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
@@ -283,7 +288,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 					} else if (ed instanceof ConditionalEventDefinition) {
 						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
 								.getCondition();
-						if (conditionalExp.getBody() == null) {
+						if (conditionalExp==null || conditionalExp.getBody() == null) {
 							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
@@ -301,11 +306,19 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 					}
 				}
 			}
+			// no more validations on this
+			be = null;
 		}
 		else if (be instanceof ThrowEvent) {
 			ThrowEvent elem = (ThrowEvent) be;
 
-			if (!warnings) {
+
+			if (warnings) {
+				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
+					return createMissingFeatureStatus(ctx,be,"outgoing");
+				}
+			}
+			else {
 				List<EventDefinition> eventdefs = elem.getEventDefinitions();
 				if (eventdefs.size()==0) {
 					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
@@ -331,7 +344,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 					} else if (ed instanceof ConditionalEventDefinition) {
 						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
 								.getCondition();
-						if (conditionalExp.getBody() == null) {
+						if (conditionalExp==null || conditionalExp.getBody() == null) {
 							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
@@ -349,6 +362,8 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 					}
 				}
 			}
+			// no more validations on this
+			be = null;
 		}
 		else if (be instanceof SequenceFlow) {
 			SequenceFlow elem = (SequenceFlow) be;

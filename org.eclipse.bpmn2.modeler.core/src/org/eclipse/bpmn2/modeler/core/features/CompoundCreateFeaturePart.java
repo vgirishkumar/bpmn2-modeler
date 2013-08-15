@@ -63,12 +63,16 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		// for ICreateConnectionContext we only get a Graphiti Connection element.
 		List<Object> businessObjects = new ArrayList<Object>();
 		if (feature instanceof ICreateFeature && context instanceof ICreateContext) {
-			Object created[] = ((ICreateFeature)feature).create((ICreateContext)context);
-			for (Object o : created)
-				businessObjects.add(o);
+			if (canCreate(context)) {
+				Object created[] = ((ICreateFeature)feature).create((ICreateContext)context);
+				for (Object o : created)
+					businessObjects.add(o);
+			}
 		}
 		else if (feature instanceof ICreateConnectionFeature && context instanceof ICreateConnectionContext) {
-			businessObjects.add(((ICreateConnectionFeature)feature).create((ICreateConnectionContext)context));
+			if (canCreate(context)) {
+				businessObjects.add(((ICreateConnectionFeature)feature).create((ICreateConnectionContext)context));
+			}
 		}
 
 		BaseElement businessObject = null;

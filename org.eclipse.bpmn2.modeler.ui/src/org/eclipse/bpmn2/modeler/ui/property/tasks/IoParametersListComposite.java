@@ -26,7 +26,6 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -88,71 +87,6 @@ public class IoParametersListComposite extends DefaultListComposite {
 		InsertionAdapter.executeIfNeeded(ioSpecification);
 		
 		param = super.addListItem(object, feature);
-		if (param instanceof DataInput) {
-			List<OutputSet> outputSets = ioSpecification.getOutputSets();
-			if (outputSets.size()==0) {
-				outputSets.add((OutputSet) createModelObject(OutputSet.class));
-			}
-			// add the new parameter to the InputSet
-			List<InputSet> inputSets = ioSpecification.getInputSets();
-			if (inputSets.size()==0) {
-				inputSets.add((InputSet) createModelObject(InputSet.class));
-			}
-			InputSet inputSet = inputSets.get(0);
-			
-			// generate a unique parameter name
-			String base = "input";
-			int suffix = 1;
-			String name = base + suffix;
-			for (;;) {
-				boolean found = false;
-				for (DataInput p : inputSet.getDataInputRefs()) {
-					if (name.equals(p.getName())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					break;
-				name = base + ++suffix;
-			}
-			((DataInput)param).setName(name);
-
-			inputSet.getDataInputRefs().add((DataInput) param);
-		}
-		else if (param instanceof DataOutput)
-		{
-			List<InputSet> inputSets = ioSpecification.getInputSets();
-			if (inputSets.size()==0) {
-				inputSets.add((InputSet) createModelObject(InputSet.class));
-			}
-			// add the new parameter to the OutputSet
-			List<OutputSet> outputSets = ioSpecification.getOutputSets();
-			if (outputSets.size()==0) {
-				outputSets.add((OutputSet) createModelObject(OutputSet.class));
-			}
-			OutputSet outputSet = outputSets.get(0);
-			
-			// generate a unique parameter name
-			String base = "output";
-			int suffix = 1;
-			String name = base + suffix;
-			for (;;) {
-				boolean found = false;
-				for (DataOutput p : outputSet.getDataOutputRefs()) {
-					if (name.equals(p.getName())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found)
-					break;
-				name = base + ++suffix;
-			}
-			((DataOutput)param).setName(name);
-
-			outputSet.getDataOutputRefs().add((DataOutput) param);
-		}
 		
 		if (activity!=null) {
 			// this is an Activity - create an Input or Output DataAssociation

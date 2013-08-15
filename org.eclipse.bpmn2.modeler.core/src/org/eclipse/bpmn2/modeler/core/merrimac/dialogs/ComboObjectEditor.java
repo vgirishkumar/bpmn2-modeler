@@ -92,6 +92,12 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		boolean canEditInline = canEditInline();
 		boolean canCreateNew = canCreateNew();
 		
+		if (style == SWT.READ_ONLY) {
+			canEdit = false;
+			canEditInline = false;
+			canCreateNew = false;
+		}
+		
 		if (!canEditInline)
 			style |= SWT.READ_ONLY;
 		comboViewer = createComboViewer(composite,

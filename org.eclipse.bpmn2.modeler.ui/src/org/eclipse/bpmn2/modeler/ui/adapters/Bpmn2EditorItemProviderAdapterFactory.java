@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.CallConversation;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.CorrelationKey;
 import org.eclipse.bpmn2.CorrelationPropertyBinding;
@@ -35,6 +36,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
@@ -61,6 +63,7 @@ import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
@@ -71,6 +74,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.ActivityPropertiesAdapte
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallActivityPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallChoreographyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallConversationPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.CatchEventPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CompensateEventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationKeyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyBindingPropertiesAdapter;
@@ -91,6 +95,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.GlobalScriptTaskProperti
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ImportPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.IoSpecificationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemAwareElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.LinkEventDefinitionPropertiesAdapter;
@@ -115,6 +120,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.ServiceTaskPropertiesAda
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.SignalEventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.SignalPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.TaskPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.ThrowEventPropertiesAdapter;
 import org.eclipse.bpmn2.provider.Bpmn2ItemProviderAdapterFactory;
 import org.eclipse.bpmn2.util.Bpmn2Switch;
 import org.eclipse.emf.common.notify.Adapter;
@@ -605,7 +611,30 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 				return adapter;
         	return new LinkEventDefinitionPropertiesAdapter(adapterFactory,object);
 		}
-//
+
+		@Override
+		public ExtendedPropertiesAdapter caseInputOutputSpecification(InputOutputSpecification object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new IoSpecificationPropertiesAdapter(adapterFactory,object);
+		}
+
+		@Override
+		public ExtendedPropertiesAdapter caseThrowEvent(ThrowEvent object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new ThrowEventPropertiesAdapter(adapterFactory,object);
+		}
+
+		@Override
+		public ExtendedPropertiesAdapter caseCatchEvent(CatchEvent object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new CatchEventPropertiesAdapter(adapterFactory,object);
+		}
 
 		@Override
 		public ExtendedPropertiesAdapter caseInputSet(InputSet object) {

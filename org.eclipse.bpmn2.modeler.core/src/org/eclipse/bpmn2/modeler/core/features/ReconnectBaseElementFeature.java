@@ -13,9 +13,9 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
@@ -30,7 +30,6 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -118,18 +117,20 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 			
 			Connection connection = context.getConnection();
 			BaseElement flow = BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			BaseElement be = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
-			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-				EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef");
-				if (feature!=null)
-					flow.eSet(feature, be);
-				AnchorUtil.deleteEmptyAdHocAnchors(connection.getEnd().getParent());
-			}
-			else {
-				EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef");
-				if (feature!=null)
-					flow.eSet(feature, be);
-				AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
+			if (!(flow instanceof DataAssociation)) {
+				BaseElement be = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+				if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
+					EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef");
+					if (feature!=null)
+						flow.eSet(feature, be);
+					AnchorUtil.deleteEmptyAdHocAnchors(connection.getEnd().getParent());
+				}
+				else {
+					EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef");
+					if (feature!=null && !feature.isMany())
+						flow.eSet(feature, be);
+					AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
+				}
 			}
 			
 			ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection, true);

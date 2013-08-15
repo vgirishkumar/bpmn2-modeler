@@ -33,11 +33,9 @@ import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -139,7 +137,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					eClass = Bpmn2Package.eINSTANCE.getDataStore();
 			}			
 			if (eClass!=null) {
-				return ModelUtil.createObject(resource, eClass);
+				return Bpmn2ModelerFactory.create(resource, eClass);
 			}
 			return null;
 		}

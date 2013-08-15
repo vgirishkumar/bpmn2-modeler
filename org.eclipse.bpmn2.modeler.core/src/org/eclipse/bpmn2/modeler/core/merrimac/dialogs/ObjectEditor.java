@@ -79,6 +79,10 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	 */
 	protected abstract Control createControl(Composite composite, String label, int style);
 	
+	public void setStyle(int style) {
+		this.style = style;
+	}
+	
 	public Control createControl(Composite composite, String label) {
 		Control c = createControl(composite,label,style);
 		c.setData(IConstants.NOTIFY_CHANGE_LISTENER_KEY, this);

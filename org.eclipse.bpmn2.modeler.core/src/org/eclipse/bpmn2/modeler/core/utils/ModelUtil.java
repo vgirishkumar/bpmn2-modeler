@@ -1030,9 +1030,11 @@ public class ModelUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> getAllRootElements(Definitions definitions, final Class<T> class1) {
 		ArrayList<T> list = new ArrayList<T>();
-		for (RootElement re : definitions.getRootElements()) {
-			if (class1.isInstance(re)) {
-				list.add((T) re);
+		if (definitions!=null) {
+			for (RootElement re : definitions.getRootElements()) {
+				if (class1.isInstance(re)) {
+					list.add((T) re);
+				}
 			}
 		}
 		return list;
@@ -1356,47 +1358,47 @@ public class ModelUtil {
 		return value;
 	}
 	
-	public static EObject createObject(Object object) {
-		if (object instanceof EObject)
-			return createObject(((EObject)object).eResource(),object);
-		return createObject(null,object);
-	}
-
-	public static EObject createObject(Resource resource, Object object) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
-		if (adapter!=null)
-			return adapter.getObjectDescriptor().createObject(resource, object);
-		return null;
-	}
-
-	public static EObject createFeature(EObject object, String featureName) {
-		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
-		if (feature!=null)
-			return createFeature(object, feature);
-		return null;
-	}
-	
-	public static EObject createFeature(EObject object, EStructuralFeature feature) {
-		return createFeature(object, feature, null);
-	}
-
-	public static EObject createFeature(EObject object, EStructuralFeature feature, EClass eclass) {
-		return createFeature(object.eResource(), object, feature, eclass);
-	}
-
-	public static EObject createFeature(Resource resource, EObject object, EStructuralFeature feature, EClass eclass) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
-		if (adapter!=null)
-			return adapter.getFeatureDescriptor(feature).createFeature(resource, object, eclass);
-		// There is no properties adapter registered for this class. This can only happen if the object to
-		// be created is in an external package. If this is the case, simply construct an object using the
-		// registered model factory.
-		EPackage pkg = eclass.getEPackage();
-		if (!isBpmnPackage(pkg)) {
-			return pkg.getEFactoryInstance().create(eclass);
-		}
-		return null;
-	}
+//	public static EObject createObject(Object object) {
+//		if (object instanceof EObject)
+//			return createObject(((EObject)object).eResource(),object);
+//		return createObject(null,object);
+//	}
+//
+//	public static EObject createObject(Resource resource, Object object) {
+//		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+//		if (adapter!=null)
+//			return adapter.getObjectDescriptor().createObject(resource, object);
+//		return null;
+//	}
+//
+//	public static EObject createFeature(EObject object, String featureName) {
+//		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+//		if (feature!=null)
+//			return createFeature(object, feature);
+//		return null;
+//	}
+//	
+//	public static EObject createFeature(EObject object, EStructuralFeature feature) {
+//		return createFeature(object, feature, null);
+//	}
+//
+//	public static EObject createFeature(EObject object, EStructuralFeature feature, EClass eclass) {
+//		return createFeature(object.eResource(), object, feature, eclass);
+//	}
+//
+//	public static EObject createFeature(Resource resource, EObject object, EStructuralFeature feature, EClass eclass) {
+//		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+//		if (adapter!=null)
+//			return adapter.getFeatureDescriptor(feature).createFeature(resource, object, eclass);
+//		// There is no properties adapter registered for this class. This can only happen if the object to
+//		// be created is in an external package. If this is the case, simply construct an object using the
+//		// registered model factory.
+//		EPackage pkg = eclass.getEPackage();
+//		if (!isBpmnPackage(pkg)) {
+//			return pkg.getEFactoryInstance().create(eclass);
+//		}
+//		return null;
+//	}
 
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {

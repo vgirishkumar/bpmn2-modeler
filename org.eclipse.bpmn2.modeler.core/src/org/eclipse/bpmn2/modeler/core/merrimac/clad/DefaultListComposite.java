@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
@@ -76,7 +77,7 @@ public class DefaultListComposite extends AbstractListComposite {
 				if (listItemClass==null)
 					return null; // user cancelled
 			}
-			newItem = ModelUtil.createFeature(object,feature,listItemClass);
+			newItem = Bpmn2ModelerFactory.createFeature(object,feature,listItemClass);
 			if (newItem==null) {
 				MessageDialog.openError(getShell(), "Internal Error",
 						"Can not create a new " +
@@ -84,7 +85,7 @@ public class DefaultListComposite extends AbstractListComposite {
 						" because its Object Factory is unknown."
 				);
 			}
-			else
+			else if (!list.contains(newItem))
 				list.add(newItem);
 		}
 		return newItem;

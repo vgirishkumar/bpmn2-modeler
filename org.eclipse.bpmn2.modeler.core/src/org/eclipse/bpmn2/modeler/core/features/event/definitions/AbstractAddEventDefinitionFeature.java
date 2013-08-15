@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -70,6 +71,10 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 	}
 
 	public void draw(Event event, EventDefinition eventDef, ContainerShape container) {
+		if (FeatureSupport.isLabelShape(container)) {
+			// don't draw decorators on Labels
+			return;
+		}
 
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(event);
 		int size = eventDefinitions.size();

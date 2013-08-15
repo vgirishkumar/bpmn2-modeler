@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -66,12 +67,10 @@ public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFea
 
 			// either find the existing Shape that is linked with an EventDefinition...
 			PictogramElement eventDefinitionShape = null;
-			Iterator<PictogramElement> iterator = Graphiti.getPeService().getAllContainedPictogramElements(container).iterator();
-			while (iterator.hasNext()) {
-				PictogramElement pe = iterator.next();
+			for (PictogramElement pe : container.getChildren()) {
 				if (pe.getLink() != null) {
 					EList<EObject> objects = pe.getLink().getBusinessObjects();
-					if (objects.size()==1 && objects.get(0) instanceof EventDefinition) {
+					if (objects.size()>0 && objects.get(0) instanceof EventDefinition) {
 						eventDefinition = (EventDefinition)objects.get(0);
 						eventDefinitionShape = pe;
 						break;
@@ -83,6 +82,9 @@ public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFea
 				// ...or create a temporary Shape that we can link
 				// with the event definition business object... 
 				eventDefinitionShape = Graphiti.getPeService().createShape(container, true);
+				// make sure this thing has a GraphicsAlgorithm so the GraphicalViewer doesn't
+				// throw an NPE if a refresh happens while we're still doing the update.
+				Graphiti.getCreateService().createRectangle(eventDefinitionShape);
 				link(eventDefinitionShape,eventDefinition);
 			}
 			// ...so we can create an UpdateContext...

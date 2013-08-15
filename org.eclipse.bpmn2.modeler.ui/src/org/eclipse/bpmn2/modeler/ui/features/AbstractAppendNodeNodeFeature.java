@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -397,8 +398,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 		FlowNode newObject = BusinessObjectUtil.getFirstElementOfType(newShape, FlowNode.class);
 
 		// create a new SequenceFlow to connect the old and new FlowNodes
-		SequenceFlow sequenceFlow = (SequenceFlow) ModelUtil.createObject(
-				oldObject.eResource(), Bpmn2Package.eINSTANCE.getSequenceFlow());
+		SequenceFlow sequenceFlow = Bpmn2ModelerFactory.create(oldObject.eResource(), SequenceFlow.class);
 		FlowElementsContainer container = (FlowElementsContainer) oldObject.eContainer();
 		container.getFlowElements().add(sequenceFlow);
 		sequenceFlow.setSourceRef(oldObject);
