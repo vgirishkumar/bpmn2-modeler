@@ -1188,12 +1188,7 @@ public class ModelUtil {
 		EObject object = dummyObjects.get(eclass);
 		if (object==null && eclass.eContainer() instanceof EPackage) {
 	    	EPackage pkg = (EPackage)eclass.eContainer();
-	    	try {
-	    		object = pkg.getEFactoryInstance().create(eclass);
-	    	}
-	    	catch (Exception e) {
-	    		object = eclass;
-	    	}
+	    	object = pkg.getEFactoryInstance().create(eclass);
 			dummyObjects.put(eclass, object);
 		}
 		return object;

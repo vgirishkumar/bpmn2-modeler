@@ -39,6 +39,8 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl.Bpmn2ModelerXMLSave;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
@@ -114,7 +116,16 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 			private boolean needTargetNamespace = true;
 			
 			@Override
+			protected void saveElement(EObject o, EStructuralFeature f) {
+				if (o instanceof ExternalProcess) {
+					return;
+				}
+				super.saveElement(o, f);
+			}
+
+			@Override
 			protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
+				
 				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 					return false;
 				// don't save the "name" feature of Property objects.
@@ -472,8 +483,22 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				// the CalledElementRef in CallActivity is just an ID. This means we need
 				// to create a CallableElement which is simply a proxy, not a real object.
 				CallActivity ca = (CallActivity)object;
-				CallableElement ce = Bpmn2ModelerFactory.create(CallableElement.class);
-				((InternalEObject)ce).eSetProxyURI(URI.createURI(ids));
+				CallableElement ce = null;
+				Definitions defs = ModelUtil.getDefinitions(helper.getResource());
+				for (RootElement re : defs.getRootElements()) {
+					if (re instanceof ExternalProcess) {
+						if (ids.equals(re.getId())) {
+							ce = (ExternalProcess) re;
+							break;
+						}
+					}
+				}
+				if (ce==null) {
+					ce = DroolsFactory.eINSTANCE.createExternalProcess();
+					ce.setName(ids);
+					ce.setId(ids);
+					defs.getRootElements().add(ce);
+				}
 				ca.setCalledElementRef(ce);
 			}
 			else if (object instanceof Interface && eReference==Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()) {
