@@ -157,7 +157,18 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 		}
 		
+		BPMNEdge newEdge = BusinessObjectUtil.getFirstElementOfType(connection, BPMNEdge.class);
 		for (Connection c : deleted) {
+			BPMNEdge oldEdge = BusinessObjectUtil.getFirstElementOfType(c, BPMNEdge.class);
+			if (oldEdge!=null && oldEdge==newEdge) {
+				// do not delete the BPMNEdge element if it's being reused.
+				for (int index=0; index<c.getLink().getBusinessObjects().size(); ++index) {
+					if (oldEdge == c.getLink().getBusinessObjects().get(index)) {
+						c.getLink().getBusinessObjects().remove(index);
+						break;
+					}
+				}
+			}
 			DeleteContext dc = new DeleteContext(c);
 			c.getLink().getBusinessObjects().remove(0);
 			IDeleteFeature df = fp.getDeleteFeature(dc);
