@@ -1209,10 +1209,14 @@ public class ModelUtil {
 		return adapt(object,null);
 	}
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
 		EObject eclass = getFeatureClass(object,feature);
-		return (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+		if (adapter!=null) {
+			adapter.getObjectDescriptor().setObject(object);
+		}
+		return adapter;
 	}
 	
 	/*

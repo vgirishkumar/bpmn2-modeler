@@ -106,7 +106,6 @@ import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
