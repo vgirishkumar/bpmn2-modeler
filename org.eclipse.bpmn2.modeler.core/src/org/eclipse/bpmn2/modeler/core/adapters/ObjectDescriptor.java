@@ -45,6 +45,10 @@ public class ObjectDescriptor<T extends EObject> {
 		this.object = object;
 	}
 	
+	public void setObject(T object) {
+		this.object = object;
+	}
+	
 	public void setLabel(String label) {
 		this.label = label;
 	}
