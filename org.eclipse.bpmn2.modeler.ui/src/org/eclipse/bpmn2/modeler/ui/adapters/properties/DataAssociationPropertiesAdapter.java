@@ -83,7 +83,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		
 		@Override
 		public String getLabel(Object context) {
-			Object object = this.adopt(context);
+			Object object = adopt(context);
 			if (object instanceof DataInputAssociation)
 				return "Source";
 			return "Target";
