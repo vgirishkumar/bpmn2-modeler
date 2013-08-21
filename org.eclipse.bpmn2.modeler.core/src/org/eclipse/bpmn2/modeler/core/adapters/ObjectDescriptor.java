@@ -119,6 +119,7 @@ public class ObjectDescriptor<T extends EObject> {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected EObject clone(T oldObject) {
 		T newObject = null;
 		if (oldObject!=null) {
@@ -131,6 +132,7 @@ public class ObjectDescriptor<T extends EObject> {
 		return newObject;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof EObject && ((EObject) obj).eClass() == object.eClass()) {
@@ -186,9 +188,9 @@ public class ObjectDescriptor<T extends EObject> {
 	 * @param context
 	 * @return the context variable if it has the same type as this.object, or this.object if not.
 	 */
+	@SuppressWarnings("unchecked")
 	protected T adopt(Object context) {
 		T result = (this.object.getClass().isInstance(context)) ? (T)context : this.object;
-//		InsertionAdapter.executeIfNeeded(result);
 		return result;
 	}
 
@@ -217,6 +219,7 @@ public class ObjectDescriptor<T extends EObject> {
 		return createObject(null,context);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public T createObject(Resource resource, Object context) {
 	
 		EClass eClass = null;

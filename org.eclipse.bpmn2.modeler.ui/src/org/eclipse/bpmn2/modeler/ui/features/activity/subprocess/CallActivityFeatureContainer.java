@@ -122,16 +122,18 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 				CallActivity callActivity = BusinessObjectUtil.getFirstElementOfType(pe, CallActivity.class);
 				CallableElement calledActivity = callActivity.getCalledElementRef();
 				// if there are no other references to this called element, delete it from the model
-				boolean canDeleteCalledActivity = true;
-				Definitions definitions = ModelUtil.getDefinitions(callActivity);
-				TreeIterator<EObject> iter = definitions.eAllContents();
-				while (iter.hasNext() && canDeleteCalledActivity) {
-					EObject o = iter.next();
-					if (o!=callActivity && o instanceof BaseElement) {
-						for (EObject cr : o.eCrossReferences()) {
-							if (cr == calledActivity) {
-								canDeleteCalledActivity = false;
-								break;
+				boolean canDeleteCalledActivity = (calledActivity!=null);
+				if (canDeleteCalledActivity) {
+					Definitions definitions = ModelUtil.getDefinitions(callActivity);
+					TreeIterator<EObject> iter = definitions.eAllContents();
+					while (iter.hasNext() && canDeleteCalledActivity) {
+						EObject o = iter.next();
+						if (o!=callActivity && o instanceof BaseElement) {
+							for (EObject cr : o.eCrossReferences()) {
+								if (cr == calledActivity) {
+									canDeleteCalledActivity = false;
+									break;
+								}
 							}
 						}
 					}

@@ -77,9 +77,11 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		}
 		else if (elem instanceof CatchEvent) {
 			retList.addAll(((CatchEvent)elem).getEventDefinitions());
+			retList.addAll(((CatchEvent)elem).getDataOutputAssociation());
 		}
 		else if (elem instanceof ThrowEvent) {
 			retList.addAll(((ThrowEvent)elem).getEventDefinitions());
+			retList.addAll(((ThrowEvent)elem).getDataInputAssociation());
 		}
 		
 		if (elem instanceof Activity) {
@@ -92,6 +94,8 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 					retList.add(o);
 				}
 			}
+			retList.addAll(((Activity)elem).getDataInputAssociations());
+			retList.addAll(((Activity)elem).getDataOutputAssociations());
 		}
 		return retList;
 	}

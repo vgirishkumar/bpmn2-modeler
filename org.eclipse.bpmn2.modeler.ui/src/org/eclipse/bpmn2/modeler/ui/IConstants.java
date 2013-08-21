@@ -76,6 +76,9 @@ public interface IConstants {
 	public final String ICON_CONVERSATION = "16/Conversation.png";
 	public final String ICON_CONVERSATIONLINK = "16/ConversationLink.png";
 	public final String ICON_CUSTOMTASK = "16/CustomTask.png";
+	public final String ICON_DATAASSOCIATION = "16/DataAssociation.png";
+	public final String ICON_DATAINPUTASSOCIATION = "16/DataInputAssociation.png";
+	public final String ICON_DATAOUTPUTASSOCIATION = "16/DataOutputAssociation.png";
 	public final String ICON_DATAINPUT = "16/DataInput.png";
 	public final String ICON_DATAOBJECT = "16/DataObject.png";
 	public final String ICON_DATAOUTPUT = "16/DataOutput.png";

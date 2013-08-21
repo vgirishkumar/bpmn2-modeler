@@ -66,6 +66,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -174,6 +175,33 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			IDeleteFeature df = fp.getDeleteFeature(dc);
 			df.delete(dc);
 		}
+	}
+
+	public static Connection findDataAssociation(Diagram diagram, DataAssociation newAssociation) {
+		if (diagram!=null) {
+			for (Connection c : diagram.getConnections()) {
+				// if this new DataAssociation replaces another one, delete it
+				if (newAssociation instanceof DataInputAssociation) {
+					DataInputAssociation dia = BusinessObjectUtil.getFirstElementOfType(c, DataInputAssociation.class);
+					if (dia!=null) {
+						if (newAssociation.getTargetRef() == dia.getTargetRef())
+							return c;
+					}
+					
+				}
+				else {
+					DataOutputAssociation doa = BusinessObjectUtil.getFirstElementOfType(c, DataOutputAssociation.class);
+					if (doa!=null) {
+						for (ItemAwareElement d : newAssociation.getSourceRef()) {
+							if (doa.getSourceRef().contains(d)) {
+								return c;
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	private static DataInputAssociation selectInput(BaseElement target, List<DataInput> dataInputs, List<DataInputAssociation> dataInputAssociations, InputSet inputSet) {
@@ -382,7 +410,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (source instanceof Activity || source instanceof CatchEvent)
 				return true;
 			if (source instanceof ItemAwareElement) {
-				if (source instanceof DataInput)
+				if (source instanceof DataOutput)
 					return false;
 				return true;
 			}
