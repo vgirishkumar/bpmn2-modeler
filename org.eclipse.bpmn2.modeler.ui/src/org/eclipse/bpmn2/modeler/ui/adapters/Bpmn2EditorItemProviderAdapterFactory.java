@@ -202,7 +202,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
         	    adapter = getTargetRuntimeAdapter((EClass)object);
         	    if (adapter==null) {
         	    	// if none is found, create a dummy EObject and cache it
-   		    		object = ModelUtil.getDummyObject((EClass)object);
+   		    		object = ExtendedPropertiesAdapter.getDummyObject((EClass)object);
    		    		adapter = doSwitch(object);
         	    }
         	}

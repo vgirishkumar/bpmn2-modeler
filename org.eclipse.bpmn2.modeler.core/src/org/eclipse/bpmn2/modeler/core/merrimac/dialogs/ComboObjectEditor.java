@@ -363,6 +363,8 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		
 		StructuredSelection oldSelection = (StructuredSelection)comboViewer.getSelection();
 		Object oldValue = oldSelection.getFirstElement();
+		if (oldValue instanceof String)
+			oldValue = comboViewer.getData((String)oldValue);
 		if (ModelUtil.isStringWrapper(oldValue))
 			oldValue = ModelUtil.getStringWrapperValue(oldValue);
 		if (newValue==null) {

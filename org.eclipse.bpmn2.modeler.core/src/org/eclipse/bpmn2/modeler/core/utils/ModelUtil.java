@@ -103,8 +103,6 @@ public class ModelUtil {
 	// Map of ID strings and sequential counters for each BPMN2 element description.
 	public static HashMap<String, Integer> defaultIds = new HashMap<String, Integer>();
 
-	protected static Hashtable<EClass,EObject> dummyObjects = new Hashtable<EClass,EObject>();
-
 	/**
 	 * Clear the IDs hashmap for the given EMF Resource. This should be called
 	 * when the editor is disposed to avoid unnecessary growth of the IDs table.
@@ -1175,50 +1173,6 @@ public class ModelUtil {
 		}
 	}
 
-	/**
-	 * Dummy objects are constructed when needed for an ExtendedPropertiesAdapter. The adapter factory
-	 * (@see org.eclipse.bpmn2.modeler.ui.adapters.Bpmn2EditorItemProviderAdapterFactory) knows how to
-	 * construct an ExtendedPropertiesAdapter from an EClass, however the adapter itself needs an EObject.
-	 * This method constructs and caches these dummy objects as they are needed.
-	 * 
-	 * @param featureEType
-	 * @return
-	 */
-	public static EObject getDummyObject(EClass eclass) {
-		EObject object = dummyObjects.get(eclass);
-		if (object==null && eclass.eContainer() instanceof EPackage) {
-	    	EPackage pkg = (EPackage)eclass.eContainer();
-	    	object = pkg.getEFactoryInstance().create(eclass);
-			dummyObjects.put(eclass, object);
-		}
-		return object;
-	}
-
-	private static EObject getFeatureClass(EObject object, EStructuralFeature feature) {
-		EClass eclass = null;
-		if (feature!=null && feature.eContainer() instanceof EClass)
-			eclass = (EClass)feature.eContainer();
-		if (eclass==null || eclass.isAbstract()) {
-			return object;
-		}
-		return eclass;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	private static ExtendedPropertiesAdapter adapt(EObject object) {
-		return adapt(object,null);
-	}
-	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
-		EObject eclass = getFeatureClass(object,feature);
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
-		if (adapter!=null) {
-			adapter.getObjectDescriptor().setObject(object);
-		}
-		return adapter;
-	}
-	
 	/*
 	 * Various model object and feature UI property methods
 	 */
@@ -1227,7 +1181,7 @@ public class ModelUtil {
 		String label = "";
 		if (object instanceof EObject) {
 			EObject eObject = (EObject)object;
-			ExtendedPropertiesAdapter adapter = adapt(eObject);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
 			if (adapter!=null)
 				label = adapter.getObjectDescriptor().getLabel(eObject);
 			else
@@ -1241,7 +1195,7 @@ public class ModelUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static void setLabel(EObject object, EStructuralFeature feature, String label) {
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			adapter.getFeatureDescriptor(feature).setLabel(label);
 	}
@@ -1249,7 +1203,7 @@ public class ModelUtil {
 	@SuppressWarnings("rawtypes")
 	public static String getLabel(EObject object, EStructuralFeature feature) {
 		String label = "";
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			label = adapter.getFeatureDescriptor(feature).getLabel(object);
 		else
@@ -1262,7 +1216,7 @@ public class ModelUtil {
 	public static String getDisplayName(Object object) {
 		if (object instanceof EObject) {
 			EObject eObject = (EObject)object;
-			ExtendedPropertiesAdapter adapter = adapt(eObject);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
 			if (adapter!=null) {
 				String text = adapter.getObjectDescriptor().getDisplayName(eObject);
 				if (text!=null && !text.isEmpty()) {
@@ -1279,7 +1233,7 @@ public class ModelUtil {
 		if (feature==null)
 			return getDisplayName(object);
 		
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).getDisplayName(object);
 		return getLongDisplayName(object, feature);
@@ -1287,7 +1241,7 @@ public class ModelUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static boolean setMultiLine(EObject object, EStructuralFeature feature, boolean multiLine) {
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null) {
 			adapter.getFeatureDescriptor(feature).setMultiLine(multiLine);
 			return true;
@@ -1300,7 +1254,7 @@ public class ModelUtil {
 		if (feature==null)
 			return false;
 		
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).isMultiLine(object);
 		return false;
@@ -1311,7 +1265,7 @@ public class ModelUtil {
 		if (feature==null)
 			return null;
 		
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
 		
@@ -1328,7 +1282,7 @@ public class ModelUtil {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean setValue(TransactionalEditingDomain domain, final EObject object, final EStructuralFeature feature, Object value) {
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		Object oldValue = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
 		if (isStringWrapper(oldValue)) {
 			oldValue = getStringWrapperValue(oldValue);
@@ -1391,7 +1345,7 @@ public class ModelUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static Object getValue(final EObject object, final EStructuralFeature feature) {
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		Object value = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
 		return value;
 	}
@@ -1399,7 +1353,7 @@ public class ModelUtil {
 	@SuppressWarnings("rawtypes")
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
 				if (result instanceof Boolean)
@@ -1420,7 +1374,7 @@ public class ModelUtil {
 	@SuppressWarnings("rawtypes")
 	public static boolean canCreateNew(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW);
 				if (result instanceof Boolean)
@@ -1441,7 +1395,7 @@ public class ModelUtil {
 	@SuppressWarnings("rawtypes")
 	public static boolean canEditInline(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT_INLINE);
 				if (result instanceof Boolean)
@@ -1454,7 +1408,7 @@ public class ModelUtil {
 	@SuppressWarnings("rawtypes")
 	public static boolean canSetNull(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 			if (adapter!=null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
 				if (result instanceof Boolean)
@@ -1474,7 +1428,7 @@ public class ModelUtil {
 			return true;
 		}
 		
-		ExtendedPropertiesAdapter adapter = adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null) {
 			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE);
 			if (result instanceof Boolean)

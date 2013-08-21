@@ -17,7 +17,6 @@ import java.lang.reflect.Constructor;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -42,6 +41,7 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 		this.element = element;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Class getInstanceClass() {
 	    if (type == null) {
 	        return null;
@@ -49,12 +49,12 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 		try {
 			return Platform.getBundle(element.getContributor().getName()).loadClass(type);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public ExtendedPropertiesAdapter getAdapter(AdapterFactory adapterFactory, EObject object) {
         if (adapterClassName == null) {
             return null;
@@ -65,7 +65,7 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 			EClass eclass = null;
 			if (object instanceof EClass) {
 				eclass = (EClass)object;
-				object = ModelUtil.getDummyObject(eclass);
+				object = ExtendedPropertiesAdapter.getDummyObject(eclass);
 			}
 			else {
 				eclass = object.eClass();
@@ -78,6 +78,7 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 		return null;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Constructor getConstructor(Class adapterClass, EClass eclass) {
 		Constructor ctor = null;
 		try {
