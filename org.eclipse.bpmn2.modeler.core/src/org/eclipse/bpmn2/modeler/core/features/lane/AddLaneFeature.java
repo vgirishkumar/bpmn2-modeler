@@ -229,7 +229,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 	protected int getHeight(IAddContext context) {
 		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null){
 			if (context.getTargetContainer() instanceof Diagram) {
-				return getHeight();
+				return super.getHeight(context);
 			}
 			int height = context.getTargetContainer().getGraphicsAlgorithm().getHeight();
 			
@@ -239,14 +239,14 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 			}
 			return height;
 		}
-		return context.getHeight();
+		return super.getHeight(context);
 	}
 	
 	@Override
 	public int getWidth(IAddContext context) {
 		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null){
 			if (context.getTargetContainer() instanceof Diagram) {
-				return getWidth();
+				return super.getWidth(context);
 			}
 			int width = context.getTargetContainer().getGraphicsAlgorithm().getWidth();
 			
@@ -256,7 +256,7 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 			}
 			return width;
 		}
-		return context.getWidth();
+		return super.getWidth(context);
 	}
 
 	@Override

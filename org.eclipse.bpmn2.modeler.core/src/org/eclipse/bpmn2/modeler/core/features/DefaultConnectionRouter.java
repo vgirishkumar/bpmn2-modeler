@@ -159,7 +159,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (!FeatureSupport.isGroupShape(shape))
+			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) && !FeatureSupport.isParticipant(shape))
 				if (GraphicsUtil.intersectsLine(shape, p1, p2))
 					collisions.add(shape);
 		}
