@@ -107,7 +107,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		for (Connection connection : getDiagram().getConnections()) {
 			if (GraphicsUtil.intersects(shape, connection)) {
 				if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
-				ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
+					ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
 				}
 			}
 		}
