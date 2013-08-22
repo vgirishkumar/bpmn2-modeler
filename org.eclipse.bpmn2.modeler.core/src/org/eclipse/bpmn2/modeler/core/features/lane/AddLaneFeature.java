@@ -58,7 +58,15 @@ public class AddLaneFeature extends AbstractAddBPMNShapeFeature<Lane> {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		return FeatureSupport.isValidFlowElementTarget(context);
+		// NOTE: This is slightly different from FeatureSupport.isValidFlowElementTarget()
+		// because a Lane can be added to a Lane that is not a top-level Lane. This is not
+		// the case for Activities, Events and Gateways.
+		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
+		boolean intoLane = FeatureSupport.isTargetLane(context);
+		boolean intoParticipant = FeatureSupport.isTargetParticipant(context);
+		boolean intoFlowElementContainer = FeatureSupport.isTargetFlowElementsContainer(context);
+		boolean intoGroup = FeatureSupport.isTargetGroup(context);
+		return (intoDiagram || intoLane || intoParticipant || intoFlowElementContainer) && !intoGroup;
 	}
 
 	@Override
