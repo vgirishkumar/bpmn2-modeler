@@ -497,9 +497,11 @@ public class FeatureSupport {
 					service.setSize(childGa, width, childGa.getHeight());
 				else
 					service.setSize(childGa, childGa.getWidth(), height);
+				DIUtils.updateDIShape(s);
 				postResizeFixLenghts((ContainerShape) s);
 			}
 		}
+		DIUtils.updateDIShape(root);
 	}
 
 	public static String getShapeValue(IPictogramElementContext context) {
