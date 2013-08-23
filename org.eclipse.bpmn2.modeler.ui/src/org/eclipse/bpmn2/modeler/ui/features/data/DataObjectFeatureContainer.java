@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -129,6 +130,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 
 		@Override
 		public FlowElement createBusinessObject(ICreateContext context) {
+			changesDone = true;
 			FlowElement bo = null;
 			try {
 				DataObjectReference dataObjectReference = null;
@@ -166,26 +168,32 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				DataObject result = dataObject;
 				if (dataObjectList.size() > 1) {
 					PopupMenu popupMenu = new PopupMenu(dataObjectList, labelProvider);
-					boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-					if (b) {
+					changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+					if (changesDone) {
 						result = (DataObject) popupMenu.getResult();
 					}
+					else {
+						EcoreUtil.delete(dataObject);
+						EcoreUtil.delete(dataObjectReference);
+					}
 				}
-				if (result == dataObject) { // the new one
-					mh.addFlowElement(targetBusinessObject,dataObject);
-					ModelUtil.setID(dataObject);
-					dataObject.setIsCollection(false);
-					dataObject.setName(oldName);
-					bo = dataObject;
-				} else {
-					mh.addFlowElement(targetBusinessObject,dataObjectReference);
-					ModelUtil.setID(dataObjectReference);
-					dataObjectReference.setName(result.getName() + " Ref");
-					dataObjectReference.setDataObjectRef(result);
-					dataObject = result;
-					bo = dataObjectReference;
+				if (changesDone) {
+					if (result == dataObject) { // the new one
+						mh.addFlowElement(targetBusinessObject,dataObject);
+						ModelUtil.setID(dataObject);
+						dataObject.setIsCollection(false);
+						dataObject.setName(oldName);
+						bo = dataObject;
+					} else {
+						mh.addFlowElement(targetBusinessObject,dataObjectReference);
+						ModelUtil.setID(dataObjectReference);
+						dataObjectReference.setName(result.getName() + " Ref");
+						dataObjectReference.setDataObjectRef(result);
+						dataObject = result;
+						bo = dataObjectReference;
+					}
+					putBusinessObject(context, bo);
 				}
-				putBusinessObject(context, bo);
 
 			} catch (IOException e) {
 				Activator.showErrorWithLogging(e);

@@ -48,6 +48,8 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		extends AbstractCreateFeature
 		implements IBpmn2CreateFeature<T, ICreateContext> {
 
+	protected boolean changesDone = true;
+
 	/**
 	 * @param fp
 	 * @param name
@@ -88,6 +90,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 	    	ctd.populateObject(businessObject, true);
 		}
+		changesDone = true;
 		return businessObject;
 	}
 	
@@ -146,5 +149,10 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	protected ModelEnablementDescriptor getModelEnablements() {
 		DiagramEditor editor = (DiagramEditor) getDiagramEditor();
 		return (ModelEnablementDescriptor) editor.getAdapter(ModelEnablementDescriptor.class);
+	}
+
+	@Override
+	public boolean hasDoneChanges() {
+		return changesDone;
 	}
 }

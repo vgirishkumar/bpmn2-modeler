@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class WhiteboxFeature extends AbstractCustomFeature {
 
-	private boolean changesDone = false;
+	protected boolean changesDone = false;
 	
 	// label provider for the popup menu that displays allowable Activity subclasses
 	private static ILabelProvider labelProvider = new ILabelProvider() {
@@ -201,9 +201,6 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 			else
 				return null;
 		}
-		else
-			changesDone = true;
-		
 		if (changesDone) {
 			if (result==newDiagram) { // the new one
 				String name = "Process for "+ModelUtil.getDisplayName(participant);

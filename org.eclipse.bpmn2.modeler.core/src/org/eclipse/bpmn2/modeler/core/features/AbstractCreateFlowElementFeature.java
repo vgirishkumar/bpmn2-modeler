@@ -61,21 +61,26 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 
 	@Override
 	public Object[] create(ICreateContext context) {
-		T element = null;
-		try {
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-			element = createBusinessObject(context);
-			if (FeatureSupport.isTargetLane(context) && element instanceof FlowNode) {
-				((FlowNode) element).getLanes().add(
-						(Lane) getBusinessObjectForPictogramElement(context.getTargetContainer()));
+		T element = createBusinessObject(context);
+		if (element!=null) {
+			changesDone = true;
+			try {
+				ModelHandler handler = ModelHandler.getInstance(getDiagram());
+				if (FeatureSupport.isTargetLane(context) && element instanceof FlowNode) {
+					((FlowNode) element).getLanes().add(
+							(Lane) getBusinessObjectForPictogramElement(context.getTargetContainer()));
+				}
+				handler.addFlowElement(getBusinessObjectForPictogramElement(context.getTargetContainer()), element);
+			} catch (IOException e) {
+				Activator.logError(e);
 			}
-			handler.addFlowElement(getBusinessObjectForPictogramElement(context.getTargetContainer()), element);
-		} catch (IOException e) {
-			Activator.logError(e);
+			PictogramElement pe = null;
+			pe = addGraphicalRepresentation(context, element);
+			return new Object[] { element, pe };
 		}
-		PictogramElement pe = null;
-		pe = addGraphicalRepresentation(context, element);
-		return new Object[] { element, pe };
+		else
+			changesDone = false;
+		return new Object[] { null };
 	}
 	
 	protected abstract String getStencilImageId();

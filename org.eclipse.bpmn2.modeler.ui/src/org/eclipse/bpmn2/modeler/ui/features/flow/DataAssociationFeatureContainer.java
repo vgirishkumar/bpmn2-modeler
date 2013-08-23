@@ -31,6 +31,7 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
@@ -750,6 +751,14 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		@Override
 		public void postReconnect(IReconnectionContext context) {
 			Connection connection = context.getConnection();
+			
+			// If reconnecting to the same shape, there's nothing to do here
+			// except update the connection anchor point
+			if (context.getOldAnchor().eContainer() == context.getNewAnchor().eContainer()) {
+				DIUtils.updateDIEdge(connection);
+				return;
+			}
+			
 			BPMNEdge edge = BusinessObjectUtil.getFirstElementOfType(context.getConnection(), BPMNEdge.class);
 			BaseElement oldElement = null;
 			BaseElement newElement = null;

@@ -74,7 +74,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
 
-	private boolean changesDone = false;;
+	protected boolean changesDone = false;;
 	
 	// label provider for the popup menu that displays allowable Activity subclasses
 	private static ILabelProvider labelProvider = new ILabelProvider() {

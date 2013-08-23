@@ -40,6 +40,7 @@ import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -315,6 +316,8 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public Message createBusinessObject(ICreateContext context) {
+			changesDone = true;
+
 			Message message = null;
 			message = Bpmn2ModelerFactory.create(Message.class);
 			String oldName = message.getName();
@@ -330,22 +333,28 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			Message result = message;
 			if (messageList.size() > 1) {
 				PopupMenu popupMenu = new PopupMenu(messageList, labelProvider);
-				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-				if (b) {
+				changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (changesDone) {
 					result = (Message) popupMenu.getResult();
 				}
+				else {
+					EcoreUtil.delete(message);
+					message = null;
+				}
 			}
-			if (result == message) {
-				// the new one
-				definitions.getRootElements().add(message);
-				message.setId(null);
-				ModelUtil.setID(message);
-				message.setName(oldName);
-			} else {
-				// and existing one
-				message = result;
+			if (changesDone) {
+				if (result == message) {
+					// the new one
+					definitions.getRootElements().add(message);
+					message.setId(null);
+					ModelUtil.setID(message);
+					message.setName(oldName);
+				} else {
+					// and existing one
+					message = result;
+				}
+				putBusinessObject(context, message);
 			}
-			putBusinessObject(context, message);
 			
 			return message;
 		}
