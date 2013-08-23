@@ -31,6 +31,7 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -42,9 +43,15 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.transaction.RollbackException;
+import org.eclipse.emf.transaction.Transaction;
+import org.eclipse.emf.transaction.impl.InternalTransactionalEditingDomain;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -75,6 +82,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -235,6 +243,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (b) {
 				result = (DataInput) popupMenu.getResult();
 			}
+			else {
+				EcoreUtil.delete(dataInput);
+				return null;
+			}
 		}
 
 		DataInputAssociation dataInputAssoc = null;
@@ -293,6 +305,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
 			if (b) {
 				result = (DataOutput) popupMenu.getResult();
+			}
+			else {
+				EcoreUtil.delete(dataOutput);
+				return null;
 			}
 		}
 
@@ -490,18 +506,23 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			DataAssociation dataAssoc = null;
 			BaseElement source = getSourceBo(context);
 			BaseElement target = getTargetBo(context);
-
+			InputOutputSpecification ioSpec = null;
+			OutputSet outputSet = null;
+			InputSet inputSet = null;
+			// Assume we will be creating a new Data Association but if user hits the ESC key
+			// during selectInput() or selectOutput(), undo everything.
+			changesDone = true;
+			
 			if (target instanceof ItemAwareElement) {
 				// Target is the DataObject.
 				DataOutputAssociation dataOutputAssoc = null;
 				if (source instanceof Activity) {
 					// if the source is an Activity, create an ioSpecification if it doesn't have one yet
 					Activity activity = (Activity) source;
-					InputOutputSpecification ioSpec = activity.getIoSpecification();
+					ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
 						ioSpec = Bpmn2ModelerFactory.createFeature(activity, "ioSpecification", InputOutputSpecification.class);
 					}
-					OutputSet outputSet = null;
 					if (ioSpec.getOutputSets().size()==0) {
 						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						ioSpec.getOutputSets().add(outputSet);
@@ -516,14 +537,16 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				else if (source instanceof CatchEvent) {
 					// if the source is an Event, create an output set if it doesn't have one yet
 					CatchEvent event = (CatchEvent)source;
-					OutputSet outputSet = event.getOutputSet();
+					outputSet = event.getOutputSet();
 					if (outputSet==null) {
 						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						event.setOutputSet(outputSet);
 					}
 					dataOutputAssoc = selectOutput(source, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
 				}
-				dataOutputAssoc.setTargetRef((ItemAwareElement) target);
+				
+				if (dataOutputAssoc!=null)
+					dataOutputAssoc.setTargetRef((ItemAwareElement) target);
 
 				dataAssoc = dataOutputAssoc;
 			}
@@ -534,11 +557,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				if (target instanceof Activity) {
 					// if the target is an Activity, create an ioSpecification if it doesn't have one yet
 					Activity activity = (Activity) target;
-					InputOutputSpecification ioSpec = activity.getIoSpecification();
+					ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
 						ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
 					}
-					InputSet inputSet = null;
 					if (ioSpec.getInputSets().size()==0) {
 						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						ioSpec.getInputSets().add(inputSet);
@@ -553,19 +575,27 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				else if (target instanceof ThrowEvent) {
 					// if the target is an Event, create an input set if it doesn't have one yet
 					ThrowEvent event = (ThrowEvent)target;
-					InputSet inputSet = event.getInputSet();
+					inputSet = event.getInputSet();
 					if (inputSet==null) {
 						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						event.setInputSet(inputSet);
 					}
 					dataInputAssoc = selectInput(target, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
 				}
-				dataInputAssoc.getSourceRef().clear();
-				dataInputAssoc.getSourceRef().add((ItemAwareElement) source);
-
+				
+				if (dataInputAssoc!=null) {
+					dataInputAssoc.getSourceRef().clear();
+					dataInputAssoc.getSourceRef().add((ItemAwareElement) source);
+				}
 				dataAssoc = dataInputAssoc;
 			}
-			putBusinessObject(context, dataAssoc);
+			
+			if (dataAssoc!=null) {
+				putBusinessObject(context, dataAssoc);
+			}
+			else {
+				changesDone = false;
+			}
 			return dataAssoc;
 		}
 	}
@@ -700,6 +730,8 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 	public static class ReconnectDataAssociationFeature extends AbstractReconnectFlowFeature {
 
+		protected Transaction transaction;
+
 		public ReconnectDataAssociationFeature(IFeatureProvider fp) {
 			super(fp);
 		}
@@ -729,9 +761,48 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		protected Class<? extends EObject> getSourceClass() {
 			return BaseElement.class;
 		}
+		
+		/**
+		 * Wrap this whole reconnection mess in a transaction. If user hits ESC key during
+		 * selectInput() or selectOutput() popup menu, roll back the transaction. This is
+		 * the only way I've found that will restore the original anchor point on the connection;
+		 * simply returning "false" from hasDoneChanges() won't do it. Possible Graphiti bug?  
+		 */
+		protected void startTransaction() {
+			if (transaction==null) {
+				try {
+					final InternalTransactionalEditingDomain transactionalDomain =
+							(InternalTransactionalEditingDomain) getDiagramBehavior().getEditingDomain();
+					transaction = transactionalDomain.startTransaction(false, null);
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		protected void commitTransaction() {
+			try {
+				transaction.commit();
+			}
+			catch (RollbackException e) {
+				ErrorDialog.openError(Display.getDefault().getActiveShell(),
+						"Error Commiting Model Changes",
+						"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
+								Activator.PLUGIN_ID, e.getMessage(), e));
+			}
+		}
+		
+		protected void rollbackTransaction() {
+			if (transaction!=null) {
+				transaction.rollback();
+			}
+		}
 
 		@Override
 		public void preReconnect(IReconnectionContext context) {
+			startTransaction();
+			
 			PictogramElement targetPictogramElement = context.getTargetPictogramElement();
 			if (targetPictogramElement instanceof FreeFormConnection) {
 				Shape connectionPointShape = AnchorUtil.createConnectionPoint(
@@ -750,7 +821,14 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public void postReconnect(IReconnectionContext context) {
+			
 			Connection connection = context.getConnection();
+			InputOutputSpecification ioSpec = null;
+			OutputSet outputSet = null;
+			InputSet inputSet = null;
+			// Assume we will be creating a new Data Association but if user hits the ESC key
+			// during selectInput() or selectOutput(), undo everything.
+			changesDone = true;
 			
 			// If reconnecting to the same shape, there's nothing to do here
 			// except update the connection anchor point
@@ -838,14 +916,13 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 			if (newElement instanceof Activity) {
 				Activity activity = (Activity) newElement;
-				InputOutputSpecification ioSpec = activity.getIoSpecification();
+				ioSpec = activity.getIoSpecification();
 				if (ioSpec==null) {
 					ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
 				}
 				if (isInput) {
 					List<DataInput> dataInputs = null;
 					List<DataInputAssociation> dataInputAssociations = null;
-					InputSet inputSet = null;
 					if (ioSpec.getInputSets().size()==0) {
 						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						ioSpec.getInputSets().add(inputSet);
@@ -858,13 +935,14 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					dataInputs = ioSpec.getDataInputs();
 					dataInputAssociations = activity.getDataInputAssociations();
 					newAssociation = selectInput(newElement, dataInputs, dataInputAssociations, inputSet);
-					newAssociation.getSourceRef().clear();
-					newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+					if (newAssociation!=null) {
+						newAssociation.getSourceRef().clear();
+						newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+					}
 				}
 				else {
 					List<DataOutput> dataOutputs = null;
 					List<DataOutputAssociation> dataOutputAssociations = null;
-					OutputSet outputSet = null;
 					if (ioSpec.getOutputSets().size()==0) {
 						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						ioSpec.getOutputSets().add(outputSet);
@@ -877,7 +955,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					dataOutputs = ioSpec.getDataOutputs();
 					dataOutputAssociations = activity.getDataOutputAssociations();
 					newAssociation = selectOutput(newElement, dataOutputs, dataOutputAssociations, outputSet);
-					newAssociation.setTargetRef((ItemAwareElement) otherElement);
+					if (newAssociation!=null) {
+						newAssociation.setTargetRef((ItemAwareElement) otherElement);
+					}
 				}
 			}
 			else if (newElement instanceof CatchEvent) {
@@ -885,26 +965,30 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					throw new IllegalArgumentException("Invalid Source");
 				else {
 					CatchEvent event = (CatchEvent)newElement;
-					OutputSet outputSet = event.getOutputSet();
+					outputSet = event.getOutputSet();
 					if (outputSet==null) {
 						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
 						event.setOutputSet(outputSet);
 					}
 					newAssociation = selectOutput(event, event.getDataOutputs(), event.getDataOutputAssociation(), outputSet);
-					newAssociation.setTargetRef((ItemAwareElement) otherElement);
+					if (newAssociation!=null) {
+						newAssociation.setTargetRef((ItemAwareElement) otherElement);
+					}
 				}
 			}
 			else if (newElement instanceof ThrowEvent) {
 				if (isInput) {
 					ThrowEvent event = (ThrowEvent)newElement;
-					InputSet inputSet = event.getInputSet();
+					inputSet = event.getInputSet();
 					if (inputSet==null) {
 						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
 						event.setInputSet(inputSet);
 					}
 					newAssociation = selectInput(newElement, event.getDataInputs(), event.getDataInputAssociation(), inputSet);
-					newAssociation.getSourceRef().clear();
-					newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+					if (newAssociation!=null) {
+						newAssociation.getSourceRef().clear();
+						newAssociation.getSourceRef().add((ItemAwareElement) otherElement);
+					}
 				}
 				else
 					throw new IllegalArgumentException("Invalid Target");
@@ -913,17 +997,25 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				
 			}
 			
-			if (!(newElement instanceof ItemAwareElement)) {
-				List<EObject> businessObjects = connection.getLink().getBusinessObjects();
-				int index = businessObjects.indexOf(oldAssociation);
-				businessObjects.remove(index);
-				businessObjects.add(index, newAssociation);
-				edge.setBpmnElement(newAssociation);
-	
-				deleteReplacedDataAssociation(getFeatureProvider(), connection);
+			if (newAssociation!=null) {
+				if (!(newElement instanceof ItemAwareElement)) {
+					List<EObject> businessObjects = connection.getLink().getBusinessObjects();
+					int index = businessObjects.indexOf(oldAssociation);
+					businessObjects.remove(index);
+					businessObjects.add(index, newAssociation);
+					edge.setBpmnElement(newAssociation);
+		
+					deleteReplacedDataAssociation(getFeatureProvider(), connection);
+				}
+				
+				super.postReconnect(context);
+				
+				commitTransaction();
 			}
-			
-			super.postReconnect(context);
+			else {
+				changesDone = false;
+				rollbackTransaction();
+			}
 		}
 	} 
 	

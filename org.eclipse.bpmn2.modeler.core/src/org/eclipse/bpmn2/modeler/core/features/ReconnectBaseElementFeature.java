@@ -37,105 +37,113 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 
-		public ReconnectBaseElementFeature(IFeatureProvider fp) {
-			super(fp);
-		}
+	protected boolean changesDone = false;
+	
+	public ReconnectBaseElementFeature(IFeatureProvider fp) {
+		super(fp);
+	}
 
-		@Override
-		public boolean canReconnect(IReconnectionContext context) {
-			// TODO Auto-generated method stub
-			return super.canReconnect(context);
-		}
+	@Override
+	public boolean canReconnect(IReconnectionContext context) {
+		// TODO Auto-generated method stub
+		return super.canReconnect(context);
+	}
 
-		@Override
-		public void preReconnect(IReconnectionContext context) {
-			IPeService peService = Graphiti.getPeService();
-			IGaService gaService = Graphiti.getGaService();
-			Connection connection = context.getConnection();
-			FixPointAnchor newAnchor = null;
-			
-			AnchorContainer source = connection.getStart().getParent();
-			AnchorContainer target = connection.getEnd().getParent();
-			Tuple<FixPointAnchor, FixPointAnchor> anchors = null;
-			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-				target = (AnchorContainer) context.getTargetPictogramElement();
+	@Override
+	public void preReconnect(IReconnectionContext context) {
+		IPeService peService = Graphiti.getPeService();
+		IGaService gaService = Graphiti.getGaService();
+		Connection connection = context.getConnection();
+		FixPointAnchor newAnchor = null;
+		
+		AnchorContainer source = connection.getStart().getParent();
+		AnchorContainer target = connection.getEnd().getParent();
+		Tuple<FixPointAnchor, FixPointAnchor> anchors = null;
+		if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
+			target = (AnchorContainer) context.getTargetPictogramElement();
 //				if (AnchorUtil.useAdHocAnchors(target, connection))
-				if (true)
-				{
-					ILocation targetLoc = context.getTargetLocation();
-					ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)target);
-					Point p = gaService.createPoint(targetLoc.getX() - shapeLoc.getX(), targetLoc.getY() - shapeLoc.getY());
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
-							AnchorUtil.pointToString(p));
-				}
-				else {
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
-				}
-				BendpointConnectionRouter.setMovedBendpoint(connection, Integer.MAX_VALUE);
-
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
-				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
-				newAnchor = anchors.getSecond();
+			if (true)
+			{
+				ILocation targetLoc = context.getTargetLocation();
+				ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)target);
+				Point p = gaService.createPoint(targetLoc.getX() - shapeLoc.getX(), targetLoc.getY() - shapeLoc.getY());
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+						AnchorUtil.pointToString(p));
 			}
 			else {
-				source = (AnchorContainer) context.getTargetPictogramElement();
-//				if (AnchorUtil.useAdHocAnchors(source, connection))
-				if (true)
-				{
-					ILocation sourceLoc = context.getTargetLocation();
-					ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)source);
-					Point p = gaService.createPoint(sourceLoc.getX() - shapeLoc.getX(), sourceLoc.getY() - shapeLoc.getY());
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
-				}
-				else {
-					peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
-				}
-				BendpointConnectionRouter.setMovedBendpoint(connection, 0);
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
-				anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
-				newAnchor = anchors.getFirst();
 			}
+			BendpointConnectionRouter.setMovedBendpoint(connection, Integer.MAX_VALUE);
 
-			if (newAnchor!=null)
-				((ReconnectionContext)context).setNewAnchor(newAnchor);
-			
-			super.preReconnect(context);
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
+			newAnchor = anchors.getSecond();
+		}
+		else {
+			source = (AnchorContainer) context.getTargetPictogramElement();
+//				if (AnchorUtil.useAdHocAnchors(source, connection))
+			if (true)
+			{
+				ILocation sourceLoc = context.getTargetLocation();
+				ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)source);
+				Point p = gaService.createPoint(sourceLoc.getX() - shapeLoc.getX(), sourceLoc.getY() - shapeLoc.getY());
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
+			}
+			else {
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+			}
+			BendpointConnectionRouter.setMovedBendpoint(connection, 0);
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
+			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
+			newAnchor = anchors.getFirst();
 		}
 
-		@Override
-		public void postReconnect(IReconnectionContext context) {
-			super.postReconnect(context);
+		if (newAnchor!=null)
+			((ReconnectionContext)context).setNewAnchor(newAnchor);
+		
+		super.preReconnect(context);
+	}
 
-			BPMNEdge edge = BusinessObjectUtil.getFirstElementOfType(context.getConnection(), BPMNEdge.class);
-			DiagramElement de = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), DiagramElement.class);
-			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-				edge.setTargetElement(de);
-			}
-			else {
-				edge.setSourceElement(de);
-			}
-			
-			Connection connection = context.getConnection();
-			BaseElement flow = BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			if (!(flow instanceof DataAssociation)) {
-				BaseElement be = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
-				if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-					EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef");
-					if (feature!=null)
-						flow.eSet(feature, be);
-					AnchorUtil.deleteEmptyAdHocAnchors(connection.getEnd().getParent());
-				}
-				else {
-					EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef");
-					if (feature!=null && !feature.isMany())
-						flow.eSet(feature, be);
-					AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
-				}
-			}
-			
-			ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection, true);
+	@Override
+	public void postReconnect(IReconnectionContext context) {
+		super.postReconnect(context);
 
-			DIUtils.updateDIEdge(context.getConnection());
+		BPMNEdge edge = BusinessObjectUtil.getFirstElementOfType(context.getConnection(), BPMNEdge.class);
+		DiagramElement de = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), DiagramElement.class);
+		if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
+			edge.setTargetElement(de);
+		}
+		else {
+			edge.setSourceElement(de);
 		}
 		
+		Connection connection = context.getConnection();
+		BaseElement flow = BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
+		if (!(flow instanceof DataAssociation)) {
+			BaseElement be = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
+			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
+				EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef");
+				if (feature!=null)
+					flow.eSet(feature, be);
+				AnchorUtil.deleteEmptyAdHocAnchors(connection.getEnd().getParent());
+			}
+			else {
+				EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef");
+				if (feature!=null && !feature.isMany())
+					flow.eSet(feature, be);
+				AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());
+			}
+		}
+		
+		ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection, true);
+
+		DIUtils.updateDIEdge(context.getConnection());
+		
+		changesDone = true;
 	}
+
+	@Override
+	public boolean hasDoneChanges() {
+		return changesDone;
+	}
+}
