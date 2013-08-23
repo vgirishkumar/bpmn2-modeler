@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 	
-	private boolean changesDone = false;
+	protected boolean changesDone = false;
 	
 	private static ILabelProvider labelProvider = new ILabelProvider() {
 
@@ -139,7 +139,6 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 				}
 				Participant result = participant;
 
-				changesDone = true;
 				if (participantList.size()>1) {
 					PopupMenu popupMenu = new PopupMenu(participantList, labelProvider);
 					changesDone = popupMenu.show(Display.getCurrent().getActiveShell());

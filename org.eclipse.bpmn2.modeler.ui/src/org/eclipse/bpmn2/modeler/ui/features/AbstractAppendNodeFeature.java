@@ -33,7 +33,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
 import org.eclipse.emf.common.util.EList;
@@ -76,9 +75,9 @@ import org.eclipse.swt.widgets.Display;
  * @author Bob Brodt
  *
  */
-public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
+public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
 	
-	private boolean changesDone = false;
+	protected boolean changesDone = false;
 	
 	// label provider for the popup menu that displays allowable Activity subclasses
 	private static ILabelProvider labelProvider = new ILabelProvider() {
@@ -119,7 +118,7 @@ public abstract class AbstractAppendNodeNodeFeature<T extends FlowNode> extends 
 	/**
 	 * @param fp
 	 */
-	public AbstractAppendNodeNodeFeature(IFeatureProvider fp) {
+	public AbstractAppendNodeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
