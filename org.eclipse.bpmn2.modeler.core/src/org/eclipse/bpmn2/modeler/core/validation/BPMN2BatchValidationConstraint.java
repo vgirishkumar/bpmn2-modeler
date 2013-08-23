@@ -483,7 +483,7 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			if (warnings) {
 			}
 			else {
-				if (isEmpty(elem.getTargetRef())) {
+				if (isEmpty(elem.getTargetRef()) && elem.getAssignment().size()==0 && elem.getTransformation()==null) {
 					return createMissingFeatureStatus(ctx,be,"targetRef");
 				}
 			}
