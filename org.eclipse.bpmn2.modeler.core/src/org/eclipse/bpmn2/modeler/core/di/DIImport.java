@@ -15,18 +15,16 @@ package org.eclipse.bpmn2.modeler.core.di;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
-import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
@@ -44,11 +42,9 @@ import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
@@ -108,7 +104,7 @@ public class DIImport {
 	private TransactionalEditingDomain domain;
 	private ModelHandler modelHandler;
 	private IFeatureProvider featureProvider;
-	private HashMap<BaseElement, PictogramElement> elements;
+	private LinkedHashMap<BaseElement, PictogramElement> elements;
 	private Bpmn2Preferences preferences;
 	private ImportDiagnostics diagnostics;
 	private final IPeService peService = Graphiti.getPeService();
@@ -130,7 +126,7 @@ public class DIImport {
 		
 		diagnostics = new ImportDiagnostics(modelHandler.getResource());
 		preferences = (Bpmn2Preferences) editor.getAdapter(Bpmn2Preferences.class);		
-		elements = new HashMap<BaseElement, PictogramElement>();
+		elements = new LinkedHashMap<BaseElement, PictogramElement>();
 		domain.getCommandStack().execute(new RecordingCommand(domain) {
 			@Override
 			protected void doExecute() {
@@ -543,18 +539,16 @@ public class DIImport {
 
 		if (bpmnElement instanceof Lane) {
 			handleLane((Lane)bpmnElement, context, shape);
-		} else if (bpmnElement instanceof FlowNode ||
-				bpmnElement instanceof DataObject ||
-				bpmnElement instanceof DataObjectReference) {
+		} else if (bpmnElement instanceof FlowNode){ 
 			handleFlowElement((FlowElement) bpmnElement, context, shape);
 		} else if (bpmnElement instanceof Participant) {
 			handleParticipant((Participant) bpmnElement, context, shape);
-		} else if (bpmnElement instanceof DataInput || bpmnElement instanceof DataOutput) {
+		} else if (bpmnElement instanceof DataInput ||
+				bpmnElement instanceof DataOutput ||
+				bpmnElement instanceof DataObject ||
+				bpmnElement instanceof DataObjectReference ||
+				bpmnElement instanceof DataStoreReference) {
 			handleItemAwareElement((ItemAwareElement)bpmnElement, context, shape);
-		} else if (bpmnElement instanceof DataStoreReference){
-			// Even though Data Stores are not Flow Elements, they need to be handled the same
-			// way because they may be contained in a SubProcesses
-			handleFlowElement((FlowElement) bpmnElement, context, shape);
 		} else {
 			context.setTargetContainer(diagram);
 			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
@@ -707,13 +701,25 @@ public class DIImport {
 		int w = (int) shape.getBounds().getWidth();
 		int h = (int) shape.getBounds().getHeight();
 
-		// find a correct container element
-		// if this Data Object is contained within a Lane, make the Lane the target container
-		for (Entry<BaseElement, PictogramElement> entry : elements.entrySet()) {
-			if (entry.getKey() instanceof Lane) {
-				ContainerShape laneShape = (ContainerShape)entry.getValue();
-				if (GraphicsUtil.intersects(laneShape, x, y, w, h)) {
-					targetContainer = (ContainerShape) laneShape;
+		// Find a container for this data object shape: ItemAwareElements may or may not
+		// be direct child elements in the BPMN2 model (e.g. a DataObject inside a Lane,
+		// or a DataStoreReference inside a Pool) but we still want to visually represent
+		// them as child elements in the graphical view. So, for example, a DataObject that
+		// that was originally dropped into a Lane should move and behave as if it were a
+		// child shape of the Lane.
+		ArrayList<Entry<BaseElement, PictogramElement>> entries =
+				new ArrayList<Entry<BaseElement, PictogramElement>>(elements.entrySet());
+		// We have to iterate over the list of created elements in reverse order.
+		// This is the graphical Z-order, from top to bottom, of the BPMNShape elements.
+		for (int i=entries.size()-1; i>=0; --i) {
+			Entry<BaseElement, PictogramElement> entry = entries.get(i);
+			BaseElement key = entry.getKey();
+			if ((key instanceof Lane && FeatureSupport.isLaneOnTop((Lane)key)) ||
+					key instanceof Participant ||
+					key instanceof SubProcess) {
+				ContainerShape value = (ContainerShape)entry.getValue();
+				if (GraphicsUtil.intersects(value, x, y, w, h)) {
+					targetContainer = (ContainerShape) value;
 					ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
 					x -= loc.getX();
 					y -= loc.getY();
@@ -721,8 +727,16 @@ public class DIImport {
 				}
 			}
 		}
-		if (targetContainer==null)
+		if (targetContainer==null) {
+			// Some data items are both ItemAwareElements and FlowElements (i.e. DataObject,
+			// DataObjectReference, and DataStoreReference) and if they are not "contained"
+			// within a Lane or Pool, they need to be handled like FlowElements.
+			if (element instanceof FlowElement) {
+				handleFlowElement((FlowElement)element, context, shape);
+				return;
+			}
 			targetContainer = getDiagram(shape);
+		}
 		context.setTargetContainer(targetContainer);
 		context.setLocation(x, y);
 	}
