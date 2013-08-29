@@ -26,7 +26,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.dd.di.DiagramElement;
 
-final class DIZorderComparator implements Comparator<DiagramElement> {
+public final class DIZorderComparator implements Comparator<DiagramElement> {
 	@Override
 	public int compare(DiagramElement a, DiagramElement b) {
 		boolean aShape = a instanceof BPMNShape;
