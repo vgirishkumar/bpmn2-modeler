@@ -25,6 +25,8 @@ import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
@@ -104,16 +106,14 @@ public class FeatureSupport {
 	public static boolean isValidDataTarget(ITargetContext context) {
 		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
 		boolean intoDiagram = containerBO instanceof BPMNDiagram;
-		if (intoDiagram) {
-			// SubProcess are not allowed to define their own DataInputs or DataOutputs
-			BPMNDiagram bpmnDiagram = (BPMNDiagram) containerBO;
-			if (bpmnDiagram.getPlane().getBpmnElement() instanceof SubProcess)
-				intoDiagram = false;
-		}
-		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
-		boolean intoParticipant = isTargetParticipant(context);
-		boolean intoGroup = isTargetGroup(context);
-		return (intoDiagram || intoLane || intoParticipant) && !intoGroup;
+		boolean intoSubProcess = containerBO instanceof SubProcess;
+		if (intoSubProcess || intoDiagram)
+			return true;
+		if (FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context))
+			return true;
+		if (FeatureSupport.isTargetParticipant(context))
+			return true;
+		return false;
 	}
 	
 	public static boolean isTargetSubProcess(ITargetContext context) {

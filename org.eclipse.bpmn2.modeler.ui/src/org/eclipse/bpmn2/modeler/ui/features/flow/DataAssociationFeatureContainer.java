@@ -834,6 +834,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			// except update the connection anchor point
 			if (context.getOldAnchor().eContainer() == context.getNewAnchor().eContainer()) {
 				DIUtils.updateDIEdge(connection);
+				commitTransaction();
 				return;
 			}
 			
