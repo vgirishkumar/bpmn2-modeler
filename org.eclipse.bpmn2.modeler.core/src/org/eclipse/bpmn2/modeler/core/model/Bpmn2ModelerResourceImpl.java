@@ -29,10 +29,8 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
-import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -41,6 +39,7 @@ import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.DIZorderComparator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
@@ -65,15 +64,14 @@ import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -93,11 +91,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
-import org.eclipse.wst.wsdl.WSDLElement;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -262,6 +256,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 	@Override
 	protected XMLSave createXMLSave() {
+        prepareSave();
 		return new Bpmn2ModelerXMLSave(createXMLHelper()) {
 		};
 	}
@@ -285,10 +280,20 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 		}
+		
+		for (BPMNDiagram bpmnDiagram : thisDefinitions.getDiagrams()) {
+			fixZOrder(bpmnDiagram);
+		}
+
+	}
+
+	private void fixZOrder(BPMNDiagram bpmnDiagram) {
+		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
+		ECollections.sort(elements, new DIZorderComparator());
 	}
 
 	/**
-	 * Set the ID attribute of cur to a generated ID, if it is not already set.
+	 * Generate an ID attribute for the given BPMN2 element if not already set.
 	 * 
 	 * @param obj
 	 *            The object whose ID should be set.
@@ -303,7 +308,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	}
 
 	/**
-	 * We need extend the standard SAXXMLHandler to hook into the handling of
+	 * We need to extend the standard SAXXMLHandler to hook into the handling of
 	 * attribute references which may be either simple ID Strings or QNames.
 	 * We'll search through all of the objects' IDs first to find the one we're
 	 * looking for. If not, we'll try a QName search.
