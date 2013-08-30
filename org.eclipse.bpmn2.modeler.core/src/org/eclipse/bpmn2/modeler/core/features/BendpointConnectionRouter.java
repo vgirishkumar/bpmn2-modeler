@@ -115,7 +115,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point pStart;
 		Point pEnd;
 		if (sourceAnchor==null) {
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, oldPoints.get(oldPoints.size()-1));
+			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, oldPoints.get(1));
 			pStart = GraphicsUtil.createPoint(ba.anchor);
 		}
 		else {
@@ -123,7 +123,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			pStart = oldPoints.get(0);
 		}
 		if (targetAnchor==null) {
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, oldPoints.get(0));
+			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, oldPoints.get(oldPoints.size()-2));
 			pEnd = GraphicsUtil.createPoint(ba.anchor);
 		}
 		else {
@@ -142,8 +142,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		
 		Point p1 = pStart;
 		Point p2;
-		Point p3;
-		for (int i=1; i<oldPoints.size(); ++i) {
+		for (int i=1; i<oldPoints.size() - 1; ++i) {
 			p2 = oldPoints.get(i);
 			ContainerShape shape = getCollision(p1,p2);
 			if (shape!=null && !manual) {
@@ -172,10 +171,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			p1 = p2;
 		}
 
-		if (!manual) {
-			route.add(pEnd);
-		}
-		
+		route.add(pEnd);
 		
 		oldPoints.clear();
 		
