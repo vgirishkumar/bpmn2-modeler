@@ -110,7 +110,14 @@ public class BooleanObjectEditor extends ObjectEditor {
 		super.notifyChanged(notification);
 		if ( notification.getEventType() == -1 ||
 				(object == notification.getNotifier() && feature == notification.getFeature())) {
-			button.setSelection((Boolean) object.eGet(feature));
+			Object value = object.eGet(feature);
+			if (value==null) {
+				value = Boolean.FALSE;
+			}
+			else {
+				value = Boolean.parseBoolean(value.toString());
+			}
+			button.setSelection((Boolean) value);
 		}
 	}
 	

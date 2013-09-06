@@ -69,6 +69,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class JbpmModelUtil {
@@ -137,7 +138,7 @@ public class JbpmModelUtil {
 	 * @return an ImportType object if it was created, null if the user canceled the import dialog.
 	 */
 	public static IType showImportDialog(EObject object) {
-		Shell shell = ModelUtil.getEditor(object).getSite().getShell();
+		Shell shell = Display.getDefault().getActiveShell();
 		SchemaImportDialog dialog = new SchemaImportDialog(shell, SchemaImportDialog.ALLOW_JAVA);
 		if (dialog.open() == Window.OK) {
 			Object result[] = dialog.getResult();
@@ -175,7 +176,7 @@ public class JbpmModelUtil {
 					process = processes.get(0);
 				else {
 					if (recursive) {
-						Shell shell = ModelUtil.getEditor(object).getSite().getShell();
+						Shell shell = Display.getDefault().getActiveShell();
 						MessageDialog.openError(shell, "Error", "No processes defined!");
 					}
 					return null;
@@ -188,7 +189,7 @@ public class JbpmModelUtil {
 		for (ImportType it : allImports) {
 			if (className.equals(it.getName())) {
 				if (recursive) {
-					Shell shell = ModelUtil.getEditor(object).getSite().getShell();
+					Shell shell = Display.getDefault().getActiveShell();
 					MessageDialog.openWarning(shell, "Warning", "The import '"+className+"' already exists.");
 				}
 				return null;
