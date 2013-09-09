@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -82,81 +83,8 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 		ModelSubclassSelectionDialog dialog = new ModelSubclassSelectionDialog(getDiagramEditor(), businessObject, feature) {
 			@Override
 			protected void filterList(List<EClass> items) {
-				BaseElement eventOwner = null;
-				if (event instanceof BoundaryEvent) {
-					eventOwner = ((BoundaryEvent)event).getAttachedToRef();
-				}
-				else {
-					EObject parent = event.eContainer();
-					while (parent!=null) {
-						if (parent instanceof FlowElementsContainer ) {
-							eventOwner = (BaseElement)parent;
-							break;
-						}
-						parent = parent.eContainer();
-					}
-				}
 				List<EClass> filteredItems = new ArrayList<EClass>();
-				List<EClass> allowedItems = new ArrayList<EClass>();
-				if (event instanceof BoundaryEvent) {
-					if (eventOwner instanceof Transaction) {
-						if (((BoundaryEvent)event).isCancelActivity())
-							allowedItems.add(PACKAGE.getCancelEventDefinition());
-					}
-					if (((BoundaryEvent)event).isCancelActivity())
-						allowedItems.add(PACKAGE.getCompensateEventDefinition());
-					allowedItems.add(PACKAGE.getConditionalEventDefinition());
-					if (((BoundaryEvent)event).isCancelActivity())
-						allowedItems.add(PACKAGE.getErrorEventDefinition());
-					allowedItems.add(PACKAGE.getEscalationEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-					allowedItems.add(PACKAGE.getTimerEventDefinition());
-				}
-				else if (event instanceof IntermediateCatchEvent) {
-					allowedItems.add(PACKAGE.getConditionalEventDefinition());
-					allowedItems.add(PACKAGE.getLinkEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-					allowedItems.add(PACKAGE.getTimerEventDefinition());
-				}
-				else if (event instanceof StartEvent) {
-					if (eventOwner instanceof SubProcess) {
-						if (((StartEvent)event).isIsInterrupting()) {
-							allowedItems.add(PACKAGE.getCompensateEventDefinition());
-							allowedItems.add(PACKAGE.getErrorEventDefinition());
-						}
-						allowedItems.add(PACKAGE.getEscalationEventDefinition());
-					}
-					allowedItems.add(PACKAGE.getConditionalEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-					allowedItems.add(PACKAGE.getTimerEventDefinition());
-				}
-				else if (event instanceof EndEvent) {
-					if (eventOwner instanceof Transaction)
-						allowedItems.add(PACKAGE.getCancelEventDefinition());
-					allowedItems.add(PACKAGE.getCompensateEventDefinition());
-					allowedItems.add(PACKAGE.getErrorEventDefinition());
-					allowedItems.add(PACKAGE.getEscalationEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-					allowedItems.add(PACKAGE.getTerminateEventDefinition());
-				}
-				else if (event instanceof ImplicitThrowEvent) {
-					allowedItems.add(PACKAGE.getCompensateEventDefinition());
-					allowedItems.add(PACKAGE.getEscalationEventDefinition());
-					allowedItems.add(PACKAGE.getLinkEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-				}
-				else if (event instanceof IntermediateThrowEvent) {
-					allowedItems.add(PACKAGE.getCompensateEventDefinition());
-					allowedItems.add(PACKAGE.getEscalationEventDefinition());
-					allowedItems.add(PACKAGE.getLinkEventDefinition());
-					allowedItems.add(PACKAGE.getMessageEventDefinition());
-					allowedItems.add(PACKAGE.getSignalEventDefinition());
-				}
+				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event);
 				for (EClass eclass : items) {
 					if (allowedItems.contains(eclass))
 						filteredItems.add(eclass);

@@ -5,7 +5,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractAddEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.CreateEventDefinition;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -105,7 +105,7 @@ public class MyEventDefinitionFeatureContainer extends CustomTaskFeatureContaine
 		};
 	}
 	
-	public class CreateMyEventDefinitionFeature extends CreateEventDefinition<MyEventDefinition> {
+	public class CreateMyEventDefinitionFeature extends AbstractCreateEventDefinitionFeature<MyEventDefinition> {
 
 		public CreateMyEventDefinitionFeature(IFeatureProvider fp) {
 			super(fp, "My Event Definition", "Create My Event Definition");
