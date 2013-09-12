@@ -12,13 +12,19 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.connectors;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.ExpressionDetailComposite;
 import org.eclipse.emf.ecore.EObject;
@@ -32,7 +38,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
+public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 
 	private Button addRemoveConditionButton;
 	private Button setDefaultFlowCheckbox;
@@ -49,10 +55,22 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 	}
 
 	@Override
-	public void cleanBindings() {
-		super.cleanBindings();
-		addRemoveConditionButton = null;
-		setDefaultFlowCheckbox = null;
+	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
+		if (propertiesProvider==null) {
+			propertiesProvider = new AbstractPropertiesProvider(object) {
+				String[] properties = new String[] {
+						"language",
+						"body",
+						"evaluatesToTypeRef"
+				};
+				
+				@Override
+				public String[] getProperties() {
+					return properties; 
+				}
+			};
+		}
+		return propertiesProvider;
 	}
 
 	@SuppressWarnings("restriction")
@@ -67,7 +85,7 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 			
 			GridData data;
 
-			addRemoveConditionButton = new Button(this, SWT.PUSH);
+			addRemoveConditionButton = getToolkit().createButton(this, "", SWT.PUSH);
 			addRemoveConditionButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 			addRemoveConditionButton.addSelectionListener(new SelectionAdapter() {
 				
@@ -90,36 +108,32 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 			});
 			Expression exp = (Expression) sequenceFlow.getConditionExpression();
 			
-			setDefaultFlowCheckbox = new Button(this, SWT.CHECK);
-			data = new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1);
-			if (!allowDefault(sequenceFlow)) {
-				data.exclude = true;
-				setDefaultFlowCheckbox.setVisible(false);
-			}
-			setDefaultFlowCheckbox.setLayoutData(data);
-			setDefaultFlowCheckbox.addSelectionListener(new SelectionAdapter() {
-				
-				public void widgetSelected(SelectionEvent e) {
-					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							if (getDefault(sequenceFlow) != sequenceFlow)
-								setDefault(sequenceFlow,sequenceFlow);
-							else
-								setDefault(sequenceFlow,null);
-						}
-					});
-				}
-			});
 			
 			if (exp != null) {
 				addRemoveConditionButton.setText("Remove Condition");
-				setDefaultFlowCheckbox.setVisible(false);
 				this.businessObject = exp;
-				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
-				composite.setBusinessObject(exp);
-				composite.setTitle("Condition Expression");
+				// this causes a "No more handles" SWT error - figure out why...
+//				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
+//				composite.setBusinessObject(exp);
+//				composite.setTitle("Condition Expression");
+				// In the meantime, use this as a replacement:
+				
+				ObjectEditor editor;
+				EStructuralFeature f;
+				f = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
+				editor = new ComboObjectEditor(this,exp, f) {
+					
+					@Override
+					protected boolean canSetNull() {
+						return true;
+					}
+				};
+				editor.createControl(this,ModelUtil.getLabel(exp, f));
+
+				f = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
+				editor = new TextObjectEditor(this,exp,f);
+				editor.createControl(this,ModelUtil.getLabel(exp, f));
+
 			}
 			else {
 				addRemoveConditionButton.setText("Add Condition");
@@ -131,17 +145,35 @@ public class SequenceFlowDetailComposite extends ExpressionDetailComposite {
 						objectName = null;
 					String typeName = ModelUtil.getLabel(flowNode);
 					if (allowDefault(sequenceFlow)) {
-						setDefaultFlowCheckbox.setVisible(true);
+						setDefaultFlowCheckbox = getToolkit().createButton(this, "", SWT.CHECK);
+						data = new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1);
+						if (!allowDefault(sequenceFlow)) {
+							data.exclude = true;
+							setDefaultFlowCheckbox.setVisible(false);
+						}
+						setDefaultFlowCheckbox.setLayoutData(data);
+						setDefaultFlowCheckbox.addSelectionListener(new SelectionAdapter() {
+							
+							public void widgetSelected(SelectionEvent e) {
+								TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+								domain.getCommandStack().execute(new RecordingCommand(domain) {
+									@Override
+									protected void doExecute() {
+										if (getDefault(sequenceFlow) != sequenceFlow)
+											setDefault(sequenceFlow,sequenceFlow);
+										else
+											setDefault(sequenceFlow,null);
+									}
+								});
+							}
+						});
 						setDefaultFlowCheckbox.setSelection( getDefault(sequenceFlow) == sequenceFlow );
 						setDefaultFlowCheckbox.setText("Default Flow for "+ typeName +
 								(objectName==null ? "" : (" \"" + objectName + "\"")));
 					}
 				}
-				else {
-					setDefaultFlowCheckbox.setVisible(false);
-				}
 			}
-			redrawPage();
+//			redrawPage();
 		}
 		
 	}

@@ -603,16 +603,15 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             }
             
             // empty Expressions should not be saved
-            if (f!=null && f.getEType() == Bpmn2Package.eINSTANCE.getExpression()) {
+            if (f!=null && (f.getEType() == Bpmn2Package.eINSTANCE.getExpression() ||
+            		f.getEType() == Bpmn2Package.eINSTANCE.getFormalExpression())) {
             	Expression expression = (Expression)o.eGet(f);
             	if (expression==null)
             		return false;
             	if (expression instanceof FormalExpression) {
 	            	FormalExpression formalExpression = (FormalExpression)expression;
-	            	if (
-	            			(formalExpression.getBody()==null || formalExpression.getBody().isEmpty()) &&
-	            			(formalExpression.getLanguage()==null || formalExpression.getLanguage().isEmpty()) &&
-	            			formalExpression.getEvaluatesToTypeRef()==null) {
+            		String body = ModelUtil.getExpressionBody(formalExpression);
+	            	if (body==null) {
 	            		return false;
 	            	}
             	}
@@ -633,13 +632,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				for (Assignment a : da.getAssignment()) {
 					Expression from = a.getFrom();
 					if (from instanceof FormalExpression) {
-						String body = ((FormalExpression)from).getBody();
+						String body = ModelUtil.getExpressionBody(((FormalExpression)from));
 						if (body==null || body.isEmpty())
 							return false;
 					}
 					Expression to = a.getTo();
 					if (to instanceof FormalExpression) {
-						String body = ((FormalExpression)to).getBody();
+						String body = ModelUtil.getExpressionBody(((FormalExpression)to));
 						if (body==null || body.isEmpty())
 							return false;
 					}

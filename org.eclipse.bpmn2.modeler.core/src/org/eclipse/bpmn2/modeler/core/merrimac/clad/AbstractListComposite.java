@@ -806,7 +806,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	}
 
 	private boolean refreshIfNeeded(EObject value, EList<EObject> table) {
-		if (table.contains(value)) {
+		if (table.contains(value) && tableViewer!=null) {
 			tableViewer.setInput(table);
 			return true;
 		}

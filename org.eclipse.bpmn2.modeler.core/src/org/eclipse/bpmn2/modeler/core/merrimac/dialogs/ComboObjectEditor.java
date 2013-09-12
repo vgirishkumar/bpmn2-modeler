@@ -247,7 +247,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	}
 	
 	protected EObject createObject() throws Exception {
-		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, null);
+		FeatureEditingDialog dialog = createFeatureEditingDialog(null);
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
@@ -255,8 +255,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	}
 	
 	protected EObject editObject(EObject value) throws Exception {
-		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(),
-				object, feature, value);
+		FeatureEditingDialog dialog = createFeatureEditingDialog(value);
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();

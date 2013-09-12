@@ -13,10 +13,12 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Task;
@@ -36,6 +38,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.Pa
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.WorkDefinitionImpl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.impl.WorkImpl;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmTaskFeatureContainer.JbpmAddTaskFeature;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
@@ -102,6 +105,29 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 			final String name = customTaskDescriptor.getName();
 			if (name!=null && !name.isEmpty()) {
 				task.setName(name.trim());
+			}
+			// Create the ItemDefinitions for each I/O parameter if needed
+			JBPM5RuntimeExtension rx = (JBPM5RuntimeExtension)customTaskDescriptor.getRuntime().getRuntimeExtension();
+			WorkItemDefinition wid = rx.getWorkItemDefinition(name);
+			if (task.getIoSpecification()!=null) {
+				for (DataInput input : task.getIoSpecification().getDataInputs()) {
+					for (Entry<String, String> entry : wid.getParameters().entrySet()) {
+						if (input.getName().equals(entry.getKey())) {
+							if (entry.getValue()!=null)
+								input.setItemSubjectRef(JbpmModelUtil.getDataType(context.getTargetContainer(), entry.getValue()));
+							break;
+						}
+					}
+				}
+				for (DataOutput output : task.getIoSpecification().getDataOutputs()) {
+					for (Entry<String, String> entry : wid.getResults().entrySet()) {
+						if (output.getName().equals(entry.getKey())) {
+							if (entry.getValue()!=null)
+								output.setItemSubjectRef(JbpmModelUtil.getDataType(context.getTargetContainer(), entry.getValue()));
+							break;
+						}
+					}
+				}
 			}
 			return task;
 		}

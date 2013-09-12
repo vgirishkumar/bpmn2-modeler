@@ -120,7 +120,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 			exp = createModelObject(FormalExpression.class);
 		}
 			
-		if (exp.getBody()==null)
+		if (ModelUtil.getExpressionBody(exp)==null)
 			exp.setBody("");
 		
 		timeValueEditor = new TextObjectEditor(this, exp, PACKAGE.getFormalExpression_Body());

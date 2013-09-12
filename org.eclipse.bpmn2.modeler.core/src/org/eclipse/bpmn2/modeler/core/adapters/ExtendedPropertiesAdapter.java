@@ -147,8 +147,9 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 
 	private static EObject getFeatureClass(EObject object, EStructuralFeature feature) {
 		EClass eclass = null;
-		if (feature!=null && feature.eContainer() instanceof EClass)
+		if (feature!=null && feature.eContainer() instanceof EClass) {
 			eclass = (EClass)feature.eContainer();
+		}
 		if (eclass==null || eclass.isAbstract()) {
 			return object;
 		}

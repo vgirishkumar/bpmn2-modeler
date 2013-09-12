@@ -14,35 +14,26 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
+import org.eclipse.bpmn2.ResourceParameter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
- * @author Gary Brown
+ * @author Bob Brodt
  *
  */
-public class MessagePropertiesAdapter extends RootElementPropertiesAdapter<Message> {
+public class ResourceParameterPropertiesAdapter extends ExtendedPropertiesAdapter<ResourceParameter> {
 
 	/**
 	 * @param adapterFactory
 	 * @param object
 	 */
-	public MessagePropertiesAdapter(AdapterFactory adapterFactory, Message object) {
+	public ResourceParameterPropertiesAdapter(AdapterFactory adapterFactory, ResourceParameter object) {
 		super(adapterFactory, object);
 
-		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature));
-    	
-    	setObjectDescriptor(new RootElementObjectDescriptor<Message>(adapterFactory, object) {
-			@Override
-			public String getDisplayName(Object context) {
-				final Message mesg = adopt(context);
-				String text = ChoreographyUtil.getMessageName(mesg);
-				return text;
-			}
-    	});
+		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getResourceParameter_Type();
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<ResourceParameter>(adapterFactory, object, feature));
 	}
 
 }

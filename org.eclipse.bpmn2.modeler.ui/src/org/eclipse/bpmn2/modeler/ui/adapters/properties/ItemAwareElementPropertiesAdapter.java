@@ -47,7 +47,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	
     	setFeatureDescriptor(feature,
-			new ItemAwareElementFeatureDescriptor<T>(adapterFactory, object, feature)
+			new ItemDefinitionRefFeatureDescriptor<T>(adapterFactory, object, feature)
     	);
     	
     	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();

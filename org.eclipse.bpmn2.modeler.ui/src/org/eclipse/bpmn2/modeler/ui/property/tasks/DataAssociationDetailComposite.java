@@ -853,7 +853,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				if (value instanceof FormalExpression) {
 					FormalExpression exp = (FormalExpression)value;
-					String body = exp.getBody();
+					String body = ModelUtil.getExpressionBody(exp);
 					if (body==null||body.isEmpty())
 						body = "<empty>";
 					return body;

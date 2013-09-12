@@ -157,7 +157,7 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 	private String connectionTimeout;
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
-	private String defaultModelEnablementProfile;
+	private String defaultModelEnablementProfile = "";
 	private boolean doCoreValidation;
 
 	private HashMap<Class, ShapeStyle> shapeStyles = new HashMap<Class, ShapeStyle>();

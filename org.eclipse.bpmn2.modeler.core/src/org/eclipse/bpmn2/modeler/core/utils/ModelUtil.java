@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -46,6 +47,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.INamespaceMap;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
@@ -74,11 +76,13 @@ import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -925,24 +929,21 @@ public class ModelUtil {
 	
 	public static Resource getResource(EObject object) {
 		Resource resource = null;
-		if (object!=null) {
+		if (object instanceof Shape) {
+			ResourceSet rs = object.eResource().getResourceSet();
+			for (Resource r : rs.getResources()) {
+				if (r instanceof Bpmn2Resource) {
+					return r;
+				}
+			}
+		}
+		else  if (object!=null) {
 			resource = object.eResource();
 			if (resource==null) {
 				InsertionAdapter insertionAdapter = AdapterUtil.adapt(object, InsertionAdapter.class);
 				if (insertionAdapter!=null)
 					resource = insertionAdapter.getResource();
 				// TODO: can we use any of the referenced objects to find a Resource?
-//				if (resource==null) {
-//					EClass featureEType = object.eClass();
-//					for (EReference ref : featureEType.getEAllReferences()) {
-//						Object value = object.eGet(ref);
-//						if (value instanceof EObject) {
-//							resource = getResource((EObject) value);
-//							if (resource!=null)
-//								return resource;
-//						}
-//					}
-//				}
 			}
 		}
 		return resource;
@@ -1283,62 +1284,48 @@ public class ModelUtil {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean setValue(TransactionalEditingDomain domain, final EObject object, final EStructuralFeature feature, Object value) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
-		Object oldValue = adapter==null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue();
-		if (isStringWrapper(oldValue)) {
-			oldValue = getStringWrapperValue(oldValue);
-			if (value instanceof String)
-				value = ModelUtil.createStringWrapper((String)value);
-		}
-		final Object newValue = (feature instanceof EReference && !(value instanceof EObject)) ? null : value;
-		
-		boolean valueChanged = (newValue != oldValue);
-		if (newValue!=null && oldValue!=null)
-			valueChanged = !newValue.equals(oldValue);
-		if (newValue!=feature.getDefaultValue())
-			valueChanged = true;
-		
-		if (valueChanged) {
-			try {
-				InsertionAdapter.executeIfNeeded(object);
-				if (newValue instanceof EObject) {
-					// make sure the new object is added to its control first
-					// so that it inherits the control's Resource and EditingDomain
-					// before we try to change its value.
-					InsertionAdapter.executeIfNeeded((EObject)newValue);
+
+		try {
+			InsertionAdapter.executeIfNeeded(object);
+			if (value instanceof EObject) {
+				// make sure the new object is added to its control first
+				// so that it inherits the control's Resource and EditingDomain
+				// before we try to change its value.
+				InsertionAdapter.executeIfNeeded((EObject)value);
+			}
+			if (value instanceof String && ((String) value).isEmpty()) {
+				if (!(feature.getDefaultValue() instanceof String))
+					value = null;
+			}
+			
+			if (adapter!=null) {
+				if (!adapter.getFeatureDescriptor(feature).equals(value)) {
+					adapter.getFeatureDescriptor(feature).setValue(value);
 				}
-				
-				if (newValue==null){ // DO NOT use isEmpty() because this erases an object's anyAttribute feature!
-					adapter.getFeatureDescriptor(feature).unset();
-				}
-				else if (adapter!=null) { 			// use the Extended Properties adapter if there is one
-					adapter.getFeatureDescriptor(feature).setValue(newValue);
-				}
-				else {
-					// fallback is to set the new value here using good ol' EObject.eSet()
-					if (domain!=null) {
-						domain.getCommandStack().execute(new RecordingCommand(domain) {
-							@Override
-							protected void doExecute() {
-								if (object.eGet(feature) instanceof List) {
-									((List)object.eGet(feature)).add(newValue);
-								}
-								else
-									object.eSet(feature, newValue);
-							}
-						});
-					}
-					else {
+			}
+			else if (domain!=null) {
+				final Object v = value;
+				domain.getCommandStack().execute(new RecordingCommand(domain) {
+					@Override
+					protected void doExecute() {
 						if (object.eGet(feature) instanceof List) {
-							((List)object.eGet(feature)).add(newValue);
+							((List)object.eGet(feature)).add(v);
 						}
 						else
-							object.eSet(feature, newValue);
+							object.eSet(feature, v);
 					}
-				}
-			} catch (Exception e) {
-				ErrorUtils.showErrorMessage(e.getMessage());
-				return false;
+				});
 			}
+			else {
+				if (object.eGet(feature) instanceof List) {
+					((List)object.eGet(feature)).add(value);
+				}
+				else
+					object.eSet(feature, value);
+			}
+		} catch (Exception e) {
+			ErrorUtils.showErrorMessage(e.getMessage());
+			return false;
 		}
 		return true;
 	}
@@ -1350,6 +1337,13 @@ public class ModelUtil {
 		return value;
 	}
 
+	public static boolean compare(EObject object1, EObject object2) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object1, null);
+		if (adapter!=null)
+			return adapter.getObjectDescriptor().equals(object2);
+		return object1.equals(object2);
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
 		if (feature!=null && feature.getEType() instanceof EClass) {
@@ -1498,13 +1492,16 @@ public class ModelUtil {
 	}
 
 	public static void disposeChildWidgets(Composite parent) {
+		int i = 0;
 		Control[] kids = parent.getChildren();
 		for (Control k : kids) {
 			if (k instanceof Composite) {
 				disposeChildWidgets((Composite)k);
 			}
 			k.dispose();
+			++i;
 		}
+		kids = parent.getChildren();
 	}
 
 	/**
@@ -1552,4 +1549,38 @@ public class ModelUtil {
 		}
 		return null;
 	}
+	
+	/**
+	 * This is a workaround to deal with FormalExpressions: if the "body" of an expression
+	 * is null, the default FormalExpression.getBody() method returns the string "null"
+	 * which is not exactly what we want! We need to know if the body is actually null,
+	 * or if it contains the string "null".
+	 * 
+	 * @param expression
+	 * @return
+	 */
+	public static String getExpressionBody(FormalExpression expression) {
+		String body = null;
+        if (expression.getMixed() != null && !expression.getMixed().isEmpty()) {
+            StringBuilder result = new StringBuilder();
+            boolean isNull = true;
+            for (FeatureMap.Entry cur : expression.getMixed()) {
+                switch (cur.getEStructuralFeature().getFeatureID()) {
+                case XMLTypePackage.XML_TYPE_DOCUMENT_ROOT__CDATA:
+                case XMLTypePackage.XML_TYPE_DOCUMENT_ROOT__TEXT:
+                	if (cur.getValue()!=null) {
+                		isNull = false;
+                		result.append(cur.getValue());
+                	}
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            if (!isNull)
+            	body = result.toString();
+        }
+        return body;
+    }
 }

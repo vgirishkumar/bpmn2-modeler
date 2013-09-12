@@ -87,7 +87,7 @@
 					]]>
 			</constraint>
 			<constraint
-					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2BatchValidationConstraint"
+					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
 					id="org.eclipse.bpmn2.modeler.core.validation.error"
 					isEnabledByDefault="true"
 					lang="Java"
@@ -101,7 +101,7 @@
 				<target class="BaseElement"/>
 			</constraint>
  			<constraint
-					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2BatchValidationConstraint"
+					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
 					id="org.eclipse.bpmn2.modeler.core.validation.warning"
 					isEnabledByDefault="true"
 					lang="Java"
@@ -111,6 +111,21 @@
 					statusCode="1">
 				<message>{0}</message>
 				<description>Diagram Validation Warnings</description>
+				<target class="Definitions"/>
+				<target class="BaseElement"/>
+			</constraint>
+			<!-- Live validation constraints for user feedback during editing -->
+			<constraint
+					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
+					id="org.eclipse.bpmn2.modeler.core.validation.live.error"
+					isEnabledByDefault="true"
+					lang="Java"
+					mode="Live"
+					name="Infos"
+					severity="INFO"
+					statusCode="1">
+				<message>{0}</message>
+				<description>Diagram Validation Errors</description>
 				<target class="Definitions"/>
 				<target class="BaseElement"/>
 			</constraint>
@@ -177,7 +192,7 @@
    </extension>
 	
 	<extension point="org.eclipse.emf.validation.validationListeners">
-		<listener class="org.eclipse.bpmn2.modeler.core.validation.ProblemsReporter">
+		<listener class="org.eclipse.bpmn2.modeler.core.validation.LiveValidationListener">
 			<clientContext id="org.eclipse.bpmn2.modeler.core.validationContext"/>
 		</listener>
 	</extension>
