@@ -133,51 +133,55 @@ public class ObjectDescriptor<T extends EObject> {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof EObject && ((EObject) obj).eClass() == object.eClass()) {
+	public boolean equals(Object otherObject) {
+		EObject thisObject = this.object;
+		if (otherObject instanceof EObject) {
 			// compare feature values of both EObjects:
 			// this should take care of most of the BPMN2 elements
-			for (EStructuralFeature f : object.eClass().getEAllStructuralFeatures()) {
-				// IDs are allowed to be different
-				if ("id".equals(f.getName()))
-					continue;
-				Object v1 = ((T)obj).eGet(f);
-				Object v2 = object.eGet(f);
-				// both null? equal!
-				if (v1==null && v2==null)
-					continue;
-				// one or the other null? not equal!
-				if (v1==null || v2==null)
-					return false;
-				// both not null? do a default compare...
-				if (!v1.equals(v2)) {
-					// the default Object.equals(obj) fails:
-					// for Dynamic EObjects (used here as "proxies") only compare their proxy URIs 
-					if (v1 instanceof DynamicEObjectImpl && v2 instanceof DynamicEObjectImpl) {
-						v1 = ((DynamicEObjectImpl)v1).eProxyURI();
-						v2 = ((DynamicEObjectImpl)v2).eProxyURI();
-						if (v1==null && v2==null)
-							continue;
-						if (v1==null || v2==null)
-							return false;
-						if (v1.equals(v2))
-							continue;
-					}
-					else if (v1 instanceof EObject && v2 instanceof EObject) {
-						// for all other EObjects, do a deep compare...
-						ExtendedPropertiesAdapter<T> adapter = (ExtendedPropertiesAdapter<T>) AdapterUtil.adapt((EObject)v1, ExtendedPropertiesAdapter.class);
-						if (adapter!=null) {
-							if (adapter.getObjectDescriptor().equals(v2))
-								continue;
-						}
-					}
-					return false;
-				}
-			}
-			return true;
+			return compare(thisObject, (EObject)otherObject);
 		}
-		return super.equals(obj);
+		return super.equals(otherObject);
+	}
+
+	public static boolean compare(EObject thisObject, EObject otherObject) {
+		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {
+			// IDs are allowed to be different
+			if ("id".equals(f.getName()))
+				continue;
+			Object v1 = otherObject.eGet(f);
+			Object v2 = thisObject.eGet(f);
+			// both null? equal!
+			if (v1==null && v2==null)
+				continue;
+			// one or the other null? not equal!
+			if (v1==null || v2==null)
+				return false;
+			// both not null? do a default compare...
+			if (!v1.equals(v2)) {
+				// the default Object.equals(obj) fails:
+				// for Dynamic EObjects (used here as "proxies") only compare their proxy URIs 
+				if (v1 instanceof DynamicEObjectImpl && v2 instanceof DynamicEObjectImpl) {
+					v1 = ((DynamicEObjectImpl)v1).eProxyURI();
+					v2 = ((DynamicEObjectImpl)v2).eProxyURI();
+					if (v1==null && v2==null)
+						continue;
+					if (v1==null || v2==null)
+						return false;
+					if (v1.equals(v2))
+						continue;
+				}
+				else if (v1 instanceof EObject && v2 instanceof EObject) {
+					// for all other EObjects, do a deep compare...
+					ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt((EObject)v1, ExtendedPropertiesAdapter.class);
+					if (adapter!=null) {
+						if (adapter.getObjectDescriptor().equals(v2))
+							continue;
+					}
+				}
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**

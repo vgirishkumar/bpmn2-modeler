@@ -17,27 +17,27 @@ import java.util.List;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.graphiti.IExecutionInfo;
-import org.eclipse.graphiti.features.IFeatureAndContext;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
-public abstract class CreateEventDefinition<T extends EventDefinition> extends AbstractBpmn2CreateFeature<T> {
+public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefinition> extends AbstractBpmn2CreateFeature<T> {
 
-	public CreateEventDefinition(IFeatureProvider fp, String name, String description) {
+	public AbstractCreateEventDefinitionFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
 	}
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
-		return bo != null && bo instanceof Event;
+		if (bo instanceof Event) {
+			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions((Event) bo);
+			if (allowedItems.contains(getBusinessObjectClass()))
+				return true;
+		}
+		return false;
 	}
 
 	@Override

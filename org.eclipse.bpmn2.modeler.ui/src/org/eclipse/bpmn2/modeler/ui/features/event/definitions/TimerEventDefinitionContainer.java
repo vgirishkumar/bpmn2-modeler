@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.CreateEventDefinition;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -91,24 +91,10 @@ public class TimerEventDefinitionContainer extends AbstractEventDefinitionFeatur
 		return timerShape;
 	}
 
-	public static class CreateTimerEventDefinition extends CreateEventDefinition<TimerEventDefinition> {
+	public static class CreateTimerEventDefinition extends AbstractCreateEventDefinitionFeature<TimerEventDefinition> {
 
 		public CreateTimerEventDefinition(IFeatureProvider fp) {
 			super(fp, "Timer Event Definition", "Create "+"Timer Event Definition");
-		}
-
-		@Override
-		public boolean canCreate(ICreateContext context) {
-			if (!super.canCreate(context)) {
-				return false;
-			}
-
-			Event e = (Event) getBusinessObjectForPictogramElement(context.getTargetContainer());
-			if (e instanceof ThrowEvent) {
-				return false;
-			}
-
-			return true;
 		}
 
 		@Override

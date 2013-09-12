@@ -21,16 +21,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
-import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.ImplicitThrowEvent;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -40,8 +45,10 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
@@ -51,18 +58,11 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.CreateContext;
-import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -79,8 +79,6 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
-import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
 public class FeatureSupport {
 	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal";
@@ -885,4 +883,84 @@ public class FeatureSupport {
 		}
 		return result;
 	}
+	
+	public static List<EClass> getAllowedEventDefinitions(Event event) {
+		BaseElement eventOwner = null;
+		if (event instanceof BoundaryEvent) {
+			eventOwner = ((BoundaryEvent)event).getAttachedToRef();
+		}
+		else {
+			EObject parent = event.eContainer();
+			while (parent!=null) {
+				if (parent instanceof FlowElementsContainer ) {
+					eventOwner = (BaseElement)parent;
+					break;
+				}
+				parent = parent.eContainer();
+			}
+		}
+		
+		List<EClass> allowedItems = new ArrayList<EClass>();
+		if (event instanceof BoundaryEvent) {
+			if (eventOwner instanceof Transaction) {
+				if (((BoundaryEvent)event).isCancelActivity())
+					allowedItems.add(Bpmn2Package.eINSTANCE.getCancelEventDefinition());
+			}
+			if (((BoundaryEvent)event).isCancelActivity())
+				allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getConditionalEventDefinition());
+			if (((BoundaryEvent)event).isCancelActivity())
+				allowedItems.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getTimerEventDefinition());
+		}
+		else if (event instanceof IntermediateCatchEvent) {
+			allowedItems.add(Bpmn2Package.eINSTANCE.getConditionalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getLinkEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getTimerEventDefinition());
+		}
+		else if (event instanceof StartEvent) {
+			if (eventOwner instanceof SubProcess) {
+				if (((StartEvent)event).isIsInterrupting()) {
+					allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
+					allowedItems.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition());
+				}
+				allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
+			}
+			allowedItems.add(Bpmn2Package.eINSTANCE.getConditionalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getTimerEventDefinition());
+		}
+		else if (event instanceof EndEvent) {
+			if (eventOwner instanceof Transaction)
+				allowedItems.add(Bpmn2Package.eINSTANCE.getCancelEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getTerminateEventDefinition());
+		}
+		else if (event instanceof ImplicitThrowEvent) {
+			allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getLinkEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+		}
+		else if (event instanceof IntermediateThrowEvent) {
+			allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getLinkEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
+			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
+		}
+		return allowedItems;
+	}
+	
 }

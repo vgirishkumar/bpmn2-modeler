@@ -16,7 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.CreateEventDefinition;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -90,7 +90,7 @@ public class MessageEventDefinitionContainer extends AbstractEventDefinitionFeat
 		return envelopeShape;
 	}
 
-	public static class CreateMessageEventDefinition extends CreateEventDefinition<MessageEventDefinition> {
+	public static class CreateMessageEventDefinition extends AbstractCreateEventDefinitionFeature<MessageEventDefinition> {
 
 		public CreateMessageEventDefinition(IFeatureProvider fp) {
 			super(fp, "Message Event Definition", "Create "+"Message Event Definition");

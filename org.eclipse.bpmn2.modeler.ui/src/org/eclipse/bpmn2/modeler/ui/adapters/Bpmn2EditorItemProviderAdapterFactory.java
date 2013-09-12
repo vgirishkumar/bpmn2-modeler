@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.CallConversation;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.CorrelationKey;
+import org.eclipse.bpmn2.CorrelationProperty;
 import org.eclipse.bpmn2.CorrelationPropertyBinding;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
 import org.eclipse.bpmn2.DataAssociation;
@@ -53,6 +54,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ResourceAssignmentExpression;
+import org.eclipse.bpmn2.ResourceParameter;
 import org.eclipse.bpmn2.ResourceParameterBinding;
 import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.RootElement;
@@ -78,6 +80,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.CatchEventPropertiesAdap
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CompensateEventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationKeyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyBindingPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyRetrievalExpressionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
@@ -111,6 +114,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.PropertyPropertiesAdapte
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ReceiveTaskPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ResourceAssignmentExpressionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ResourceParameterBindingPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.ResourceParameterPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ResourceRolePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.RootElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ScriptTaskPropertiesAdapter;
@@ -666,6 +670,23 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
 			return new GlobalScriptTaskPropertiesAdapter(adapterFactory,object);
+        }
+//
+        
+		@Override
+        public ExtendedPropertiesAdapter caseResourceParameter(ResourceParameter object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+			return new ResourceParameterPropertiesAdapter(adapterFactory,object);
+        }
+
+		@Override
+        public ExtendedPropertiesAdapter caseCorrelationProperty(CorrelationProperty object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+			return new CorrelationPropertyPropertiesAdapter(adapterFactory,object);
         }
 
     };

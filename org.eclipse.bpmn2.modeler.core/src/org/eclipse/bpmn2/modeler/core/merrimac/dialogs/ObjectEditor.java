@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
@@ -147,6 +148,10 @@ public abstract class ObjectEditor implements INotifyChangedListener {
         return false;
 	}
 	
+	protected FeatureEditingDialog createFeatureEditingDialog(EObject value) {
+		return new FeatureEditingDialog(getDiagramEditor(), object, feature, value);
+	}
+
 	/**
 	 * Returns a descriptive text string for use as a tooltip on the Label for this editor.
 	 * The default implementation constructs a key from the object and feature name owned by this

@@ -18,7 +18,7 @@ import java.util.Hashtable;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
-import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemAwareElementFeatureDescriptor;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.PropertyPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -44,7 +44,7 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(feature,
-			new ItemAwareElementFeatureDescriptor<Property>(adapterFactory,object,feature) {
+			new ItemDefinitionRefFeatureDescriptor<Property>(adapterFactory,object,feature) {
 				
 				@Override
 				public void setValue(Object context, final Object value) {

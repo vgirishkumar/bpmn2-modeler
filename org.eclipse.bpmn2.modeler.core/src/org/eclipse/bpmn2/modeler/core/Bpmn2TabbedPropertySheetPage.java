@@ -14,6 +14,7 @@ import java.util.ResourceBundle.Control;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,7 +27,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributo
 import org.eclipse.ui.views.properties.tabbed.TabContents;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
-public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage {
+public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage implements IAdaptable {
 
 	DiagramEditor diagramEditor;
 	private ISelection currentSelection;
@@ -54,5 +55,12 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage {
 	
 	public DiagramEditor getDiagramEditor() {
 		return diagramEditor;
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if (diagramEditor!=null)
+			return diagramEditor.getAdapter(adapter);
+		return null;
 	}
 }

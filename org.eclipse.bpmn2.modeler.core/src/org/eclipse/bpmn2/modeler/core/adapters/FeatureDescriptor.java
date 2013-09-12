@@ -342,4 +342,22 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			}
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		Object thisValue = object.eGet(feature);
+		
+		if (thisValue==null && obj==null)
+			return true;
+		
+		if (thisValue instanceof EObject && obj instanceof EObject) {
+			return compare((EObject)thisValue, (EObject)obj);
+		}
+		
+		if (thisValue!=null && obj!=null)
+			return thisValue.equals(obj);
+		
+		return false;
+	}
+	
 }

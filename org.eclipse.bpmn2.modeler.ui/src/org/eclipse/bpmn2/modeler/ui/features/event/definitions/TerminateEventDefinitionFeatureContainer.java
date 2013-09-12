@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.CreateEventDefinition;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -79,21 +79,10 @@ public class TerminateEventDefinitionFeatureContainer extends AbstractEventDefin
 		return null; // NOT ALLOWED ACCORDING TO SPEC
 	}
 
-	public static class CreateTerminateEventDefinition extends CreateEventDefinition<TerminateEventDefinition> {
+	public static class CreateTerminateEventDefinition extends AbstractCreateEventDefinitionFeature<TerminateEventDefinition> {
 
 		public CreateTerminateEventDefinition(IFeatureProvider fp) {
 			super(fp, "Terminate Event Definition", "Create "+"Terminate Event Definition");
-		}
-
-		@Override
-		public boolean canCreate(ICreateContext context) {
-			if (!super.canCreate(context)) {
-				return false;
-			}
-
-			Event e = (Event) getBusinessObjectForPictogramElement(context.getTargetContainer());
-
-			return e instanceof EndEvent;
 		}
 
 		@Override

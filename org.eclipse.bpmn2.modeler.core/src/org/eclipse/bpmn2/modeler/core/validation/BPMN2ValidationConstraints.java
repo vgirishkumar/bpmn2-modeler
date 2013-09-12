@@ -68,14 +68,14 @@ import org.eclipse.emf.validation.AbstractModelConstraint;
 import org.eclipse.emf.validation.EMFEventType;
 import org.eclipse.emf.validation.IValidationContext;
 
-public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
+public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 	public final static String ERROR_ID = "org.eclipse.bpmn2.modeler.core.validation.error";
 	public final static String WARNING_ID = "org.eclipse.bpmn2.modeler.core.validation.warning";
 	
 	private boolean warnings = false;
 	
-	public BPMN2BatchValidationConstraint() {
+	public BPMN2ValidationConstraints() {
 	}
 
 	@Override
@@ -97,6 +97,9 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				return validateBaseElement(ctx, (BaseElement) eObj);
 			}
 		} else { // In the case of live mode.
+			if (eObj instanceof BaseElement) {
+				return validateBaseElementLive(ctx, (BaseElement) eObj);
+			}
 		}
 
 		return ctx.createSuccessStatus();
@@ -237,9 +240,6 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 				if (isEmpty(elem.getScript())) {
 					return createMissingFeatureStatus(ctx,be,"script");
 				}
-				if (isEmpty(elem.getScriptFormat())) {
-					return createMissingFeatureStatus(ctx,be,"scriptFormat");
-				}
 			}
 		}
 		else if (be instanceof SendTask) {
@@ -286,9 +286,9 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 							return createFailureStatus(ctx,be,"Error Event has no Error definition");
 						}
 					} else if (ed instanceof ConditionalEventDefinition) {
-						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
-								.getCondition();
-						if (conditionalExp==null || conditionalExp.getBody() == null) {
+						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
+						if (conditionalExp==null || ModelUtil.getExpressionBody(conditionalExp) == null ||
+								ModelUtil.getExpressionBody(conditionalExp).isEmpty()) {
 							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
@@ -342,9 +342,9 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 							return createFailureStatus(ctx,be,"Error Event has no Error definition");
 						}
 					} else if (ed instanceof ConditionalEventDefinition) {
-						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed)
-								.getCondition();
-						if (conditionalExp==null || conditionalExp.getBody() == null) {
+						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
+						if (conditionalExp==null || ModelUtil.getExpressionBody(conditionalExp) == null ||
+								ModelUtil.getExpressionBody(conditionalExp).isEmpty()) {
 							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
 						}
 					} else if (ed instanceof EscalationEventDefinition) {
@@ -534,11 +534,11 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			for (MessageFlow mf : elem.getMessageFlowRef()) {
 				InteractionNode in = mf.getSourceRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					createFailureStatus(ctx,be,"Message Flow source is not a Participant of the Choreography Task");
+					return createFailureStatus(ctx,be,"Message Flow source is not a Participant of the Choreography Task");
 				}
 				in = mf.getTargetRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					createFailureStatus(ctx,be,"Message Flow target is not a Participant of the Choreography Task");
+					return createFailureStatus(ctx,be,"Message Flow target is not a Participant of the Choreography Task");
 				}
 			}
 		}
@@ -597,5 +597,47 @@ public class BPMN2BatchValidationConstraint extends AbstractModelConstraint {
 			}
 		}
 		return false;
+	}
+
+
+	private IStatus validateBaseElementLive(IValidationContext ctx, BaseElement be) {
+
+		if (be instanceof ItemDefinition) {
+			ItemDefinition itemDefinition = (ItemDefinition) be;
+			final Definitions defs = ModelUtil.getDefinitions(itemDefinition);
+			if (defs!=null) {
+				// check for duplicate ItemDefinitions
+				List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
+				for (ItemDefinition id : itemDefs) {
+					if (id == itemDefinition)
+						continue;
+					
+					if (ModelUtil.compare(id, itemDefinition)) {
+						return createFailureStatus(ctx,be,
+								"The "+ id.getItemKind() + " " +
+								(id.isIsCollection() ? "Collection " : "")+
+								"Data Type \"" +
+								ModelUtil.getDisplayName(id) +
+								"\" is already defined.");
+					}
+				}
+			}
+			
+			Object structureRef = itemDefinition.getStructureRef();
+			if (structureRef==null ||
+					(ModelUtil.isStringWrapper(structureRef) &&
+					ModelUtil.getStringWrapperValue(structureRef).isEmpty())) {
+				
+				return createMissingFeatureStatus(ctx,be,"structureRef");
+			}
+		}
+		else if (be instanceof MessageEventDefinition) {
+			MessageEventDefinition med = (MessageEventDefinition) be;
+			if (med.getMessageRef() == null) {
+				return createMissingFeatureStatus(ctx,be,"messageRef");
+			}
+		}
+
+		return ctx.createSuccessStatus();
 	}
 }

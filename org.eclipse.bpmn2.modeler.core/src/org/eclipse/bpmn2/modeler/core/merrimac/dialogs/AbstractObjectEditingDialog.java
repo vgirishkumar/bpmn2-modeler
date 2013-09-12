@@ -14,6 +14,8 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.validation.LiveValidationListener;
+import org.eclipse.bpmn2.modeler.core.validation.ValidationErrorHandler;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
@@ -22,7 +24,9 @@ import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.impl.InternalTransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -32,12 +36,15 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
-public abstract class AbstractObjectEditingDialog extends FormDialog {
+public abstract class AbstractObjectEditingDialog extends FormDialog implements ValidationErrorHandler {
 
 	protected IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 	protected DiagramEditor editor;
@@ -47,7 +54,8 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 	protected boolean abortOnCancel = true;
 	protected Transaction transaction;
 	protected Composite dialogContent;
-	
+    private Text errorMessageText;
+    
 	public AbstractObjectEditingDialog(DiagramEditor editor, EObject object) {
 		super(editor.getEditorSite().getShell());
 		setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE
@@ -89,6 +97,20 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		getShell().pack();
 	}
 	
+	@Override
+	protected Control createDialogArea(Composite parent) {
+        Composite composite = (Composite) super.createDialogArea(parent);
+        
+        errorMessageText = new Text(parent, SWT.READ_ONLY | SWT.WRAP | SWT.BORDER);
+        errorMessageText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
+                | GridData.HORIZONTAL_ALIGN_FILL));
+        errorMessageText.setForeground(errorMessageText.getDisplay()
+                .getSystemColor(SWT.COLOR_RED));
+        errorMessageText.setBackground(errorMessageText.getDisplay()
+                .getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+        return composite;
+	}
+
 	abstract protected Composite createDialogContent(Composite parent);
 	abstract protected String getPreferenceKey();
 	
@@ -156,8 +178,18 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 		getShell().setSize(600,400);
 
 		addControlListener();
+		
+		// Tell the Live Validation Listener to report validation errors to us
+		// instead of the Workbench Status line.
+		LiveValidationListener.setValidationErrorHandler(this);
+		getShell().addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				LiveValidationListener.setValidationErrorHandler(null);
+			}
+		});
+		
 		aboutToOpen();
-
+		
 		return super.open();
 	}
 	
@@ -239,4 +271,29 @@ public abstract class AbstractObjectEditingDialog extends FormDialog {
 			transaction.rollback();
 		}
 	}
+	
+	public void reportError(IStatus s)
+	{
+		String errorMessage = (s==null) ? null : s.getMessage();
+    	if (errorMessageText != null && !errorMessageText.isDisposed()) {
+    		errorMessageText.setText(errorMessage == null ? "" : errorMessage); //$NON-NLS-1$
+    		// Disable the error message text control if there is no error, or
+    		// no error text (empty or whitespace only).  Hide it also to avoid
+    		// color change.
+    		boolean hasError = errorMessage != null && (StringConverter.removeWhiteSpaces(errorMessage)).length() > 0;
+    		errorMessageText.setEnabled(hasError);
+    		errorMessageText.setVisible(hasError);
+    		GridData gd = (GridData) errorMessageText.getLayoutData();
+    		gd.exclude = !hasError;
+    		if (dialogArea!=null)
+    			dialogArea.getParent().layout();
+ 
+    		if (s!=null && s.getSeverity()>=IStatus.ERROR) {
+	    		Control button = getButton(IDialogConstants.OK_ID);
+	    		if (button != null) {
+	    			button.setEnabled(hasError);
+	    		}
+    		}
+    	}
+    }
 }
