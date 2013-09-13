@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -193,6 +194,13 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		return super.open();
 	}
 	
+	@Override
+	public boolean close() {
+		if (getReturnCode() != OK)
+			cancel = true;
+		return super.close();
+	}
+
 	/**
 	 * Return state of the "abortOnCancel transaction on cancel" flag
 	 * 
@@ -269,6 +277,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	protected void rollbackTransaction() {
 		if (transaction!=null) {
 			transaction.rollback();
+			transaction = null;
 		}
 	}
 	
