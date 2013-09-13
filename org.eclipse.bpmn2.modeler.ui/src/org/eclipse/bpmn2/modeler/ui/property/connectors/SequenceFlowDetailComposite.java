@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.connectors;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
@@ -20,13 +19,8 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.property.data.ExpressionDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -73,7 +67,6 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 		return propertiesProvider;
 	}
 
-	@SuppressWarnings("restriction")
 	@Override
 	public void createBindings(final EObject be) {
 		
@@ -106,40 +99,19 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 					});
 				}
 			});
-			Expression exp = (Expression) sequenceFlow.getConditionExpression();
 			
+			Expression exp = (Expression) sequenceFlow.getConditionExpression();
 			
 			if (exp != null) {
 				addRemoveConditionButton.setText("Remove Condition");
-				this.businessObject = exp;
-				// this causes a "No more handles" SWT error - figure out why...
-//				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
-//				composite.setBusinessObject(exp);
-//				composite.setTitle("Condition Expression");
-				// In the meantime, use this as a replacement:
-				
-				ObjectEditor editor;
-				EStructuralFeature f;
-				f = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
-				editor = new ComboObjectEditor(this,exp, f) {
-					
-					@Override
-					protected boolean canSetNull() {
-						return true;
-					}
-				};
-				editor.createControl(this,ModelUtil.getLabel(exp, f));
-
-				f = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
-				editor = new TextObjectEditor(this,exp,f);
-				editor.createControl(this,ModelUtil.getLabel(exp, f));
-
+				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
+				composite.setBusinessObject(exp);
+				composite.setTitle("Condition Expression");
 			}
 			else {
 				addRemoveConditionButton.setText("Add Condition");
 				if (sequenceFlow.getSourceRef() instanceof FlowNode) {
 					FlowNode flowNode = (FlowNode)sequenceFlow.getSourceRef();
-//					Object adapter = flowNode.eClass().
 					String objectName = flowNode.getName();
 					if (objectName!=null && objectName.isEmpty())
 						objectName = null;
@@ -173,9 +145,7 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 					}
 				}
 			}
-//			redrawPage();
 		}
-		
 	}
 	
 	private boolean allowDefault(SequenceFlow sf) {

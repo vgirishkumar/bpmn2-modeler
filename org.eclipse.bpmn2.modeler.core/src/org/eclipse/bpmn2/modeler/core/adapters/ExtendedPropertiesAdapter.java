@@ -19,7 +19,9 @@ import java.util.Hashtable;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -109,6 +111,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
+		for (Adapter a : object.eAdapters()) {
+			if (a instanceof ExtendedPropertiesAdapter)
+				return (ExtendedPropertiesAdapter) a;
+		}
 		EObject eclass = getFeatureClass(object,feature);
 		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
 		if (adapter!=null) {
@@ -224,4 +230,17 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 		}
 		props.put(key, value);
 	}
+
+	public void setTarget(Notifier newTarget) {
+		super.setTarget(newTarget);
+		if (newTarget instanceof EObject && !(newTarget instanceof EClass)) {
+			EObject object = (EObject)newTarget;
+			for (Adapter a : object.eAdapters()) {
+				if (a instanceof ExtendedPropertiesAdapter)
+					return;
+			}
+			object.eAdapters().add(this);
+		}
+	}
+	
 }
