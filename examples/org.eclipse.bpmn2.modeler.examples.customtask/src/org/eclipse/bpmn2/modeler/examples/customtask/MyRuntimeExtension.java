@@ -47,18 +47,4 @@ public class MyRuntimeExtension implements IBpmn2RuntimeExtension {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public Composite getPreferencesComposite(Composite parent,
-			Bpmn2Preferences preferences) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void modelObjectCreated(EObject object) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

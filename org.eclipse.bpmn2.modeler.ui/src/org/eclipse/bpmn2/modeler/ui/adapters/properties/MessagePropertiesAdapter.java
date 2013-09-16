@@ -33,6 +33,7 @@ public class MessagePropertiesAdapter extends RootElementPropertiesAdapter<Messa
 		super(adapterFactory, object);
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature));
     	
     	setObjectDescriptor(new RootElementObjectDescriptor<Message>(adapterFactory, object) {

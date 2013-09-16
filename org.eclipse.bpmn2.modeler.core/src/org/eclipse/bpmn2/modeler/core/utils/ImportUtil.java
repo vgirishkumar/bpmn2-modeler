@@ -698,7 +698,7 @@ public class ImportUtil {
                         if (parameterType == null) {
                             String boxedType = getBoxedType(Signature.toString(parameterTypes[0]));
                             if (boxedType != null && boxedType.length() > 0) {
-                                bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.PHYSICAL));
+                                bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.INFORMATION));
                             }
                         }
                         bpmn2op.setInMessageRef(bpmn2msg);
@@ -721,7 +721,7 @@ public class ImportUtil {
                         String boxedType = getBoxedType(Signature.toString(method.getReturnType()));
                         if (boxedType != null && boxedType.length() > 0) {
                         	bpmn2msg = createMessage(definitions, imp, returnType, baseName + "Result");
-                            bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.PHYSICAL));
+                            bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.INFORMATION));
                         }
                     }
                     if (bpmn2msg!=null)
@@ -1027,7 +1027,7 @@ public class ImportUtil {
             }
         } catch (JavaModelException e) {
         }
-		return createItemDefinition(definitions, imp, clazz.getFullyQualifiedName('.'), ItemKind.PHYSICAL);
+		return createItemDefinition(definitions, imp, clazz.getFullyQualifiedName('.'), ItemKind.INFORMATION);
 	}
 	
 	/**
@@ -1109,7 +1109,7 @@ public class ImportUtil {
 	
 	public static ItemDefinition findItemDefinition(Definitions definitions, Import imp, IType clazz) {
 		EObject structureRef = ModelUtil.createStringWrapper(clazz.getFullyQualifiedName('.'));
-		return findItemDefinition(definitions, imp, structureRef, ItemKind.PHYSICAL);
+		return findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
 	}
 	
 	/**
@@ -1128,7 +1128,7 @@ public class ImportUtil {
         } catch (JavaModelException e) {
         }
 		EObject structureRef = ModelUtil.createStringWrapper(clazz.getFullyQualifiedName('.'));
-		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.PHYSICAL);
+		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
 		if (itemDef!=null) {
 			EcoreUtil.delete(itemDef);
 		}
@@ -1144,7 +1144,7 @@ public class ImportUtil {
 	 */
 	public static void deleteItemDefinition(Definitions definitions, Import imp, String structName) {
 		EObject structureRef = ModelUtil.createStringWrapper(structName);
-		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.PHYSICAL);
+		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
 		if (itemDef==null)
 			itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
 		

@@ -32,6 +32,7 @@ public class SignalPropertiesAdapter extends RootElementPropertiesAdapter<Signal
 		super(adapterFactory, object);
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getSignal_StructureRef();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Signal>(adapterFactory, object, feature));
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Signal>(adapterFactory, object) {

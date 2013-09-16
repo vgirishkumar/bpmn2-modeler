@@ -26,9 +26,11 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.ui.provider.PropertyDescriptor.EDataTypeCellEditor;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -156,12 +158,24 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			}
 			else if (ec instanceof EDataType) {
 				ce = new EDataTypeCellEditor((EDataType)ec, parent);
+				ce.setValidator(new CustomDataTypeValidator());
 			}
 			else if (ic==EObject.class) {
 				ce = new StringWrapperCellEditor(parent);
 			}
 		}
 		return ce;
+	}
+	
+	public class CustomDataTypeValidator implements ICellEditorValidator {
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.ICellEditorValidator#isValid(java.lang.Object)
+		 */
+		@Override
+		public String isValid(Object value) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	
 	public void setEditable(boolean editable) {

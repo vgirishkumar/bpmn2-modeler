@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.PropertyPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -51,12 +52,17 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 					final Property property = adopt(context);
 
 					TransactionalEditingDomain domain = getEditingDomain(object);
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							property.setItemSubjectRef(JbpmModelUtil.getDataType(property, value));
-						}
-					});
+					if (domain==null && value instanceof EObject) {
+						domain = getEditingDomain(value);
+					}
+					if (domain!=null) {
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								property.setItemSubjectRef(JbpmModelUtil.getDataType(property, value));
+							}
+						});
+					}
 				}
 				
 				@Override

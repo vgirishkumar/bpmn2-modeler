@@ -119,6 +119,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     	);
 		
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getFormalExpression_EvaluatesToTypeRef();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<FormalExpression>(adapterFactory, object, feature));
 
 		setObjectDescriptor(new ObjectDescriptor<FormalExpression>(adapterFactory, object) {

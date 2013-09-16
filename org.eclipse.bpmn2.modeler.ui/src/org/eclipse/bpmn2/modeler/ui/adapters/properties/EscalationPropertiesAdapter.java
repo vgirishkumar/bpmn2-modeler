@@ -32,6 +32,7 @@ public class EscalationPropertiesAdapter extends RootElementPropertiesAdapter<Es
 		super(adapterFactory, object);
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getEscalation_StructureRef();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(adapterFactory, object, feature));
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Escalation>(adapterFactory, object) {

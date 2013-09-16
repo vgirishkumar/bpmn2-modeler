@@ -948,6 +948,12 @@ public class ModelUtil {
 		}
 		return resource;
 	}
+
+	public static Resource getResource(DiagramEditor editor) {
+		if (editor!=null)
+			return getResource(editor.getDiagramTypeProvider().getDiagram());
+		return null;
+	}
 	
 	public static EObject getContainer(EObject object) {
 		EObject container = null;
@@ -1101,13 +1107,15 @@ public class ModelUtil {
 	public static <T> List<T> getAllExtensionAttributeValues(EObject object, Class<T> clazz) {
 		List<T> results = new ArrayList<T>();
 		
-		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
-		EList<ExtensionAttributeValue> list = (EList<ExtensionAttributeValue>)object.eGet(evf);
-		for (ExtensionAttributeValue eav : list) {
-			FeatureMap fm = eav.getValue();
-			for (Entry e : fm) {
-				if (clazz.isInstance(e.getValue())) {
-					results.add((T)e.getValue());
+		if (object!=null) {
+			EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
+			EList<ExtensionAttributeValue> list = (EList<ExtensionAttributeValue>)object.eGet(evf);
+			for (ExtensionAttributeValue eav : list) {
+				FeatureMap fm = eav.getValue();
+				for (Entry e : fm) {
+					if (clazz.isInstance(e.getValue())) {
+						results.add((T)e.getValue());
+					}
 				}
 			}
 		}

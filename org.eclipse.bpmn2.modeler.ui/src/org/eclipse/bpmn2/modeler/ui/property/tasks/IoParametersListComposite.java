@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -87,6 +88,16 @@ public class IoParametersListComposite extends DefaultListComposite {
 		InsertionAdapter.executeIfNeeded(ioSpecification);
 		
 		param = super.addListItem(object, feature);
+		
+		// make sure the ioSpecification has both a default InputSet and OutputSet
+		if (ioSpecification.getInputSets().size()==0) {
+			InputSet is = Bpmn2ModelerFactory.create(ioSpecification.eResource(), InputSet.class);
+			ioSpecification.getInputSets().add(is);
+		}
+		if (ioSpecification.getOutputSets().size()==0) {
+			OutputSet os = Bpmn2ModelerFactory.create(ioSpecification.eResource(), OutputSet.class);
+			ioSpecification.getOutputSets().add(os);
+		}
 		
 		if (activity!=null) {
 			// this is an Activity - create an Input or Output DataAssociation

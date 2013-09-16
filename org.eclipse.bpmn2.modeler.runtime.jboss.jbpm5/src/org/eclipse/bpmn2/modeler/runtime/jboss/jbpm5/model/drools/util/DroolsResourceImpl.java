@@ -12,12 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
@@ -35,18 +38,18 @@ import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl.Bpmn2ModelerXMLSave;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
-import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -54,13 +57,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.BasicInternalEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -88,7 +88,49 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 	public DroolsResourceImpl(URI uri) {
 		super(uri);
 	}
-
+	
+	public void save(Map<?, ?> options) throws IOException {
+		super.save(options);
+		// check the Global Variables to make sure they don't collide with any other process variables
+		Definitions definitions = ImportHelper.getDefinitions(this);
+		String message = null;
+		TreeIterator<EObject> iter1 = definitions.eAllContents();
+		HashSet<EObject> map = new HashSet<EObject>();
+		while (iter1.hasNext()) {
+			EObject o1 = iter1.next();
+			if (o1 instanceof GlobalType && !map.contains(o1)) {
+				TreeIterator<EObject> iter2 = definitions.eAllContents();
+				map.add(o1);
+				String id1 = ((GlobalType)o1).getIdentifier();
+				
+				while (iter2.hasNext()) {
+					EObject o2 = iter2.next();
+					if (o2 instanceof BaseElement && o1!=o2 && !map.contains(o2)) {
+						String id2;
+						if (o2 instanceof GlobalType)
+							id2 = ((GlobalType)o2).getIdentifier();
+						else
+							id2 = ((BaseElement)o2).getId();
+						if (id1!=null && id2!=null) {
+							if (id1.equals(id2)) {
+								String msg =
+										ModelUtil.getLabel(o1) + " \"" + ModelUtil.getDisplayName(o1) + "\" and " +
+										ModelUtil.getLabel(o2) + " \"" + ModelUtil.getDisplayName(o2) + "\" have the same ID";
+								if (message==null)
+									message = msg;
+								else
+									message += "\n" + msg;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (message != null) {
+			throw new IllegalArgumentException("Duplicate IDs:\n" + message);
+		}
+	}
+	
     @Override
     protected XMLHelper createXMLHelper() {
     	if (xmlHelper!=null)
@@ -437,8 +479,14 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 									}
 								}
 							}
+							ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
+							childObject.eAdapters().add(a);
 						}
-					}	
+					}
+					else if (childObject instanceof GlobalType) {
+						ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
+						childObject.eAdapters().add(a);
+					}
 				}
 				catch(Exception e) {
 				}

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
@@ -233,7 +234,52 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         // only necessary if this resource will not be added to a ResourceSet instantly
         this.eAdapters().add(oppositeReferenceAdapter);
 	}
+	
+	public void save(Map<?, ?> options) throws IOException {
+		
+		// Ensure that there are no duplicate IDs. This could corrupt the BPMN2 file.
+		// If this happens, do NOT save the file until the problem has been fixed.
+		Definitions definitions = ImportHelper.getDefinitions(this);
+		String message = null;
+		TreeIterator<EObject> iter1 = definitions.eAllContents();
+		HashSet<EObject> map = new HashSet<EObject>();
+		while (iter1.hasNext()) {
+			EObject o1 = iter1.next();
+			if (o1 instanceof BaseElement && !map.contains(o1)) {
+				TreeIterator<EObject> iter2 = definitions.eAllContents();
+				map.add(o1);
+				String id1 = ((BaseElement)o1).getId();
+				
+				while (iter2.hasNext()) {
+					EObject o2 = iter2.next();
+					if (o2 instanceof BaseElement && o1!=o2 && !map.contains(o2)) {
+						String id2 = ((BaseElement)o2).getId();
+						if (id1!=null && id2!=null) {
+							if (id1.equals(id2)) {
+								String msg =
+										ModelUtil.getLabel(o1) + " \"" + ModelUtil.getDisplayName(o1) + "\" and " +
+										ModelUtil.getLabel(o2) + " \"" + ModelUtil.getDisplayName(o2) + "\" have the same ID";
+								if (message==null)
+									message = msg;
+								else
+									message += "\n" + msg;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (message != null) {
+			throw new IllegalArgumentException("Duplicate IDs:\n" + message);
+		}
+		
+		for (BPMNDiagram bpmnDiagram : definitions.getDiagrams()) {
+			fixZOrder(bpmnDiagram);
+		}
 
+		super.save(options);
+	}
+	
     @Override
     protected XMLHelper createXMLHelper() {
     	if (xmlHelper!=null)
@@ -264,7 +310,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	@Override
 	protected void prepareSave() {
 		EObject cur;
-		Definitions thisDefinitions = ImportHelper.getDefinitions(this);
+		Definitions definitions = ImportHelper.getDefinitions(this);
 		for (Iterator<EObject> iter = getAllContents(); iter.hasNext();) {
 			cur = iter.next();
 
@@ -272,19 +318,14 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 			for (EObject referenced : cur.eCrossReferences()) {
 				setDefaultId(referenced);
-				if (thisDefinitions != null) {
+				if (definitions != null) {
 					Resource refResource = referenced.eResource();
 					if (refResource != null && refResource != this) {
-						createImportIfNecessary(thisDefinitions, refResource);
+						createImportIfNecessary(definitions, refResource);
 					}
 				}
 			}
 		}
-		
-		for (BPMNDiagram bpmnDiagram : thisDefinitions.getDiagrams()) {
-			fixZOrder(bpmnDiagram);
-		}
-
 	}
 
 	private void fixZOrder(BPMNDiagram bpmnDiagram) {
