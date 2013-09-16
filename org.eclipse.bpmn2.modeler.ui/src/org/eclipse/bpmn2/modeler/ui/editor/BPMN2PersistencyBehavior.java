@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
@@ -48,7 +49,7 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 				// Save the resources to the file system.
 				try {
 					savedResources.addAll(save(diagramEditor.getEditingDomain(), saveOptions));
-				} catch (final Exception e) {
+				} catch (final WrappedException e) {
 					final String msg = e.getMessage().replaceAll("\tat .*", "").replaceFirst(".*Exception: ","").trim();
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
