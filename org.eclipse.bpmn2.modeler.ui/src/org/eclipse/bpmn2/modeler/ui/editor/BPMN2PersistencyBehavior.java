@@ -49,7 +49,7 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 				// Save the resources to the file system.
 				try {
 					savedResources.addAll(save(diagramBehavior.getEditingDomain(), saveOptions, monitor));
-				} catch (final Exception e) {
+				} catch (final WrappedException e) {
 					final String msg = e.getMessage().replaceAll("\tat .*", "").replaceFirst(".*Exception: ","").trim();
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
