@@ -46,8 +46,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
@@ -82,11 +82,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.transaction.NotificationFilter;
+import org.eclipse.emf.transaction.ResourceSetChangeEvent;
+import org.eclipse.emf.transaction.ResourceSetListener;
+import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
@@ -101,7 +105,7 @@ import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
 
 @SuppressWarnings("restriction")
-public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
+public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSetListener {
 	
 	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5";
 	
@@ -190,7 +194,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	        initialized = true;
 		}
 		
-		Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
 		ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
 		if (sel instanceof IStructuredSelection) {
 			Object o = ((IStructuredSelection)sel).getFirstElement();
@@ -255,6 +258,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 				e.printStackTrace();
 			}
 		}
+		
+		editor.getEditingDomain().addResourceSetListener(this);
 	}
 	
 	/*
@@ -527,85 +532,61 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	}
 
 	@Override
-	public Composite getPreferencesComposite(Composite parent, Bpmn2Preferences preferences) {
+	public NotificationFilter getFilter() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override 
-	public void modelObjectCreated(final EObject object) {
-		if (object instanceof org.eclipse.bpmn2.Property ||
-				object instanceof DataObject ||
-				object instanceof Message) {
-			object.eAdapters().add(new Adapter() {
-				@Override
-				public void notifyChanged(Notification notification) {
-					
-		            if (notification.getEventType()==Notification.SET) {
-						Object o = notification.getFeature();
-						if (o instanceof EStructuralFeature) {
-							EStructuralFeature feature = (EStructuralFeature)o;
-	                        if ("name".equals(feature.getName())) {
-								Object newValue = notification.getNewValue();
-								Object oldValue = notification.getOldValue();
-								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
-								{
-									EStructuralFeature id = object.eClass().getEStructuralFeature("id");
-									if (id!=null) {
-										newValue = SyntaxCheckerUtils.toNCName((String)newValue);
-										boolean deliver = object.eDeliver();
-										if (deliver)
-											object.eSetDeliver(false);
-										object.eSet(id, newValue);
-										if (deliver)
-											object.eSetDeliver(true);
-									}
-								}
-							}
-	                        else if ("id".equals(feature.getName())) {
-								Object newValue = notification.getNewValue();
-								Object oldValue = notification.getOldValue();
-								if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) 
-								{
-									EStructuralFeature name = object.eClass().getEStructuralFeature("name");
-									if (name!=null) {
-										boolean deliver = object.eDeliver();
-										if (deliver)
-											object.eSetDeliver(false);
-										object.eSet(name, newValue);
-										if (deliver)
-											object.eSetDeliver(true);
-									}
-								}
+	@Override
+	public Command transactionAboutToCommit(ResourceSetChangeEvent event) throws RollbackException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void resourceSetChanged(ResourceSetChangeEvent event) {
+		for (Notification n : event.getNotifications()) {
+			if (n.getEventType() == Notification.ADD) {
+				if (n.getNewValue() instanceof EObject) {
+					EObject object = (EObject)n.getNewValue();
+					if (object instanceof org.eclipse.bpmn2.Property ||
+							object instanceof DataObject ||
+							object instanceof Message ||
+							object instanceof GlobalType) {
+						boolean found = false;
+						for (Adapter a : ((EObject)object).eAdapters()) {
+							if (a instanceof ProcessVariableNameChangeAdapter) {
+								found = true;
+								break;
 							}
 						}
-		            }
+						if (!found) {
+							ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
+							object.eAdapters().add(a);
+						}
+					}
 				}
-
-				@Override
-				public Notifier getTarget() {
-					return null;
-				}
-
-				@Override
-				public void setTarget(Notifier newTarget) {
-				}
-
-				@Override
-				public boolean isAdapterForType(Object type) {
-					return false;
-				}
-				
-			});
-		}
-		else if (object instanceof Gateway ||
-				object instanceof CatchEvent ||
-				object instanceof ThrowEvent) {
-			// these objects should not be assigned names when initially created
-			EStructuralFeature feature = object.eClass().getEStructuralFeature("name");
-			if (feature!=null && !object.eIsSet(feature)) {
-				object.eSet(feature, "");
 			}
 		}
+		
+	}
+
+	@Override
+	public boolean isAggregatePrecommitListener() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isPrecommitOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isPostcommitOnly() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

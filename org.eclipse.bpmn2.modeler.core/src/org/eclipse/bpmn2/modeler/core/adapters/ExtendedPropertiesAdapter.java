@@ -111,12 +111,14 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
+		ExtendedPropertiesAdapter adapter = null;
 		for (Adapter a : object.eAdapters()) {
 			if (a instanceof ExtendedPropertiesAdapter)
-				return (ExtendedPropertiesAdapter) a;
+				adapter = (ExtendedPropertiesAdapter) a;
 		}
 		EObject eclass = getFeatureClass(object,feature);
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+		if (adapter==null)
+			adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
 		if (adapter!=null) {
 			if (object instanceof EClass)
 				object = getDummyObject((EClass)object);

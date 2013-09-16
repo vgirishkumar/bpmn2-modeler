@@ -88,7 +88,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		if (id!=null) {
 	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-	    	ctd.populateObject(businessObject, true);
+	    	ctd.populateObject(businessObject, resource, true);
 		}
 		changesDone = true;
 		return businessObject;

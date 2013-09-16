@@ -24,7 +24,9 @@ import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Error;
@@ -637,7 +639,46 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				return createMissingFeatureStatus(ctx,be,"messageRef");
 			}
 		}
-
+		else if (be instanceof DataInput) {
+			DataInput param = (DataInput) be;
+			List<DataInput> allParams = null;
+			if (be.eContainer() instanceof InputOutputSpecification) {
+				allParams = ((InputOutputSpecification)param.eContainer()).getDataInputs();
+			}
+			else if (be.eContainer() instanceof ThrowEvent) {
+				allParams = ((ThrowEvent)param.eContainer()).getDataInputs();
+			}
+			if (allParams!=null) {
+				for (DataInput i : allParams) {
+					if (i!=param) {
+						String n1 = param.getName();
+						String n2 = i.getName();
+						if (n1!=null && n2!=null && n1.equals(n2))
+							return ctx.createFailureStatus("Input Parameter \""+param.getName()+"\" is already defined");
+					}
+				}
+			}
+		}
+		else if (be instanceof DataOutput) {
+			DataOutput param = (DataOutput) be;
+			List<DataOutput> allParams = null;
+			if (be.eContainer() instanceof InputOutputSpecification) {
+				allParams = ((InputOutputSpecification)param.eContainer()).getDataOutputs();
+			}
+			else if (be.eContainer() instanceof CatchEvent) {
+				allParams = ((CatchEvent)param.eContainer()).getDataOutputs();
+			}
+			if (allParams!=null) {
+				for (DataOutput i : allParams) {
+					if (i!=param) {
+						String n1 = param.getName();
+						String n2 = i.getName();
+						if (n1!=null && n2!=null && n1.equals(n2))
+							return ctx.createFailureStatus("Output Parameter \""+param.getName()+"\" is already defined");
+					}
+				}
+			}
+		}
 		return ctx.createSuccessStatus();
 	}
 }

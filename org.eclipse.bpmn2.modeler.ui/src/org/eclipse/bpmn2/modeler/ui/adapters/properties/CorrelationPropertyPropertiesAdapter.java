@@ -32,6 +32,7 @@ public class CorrelationPropertyPropertiesAdapter extends RootElementPropertiesA
 		super(adapterFactory, object);
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getCorrelationProperty_Type();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<CorrelationProperty>(adapterFactory, object, feature));
 	}
 

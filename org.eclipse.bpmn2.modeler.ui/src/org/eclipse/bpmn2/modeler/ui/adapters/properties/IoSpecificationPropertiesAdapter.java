@@ -20,10 +20,13 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -80,5 +83,21 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				return dataOutput;
 			}
     	});
+    	
+		setObjectDescriptor(new ObjectDescriptor<InputOutputSpecification>(adapterFactory, object) {
+			
+			@Override
+			public InputOutputSpecification createObject(Resource resource, Object context) {
+				InputOutputSpecification ioSpec = Bpmn2ModelerFactory.eINSTANCE.createInputOutputSpecification();
+				ModelUtil.setID(ioSpec, resource);
+//				InputSet is = Bpmn2ModelerFactory.eINSTANCE.createInputSet();
+//				ModelUtil.setID(is, resource);
+//				ioSpec.getInputSets().add(is);
+//				OutputSet os = Bpmn2ModelerFactory.eINSTANCE.createOutputSet();
+//				ModelUtil.setID(os, resource);
+//				ioSpec.getOutputSets().add(os);
+				return ioSpec;
+			}
+		});    	
 	}
 }

@@ -19,8 +19,11 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
@@ -46,6 +49,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureCont
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.TaskFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -106,10 +110,25 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 			if (name!=null && !name.isEmpty()) {
 				task.setName(name.trim());
 			}
+			
+			// make sure the ioSpecification has both a default InputSet and OutputSet
+			InputOutputSpecification ioSpecification = task.getIoSpecification();
+			if (ioSpecification!=null) {
+				Resource resource = ModelUtil.getResource(context.getTargetContainer());
+				if (ioSpecification.getInputSets().size()==0) {
+					InputSet is = Bpmn2ModelerFactory.create(resource, InputSet.class);
+					ioSpecification.getInputSets().add(is);
+				}
+				if (ioSpecification.getOutputSets().size()==0) {
+					OutputSet os = Bpmn2ModelerFactory.create(resource, OutputSet.class);
+					ioSpecification.getOutputSets().add(os);
+				}
+			}
+			
 			// Create the ItemDefinitions for each I/O parameter if needed
 			JBPM5RuntimeExtension rx = (JBPM5RuntimeExtension)customTaskDescriptor.getRuntime().getRuntimeExtension();
 			WorkItemDefinition wid = rx.getWorkItemDefinition(name);
-			if (task.getIoSpecification()!=null) {
+			if (task.getIoSpecification()!=null && wid!=null) {
 				for (DataInput input : task.getIoSpecification().getDataInputs()) {
 					for (Entry<String, String> entry : wid.getParameters().entrySet()) {
 						if (input.getName().equals(entry.getKey())) {
@@ -318,7 +337,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomTaskFeatureContainer {
 								ModelUtil.getDefinitions(task).getRootElements().add(itemDefinition);
 								ModelUtil.setID(itemDefinition);
 							}
-							itemDefinition.setItemKind(ItemKind.PHYSICAL);
+							itemDefinition.setItemKind(ItemKind.INFORMATION);
 							itemDefinition.setStructureRef(structureRef);
 							dataInput.setItemSubjectRef(itemDefinition);
 						}

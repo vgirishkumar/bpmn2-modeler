@@ -10,17 +10,18 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.editor;
 
-import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
-import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
-import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 
 public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 
@@ -36,5 +37,31 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 
     	return diagram;
     }
+    
+	protected IRunnableWithProgress createOperation(final Set<Resource> savedResources,
+			final Map<Resource, Map<?, ?>> saveOptions) {
+		// Do the work within an operation because this is a long running
+		// activity that modifies the workbench.
+		final IRunnableWithProgress operation = new IRunnableWithProgress() {
+			// This is the method that gets invoked when the operation runs.
+			public void run(IProgressMonitor monitor) {
+				// Save the resources to the file system.
+				try {
+					savedResources.addAll(save(diagramEditor.getEditingDomain(), saveOptions));
+				} catch (final Exception e) {
+					final String msg = e.getMessage().replaceAll("\tat .*", "").replaceFirst(".*Exception: ","").trim();
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							MessageDialog.openError(Display.getDefault().getActiveShell(), "Can not save file", msg);
+						}
+					});
+					monitor.setCanceled(true);
+					throw e;
+				}
+			}
+		};
+		return operation;
+	}
 
 }

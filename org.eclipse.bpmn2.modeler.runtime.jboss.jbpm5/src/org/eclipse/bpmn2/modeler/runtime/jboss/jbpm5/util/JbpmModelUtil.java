@@ -217,7 +217,7 @@ public class JbpmModelUtil {
 						ItemDefinition oldItemDef = (ItemDefinition)object;
 						String oldName = ModelUtil.getStringWrapperValue(oldItemDef.getStructureRef());
 						// and now update the existing item's structureRef
-						oldItemDef.setItemKind(ItemKind.PHYSICAL);
+						oldItemDef.setItemKind(ItemKind.INFORMATION);
 						EObject structureRef = ModelUtil.createStringWrapper(className);
 						oldItemDef.setStructureRef(structureRef);
 						importer.createInterface(definitions, null, type);
@@ -284,21 +284,28 @@ public class JbpmModelUtil {
 			if (itemDef==null) {
 				// create a new ItemDefinition for the jBPM data type
 				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
-				itemDef.setItemKind(ItemKind.PHYSICAL);
-				ModelUtil.setID(itemDef,defs.eResource());
+				itemDef.setItemKind(ItemKind.INFORMATION);
 				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
-				InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
+				if (defs!=null) {
+					ModelUtil.setID(itemDef,defs.eResource());
+					InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
+				}
 			}
 			choices.put(dt.getStringType(),itemDef);
 		}
 		
 		// add all imported data types
-		EObject parent = object;
-		while (parent!=null && !(parent instanceof org.eclipse.bpmn2.Process))
-			parent = parent.eContainer();
+		EObject process = object;
+		while (process!=null && !(process instanceof org.eclipse.bpmn2.Process))
+			process = process.eContainer();
+		if (process==null) {
+			List<Process> list = ModelUtil.getAllRootElements(defs, Process.class);
+			if (list.size()>0)
+				process = list.get(0);
+		}
 		
 		String s;
-		List<ImportType> imports = ModelUtil.getAllExtensionAttributeValues(parent, ImportType.class);
+		List<ImportType> imports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
 		for (ImportType it : imports) {
 			s = it.getName();
 			if (s!=null && !s.isEmpty())
@@ -306,7 +313,7 @@ public class JbpmModelUtil {
 		}
 		
 		// add all Global variable types
-		List<GlobalType> globals = ModelUtil.getAllExtensionAttributeValues(parent, GlobalType.class);
+		List<GlobalType> globals = ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class);
 		for (GlobalType gt : globals) {
 			s = gt.getType();
 			if (s!=null && !s.isEmpty())
@@ -386,6 +393,7 @@ public class JbpmModelUtil {
 	public static ItemDefinition findOrCreateItemDefinition(EObject context, String structureRef) {
 		ItemDefinition itemDef = null;
 		Definitions definitions = ModelUtil.getDefinitions(context);
+		Resource resource = ModelUtil.getResource(context);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
 			String s = ModelUtil.getStringWrapperValue(id.getStructureRef());
@@ -396,10 +404,10 @@ public class JbpmModelUtil {
 		}
 		if (itemDef==null)
 		{
-			itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
+			itemDef = Bpmn2ModelerFactory.create(resource, ItemDefinition.class);
 			itemDef.setStructureRef(ModelUtil.createStringWrapper(structureRef));
-			itemDef.setItemKind(ItemKind.PHYSICAL);
-			definitions.getRootElements().add(itemDef);
+			itemDef.setItemKind(ItemKind.INFORMATION);
+
 			ModelUtil.setID(itemDef);
 		}
 		return itemDef;
@@ -408,11 +416,11 @@ public class JbpmModelUtil {
 	public static BPSimDataType getBPSimData(EObject object) {
 		BPSimDataType processAnalysisData = null;
 		Relationship rel = null;
-		Resource resource = object.eResource();
+		Resource resource = ModelUtil.getResource(object);
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {
-			rel = Bpmn2ModelerFactory.create(Relationship.class);
+			rel = Bpmn2ModelerFactory.create(resource, Relationship.class);
 			definitions.getRelationships().add(rel);
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);

@@ -32,6 +32,7 @@ public class ErrorPropertiesAdapter extends RootElementPropertiesAdapter<Error> 
 		super(adapterFactory, object);
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getError_StructureRef();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(adapterFactory, object, feature));
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Error>(adapterFactory, object) {

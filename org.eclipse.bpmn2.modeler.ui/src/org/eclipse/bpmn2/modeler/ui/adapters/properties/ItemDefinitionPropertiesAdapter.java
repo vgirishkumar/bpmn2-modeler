@@ -106,7 +106,6 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			}
 			
 			@Override
-			
 			public ItemDefinition createObject(Resource resource, Object context) {
 				ItemDefinition itemDefinition = ItemDefinitionPropertiesAdapter.createItemDefinition(resource);
 				return itemDefinition;

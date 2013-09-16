@@ -133,8 +133,6 @@ public class Bpmn2PropertyPage extends PropertyPage {
 		cboIsMarkerVisible = new BPMNDIAttributeDefaultCombo(group);
 		cboIsMarkerVisible.setText(Bpmn2Preferences.PREF_IS_MARKER_VISIBLE_LABEL);
 		
-		runtimeComposite = prefs.getRuntime().getRuntimeExtension().getPreferencesComposite(container, prefs);
-
 		initData();
 
 		return container;

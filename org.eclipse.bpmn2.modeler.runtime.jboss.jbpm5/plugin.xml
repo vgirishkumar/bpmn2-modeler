@@ -315,6 +315,50 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmGatewayPropertiesAdapter">
 		</propertyExtension>
 		
+		<!-- Things that have ItemDefinition references (data types) need to include the java native types in combo boxes and such -->
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.CorrelationProperty"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.CorrelationProperty"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmCorrelationPropertyPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.Error"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Error"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmErrorPropertiesAdapter">
+		</propertyExtension>
+		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.Escalation"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Escalation"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmEscalationPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.Message"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Message"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmMessagePropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.ResourceParameter"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.ResourceParameter"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmResourceParameterPropertiesAdapter">
+		</propertyExtension>
+
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.Signal"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.Signal"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmSignalPropertiesAdapter">
+		</propertyExtension>
+		
 <!-- Graphiti Feature Container Overrides -->
 		
 		<featureContainer
@@ -463,6 +507,7 @@
 			name="ExclusiveGateway Extensions"
 			type="ExclusiveGateway">
 			<property name="gatewayDirection" value="Diverging"/>
+			<property name="name" value=""/>
 		</modelExtension>
 		
 		<modelExtension
@@ -471,6 +516,7 @@
 			name="EventBasedGateway Extensions"
 			type="EventBasedGateway">
 			<property name="gatewayDirection" value="Diverging"/>
+			<property name="name" value=""/>
 		</modelExtension>
 		
 		<modelExtension
@@ -479,6 +525,7 @@
 			name="InclusiveGateway Extensions"
 			type="InclusiveGateway">
 			<property name="gatewayDirection" value="Diverging"/>
+			<property name="name" value=""/>
 		</modelExtension>
 		
 		<modelExtension
@@ -487,8 +534,53 @@
 			name="ParallelGateway Extensions"
 			type="ParallelGateway">
 			<property name="gatewayDirection" value="Diverging"/>
+			<property name="name" value=""/>
+		</modelExtension>
+		
+		<!-- do not automatically generate name labels for these objects when created -->
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.startEvent"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="StartEvent Extensions"
+			type="StartEvent">
+			<property name="name" value=""/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.endEvent"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="EndEvent Extensions"
+			type="EndEvent">
+			<property name="name" value=""/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.boundaryEvent"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="BoundaryEvent Extensions"
+			type="BoundaryEvent">
+			<property name="name" value=""/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.intermediateCatchEvent"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="IntermediateCatchEvent Extensions"
+			type="IntermediateCatchEvent">
+			<property name="name" value=""/>
+		</modelExtension>
+		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.intermediateThrowEvent"
+			runtimeId="org.jboss.runtime.jbpm5"
+			name="IntermediateThrowEvent Extensions"
+			type="IntermediateThrowEvent">
+			<property name="name" value=""/>
 		</modelExtension>
 
+		<!-- customized User Task -->
+		
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.modelExtension.userTask"
 			runtimeId="org.jboss.runtime.jbpm5"
@@ -1256,6 +1348,22 @@
                </message>
                <target class="CallActivity"/>
             </constraint>
+			<constraint
+					class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessVariableNameConstraint"
+					id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.VariableName"
+					isEnabledByDefault="true"
+					lang="Java"
+					mode="Live"
+					name="Infos"
+					severity="INFO"
+					statusCode="1">
+				<message>{0}</message>
+				<description>Variable Name Validation Errors</description>
+				<target class="BaseElement"/>
+				<target class="Property"/>
+				<target class="Message"/>
+				<target class="DataObject"/>
+			</constraint>
          </constraints>
       </constraintProvider>
    </extension>
