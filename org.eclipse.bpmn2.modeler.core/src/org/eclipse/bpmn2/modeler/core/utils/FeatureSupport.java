@@ -903,13 +903,13 @@ public class FeatureSupport {
 		List<EClass> allowedItems = new ArrayList<EClass>();
 		if (event instanceof BoundaryEvent) {
 			if (eventOwner instanceof Transaction) {
-				if (((BoundaryEvent)event).isCancelActivity())
+//				if (((BoundaryEvent)event).isCancelActivity())
 					allowedItems.add(Bpmn2Package.eINSTANCE.getCancelEventDefinition());
 			}
-			if (((BoundaryEvent)event).isCancelActivity())
+//			if (((BoundaryEvent)event).isCancelActivity())
 				allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
 			allowedItems.add(Bpmn2Package.eINSTANCE.getConditionalEventDefinition());
-			if (((BoundaryEvent)event).isCancelActivity())
+//			if (((BoundaryEvent)event).isCancelActivity())
 				allowedItems.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition());
 			allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
 			allowedItems.add(Bpmn2Package.eINSTANCE.getMessageEventDefinition());
@@ -925,10 +925,10 @@ public class FeatureSupport {
 		}
 		else if (event instanceof StartEvent) {
 			if (eventOwner instanceof SubProcess) {
-				if (((StartEvent)event).isIsInterrupting()) {
+//				if (((StartEvent)event).isIsInterrupting()) {
 					allowedItems.add(Bpmn2Package.eINSTANCE.getCompensateEventDefinition());
 					allowedItems.add(Bpmn2Package.eINSTANCE.getErrorEventDefinition());
-				}
+//				}
 				allowedItems.add(Bpmn2Package.eINSTANCE.getEscalationEventDefinition());
 			}
 			allowedItems.add(Bpmn2Package.eINSTANCE.getConditionalEventDefinition());

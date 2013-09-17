@@ -89,14 +89,14 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
     	
     	ref = Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef();
     	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(adapterFactory,object,ref));
-		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.TRUE);
+		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.FALSE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.FALSE);
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
 		ref = Bpmn2Package.eINSTANCE.getDataAssociation_TargetRef();
     	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(adapterFactory,object,ref));
-		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.TRUE);
+		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.FALSE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.FALSE);
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);

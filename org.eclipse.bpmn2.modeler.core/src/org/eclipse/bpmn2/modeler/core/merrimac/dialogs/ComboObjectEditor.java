@@ -301,22 +301,24 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				if (ModelUtil.isStringWrapper(oldValue))
 					oldValue = ModelUtil.getStringWrapperValue(oldValue);
 	
-				ArrayList<String> list = new ArrayList<String>(choices.keySet());
-				Collections.sort(list);
 				StructuredSelection currentSelection = null;
-				for (String key : list) {
-					comboViewer.add(key);
-					Object newValue = choices.get(key); 
-					if (newValue!=null) {
-						comboViewer.setData(key, newValue);
-						if (currentSelection==null) {
-							String oldValueString = oldValue==null ? null : oldValue.toString();
-							if (newValue.equals(oldValue) || key.equals(oldValue) || key.equals(oldValueString)) {
-								currentSelection = new StructuredSelection(key);
-							}
-							else if (adapter!=null) {
-								if (adapter.getObjectDescriptor().equals(newValue)) {
+				if (choices!=null) {
+					ArrayList<String> list = new ArrayList<String>(choices.keySet());
+					Collections.sort(list);
+					for (String key : list) {
+						comboViewer.add(key);
+						Object newValue = choices.get(key); 
+						if (newValue!=null) {
+							comboViewer.setData(key, newValue);
+							if (currentSelection==null) {
+								String oldValueString = oldValue==null ? null : oldValue.toString();
+								if (newValue.equals(oldValue) || key.equals(oldValue) || key.equals(oldValueString)) {
 									currentSelection = new StructuredSelection(key);
+								}
+								else if (adapter!=null) {
+									if (adapter.getObjectDescriptor().equals(newValue)) {
+										currentSelection = new StructuredSelection(key);
+									}
 								}
 							}
 						}
