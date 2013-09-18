@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -295,6 +296,8 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 		
 		FlowElement newObject;
 		ContainerShape newShape;
+		createContext.setX(0);
+		createContext.setY(0);
 		Object[] created = createFeature.create(createContext);
 		if (created[0] instanceof List) {
 			// this will happen if the createFeature is a CompoundCreateFeature
@@ -462,6 +465,9 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 			return null;
 		
 		cc.setTargetContainer((ContainerShape)container);
+		
+		// set the IMPORT flag so that the new shape's location is not adjusted during creation
+		cc.putProperty(DIImport.IMPORT_PROPERTY, Boolean.TRUE);
 		return cc;
 	}
 }
