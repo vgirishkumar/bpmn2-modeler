@@ -101,7 +101,7 @@ public class TextObjectEditor extends ObjectEditor {
 		});
 
 		// ask the object if this feature is read-only
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null && feature!=null) {
 			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
 			if (result instanceof Boolean)

@@ -81,7 +81,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		EObject container = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 		Resource resource = container.eResource();
 		EClass eclass = getBusinessObjectClass();
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
 		T businessObject = (T)adapter.getObjectDescriptor().createObject(resource,eclass);
 		putBusinessObject(context, businessObject);
 		String id = (String)context.getProperty(ICustomTaskFeatureContainer.CUSTOM_TASK_ID);

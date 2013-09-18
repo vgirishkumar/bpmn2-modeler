@@ -242,7 +242,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         if (status instanceof IConstraintStatus) {
             IConstraintStatus ics = (IConstraintStatus) status;
             EObject object = ics.getTarget();
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+    		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter!=null) {
 				Object lineNumber = adapter.getProperty(ExtendedPropertiesAdapter.LINE_NUMBER);
 				if (lineNumber!=null) {

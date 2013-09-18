@@ -50,7 +50,7 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 
 	@Override
 	public void createBindings(EObject be) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(be, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
 		if (adapter!=null) {
 			// if the Activity that owns this DataInputAssociation or DataOutputAssociation is
 			// a Custom Task, then make the "name" feature read-only. Custom Task I/O parameters

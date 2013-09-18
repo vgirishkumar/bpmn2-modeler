@@ -20,6 +20,12 @@ public class JbpmMessagePropertiesAdapter extends MessagePropertiesAdapter {
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature) {
 
     		@Override
+			public String getLabel(Object context) {
+				// TODO Auto-generated method stub
+				return super.getLabel(context);
+			}
+
+			@Override
     		public Hashtable<String, Object> getChoiceOfValues(Object context) {
 				return JbpmModelUtil.collectAllDataTypes(adopt(context));
     		}

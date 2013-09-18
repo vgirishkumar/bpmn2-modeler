@@ -380,7 +380,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			super.createObject(peekObject, feature);
 			EObject newObject = objects.peekEObject();
 			if (newObject!=null && newObject!=peekObject) {
-				ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(newObject, ExtendedPropertiesAdapter.class);
+				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(newObject);
 				if (adapter!=null) {
 					adapter.setProperty(ExtendedPropertiesAdapter.LINE_NUMBER, getLineNumber());
 				}

@@ -195,7 +195,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	public String getChoiceString(Object value) {
 		if (value instanceof EObject) {
 			EObject eObject = (EObject)value;
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eObject, ExtendedPropertiesAdapter.class);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
 			if (adapter!=null)
 				return adapter.getObjectDescriptor().getDisplayName(eObject);
 			return ModelUtil.toDisplayName( eObject.eClass().getName() );
@@ -238,7 +238,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			if (eclass==null)
 				eclass = (EClass)feature.getEType();
 			
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
 			if (adapter!=null) {
 				if (resource==null)
 					resource = object.eResource();
@@ -351,7 +351,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			return true;
 		
 		if (thisValue instanceof EObject && obj instanceof EObject) {
-			return compare((EObject)thisValue, (EObject)obj);
+			return compare((EObject)thisValue, (EObject)obj, false);
 		}
 		
 		if (thisValue!=null && obj!=null)
@@ -360,4 +360,21 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return false;
 	}
 	
+	@Override
+	public boolean similar(Object obj) {
+		Object thisValue = object.eGet(feature);
+		
+		if (thisValue==null && obj==null)
+			return true;
+		
+		if (thisValue instanceof EObject && obj instanceof EObject) {
+			return compare((EObject)thisValue, (EObject)obj, true);
+		}
+		
+		if (thisValue!=null && obj!=null)
+			return thisValue.equals(obj);
+		
+		return false;
+	}
+
 }

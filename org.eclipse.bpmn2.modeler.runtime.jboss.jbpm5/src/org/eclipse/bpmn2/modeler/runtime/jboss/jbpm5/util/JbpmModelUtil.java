@@ -61,6 +61,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -286,8 +287,8 @@ public class JbpmModelUtil {
 				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
 				itemDef.setItemKind(ItemKind.INFORMATION);
 				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
+				itemDef.setId("_"+dts);
 				if (defs!=null) {
-					ModelUtil.setID(itemDef,defs.eResource());
 					InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
 				}
 			}
@@ -295,39 +296,33 @@ public class JbpmModelUtil {
 		}
 		
 		// add all imported data types
-		EObject process = object;
-		while (process!=null && !(process instanceof org.eclipse.bpmn2.Process))
-			process = process.eContainer();
-		if (process==null) {
-			List<Process> list = ModelUtil.getAllRootElements(defs, Process.class);
-			if (list.size()>0)
-				process = list.get(0);
-		}
-		
-		String s;
-		List<ImportType> imports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
-		for (ImportType it : imports) {
-			s = it.getName();
-			if (s!=null && !s.isEmpty())
-				choices.put(s, it);
-		}
-		
-		// add all Global variable types
-		List<GlobalType> globals = ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class);
-		for (GlobalType gt : globals) {
-			s = gt.getType();
-			if (s!=null && !s.isEmpty())
-				choices.put(s, gt);
-		}
+//		EObject process = object;
+//		while (process!=null && !(process instanceof org.eclipse.bpmn2.Process))
+//			process = process.eContainer();
+//		if (process==null) {
+//			List<Process> list = ModelUtil.getAllRootElements(defs, Process.class);
+//			if (list.size()>0)
+//				process = list.get(0);
+//		}
+//		
+//		String s;
+//		List<ImportType> imports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
+//		for (ImportType it : imports) {
+//			s = it.getName();
+//			if (s!=null && !s.isEmpty())
+//				choices.put(s, it);
+//		}
+//		
+//		// add all Global variable types
+//		List<GlobalType> globals = ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class);
+//		for (GlobalType gt : globals) {
+//			s = gt.getType();
+//			if (s!=null && !s.isEmpty())
+//				choices.put(s, gt);
+//		}
 
 		// add all ItemDefinitions
-		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
-		for (ItemDefinition id : itemDefs) {
-			s = ModelUtil.getStringWrapperValue(id.getStructureRef());
-			if (s==null || s.isEmpty())
-				s = id.getId();
-			choices.put(s,id);
-		}
+		choices.putAll( ItemDefinitionPropertiesAdapter.getChoiceOfValues(object) );
 		
 		return choices;
 	}

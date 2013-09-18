@@ -81,18 +81,10 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 	public void setValue(Object context, Object value) {
 		T object = adopt(context);
 		if (value instanceof ItemDefinition) {
-			ItemDefinition itemDefinition = null;
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(value, ExtendedPropertiesAdapter.class);
-			final Definitions defs = ModelUtil.getDefinitions(object);
-			if (defs!=null) {
-				List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
-				for (ItemDefinition id : itemDefs) {
-					if (adapter.getObjectDescriptor().equals(id)) {
-						itemDefinition = id;
-						break;
-					}
-				}
-				if (itemDefinition==null) {
+			ItemDefinition itemDefinition = (ItemDefinition) value;
+			if (itemDefinition.eResource()==null) {
+				final Definitions defs = ModelUtil.getDefinitions(object);
+				if (defs!=null) {
 					itemDefinition = (ItemDefinition) value;
     				TransactionalEditingDomain editingDomain = getEditingDomain(itemDefinition);
 					if (editingDomain == null) {
