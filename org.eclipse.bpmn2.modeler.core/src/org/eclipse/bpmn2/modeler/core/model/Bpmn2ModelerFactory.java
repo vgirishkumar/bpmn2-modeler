@@ -163,7 +163,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		Assert.isTrue(eClass!=null);
 		
 		EObject newObject = null;
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eClass, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
 		if (adapter!=null) {
 			newObject = adapter.getObjectDescriptor().createObject(resource, eClass);
 		}
@@ -226,7 +226,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		if (resource==null)
 			resource = object.eResource();
 		
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
 			newObject = adapter.getFeatureDescriptor(feature).createFeature(resource, object, eClass);
 		}

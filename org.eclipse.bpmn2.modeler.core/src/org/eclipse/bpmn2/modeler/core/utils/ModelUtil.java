@@ -325,6 +325,21 @@ public class ModelUtil {
 		return null;
 	}
 
+	public static String generateUndefinedID(String base) {
+		String name = "undefined";
+		if (base.contains("_")) {
+			return "<" + name + "_" + base.replaceFirst(".*_", "") + ">";
+		}
+		
+		Integer value = defaultIds.get(name);
+		if (value==null)
+			value = Integer.valueOf(1);
+		value = Integer.valueOf( value.intValue() + 1 );
+		defaultIds.put(name, Integer.valueOf(value));
+		
+		return "<" + name + "_" + value + ">";
+	}
+
 	public static int getIDNumber(String id) {
 		try {
 			int i = id.lastIndexOf("_");
@@ -1345,10 +1360,10 @@ public class ModelUtil {
 		return value;
 	}
 
-	public static boolean compare(EObject object1, EObject object2) {
+	public static boolean compare(EObject object1, EObject object2, boolean similar) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object1, null);
 		if (adapter!=null)
-			return adapter.getObjectDescriptor().equals(object2);
+			return adapter.getObjectDescriptor().compare(object1, object2, similar);
 		return object1.equals(object2);
 	}
 	

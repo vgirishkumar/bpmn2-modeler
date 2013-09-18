@@ -192,7 +192,7 @@ public class InsertionAdapter extends EContentAdapter {
 				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
 					protected void doExecute() {
-						ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+						ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 						if (adapter!=null) {
 							adapter.getFeatureDescriptor(feature).setValue(value);
 						}

@@ -105,27 +105,42 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public static ExtendedPropertiesAdapter adapt(EObject object) {
+	public static ExtendedPropertiesAdapter adapt(Object object) {
 		return adapt(object,null);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static ExtendedPropertiesAdapter adapt(EObject object, EStructuralFeature feature) {
+	public static ExtendedPropertiesAdapter adapt(Object object, EStructuralFeature feature) {
 		ExtendedPropertiesAdapter adapter = null;
-		for (Adapter a : object.eAdapters()) {
-			if (a instanceof ExtendedPropertiesAdapter)
-				adapter = (ExtendedPropertiesAdapter) a;
-		}
-		EObject eclass = getFeatureClass(object,feature);
-		if (adapter==null)
-			adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
-		if (adapter!=null) {
-			if (object instanceof EClass)
-				object = getDummyObject((EClass)object);
-			adapter.setTarget(object);
-			adapter.getObjectDescriptor().setObject(object);
-			if (feature!=null)
-				adapter.getFeatureDescriptor(feature).setObject(object);
+		if (object instanceof EObject) {
+			// If the EObject already has one of these adapters, find the "best" one for
+			// the given feature. The "best" means the adapter will have defined a FeatureDescriptor
+			// for the given feature.
+			EObject eObject = (EObject) object;
+			ExtendedPropertiesAdapter genericAdapter = null;
+			for (Adapter a : eObject.eAdapters()) {
+				if (a instanceof ExtendedPropertiesAdapter && ((ExtendedPropertiesAdapter)a).canAdapt(eObject, feature)) {
+					if (a.getClass() == ExtendedPropertiesAdapter.class)
+						genericAdapter = (ExtendedPropertiesAdapter) a;
+					else
+						adapter = (ExtendedPropertiesAdapter) a;
+				}
+			}
+			// if no "best" adapter is found, use the generic adapter if one has been created for this EObject
+			if (adapter==null && genericAdapter!=null)
+				adapter = genericAdapter;
+			
+			EObject eclass = getFeatureClass(eObject,feature);
+			if (adapter==null)
+				adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+			if (adapter!=null) {
+				if (eObject instanceof EClass)
+					eObject = getDummyObject((EClass)eObject);
+				adapter.setTarget(eObject);
+				adapter.getObjectDescriptor().setObject(eObject);
+				if (feature!=null)
+					adapter.getFeatureDescriptor(feature).setObject(eObject);
+			}
 		}
 		return adapter;
 	}
@@ -244,5 +259,20 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 			object.eAdapters().add(this);
 		}
 	}
-	
+
+	public boolean canAdapt(EObject object, EStructuralFeature feature) {
+		if (object!=null) {
+			if (getObjectDescriptor().object.eClass() == object.eClass()) {
+				if (feature==null)
+					return true;
+				FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,PROPERTY_DESCRIPTOR);
+				if (fd!=null) {
+					// only TRUE if this adapter is not using a default FeatureDescriptor
+					if (fd.getClass()!=FeatureDescriptor.class)
+						return true;
+				}
+			}
+		}
+		return false;
+	}
 }

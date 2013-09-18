@@ -159,6 +159,12 @@ public class DefaultListComposite extends AbstractListComposite {
 		return selected;
 	}
 	
+	protected Object getListItem(EObject object, EStructuralFeature feature, int index) {
+		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		int[] map = buildIndexMap(object,feature);
+		return list.get(map[index]);
+	}
+	
 	protected Object moveListItemUp(EObject object, EStructuralFeature feature, int index) {
 		EList<EObject> list = (EList<EObject>)object.eGet(feature);
 		int[] map = buildIndexMap(object,feature);

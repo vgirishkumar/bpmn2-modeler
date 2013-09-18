@@ -61,7 +61,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 		if (eClass==null)
 			eClass = (EClass)feature.getEType();
 		else if (feature.getEType() != eClass) {
-			ExtendedPropertiesAdapter<T> adapter = (ExtendedPropertiesAdapter<T>) AdapterUtil.adapt(eClass, ExtendedPropertiesAdapter.class);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
 			if (adapter!=null) {
 				rootElement = adapter.getObjectDescriptor().createObject(resource, eClass);
 			}

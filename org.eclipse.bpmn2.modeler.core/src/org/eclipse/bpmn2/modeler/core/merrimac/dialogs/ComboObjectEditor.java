@@ -297,26 +297,28 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				}
 				
 				// add all other possible selections
-				ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(oldValue, ExtendedPropertiesAdapter.class);
+				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(oldValue);
 				if (ModelUtil.isStringWrapper(oldValue))
 					oldValue = ModelUtil.getStringWrapperValue(oldValue);
 	
-				ArrayList<String> list = new ArrayList<String>(choices.keySet());
-				Collections.sort(list);
 				StructuredSelection currentSelection = null;
-				for (String key : list) {
-					comboViewer.add(key);
-					Object newValue = choices.get(key); 
-					if (newValue!=null) {
-						comboViewer.setData(key, newValue);
-						if (currentSelection==null) {
-							String oldValueString = oldValue==null ? null : oldValue.toString();
-							if (newValue.equals(oldValue) || key.equals(oldValue) || key.equals(oldValueString)) {
-								currentSelection = new StructuredSelection(key);
-							}
-							else if (adapter!=null) {
-								if (adapter.getObjectDescriptor().equals(newValue)) {
+				if (choices!=null) {
+					ArrayList<String> list = new ArrayList<String>(choices.keySet());
+					Collections.sort(list);
+					for (String key : list) {
+						comboViewer.add(key);
+						Object newValue = choices.get(key); 
+						if (newValue!=null) {
+							comboViewer.setData(key, newValue);
+							if (currentSelection==null) {
+								String oldValueString = oldValue==null ? null : oldValue.toString();
+								if (newValue.equals(oldValue) || key.equals(oldValue) || key.equals(oldValueString)) {
 									currentSelection = new StructuredSelection(key);
+								}
+								else if (adapter!=null) {
+									if (adapter.getObjectDescriptor().equals(newValue)) {
+										currentSelection = new StructuredSelection(key);
+									}
 								}
 							}
 						}
@@ -338,9 +340,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			return false;
 
 		Object newValue =  getValue();
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(newValue, ExtendedPropertiesAdapter.class);
-		if (ModelUtil.isStringWrapper(newValue))
-			newValue = ModelUtil.getStringWrapperValue(newValue);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(newValue);
 
 		isWidgetUpdating = false;
 		Hashtable<String,Object> oldChoices = new Hashtable<String,Object>();
@@ -362,12 +362,12 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		
 		StructuredSelection oldSelection = (StructuredSelection)comboViewer.getSelection();
 		Object oldValue = oldSelection.getFirstElement();
-		if (oldValue instanceof String)
-			oldValue = comboViewer.getData((String)oldValue);
-		if (ModelUtil.isStringWrapper(oldValue))
-			oldValue = ModelUtil.getStringWrapperValue(oldValue);
 		if (newValue==null) {
 			if (oldValue!=null)
+				return true;
+		}
+		else if (adapter!=null) {
+			if (!adapter.getObjectDescriptor().equals(oldValue))
 				return true;
 		}
 		else if (!newValue.equals(oldValue))
@@ -375,19 +375,18 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 
 		for (Entry<String, Object> entry : newChoices.entrySet()) {
 			oldValue = oldChoices.get(entry.getKey());
-			if (ModelUtil.isStringWrapper(oldValue))
-				oldValue = ModelUtil.getStringWrapperValue(oldValue);
 			newValue = entry.getValue();
-			if (ModelUtil.isStringWrapper(newValue))
-				newValue = ModelUtil.getStringWrapperValue(newValue);
-			if (oldValue!=newValue) {
-				if (oldValue!=null && newValue!=null) {
-					if (!oldValue.equals(newValue))
-						return true;
-				}
-				else
+			adapter = ExtendedPropertiesAdapter.adapt(newValue);
+			if (newValue==null) {
+				if (oldValue!=null)
 					return true;
 			}
+			else if (adapter!=null) {
+				if (!adapter.getObjectDescriptor().equals(oldValue))
+					return true;
+			}
+			else if (!newValue.equals(oldValue))
+				return true;
 		}
 		return false;
 	}

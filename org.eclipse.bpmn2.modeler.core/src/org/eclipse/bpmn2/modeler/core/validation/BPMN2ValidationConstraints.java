@@ -614,7 +614,12 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					if (id == itemDefinition)
 						continue;
 					
-					if (ModelUtil.compare(id, itemDefinition)) {
+					if (ModelUtil.compare(id, itemDefinition,true)) {
+						Object structureRef = itemDefinition.getStructureRef();
+						if (structureRef==null ||
+								(ModelUtil.isStringWrapper(structureRef) &&
+								ModelUtil.getStringWrapperValue(structureRef).isEmpty()))
+							continue;
 						return createFailureStatus(ctx,be,
 								"The "+ id.getItemKind() + " " +
 								(id.isIsCollection() ? "Collection " : "")+

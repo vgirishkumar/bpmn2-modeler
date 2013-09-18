@@ -13,17 +13,11 @@ package org.eclipse.bpmn2.modeler.ui.property.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.ImplicitThrowEvent;
-import org.eclipse.bpmn2.IntermediateCatchEvent;
-import org.eclipse.bpmn2.IntermediateThrowEvent;
-import org.eclipse.bpmn2.StartEvent;
-import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
@@ -52,6 +46,45 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 		return columnProvider.getColumns().size();
 	}
 	
+	@Override
+	protected EObject addListItem(EObject object, EStructuralFeature feature) {
+		EObject newItem = super.addListItem(object, feature);
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=417207
+		// the Cancel Activity checkbox should always be TRUE
+		// if the Boundary Event contains a Error Event Definition,
+		// and should be hidden when it contains a Compensate Event Definition.
+		if (object instanceof BoundaryEvent) {
+			BoundaryEvent be = (BoundaryEvent) object;
+			if (newItem instanceof ErrorEventDefinition) {
+				be.setCancelActivity(true);
+				((AbstractDetailComposite)getParent()).refresh();
+			}
+			else if (newItem instanceof CompensateEventDefinition) {
+				be.setCancelActivity(false);
+				((AbstractDetailComposite)getParent()).refresh();
+			}
+		}
+		return newItem;
+	}
+
+	@Override
+	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
+		Object oldItem = getListItem(object,feature,index);
+		Object newItem = super.removeListItem(object, feature, index);
+		if (object instanceof BoundaryEvent) {
+			BoundaryEvent be = (BoundaryEvent) object;
+			if (oldItem instanceof ErrorEventDefinition) {
+				be.setCancelActivity(true);
+				((AbstractDetailComposite)getParent()).refresh();
+			}
+			else if (oldItem instanceof CompensateEventDefinition) {
+				be.setCancelActivity(false);
+				((AbstractDetailComposite)getParent()).refresh();
+			}
+		}
+		return newItem;
+	}
+
 	@Override
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		columnProvider = super.getColumnProvider(object,feature);

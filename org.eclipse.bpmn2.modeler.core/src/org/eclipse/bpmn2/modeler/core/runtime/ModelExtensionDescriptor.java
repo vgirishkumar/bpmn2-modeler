@@ -541,7 +541,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	public void adaptObject(EObject object) {
 		addModelExtensionAdapter(object);
 		if (description!=null && !description.isEmpty()) {
-			ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(object, ExtendedPropertiesAdapter.class);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter!=null) {
 				adapter.setProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION, description);
 			}

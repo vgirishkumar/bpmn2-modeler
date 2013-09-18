@@ -614,11 +614,11 @@ public class ImportUtil {
 	 * @return the Interface if it already exists, null if not 
 	 */
 	public static Interface findInterface(Definitions definitions, Interface intf) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(intf, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(intf);
 		if (adapter!=null) {
 			List <Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
 			for (Interface i : list) {
-				if (adapter.getObjectDescriptor().equals(i))
+				if (adapter.getObjectDescriptor().similar(i))
 					return i;
 			}
 		}
@@ -827,11 +827,11 @@ public class ImportUtil {
 	 * @return the Operation if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Operation findOperation(Definitions definitions, org.eclipse.bpmn2.Operation bpmn2op) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(bpmn2op, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(bpmn2op);
 		if (adapter!=null) {
 			List<org.eclipse.bpmn2.Operation> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Operation.class);
 			for (org.eclipse.bpmn2.Operation o : list) {
-				if (adapter.getObjectDescriptor().equals(o))
+				if (adapter.getObjectDescriptor().similar(o))
 					return (org.eclipse.bpmn2.Operation)o;
 			}
 		}
@@ -913,11 +913,11 @@ public class ImportUtil {
 	 * @return the Operation if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Message findMessage(Definitions definitions, org.eclipse.bpmn2.Message msg) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(msg, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(msg);
 		if (adapter!=null) {
 			List<org.eclipse.bpmn2.Message> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Message.class);
 			for (org.eclipse.bpmn2.Message m : list) {
-				if (adapter.getObjectDescriptor().equals(m))
+				if (adapter.getObjectDescriptor().similar(m))
 					return (org.eclipse.bpmn2.Message)m;
 			}
 		}
@@ -984,11 +984,11 @@ public class ImportUtil {
 	 * @return the Error if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Error findError(Definitions definitions, org.eclipse.bpmn2.Error error) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(error, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(error);
 		if (adapter!=null) {
 			List<org.eclipse.bpmn2.Error> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Error.class);
 			for (org.eclipse.bpmn2.Error e : list) {
-				if (adapter.getObjectDescriptor().equals(e))
+				if (adapter.getObjectDescriptor().similar(e))
 					return (org.eclipse.bpmn2.Error)e;
 			}
 		}
@@ -1096,11 +1096,11 @@ public class ImportUtil {
 	 * @return the ItemDefinition if it already exists, null if not 
 	 */
 	public static ItemDefinition findItemDefinition(Definitions definitions, ItemDefinition itemDef) {
-		ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(itemDef, ExtendedPropertiesAdapter.class);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(itemDef);
 		if (adapter!=null) {
 			List<ItemDefinition> list = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 			for (ItemDefinition i : list) {
-				if (adapter.getObjectDescriptor().equals(i))
+				if (adapter.getObjectDescriptor().similar(i))
 					return (ItemDefinition)i;
 			}
 		}

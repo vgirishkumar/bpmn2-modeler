@@ -138,15 +138,25 @@ public class ObjectDescriptor<T extends EObject> {
 		if (otherObject instanceof EObject) {
 			// compare feature values of both EObjects:
 			// this should take care of most of the BPMN2 elements
-			return compare(thisObject, (EObject)otherObject);
+			return compare(thisObject, (EObject)otherObject, false);
 		}
 		return super.equals(otherObject);
 	}
 
-	public static boolean compare(EObject thisObject, EObject otherObject) {
+	public boolean similar(Object otherObject) {
+		EObject thisObject = this.object;
+		if (otherObject instanceof EObject) {
+			// compare feature values of both EObjects:
+			// this should take care of most of the BPMN2 elements
+			return compare(thisObject, (EObject)otherObject, true);
+		}
+		return super.equals(otherObject);
+	}
+	
+	public static boolean compare(EObject thisObject, EObject otherObject, boolean similar) {
 		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {
 			// IDs are allowed to be different
-			if ("id".equals(f.getName()))
+			if (similar && "id".equals(f.getName()))
 				continue;
 			Object v1 = otherObject.eGet(f);
 			Object v2 = thisObject.eGet(f);
@@ -160,9 +170,9 @@ public class ObjectDescriptor<T extends EObject> {
 			if (!v1.equals(v2)) {
 				// the default Object.equals(obj) fails:
 				// for Dynamic EObjects (used here as "proxies") only compare their proxy URIs 
-				if (v1 instanceof DynamicEObjectImpl && v2 instanceof DynamicEObjectImpl) {
-					v1 = ((DynamicEObjectImpl)v1).eProxyURI();
-					v2 = ((DynamicEObjectImpl)v2).eProxyURI();
+				if (ModelUtil.isStringWrapper(v1) && ModelUtil.isStringWrapper(v2)) {
+					v1 = ModelUtil.getStringWrapperValue(v1);
+					v2 = ModelUtil.getStringWrapperValue(v2);
 					if (v1==null && v2==null)
 						continue;
 					if (v1==null || v2==null)
@@ -172,9 +182,9 @@ public class ObjectDescriptor<T extends EObject> {
 				}
 				else if (v1 instanceof EObject && v2 instanceof EObject) {
 					// for all other EObjects, do a deep compare...
-					ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt((EObject)v1, ExtendedPropertiesAdapter.class);
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt((EObject)v1);
 					if (adapter!=null) {
-						if (adapter.getObjectDescriptor().equals(v2))
+						if (adapter.getObjectDescriptor().compare((EObject)v1,(EObject)v2,similar))
 							continue;
 					}
 				}

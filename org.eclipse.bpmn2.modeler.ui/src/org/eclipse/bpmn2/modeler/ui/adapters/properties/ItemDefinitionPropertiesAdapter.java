@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -60,7 +61,8 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				@Override
 				public String getDisplayName(Object context) {
 					ItemDefinition itemDefinition = adopt(context);
-					return ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
+					String value = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
+					return value;
 				}
 				
 	    		@Override
@@ -74,12 +76,22 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	    		@Override
 	    		public Object getValue(Object context) {
 					ItemDefinition itemDefinition = adopt(context);
-					return ItemDefinitionPropertiesAdapter.getStructureRef(itemDefinition);
+					Object value = ItemDefinitionPropertiesAdapter.getStructureRef(itemDefinition);
+					if (value==null || (ModelUtil.isStringWrapper(value) && ModelUtil.getStringWrapperValue(value).isEmpty())) {
+						value = itemDefinition.getId();
+					}
+					return value;
 	    		}
 
 	    		@Override
 	    		public void setValue(Object context, Object value) {
+					ItemDefinition itemDefinition = adopt(context);
 					if (value instanceof String) {
+						if (itemDefinition.getStructureRef()==null) {
+							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
+							value = ((String) value).replace(oldValue, "");
+						}
+						value = SyntaxCheckerUtils.toNCName((String)value);
 						value = ModelUtil.createStringWrapper((String)value);
 					}
 					super.setValue(context, value);
@@ -114,25 +126,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			@Override
 			public boolean equals(Object obj) {
 				if (obj instanceof ItemDefinition) {
-					ItemDefinition other = (ItemDefinition)obj;
-					if (!object.getItemKind().equals(other.getItemKind()))
-						return false;
-					if (object.isIsCollection()!=other.isIsCollection())
-						return false;
-					Object thisStructure = object.getStructureRef();
-					Object otherStructure = other.getStructureRef();
-					if (thisStructure!=otherStructure) {
-						if (thisStructure==null || otherStructure==null)
-							return false;
-						if (ModelUtil.isStringWrapper(thisStructure)) {
-							String thisWrapper = ModelUtil.getStringWrapperValue(object.getStructureRef());
-							String otherWrapper = ModelUtil.getStringWrapperValue(other.getStructureRef());
-							if (ModelUtil.isStringWrapper(otherStructure)) {
-								return thisWrapper.equals(otherWrapper);
-							}
-						}
-						return thisStructure.equals(otherStructure);
-					}
+					return super.equals(obj);
 				}
 				else if (obj instanceof String) {
 					String otherWrapper = (String) obj;
@@ -163,8 +157,6 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	public static ItemDefinition createItemDefinition(Resource resource) {
 		ItemDefinition itemDefinition = Bpmn2ModelerFactory.eINSTANCE.createItemDefinition();
 		ModelUtil.setID(itemDefinition, resource);
-		EObject structureRef = ModelUtil.createStringWrapper("");
-		itemDefinition.setStructureRef(structureRef);
 		Definitions defs = ModelUtil.getDefinitions(resource);
 		if (defs!=null) {
 			defs.getRootElements().add(itemDefinition);
@@ -200,6 +192,9 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				else if (ModelUtil.isStringWrapper(value))
 					name = ModelUtil.getStringWrapperValue(value);
 			}
+			if (name==null || name.isEmpty()) {
+				name = ModelUtil.generateUndefinedID(itemDefinition.getId());
+			}
 		}
 		return name;
 	}
@@ -208,8 +203,8 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		Object value = null;
 		if (itemDefinition!=null)
 			value = itemDefinition.getStructureRef();
-		if (value==null)
-			value = ModelUtil.createStringWrapper("");
+		if (ModelUtil.isStringWrapper(value) && ModelUtil.getStringWrapperValue(value).isEmpty())
+			value = null;
 		return value;
 	}
 
