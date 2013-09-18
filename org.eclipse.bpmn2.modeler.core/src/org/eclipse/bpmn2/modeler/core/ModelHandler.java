@@ -843,7 +843,10 @@ public class ModelHandler {
 				return (FlowElementsContainer)be;
 			}
 			else { // somebody did not understand the BPMNPlane (seems to be common), try adding to the first process
-				return getAll(Process.class).get(0);
+				List<Process> list = getAll(Process.class);
+				if (list.size()==0)
+					return getOrCreateProcess(null);
+				return list.get(0);
 			}
 		}
 		if (o instanceof Participant) {
