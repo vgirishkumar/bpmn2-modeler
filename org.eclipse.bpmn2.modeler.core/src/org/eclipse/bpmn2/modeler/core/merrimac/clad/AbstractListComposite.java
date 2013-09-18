@@ -27,6 +27,8 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
@@ -493,8 +495,11 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					if (!enable && editAction!=null)
 						editAction.setEnabled(enable);
 
+			    	Notification n = new ENotificationImpl((InternalEObject) o, 0, null, null, null, false);
+					this.validate(n);
 				}
 			}
+			
 			detailSection.setVisible(enable);
 			detailSection.setExpanded(enable);
 			if (editAction!=null)

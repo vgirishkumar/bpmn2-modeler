@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.core.validation;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
@@ -33,9 +34,11 @@ import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.EscalationEventDefinition;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventBasedGateway;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ExclusiveGateway;
+import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
@@ -46,6 +49,7 @@ import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -63,6 +67,7 @@ import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -128,7 +133,12 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 	public IStatus createMissingFeatureStatus(IValidationContext ctx, EObject object, String featureName) {
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
-		String message = ModelUtil.getLabel(object) + " has no " + ModelUtil.getLabel(object, feature);
+		// change error message slightly for connections
+		String message;
+		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
+			message = ModelUtil.getLabel(object) + " has no " + ModelUtil.getLabel(object, feature) + " Connections";
+		else
+			message = ModelUtil.getLabel(object) + " has missing or incomplete " + ModelUtil.getLabel(object, feature);
 		IStatus status = ctx.createFailureStatus(message);
 		ctx.addResult(object);
 		return status;
@@ -183,36 +193,36 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 		}
 		else if (be instanceof Error) {
-			if (warnings) {
-				if (((Error)be).getStructureRef()==null) {
+			if (!warnings) {
+				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
 					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof Escalation) {
-			if (warnings) {
-				if (((Escalation)be).getStructureRef()==null) {
+			if (!warnings) {
+				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
 					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof Message) {
-			if (warnings) {
-				if (((Message)be).getItemRef()==null) {
+			if (!warnings) {
+				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
 					return createMissingFeatureStatus(ctx,be,"itemRef");
 				}
 			}
 		}
 		else if (be instanceof Signal) {
-			if (warnings) {
-				if (((Signal)be).getStructureRef()==null) {
+			if (!warnings) {
+				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
 					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
 		}
 		else if (be instanceof ItemDefinition) {
 			if (!warnings) {
-				if (((ItemDefinition)be).getStructureRef()==null) {
+				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
 					return createMissingFeatureStatus(ctx,be,"structureRef");
 				}
 			}
@@ -265,48 +275,9 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				}
 			}
 			else {
-				List<EventDefinition> eventdefs = elem.getEventDefinitions();
-				if (eventdefs.size()==0) {
-					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
-				}
-				
-				for (EventDefinition ed : eventdefs) {
-					if (ed instanceof TimerEventDefinition) {
-						TimerEventDefinition ted = (TimerEventDefinition) ed;
-						if (	ted.getTimeDate() == null
-								&& ted.getTimeDuration() == null
-								&& ted.getTimeCycle() == null
-						) {
-							return createFailureStatus(ctx,be,"Timer Event has no Timer definition");
-						}
-					} else if (ed instanceof SignalEventDefinition) {
-						if (((SignalEventDefinition) ed).getSignalRef() == null) {
-							return createFailureStatus(ctx,be,"Signal Event has no Signal definition");
-						}
-					} else if (ed instanceof ErrorEventDefinition) {
-						if (((ErrorEventDefinition) ed).getErrorRef() == null) {
-							return createFailureStatus(ctx,be,"Error Event has no Error definition");
-						}
-					} else if (ed instanceof ConditionalEventDefinition) {
-						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
-						if (conditionalExp==null || ModelUtil.getExpressionBody(conditionalExp) == null ||
-								ModelUtil.getExpressionBody(conditionalExp).isEmpty()) {
-							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
-						}
-					} else if (ed instanceof EscalationEventDefinition) {
-						if (((EscalationEventDefinition) ed).getEscalationRef() == null) {
-							return createFailureStatus(ctx,be,"Escalation Event has no Escalation definition");
-						}
-					} else if (ed instanceof MessageEventDefinition) {
-						if (((MessageEventDefinition) ed).getMessageRef() == null) {
-							return createFailureStatus(ctx,be,"Message Event has no Message definition");
-						}
-					} else if (ed instanceof CompensateEventDefinition) {
-						if (((CompensateEventDefinition) ed).getActivityRef() == null) {
-							return createFailureStatus(ctx,be,"Compensate Event has no Activity definition");
-						}
-					}
-				}
+				IStatus status = validateEvent(ctx,(Event)be);
+				if (status!=null)
+					return status;
 			}
 			// no more validations on this
 			be = null;
@@ -314,55 +285,15 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		else if (be instanceof ThrowEvent) {
 			ThrowEvent elem = (ThrowEvent) be;
 
-
 			if (warnings) {
 				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
 					return createMissingFeatureStatus(ctx,be,"outgoing");
 				}
 			}
 			else {
-				List<EventDefinition> eventdefs = elem.getEventDefinitions();
-				if (eventdefs.size()==0) {
-					return createMissingFeatureStatus(ctx,be,"eventDefinitions");
-				}
-
-				for (EventDefinition ed : eventdefs) {
-					if (ed instanceof TimerEventDefinition) {
-						TimerEventDefinition ted = (TimerEventDefinition) ed;
-						if (	ted.getTimeDate() == null
-								&& ted.getTimeDuration() == null
-								&& ted.getTimeCycle() == null
-						) {
-							return createFailureStatus(ctx,be,"Timer Event has no Timer definition");
-						}
-					} else if (ed instanceof SignalEventDefinition) {
-						if (((SignalEventDefinition) ed).getSignalRef() == null) {
-							return createFailureStatus(ctx,be,"Signal Event has no Signal definition");
-						}
-					} else if (ed instanceof ErrorEventDefinition) {
-						if (((ErrorEventDefinition) ed).getErrorRef() == null) {
-							return createFailureStatus(ctx,be,"Error Event has no Error definition");
-						}
-					} else if (ed instanceof ConditionalEventDefinition) {
-						FormalExpression conditionalExp = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
-						if (conditionalExp==null || ModelUtil.getExpressionBody(conditionalExp) == null ||
-								ModelUtil.getExpressionBody(conditionalExp).isEmpty()) {
-							return createFailureStatus(ctx,be,"Conditional Event has no Condition Expression");
-						}
-					} else if (ed instanceof EscalationEventDefinition) {
-						if (((EscalationEventDefinition) ed).getEscalationRef() == null) {
-							return createFailureStatus(ctx,be,"Escalation Event has no conditional Escalation definition");
-						}
-					} else if (ed instanceof MessageEventDefinition) {
-						if (((MessageEventDefinition) ed).getMessageRef() == null) {
-							return createFailureStatus(ctx,be,"Message Event has no Message definition");
-						}
-					} else if (ed instanceof CompensateEventDefinition) {
-						if (((CompensateEventDefinition) ed).getActivityRef() == null) {
-							return createFailureStatus(ctx,be,"Compensate Event has no Activity definition");
-						}
-					}
-				}
+				IStatus status = validateEvent(ctx,(Event)be);
+				if (status!=null)
+					return status;
 			}
 			// no more validations on this
 			be = null;
@@ -544,8 +475,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				}
 			}
 		}
-		
-		
+
+
+		if (be instanceof ItemAwareElement) {
+			return validateItemAwareElement(ctx, (ItemAwareElement)be);
+		}
 		if (be instanceof FlowNode) {
 			return validateFlowNode(ctx, (FlowNode) be);
 		}
@@ -553,6 +487,119 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
+	private Process findProcess(BaseElement be) {
+		while (be!=null && !(be instanceof Process) && be.eContainer() instanceof BaseElement) {
+			be = (BaseElement)be.eContainer();
+		}
+		if (be instanceof Process)
+			return (Process) be;
+		return null;
+	}
+	
+	private boolean isValidForExecutableProcess(BaseElement be, BaseElement ref) {
+		Process process = findProcess(be);
+		if (!warnings && process!=null && process.isIsExecutable()) {
+			// Executable processes MUST have FormalExpressions defined
+			if (ref==null)
+				return false;
+			if (ref instanceof Expression) {
+				if (!(ref instanceof FormalExpression))
+					return false;
+				String body = ModelUtil.getExpressionBody((FormalExpression)ref);
+				if (isEmpty(body))
+					return false;
+			}
+			else if (ref instanceof Message) {
+				Message message = (Message) ref;
+				if (!isValidForExecutableProcess(message, message.getItemRef()))
+					return false;
+			}
+			else if (ref instanceof ItemDefinition) {
+				ItemDefinition itemDefinition = (ItemDefinition) ref;
+				if (isEmpty(itemDefinition.getStructureRef()))
+					return false;
+			}
+			else if (ref instanceof Signal) {
+				Signal signal = (Signal) ref;
+				if (!isValidForExecutableProcess(signal, signal.getStructureRef()))
+					return false;
+			}
+			else if (ref instanceof Error) {
+				Error error = (Error) ref;
+				if (!isValidForExecutableProcess(error, error.getStructureRef()))
+					return false;
+			}
+			else if (ref instanceof Escalation) {
+				Escalation escalation = (Escalation) ref;
+				if (isEmpty(escalation.getEscalationCode()))
+					return false;
+				if (!isValidForExecutableProcess(escalation, escalation.getStructureRef()))
+					return false;
+			}
+			else if (ref instanceof Activity) {
+				
+			}
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	private IStatus validateEvent(IValidationContext ctx, Event event) {
+		Process process = findProcess(event);
+		if (process!=null && process.isIsExecutable()) {
+			EStructuralFeature feature = event.eClass().getEStructuralFeature("eventDefinitions");
+			Assert.isNotNull(feature);
+			List<EventDefinition> eventdefs = (List<EventDefinition>) event.eGet(feature);
+			if (eventdefs.size()==0) {
+				return createMissingFeatureStatus(ctx,event,"eventDefinitions");
+			}
+			for (EventDefinition ed : eventdefs) {
+				IStatus status = validateEventDefinition(ctx,ed);
+				if (status!=null)
+					return status;
+			}
+		}
+		return null;
+	}
+
+	private IStatus validateEventDefinition(IValidationContext ctx, EventDefinition ed) {
+		if (ed instanceof TimerEventDefinition) {
+			TimerEventDefinition ted = (TimerEventDefinition) ed;
+			if (	ted.getTimeDate() == null
+					&& ted.getTimeDuration() == null
+					&& ted.getTimeCycle() == null
+			) {
+				return createFailureStatus(ctx,ed,"Timer Event has no Timer definition");
+			}
+		} else if (ed instanceof SignalEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((SignalEventDefinition) ed).getSignalRef())) {
+				return createMissingFeatureStatus(ctx,ed,"signalRef");
+			}
+		} else if (ed instanceof ErrorEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((ErrorEventDefinition) ed).getErrorRef())) {
+				return createMissingFeatureStatus(ctx,ed,"errorRef");
+			}
+		} else if (ed instanceof ConditionalEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((ConditionalEventDefinition) ed).getCondition())) {
+				return createMissingFeatureStatus(ctx,ed,"condition");
+			}
+		} else if (ed instanceof EscalationEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((EscalationEventDefinition) ed).getEscalationRef())) {
+				return createMissingFeatureStatus(ctx,ed,"escalationRef");
+			}
+		} else if (ed instanceof MessageEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((MessageEventDefinition) ed).getMessageRef())) {
+				return createMissingFeatureStatus(ctx,ed,"messageRef");
+			}
+		} else if (ed instanceof CompensateEventDefinition) {
+			if (!isValidForExecutableProcess(ed, ((CompensateEventDefinition) ed).getActivityRef())) {
+				return createMissingFeatureStatus(ctx,ed,"activityRef");
+			}
+		}
+		return null;
+	}
+	
 	private IStatus validateFlowNode(IValidationContext ctx, FlowNode fn) {
 		if (!warnings) {
 			boolean needIncoming = true;
@@ -576,6 +623,13 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 		return ctx.createSuccessStatus();
 	}
+	
+	private IStatus validateItemAwareElement(IValidationContext ctx, ItemAwareElement elem) {
+		if (!isValidForExecutableProcess(elem, elem.getItemSubjectRef())) {
+			return createMissingFeatureStatus(ctx,elem,"itemSubjectRef");
+		}
+		return ctx.createSuccessStatus();
+	}
 
 	private static boolean isEmpty(Object object) {
 		if (object instanceof String) {
@@ -584,6 +638,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		}
 		else if (object instanceof List) {
 			return ((List)object).isEmpty();
+		}
+		else if (ModelUtil.isStringWrapper(object)) {
+			String w = ModelUtil.getStringWrapperValue(object);
+			if (w==null || w.isEmpty())
+				return true;
 		}
 		else if (object==null)
 			return true;
@@ -638,11 +697,15 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				return createMissingFeatureStatus(ctx,be,"structureRef");
 			}
 		}
-		else if (be instanceof MessageEventDefinition) {
-			MessageEventDefinition med = (MessageEventDefinition) be;
-			if (med.getMessageRef() == null) {
-				return createMissingFeatureStatus(ctx,be,"messageRef");
-			}
+		else if (be instanceof Event) {
+			IStatus status = validateEvent(ctx,(Event)be);
+			if (status!=null)
+				return status;
+		}
+		else if (be instanceof EventDefinition) {
+			IStatus status = validateEventDefinition(ctx,(EventDefinition)be);
+			if (status!=null)
+				return status;
 		}
 		else if (be instanceof DataInput) {
 			DataInput param = (DataInput) be;
