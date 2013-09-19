@@ -50,6 +50,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -224,8 +225,17 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		if (filename==null) {
 			return getInstance();
 		}
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().findMember(filename).getProject();
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		if (root==null) {
+			return getInstance();
+		}
+		IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(filename);
+		if (res==null) {
+			return getInstance();
+		}
+		IProject project = res.getProject();
 		return getInstance(project);
+			
 	}
 	
 	/**
