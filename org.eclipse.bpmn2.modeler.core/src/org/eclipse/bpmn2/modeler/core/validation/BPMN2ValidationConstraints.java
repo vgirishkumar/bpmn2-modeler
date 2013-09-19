@@ -499,10 +499,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	private boolean isValidForExecutableProcess(BaseElement be, BaseElement ref) {
 		Process process = findProcess(be);
 		if (!warnings && process!=null && process.isIsExecutable()) {
-			// Executable processes MUST have FormalExpressions defined
 			if (ref==null)
 				return false;
 			if (ref instanceof Expression) {
+				// Executable processes MUST have FormalExpressions defined
 				if (!(ref instanceof FormalExpression))
 					return false;
 				String body = ModelUtil.getExpressionBody((FormalExpression)ref);
@@ -510,11 +510,13 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					return false;
 			}
 			else if (ref instanceof Message) {
+				// Messages must have complete ItemDefinitions
 				Message message = (Message) ref;
 				if (!isValidForExecutableProcess(message, message.getItemRef()))
 					return false;
 			}
 			else if (ref instanceof ItemDefinition) {
+				// ItemDefinitions must have non-empty structure definitions
 				ItemDefinition itemDefinition = (ItemDefinition) ref;
 				if (isEmpty(itemDefinition.getStructureRef()))
 					return false;
@@ -526,6 +528,8 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else if (ref instanceof Error) {
 				Error error = (Error) ref;
+				if (isEmpty(error.getErrorCode()))
+					return false;
 				if (!isValidForExecutableProcess(error, error.getStructureRef()))
 					return false;
 			}
@@ -545,6 +549,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		return true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private IStatus validateEvent(IValidationContext ctx, Event event) {
 		Process process = findProcess(event);
 		if (process!=null && process.isIsExecutable()) {
@@ -631,6 +636,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static boolean isEmpty(Object object) {
 		if (object instanceof String) {
 			String str = (String) object;
@@ -648,18 +654,6 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			return true;
 		return false;
 	}
-
-	private boolean containsWhiteSpace(String testString) {
-		if (testString != null) {
-			for (int i = 0; i < testString.length(); i++) {
-				if (Character.isWhitespace(testString.charAt(i))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 
 	private IStatus validateBaseElementLive(IValidationContext ctx, BaseElement be) {
 
