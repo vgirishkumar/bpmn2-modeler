@@ -46,11 +46,16 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.events.ExpansionEvent;
@@ -550,24 +555,58 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	}
 
 	private Section createListSection(Composite parent, String label) {
-		Section section = toolkit.createSection(parent,
+		final Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE |
 				ExpandableComposite.COMPACT |
 				ExpandableComposite.TITLE_BAR);
 		section.setText(label+" List");
 
-		Composite tableComposite = toolkit.createComposite(section, SWT.NONE);
+		final Composite tableComposite = toolkit.createComposite(section, SWT.NONE);
 		section.setClient(tableComposite);
 		tableComposite.setLayout(new GridLayout(1, false));
 		
 		table = toolkit.createTable(tableComposite, SWT.FULL_SELECTION | SWT.V_SCROLL);
-		GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
-		gridData.widthHint = 100;
+		final GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
 		gridData.heightHint = 100;
+		gridData.widthHint = 50;
 		table.setLayoutData(gridData);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
+		// make the table resizing behave a little better:
+		// adjust table columns so they are all equal width,
+		// grow and shrink table height based on number of rows
+		tableComposite.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				Rectangle area = tableComposite.getClientArea();
+				ScrollBar vBar = table.getVerticalBar();
+				int vBarSize = vBar.isVisible() ? vBar.getSize().x : 0;
+				ScrollBar hBar = table.getHorizontalBar();
+				int hBarSize = hBar.isVisible() ? hBar.getSize().y : 0;
+				Rectangle trim = table.computeTrim(0,0,0,0);
+				int width = area.width - trim.width - vBarSize;
+				int remainingWidth = width;
+				int columnCount = table.getColumnCount();
+				// adjust number of visible rows
+				int rowCount = table.getItemCount();
+				if (rowCount<2)
+					rowCount = 2;
+				if (rowCount>8)
+					rowCount = 8;
+				int height = trim.height + table.getHeaderHeight() + hBarSize + rowCount * table.getItemHeight();
+				gridData.heightHint = height;
+				gridData.widthHint = 50;
+				table.setSize(area.width, area.height);
+				for (int index=0; index<columnCount; ++index) {
+					org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
+					if (index==columnCount-1)
+						tc.setWidth(remainingWidth + 7);
+					else
+						tc.setWidth(width/columnCount);
+					remainingWidth -= tc.getWidth();
+				}
+			}
+		});
 		
 	    tableToolBarManager = new ToolBarManager(SWT.FLAT);
 	    ToolBar toolbar = tableToolBarManager.createControl(section);
