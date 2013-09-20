@@ -555,7 +555,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			bpmnResource = (Bpmn2ResourceImpl) resourceSet.createResource(modelUri,
 					Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
 
-			resourceSet.setURIConverter(new ProxyURIConverterImplExtension());
+			resourceSet.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
 			resourceSet.eAdapters().add(editorAdapter = new DiagramEditorAdapter(this));
 
 			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, bpmnResource);
