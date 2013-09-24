@@ -165,8 +165,8 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 						"parallelMultiple",
 						"cancelActivity",
 						"eventDefinitions",
-						"dataInputs",
-						"dataOutputs",
+//						"dataInputs",
+//						"dataOutputs",
 						"properties"
 				};
 				

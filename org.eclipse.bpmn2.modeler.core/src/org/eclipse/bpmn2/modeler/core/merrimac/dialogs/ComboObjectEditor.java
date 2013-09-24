@@ -61,10 +61,10 @@ import org.eclipse.swt.widgets.Control;
 public class ComboObjectEditor extends MultivalueObjectEditor {
 
 	protected ComboViewer comboViewer;
-	private Composite buttons = null;
-	private boolean keyPressed = false;
-	private Button editButton = null;
-	private Button createButton = null;
+	protected Composite buttons = null;
+	protected boolean keyPressed = false;
+	protected Button editButton = null;
+	protected Button createButton = null;
 	
 	/**
 	 * @param parent

@@ -113,20 +113,35 @@ import org.eclipse.ui.forms.widgets.Section;
 public class DataAssociationDetailComposite extends ItemAwareElementDetailComposite {
 	
 	public enum MapType {
-		None,
-		Property,
-		Transformation,
-		Expression,
-		Advanced
+		None(0),
+		Property(1),
+		Transformation(2),
+		Expression(4),
+		Advanced(8);
+		
+		private int value;
+
+		MapType(int value) {
+			this.value = value;
+		}
+		public int getValue() {
+			return value;
+		}
+		public boolean isAllowed(int value) {
+			return (this.value & value) != 0;
+		}
 	};
 
+	protected int allowedMapTypes = -1;
 	protected ItemAwareElement parameter;
 	protected String parameterName;
 	protected DataAssociation association;
 	protected boolean isInput;
 	protected boolean updatingWidgets;
 	
+	protected boolean showFromGroup = true;
 	protected Group fromGroup;
+	protected boolean showToGroup = true;
 	protected Group toGroup;
 	protected Button mapPropertyButton;
 	protected Button mapExpressionButton;
@@ -205,15 +220,26 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 		parameter = (ItemAwareElement)be;
 
+		GridData gridData;
 		fromGroup = new Group(this, SWT.NONE);
 		fromGroup.setText("From");
 		fromGroup.setLayout(new GridLayout(3,false));
-		fromGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,3,1));
+		gridData = new GridData(SWT.FILL,SWT.TOP,true,false,3,1);
+		fromGroup.setLayoutData(gridData);
+		if (!showFromGroup) {
+			fromGroup.setVisible(false);
+			gridData.exclude = true;
+		}
 
 		toGroup = new Group(this, SWT.NONE);
 		toGroup.setText("To");
 		toGroup.setLayout(new GridLayout(3,false));
-		toGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,3,1));
+		gridData = new GridData(SWT.FILL,SWT.TOP,true,false,3,1);
+		toGroup.setLayoutData(gridData);
+		if (!showToGroup) {
+			toGroup.setVisible(false);
+			gridData.exclude = true;
+		}
 
 		final Group group = isInput ? toGroup : fromGroup;
 
@@ -308,6 +334,73 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			}
 		}
 		createWidgets();
+		setAllowedMapTypes(allowedMapTypes);
+	}
+	
+	public Group getFromGroup() {
+		return fromGroup;
+	}
+
+	public Group getToGroup() {
+		return toGroup;
+	}
+
+	public void setShowFromGroup(boolean showFromGroup) {
+		this.showFromGroup = showFromGroup;
+	}
+
+	public void setShowToGroup(boolean showToGroup) {
+		this.showToGroup = showToGroup;
+	}
+	
+	public void setAllowedMapTypes(int value) {
+		allowedMapTypes = value;
+		
+		Boolean enable;
+		int countEnabled = 0;
+		if (mapPropertyButton!=null) {
+			enable = MapType.Property.isAllowed(allowedMapTypes);
+			mapPropertyButton.setVisible(enable);
+			((GridData)mapPropertyButton.getLayoutData()).exclude = !enable;
+			if (enable)
+				++countEnabled;
+		}
+		
+		if (mapTransformationButton!=null) {
+			enable = MapType.Transformation.isAllowed(allowedMapTypes);
+			mapTransformationButton.setVisible(enable);
+			((GridData)mapTransformationButton.getLayoutData()).exclude = !enable;
+			if (enable)
+				++countEnabled;
+		}
+		
+		if (mapExpressionButton!=null) {
+			enable = MapType.Expression.isAllowed(allowedMapTypes);
+			mapExpressionButton.setVisible(enable);
+			((GridData)mapExpressionButton.getLayoutData()).exclude = !enable;
+			if (enable)
+				++countEnabled;
+		}
+		
+		if (advancedMappingButton!=null) {
+			enable = MapType.Advanced.isAllowed(allowedMapTypes);
+			advancedMappingButton.setVisible(enable);
+			((GridData)advancedMappingButton.getLayoutData()).exclude = !enable;
+			if (enable)
+				++countEnabled;
+		}
+		if (countEnabled==1) {
+			// hide all radio buttons if only one is enabled
+			enable = false;
+			mapPropertyButton.setVisible(enable);
+			((GridData)mapPropertyButton.getLayoutData()).exclude = !enable;
+			mapTransformationButton.setVisible(enable);
+			((GridData)mapTransformationButton.getLayoutData()).exclude = !enable;
+			mapExpressionButton.setVisible(enable);
+			((GridData)mapExpressionButton.getLayoutData()).exclude = !enable;
+			advancedMappingButton.setVisible(enable);
+			((GridData)advancedMappingButton.getLayoutData()).exclude = !enable;
+		}
 	}
 	
 	/**
@@ -325,25 +418,32 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	private MapType getMapType() {
 		if (association!=null) {
 			if (association.getAssignment().size()>1) {
-				return MapType.Advanced;
+				
+				if (MapType.Advanced.isAllowed(allowedMapTypes))
+					return MapType.Advanced;
 			}
 			if (association.getTransformation()!=null) {
 				if (association.getAssignment().size()>0) {
-					return MapType.Advanced;
+					if (MapType.Advanced.isAllowed(allowedMapTypes))
+						return MapType.Advanced;
 				}
+				if (MapType.Transformation.isAllowed(allowedMapTypes))
 				return MapType.Transformation;
 			}
 			if (association.getAssignment().size()==1) {
-				return MapType.Expression;
+				if (MapType.Expression.isAllowed(allowedMapTypes))
+					return MapType.Expression;
 			}
 			if (isInput) {
 				if (association.getTargetRef()!=null) {
-					return MapType.Property;
+					if (MapType.Property.isAllowed(allowedMapTypes))
+						return MapType.Property;
 				}
 			}
 			else {
 				if (association.getSourceRef().size()>0) {
-					return MapType.Property;
+					if (MapType.Property.isAllowed(allowedMapTypes))
+						return MapType.Property;
 				}
 			}
 		}
@@ -566,7 +666,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				}
 				else {
 					propertyComposite.setVisible(true);
-					((GridData)propertyComposite.getLayoutData()).exclude = false;
 				}
 				
 				if (propertyDetailsComposite==null) {
@@ -618,7 +717,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			else {
 				if (propertyComposite!=null) {
 					propertyComposite.setVisible(false);
-					((GridData)propertyComposite.getLayoutData()).exclude = true;
 				}
 				
 				// remove the Property reference

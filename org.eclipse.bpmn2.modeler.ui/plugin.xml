@@ -284,7 +284,7 @@
 			id="org.eclipse.bpmn2.modeler.receiveTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation instantiate messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ReceiveTask"
 			label="Receive Task">
@@ -303,7 +303,7 @@
 			id="org.eclipse.bpmn2.modeler.sendTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.SendTask"
 			label="Send Task">
@@ -313,7 +313,7 @@
 			id="org.eclipse.bpmn2.modeler.serviceTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ServiceTask"
 			label="Service Task">
@@ -323,7 +323,7 @@
 			id="org.eclipse.bpmn2.modeler.userTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
 			label="User Task">
@@ -334,7 +334,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.globalBusinessRuleTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources"
 			type="org.eclipse.bpmn2.GlobalBusinessRuleTask"
 			label="Global Business Rule Task">
@@ -361,7 +361,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.globalUserTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources"
 			type="org.eclipse.bpmn2.GlobalUserTask"
 			label="Global User Task">
@@ -553,7 +553,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
 			type="org.eclipse.bpmn2.Interface"
-			label="Interface Details">
+			label="Interface">
 		</propertyTab>
 
 		<propertyTab
@@ -571,7 +571,7 @@
 			class="default"
 			features="itemKind structureRef isCollection"
 			type="org.eclipse.bpmn2.ItemDefinition"
-			label="Item Definition">
+			label="Data Type">
 		</propertyTab>
 
 		<propertyTab

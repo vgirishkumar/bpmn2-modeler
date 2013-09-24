@@ -14,7 +14,11 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite.MapType;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -31,5 +35,12 @@ public class JbpmServiceTaskDetailComposite extends JbpmTaskDetailComposite {
 		super(parent, style);
 	}
 	
+	@Override
+	
+	protected void createMessageAssociations(final Activity serviceTask, final EReference reference, final Operation operation) {
+		super.createMessageAssociations(serviceTask, reference, operation);
+		inputComposite.setAllowedMapTypes(MapType.Property.getValue());
+		outputComposite.setAllowedMapTypes(MapType.Property.getValue() | MapType.Expression.getValue());
+	}
 	
 }
