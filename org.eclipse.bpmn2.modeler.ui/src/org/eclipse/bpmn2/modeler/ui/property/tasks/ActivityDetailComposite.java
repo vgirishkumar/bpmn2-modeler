@@ -19,9 +19,15 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -34,9 +40,13 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.property.editors.ServiceImplementationObjectEditor;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.swt.SWT;
@@ -53,6 +63,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	protected Button addStandardLoopButton;
 	protected Button addMultiLoopButton;
 	protected AbstractDetailComposite loopCharacteristicsComposite;
+	
+	protected DataAssociationDetailComposite inputComposite;
+	protected DataAssociationDetailComposite outputComposite;
 	
 	public ActivityDetailComposite(Composite parent, int style) {
 		super(parent, style);
@@ -72,6 +85,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		addStandardLoopButton = null;
 		addMultiLoopButton = null;
 		loopCharacteristicsComposite = null;
+		inputComposite = null;
+		outputComposite = null;
 	}
 	
 	@Override
@@ -110,8 +125,17 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		return propertiesProvider;
 	}
-
-	protected void bindReference(Composite parent, EObject object, EReference reference) {
+	
+	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
+		if ("implementation".equals(attribute.getName())) {
+			ObjectEditor editor = new ServiceImplementationObjectEditor(this,object,attribute);
+			editor.createControl(parent,label);
+		}
+		else
+			super.bindAttribute(parent, object, attribute, label);
+	}
+	
+	protected void bindReference(final Composite parent, final EObject object, final EReference reference) {
 		if (!isModelObjectEnabled(object.eClass(), reference))
 			return;
 		
@@ -260,10 +284,232 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			};
 			editor.createControl(parent,displayName);
 		}
+		else if ("operationRef".equals(reference.getName())) {
+			// Handle ServiceTask.operationRef
+			final Activity serviceTask = (Activity)object;
+			final String displayName = getPropertiesProvider().getLabel(object, reference);
+			final ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
+				@Override
+				protected boolean setValue(final Object result) {
+					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							Operation operation = null;
+							if (result instanceof Operation)
+								operation = (Operation)result;
+							createMessageAssociations(serviceTask, reference, operation);
+						}
+					});
+					return true;
+				}
+			};
+			editor.createControl(parent,displayName);
+			
+			createMessageAssociations(serviceTask, reference, (Operation)serviceTask.eGet(reference));
+		}
 		else
 			super.bindReference(parent, object, reference);
 		
 		redrawPage();
+	}
+	
+	protected void createMessageAssociations(final Activity serviceTask, final EReference reference, final Operation operation) {
+		
+		Operation oldOperation = (Operation) serviceTask.eGet(reference);
+		boolean changed = (oldOperation != operation);
+		if (changed)
+			serviceTask.eSet(reference, operation);
+
+		if (inputComposite==null) {
+			inputComposite = new DataAssociationDetailComposite(getAttributesParent(), SWT.NONE);
+			inputComposite.setShowToGroup(false);
+		}
+		
+		if (outputComposite==null) {
+			outputComposite = new DataAssociationDetailComposite(getAttributesParent(), SWT.NONE);
+			outputComposite.setShowFromGroup(false);
+		}
+		
+		if (operation==null) {
+			inputComposite.setVisible(false);
+			outputComposite.setVisible(false);
+			if (oldOperation!=null) {
+				// remove the input and (optional) output that was associated with the previous operation
+				InputOutputSpecification ioSpec = serviceTask.getIoSpecification();
+				if (ioSpec!=null) {
+					serviceTask.getDataInputAssociations().clear();
+					serviceTask.getDataOutputAssociations().clear();
+					ioSpec.getDataInputs().clear();
+					ioSpec.getDataOutputs().clear();
+					ioSpec.getInputSets().clear();
+					ioSpec.getOutputSets().clear();
+					serviceTask.setIoSpecification(null);
+				}
+			}
+		}
+		else {
+			TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+			Resource resource = serviceTask.eResource();
+			InputOutputSpecification ioSpec = serviceTask.getIoSpecification();
+			if (ioSpec==null) {
+				ioSpec = Bpmn2ModelerFactory.eINSTANCE.createInputOutputSpecification();
+				ModelUtil.setID(ioSpec, resource);
+				if (changed) {
+					serviceTask.setIoSpecification(ioSpec);
+				}
+				else {
+					final InputOutputSpecification ios = ioSpec;
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							serviceTask.setIoSpecification(ios);
+						}
+					});
+				}
+			}
+			if (ioSpec.getInputSets().size()==0) {
+				final InputSet inputSet = Bpmn2ModelerFactory.create(resource, InputSet.class);
+				ModelUtil.setID(inputSet);
+				if (changed) {
+					ioSpec.getInputSets().add(inputSet);
+				}
+				else {
+					final InputOutputSpecification ios = ioSpec;
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							ios.getInputSets().add(inputSet);
+						}
+					});
+				}
+			}
+			if (ioSpec.getOutputSets().size()==0) {
+				final OutputSet outputSet = Bpmn2ModelerFactory.create(resource, OutputSet.class);
+				ModelUtil.setID(outputSet);
+				if (changed) {
+					ioSpec.getOutputSets().add(outputSet);
+				}
+				else {
+					final InputOutputSpecification ios = ioSpec;
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							ios.getOutputSets().add(outputSet);
+						}
+					});
+				}
+			}
+			DataInput input = null;
+			DataOutput output = null;
+			if (changed) {
+				serviceTask.getDataInputAssociations().clear();
+				serviceTask.getDataOutputAssociations().clear();
+				ioSpec.getDataInputs().clear();
+				ioSpec.getDataOutputs().clear();
+				ioSpec.getInputSets().get(0).getDataInputRefs().clear();
+				ioSpec.getOutputSets().get(0).getDataOutputRefs().clear();
+			}
+			
+			if (operation.getInMessageRef()!=null) {
+				// display the "From" association widgets
+				input = Bpmn2ModelerFactory.create(resource, DataInput.class);
+				input.setItemSubjectRef(operation.getInMessageRef().getItemRef());
+				input.setIsCollection(operation.getInMessageRef().getItemRef().isIsCollection());
+				if (changed) {
+					ioSpec.getDataInputs().add(input);
+					ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
+				}
+				else {
+					if (ioSpec.getDataInputs().size()!=1 ||
+							ioSpec.getDataInputs().get(0).getItemSubjectRef() != operation.getInMessageRef().getItemRef()) {
+						final InputOutputSpecification ios = ioSpec;
+						final DataInput i = input;
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								ios.getDataInputs().clear();
+								ios.getDataInputs().add(i);
+								ios.getInputSets().get(0).getDataInputRefs().add(i);
+							}
+						});
+					}
+					input = ioSpec.getDataInputs().get(0);
+				}
+			}
+			
+			if (operation.getOutMessageRef()!=null) {
+				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
+				output.setItemSubjectRef(operation.getInMessageRef().getItemRef());
+				output.setIsCollection(operation.getInMessageRef().getItemRef().isIsCollection());
+				if (changed) {
+					ioSpec.getDataOutputs().add(output);
+					ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
+				}
+				else {
+					if (ioSpec.getDataOutputs().size()!=1 ||
+							ioSpec.getDataOutputs().get(0).getItemSubjectRef() != operation.getInMessageRef().getItemRef()) {
+						final InputOutputSpecification ios = ioSpec;
+						final DataOutput o = output;
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								ios.getDataOutputs().clear();
+								ios.getDataOutputs().add(o);
+								ios.getOutputSets().get(0).getDataOutputRefs().add(o);
+							}
+						});
+					}
+					output = ioSpec.getDataOutputs().get(0);
+				}
+			}
+			
+			if (ioSpec.getDataInputs().size()>0) {
+				input = ioSpec.getDataInputs().get(0);
+				// fix missing InputSet
+				final InputSet inputSet = ioSpec.getInputSets().get(0);
+				if (!inputSet.getDataInputRefs().contains(input)) {
+					final DataInput i = input;
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							inputSet.getDataInputRefs().add(i);
+						}
+					});
+				}
+			}
+			if (ioSpec.getDataOutputs().size()>0) {
+				output = ioSpec.getDataOutputs().get(0);
+				// fix missing InputSet
+				final OutputSet outputSet = ioSpec.getOutputSets().get(0);
+				if (!outputSet.getDataOutputRefs().contains(output)) {
+					final DataOutput o = output;
+					domain.getCommandStack().execute(new RecordingCommand(domain) {
+						@Override
+						protected void doExecute() {
+							outputSet.getDataOutputRefs().add(o);
+						}
+					});
+				}
+			}
+			
+			if (operation.getInMessageRef()!=null) {
+				// display the "From" association widgets
+				inputComposite.setVisible(true);
+				inputComposite.setBusinessObject(input);
+				inputComposite.getFromGroup().setText("Map Outgoing Message Data From:");
+			}
+			else
+				inputComposite.setVisible(false);
+			
+			if (operation.getOutMessageRef()!=null) {
+				outputComposite.setVisible(true);
+				outputComposite.setBusinessObject(output);
+				outputComposite.getToGroup().setText("Map Incoming Message Data To:");
+			}
+			else
+				outputComposite.setVisible(false);
+		}
 	}
 	
 	private void createNewDiagram(final BaseElement bpmnElement) {

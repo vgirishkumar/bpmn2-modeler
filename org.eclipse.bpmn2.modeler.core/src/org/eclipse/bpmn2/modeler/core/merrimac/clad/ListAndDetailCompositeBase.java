@@ -149,6 +149,14 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 			ModelUtil.recursivelayout(getParent());
 		}
 	}
+	
+	public void setVisible(boolean visible) {
+		if (getLayoutData() instanceof GridData) {
+			((GridData)getLayoutData()).exclude = !visible;
+		}
+		super.setVisible(visible);
+		redrawPage();
+	}
 
 	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
 		if (getPropertySection()!=null)

@@ -43,21 +43,6 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 
     	feature = Bpmn2Package.eINSTANCE.getServiceTask_Implementation();
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	
-    	setFeatureDescriptor(feature,
-			new FeatureDescriptor<ServiceTask>(adapterFactory,object,feature) {
-
-				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					if (choiceOfValues==null) {
-						choiceOfValues = new Hashtable<String,Object>();
-						choiceOfValues.put("Unspecified", "##unspecified");
-						choiceOfValues.put("Web Service", "##WebService");
-					}
-					return choiceOfValues;
-				}
-			}
-    	);
 	}
 
 }

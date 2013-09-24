@@ -62,18 +62,7 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 			}
 		}
 		
+		setAllowedMapTypes(MapType.Property.getValue() | MapType.Expression.getValue());
 		super.createBindings(be);
-		if (mapTransformationButton!=null) {
-			((GridData)mapTransformationButton.getLayoutData()).exclude = true;
-			((GridData)advancedMappingButton.getLayoutData()).exclude = true;
-			mapTransformationButton.setVisible(false);
-			advancedMappingButton.setVisible(false);
-			if (be instanceof DataOutput || be.eContainer().eContainer() instanceof CallActivity) {
-				((GridData)mapExpressionButton.getLayoutData()).exclude = true;
-				mapExpressionButton.setVisible(false);
-				((GridData)mapPropertyButton.getLayoutData()).exclude = true;
-				mapPropertyButton.setVisible(false);
-			}
-		}
 	}
 }
