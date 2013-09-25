@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -38,6 +39,11 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 	}
 	
 	protected boolean canEdit() {
+		if (editButton==null)
+			return true;
+		Object value = object.eGet(feature);
+		if (value instanceof String && ((String)value).startsWith("##"))
+			return false;
 		return true;
 	}
 	
@@ -116,6 +122,9 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 		Hashtable<String, Object> choices = new Hashtable<String, Object>();
 		choices.put(UNSPECIFIED_LABEL, ModelUtil.createStringWrapper(UNSPECIFIED_VALUE));
 		choices.put(WEBSERVICE_LABEL, ModelUtil.createStringWrapper(WEBSERVICE_VALUE));
+		Hashtable<String, Object> otherChoices = ModelUtil.getChoiceOfValues(object, feature);
+		if (otherChoices!=null)
+			choices.putAll(otherChoices);
 
 		Definitions definitions = ModelUtil.getDefinitions(object);
 		if (definitions!=null) {
