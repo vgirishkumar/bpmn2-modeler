@@ -221,7 +221,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 							fillCombo();
 						}
 						if (editButton!=null)
-							editButton.setEnabled(firstElement!=null && !firstElement.isEmpty());
+							editButton.setEnabled(canEdit() && firstElement!=null && !firstElement.isEmpty());
 					}
 				}
 			}
@@ -327,7 +327,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				if (currentSelection!=null)
 					comboViewer.setSelection(currentSelection);
 				if (editButton!=null)
-					editButton.setEnabled(currentSelection!=null);
+					editButton.setEnabled(canEdit() && currentSelection!=null);
 			}
 		}
 		finally {
