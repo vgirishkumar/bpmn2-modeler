@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.AbstractPropertyChangeListenerProvider;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
@@ -260,7 +260,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							if (tabs!=null) {
 								ct.propertyTabs = tabs.split(" ");
 							}
-							ct.featureContainer = (ICustomTaskFeatureContainer) e.createExecutableExtension("featureContainer");
+							ct.featureContainer = (ICustomElementFeatureContainer) e.createExecutableExtension("featureContainer");
 							ct.featureContainer.setCustomTaskDescriptor(ct);
 							ct.featureContainer.setId(id);
 							ct.setPermanent(true);

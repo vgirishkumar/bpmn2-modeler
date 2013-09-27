@@ -16,7 +16,7 @@ import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape
 
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -33,7 +33,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public class AddEventFeature<T extends Event>
-	extends AbstractAddBPMNShapeFeature<T> {
+	extends AbstractBpmn2AddElementFeature<T> {
 
 	public static final String EVENT_ELEMENT = "event.graphics.element";
 	public static final String EVENT_CIRCLE = "event.graphics.element.circle";

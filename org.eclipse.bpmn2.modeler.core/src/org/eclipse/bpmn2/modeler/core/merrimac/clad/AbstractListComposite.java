@@ -172,6 +172,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			
 			// default is to include property name as the first column
 			EStructuralFeature nameAttribute = listItemClass.getEStructuralFeature("name");
+			EStructuralFeature idAttribute = listItemClass.getEStructuralFeature("id");
 			if (nameAttribute!=null)
 				columnProvider.add(object, listItemClass, nameAttribute);
 
@@ -192,7 +193,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 									if (f1 instanceof EAttribute && !anyAttributes.contains(f1)) {
 										columnProvider.add(object, listItemClass, f1);
 										anyAttributes.add(f1);
-									}
+									} 
 								}
 							}
 						}
@@ -204,13 +205,16 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 						columnProvider.add(object, listItemClass, a1);
 				}
 				else {
-					if (a1!=nameAttribute)
-						columnProvider.add(object, listItemClass, a1);
+					
+					if (a1!=nameAttribute) {
+						if (a1!=idAttribute || getPreferences().getShowIdAttribute())
+							columnProvider.add(object, listItemClass, a1);
+					}
 				}
 			}
 			if (columnProvider.getColumns().size()==0) {
-				feature = listItemClass.getEStructuralFeature("id");
-				columnProvider.addRaw(object, feature);
+				if (idAttribute!=null && getPreferences().getShowIdAttribute())
+					columnProvider.addRaw(object, idAttribute);
 			}
 		}
 		return columnProvider;

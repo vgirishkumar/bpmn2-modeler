@@ -54,15 +54,21 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -74,6 +80,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -961,6 +968,70 @@ public class FeatureSupport {
 			allowedItems.add(Bpmn2Package.eINSTANCE.getSignalEventDefinition());
 		}
 		return allowedItems;
+	}
+
+	public static boolean updateConnection(IFeatureProvider fp, Connection connection) {
+		boolean layoutChanged = false;
+		LayoutContext layoutContext = new LayoutContext(connection);
+		ILayoutFeature layoutFeature = fp.getLayoutFeature(layoutContext);
+		if (layoutFeature!=null) {
+			layoutFeature.layout(layoutContext);
+			layoutChanged = layoutFeature.hasDoneChanges();
+		}
+		
+		boolean updateChanged = false;
+		UpdateContext updateContext = new UpdateContext(connection);
+		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext);
+		if (updateFeature!=null && updateFeature.updateNeeded(updateContext).toBoolean()) {
+			updateFeature.update(updateContext);
+			updateChanged = updateFeature.hasDoneChanges();
+		}
+		
+		return layoutChanged || updateChanged;
+	}
+
+	public static boolean updateConnection(IFeatureProvider fp, Connection connection, boolean force) {
+		AbstractConnectionRouter.setForceRouting(connection, force);
+		return updateConnection(fp,connection);
+	}
+
+	public static void updateConnections(IFeatureProvider fp, AnchorContainer ac, List<Connection> alreadyUpdated) {
+		for (int ai=0; ai<ac.getAnchors().size(); ++ai) {
+			Anchor a = ac.getAnchors().get(ai);
+			for (int ci=0; ci<a.getIncomingConnections().size(); ++ci) {
+				Connection c = a.getIncomingConnections().get(ci);
+				if (c instanceof FreeFormConnection) {
+					if (!alreadyUpdated.contains(c)) {
+						updateConnection(fp, c, true);
+						alreadyUpdated.add(c);
+					}
+				}
+			}
+		}
+		
+		for (int ai=0; ai<ac.getAnchors().size(); ++ai) {
+			Anchor a = ac.getAnchors().get(ai);
+			for (int ci=0; ci<a.getOutgoingConnections().size(); ++ci) {
+				Connection c = a.getOutgoingConnections().get(ci);
+				if (c instanceof FreeFormConnection) {
+					if (!alreadyUpdated.contains(c)) {
+						updateConnection(fp, c, true);
+						alreadyUpdated.add(c);
+					}
+				}
+			}
+		}
+	}
+
+	public static void updateConnections(IFeatureProvider fp, AnchorContainer ac) {
+		List<Connection> alreadyUpdated = new ArrayList<Connection>();
+		if (ac instanceof ContainerShape) {
+			for (Shape child : ((ContainerShape)ac).getChildren()) {
+				if (child instanceof ContainerShape)
+					updateConnections(fp, child, alreadyUpdated);
+			}
+		}
+		updateConnections(fp, ac, alreadyUpdated);
 	}
 	
 }

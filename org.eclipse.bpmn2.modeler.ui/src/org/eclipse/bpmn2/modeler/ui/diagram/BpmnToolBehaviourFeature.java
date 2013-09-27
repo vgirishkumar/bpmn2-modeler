@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Group;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
@@ -44,7 +43,9 @@ import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.core.runtime.IStatus;
@@ -92,6 +93,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
 import org.eclipse.graphiti.palette.IToolEntry;
+import org.eclipse.graphiti.palette.impl.AbstractPaletteEntry;
 import org.eclipse.graphiti.palette.impl.ConnectionCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.PaletteCompartmentEntry;
@@ -510,16 +512,28 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 			}
 			
 			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
-				CustomTaskFeatureContainer container = (CustomTaskFeatureContainer)tc.getFeatureContainer();
+				CustomElementFeatureContainer container = (CustomElementFeatureContainer)tc.getFeatureContainer();
 				if (!container.isAvailable(featureProvider))
 					continue;
 
+				IToolEntry toolEntry = null;
 				String id = tc.getId();
 				container.setId(id);
 				featureProvider.addFeatureContainer(id, container);
-				ICreateFeature cf = container.getCreateFeature(featureProvider);
-				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
-						cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				if (container instanceof CustomShapeFeatureContainer) {
+					ICreateFeature cf = ((CustomShapeFeatureContainer)container).getCreateFeature(featureProvider);
+					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
+							cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+					toolEntry = objectCreationToolEntry;
+				}
+				else if (container instanceof CustomConnectionFeatureContainer) {
+					ICreateConnectionFeature cf = ((CustomConnectionFeatureContainer)container).getCreateConnectionFeature(featureProvider);
+					ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
+							cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+							cf.getCreateLargeImageId());
+					connectionCreationToolEntry.addCreateConnectionFeature(cf);
+					toolEntry = connectionCreationToolEntry;
+				}
 				
 				String category = tc.getCategory();
 				if (category==null || category.isEmpty())
@@ -533,7 +547,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 					categories.put(category, compartmentEntry);
 				}
 				
-				compartmentEntry.addToolEntry(objectCreationToolEntry);
+				compartmentEntry.addToolEntry(toolEntry);
 			}
 		} catch (Exception ex) {
 			Activator.logError(ex);
@@ -567,9 +581,6 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		else {
 			if (pe instanceof ContainerShape) {
 				BaseElement be = BusinessObjectUtil.getFirstBaseElement((ContainerShape)pe);
-				if (be instanceof Group) {
-					System.out.println();
-				}
 			}
 		}
 		return super.getClickArea(pe);

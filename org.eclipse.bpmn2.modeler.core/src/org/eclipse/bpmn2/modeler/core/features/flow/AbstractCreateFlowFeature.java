@@ -12,28 +12,33 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.flow;
 
+import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Conversation;
+import org.eclipse.bpmn2.ConversationLink;
+import org.eclipse.bpmn2.ConversationNode;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.InteractionNode;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
-import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
-import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -43,10 +48,8 @@ public abstract class AbstractCreateFlowFeature<
 		CONNECTION extends BaseElement,
 		SOURCE extends EObject,
 		TARGET extends EObject>
-	extends AbstractBpmn2CreateConnectionFeature<CONNECTION> {
+	extends AbstractBpmn2CreateConnectionFeature<CONNECTION, SOURCE, TARGET> {
 
-	protected boolean changesDone = false;
-	
 	public AbstractCreateFlowFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
 	}
@@ -61,12 +64,10 @@ public abstract class AbstractCreateFlowFeature<
 	@Override
 	public Connection create(ICreateConnectionContext context) {
 		Connection connection = null;
-		CONNECTION bo = createBusinessObject(context);
-		if (bo!=null) {
-			AddConnectionContext addContext = new AddConnectionContext(
-					context.getSourceAnchor(),
-					context.getTargetAnchor());
-			addContext.setNewObject(bo);
+		CONNECTION businessObject = createBusinessObject(context);
+		if (businessObject!=null) {
+			AddConnectionContext addContext = createAddConnectionContext(context, businessObject);
+			addContext.setNewObject(businessObject);
 	
 			IPeService peService = Graphiti.getPeService();
 			IGaService gaService = Graphiti.getGaService();
@@ -97,9 +98,9 @@ public abstract class AbstractCreateFlowFeature<
 			addContext.putProperty(AnchorUtil.CONNECTION_CREATED, Boolean.TRUE);
 	
 			connection = (Connection) getFeatureProvider().addIfPossible(addContext);
-			ModelUtil.setID(bo);
+			ModelUtil.setID(businessObject);
 	
-			ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
+			FeatureSupport.updateConnection(getFeatureProvider(), connection);
 	
 			changesDone = true;
 		}
@@ -110,8 +111,13 @@ public abstract class AbstractCreateFlowFeature<
 	}
 
 	@Override
-	public boolean canStartConnection(ICreateConnectionContext context) {
-		return getSourceBo(context) != null;
+	public CONNECTION createBusinessObject(ICreateConnectionContext context) {
+		CONNECTION businessObject = super.createBusinessObject(context);
+		SOURCE source = getSourceBo(context);
+		TARGET target = getTargetBo(context);
+		addConnectionToContainer(businessObject, source, target);
+
+		return businessObject;
 	}
 
 	protected abstract String getStencilImageId();
@@ -125,27 +131,113 @@ public abstract class AbstractCreateFlowFeature<
 	public String getCreateLargeImageId() {
 		return getStencilImageId();
 	}
-
-	protected SOURCE getSourceBo(ICreateConnectionContext context) {
-		if (context.getSourceAnchor() != null) {
-			return BusinessObjectUtil.getFirstElementOfType(context.getSourceAnchor().getParent(), getSourceClass());
+	
+	/**
+	 * Add a connection object to its correct container, depending on the type of connection.
+	 * The container is determined by the connection's source object, which may be either a
+	 * FlowNode or InteractionNode depending on the type of connection.
+	 * 
+	 * The container is determined as follows, based on connection type:
+	 *   SequenceFlow - added to the list of FlowElements in a FlowElementsContainer,
+	 *                  e.g. Process, SubProcess, etc.
+	 *   Association - added to the list of Artifacts in a FlowElementsContainer
+	 *   MessageFlow - added to the list of MessageFlows in a Collaboration
+	 *   ConversationLink - added to the list of ConversationLinks in a Collaboration
+	 *   
+	 * This method does NOT handle DataAssociations which, technically appear like connections,
+	 * but are really input/output mappings of an Activity's I/O Parameters. These are handled
+	 * as a special case in
+	 * @link org.eclipse.bpmn2.modeler.ui.features.flow.DataAssociationFeatureContainer#createBusinessObject()
+	 * 
+	 * @param connection - the connection to be added to a container element
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	private boolean addConnectionToContainer(CONNECTION connection, SOURCE source, TARGET target) {
+		if (connection instanceof SequenceFlow) {
+			if (source instanceof Participant) {
+				if (((Participant)source).getProcessRef()!=null) {
+					((Participant)source).getProcessRef().getFlowElements().add((SequenceFlow)connection);
+					return true;
+				}
+			}
+			else if (source instanceof FlowElementsContainer) {
+				((FlowElementsContainer)source).getFlowElements().add((SequenceFlow)connection);
+				return true;
+			}
 		}
-		return null;
-	}
-
-	protected TARGET getTargetBo(ICreateConnectionContext context) {
-		if (context.getTargetAnchor() != null) {
-			return BusinessObjectUtil.getFirstElementOfType(context.getTargetAnchor().getParent(), getTargetClass());
+		else if (connection instanceof Association) {
+			if (source instanceof Process) {
+				((Process)source).getArtifacts().add((Association)connection);
+				return true;
+			}
+			else if (source instanceof SubProcess) {
+				((SubProcess)source).getArtifacts().add((Association)connection);
+				return true;
+			}
+			else if (source instanceof SubChoreography) {
+				((SubChoreography)source).getArtifacts().add((Association)connection);
+				return true;
+			}
+			else if (source instanceof Collaboration) {
+				((Collaboration)source).getArtifacts().add((Association)connection);
+				return true;
+			}
 		}
-		return null;
-	}
+		else if (connection instanceof MessageFlow) {
+			if (source instanceof Process) {
+				// find the Collaboration that owns this Process
+				Definitions definitions = ModelUtil.getDefinitions(source);
+				for (Collaboration c : ModelUtil.getAllRootElements(definitions, Collaboration.class)) {
+					for (Participant p : c.getParticipants()) {
+						if (p.getProcessRef() == source) {
+							source = (SOURCE)c;
+							break;
+						}
+					}
+				}
+			}
+			if (source instanceof Collaboration) {
+				((Collaboration)source).getMessageFlows().add((MessageFlow)connection);
+				return true;
+			}
+			else if (source instanceof ChoreographyTask) {
+				((ChoreographyTask)source).getMessageFlowRef().add((MessageFlow)connection);
+			}
+			else if (source instanceof ConversationNode) {
+				((ConversationNode)source).getMessageFlowRefs().add((MessageFlow)connection);
+			}
+		}
+		else if (connection instanceof ConversationLink) {
+			if (source instanceof Process) {
+				// find the Collaboration that owns this Process
+				Definitions definitions = ModelUtil.getDefinitions(source);
+				for (Collaboration c : ModelUtil.getAllRootElements(definitions, Collaboration.class)) {
+					for (Participant p : c.getParticipants()) {
+						if (p.getProcessRef() == source) {
+							source = (SOURCE)c;
+							break;
+						}
+					}
+				}
+			}
+			if (source instanceof Collaboration) {
+				((Collaboration)source).getConversationLinks().add((ConversationLink)connection);
+				return true;
+			}
+			if (source instanceof Conversation && target instanceof Participant) {
+				((Conversation)source).getParticipantRefs().add((Participant)target);
+			}
+			if (target instanceof Conversation && source instanceof Participant) {
+				((Conversation)target).getParticipantRefs().add((Participant)source);
+			}
+		}
 
-	protected abstract Class<SOURCE> getSourceClass();
-
-	protected abstract Class<TARGET> getTargetClass();
-
-	@Override
-	public boolean hasDoneChanges() {
-		return changesDone;
+		if (source.eContainer() instanceof EObject) {
+			return addConnectionToContainer(connection, (SOURCE)source.eContainer(), target);
+		}
+		
+		return false;
 	}
 }

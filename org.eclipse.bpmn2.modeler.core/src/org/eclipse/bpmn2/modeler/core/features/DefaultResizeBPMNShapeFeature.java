@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -41,11 +42,11 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		}
 		DIUtils.updateDIShape(context.getPictogramElement());
 		
-		ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
+		FeatureSupport.updateConnections(getFeatureProvider(), shape);
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			if (GraphicsUtil.intersects(shape, connection)) {
-				ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection);
+				FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			}
 		}
 	}

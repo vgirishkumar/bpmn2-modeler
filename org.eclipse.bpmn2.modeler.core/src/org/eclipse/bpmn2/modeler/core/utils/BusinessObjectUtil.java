@@ -18,13 +18,11 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Conversation;
+import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutputAssociation;
-import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.util.EList;
@@ -221,7 +219,7 @@ public class BusinessObjectUtil {
 				be == MessageFlow.class ||
 				be == DataInputAssociation.class ||
 				be == DataOutputAssociation.class ||
-				be == Conversation.class;
+				be == ConversationLink.class;
 	}
 
 	public static List<Diagram> getAllDiagrams(Diagram diagram) {

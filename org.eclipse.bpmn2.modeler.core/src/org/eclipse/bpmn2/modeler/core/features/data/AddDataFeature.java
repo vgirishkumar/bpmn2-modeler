@@ -14,7 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features.data;
 
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -34,7 +34,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public abstract class AddDataFeature<T extends ItemAwareElement> extends AbstractAddBPMNShapeFeature<T> {
+public abstract class AddDataFeature<T extends ItemAwareElement> extends AbstractBpmn2AddElementFeature<T> {
 
 	public AddDataFeature(IFeatureProvider fp) {
 		super(fp);
