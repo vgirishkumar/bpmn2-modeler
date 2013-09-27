@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
 import org.eclipse.emf.ecore.EObject;
 
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
-	protected ICustomTaskFeatureContainer featureContainer;
+	protected ICustomElementFeatureContainer featureContainer;
 	protected String category;
 	protected String icon;
 	protected String propertyTabs[];
@@ -45,11 +45,11 @@ public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 		super(id,name);
 	}
 	
-	public ICustomTaskFeatureContainer getFeatureContainer() {
+	public ICustomElementFeatureContainer getFeatureContainer() {
 		return featureContainer;
 	}
 
-	public void setFeatureContainer(ICustomTaskFeatureContainer featureContainer) {
+	public void setFeatureContainer(ICustomElementFeatureContainer featureContainer) {
 		this.featureContainer = featureContainer;
 	}
 	

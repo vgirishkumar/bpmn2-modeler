@@ -19,9 +19,8 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -111,7 +110,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		return new ResizeGroupFeature(fp);
 	}
 
-	public class AddGroupFeature extends AbstractAddBPMNShapeFeature<Group> {
+	public class AddGroupFeature extends AbstractBpmn2AddElementFeature<Group> {
 		public AddGroupFeature(IFeatureProvider fp) {
 			super(fp);
 		}
@@ -293,7 +292,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 			DIUtils.updateDIShape(context.getPictogramElement());
 
-			ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
+			FeatureSupport.updateConnections(getFeatureProvider(), shape);
 		}
 	}
 }

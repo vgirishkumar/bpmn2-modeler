@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
@@ -121,7 +121,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 		};
 	}
 
-	public class AddDataStoreReferenceFeature extends AbstractAddBPMNShapeFeature<DataStoreReference> {
+	public class AddDataStoreReferenceFeature extends AbstractBpmn2AddElementFeature<DataStoreReference> {
 		public AddDataStoreReferenceFeature(IFeatureProvider fp) {
 			super(fp);
 		}

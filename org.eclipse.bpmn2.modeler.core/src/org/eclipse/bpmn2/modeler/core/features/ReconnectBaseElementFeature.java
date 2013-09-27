@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -135,7 +136,7 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 			}
 		}
 		
-		ConnectionFeatureContainer.updateConnection(getFeatureProvider(), connection, true);
+		FeatureSupport.updateConnection(getFeatureProvider(), connection, true);
 
 		DIUtils.updateDIEdge(context.getConnection());
 		

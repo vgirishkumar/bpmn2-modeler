@@ -116,7 +116,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	public void paste(IPasteContext context) {
 		// TODO: COPY-PASTE
 		PictogramElement[] pes = context.getPictogramElements();
-		ContainerShape targetContainerShape = (ContainerShape) pes[0];
+		ContainerShape targetContainerShape = getTargetContainerShape((ContainerShape) pes[0]);
 		BaseElement targetContainerObject = getContainerObject(targetContainerShape);
 
 		// save the Diagram and Resource needed for constructin the new objects
@@ -565,6 +565,16 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return newObject;
 	}
 
+	protected ContainerShape getTargetContainerShape(ContainerShape targetContainerShape) {
+		PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
+		for (PictogramElement pe : pes) {
+			if (pe==targetContainerShape) {
+				targetContainerShape = (ContainerShape)targetContainerShape.eContainer();
+			}
+		}
+		return targetContainerShape;
+	}
+	
 	protected BaseElement getContainerObject(ContainerShape targetContainerShape) {
 		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(targetContainerShape);
 		if (bo instanceof BPMNDiagram) {

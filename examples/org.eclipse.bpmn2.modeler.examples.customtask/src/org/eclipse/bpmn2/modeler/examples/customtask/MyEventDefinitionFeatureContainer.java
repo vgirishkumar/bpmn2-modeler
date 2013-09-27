@@ -2,7 +2,7 @@ package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.modeler.core.features.FeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractAddEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
@@ -15,7 +15,7 @@ import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -36,7 +36,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class MyEventDefinitionFeatureContainer extends CustomTaskFeatureContainer {
+public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContainer {
 
 	private final static String TYPE_VALUE = "MyEventDefinition";
 	private final static String CUSTOM_TASK_ID = "org.eclipse.bpmn2.modeler.examples.customtask.eventDefinition1";
@@ -62,7 +62,7 @@ public class MyEventDefinitionFeatureContainer extends CustomTaskFeatureContaine
 		return null;
 	}
 
-	protected FeatureContainer createFeatureContainer(IFeatureProvider fp) {
+	protected IShapeFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		return new AbstractEventDefinitionFeatureContainer() {
 
 			@Override

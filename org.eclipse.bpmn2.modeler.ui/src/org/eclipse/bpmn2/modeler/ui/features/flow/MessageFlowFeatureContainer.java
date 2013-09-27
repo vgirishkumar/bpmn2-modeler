@@ -120,16 +120,6 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	}
 
 	@Override
-	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
-		return new DefaultMoveBPMNShapeFeature(fp) {
-			@Override
-			public boolean canMoveShape(IMoveShapeContext context) {
-				return false;
-			}
-		};
-	}
-
-	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return new UpdateMessageFlowFeature(fp);
 	}
@@ -422,23 +412,6 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		@Override
 		protected String getStencilImageId() {
 			return ImageProvider.IMG_16_MESSAGE_FLOW;
-		}
-
-		@Override
-		public MessageFlow createBusinessObject(ICreateConnectionContext context) {
-			MessageFlow bo = null;
-			try {
-				ModelHandler mh = ModelHandler.getInstance(getDiagram());
-				InteractionNode source = getSourceBo(context);
-				InteractionNode target = getTargetBo(context);
-				bo = mh.createMessageFlow(source, target);
-				bo.setName("");
-				putBusinessObject(context, bo);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return bo;
 		}
 
 		@Override

@@ -1,11 +1,11 @@
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-public class MyAssociationFeatureContainer extends CustomTaskFeatureContainer {
+public class MyAssociationFeatureContainer extends CustomShapeFeatureContainer {
 
 	private final static String TYPE_VALUE = "MyAssociation";
 	private final static String CUSTOM_TASK_ID = "org.eclipse.bpmn2.modeler.examples.customtask.association1";

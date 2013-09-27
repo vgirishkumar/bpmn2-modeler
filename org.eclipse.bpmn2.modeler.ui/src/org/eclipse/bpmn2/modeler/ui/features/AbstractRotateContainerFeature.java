@@ -22,7 +22,6 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.ConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.RoutingNet;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -101,7 +100,7 @@ public abstract class AbstractRotateContainerFeature extends AbstractCustomFeatu
 			FeatureSupport.redraw(container);
 			
 			for (Shape shape : moved) {
-				ConnectionFeatureContainer.updateConnections(getFeatureProvider(), shape);
+				FeatureSupport.updateConnections(getFeatureProvider(), shape);
 			}
 		}
 	}

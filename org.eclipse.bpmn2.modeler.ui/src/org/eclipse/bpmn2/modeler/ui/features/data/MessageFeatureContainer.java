@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
@@ -170,7 +170,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		};
 	}
 
-	public class AddMessageFeature extends AbstractAddBPMNShapeFeature<Message> {
+	public class AddMessageFeature extends AbstractBpmn2AddElementFeature<Message> {
 		public AddMessageFeature(IFeatureProvider fp) {
 			super(fp);
 		}

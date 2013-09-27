@@ -17,7 +17,7 @@ import static org.eclipse.bpmn2.modeler.ui.features.event.BoundaryEventFeatureCo
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.AbstractAddBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
@@ -37,7 +37,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddBoundaryEventFeature extends AbstractAddBPMNShapeFeature<BoundaryEvent> {
+public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<BoundaryEvent> {
 
 	public static final String BOUNDARY_EVENT_RELATIVE_Y = "boundary.event.relative.y";
 
