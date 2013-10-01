@@ -265,11 +265,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 			if (getObjectDescriptor().object.eClass() == object.eClass()) {
 				if (feature==null)
 					return true;
-				FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,PROPERTY_DESCRIPTOR);
-				if (fd!=null) {
-					// only TRUE if this adapter is not using a default FeatureDescriptor
-					if (fd.getClass()!=FeatureDescriptor.class)
-						return true;
+				// only TRUE if this adapter already has a FeatureDescriptor for this feature 
+				Hashtable<String,Object> props = featureProperties.get(feature);
+				if (props!=null) {
+					return true;
 				}
 			}
 		}
