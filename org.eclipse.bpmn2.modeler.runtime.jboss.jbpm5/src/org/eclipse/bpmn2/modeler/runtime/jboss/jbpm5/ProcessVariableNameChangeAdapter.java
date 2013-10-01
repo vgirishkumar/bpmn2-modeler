@@ -5,10 +5,12 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.validation.model.EvaluationMode;
 import org.eclipse.emf.validation.service.IValidator;
 import org.eclipse.emf.validation.service.ModelValidationService;
@@ -20,24 +22,33 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 		if (notification.getNotifier() instanceof EObject) {
 			EObject object = (EObject)notification.getNotifier();
             if (notification.getEventType()==Notification.SET) {
-				Object o = notification.getFeature();
-				if (o instanceof EStructuralFeature) {
-					EStructuralFeature feature = (EStructuralFeature)o;
+				Object f = notification.getFeature();
+				if (f instanceof EStructuralFeature) {
+					EStructuralFeature feature = (EStructuralFeature)f;
+					EStructuralFeature idFeature = object.eClass().getEStructuralFeature("id");
+					EStructuralFeature nameFeature = object.eClass().getEStructuralFeature("name");
                     if ("name".equals(feature.getName())) {
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
 						if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
 						{
-							EStructuralFeature id = object.eClass().getEStructuralFeature("id");
-							if (id!=null) {
+							if (idFeature!=null) {
 								newValue = SyntaxCheckerUtils.toNCName((String)newValue);
 								boolean deliver = object.eDeliver();
-								if (deliver)
-									object.eSetDeliver(false);
-								object.eSet(id, newValue);
-								if (deliver)
-									object.eSetDeliver(true);
-								
+								try {
+									if (deliver)
+										object.eSetDeliver(false);
+									
+									Object uniqueId = makeUniqueId(object,newValue);
+									object.eSet(nameFeature, uniqueId);
+									object.eSet(idFeature, uniqueId);
+								}
+								catch (Exception e) {
+									
+								}
+								finally {
+									object.eSetDeliver(deliver);
+								}								
 								validate(notification);
 							}
 						}
@@ -47,15 +58,22 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 						Object oldValue = notification.getOldValue();
 						if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) 
 						{
-							EStructuralFeature name = object.eClass().getEStructuralFeature("name");
-							if (name!=null) {
+							if (nameFeature!=null) {
 								boolean deliver = object.eDeliver();
-								if (deliver)
-									object.eSetDeliver(false);
-								object.eSet(name, newValue);
-								if (deliver)
-									object.eSetDeliver(true);
-								
+								try {
+									if (deliver)
+										object.eSetDeliver(false);
+									
+									Object uniqueId = makeUniqueId(object,newValue);
+									object.eSet(nameFeature, uniqueId);
+									object.eSet(idFeature, uniqueId);
+								}
+								catch (Exception e) {
+									
+								}
+								finally {
+									object.eSetDeliver(deliver);
+								}								
 								validate(notification);
 							}
 						}
@@ -68,6 +86,40 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 		}
 	}
 
+	private Object makeUniqueId(EObject object, Object id) {
+		int i = 1;
+		Object uniqueId = id;
+		EObject dup = null;
+		do {
+			dup = findDuplicateId(object,uniqueId);
+			if (dup!=null) {
+				uniqueId = id + "_" + i++;
+			}
+		}
+		while (dup!=null);
+		return uniqueId;
+	}
+	
+	private EObject findDuplicateId(EObject object, Object id) {
+		if (object!=null && id!=null) {
+			Resource resource = object.eResource();
+			
+			TreeIterator<EObject> iter = resource.getAllContents();
+			while (iter.hasNext()) {
+				EObject o = iter.next();
+				if (o!=object) {
+					EStructuralFeature f = o.eClass().getEStructuralFeature("id");
+					if (f!=null) {
+						Object existingId = o.eGet(f);
+						if (id.equals(existingId))
+							return o;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public Notifier getTarget() {
 		// TODO Auto-generated method stub
