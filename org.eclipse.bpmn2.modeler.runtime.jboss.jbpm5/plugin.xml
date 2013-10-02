@@ -482,6 +482,7 @@
 			name="SequenceFlow Extensions"
 			type="SequenceFlow">
 			<property name="priority" value="1" type="EInt"/>
+			<property name="name" value=""/>
 		</modelExtension>
 		
 		<modelExtension

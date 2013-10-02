@@ -40,6 +40,7 @@ import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.RootElementComparator;
 import org.eclipse.bpmn2.modeler.core.DIZorderComparator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -277,6 +278,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			fixZOrder(bpmnDiagram);
 		}
 
+		fixRootElementOrder(definitions.getRootElements());
+
 		super.save(options);
 	}
 	
@@ -331,6 +334,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	private void fixZOrder(BPMNDiagram bpmnDiagram) {
 		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
 		ECollections.sort(elements, new DIZorderComparator());
+	}
+
+	private void fixRootElementOrder(List<RootElement> elements) {
+		ECollections.sort((EList<RootElement>)elements, new RootElementComparator());
 	}
 
 	/**

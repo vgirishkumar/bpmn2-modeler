@@ -28,6 +28,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -105,6 +106,12 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 			if (exp != null) {
 				addRemoveConditionButton.setText("Remove Condition");
 				AbstractDetailComposite composite = PropertiesCompositeFactory.createDetailComposite(Expression.class, this, SWT.BORDER);
+				composite.setBusinessObject(exp);
+				// force the property page to resize to adjust for new expression section
+				Point size = composite.computeSize(-1, -1);
+				GridData gd = (GridData)composite.getLayoutData();
+				gd.widthHint = size.x;
+				gd.heightHint = size.y;
 				composite.setBusinessObject(exp);
 				composite.setTitle("Condition Expression");
 			}
