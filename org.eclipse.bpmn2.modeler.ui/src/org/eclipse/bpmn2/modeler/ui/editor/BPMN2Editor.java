@@ -401,9 +401,15 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 
 	private void saveModelFile() {
-		modelHandler.save();
-		((BasicCommandStack) getEditingDomain().getCommandStack()).saveIsDone();
-		updateDirtyState();
+		try {
+			bpmnResource.save(null);
+			((BasicCommandStack) getEditingDomain().getCommandStack()).saveIsDone();
+			updateDirtyState();
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
@@ -37,12 +36,10 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
+import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.RootElementComparator;
-import org.eclipse.bpmn2.modeler.core.DIZorderComparator;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -277,15 +274,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			throw new IllegalArgumentException("Duplicate IDs:\n" + message);
 		}
 		
-		for (BPMNDiagram bpmnDiagram : definitions.getDiagrams()) {
-			fixZOrder(bpmnDiagram);
-		}
-		
-		fixRootElementOrder(definitions.getRootElements());
-
 		super.save(options);
 	}
-	
+
+
     @Override
     protected XMLHelper createXMLHelper() {
     	if (xmlHelper!=null)
@@ -332,15 +324,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 		}
-	}
-
-	private void fixZOrder(BPMNDiagram bpmnDiagram) {
-		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
-		ECollections.sort(elements, new DIZorderComparator());
-	}
-
-	private void fixRootElementOrder(List<RootElement> elements) {
-		ECollections.sort((EList<RootElement>)elements, new RootElementComparator());
 	}
 
 	/**
@@ -731,6 +714,37 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					minX = Math.min(minX, b.getX());
 					minY = Math.min(minY, b.getY());
 				}
+			}
+		}
+
+		@Override
+		protected void saveContainedMany(EObject o, EStructuralFeature f) {
+			if (o instanceof BPMNPlane && f==DiPackage.eINSTANCE.getPlane_PlaneElement()) {
+				// Sort the Diagram Elements in ascending Z-order
+				BPMNPlane plane = (BPMNPlane) o;
+				EList<DiagramElement> originalList = new BasicEList<DiagramElement>();
+				originalList.addAll(plane.getPlaneElement());
+				
+				plane.eSetDeliver(false);
+				ECollections.sort((EList<DiagramElement>) plane.getPlaneElement(), new DIZorderComparator());
+				super.saveContainedMany(o, f);
+				ECollections.setEList((EList)plane.getPlaneElement(),originalList);
+				plane.eSetDeliver(true);
+			}
+			else if (o instanceof Definitions && f==Bpmn2Package.eINSTANCE.getDefinitions_RootElements()) {
+				// Sort the Definitions Root Elements to avoid forward references
+				Definitions definitions = (Definitions) o;
+				EList<RootElement> originalList = new BasicEList<RootElement>();
+				originalList.addAll(definitions.getRootElements());
+
+				definitions.eSetDeliver(false);
+				ECollections.sort((EList<RootElement>)definitions.getRootElements(), new RootElementComparator());
+				super.saveContainedMany(o, f);
+				ECollections.setEList((EList)definitions.getRootElements(),originalList);
+				definitions.eSetDeliver(true);
+			}
+			else {
+				super.saveContainedMany(o, f);
 			}
 		}
 
