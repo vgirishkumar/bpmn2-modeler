@@ -752,41 +752,41 @@ public class ModelHandler {
 		return (Definitions) resource.getContents().get(0).eContents().get(0);
 	}
 
-	public void save() {
-		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
-		if (domain != null) {
-			domain.getCommandStack().execute(new RecordingCommand(domain) {
-				@Override
-				protected void doExecute() {
-					saveResource();
-				}
-			});
-		} else {
-			saveResource();
-		}
-	}
+//	public void save() {
+//		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
+//		if (domain != null) {
+//			domain.getCommandStack().execute(new RecordingCommand(domain) {
+//				@Override
+//				protected void doExecute() {
+//					saveResource();
+//				}
+//			});
+//		} else {
+//			saveResource();
+//		}
+//	}
 
-	private void saveResource() {
-		fixZOrder();
-		try {
-			resource.save(null);
-		} catch (IOException e) {
-			Activator.logError(e);
-		}
-	}
-
-	private void fixZOrder() {
-		final List<BPMNDiagram> diagrams = getAll(BPMNDiagram.class);
-		for (BPMNDiagram bpmnDiagram : diagrams) {
-			fixZOrder(bpmnDiagram);
-		}
-
-	}
-
-	private void fixZOrder(BPMNDiagram bpmnDiagram) {
-		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
-		ECollections.sort(elements, new DIZorderComparator());
-	}
+//	private void saveResource() {
+//		fixZOrder();
+//		try {
+//			resource.save(null);
+//		} catch (IOException e) {
+//			Activator.logError(e);
+//		}
+//	}
+//
+//	private void fixZOrder() {
+//		final List<BPMNDiagram> diagrams = getAll(BPMNDiagram.class);
+//		for (BPMNDiagram bpmnDiagram : diagrams) {
+//			fixZOrder(bpmnDiagram);
+//		}
+//
+//	}
+//
+//	private void fixZOrder(BPMNDiagram bpmnDiagram) {
+//		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
+//		ECollections.sort(elements, new DIZorderComparator());
+//	}
 
 	void loadResource() {
 		try {

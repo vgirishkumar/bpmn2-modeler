@@ -88,49 +88,7 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 	public DroolsResourceImpl(URI uri) {
 		super(uri);
 	}
-	
-	public void save(Map<?, ?> options) throws IOException {
-		super.save(options);
-		// check the Global Variables to make sure they don't collide with any other process variables
-		Definitions definitions = ImportHelper.getDefinitions(this);
-		String message = null;
-		TreeIterator<EObject> iter1 = definitions.eAllContents();
-		HashSet<EObject> map = new HashSet<EObject>();
-		while (iter1.hasNext()) {
-			EObject o1 = iter1.next();
-			if (o1 instanceof GlobalType && !map.contains(o1)) {
-				TreeIterator<EObject> iter2 = definitions.eAllContents();
-				map.add(o1);
-				String id1 = ((GlobalType)o1).getIdentifier();
-				
-				while (iter2.hasNext()) {
-					EObject o2 = iter2.next();
-					if (o2 instanceof BaseElement && o1!=o2 && !map.contains(o2)) {
-						String id2;
-						if (o2 instanceof GlobalType)
-							id2 = ((GlobalType)o2).getIdentifier();
-						else
-							id2 = ((BaseElement)o2).getId();
-						if (id1!=null && id2!=null) {
-							if (id1.equals(id2)) {
-								String msg =
-										ModelUtil.getLabel(o1) + " \"" + ModelUtil.getDisplayName(o1) + "\" and " +
-										ModelUtil.getLabel(o2) + " \"" + ModelUtil.getDisplayName(o2) + "\" have the same ID";
-								if (message==null)
-									message = msg;
-								else
-									message += "\n" + msg;
-							}
-						}
-					}
-				}
-			}
-		}
-		if (message != null) {
-			throw new IllegalArgumentException("Duplicate IDs:\n" + message);
-		}
-	}
-	
+
     @Override
     protected XMLHelper createXMLHelper() {
     	if (xmlHelper!=null)
@@ -176,10 +134,14 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 					if (f.getName().equals("name"))
 						return false;
 				}
-				if (f== Bpmn2Package.eINSTANCE.getDefinitions_Relationships()) {
+				if (f==Bpmn2Package.eINSTANCE.getDefinitions_Relationships()) {
 					if (!JbpmPreferencePage.isEnableSimulation())
 						return false;
 				}
+				if (o instanceof GlobalType && f==Bpmn2Package.eINSTANCE.getBaseElement_Id()) {
+					return false;
+				}
+				
 				return super.shouldSaveFeature(o, f);
 			}
 
@@ -484,6 +446,11 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						}
 					}
 					else if (childObject instanceof GlobalType) {
+						// The BaseElement feature "id" is not saved, but it MUST be kept in sync with the
+						// GlobalType feature "identifier" - this acts like the "name" feature of other
+						// ItemAwareElements that treat "name" like an ID.
+						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
+						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
 						ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
 						childObject.eAdapters().add(a);
 					}

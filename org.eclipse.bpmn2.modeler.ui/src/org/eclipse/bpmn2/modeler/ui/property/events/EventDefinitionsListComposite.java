@@ -15,8 +15,10 @@ import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
@@ -31,12 +33,15 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.LinkEventDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
+import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
@@ -192,6 +197,56 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 					@Override
 					public String getHeaderText() {
 						return "Event Type";
+					}
+					
+					@Override
+					public CellEditor createCellEditor (Composite parent) {
+						// need to override this to avoid any problems
+						return super.createCellEditor(parent);
+					}
+				}
+			).setEditable(false);
+		columnProvider.addRaw(
+				new TableColumn(object,object.eClass().getEStructuralFeature("id")) {
+					public String getText(Object element) {
+						if (element instanceof CancelEventDefinition) {
+						}
+						if (element instanceof CompensateEventDefinition) {
+							if (((CompensateEventDefinition)element).getActivityRef()!=null)
+								return ((CompensateEventDefinition)element).getActivityRef().getId();
+						}
+						if (element instanceof ConditionalEventDefinition) {
+							if (((ConditionalEventDefinition)element).getCondition()!=null)
+								return ModelUtil.getDisplayName(((ConditionalEventDefinition)element).getCondition());
+						}
+						if (element instanceof ErrorEventDefinition) {
+							if (((ErrorEventDefinition)element).getErrorRef()!=null)
+								return ((ErrorEventDefinition)element).getErrorRef().getId();
+						}
+						if (element instanceof EscalationEventDefinition) {
+							if (((EscalationEventDefinition)element).getEscalationRef()!=null)
+								return ((EscalationEventDefinition)element).getEscalationRef().getId();
+						}
+						if (element instanceof LinkEventDefinition) {
+						}
+						if (element instanceof MessageEventDefinition) {
+							if (((MessageEventDefinition)element).getMessageRef()!=null)
+								return ((MessageEventDefinition)element).getMessageRef().getId();
+						}
+						if (element instanceof SignalEventDefinition) {
+							if (((SignalEventDefinition)element).getSignalRef()!=null)
+								return ((SignalEventDefinition)element).getSignalRef().getId();
+						}
+						if (element instanceof TerminateEventDefinition) {
+						}
+						if (element instanceof TimerEventDefinition) {
+						}
+						return "";
+					}
+
+					@Override
+					public String getHeaderText() {
+						return "Event ID";
 					}
 					
 					@Override

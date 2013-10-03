@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -42,6 +43,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -59,6 +61,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 
@@ -79,35 +82,39 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
 	@Override
 	public boolean canPaste(IPasteContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes.length != 1 || !(pes[0] instanceof ContainerShape)) {
+		// target must be a FlowElementsContainer (Process, etc.)
+		if (getTargetContainerShape(context)==null) {
 			return false;
 		}
-		
-		// target must be a FlowElementsContainer (Process, etc.)
-		ContainerShape targetContainerShape = (ContainerShape) pes[0];
-		if (getContainerObject(targetContainerShape)==null)
-			return false;
 
 		// can paste, if all objects on the clipboard are PictogramElements
 		Object[] fromClipboard = getFromClipboard();
 		if (fromClipboard == null || fromClipboard.length == 0) {
 			return false;
 		}
+		int count = 0;
 		for (Object object : fromClipboard) {
 			if (!(object instanceof PictogramElement)) {
-				return false;
+				continue;
 			}
 			PictogramElement pe = (PictogramElement) object;
 			BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
 			if (!(be instanceof FlowElement) && !(be instanceof Lane) && !(be instanceof Participant)) {
-				return false;
+				continue;
 			}
 			// can't paste Boundary Events directly - these are "carried along"
 			// by the Activity to which they are attached.
-			if (be instanceof BoundaryEvent)
-				return false;
+			if (be instanceof BoundaryEvent) {
+				continue;
+			}
+			// can't paste Label shapes
+			if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+				continue;
+			}
+			++count;
 		}
+		if (count==0)
+			return false;
 
 		return true;
 	}
@@ -115,11 +122,10 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	@Override
 	public void paste(IPasteContext context) {
 		// TODO: COPY-PASTE
-		PictogramElement[] pes = context.getPictogramElements();
-		ContainerShape targetContainerShape = getTargetContainerShape((ContainerShape) pes[0]);
+		ContainerShape targetContainerShape = getTargetContainerShape(context);
 		BaseElement targetContainerObject = getContainerObject(targetContainerShape);
 
-		// save the Diagram and Resource needed for constructin the new objects
+		// save the Diagram and Resource needed for constructing the new objects
 		diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
 		resource = targetContainerObject.eResource();
 		definitions = ModelUtil.getDefinitions(resource);
@@ -129,15 +135,25 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		xReference = 0;
 		yReference = 0;
 		
+		int xMin = Integer.MAX_VALUE;
+		int yMin = Integer.MAX_VALUE;
 		Object[] fromClipboard = getFromClipboard();
 		for (Object object : fromClipboard) {
 			if (object instanceof ContainerShape) {
 				ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram((ContainerShape) object);
-				xReference = loc.getX();
-				yReference = loc.getY();
-				break;
+				if (loc.getX() < xMin) {
+					xMin = loc.getX();
+				}
+				if (loc.getY() < yMin) {
+					yMin = loc.getY();
+				}
 			}
 		}
+		if (xMin!=Integer.MAX_VALUE) {
+			xReference = xMin;
+			yReference = yMin;
+		}
+
 		int x = context.getX();
 		int y = context.getY();
 		if (!(targetContainerShape instanceof Diagram)) {
@@ -179,8 +195,34 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		this.getDiagramEditor().setPictogramElementsForSelection(newPes);
 	}
 	
-	protected BaseElement createNewObject(BaseElement oldObject, BaseElement targetContainerObject) {
+	protected Object[] getFromClipboard() {
+		List<Object> allObjects = new ArrayList<Object>();
+		Object[] objects = super.getFromClipboard();
+		for (Object o : objects)
+			allObjects.add(o);
+		
+		List<Object> filteredObjects = new ArrayList<Object>();
+		for (Object object : allObjects) {
+			if (object instanceof ContainerShape && !FeatureSupport.isLabelShape((Shape)object)) {
+				filteredObjects.add(object);
+			}
+			else if (object instanceof Connection) {
+				Connection c = (Connection)object;
+				if (allObjects.contains(c.getStart().getParent()) &&
+						allObjects.contains(c.getEnd().getParent())) {
+					filteredObjects.add(object);
+				}
+			}
+		}
+		
+		return filteredObjects.toArray();
+	}
+	
+	private BaseElement createNewObject(BaseElement oldObject, BaseElement targetContainerObject) {
+		Bpmn2ModelerFactory.setEnableModelExtensions(false);
 		BaseElement newObject = EcoreUtil.copy(oldObject);
+		Bpmn2ModelerFactory.setEnableModelExtensions(true);
+
 		// get rid of some of the objects created by EcoreUtil.copy() as these will be
 		// constructed here because we need to create the Graphiti shapes and DI elements
 		// along with these
@@ -291,7 +333,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return newObject;
 	}
 
-	protected String getId(EObject newObject) {
+	private String getId(EObject newObject) {
 		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id");
 		if (feature != null) {
 			return (String) newObject.eGet(feature);
@@ -299,7 +341,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return null;
 	}
 	
-	protected String setId(EObject newObject) {
+	private String setId(EObject newObject) {
 		String newId = null;
 		String oldId = null;
 		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id");
@@ -318,7 +360,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return oldId;
 	}
 
-	protected EObject findObjectById(String id) {
+	private EObject findObjectById(String id) {
 		TreeIterator<EObject> iter = definitions.eAllContents();
 		while (iter.hasNext()) {
 			EObject o = iter.next();
@@ -332,7 +374,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return null;
 	}
 
-	protected ContainerShape findShape(EObject object) {
+	private ContainerShape findShape(EObject object) {
 		List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, object);
 		for (PictogramElement pe : pes) {
 			if (pe instanceof ContainerShape)
@@ -341,7 +383,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return null;
 	}
 
-	protected Connection findConnection(EObject object) {
+	private Connection findConnection(EObject object) {
 		List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, object);
 		for (PictogramElement pe : pes) {
 			if (pe instanceof Connection)
@@ -350,7 +392,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return null;
 	}
 
-	protected BaseElement copyShape(ContainerShape oldShape, ContainerShape targetContainerShape, int x, int y) {
+	private BaseElement copyShape(ContainerShape oldShape, ContainerShape targetContainerShape, int x, int y) {
 		if (shapeMap.get(oldShape)!=null)
 			return null;
 		
@@ -476,7 +518,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return newObject;
 	}
 
-	protected BaseElement copyConnection(Connection oldConnection, ContainerShape targetContainerShape, int x, int y) {
+	private BaseElement copyConnection(Connection oldConnection, ContainerShape targetContainerShape, int x, int y) {
 		if (connectionMap.get(oldConnection)!=null)
 			return null;
 		
@@ -558,24 +600,28 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			}
 		}
 
-		UpdateContext uc = new UpdateContext(newConnection);
-		IUpdateFeature uf = getFeatureProvider().getUpdateFeature(uc);
-		uf.update(uc);
+		FeatureSupport.updateConnection(getFeatureProvider(), newConnection);
 
 		return newObject;
 	}
-
-	protected ContainerShape getTargetContainerShape(ContainerShape targetContainerShape) {
-		PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
-		for (PictogramElement pe : pes) {
-			if (pe==targetContainerShape) {
-				targetContainerShape = (ContainerShape)targetContainerShape.eContainer();
+	
+	private ContainerShape getTargetContainerShape(IPasteContext context) {
+		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
+		
+		Point p = GraphicsUtil.createPoint(context.getX(), context.getY());
+		for (Shape c : diagram.getChildren()) {
+			if (GraphicsUtil.contains(c, p) && c instanceof ContainerShape) {
+				BaseElement be = getContainerObject((ContainerShape) c);
+				if (be instanceof FlowElementsContainer) {
+					return (ContainerShape) c;
+				}
+				return null;
 			}
 		}
-		return targetContainerShape;
+		return diagram;
 	}
 	
-	protected BaseElement getContainerObject(ContainerShape targetContainerShape) {
+	private BaseElement getContainerObject(ContainerShape targetContainerShape) {
 		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(targetContainerShape);
 		if (bo instanceof BPMNDiagram) {
 			bo = ((BPMNDiagram) bo).getPlane().getBpmnElement();
@@ -588,7 +634,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return null;
 	}
 	
-	protected FlowElementsContainer getFlowElementsContainer(Lane lane) {
+	private FlowElementsContainer getFlowElementsContainer(Lane lane) {
 		EObject container = lane.eContainer();
 		while (!(container instanceof FlowElementsContainer) && container!=null)
 			container = container.eContainer();

@@ -461,14 +461,14 @@ public class JbpmModelUtil {
 		String id = be.getId();
 		for (ElementParameters ep : scenario.getElementParameters()) {
 			
-			if (id.equals(ep.getId())) {
+			if (id.equals(ep.getElementRef())) {
 				elementParams = ep;
 				break;
 			}
 		}
 		if (elementParams==null) {
 			elementParams = BpsimFactory.eINSTANCE.createElementParameters();
-			elementParams.setId(id);
+			elementParams.setElementRef(id);
 			ModelUtil.setID(elementParams, resource);
 			
 			if (be instanceof Task) {
