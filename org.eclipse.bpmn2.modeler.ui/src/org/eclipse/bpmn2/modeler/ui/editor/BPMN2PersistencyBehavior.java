@@ -45,7 +45,7 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 		// activity that modifies the workbench.
 		final IRunnableWithProgress operation = new IRunnableWithProgress() {
 			// This is the method that gets invoked when the operation runs.
-			public void run(IProgressMonitor monitor) {
+			public void run(final IProgressMonitor monitor) {
 				// Save the resources to the file system.
 				try {
 					savedResources.addAll(save(diagramBehavior.getEditingDomain(), saveOptions, monitor));
@@ -55,9 +55,9 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 						@Override
 						public void run() {
 							MessageDialog.openError(Display.getDefault().getActiveShell(), "Can not save file", msg);
+							monitor.setCanceled(true);
 						}
 					});
-					monitor.setCanceled(true);
 					throw e;
 				}
 			}
