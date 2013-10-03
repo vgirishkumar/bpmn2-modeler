@@ -27,7 +27,10 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 					EStructuralFeature feature = (EStructuralFeature)f;
 					EStructuralFeature idFeature = object.eClass().getEStructuralFeature("id");
 					EStructuralFeature nameFeature = object.eClass().getEStructuralFeature("name");
-                    if ("name".equals(feature.getName())) {
+					EStructuralFeature identifierFeature = object.eClass().getEStructuralFeature("identifier");
+					if (identifierFeature!=null)
+						nameFeature = identifierFeature;
+                    if ("name".equals(feature.getName()) || "identifier".equals(feature.getName())) {
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
 						if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
@@ -39,9 +42,10 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 									if (deliver)
 										object.eSetDeliver(false);
 									
-									Object uniqueId = makeUniqueId(object,newValue);
-									object.eSet(nameFeature, uniqueId);
-									object.eSet(idFeature, uniqueId);
+									// No need to make this ID unique; ID collisions will be detected
+									// during validate() and will be reported in the UI.
+									object.eSet(nameFeature, newValue);
+									object.eSet(idFeature, newValue);
 								}
 								catch (Exception e) {
 									
@@ -78,9 +82,6 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 							}
 						}
 					}
-                    else if (object instanceof GlobalType) {
-						validate(notification);
-                    }
 				}
             }
 		}

@@ -343,12 +343,28 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 				Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
 			}
 			else {
-				IProgressService ps = PlatformUI.getWorkbench().getProgressService();
-				ps.busyCursorWhile(new IRunnableWithProgress() {
-					public void run(IProgressMonitor pm) {
-						String taskName = "Loading Resource " + resource.getURI();
-						pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
-						Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+				Display.getDefault().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						IProgressService ps = PlatformUI.getWorkbench().getProgressService();
+						try {
+							ps.busyCursorWhile(new IRunnableWithProgress() {
+								public void run(IProgressMonitor pm) {
+									String taskName = "Loading Resource " + resource.getURI();
+									pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
+									Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+								}
+							});
+						}
+						catch (InvocationTargetException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 			}
