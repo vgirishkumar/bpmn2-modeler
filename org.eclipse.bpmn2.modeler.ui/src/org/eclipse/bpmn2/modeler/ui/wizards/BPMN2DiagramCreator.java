@@ -21,11 +21,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -33,34 +33,39 @@ import org.eclipse.ui.PlatformUI;
 
 public class BPMN2DiagramCreator {
 
-	private final static String TEMPFILE_EXTENSION = "bpmn2d"; 
-//	private IFolder diagramFolder;
-//	private IFile diagramFile;
-//	private URI uri;
-
 	public static Bpmn2DiagramEditorInput createDiagram(URI uri, Bpmn2DiagramType diagramType, String targetNamespace) throws CoreException {
-		return createDiagram(uri, diagramType, targetNamespace, null);
+		return createDiagram(null, uri, diagramType, targetNamespace, null);
 	}
 
-	public static Bpmn2DiagramEditorInput createDiagram(URI modelUri, Bpmn2DiagramType diagramType, String targetNamespace, BPMN2Editor diagramEditor) {
+	public static Bpmn2DiagramEditorInput createDiagram(IEditorInput oldInput, URI modelUri, Bpmn2DiagramType diagramType, String targetNamespace, BPMN2Editor diagramEditor) {
 
 		String modelName = modelUri.trimFragment().trimFileExtension().lastSegment();
 		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", modelName, true);
 
 		String diagramName = FileService.createTempName(modelName);
 		URI diagramUri = URI.createFileURI(diagramName);
-		TransactionalEditingDomain domain = FileService.createEmfFileForDiagram(diagramUri, diagram, diagramEditor);
+		FileService.createEmfFileForDiagram(diagramUri, diagram, diagramEditor);
 
 		String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId(diagram.getDiagramTypeId());
-		final Bpmn2DiagramEditorInput editorInput = new Bpmn2DiagramEditorInput(modelUri, diagramUri, providerId);
-		editorInput.setInitialDiagramType(diagramType);
-		editorInput.setTargetNamespace(targetNamespace);
+		
+		// No need to create a new one if old input is already a Bpmn2DiagramEditorInput,
+		// just update it
+		Bpmn2DiagramEditorInput newInput;
+		if (oldInput instanceof Bpmn2DiagramEditorInput) {
+			newInput = (Bpmn2DiagramEditorInput)oldInput;
+			newInput.updateUri(diagramUri);
+		}
+		else
+			newInput = new Bpmn2DiagramEditorInput(modelUri, diagramUri, providerId);
+		
+		newInput.setInitialDiagramType(diagramType);
+		newInput.setTargetNamespace(targetNamespace);
 
 		if (diagramEditor==null) {
-			openEditor(editorInput);
+			openEditor(newInput);
 		}
 
-		return editorInput;
+		return newInput;
 	}
 
 	public static IEditorPart openEditor(final DiagramEditorInput editorInput) {

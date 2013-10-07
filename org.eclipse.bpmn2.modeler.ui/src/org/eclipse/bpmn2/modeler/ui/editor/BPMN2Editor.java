@@ -394,12 +394,17 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		modelUri = FileService.getInputUri(input);
 		if (modelUri==null)
 			throw new PartInitException("Can't create BPMN2Editor Input");
-		input = BPMN2DiagramCreator.createDiagram(modelUri, diagramType,targetNamespace,this);
+		input = BPMN2DiagramCreator.createDiagram(input, modelUri, diagramType,targetNamespace,this);
 		diagramUri = ((Bpmn2DiagramEditorInput)input).getUri();
 
 		return (Bpmn2DiagramEditorInput)input;
 	}
 
+	/**
+	 * Bypasses Graphiti's Persistency Behavior code and save only the BPMN2 model resource. 
+	 * This is only used after a successful Import if the BPMN2 model was changed in any way,
+	 * e.g. missing DI elements were added.
+	 */
 	private void saveModelFile() {
 		try {
 			bpmnResource.save(null);
@@ -407,7 +412,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			updateDirtyState();
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -427,58 +431,51 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			Activator.logError(e);
 		}
 		
-		super.setInput(input);
+		// Determine which Target Runtime to use for this input and initialize the ResourceSet
+		TargetRuntime targetRuntime = getTargetRuntime(input);
+		ResourceSet resourceSet = getEditingDomain().getResourceSet();
+		resourceSet.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
+		resourceSet.eAdapters().add(editorAdapter = new DiagramEditorAdapter(this));
+
+		// Tell the TargetRuntime about the ResourceSet. This allows the TargetRuntime to provide its
+		// own ResourceFactory if needed.
+		targetRuntime.setResourceSet(resourceSet);
 		
-		// Determine which Target Runtime to use for this input
-		getTargetRuntime(input);
+		// Now create the BPMN2 model resource.
+		bpmnResource = (Bpmn2ResourceImpl) resourceSet.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+		
+		// Set this input in Graphiti DiagramEditor
+		super.setInput(input);
 		
 		// Hook a transaction exception handler so we can get diagnostics about EMF validation errors.
 		getEditingDomainListener();
 		
-		BasicCommandStack basicCommandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
+		// This does the actual loading of the resource.
+		// TODO: move the loading code to BPMN2PersistencyBehavior where it belongs,
+		// and get rid of ModelHandler and ModelHandlerLocator
+		modelHandler = ModelHandlerLocator.createModelHandler(modelUri, bpmnResource);
+		ModelHandlerLocator.put(diagramUri, modelHandler);
 
-		if (input instanceof DiagramEditorInput) {
-			ResourceSet resourceSet = getEditingDomain().getResourceSet();
-			getTargetRuntime().setResourceSet(resourceSet);
-			
-			bpmnResource = (Bpmn2ResourceImpl) resourceSet.createResource(modelUri,
-					Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+		// Allow the runtime extension to construct custom tasks and whatever else it needs
+		// custom tasks should be added to the current target runtime's custom tasks list
+		// where they will be picked up by the toolpalette refresh.
+		getTargetRuntime().getRuntimeExtension().initialize(this);
 
-			resourceSet.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
-			resourceSet.eAdapters().add(editorAdapter = new DiagramEditorAdapter(this));
-
-			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, bpmnResource);
-			ModelHandlerLocator.put(diagramUri, modelHandler);
-
-			getTargetRuntime(input);
-			setActiveEditor(this);
-
-			// allow the runtime extension to construct custom tasks and whatever else it needs
-			// custom tasks should be added to the current target runtime's custom tasks list
-			// where they will be picked up by the toolpalette refresh.
-			getTargetRuntime().getRuntimeExtension().initialize(this);
-
-			try {
-				if (getModelFile()==null || getModelFile().exists()) {
-					bpmnResource.load(null);
-				} else {
-					saveModelFile();
-				}
-			} catch (IOException e) {
-				Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
-				ErrorUtils.showErrorWithLogging(status);
+		// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
+		BasicCommandStack commandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
+		commandStack.execute(new RecordingCommand(getEditingDomain()) {
+			@Override
+			protected void doExecute() {
+				importDiagram();
+				getTargetRuntime().setResource(bpmnResource);
 			}
-			basicCommandStack.execute(new RecordingCommand(getEditingDomain()) {
+		});
 
-				@Override
-				protected void doExecute() {
-					importDiagram();
-					getTargetRuntime().setResource(bpmnResource);
-				}
-			});
-		}
-		basicCommandStack.saveIsDone();
-		basicCommandStack.flush();
+		// Reset the save point and initialize the undo stack
+		commandStack.saveIsDone();
+		commandStack.flush();
+		
+		// Load error markers
 		loadMarkers();
 	}
 	
@@ -503,6 +500,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			if (diagramType != Bpmn2DiagramType.NONE) {
 				bpmnDiagram = modelHandler.createDiagramType(diagramType, targetNamespace);
 				featureProvider.link(diagram, bpmnDiagram);
+				// If the bpmn file was missing DI elements, they would have been added by the importer
+				// so save the file now in case it was changed.
 				saveModelFile();
 			}
 			
@@ -903,6 +902,10 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	public ModelHandler getModelHandler() {
 		return modelHandler;
+	}
+	
+	public Resource getResource() {
+		return bpmnResource;
 	}
 	
 	public ResourceSet getResourceSet() {

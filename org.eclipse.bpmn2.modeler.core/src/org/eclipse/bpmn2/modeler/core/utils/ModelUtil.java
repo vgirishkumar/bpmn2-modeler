@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -1486,8 +1487,12 @@ public class ModelUtil {
 		}
 		feature = object.eClass().getEStructuralFeature("id");
 		if (feature!=null) {
-			if (object.eGet(feature)!=null)
-				objName = (String)object.eGet(feature);
+			String id = (String)object.eGet(feature);
+			if (id==null || id.isEmpty())
+				id = "Unknown " + objName;
+			else
+				id = objName + " \"" + id + "\"";
+			return id;
 		}
 		feature = object.eClass().getEStructuralFeature("qName");
 		if (feature!=null) {
@@ -1606,4 +1611,36 @@ public class ModelUtil {
         }
         return body;
     }
+
+	public static List<Tuple<EObject,EObject>> findDuplicateIds(Resource resource) {
+		List<Tuple<EObject,EObject>> list = new ArrayList<Tuple<EObject,EObject>>();
+		Definitions definitions = ModelUtil.getDefinitions(resource);
+		TreeIterator<EObject> iter1 = definitions.eAllContents();
+		HashSet<EObject> map = new HashSet<EObject>();
+		while (iter1.hasNext()) {
+			EObject o1 = iter1.next();
+			EStructuralFeature id1Feature = o1.eClass().getEIDAttribute();
+			if (id1Feature!=null && !map.contains(o1)) {
+				TreeIterator<EObject> iter2 = definitions.eAllContents();
+				map.add(o1);
+				String id1 = (String)o1.eGet(id1Feature);
+				
+				while (iter2.hasNext()) {
+					EObject o2 = iter2.next();
+					EStructuralFeature id2Feature = o2.eClass().getEIDAttribute();
+					if (id2Feature!=null && o1!=o2 && !map.contains(o2)) {
+						String id2 = (String)o2.eGet(id2Feature);
+						if (id1!=null && !id1.isEmpty() && id2!=null && !id2.isEmpty()) {
+							if (id1.equals(id2)) {
+								list.add( new Tuple<EObject,EObject>(o1,o2) );
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return list;
+	}
+	
 }
