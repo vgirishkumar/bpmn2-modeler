@@ -223,6 +223,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
 
 /**
  * 
@@ -331,6 +332,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 
 	protected DiagramEditorAdapter editorAdapter;
 	protected BPMN2MultiPageEditor multipageEditor;
+	protected IPropertySheetPage propertySheetPage;
+	protected IContentOutlinePage outlinePage;
 	
 	protected boolean saveInProgress = false;
 	private static NotificationFilter filterNone = new NotificationFilter.Custom() {
@@ -825,16 +828,26 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (required==Bpmn2Preferences.class)
 			return getPreferences();
 		if (required == IPropertySheetPage.class) {
-			return new Bpmn2TabbedPropertySheetPage(this);
+			if (propertySheetPage==null) {
+				propertySheetPage = new Bpmn2TabbedPropertySheetPage(this);
+			}
+			return propertySheetPage;
 		}
 		if (required == SelectionSynchronizer.class) {
 			return getSelectionSynchronizer();
 		}
 		if (required == IContentOutlinePage.class) {
 			if (getDiagramTypeProvider() != null) {
-				BPMN2EditorOutlinePage outlinePage = new BPMN2EditorOutlinePage(this);
+				if (outlinePage==null) {
+					outlinePage = new BPMN2EditorOutlinePage(this);
+				}
 				return outlinePage;
 			}
+		}
+		if (required == StructuredTextEditor.class) {
+			// ugly hack to disable selection in Property Viewer while source viewer is active
+			if (multipageEditor.getActiveEditor() == multipageEditor.getSourceViewer())
+				return multipageEditor.getSourceViewer();
 		}
 		if (required == ModelEnablementDescriptor.class) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);

@@ -73,7 +73,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 		nameText.setLayoutData(gridData);
 		nameText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				fileText.setText(nameText.getText() + ".bpmn");
+				fileText.setText(nameText.getText() + ".bpmn2");
 				String processid = packageText.getText() + "." + nameText.getText();
 				processid = SyntaxCheckerUtils.toNCName(processid.replaceAll(" ", "_"));
 				processIdText.setText(processid);
