@@ -59,16 +59,16 @@ import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.dc.Point;
-import org.eclipse.dd.di.DiagramElement;
-import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -752,45 +752,15 @@ public class ModelHandler {
 		return (Definitions) resource.getContents().get(0).eContents().get(0);
 	}
 
-//	public void save() {
-//		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
-//		if (domain != null) {
-//			domain.getCommandStack().execute(new RecordingCommand(domain) {
-//				@Override
-//				protected void doExecute() {
-//					saveResource();
-//				}
-//			});
-//		} else {
-//			saveResource();
-//		}
-//	}
-
-//	private void saveResource() {
-//		fixZOrder();
-//		try {
-//			resource.save(null);
-//		} catch (IOException e) {
-//			Activator.logError(e);
-//		}
-//	}
-//
-//	private void fixZOrder() {
-//		final List<BPMNDiagram> diagrams = getAll(BPMNDiagram.class);
-//		for (BPMNDiagram bpmnDiagram : diagrams) {
-//			fixZOrder(bpmnDiagram);
-//		}
-//
-//	}
-//
-//	private void fixZOrder(BPMNDiagram bpmnDiagram) {
-//		EList<DiagramElement> elements = (EList<DiagramElement>) bpmnDiagram.getPlane().getPlaneElement();
-//		ECollections.sort(elements, new DIZorderComparator());
-//	}
-
+	// TODO: Move all of this model handler crap into BPMN2PersistencyBehavior where it belongs
 	void loadResource() {
 		try {
 			resource.load(null);
+			List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
+			if (dups.size()>0) {
+				FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
+				dlg.open();
+			}
 		} catch (IOException e) {
 			if (!resource.getErrors().isEmpty()) {
 				ImportDiagnostics diagnostics = new ImportDiagnostics(resource);

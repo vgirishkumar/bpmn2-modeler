@@ -50,6 +50,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
@@ -81,6 +82,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.xmi.IllegalValueException;
+import org.eclipse.emf.ecore.xmi.XMIException;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -235,48 +238,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	}
 	
 	public void save(Map<?, ?> options) throws IOException {
-		
-		// Ensure that there are no duplicate IDs. This could corrupt the BPMN2 file.
-		// If this happens, do NOT save the file until the problem has been fixed.
-		Definitions definitions = ImportHelper.getDefinitions(this);
-		String message = null;
-		TreeIterator<EObject> iter1 = definitions.eAllContents();
-		HashSet<EObject> map = new HashSet<EObject>();
-		while (iter1.hasNext()) {
-			EObject o1 = iter1.next();
-			EStructuralFeature id1Feature = o1.eClass().getEIDAttribute();
-			if (id1Feature!=null && !map.contains(o1)) {
-				TreeIterator<EObject> iter2 = definitions.eAllContents();
-				map.add(o1);
-				String id1 = (String)o1.eGet(id1Feature);
-				
-				while (iter2.hasNext()) {
-					EObject o2 = iter2.next();
-					EStructuralFeature id2Feature = o2.eClass().getEIDAttribute();
-					if (id2Feature!=null && o1!=o2 && !map.contains(o2)) {
-						String id2 = (String)o2.eGet(id2Feature);
-						if (id1!=null && !id1.isEmpty() && id2!=null && !id2.isEmpty()) {
-							if (id1.equals(id2)) {
-								String msg =
-										ModelUtil.getLabel(o1) + " \"" + ModelUtil.getDisplayName(o1) + "\" and " +
-										ModelUtil.getLabel(o2) + " \"" + ModelUtil.getDisplayName(o2) + "\" have the same ID";
-								if (message==null)
-									message = msg;
-								else
-									message += "\n" + msg;
-							}
-						}
-					}
-				}
-			}
-		}
-		if (message != null) {
-			throw new IllegalArgumentException("Duplicate IDs:\n" + message);
-		}
-		
 		super.save(options);
 	}
-
 
     @Override
     protected XMLHelper createXMLHelper() {

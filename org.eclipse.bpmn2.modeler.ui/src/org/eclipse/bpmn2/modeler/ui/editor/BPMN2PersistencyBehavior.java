@@ -10,12 +10,18 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
@@ -32,11 +38,29 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 		super(diagramEditor);
 		editor = (BPMN2Editor)diagramEditor;
 	}
+	
     @Override
-    public Diagram loadDiagram(URI modelUri) {
-    	Diagram diagram = super.loadDiagram(modelUri);
-
+    public Diagram loadDiagram(URI diagramUri) {
+    	Diagram diagram = super.loadDiagram(diagramUri);
+//    	Resource resource = editor.getResource();
+//		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
+//		if (dups.size()>0) {
+//			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
+//			dlg.open();
+//		}
     	return diagram;
+    }
+    
+    @Override
+	public void saveDiagram(IProgressMonitor monitor) {
+    	Resource resource = editor.getResource();
+		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
+		if (dups.size()>0) {
+			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
+			dlg.open();
+		}
+
+    	super.saveDiagram(monitor);
     }
     
 	protected IRunnableWithProgress createOperation(final Set<Resource> savedResources,
