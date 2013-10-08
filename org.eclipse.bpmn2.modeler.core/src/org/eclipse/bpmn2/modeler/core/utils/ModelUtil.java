@@ -215,13 +215,13 @@ public class ModelUtil {
 		return generateDefaultID(obj, name);
 	}
 	
-	public static void unsetID(EObject obj) {
+	public static void unsetID(EObject obj, Resource resource) {
 		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
 		if (feature!=null) {
 			Object value = obj.eGet(feature);
 			if (value instanceof String) {
 				String id = (String)value;
-				Object key = getKey(obj);
+				Object key = getKey(resource);
 				if (key!=null) {
 					Hashtable<String, EObject> tab = ids.get(key);
 					if (tab!=null) {

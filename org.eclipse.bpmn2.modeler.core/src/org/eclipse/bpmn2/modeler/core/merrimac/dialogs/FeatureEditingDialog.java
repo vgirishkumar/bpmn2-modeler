@@ -130,7 +130,7 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 
 	private void undoCreateNewObject() {
 		if (createNew && newObject!=null) {
-			ModelUtil.unsetID(newObject);
+			ModelUtil.unsetID(newObject, object.eResource());
 			final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 			if (domain!=null) {
 				if (domain.getCommandStack().canUndo()) {
