@@ -316,6 +316,8 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			// cell editor since the choices may have changed.
 			List<String> items = new ArrayList<String>();
 			choices = ModelUtil.getChoiceOfValues(object, feature);
+			if (ModelUtil.canSetNull(object,feature))
+				items.add("");
 			items.addAll(choices.keySet());
 			Collections.sort(items);
 			this.setItems(items.toArray(new String[items.size()]));

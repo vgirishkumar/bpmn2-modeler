@@ -102,6 +102,8 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 			}
 			super.setValue(object, itemDefinition);
 		}
+		else if (value==null)
+			super.setValue(object, null);
 	}
 
 	@Override
