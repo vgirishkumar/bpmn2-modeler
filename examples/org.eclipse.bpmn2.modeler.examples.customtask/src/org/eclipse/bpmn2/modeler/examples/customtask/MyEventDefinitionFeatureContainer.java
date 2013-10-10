@@ -6,6 +6,7 @@ import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractAddEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer.AddEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -23,6 +24,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.MmPackage;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Image;
@@ -71,6 +73,17 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 			}
 
 			@Override
+			public IAddFeature getAddFeature(IFeatureProvider fp) {
+				return new AddEventDefinitionFeature(fp) {
+
+					@Override
+					public boolean canAdd(IAddContext context) {
+						return true;
+					}
+				};
+			}
+
+			@Override
 			protected Shape drawForStart(DecorationAlgorithm algorithm, ContainerShape shape) {
 				return draw(algorithm,shape);
 			}
@@ -111,6 +124,11 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 			super(fp, "My Event Definition", "Create My Event Definition");
 		}
 
+		@Override
+		public boolean canCreate(ICreateContext context) {
+			return true;
+		}
+		
 		@Override
 		public EClass getBusinessObjectClass() {
 			return MyModelPackage.eINSTANCE.getMyEventDefinition();
