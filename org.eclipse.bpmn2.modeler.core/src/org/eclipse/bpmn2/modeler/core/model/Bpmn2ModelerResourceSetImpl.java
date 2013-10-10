@@ -38,6 +38,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -337,41 +338,48 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			Map<Object,Object> options = resource.getResourceSet().getLoadOptions();
 			Object o = options.get(Bpmn2ModelerResourceSetImpl.OPTION_PROGRESS_MONITOR);
 			if (o instanceof IProgressMonitor) {
-				IProgressMonitor pm = (IProgressMonitor)o;
-				String taskName = "Loading Resource " + resource.getURI();
-				pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
-				Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+				IProgressMonitor monitor = (IProgressMonitor)o;
+				doLoad(resource, monitor);
 			}
 			else {
-				Display.getDefault().asyncExec(new Runnable() {
-
+				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
-						IProgressService ps = PlatformUI.getWorkbench().getProgressService();
 						try {
-							ps.busyCursorWhile(new IRunnableWithProgress() {
-								public void run(IProgressMonitor pm) {
-									String taskName = "Loading Resource " + resource.getURI();
-									pm.beginTask(taskName, IProgressMonitor.UNKNOWN);
-									Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+							IProgressService ps = PlatformUI.getWorkbench().getProgressService();
+							ps.busyCursorWhile(
+								new IRunnableWithProgress() {
+
+									@Override
+									public void run(IProgressMonitor monitor) throws InvocationTargetException,
+											InterruptedException {
+										doLoad(resource, monitor);
+									}
 								}
-							});
+							);
 						}
-						catch (InvocationTargetException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						catch (Exception e) {
 						}
 					}
 				});
 			}
 		}
+		finally {
+			restoreTimeoutProperties();
+		}
+	}
+
+	private void doLoad(final Resource resource, IProgressMonitor monitor) {
+		try {
+			String taskName = "Loading Resource " + resource.getURI();
+			monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
+			Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
+			if (!resource.isLoaded()) {
+				throw new Exception("Resource not found");
+			}
+		}
 		catch (final Exception e) {
-			System.out.println(e);
-			Display.getDefault().asyncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 
 				@Override
 				public void run() {
@@ -380,14 +388,13 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 						msg = ((InvocationTargetException) e).getTargetException().getMessage();
 					}
 					MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot load Resource",
-							"Loading Resource "+resource.getURI()+" failed! Reason:\n"+msg);
+							"Loading Resource "+resource.getURI()+" failed!\n"+msg);
 				}
 				
 			});
-			Activator.logError(e);
 		}
 		finally {
-			restoreTimeoutProperties();
+			monitor.done();
 		}
 	}
 	

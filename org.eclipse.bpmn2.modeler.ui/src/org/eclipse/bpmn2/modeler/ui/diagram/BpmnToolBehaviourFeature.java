@@ -299,7 +299,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		createEventDefinitionsCompartments(palette);
 		createDataCompartments(palette);
 		createOtherCompartments(palette);
-		createCustomTasks(palette);
+//		createCustomTasks(palette);
 	}
 	
 	public List<IToolEntry> getTools() {
