@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.bpmn2.modeler.feature"
       label="BPMN2 Editor"
-      version="0.3.0.qualifier"
+      version="1.0M1.qualifier"
       provider-name="Eclipse.org">
 
    <copyright>
