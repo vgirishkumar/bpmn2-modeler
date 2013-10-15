@@ -63,6 +63,8 @@ public class Activator extends AbstractUIPlugin {
 				AdapterRegistry.INSTANCE.registerFactory(BpmnDiPackageImpl.eINSTANCE, new Bpmn2EditorDiItemProviderAdapterFactory()));
 	}
 
+	public static final String UI_EXTENSION_ID = "org.eclipse.bpmn2.modeler.ui";
+
 	/**
 	 * The constructor
 	 */

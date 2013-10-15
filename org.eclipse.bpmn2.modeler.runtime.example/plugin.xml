@@ -153,5 +153,13 @@
 		<style object="TextAnnotation" foreground="7F7F00" background="FFFF80" textColor="7F7F00" font="arial,10,-,-"/>
 		
 	</extension>
+   <extension
+         point="org.eclipse.bpmn2.modeler.ui">
+      <toolProvider
+            class="org.eclipse.bpmn2.modeler.runtime.example.SampleToolProvider"
+            id="org.eclipse.bpmn2.modeler.runtime.example.toolProvider1"
+            runtimeId="org.eclipse.bpmn2.modeler.runtime.example">
+      </toolProvider>
+   </extension>
 
 </plugin>

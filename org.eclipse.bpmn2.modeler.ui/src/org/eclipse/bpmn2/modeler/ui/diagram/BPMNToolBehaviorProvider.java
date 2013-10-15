@@ -93,7 +93,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
 import org.eclipse.graphiti.palette.IToolEntry;
-import org.eclipse.graphiti.palette.impl.AbstractPaletteEntry;
 import org.eclipse.graphiti.palette.impl.ConnectionCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.PaletteCompartmentEntry;
@@ -109,7 +108,7 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
-public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
+public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
 	public final static String DEFAULT_PALETTE_ID = "org.bpmn2.modeler.toolpalette.default.categories";
 	
@@ -155,7 +154,7 @@ public class BpmnToolBehaviourFeature extends DefaultToolBehaviorProvider implem
 		}
 	}
 	
-	public BpmnToolBehaviourFeature(IDiagramTypeProvider diagramTypeProvider) {
+	public BPMNToolBehaviorProvider(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);
 	}
 

@@ -105,7 +105,7 @@ import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
-import org.eclipse.bpmn2.modeler.ui.diagram.BpmnToolBehaviourFeature;
+import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
@@ -621,8 +621,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		GFPaletteRoot pr = (GFPaletteRoot)getPaletteRoot();
 		if (pr!=null) {
 			pr.updatePaletteEntries();
-			BpmnToolBehaviourFeature toolBehaviorProvider = 
-					(BpmnToolBehaviourFeature)getDiagramTypeProvider().
+			BPMNToolBehaviorProvider toolBehaviorProvider = 
+					(BPMNToolBehaviorProvider)getDiagramTypeProvider().
 					getCurrentToolBehaviorProvider();
 			toolBehaviorProvider.createPaletteProfilesGroup(this, pr);
 		}
