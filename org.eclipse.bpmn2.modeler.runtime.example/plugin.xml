@@ -122,6 +122,14 @@
 			<property name="affectsTaskExecution" value="false" type="EBoolean"/>
 		</modelExtension>
 		
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.ManualTask"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			name="Manual Task Extensions"
+			type="ManualTask">
+			<property name="timeToComplete" value="1d" type="EString"/>
+		</modelExtension>
+		
 		<modelEnablement runtimeId="org.eclipse.bpmn2.modeler.runtime.example" type="Process" profile="Default">
 			<disable object="all"/>
 			<enable object="default" feature="Process"/>
@@ -138,6 +146,8 @@
 			
 			<enable object="Association" feature="anyAttribute"/>
 			<enable object="Association" feature="affectsTaskExecution"/>
+			
+			<enable object="ManualTask" feature="timeToComplete"/>
 		</modelEnablement>
 		
 		<style object="TextAnnotation" foreground="7F7F00" background="FFFF80" textColor="7F7F00" font="arial,10,-,-"/>
