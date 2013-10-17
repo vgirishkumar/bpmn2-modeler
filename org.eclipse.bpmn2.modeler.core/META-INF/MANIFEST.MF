@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: BPMN2 Editor Core
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.bpmn2.modeler.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.bpmn2.modeler.core.Activator
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.emf.transaction,
  org.eclipse.emf.edit.ui,
  org.eclipse.emf.validation.ocl,
