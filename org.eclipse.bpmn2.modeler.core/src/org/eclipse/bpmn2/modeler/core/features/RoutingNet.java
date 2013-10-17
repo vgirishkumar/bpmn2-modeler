@@ -59,8 +59,8 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 	protected static final IGaService gaService = Graphiti.getGaService();
 	protected static final IPeService peService = Graphiti.getPeService();
 	
-	public static final String CONNECTION = "ROUTING_NET_CONNECTION";
-	public static final String LANE = "ROUTING_NET_LANE";
+	public static final String CONNECTION = "ROUTING_NET_CONNECTION"; //$NON-NLS-1$
+	public static final String LANE = "ROUTING_NET_LANE"; //$NON-NLS-1$
 	
 	boolean isRotated = false;
 	Shape source;
@@ -459,7 +459,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			
 			Rectangle bounds = getBounds(source);
 			if (lane==null) {
-				Object bg = context.getProperty("background");
+				Object bg = context.getProperty("background"); //$NON-NLS-1$
 				if (bg instanceof ColorConstant)
 					background = (ColorConstant)bg;
 				else
@@ -500,7 +500,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			roundedRect.setLineWidth(2);
 
 //			link(rectShape, context.getNewObject());
-			peService.setPropertyValue(containerShape, LANE, "true");
+			peService.setPropertyValue(containerShape, LANE, "true"); //$NON-NLS-1$
 			
 			gaService.setLocationAndSize(roundedRect, 0, 0, width, height);
 			peService.sendToFront(containerShape);
@@ -542,7 +542,7 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			Connection connection = peService.createFreeFormConnection(diagram);
 			connection.setStart(sourceAnchor);
 			connection.setEnd(targetAnchor);
-			peService.setPropertyValue(connection, CONNECTION, "true");
+			peService.setPropertyValue(connection, CONNECTION, "true"); //$NON-NLS-1$
 
 			Polyline connectionLine = Graphiti.getGaService().createPolyline(connection);
 

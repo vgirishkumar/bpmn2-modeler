@@ -65,11 +65,11 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AnchorUtil {
 
-	public static final String BOUNDARY_FIXPOINT_ANCHOR = "boundary.fixpoint.anchor";
-	public static final String BOUNDARY_ADHOC_ANCHOR = "boundary.adhoc.anchor";
-	public static final String CONNECTION_SOURCE_LOCATION = "connection.source.location";
-	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location";
-	public static final String CONNECTION_CREATED = "connection.created";
+	public static final String BOUNDARY_FIXPOINT_ANCHOR = "boundary.fixpoint.anchor"; //$NON-NLS-1$
+	public static final String BOUNDARY_ADHOC_ANCHOR = "boundary.adhoc.anchor"; //$NON-NLS-1$
+	public static final String CONNECTION_SOURCE_LOCATION = "connection.source.location"; //$NON-NLS-1$
+	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location"; //$NON-NLS-1$
+	public static final String CONNECTION_CREATED = "connection.created"; //$NON-NLS-1$
 
 	// values for connection points
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
@@ -87,7 +87,7 @@ public class AnchorUtil {
 	}
 
 	public enum AnchorLocation {
-		TOP("anchor.top"), BOTTOM("anchor.bottom"), LEFT("anchor.left"), RIGHT("anchor.right"), CENTER("anchor.center");
+		TOP("anchor.top"), BOTTOM("anchor.bottom"), LEFT("anchor.left"), RIGHT("anchor.right"), CENTER("anchor.center"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	
 		private final String key;
 	
@@ -117,7 +117,7 @@ public class AnchorUtil {
 	
 	public static Point stringToPoint(String s) {
 		if (s!=null) {
-			String[] a = s.split(",");
+			String[] a = s.split(","); //$NON-NLS-1$
 			try {
 				return gaService.createPoint(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
 			}
@@ -128,7 +128,7 @@ public class AnchorUtil {
 	}
 	
 	public static String pointToString(Point loc) {
-		return loc.getX() + "," + loc.getY();
+		return loc.getX() + "," + loc.getY(); //$NON-NLS-1$
 	}
 	
 	public static FixPointAnchor createBoundaryAnchor(AnchorContainer ac, AnchorLocation loc, int x, int y) {
@@ -160,7 +160,7 @@ public class AnchorUtil {
 		IPeService peService = Graphiti.getPeService();
 
 		FixPointAnchor anchor = peService.createFixPointAnchor(ac);
-		peService.setPropertyValue(anchor, BOUNDARY_ADHOC_ANCHOR, "true");
+		peService.setPropertyValue(anchor, BOUNDARY_ADHOC_ANCHOR, "true"); //$NON-NLS-1$
 		anchor.setLocation(p);
 		gaService.createInvisibleRectangle(anchor);
 

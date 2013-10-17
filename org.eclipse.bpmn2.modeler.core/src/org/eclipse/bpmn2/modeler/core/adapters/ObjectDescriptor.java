@@ -81,14 +81,14 @@ public class ObjectDescriptor<T extends EObject> {
 			String text = ModelUtil.toDisplayName(object.eClass().getName());
 			Object value = null;
 			EStructuralFeature f = null;
-			f = object.eClass().getEStructuralFeature("name");
+			f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (f!=null) {
 				value = object.eGet(f);
 				if (value==null || value.toString().isEmpty())
 					value = null;
 			}
 			if (value==null) {
-				f = object.eClass().getEStructuralFeature("id");
+				f = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 				if (f!=null) {
 					value = object.eGet(f);
 					if (value==null || value.toString().isEmpty())
@@ -156,7 +156,7 @@ public class ObjectDescriptor<T extends EObject> {
 	public static boolean compare(EObject thisObject, EObject otherObject, boolean similar) {
 		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {
 			// IDs are allowed to be different
-			if (similar && "id".equals(f.getName()))
+			if (similar && "id".equals(f.getName())) //$NON-NLS-1$
 				continue;
 			Object v1 = otherObject.eGet(f);
 			Object v2 = thisObject.eGet(f);
@@ -258,7 +258,7 @@ public class ObjectDescriptor<T extends EObject> {
 		// if the object has an "id", assign it now.
 		String id = ModelUtil.setID(newObject,resource);
 		// also set a default name
-		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null && !newObject.eIsSet(feature)) {
 			if (id!=null)
 				newObject.eSet(feature, ModelUtil.toDisplayName(id));

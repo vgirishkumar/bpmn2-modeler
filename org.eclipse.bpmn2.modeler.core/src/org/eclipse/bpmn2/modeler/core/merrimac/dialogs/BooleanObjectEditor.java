@@ -50,7 +50,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		// be off by one column for all other widgets that are created after this one.
 		createLabel(composite, label);
 		
-		button = getToolkit().createButton(composite, "", SWT.CHECK);
+		button = getToolkit().createButton(composite, "", SWT.CHECK); //$NON-NLS-1$
 		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 		button.setSelection(getValue());
 		button.addSelectionListener( new SelectionListener() {
@@ -90,7 +90,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		if (v instanceof Boolean)
 			return (Boolean)v;
 		if (v instanceof String) {
-			if ("true".equalsIgnoreCase((String)v))
+			if ("true".equalsIgnoreCase((String)v)) //$NON-NLS-1$
 				return Boolean.TRUE;
 			// translate integer values as strings
 			try {

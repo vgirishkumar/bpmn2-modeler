@@ -78,8 +78,8 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 			createCollectionShape(containerShape, new int[] { whalf, height - 8, whalf, height });
 			createCollectionShape(containerShape, new int[] { whalf + 2, height - 8, whalf + 2, height });
 
-			String value = "false";
-			EStructuralFeature feature = ((EObject)businessObject).eClass().getEStructuralFeature("isCollection");
+			String value = "false"; //$NON-NLS-1$
+			EStructuralFeature feature = ((EObject)businessObject).eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 			if (feature!=null && businessObject.eGet(feature)!=null)
 				value = ((Boolean)businessObject.eGet(feature)).toString();
 

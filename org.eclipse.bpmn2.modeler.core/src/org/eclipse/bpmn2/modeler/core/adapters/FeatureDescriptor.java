@@ -95,7 +95,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 					t = value.toString();
 			}
 			if (t==null && o!=null) {
-				f = o.eClass().getEStructuralFeature("name");
+				f = o.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 				if (f!=null) {
 					String name = (String)o.eGet(f);
 					if (name!=null && !name.isEmpty())
@@ -103,16 +103,16 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				}
 			}
 			if (t==null && o!=null) {
-				f = o.eClass().getEStructuralFeature("id");
+				f = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 				if (f!=null) {
 					Object id = o.eGet(f);
 					if (id!=null && !id.toString().isEmpty())
 						t = id.toString();
 				}
 			}
-			return t == null ? "" /*ModelUtil.getLabel(object)*/ : t;
+			return t == null ? "" /*ModelUtil.getLabel(object)*/ : t; //$NON-NLS-1$
 		}
-		return name == null ? "" : name;
+		return name == null ? "" : name; //$NON-NLS-1$
 	}
 
 	public void setChoiceOfValues(Hashtable<String, Object> choiceOfValues) {
@@ -132,7 +132,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				if (value!=null) {
 					String text = getChoiceString(value);
 					while (choiceOfValues.containsKey(text))
-						text += " ";
+						text += " "; //$NON-NLS-1$
 					choiceOfValues.put(text, value);
 				}
 			}
@@ -179,9 +179,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 					if (value!=null) {
 						String text = getChoiceString(value);
 						if (text==null)
-							text = "";
+							text = ""; //$NON-NLS-1$
 						while (choices.containsKey(text))
-							text += " ";
+							text += " "; //$NON-NLS-1$
 						choices.put(text, value);
 					}
 				}

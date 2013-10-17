@@ -44,28 +44,28 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		
 		public Bpmn2SectionDescriptor(Bpmn2TabDescriptor td, IConfigurationElement e) {
 			tab = td.getId();
-			id = tab + ".section";
+			id = tab + ".section"; //$NON-NLS-1$
 
 			try {
-				String className = e.getAttribute("class");
-				if ("default".equals(className)) {
+				String className = e.getAttribute("class"); //$NON-NLS-1$
+				if ("default".equals(className)) { //$NON-NLS-1$
 					sectionClass = new DefaultPropertySection();
-					if (e.getAttribute("features")!=null) {
-						String[] properties = e.getAttribute("features").split(" ");
+					if (e.getAttribute("features")!=null) { //$NON-NLS-1$
+						String[] properties = e.getAttribute("features").split(" "); //$NON-NLS-1$ //$NON-NLS-2$
 						((DefaultPropertySection)sectionClass).setProperties(properties);
 					}
 				}
 				else {
-					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class");
+					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class"); //$NON-NLS-1$
 				}
-				filterClassName = e.getAttribute("filter");
+				filterClassName = e.getAttribute("filter"); //$NON-NLS-1$
 				if (filterClassName==null || filterClassName.isEmpty())
-					filterClassName = "org.eclipse.bpmn2.modeler.core.runtime.PropertySectionFilter";
+					filterClassName = "org.eclipse.bpmn2.modeler.core.runtime.PropertySectionFilter"; //$NON-NLS-1$
 				filter = (PropertySectionFilter) Class.forName(filterClassName).getConstructor(null).newInstance(null);
-				enablesFor = e.getAttribute("enablesFor");
-				String type = e.getAttribute("type");
+				enablesFor = e.getAttribute("enablesFor"); //$NON-NLS-1$
+				String type = e.getAttribute("type"); //$NON-NLS-1$
 				if (type!=null && !type.isEmpty()) {
-					String types[] = type.split(" ");
+					String types[] = type.split(" "); //$NON-NLS-1$
 					for (String t : types) {
 						addAppliesToClass(Class.forName(t));
 						if (sectionClass instanceof DefaultPropertySection) {

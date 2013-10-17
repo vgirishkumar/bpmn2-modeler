@@ -33,7 +33,7 @@ import org.eclipse.graphiti.services.IGaService;
 
 public class UpdateLabelFeature extends AbstractUpdateFeature {
 
-	public static final String TEXT_ELEMENT = "baseelement.text";
+	public static final String TEXT_ELEMENT = "baseelement.text"; //$NON-NLS-1$
 
 	public UpdateLabelFeature(IFeatureProvider fp) {
 		super(fp);
@@ -60,17 +60,17 @@ public class UpdateLabelFeature extends AbstractUpdateFeature {
 		if (textShape!=null) {
 			String oldLabel = ModelUtil.getName(element);
 			if (oldLabel==null || oldLabel.isEmpty())
-				oldLabel = "";
-			String newLabel = "";
+				oldLabel = ""; //$NON-NLS-1$
+			String newLabel = ""; //$NON-NLS-1$
 			if (textShape.getGraphicsAlgorithm() instanceof AbstractText) {
 				AbstractText text = (AbstractText) textShape.getGraphicsAlgorithm();
 				newLabel = text.getValue();
 			}
 			if (newLabel==null || newLabel.isEmpty())
-				newLabel = "";
+				newLabel = ""; //$NON-NLS-1$
 			
 			if (!oldLabel.equals(newLabel))
-				return Reason.createTrueReason("Label changed");
+				return Reason.createTrueReason(Messages.UpdateLabelFeature_Label); 
 		}
 		return Reason.createFalseReason();
 	}
@@ -85,7 +85,7 @@ public class UpdateLabelFeature extends AbstractUpdateFeature {
 			AbstractText text = (AbstractText) textShape.getGraphicsAlgorithm();
 			String name = ModelUtil.getName(element);
 			if (name == null) {
-				name = "";
+				name = ""; //$NON-NLS-1$
 			}
 			if (name.equals(text.getValue())) {
 				// nothing to do here

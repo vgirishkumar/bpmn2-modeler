@@ -57,7 +57,7 @@ import org.eclipse.ui.progress.IProgressService;
 public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IResourceChangeListener {
 	// this ID identifies the BPMN file content type
 	public static final String BPMN2_CONTENT_TYPE = "org.eclipse.bpmn2.content-type.xml"; //$NON-NLS-1$
-	public static final String OPTION_PROGRESS_MONITOR = "PROGRESS_MONITOR";
+	public static final String OPTION_PROGRESS_MONITOR = "PROGRESS_MONITOR"; //$NON-NLS-1$
 	
 	private String connectionTimeout;
 	private String readTimeout;
@@ -71,7 +71,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 	/**
 	 * Used to force loading using the right resource loaders.
 	 */
-	static public final String SLIGHTLY_HACKED_KEY = "slightly.hacked.resource.set";
+	static public final String SLIGHTLY_HACKED_KEY = "slightly.hacked.resource.set"; //$NON-NLS-1$
 	
 	/* (non-Javadoc)
 	 * 
@@ -121,24 +121,24 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 
 	private void saveTimeoutProperties() {
 		if (connectionTimeout==null) {
-			connectionTimeout = System.getProperty("sun.net.client.defaultConnectTimeout");
+			connectionTimeout = System.getProperty("sun.net.client.defaultConnectTimeout"); //$NON-NLS-1$
 			if (connectionTimeout==null)
-				connectionTimeout = "";
+				connectionTimeout = ""; //$NON-NLS-1$
 		}
 		if (readTimeout==null) {
-			readTimeout = System.getProperty("sun.net.client.defaultReadTimeout");
+			readTimeout = System.getProperty("sun.net.client.defaultReadTimeout"); //$NON-NLS-1$
 			if (readTimeout==null)
-				readTimeout = "";
+				readTimeout = ""; //$NON-NLS-1$
 		}
 	}
 	
 	private void restoreTimeoutProperties() {
 		if(connectionTimeout!=null) {
-			System.setProperty("sun.net.client.defaultConnectTimeout", connectionTimeout);
+			System.setProperty("sun.net.client.defaultConnectTimeout", connectionTimeout); //$NON-NLS-1$
 			connectionTimeout = null;
 		}
 		if (readTimeout!=null) {
-			System.setProperty("sun.net.client.defaultReadTimeout", readTimeout);
+			System.setProperty("sun.net.client.defaultReadTimeout", readTimeout); //$NON-NLS-1$
 			readTimeout = null;
 		}
 	}
@@ -146,8 +146,8 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 	private void setDefaultTimeoutProperties() {
 		saveTimeoutProperties();
 		String timeout = Bpmn2Preferences.getInstance().getConnectionTimeout();
-		System.setProperty("sun.net.client.defaultConnectTimeout", timeout);
-		System.setProperty("sun.net.client.defaultReadTimeout", timeout);
+		System.setProperty("sun.net.client.defaultConnectTimeout", timeout); //$NON-NLS-1$
+		System.setProperty("sun.net.client.defaultReadTimeout", timeout); //$NON-NLS-1$
 	}
 
 	/**
@@ -217,8 +217,8 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 		if (loadOnDemand) {
 			Resource resource = demandCreateResource(uri,kind);
 			if (resource == null) {
-				throw new RuntimeException("Cannot create a resource for '"
-						+ uri + "'; a registered resource factory is needed");
+				throw new RuntimeException("Cannot create a resource for '" //$NON-NLS-1$
+						+ uri + "'; a registered resource factory is needed"); //$NON-NLS-1$
 			}
 
 			demandLoadHelper(resource);
@@ -268,21 +268,21 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					final Map<String, Object> extensionToFactoryMap =
 						Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
 					
-					final Object wsilFactory = extensionToFactoryMap.get("wsil");
-					final Object wsdlFactory = extensionToFactoryMap.get("wsdl");
-					final Object xsdFactory = extensionToFactoryMap.get("xsd");
+					final Object wsilFactory = extensionToFactoryMap.get("wsil"); //$NON-NLS-1$
+					final Object wsdlFactory = extensionToFactoryMap.get("wsdl"); //$NON-NLS-1$
+					final Object xsdFactory = extensionToFactoryMap.get("xsd"); //$NON-NLS-1$
 					
 					final Map<String, Object> contentTypeToFactoryMap = 
 						Resource.Factory.Registry.INSTANCE.getContentTypeToFactoryMap();
 					
 					if (null != wsilFactory) {
-						contentTypeToFactoryMap.put("wsil", wsilFactory);
+						contentTypeToFactoryMap.put("wsil", wsilFactory); //$NON-NLS-1$
 					}
 					if (null != wsdlFactory) {
-						contentTypeToFactoryMap.put("wsdl", wsdlFactory);
+						contentTypeToFactoryMap.put("wsdl", wsdlFactory); //$NON-NLS-1$
 					}
 					if (null != xsdFactory) {
-						contentTypeToFactoryMap.put("xsd", xsdFactory);
+						contentTypeToFactoryMap.put("xsd", xsdFactory); //$NON-NLS-1$
 					}
 
 					return convert(getFactory(uri,
@@ -371,11 +371,11 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 
 	private void doLoad(final Resource resource, IProgressMonitor monitor) {
 		try {
-			String taskName = "Loading Resource " + resource.getURI();
+			String taskName = Messages.Bpmn2ModelerResourceSetImpl_Loading_Title + resource.getURI();
 			monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
 			Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
 			if (!resource.isLoaded()) {
-				throw new Exception("Resource not found");
+				throw new Exception(Messages.Bpmn2ModelerResourceSetImpl_Loading_Not_Found);
 			}
 		}
 		catch (final Exception e) {
@@ -387,7 +387,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					if (e instanceof InvocationTargetException) {
 						msg = ((InvocationTargetException) e).getTargetException().getMessage();
 					}
-					MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot load Resource",
+					MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.Bpmn2ModelerResourceSetImpl_Loading_Error,
 							"Loading Resource "+resource.getURI()+" failed!\n"+msg);
 				}
 				

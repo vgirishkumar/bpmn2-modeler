@@ -26,7 +26,7 @@ public class DirectEditTaskFeature extends DirectEditFlowElementFeature {
 	public String checkValueValid(String value, IDirectEditingContext context) {
 		if (value.length() < 1) {
 			return "Please enter any text as Task name.";
-		} else if (value.contains("\n")) {
+		} else if (value.contains("\n")) { 
 			return "Line breakes are not allowed in Task names.";
 		}
 		return null;

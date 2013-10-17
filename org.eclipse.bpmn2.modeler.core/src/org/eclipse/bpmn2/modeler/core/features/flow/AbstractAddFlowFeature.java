@@ -106,7 +106,7 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		}
 		
 		if (addContext.getProperty(AnchorUtil.CONNECTION_CREATED)!=null) {
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_CREATED, "true");
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_CREATED, "true"); //$NON-NLS-1$
 		}
 		
 		Anchor sourceAnchor = addContext.getSourceAnchor();

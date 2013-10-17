@@ -49,7 +49,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 
 	protected IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 	protected DiagramEditor editor;
-	protected String title = "";
+	protected String title = ""; //$NON-NLS-1$
 	protected EObject object;
 	protected boolean cancel = false;
 	protected boolean abortOnCancel = true;
@@ -123,19 +123,19 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 
 		final String key = getPreferenceKey();
 		Point p = getShell().getSize();
-		int width = preferenceStore.getInt("dialog."+key+".width");
+		int width = preferenceStore.getInt("dialog."+key+".width"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (width==0)
 			width = p.x;
-		int height = preferenceStore.getInt("dialog."+key+".height");
+		int height = preferenceStore.getInt("dialog."+key+".height"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (height==0)
 			height = p.y;
 		getShell().setSize(width,height);
 		
 		p = getShell().getLocation();
-		int x = preferenceStore.getInt("dialog."+key+".x");
+		int x = preferenceStore.getInt("dialog."+key+".x"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (x==0)
 			x = p.x;
-		int y = preferenceStore.getInt("dialog."+key+".y");
+		int y = preferenceStore.getInt("dialog."+key+".y"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (y==0)
 			y = p.y;
 		getShell().setLocation(x,y);
@@ -144,15 +144,15 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 			public void controlMoved(ControlEvent e)
 			{
 				Point p = getShell().getLocation();
-				preferenceStore.setValue("dialog."+key+".x", p.x);
-				preferenceStore.setValue("dialog."+key+".y", p.y);
+				preferenceStore.setValue("dialog."+key+".x", p.x); //$NON-NLS-1$ //$NON-NLS-2$
+				preferenceStore.setValue("dialog."+key+".y", p.y); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
 			public void controlResized(ControlEvent e)
 			{
 				Point p = getShell().getSize();
-				preferenceStore.setValue("dialog."+key+".width", p.x);
-				preferenceStore.setValue("dialog."+key+".height", p.y);
+				preferenceStore.setValue("dialog."+key+".width", p.x); //$NON-NLS-1$ //$NON-NLS-2$
+				preferenceStore.setValue("dialog."+key+".height", p.y); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	
 		});
@@ -264,8 +264,8 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 							transaction.commit();
 						}
 						catch (RollbackException e) {
-							ErrorDialog.openError(getShell(), "Error Commiting Model Changes",
-									"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
+							ErrorDialog.openError(getShell(), Messages.AbstractObjectEditingDialog_Commit_Error,
+									Messages.AbstractObjectEditingDialog_Commit_Error_Title, new Status(IStatus.ERROR,
 											Activator.PLUGIN_ID, e.getMessage(), e));
 						}
 					}

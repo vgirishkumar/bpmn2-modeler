@@ -34,13 +34,13 @@ import org.eclipse.jface.resource.ImageRegistry;
  */
 public class CustomTaskImageProvider {
 	
-	public final static String ICONS_FOLDER = "icons/";
-	public final static String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId("BPMN2");
+	public final static String ICONS_FOLDER = "icons/"; //$NON-NLS-1$
+	public final static String providerId = GraphitiUi.getExtensionManager().getDiagramTypeProviderId("BPMN2"); //$NON-NLS-1$
 
 	// Sneaky tip: The values of this enum correspond to the subfolder names in "icons"
 	public enum IconSize {
-		SMALL("small"),
-		LARGE("large");
+		SMALL("small"), //$NON-NLS-1$
+		LARGE("large"); //$NON-NLS-1$
 		String value;
 		IconSize(String value) {
 			this.value = value;
@@ -117,7 +117,7 @@ public class CustomTaskImageProvider {
 
 	public static void registerImage(String imageId, ImageDescriptor image) {
 		ImageRegistry imageRegistry = GraphitiUIPlugin.getDefault().getImageRegistry();
-		imageId = providerId + "||" + imageId;
+		imageId = providerId + "||" + imageId; //$NON-NLS-1$
 		if (imageRegistry.get(imageId) == null)
 			imageRegistry.put(imageId, image);
 	}
@@ -166,7 +166,7 @@ public class CustomTaskImageProvider {
 	public static String getImageId(TargetRuntime rt, String icon, IconSize size) {
 		if (icon != null && icon.trim().length() > 0) {
 			String prefix = rt.getRuntimeExtension().getClass().getPackage().getName();
-			return prefix + "." + icon.trim() + "." + size.value;
+			return prefix + "." + icon.trim() + "." + size.value; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return null;
 	}
@@ -174,7 +174,7 @@ public class CustomTaskImageProvider {
 	public static String getImagePath(TargetRuntime rt, String icon, IconSize size) {
 		if (icon != null && icon.trim().length() > 0) {
 			String prefix = rt.getRuntimeExtension().getClass().getPackage().getName();
-			return CustomTaskImageProvider.ICONS_FOLDER + size.value + "/" + icon.trim();
+			return CustomTaskImageProvider.ICONS_FOLDER + size.value + "/" + icon.trim(); //$NON-NLS-1$
 		}
 		return null;
 	}

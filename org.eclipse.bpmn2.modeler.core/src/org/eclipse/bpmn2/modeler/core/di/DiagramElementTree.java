@@ -86,10 +86,10 @@ public class DiagramElementTree extends DiagramElementTreeNode implements ILabel
 
 	@Override
 	public String getText(Object element) {
-		String text = "Unknown BPMN Element";
+		String text = Messages.DiagramElementTree_Unknown_Element;
 		if (element instanceof DiagramElementTreeNode) {
 			BaseElement be = ((DiagramElementTreeNode)element).getBaseElement();
-			text = be.eClass().getName() + ": " + ModelUtil.getDisplayName(be);
+			text = be.eClass().getName() + ": " + ModelUtil.getDisplayName(be); //$NON-NLS-1$
 		}
 		return text;
 	}

@@ -64,7 +64,7 @@ public class TextObjectEditor extends ObjectEditor {
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
 
-		text = getToolkit().createText(composite, "", style | SWT.BORDER);
+		text = getToolkit().createText(composite, "", style | SWT.BORDER); //$NON-NLS-1$
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 		if (multiLine) {
 			data.heightHint = 100;
@@ -172,7 +172,7 @@ public class TextObjectEditor extends ObjectEditor {
 	 */
 	protected void setText(String value) {
 		if (value==null)
-			value = "";
+			value = ""; //$NON-NLS-1$
 		if (!value.equals(text.getText()))
 				text.setText(value);
 	}
@@ -202,7 +202,7 @@ public class TextObjectEditor extends ObjectEditor {
 			if (notification.getFeature() instanceof EStructuralFeature) {
 				EStructuralFeature f = (EStructuralFeature)notification.getFeature();
 				if (f!=null && (f.getName().equals(feature.getName()) ||
-						f.getName().equals("mixed")) ) { // handle the case of FormalExpression.body
+						f.getName().equals("mixed")) ) { // handle the case of FormalExpression.body //$NON-NLS-1$
 					updateText();
 					super.notifyChanged(notification);
 				}

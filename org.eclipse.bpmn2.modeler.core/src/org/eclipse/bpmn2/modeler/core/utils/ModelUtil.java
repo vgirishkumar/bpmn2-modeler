@@ -130,10 +130,10 @@ public class ModelUtil {
 	 */
 	private static String getObjectName(EObject obj) {
 		String name;
-		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("bpmnElement");
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("bpmnElement"); //$NON-NLS-1$
 		if (feature!=null && obj.eGet(feature)!=null) {
 			EObject bpmnElement = (EObject) obj.eGet(feature);
-			name = obj.eClass().getName() + "_" + bpmnElement.eClass().getName();
+			name = obj.eClass().getName() + "_" + bpmnElement.eClass().getName(); //$NON-NLS-1$
 		}
 		else {
 			name = obj.eClass().getName();
@@ -173,7 +173,7 @@ public class ModelUtil {
 		value = Integer.valueOf( value.intValue() + 1 );
 		defaultIds.put(name, Integer.valueOf(value));
 		
-		return "_" + name + "_" + value;
+		return "_" + name + "_" + value; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class ModelUtil {
 			String id = name;
 			if (name==null) {
 				name = getObjectName(obj);
-				id = name + "_" + 1;
+				id = name + "_" + 1; //$NON-NLS-1$
 			}
 			
 			for (int i=1;; ++i) {
@@ -209,14 +209,14 @@ public class ModelUtil {
 					tab.put(id, obj);
 					return id;
 				}
-				id = name + "_" + i;
+				id = name + "_" + i; //$NON-NLS-1$
 			}
 		}
 		return generateDefaultID(obj, name);
 	}
 	
 	public static void unsetID(EObject obj, Resource resource) {
-		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			Object value = obj.eGet(feature);
 			if (value instanceof String) {
@@ -239,7 +239,7 @@ public class ModelUtil {
 	 * @param obj - the BPMN2 object
 	 */
 	public static void addID(EObject obj) {
-		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			Object value = obj.eGet(feature);
 			if (value!=null) {
@@ -265,7 +265,7 @@ public class ModelUtil {
 	public static void addID(EObject obj, String id) {
 		Object key = getKey(obj);
 		String name = getObjectName(obj);
-		if (key==null || id.startsWith("_" + name + "_")) {
+		if (key==null || id.startsWith("_" + name + "_")) { //$NON-NLS-1$ //$NON-NLS-2$
 			int newValue = 0;
 			try {
 				int i = id.lastIndexOf('_') + 1;
@@ -308,7 +308,7 @@ public class ModelUtil {
 	 */
 	public static String setID(EObject obj, Resource res) {
 		String id = null;
-		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			if (obj.eGet(feature)==null) {
 				id = generateID(obj,res);
@@ -319,7 +319,7 @@ public class ModelUtil {
 	}
 	
 	public static String getID(EObject obj) {
-		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = ((EObject)obj).eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			return (String)obj.eGet(feature);
 		}
@@ -327,9 +327,9 @@ public class ModelUtil {
 	}
 	
 	public static String generateUndefinedID(String base) {
-		String name = "undefined";
-		if (base.contains("_")) {
-			return "<" + name + "_" + base.replaceFirst(".*_", "") + ">";
+		String name = "undefined"; //$NON-NLS-1$
+		if (base.contains("_")) { //$NON-NLS-1$
+			return "<" + name + "_" + base.replaceFirst(".*_", "") + ">"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 		
 		Integer value = defaultIds.get(name);
@@ -338,12 +338,12 @@ public class ModelUtil {
 		value = Integer.valueOf( value.intValue() + 1 );
 		defaultIds.put(name, Integer.valueOf(value));
 		
-		return "<" + name + "_" + value + ">";
+		return "<" + name + "_" + value + ">"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	public static int getIDNumber(String id) {
 		try {
-			int i = id.lastIndexOf("_");
+			int i = id.lastIndexOf("_"); //$NON-NLS-1$
 			return Integer.parseInt(id.substring(i+1));
 		}
 		catch (Exception e) {
@@ -353,9 +353,9 @@ public class ModelUtil {
 
 	public static String getName(BaseElement element) {
 		if (element != null) {
-			EStructuralFeature feature = element.eClass().getEStructuralFeature("name");
+			EStructuralFeature feature = element.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (feature==null)
-				feature = getAnyAttribute(element,"name");
+				feature = getAnyAttribute(element,"name"); //$NON-NLS-1$
 			if (feature!=null && element.eGet(feature) instanceof String)
 				return (String) element.eGet(feature);
 		}
@@ -363,9 +363,9 @@ public class ModelUtil {
 	}
 
 	public static boolean hasName(BaseElement obj) {
-		EStructuralFeature feature = obj.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = obj.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature==null)
-			feature = getAnyAttribute(obj,"name");
+			feature = getAnyAttribute(obj,"name"); //$NON-NLS-1$
 		return feature!=null;
 	}
 /*	
@@ -377,15 +377,15 @@ public class ModelUtil {
 */	
 	public static String toDisplayName(String anyName) {
 		// get rid of the "Impl" java suffix
-		anyName = anyName.replaceAll("Impl$", "");
-		String displayName = "";
+		anyName = anyName.replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		String displayName = ""; //$NON-NLS-1$
 		boolean first = true;
 		char[] chars = anyName.toCharArray();
 		for (int i=0; i<chars.length; ++i) {
 			char c = chars[i];
 			if (Character.isUpperCase(c)) {
 				if (displayName.length()>0 && i+1<chars.length && !Character.isUpperCase(chars[i+1]))
-					displayName += " ";
+					displayName += " "; //$NON-NLS-1$
 			}
 			if (first) {
 				c = Character.toUpperCase(c);
@@ -401,7 +401,7 @@ public class ModelUtil {
 	@SuppressWarnings("unchecked")
 	public static List<EventDefinition> getEventDefinitions(Event event) {
 		if (event!=null) {
-			EStructuralFeature feature = event.eClass().getEStructuralFeature("eventDefinitions");
+			EStructuralFeature feature = event.eClass().getEStructuralFeature("eventDefinitions"); //$NON-NLS-1$
 			if (feature!=null) {
 				return (List<EventDefinition>) event.eGet(feature);
 			}
@@ -503,7 +503,7 @@ public class ModelUtil {
 
 		if (eObject == null) {
 			throw new NullPointerException(
-					"eObject cannot be null in getNamespaceMap()");
+					"eObject cannot be null in getNamespaceMap()"); //$NON-NLS-1$
 		}
 
 		INamespaceMap<String, String> nsMap = null;
@@ -519,7 +519,7 @@ public class ModelUtil {
 		
 		if (nsMap == null) {
 			throw new IllegalStateException(
-					"INamespaceMap cannot be attached to an eObject");
+					"INamespaceMap cannot be attached to an eObject"); //$NON-NLS-1$
 		}
 
 		return nsMap;
@@ -633,20 +633,20 @@ public class ModelUtil {
 	public static String getDiagramTypeName(BPMNDiagram object) {
 		Bpmn2DiagramType type = getDiagramType((BPMNDiagram)object); 
 		if (type == Bpmn2DiagramType.CHOREOGRAPHY) {
-			return "Choreography Diagram";
+			return Messages.ModelUtil_Choreograpy_Diagram;
 		}
 		else if (type == Bpmn2DiagramType.COLLABORATION) {
-			return "Collaboration Diagram";
+			return Messages.ModelUtil_Collaboration_Diagram;
 		}
 		else if (type == Bpmn2DiagramType.PROCESS) {
-			return "Process Diagram";
+			return Messages.ModelUtil_Process_Diagram;
 		}
-		return "Unknown Diagram Type";
+		return Messages.ModelUtil_Unknown_Diagram_Type;
 	}
 	
 	public static List<EStructuralFeature> getAnyAttributes(EObject object) {
 		List<EStructuralFeature> list = new ArrayList<EStructuralFeature>();
-		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute");
+		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
 			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
 			for (Entry entry : map) {
@@ -658,7 +658,7 @@ public class ModelUtil {
 	}
 	
 	public static EStructuralFeature getAnyAttribute(EObject object, String name) {
-		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute");
+		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
 			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
 			for (Entry entry : map) {
@@ -698,7 +698,7 @@ public class ModelUtil {
 		}
 		
 		// this featuremap can only hold attributes, not elements
-		String type = "E" + value.getClass().getSimpleName();
+		String type = "E" + value.getClass().getSimpleName(); //$NON-NLS-1$
 		EDataType eDataType = (EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
 		if (eDataType!=null) {
 			if (attr==null) {
@@ -737,7 +737,7 @@ public class ModelUtil {
 		}
 		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
 		EAttribute attr = null;
-		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot");
+		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
 		if (docRoot==null) {
 			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
 			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
@@ -755,7 +755,7 @@ public class ModelUtil {
 		}
 		
 		if (type==null)
-			type = "EString";
+			type = "EString"; //$NON-NLS-1$
 		
 		EClassifier eClassifier = null;
 		if (type!=null) {
@@ -767,7 +767,7 @@ public class ModelUtil {
 						type+"' is not a known data type.";
 	
 				MessageDialog.openError(Display.getDefault().getActiveShell(),
-						"Internal Error",
+						Messages.ModelUtil_Internal_Error,
 						message);
 				throw new IllegalArgumentException(message);
 			}
@@ -802,7 +802,7 @@ public class ModelUtil {
 			ExtendedMetaData.INSTANCE.demandPackage(pkg.getNsURI());
 			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
 			if (docRoot==null) {
-				EClassifier e = pkg.getEClassifier("DocumentRoot");
+				EClassifier e = pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
 				if (e instanceof EClass) {
 					docRoot = (EClass)e;
 				}
@@ -830,7 +830,7 @@ public class ModelUtil {
 						type+"' is not a known object type.";
 	
 				MessageDialog.openError(Display.getDefault().getActiveShell(),
-						"Internal Error",
+						Messages.ModelUtil_Internal_Error,
 						message);
 				throw new IllegalArgumentException(message);
 			}
@@ -853,10 +853,10 @@ public class ModelUtil {
 	
 	public static boolean removeDynamicFeature(EPackage pkg, EObject object, String name) {
 		if (isBpmnPackage(pkg)) {
-			throw new IllegalArgumentException("Can not remove dynamic feature from "+pkg.getName());
+			throw new IllegalArgumentException("Can not remove dynamic feature from "+pkg.getName()); //$NON-NLS-1$
 		}
 		
-		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute");
+		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
 			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
 			for (Entry entry : map) {
@@ -1124,7 +1124,7 @@ public class ModelUtil {
 		List<T> results = new ArrayList<T>();
 		
 		if (object!=null) {
-			EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
+			EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
 			EList<ExtensionAttributeValue> list = (EList<ExtensionAttributeValue>)object.eGet(evf);
 			for (ExtensionAttributeValue eav : list) {
 				FeatureMap fm = eav.getValue();
@@ -1181,7 +1181,7 @@ public class ModelUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
-		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues");
+		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
@@ -1203,7 +1203,7 @@ public class ModelUtil {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static String getLabel(Object object) {
-		String label = "";
+		String label = ""; //$NON-NLS-1$
 		if (object instanceof EObject) {
 			EObject eObject = (EObject)object;
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
@@ -1214,7 +1214,7 @@ public class ModelUtil {
 		}
 		else
 			label = object.toString();
-		label = label.replaceAll(" Ref$", "");
+		label = label.replaceAll(" Ref$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		return label;
 	}
 
@@ -1227,13 +1227,13 @@ public class ModelUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static String getLabel(EObject object, EStructuralFeature feature) {
-		String label = "";
+		String label = ""; //$NON-NLS-1$
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter!=null)
 			label = adapter.getFeatureDescriptor(feature).getLabel(object);
 		else
 			label = toDisplayName( feature.getName() );
-		label = label.replaceAll(" Ref$", "");
+		label = label.replaceAll(" Ref$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		return label;
 	}
 
@@ -1464,19 +1464,19 @@ public class ModelUtil {
 		if (object instanceof BPMNDiagram) {
 			Bpmn2DiagramType type = getDiagramType((BPMNDiagram)object); 
 			if (type == Bpmn2DiagramType.CHOREOGRAPHY) {
-				objName = "Choreography Diagram";
+				objName = Messages.ModelUtil_Choreography_Diagram;
 			}
 			else if (type == Bpmn2DiagramType.COLLABORATION) {
-				objName = "Collaboration Diagram";
+				objName = Messages.ModelUtil_Collaboration_Diagram;
 			}
 			else if (type == Bpmn2DiagramType.PROCESS) {
-				objName = "Process Diagram";
+				objName = Messages.ModelUtil_Process_Diagram;
 			}
 		}
 		if (objName==null){
 			objName = toDisplayName( object.eClass().getName() );
 		}
-		EStructuralFeature feature = object.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null) {
 			String name = (String)object.eGet(feature);
 			if (name==null || name.isEmpty())
@@ -1485,7 +1485,7 @@ public class ModelUtil {
 				name = objName + " \"" + name + "\"";
 			return name;
 		}
-		feature = object.eClass().getEStructuralFeature("id");
+		feature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			String id = (String)object.eGet(feature);
 			if (id==null || id.isEmpty())
@@ -1494,7 +1494,7 @@ public class ModelUtil {
 				id = objName + " \"" + id + "\"";
 			return id;
 		}
-		feature = object.eClass().getEStructuralFeature("qName");
+		feature = object.eClass().getEStructuralFeature("qName"); //$NON-NLS-1$
 		if (feature!=null) {
 			Object qName = object.eGet(feature);
 			if (qName!=null) {
@@ -1507,7 +1507,7 @@ public class ModelUtil {
 	public static String getLongDisplayName(EObject object, EStructuralFeature feature) {
 		Object value = object.eGet(feature);
 		if (value==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return value.toString();
 	}
 
@@ -1540,7 +1540,7 @@ public class ModelUtil {
 		Control[] kids = parent.getChildren();
 		for (Control k : kids) {
 			if (k.isDisposed())
-				Activator.logError(new SWTException("Widget is disposed."));
+				Activator.logError(new SWTException("Widget is disposed.")); //$NON-NLS-1$
 			if (k instanceof Composite) {
 				recursivelayout((Composite)k);
 				((Composite)k).layout(true);

@@ -112,17 +112,17 @@ public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFea
 	}
 	
 	public static String getEventDefinitionsValue(Event element) {
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(element);
 		for (EventDefinition ed : eventDefinitions) {
 			if (!result.isEmpty())
-				result += " ";
+				result += " "; //$NON-NLS-1$
 			result += ed.getId();
 		}
 		// Parallel Multiple has a different visual than Multiple for Catch Events
 		if (element instanceof CatchEvent) {
 			if (((CatchEvent)element).isParallelMultiple())
-				result += "+";
+				result += "+"; //$NON-NLS-1$
 		}
 		return result;
 	}

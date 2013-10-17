@@ -126,13 +126,13 @@ public class ModelHandler {
 		BPMNDiagram diagram = null;
 		switch (diagramType) {
 		case PROCESS:
-			diagram = createProcessDiagram("Default");
+			diagram = createProcessDiagram(Messages.ModelHandler_Default);
 			break;
 		case COLLABORATION:
-			diagram = createCollaborationDiagram("Default");
+			diagram = createCollaborationDiagram(Messages.ModelHandler_Default);
 			break;
 		case CHOREOGRAPHY:
-			diagram = createChoreographyDiagram("Default");
+			diagram = createChoreographyDiagram(Messages.ModelHandler_Default);
 			break;
 		}
 		if (diagram!=null)
@@ -156,11 +156,11 @@ public class ModelHandler {
 					ModelUtil.setID(plane,resource);
 
 					Process process = createProcess();
-					process.setName(name+" Process");
+					process.setName(name+Messages.ModelHandler_Process);
 					// the Process ID should be the same as the resource name
 					String filename = resource.getURI().lastSegment();
-					if (filename.contains("."))
-						filename = filename.split("\\.")[0];
+					if (filename.contains(".")) //$NON-NLS-1$
+						filename = filename.split("\\.")[0]; //$NON-NLS-1$
 					process.setId( ModelUtil.generateID(process,resource,filename) );
 
 					// create StartEvent
@@ -234,7 +234,7 @@ public class ModelHandler {
 					// add to BPMNDiagram
 					plane.setBpmnElement(process);
 					bpmnDiagram.setPlane(plane);
-					bpmnDiagram.setName(name+" Process Diagram");
+					bpmnDiagram.setName(name+Messages.ModelHandler_Process_Diagram);
 					getDefinitions().getDiagrams().add(bpmnDiagram);
 				}
 			});
@@ -257,22 +257,22 @@ public class ModelHandler {
 					ModelUtil.setID(plane,resource);
 
 					Collaboration collaboration = createCollaboration();
-					collaboration.setName(name+" Collaboration");
+					collaboration.setName(name+Messages.ModelHandler_Collaboration);
 
 					Process initiatingProcess = createProcess();
-					initiatingProcess.setName("Initiating Process");
+					initiatingProcess.setName(Messages.ModelHandler_Initiating_Process);
 					initiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
 					Participant initiatingParticipant = create(Participant.class);
-					initiatingParticipant.setName("Initiating Pool");
+					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Pool);
 					initiatingParticipant.setProcessRef(initiatingProcess);
 					
 					Process nonInitiatingProcess = createProcess();
-					nonInitiatingProcess.setName("Non-initiating Process");
+					nonInitiatingProcess.setName(Messages.ModelHandler_Non_Initiating_Process);
 					nonInitiatingProcess.setDefinitionalCollaborationRef(collaboration);
 					
 					Participant nonInitiatingParticipant = create(Participant.class);
-					nonInitiatingParticipant.setName("Non-initiating Pool");
+					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Pool);
 					nonInitiatingParticipant.setProcessRef(nonInitiatingProcess);
 					
 					collaboration.getParticipants().add(initiatingParticipant);
@@ -329,7 +329,7 @@ public class ModelHandler {
 
 					plane.setBpmnElement(collaboration);
 					bpmnDiagram.setPlane(plane);
-					bpmnDiagram.setName(name+" Collaboration Diagram");
+					bpmnDiagram.setName(name+Messages.ModelHandler_Collaboration_Diagram);
 					getDefinitions().getDiagrams().add(bpmnDiagram);
 				}
 			});
@@ -353,17 +353,17 @@ public class ModelHandler {
 					ModelUtil.setID(plane,resource);
 
 					Choreography choreography = createChoreography();
-					choreography.setName(name+" Choreography");
+					choreography.setName(name+Messages.ModelHandler_Choreography);
 					
 					Participant initiatingParticipant = create(Participant.class);
-					initiatingParticipant.setName(name+" Initiating Participant");
+					initiatingParticipant.setName(name+Messages.ModelHandler_Initiating_Participant);
 
 //					Process initiatingProcess = createProcess();
 //					initiatingProcess.setName(name+" Initiating Process");
 //					initiatingParticipant.setProcessRef(initiatingProcess);
 					
 					Participant nonInitiatingParticipant = create(Participant.class);
-					nonInitiatingParticipant.setName(name+" Non-initiating Participant");
+					nonInitiatingParticipant.setName(name+Messages.ModelHandler_Non_Initiating_Participant);
 
 //					Process nonInitiatingProcess = createProcess();
 //					nonInitiatingProcess.setName(name+" Non-initiating Process");
@@ -373,7 +373,7 @@ public class ModelHandler {
 					choreography.getParticipants().add(nonInitiatingParticipant);
 					
 					ChoreographyTask task = create(ChoreographyTask.class);
-					task.setName(name+" Choreography Task");
+					task.setName(name+Messages.ModelHandler_Choreography_Task);
 					task.getParticipantRefs().add(initiatingParticipant);
 					task.getParticipantRefs().add(nonInitiatingParticipant);
 					task.setInitiatingParticipantRef(initiatingParticipant);
@@ -588,7 +588,7 @@ public class ModelHandler {
 		FlowElementsContainer container = getFlowElementContainer(target);
 		if (container.getLaneSets().isEmpty()) {
 			LaneSet laneSet = create(LaneSet.class);
-			laneSet.setName("Lane Set "+ModelUtil.getIDNumber( laneSet.getId() ));
+			laneSet.setName(Messages.ModelHandler_Lane_Set+ModelUtil.getIDNumber( laneSet.getId() ));
 			container.getLaneSets().add(laneSet);
 		}
 		container.getLaneSets().get(0).getLanes().add(lane);
@@ -774,12 +774,12 @@ public class ModelHandler {
 						if (value instanceof EObject)
 							stringValue = diagnostics.getText((EObject)value);
 						else
-							stringValue = "\"" + value.toString() + "\"";
+							stringValue = "\"" + value.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 						
-						String message = "Cannot assign " +
+						String message = Messages.ModelHandler_20 +
 								stringValue +
-								" to " +
-								"\"" + iv.getFeature().getName() + "\"";
+								Messages.ModelHandler_21 +
+								"\"" + iv.getFeature().getName() + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 								
 						diagnostics.add(IStatus.ERROR, iv.getObject(), message);
 					} else {

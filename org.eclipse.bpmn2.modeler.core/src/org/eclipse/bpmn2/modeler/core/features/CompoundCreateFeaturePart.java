@@ -142,7 +142,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				targetContainer = ((ICreateContext)context).getTargetContainer();
 			cc.setTargetContainer(targetContainer);
 			cc.setTargetConnection(((ICreateContext)context).getTargetConnection());
-			value = this.getProperty("x");
+			value = this.getProperty("x"); //$NON-NLS-1$
 			if (value!=null) {
 				if (targetContainer instanceof Diagram)
 					x += Integer.parseInt(value);
@@ -150,7 +150,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 					x = Integer.parseInt(value);
 			}
 			cc.setX(x);
-			value = this.getProperty("y");
+			value = this.getProperty("y"); //$NON-NLS-1$
 			if (value!=null) {
 				if (targetContainer instanceof Diagram)
 					y += Integer.parseInt(value);
@@ -158,12 +158,12 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 					y = Integer.parseInt(value);
 			}
 			cc.setY(y);
-			value = this.getProperty("width");
+			value = this.getProperty("width"); //$NON-NLS-1$
 			if (value!=null) {
 				width = Integer.parseInt(value);
 			}
 			cc.setWidth(width);
-			value = this.getProperty("height");
+			value = this.getProperty("height"); //$NON-NLS-1$
 			if (value!=null) {
 				height = Integer.parseInt(value);
 			}
@@ -173,7 +173,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		}
 		else if (feature instanceof ICreateConnectionFeature) {
 			CreateConnectionContext cc = new CreateConnectionContext();
-			value = this.getProperty("source");
+			value = this.getProperty("source"); //$NON-NLS-1$
 			if (value!=null) {
 				for (PictogramElement pe : pictogramElements) {
 					String id = Graphiti.getPeService().getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
@@ -189,7 +189,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			if (source==null)
 				source = ((ICreateConnectionContext)context).getSourcePictogramElement();
 			
-			value = this.getProperty("target");
+			value = this.getProperty("target"); //$NON-NLS-1$
 			if (value!=null) {
 				for (PictogramElement pe : pictogramElements) {
 					String id = Graphiti.getPeService().getPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID);
@@ -274,11 +274,11 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		if (be!=null && properties!=null) {
 			ModelDescriptor md = TargetRuntime.getCurrentRuntime().getModelDescriptor();
 			for (Entry<String, String> entry : properties.entrySet()) {
-				if (entry.getKey().startsWith("$")) {
+				if (entry.getKey().startsWith("$")) { //$NON-NLS-1$
 					String featureName = entry.getKey().substring(1);
 					EStructuralFeature feature = md.getFeature(be.eClass().getName(), featureName);
 					String value = entry.getValue();
-					if (value.startsWith("$")) {
+					if (value.startsWith("$")) { //$NON-NLS-1$
 						String name = value.substring(1);
 						EClassifier eClass = md.getClassifier(name);
 						EFactory factory = eClass.getEPackage().getEFactoryInstance();

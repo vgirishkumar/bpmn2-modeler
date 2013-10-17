@@ -35,19 +35,19 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 
 	// common property keys
-	public final static String LONG_DESCRIPTION = "long.description";
-	public final static String CUSTOM_DESCRIPTION = "custom.description";
-	public final static String UI_CAN_EDIT = "ui.can.edit";
+	public final static String LONG_DESCRIPTION = "long.description"; //$NON-NLS-1$
+	public final static String CUSTOM_DESCRIPTION = "custom.description"; //$NON-NLS-1$
+	public final static String UI_CAN_EDIT = "ui.can.edit"; //$NON-NLS-1$
 	// Any adapter that uses this must override setValue() which understands
 	// how to convert a String to the required type.
 	// This is used in ComboObjectEditor (maybe others in the future)
-	public final static String UI_CAN_EDIT_INLINE = "ui.can.edit.inline";
-	public final static String UI_CAN_CREATE_NEW = "ui.can.create.new";
-	public final static String UI_CAN_SET_NULL = "ui.can.set.null";
-	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice";
-	public static final String PROPERTY_DESCRIPTOR = "property.descriptor";
+	public final static String UI_CAN_EDIT_INLINE = "ui.can.edit.inline"; //$NON-NLS-1$
+	public final static String UI_CAN_CREATE_NEW = "ui.can.create.new"; //$NON-NLS-1$
+	public final static String UI_CAN_SET_NULL = "ui.can.set.null"; //$NON-NLS-1$
+	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice"; //$NON-NLS-1$
+	public static final String PROPERTY_DESCRIPTOR = "property.descriptor"; //$NON-NLS-1$
 	// Line number in XML document where this object is defined
-	public static final String LINE_NUMBER = "line.number";
+	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
 	
 	protected static Hashtable<EClass,EObject> dummyObjects = new Hashtable<EClass,EObject>();
 
@@ -68,25 +68,25 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 		this.adapterFactory = adapterFactory;
 		setTarget(object);
 
-		String name = "";
+		String name = ""; //$NON-NLS-1$
 		if (object instanceof BPMNDiagram) {
 			switch(ModelUtil.getDiagramType(object)) {
 			case NONE:
-				name = "UnknownDiagram";
+				name = "UnknownDiagram"; //$NON-NLS-1$
 				break;
 			case PROCESS:
-				name = "ProcessDiagram";
+				name = "ProcessDiagram"; //$NON-NLS-1$
 				break;
 			case CHOREOGRAPHY:
-				name = "ChoreographyDiagram";
+				name = "ChoreographyDiagram"; //$NON-NLS-1$
 				break;
 			case COLLABORATION:
-				name = "CollaborationDiagram";
+				name = "CollaborationDiagram"; //$NON-NLS-1$
 				break;
 			}
 		}
 		else {
-			name = object.eClass().getName().replaceAll("Impl$", "");
+			name = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		// Set the model element's long description from the Messages class.
 		// The field in Messages that contains the description will have the
@@ -95,8 +95,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 		// that contains the adapter factory class; by default, this will be the
 		// BPMN2 modeler UI plug-in hierarchy, starting with org.eclipse.bpmn2.modeler.ui.adapters
     	try {
-        	String fieldName = "UI_" + name + "_long_description";
-        	Class messages = JavaReflectionUtil.findClass(adapterFactory, "Messages");
+        	String fieldName = "UI_" + name + "_long_description"; //$NON-NLS-1$ //$NON-NLS-2$
+        	Class messages = JavaReflectionUtil.findClass(adapterFactory, "Messages"); //$NON-NLS-1$
 			Field field = messages.getField(fieldName);
 			String text = (String)field.get(null);
 			setProperty(LONG_DESCRIPTION, text);

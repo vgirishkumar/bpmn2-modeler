@@ -73,7 +73,7 @@ import org.eclipse.ui.forms.widgets.Section;
  */
 public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase implements ResourceSetListener {
 
-	public final String EMPTY_LABEL_PROPERTY = "empty.label";
+	public final String EMPTY_LABEL_PROPERTY = "empty.label"; //$NON-NLS-1$
 	protected Section attributesSection = null;
 	protected Composite attributesComposite = null;
 	protected Font descriptionFont = null;
@@ -178,14 +178,14 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		
 		if (attributesSection==null || attributesSection.isDisposed()) {
 
-			attributesSection = createSection(this, "Attributes");
+			attributesSection = createSection(this, Messages.AbstractDetailComposite_Attributes);
 			
 			attributesSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 3, 1));
 			attributesComposite = toolkit.createComposite(attributesSection);
 			attributesSection.setClient(attributesComposite);
 			attributesComposite.setLayout(new GridLayout(3,false));
 
-			final String prefName = "detail."+businessObject.eClass().getName()+".expanded";
+			final String prefName = "detail."+businessObject.eClass().getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
 			attributesSection.addExpansionListener(new IExpansionListener() {
 				
 				@Override
@@ -357,7 +357,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 //	    section.setTextClient(toolbar);
 
 		if (getBusinessObject()!=null) {
-			final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded";
+			final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			boolean expanded = preferenceStore.getBoolean(prefKey);
 			section.setExpanded(expanded);
 		}
@@ -370,7 +370,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			@Override
 			public void expansionStateChanged(ExpansionEvent e) {
 				if (getBusinessObject()!=null) {
-					final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded";
+					final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					preferenceStore.setValue(prefKey, e.getState());
 				}
 			}
@@ -422,7 +422,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
-		if (isModelObjectEnabled(object.eClass(), attribute) || "anyAttribute".equals(attribute.getName())) {
+		if (isModelObjectEnabled(object.eClass(), attribute) || "anyAttribute".equals(attribute.getName())) { //$NON-NLS-1$
 
 			if (parent==null)
 				parent = getAttributesParent();
@@ -461,7 +461,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			) {
 				ObjectEditor editor = new FloatObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
-			} else if ("anyAttribute".equals(attribute.getName()) ||
+			} else if ("anyAttribute".equals(attribute.getName()) || //$NON-NLS-1$
 					object.eGet(attribute) instanceof FeatureMap) {
 				List<Entry> basicList = ((BasicFeatureMap) object.eGet(attribute)).basicList();
 				for (Entry entry : basicList) {
@@ -614,10 +614,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					List<String> list = new ArrayList<String>();
 					EClass c = o.eClass();
 					// add name and id attributes first (if any)
-					if (c.getEStructuralFeature("name")!=null)
-						list.add("name");
-					if (c.getEStructuralFeature("id")!=null)
-						list.add("id");
+					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
+						list.add("name"); //$NON-NLS-1$
+					if (c.getEStructuralFeature("id")!=null) //$NON-NLS-1$
+						list.add("id"); //$NON-NLS-1$
 					for (EStructuralFeature attribute : o.eClass().getEStructuralFeatures()) {
 						if (!list.contains(attribute.getName()))
 							list.add(attribute.getName());

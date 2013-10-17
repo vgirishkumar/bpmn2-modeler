@@ -38,8 +38,8 @@ import org.eclipse.graphiti.services.IPeService;
 public abstract class AbstractAddActivityFeature<T extends Activity>
 	extends AbstractBpmn2AddElementFeature<T> {
 
-	public static final String ACTIVITY_DECORATOR = "activity-decorator";
-	public static final String IS_ACTIVITY = "activity";
+	public static final String ACTIVITY_DECORATOR = "activity-decorator"; //$NON-NLS-1$
+	public static final String IS_ACTIVITY = "activity"; //$NON-NLS-1$
 
 	protected final IGaService gaService = Graphiti.getGaService();
 	protected final IPeService peService = Graphiti.getPeService();
@@ -110,7 +110,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
+			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
 
 		// hook for subclasses to inject extra code
@@ -123,7 +123,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true");
+			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
 
 		splitConnection(context, containerShape);

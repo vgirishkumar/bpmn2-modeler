@@ -83,7 +83,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		if (headerText!=null)
 			return headerText;
 		
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		if (feature!=null) {
 			if (feature.eContainer() instanceof EClass) {
 				EClass eclass = this.listComposite.getListItemClass();
@@ -99,7 +99,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	public String getProperty() {
 		if (feature!=null)
 			return feature.getName(); //$NON-NLS-1$
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	@Override
@@ -247,7 +247,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	
 	public static class CustomCheckboxCellEditor extends ComboBoxCellEditor {
 
-		private static String[] items = new String[] { "false", "true" };
+		private static String[] items = new String[] { "false", "true" }; //$NON-NLS-1$ //$NON-NLS-2$
 		
 		public CustomCheckboxCellEditor(Composite parent) {
 			super(parent, items,SWT.READ_ONLY);
@@ -293,7 +293,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		protected Hashtable<String,Object> choices = null;
 
 		public CustomComboBoxCellEditor(Composite parent, EStructuralFeature feature) {
-			super(parent, new String[] {""}, SWT.READ_ONLY);
+			super(parent, new String[] {""}, SWT.READ_ONLY); //$NON-NLS-1$
 		}
 		
 		public void activate(ColumnViewerEditorActivationEvent activationEvent) {
@@ -317,7 +317,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			List<String> items = new ArrayList<String>();
 			choices = ModelUtil.getChoiceOfValues(object, feature);
 			if (ModelUtil.canSetNull(object,feature))
-				items.add("");
+				items.add(""); //$NON-NLS-1$
 			items.addAll(choices.keySet());
 			Collections.sort(items);
 			this.setItems(items.toArray(new String[items.size()]));
@@ -370,7 +370,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		@Override
 		protected void doSetValue(Object value) {
 			if (value==null)
-				value = "";
+				value = ""; //$NON-NLS-1$
 			else
 				value = ModelUtil.getStringWrapperValue(value);
 			super.doSetValue(value);

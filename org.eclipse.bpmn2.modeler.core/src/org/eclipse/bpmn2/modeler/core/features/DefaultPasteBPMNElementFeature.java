@@ -344,7 +344,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	}
 
 	private String getId(EObject newObject) {
-		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature != null) {
 			return (String) newObject.eGet(feature);
 		}
@@ -354,7 +354,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	private String setId(EObject newObject) {
 		String newId = null;
 		String oldId = null;
-		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id");
+		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature != null) {
 			oldId = (String) newObject.eGet(feature);
 			if (idMap.contains(oldId)) {
@@ -374,7 +374,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		TreeIterator<EObject> iter = definitions.eAllContents();
 		while (iter.hasNext()) {
 			EObject o = iter.next();
-			EStructuralFeature feature = o.eClass().getEStructuralFeature("id");
+			EStructuralFeature feature = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 			if (feature != null) {
 				String thisId = (String) o.eGet(feature);
 				if (thisId != null && !thisId.isEmpty() && thisId.equals(id))

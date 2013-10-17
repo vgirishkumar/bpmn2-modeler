@@ -88,7 +88,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public class FeatureSupport {
-	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal";
+	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal"; //$NON-NLS-1$
 
 	public static boolean isValidFlowElementTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
@@ -219,7 +219,7 @@ public class FeatureSupport {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
 			String value = Graphiti.getPeService().getPropertyValue(pe, ACTIVITY_DECORATOR);
-			if (value!=null && "true".equals(value))
+			if (value!=null && "true".equals(value)) //$NON-NLS-1$
 				continue;
 			list.add(pe);
 		}
@@ -230,7 +230,7 @@ public class FeatureSupport {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
 			String value = Graphiti.getPeService().getPropertyValue(pe, ACTIVITY_DECORATOR);
-			if (value!=null && "true".equals(value))
+			if (value!=null && "true".equals(value)) //$NON-NLS-1$
 				list.add(pe);
 		}
 		return list;

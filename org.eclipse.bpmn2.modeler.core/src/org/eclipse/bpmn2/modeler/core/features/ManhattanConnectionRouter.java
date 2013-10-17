@@ -177,10 +177,10 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		ConnectionRoute route = null;
 		if (allRoutes.size()==1) {
 			route = allRoutes.get(0);
-			GraphicsUtil.dump("Only one valid route: "+route.toString());
+			GraphicsUtil.dump("Only one valid route: "+route.toString()); //$NON-NLS-1$
 		}
 		else if (allRoutes.size()>1) {
-			GraphicsUtil.dump("Optimizing Routes:\n------------------");
+			GraphicsUtil.dump("Optimizing Routes:\n------------------"); //$NON-NLS-1$
 			int delta = 5;
 			int rank = allRoutes.size();
 			for (ConnectionRoute r : allRoutes) {
@@ -219,7 +219,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 				}
 			}
 
-			GraphicsUtil.dump("Calculating Crossings:\n------------------");
+			GraphicsUtil.dump("Calculating Crossings:\n------------------"); //$NON-NLS-1$
 			// Connection crossings only participate in determining the best route,
 			// we don't actually try to correct a route crossing a connection.
 			for (ConnectionRoute r : allRoutes) {
@@ -241,10 +241,10 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					}
 
 				}
-				GraphicsUtil.dump("    "+r.toString());
+				GraphicsUtil.dump("    "+r.toString()); //$NON-NLS-1$
 			}
 
-			GraphicsUtil.dump("Sorting Routes:\n------------------");
+			GraphicsUtil.dump("Sorting Routes:\n------------------"); //$NON-NLS-1$
 			Collections.sort(allRoutes);
 			
 			drawConnectionRoutes(allRoutes);

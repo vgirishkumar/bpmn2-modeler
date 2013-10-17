@@ -61,15 +61,15 @@ import org.eclipse.xsd.XSDSchema;
  */
 public class ImportUtil {
 
-	public static final String IMPORT_TYPE_WSDL = "http://schemas.xmlsoap.org/wsdl/";
-	public static final String IMPORT_TYPE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-	public static final String IMPORT_TYPE_JAVA = "http://www.java.com/javaTypes";
-	public static final String IMPORT_TYPE_BPMN2 = "http://www.omg.org/spec/BPMN/20100524/MODEL";
+	public static final String IMPORT_TYPE_WSDL = "http://schemas.xmlsoap.org/wsdl/"; //$NON-NLS-1$
+	public static final String IMPORT_TYPE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema"; //$NON-NLS-1$
+	public static final String IMPORT_TYPE_JAVA = "http://www.java.com/javaTypes"; //$NON-NLS-1$
+	public static final String IMPORT_TYPE_BPMN2 = "http://www.omg.org/spec/BPMN/20100524/MODEL"; //$NON-NLS-1$
 	
-	public static final String IMPORT_KIND_WSDL = "wsdl";
-	public static final String IMPORT_KIND_XML_SCHEMA = "xsd";
-	public static final String IMPORT_KIND_JAVA = "java";
-	public static final String IMPORT_KIND_BPMN2 = "bpmn2";
+	public static final String IMPORT_KIND_WSDL = "wsdl"; //$NON-NLS-1$
+	public static final String IMPORT_KIND_XML_SCHEMA = "xsd"; //$NON-NLS-1$
+	public static final String IMPORT_KIND_JAVA = "java"; //$NON-NLS-1$
+	public static final String IMPORT_KIND_BPMN2 = "bpmn2"; //$NON-NLS-1$
 	
 	protected Bpmn2ModelerResourceSetImpl fHackedResourceSet;
 
@@ -88,7 +88,7 @@ public class ImportUtil {
 		else if (IMPORT_TYPE_JAVA.equals(type))
 			kind = IMPORT_KIND_JAVA;
 		else if (IMPORT_TYPE_BPMN2.equals(type))
-			kind = "";
+			kind = ""; //$NON-NLS-1$
 		else
 			return null;
 		uri = URI.createURI( imp.getLocation() );
@@ -370,7 +370,7 @@ public class ImportUtil {
 				imp = Bpmn2ModelerFactory.create(Import.class);
 				imp.setImportType(IMPORT_TYPE_JAVA);
 				imp.setLocation(clazz.getFullyQualifiedName('.'));
-				imp.setNamespace("http://" + clazz.getPackageFragment().getElementName());
+				imp.setNamespace("http://" + clazz.getPackageFragment().getElementName()); //$NON-NLS-1$
 			}
 			else if (importObject instanceof Definitions) {
 				// BPMN 2.0 Diagram file
@@ -689,7 +689,7 @@ public class ImportUtil {
                     // only allow methods with one parameter at most.
                     continue;
                 }
-                String baseName = intf.getName() + "_" + bpmn2op.getName() + "_";
+                String baseName = intf.getName() + "_" + bpmn2op.getName() + "_"; //$NON-NLS-1$ //$NON-NLS-2$
                 if (parameterTypes.length == 1) {
                     try {
                         IType parameterType = resolveType(type, parameterTypes[0]);
@@ -715,12 +715,12 @@ public class ImportUtil {
                     IType returnType = resolveType(type, method.getReturnType());
                     org.eclipse.bpmn2.Message bpmn2msg = null;
                     if (returnType != null) {
-                    	bpmn2msg = createMessage(definitions, imp, returnType, baseName + "Result");
+                    	bpmn2msg = createMessage(definitions, imp, returnType, baseName + "Result"); //$NON-NLS-1$
                     }
                     else {
                         String boxedType = getBoxedType(Signature.toString(method.getReturnType()));
                         if (boxedType != null && boxedType.length() > 0) {
-                        	bpmn2msg = createMessage(definitions, imp, returnType, baseName + "Result");
+                        	bpmn2msg = createMessage(definitions, imp, returnType, baseName + "Result"); //$NON-NLS-1$
                             bpmn2msg.setItemRef(createItemDefinition(definitions, null, boxedType, ItemKind.INFORMATION));
                         }
                     }
@@ -765,21 +765,21 @@ public class ImportUtil {
     }
 
     private static String getBoxedType(String primitiveType) {
-        if ("boolean".equals(primitiveType)) {
+        if ("boolean".equals(primitiveType)) { //$NON-NLS-1$
             return Boolean.class.getName();
-        } else if ("byte".equals(primitiveType)) {
+        } else if ("byte".equals(primitiveType)) { //$NON-NLS-1$
             return Byte.class.getName();
-        } else if ("short".equals(primitiveType)) {
+        } else if ("short".equals(primitiveType)) { //$NON-NLS-1$
             return Short.class.getName();
-        } else if ("int".equals(primitiveType)) {
+        } else if ("int".equals(primitiveType)) { //$NON-NLS-1$
             return Integer.class.getName();
-        } else if ("long".equals(primitiveType)) {
+        } else if ("long".equals(primitiveType)) { //$NON-NLS-1$
             return Long.class.getName();
-        } else if ("char".equals(primitiveType)) {
+        } else if ("char".equals(primitiveType)) { //$NON-NLS-1$
             return Character.class.getName();
-        } else if ("float".equals(primitiveType)) {
+        } else if ("float".equals(primitiveType)) { //$NON-NLS-1$
             return Float.class.getName();
-        } else if ("double".equals(primitiveType)) {
+        } else if ("double".equals(primitiveType)) { //$NON-NLS-1$
             return Double.class.getName();
         }
         return null;

@@ -72,11 +72,11 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 						AnchorUtil.pointToString(p));
 			}
 			else {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
 			}
 			BendpointConnectionRouter.setMovedBendpoint(connection, Integer.MAX_VALUE);
 
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
 			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 			newAnchor = anchors.getSecond();
 		}
@@ -91,10 +91,10 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
 			}
 			else {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, "");
+				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
 			}
 			BendpointConnectionRouter.setMovedBendpoint(connection, 0);
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, "");
+			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
 			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 			newAnchor = anchors.getFirst();
 		}
@@ -123,13 +123,13 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 		if (!(flow instanceof DataAssociation)) {
 			BaseElement be = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
 			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-				EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef");
+				EStructuralFeature feature = flow.eClass().getEStructuralFeature("targetRef"); //$NON-NLS-1$
 				if (feature!=null)
 					flow.eSet(feature, be);
 				AnchorUtil.deleteEmptyAdHocAnchors(connection.getEnd().getParent());
 			}
 			else {
-				EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef");
+				EStructuralFeature feature = flow.eClass().getEStructuralFeature("sourceRef"); //$NON-NLS-1$
 				if (feature!=null && !feature.isMany())
 					flow.eSet(feature, be);
 				AnchorUtil.deleteEmptyAdHocAnchors(connection.getStart().getParent());

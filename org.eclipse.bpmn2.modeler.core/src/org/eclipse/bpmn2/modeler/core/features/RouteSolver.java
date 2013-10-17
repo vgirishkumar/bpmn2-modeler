@@ -154,7 +154,7 @@ public class RouteSolver {
 		net.add(left, top, leftMargin, bottom-top);
 		for (int i=0; i<allShapes.size(); ++i) {
 			ContainerShape shape = allShapes.get(i);
-			if (GraphicsUtil.getDebugText(shape).contains("Task_1")) {
+			if (GraphicsUtil.getDebugText(shape).contains("Task_1")) { //$NON-NLS-1$
 				GraphicsUtil.debug = true;
 			}
 			else

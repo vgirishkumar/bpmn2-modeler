@@ -161,7 +161,7 @@ public class DetourPoints {
 		if (TLY+m<py && py<=BLY)
 			return 2;
 		
-		throw new IllegalArgumentException("Logic error in getSector()");
+		throw new IllegalArgumentException("Logic error in getSector()"); //$NON-NLS-1$
 	}
 	
 	public List<Point> calculateDetour(Point p1, Point p2) {

@@ -456,7 +456,7 @@ public class DIUtils {
 			BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
 			BaseElement bpmnElement = null;
 			for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-				EStructuralFeature f = de.eClass().getEStructuralFeature("bpmnElement");
+				EStructuralFeature f = de.eClass().getEStructuralFeature("bpmnElement"); //$NON-NLS-1$
 				if (f!=null) {
 					bpmnElement = (BaseElement) de.eGet(f);
 					if (bpmnElement == object)

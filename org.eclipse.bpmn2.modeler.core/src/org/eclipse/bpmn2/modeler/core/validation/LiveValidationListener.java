@@ -49,7 +49,7 @@ public class LiveValidationListener implements IValidationListener {
 				// fabricate a multi-errorList for the MarkerUtil to consume
 				List<IConstraintStatus> results = event.getValidationResults();
 				MultiStatus multi = new MultiStatus(Activator.getDefault().PLUGIN_ID, 1,
-						(IStatus[]) results.toArray(new IStatus[results.size()]), "OCL validation errors found", null);
+						(IStatus[]) results.toArray(new IStatus[results.size()]), Messages.LiveValidationListener_Title, null);
 
 				for (IStatus s : results) {
 					reportError(s);

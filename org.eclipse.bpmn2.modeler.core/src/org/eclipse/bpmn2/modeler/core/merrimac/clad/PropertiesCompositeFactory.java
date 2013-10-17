@@ -273,11 +273,11 @@ public class PropertiesCompositeFactory {
 	
 	private static void logError(Class eClass, Exception e) {
 		Activator.logError(e);
-		MessageDialog.openError(Display.getDefault().getActiveShell(), "Internal Error",
+		MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.PropertiesCompositeFactory_Internal_Error_Title,
 				"The property sheet for the object type:\n\n"+
 				eClass+"\n\nhas not been defined or is not visible."+
 				"\n\nCause: "+
-				e+"\n\n"+
+				e+"\n\n"+ 
 				"Using the default property sheet instead.");
 	}
 

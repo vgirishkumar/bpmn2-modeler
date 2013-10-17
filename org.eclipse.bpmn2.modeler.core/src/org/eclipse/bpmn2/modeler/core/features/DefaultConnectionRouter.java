@@ -132,7 +132,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				allShapes.add(shape);
 			}
 		}
-		GraphicsUtil.dump("All Shapes", allShapes);
+		GraphicsUtil.dump("All Shapes", allShapes); //$NON-NLS-1$
 		return allShapes;
 	}
 
@@ -239,7 +239,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	}
 	
 	protected class AddRoutingConnectionFeature extends AbstractAddShapeFeature {
-		public static final String CONNECTION = "ROUTING_NET_CONNECTION";
+		public static final String CONNECTION = "ROUTING_NET_CONNECTION"; //$NON-NLS-1$
 
 		public AddRoutingConnectionFeature(IFeatureProvider fp) {
 			super(fp);
@@ -266,7 +266,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				connection.getBendpoints().add(route.get(i));
 			}
 
-			peService.setPropertyValue(connection, CONNECTION, "" + route.id);
+			peService.setPropertyValue(connection, CONNECTION, "" + route.id); //$NON-NLS-1$
 
 			Polyline connectionLine = Graphiti.getGaService().createPolyline(
 					connection);

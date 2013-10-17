@@ -62,7 +62,7 @@ public class ShapeLayoutManager {
 	
 	private void layout(ContainerShape container, int level) {
 
-		GraphicsUtil.dump(level, "layout", container);
+		GraphicsUtil.dump(level, "layout", container); //$NON-NLS-1$
 		if (container==null)
 			return;
 		
@@ -401,7 +401,7 @@ public class ShapeLayoutManager {
 		if (bpmnDiagram != null) {
 			diagram = DIUtils.findDiagram(editor.getDiagramBehavior(), bpmnDiagram);
 			if (diagram==null) {
-				System.out.println("Diagram is null");
+				System.out.println("Diagram is null"); //$NON-NLS-1$
 			}
 		}
 		if (diagram!=null) {
@@ -417,7 +417,7 @@ public class ShapeLayoutManager {
 			if (bpmnDiagram.getPlane().getBpmnElement() == be)
 				return diagram;
 		}
-		System.out.println("Container is null!");
+		System.out.println("Container is null!"); //$NON-NLS-1$
 		return null;
 	}
 

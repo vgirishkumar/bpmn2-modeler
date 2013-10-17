@@ -125,57 +125,57 @@ public class ImportDiagnostics implements IStructuredContentProvider, ILabelProv
 	@Override
 	public String getText(Object element) {
 		ImportDiagnostic d = (ImportDiagnostic)element;
-		String text = "";
-		String id = "";
+		String text = ""; //$NON-NLS-1$
+		String id = ""; //$NON-NLS-1$
 		if (d.element!=null)
 			text = getText(d.element);
 		else
 			return d.message;
 		
-		text += ": " + d.message;
+		text += ": " + d.message; //$NON-NLS-1$
 		return text;
 	}
 
 	public String getText(EObject element) {
-		String text = "";
-		String type = "";
-		String id = "";
-		String name = "";
-		String customTaskId = "";
+		String text = ""; //$NON-NLS-1$
+		String type = ""; //$NON-NLS-1$
+		String id = ""; //$NON-NLS-1$
+		String name = ""; //$NON-NLS-1$
+		String customTaskId = ""; //$NON-NLS-1$
 		if (runtime!=null) {
 			for (CustomTaskDescriptor tc : runtime.getCustomTasks()) {
 				customTaskId = tc.getFeatureContainer().getId(element);
 				if (customTaskId==null)
-					customTaskId = "";
+					customTaskId = ""; //$NON-NLS-1$
 			}
 		}
 		
 		type = element.eClass().getName();
 		
-		EStructuralFeature f = element.eClass().getEStructuralFeature("id");
+		EStructuralFeature f = element.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (f!=null) {
 			id = (String)element.eGet(f);
 			if (id==null)
-				id = "";
+				id = ""; //$NON-NLS-1$
 		}
 		if (id.isEmpty())
-			id = "unknown";
+			id = "unknown"; //$NON-NLS-1$
 		
-		f = element.eClass().getEStructuralFeature("name");
+		f = element.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (f!=null) {
 			name = (String)element.eGet(f);
 			if (name==null)
-				name = "";
+				name = ""; //$NON-NLS-1$
 		}
 		if (!customTaskId.isEmpty())
-			text = type + " Custom Task " + customTaskId;
+			text = type + " Custom Task " + customTaskId; //$NON-NLS-1$
 		else
 			text = type;
 		
 		if (name.isEmpty())
-			text += " id=\"" + id + "\"";
+			text += " id=\"" + id + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 		else
-			text += " \"" + name + "\"";
+			text += " \"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 
 		return text;
 	}

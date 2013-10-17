@@ -103,7 +103,7 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 
 	@Override
 	protected String getPreferenceKey() {
-		return super.getPreferenceKey() + "." + feature.getName();
+		return super.getPreferenceKey() + "." + feature.getName(); //$NON-NLS-1$
 	}
 	
 	@Override

@@ -416,7 +416,7 @@ public class DIGenerator {
 			FlowElementsContainer container = getRootElementContainer(bpmnElement);
 			if (container==null) {
 				DIUtils.findBPMNDiagram(bpmnElement, true);
-				diagnostics.add(IStatus.ERROR, bpmnElement, "Cannot find Diagram");
+				diagnostics.add(IStatus.ERROR, bpmnElement, Messages.DIGenerator_No_Diagram); 
 				return this.bpmnDiagram;
 			}
 			BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();

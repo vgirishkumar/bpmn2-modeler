@@ -112,31 +112,31 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			if (isValid()) {
 				BoundaryAnchor sa = AnchorUtil.findNearestBoundaryAnchor(source, get(0));
 				BoundaryAnchor ta = AnchorUtil.findNearestBoundaryAnchor(target, get(size()-1));
-				text = id+": length="+getLength()+" points="+getPoints().size()+
-						" source="+sa.locationType+" target="+ta.locationType;
+				text = id+": length="+getLength()+" points="+getPoints().size()+ //$NON-NLS-1$ //$NON-NLS-2$
+						" source="+sa.locationType+" target="+ta.locationType; //$NON-NLS-1$ //$NON-NLS-2$
 				if (collisions.size()>0) {
-					text += " collisions=";
+					text += " collisions="; //$NON-NLS-1$
 					Iterator<Collision> iter=collisions.iterator();
 					while (iter.hasNext()) {
 						Collision c = iter.next();
-						text += "'" + c.toString() + "'";
+						text += "'" + c.toString() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
 						if (iter.hasNext())
-							text += ", ";
+							text += ", "; //$NON-NLS-1$
 					}
 				}
 				if (crossings.size()>0) {
-					text += " crossings=";
+					text += " crossings="; //$NON-NLS-1$
 					Iterator<Crossing> iter=crossings.iterator();
 					while (iter.hasNext()) {
 						Crossing c = iter.next();
-						text += "'" + c.toString() + "'";
+						text += "'" + c.toString() + "'"; //$NON-NLS-1$ //$NON-NLS-2$
 						if (iter.hasNext())
-							text += ", ";
+							text += ", "; //$NON-NLS-1$
 					}
 				}
 			}
 			else
-				text = "not valid";
+				text = "not valid"; //$NON-NLS-1$
 			return text;
 		}
 		

@@ -50,7 +50,7 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 					text = reason.getText();
 				}
 				else
-					text += "\n" + reason.getText();
+					text += "\n" + reason.getText(); //$NON-NLS-1$
 			}
 		}
 		if (text!=null)

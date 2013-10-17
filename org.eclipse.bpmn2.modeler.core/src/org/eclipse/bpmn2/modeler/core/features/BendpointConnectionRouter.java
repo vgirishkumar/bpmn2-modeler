@@ -301,19 +301,19 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * remmoved from the connection
 	 */
 	public static void setMovedBendpoint(Connection connection, int index) {
-		setInterestingBendpoint(connection, "moved.", index);
+		setInterestingBendpoint(connection, "moved.", index); //$NON-NLS-1$
 	}
 
 	public static void setAddedBendpoint(Connection connection, int index) {
-		setInterestingBendpoint(connection, "added.", index);
+		setInterestingBendpoint(connection, "added.", index); //$NON-NLS-1$
 	}
 
 	public static void setRemovedBendpoint(Connection connection, int index) {
-		setInterestingBendpoint(connection, "removed.", index);
+		setInterestingBendpoint(connection, "removed.", index); //$NON-NLS-1$
 	}
 
 	public static void setFixedBendpoint(Connection connection, int index) {
-		setInterestingBendpoint(connection, "fixed."+index+".", index);
+		setInterestingBendpoint(connection, "fixed."+index+".", index); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	protected static void setInterestingBendpoint(Connection connection, String type, int index) {
@@ -337,19 +337,19 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @return a Graphiti Point in Diagram-relative coordinates, or null if the property is not set
 	 */
 	public static Point getMovedBendpoint(Connection connection) {
-		return getInterestingBendpoint(connection, "moved.");
+		return getInterestingBendpoint(connection, "moved."); //$NON-NLS-1$
 	}
 	
 	public static Point getAddedBendpoint(Connection connection) {
-		return getInterestingBendpoint(connection, "added.");
+		return getInterestingBendpoint(connection, "added."); //$NON-NLS-1$
 	}
 	
 	public static Point getRemovedBendpoint(Connection connection) {
-		return getInterestingBendpoint(connection, "removed.");
+		return getInterestingBendpoint(connection, "removed."); //$NON-NLS-1$
 	}
 	
 	public static Point getFixedBendpoint(Connection connection, int index) {
-		return getInterestingBendpoint(connection, "fixed."+index+".");
+		return getInterestingBendpoint(connection, "fixed."+index+"."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	protected static Point getInterestingBendpoint(Connection connection, String type) {

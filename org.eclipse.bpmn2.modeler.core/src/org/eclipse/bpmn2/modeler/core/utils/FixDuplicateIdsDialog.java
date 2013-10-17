@@ -87,7 +87,7 @@ public class FixDuplicateIdsDialog extends ListSelectionDialog {
 		do {
 			dup = findDuplicateId(object,uniqueId);
 			if (dup!=null) {
-				uniqueId = id + "_" + i++;
+				uniqueId = id + "_" + i++; //$NON-NLS-1$
 			}
 		}
 		while (dup!=null);
@@ -102,7 +102,7 @@ public class FixDuplicateIdsDialog extends ListSelectionDialog {
 			while (iter.hasNext()) {
 				EObject o = iter.next();
 				if (o!=object) {
-					EStructuralFeature f = o.eClass().getEStructuralFeature("id");
+					EStructuralFeature f = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 					if (f!=null) {
 						Object existingId = o.eGet(f);
 						if (id.equals(existingId))

@@ -170,14 +170,14 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		}
 		
 		if (folder!=null) {
-			int i = preferenceStore.getInt("dialog."+eclass.getName()+".tab");
+			int i = preferenceStore.getInt("dialog."+eclass.getName()+".tab"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (i>=0 && i<folder.getItemCount())
 				folder.setSelection(i);
 			folder.addSelectionListener( new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					int i = folder.getSelectionIndex();
-					preferenceStore.setValue("dialog."+eclass.getName()+".tab", i);
+					preferenceStore.setValue("dialog."+eclass.getName()+".tab", i); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			});
 			

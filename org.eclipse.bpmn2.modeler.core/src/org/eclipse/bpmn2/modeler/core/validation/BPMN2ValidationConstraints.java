@@ -77,8 +77,8 @@ import org.eclipse.emf.validation.IValidationContext;
 
 public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
-	public final static String ERROR_ID = "org.eclipse.bpmn2.modeler.core.validation.error";
-	public final static String WARNING_ID = "org.eclipse.bpmn2.modeler.core.validation.warning";
+	public final static String ERROR_ID = "org.eclipse.bpmn2.modeler.core.validation.error"; //$NON-NLS-1$
+	public final static String WARNING_ID = "org.eclipse.bpmn2.modeler.core.validation.warning"; //$NON-NLS-1$
 	
 	private boolean warnings = false;
 	
@@ -118,7 +118,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				ctx.addResult(def);
-				return ctx.createFailureStatus("No targetNamespace defined");
+				return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_2);
 			}			
 		}
 		
@@ -136,9 +136,9 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		// change error message slightly for connections
 		String message;
 		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = ModelUtil.getLabel(object) + " has no " + ModelUtil.getLabel(object, feature) + " Connections";
+			message = ModelUtil.getLabel(object) + Messages.BPMN2ValidationConstraints_3 + ModelUtil.getLabel(object, feature) + Messages.BPMN2ValidationConstraints_4;
 		else
-			message = ModelUtil.getLabel(object) + " has missing or incomplete " + ModelUtil.getLabel(object, feature);
+			message = ModelUtil.getLabel(object) + Messages.BPMN2ValidationConstraints_5 + ModelUtil.getLabel(object, feature);
 		IStatus status = ctx.createFailureStatus(message);
 		ctx.addResult(object);
 		return status;
@@ -163,13 +163,13 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					}
 				}
 				if (!foundStartEvent) {
-					return createFailureStatus(ctx, be, "Process has no Start Event");
+					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_6);
 				}
 				if (!foundEndEvent) {
-					return createFailureStatus(ctx, be, "Process has no End Event");
+					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_7);
 				}
 				if (isEmpty(process.getName())) {
-					return createMissingFeatureStatus(ctx,be,"name");
+					return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
 				}
 			}
 			else {
@@ -182,48 +182,48 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getLocation())) {
-					return createMissingFeatureStatus(ctx,be,"location");
+					return createMissingFeatureStatus(ctx,be,"location"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getNamespace())) {
-					return createMissingFeatureStatus(ctx,be,"namespace");
+					return createMissingFeatureStatus(ctx,be,"namespace"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getImportType())) {
-					return createMissingFeatureStatus(ctx,be,"importType");
+					return createMissingFeatureStatus(ctx,be,"importType"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof Error) {
 			if (!warnings) {
 				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
-					return createMissingFeatureStatus(ctx,be,"structureRef");
+					return createMissingFeatureStatus(ctx,be,"structureRef"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof Escalation) {
 			if (!warnings) {
 				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
-					return createMissingFeatureStatus(ctx,be,"structureRef");
+					return createMissingFeatureStatus(ctx,be,"structureRef"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof Message) {
 			if (!warnings) {
 				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
-					return createMissingFeatureStatus(ctx,be,"itemRef");
+					return createMissingFeatureStatus(ctx,be,"itemRef"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof Signal) {
 			if (!warnings) {
 				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
-					return createMissingFeatureStatus(ctx,be,"structureRef");
+					return createMissingFeatureStatus(ctx,be,"structureRef"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof ItemDefinition) {
 			if (!warnings) {
 				if (!isValidForExecutableProcess((BaseElement)be.eContainer(), be)) {
-					return createMissingFeatureStatus(ctx,be,"structureRef");
+					return createMissingFeatureStatus(ctx,be,"structureRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -232,7 +232,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			
 			if (!warnings) {
 				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
-					return createMissingFeatureStatus(ctx,be,"outgoing");
+					return createMissingFeatureStatus(ctx,be,"outgoing"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -241,7 +241,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			
 			if (!warnings) {
 				if (elem.getIncoming() == null || elem.getIncoming().size() < 1) {
-					return createMissingFeatureStatus(ctx,be,"incoming");
+					return createMissingFeatureStatus(ctx,be,"incoming"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -250,7 +250,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			
 			if (warnings) {
 				if (isEmpty(elem.getScript())) {
-					return createMissingFeatureStatus(ctx,be,"script");
+					return createMissingFeatureStatus(ctx,be,"script"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -259,10 +259,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (!warnings) {
 				if (elem.getOperationRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"operationRef");
+					return createMissingFeatureStatus(ctx,be,"operationRef"); //$NON-NLS-1$
 				}
 				if (elem.getMessageRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"messageRef");
+					return createMissingFeatureStatus(ctx,be,"messageRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -271,7 +271,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (warnings) {
 				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
-					return createMissingFeatureStatus(ctx,be,"outgoing");
+					return createMissingFeatureStatus(ctx,be,"outgoing"); //$NON-NLS-1$
 				}
 			}
 			else {
@@ -287,7 +287,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (warnings) {
 				if (elem.getOutgoing() == null || elem.getOutgoing().size() < 1) {
-					return createMissingFeatureStatus(ctx,be,"outgoing");
+					return createMissingFeatureStatus(ctx,be,"outgoing"); //$NON-NLS-1$
 				}
 			}
 			else {
@@ -303,10 +303,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (!warnings) {
 				if (elem.getSourceRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"sourceRef");
+					return createMissingFeatureStatus(ctx,be,"sourceRef"); //$NON-NLS-1$
 				}
 				if (elem.getTargetRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"targetRef");
+					return createMissingFeatureStatus(ctx,be,"targetRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -315,10 +315,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (!warnings) {
 				if (elem.getSourceRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"sourceRef");
+					return createMissingFeatureStatus(ctx,be,"sourceRef"); //$NON-NLS-1$
 				}
 				if (elem.getTargetRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"targetRef");
+					return createMissingFeatureStatus(ctx,be,"targetRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -329,40 +329,40 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				if (elem.getGatewayDirection() == null
 						|| elem.getGatewayDirection().getValue() == GatewayDirection.UNSPECIFIED.getValue()) {
 					ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
-					return createMissingFeatureStatus(ctx,be,"gatewayDirection");
+					return createMissingFeatureStatus(ctx,be,"gatewayDirection"); //$NON-NLS-1$
 				}
 				if (elem instanceof ExclusiveGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
 						return createFailureStatus(ctx,be,
-								"Invalid Gateway direction for Exclusing Gateway. It should be 'Converging' or 'Diverging'");
+								Messages.BPMN2ValidationConstraints_29);
 					}
 				}
 				if (elem instanceof EventBasedGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()) {
 						return createFailureStatus(ctx,be,
-								"Invalid Gateway direction for EventBased Gateway. It should be 'Diverging'");
+								Messages.BPMN2ValidationConstraints_30);
 					}
 				}
 				if (elem instanceof ParallelGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
 						return createFailureStatus(ctx,be,
-								"Invalid Gateway direction for Parallel Gateway. It should be 'Converging' or 'Diverging'");
+								Messages.BPMN2ValidationConstraints_31);
 					}
 				}
 				if (elem instanceof InclusiveGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
 						return createFailureStatus(ctx,be,
-								"Invalid Gateway direction for Inclusive Gateway. It should be 'Converging' or 'Diverging'");
+								Messages.BPMN2ValidationConstraints_32);
 					}
 				}
 				if (elem instanceof ComplexGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
 						return createFailureStatus(ctx,be,
-								"Invalid Gateway direction for Complex Gateway. It should be 'Converging' or 'Diverging'");
+								Messages.BPMN2ValidationConstraints_33);
 					}
 				}
 			}
@@ -372,7 +372,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (!warnings) {
 				if (elem.getCalledElementRef() == null) {
-					return createMissingFeatureStatus(ctx,be,"calledElementRef");
+					return createMissingFeatureStatus(ctx,be,"calledElementRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -381,7 +381,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 			if (!warnings) {
 				if (elem.getName() == null || elem.getName().length() < 1) {
-					return createMissingFeatureStatus(ctx,be,"name");
+					return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -391,10 +391,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getOperations())) {
-					return createMissingFeatureStatus(ctx,be,"operations");
+					return createMissingFeatureStatus(ctx,be,"operations"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getName())) {
-					return createMissingFeatureStatus(ctx,be,"name");
+					return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -404,10 +404,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getInMessageRef())) {
-					return createMissingFeatureStatus(ctx,be,"inMessageRef");
+					return createMissingFeatureStatus(ctx,be,"inMessageRef"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getName())) {
-					return createMissingFeatureStatus(ctx,be,"name");
+					return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -417,7 +417,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getTargetRef()) && elem.getAssignment().size()==0 && elem.getTransformation()==null) {
-					return createMissingFeatureStatus(ctx,be,"targetRef");
+					return createMissingFeatureStatus(ctx,be,"targetRef"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -427,10 +427,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getFrom())) {
-					return createMissingFeatureStatus(ctx,be,"from");
+					return createMissingFeatureStatus(ctx,be,"from"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getTo())) {
-					return createMissingFeatureStatus(ctx,be,"to");
+					return createMissingFeatureStatus(ctx,be,"to"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -440,26 +440,26 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (isEmpty(elem.getInputSets())) {
-					return createMissingFeatureStatus(ctx,be,"inputSets");
+					return createMissingFeatureStatus(ctx,be,"inputSets"); //$NON-NLS-1$
 				}
 				if (isEmpty(elem.getOutputSets())) {
-					return createMissingFeatureStatus(ctx,be,"outputSets");
+					return createMissingFeatureStatus(ctx,be,"outputSets"); //$NON-NLS-1$
 				}
 			}
 		}
 		else if (be instanceof ChoreographyActivity) {
 			ChoreographyActivity elem = (ChoreographyActivity)be;
 			if (elem.getParticipantRefs().size()<2) {
-				return createFailureStatus(ctx,be,"ChoreographyActivity must have at least two Participants");
+				return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_45);
 			}
 			if (elem.getInitiatingParticipantRef()==null) {
-				return createFailureStatus(ctx,be,"ChoreographyActivity has no initiating Participant");
+				return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_46);
 			}
 		}
 		else if (be instanceof Resource) {
 			Resource elem = (Resource)be;
 			if (isEmpty(elem.getName())) {
-				return createMissingFeatureStatus(ctx,be,"name");
+				return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
 			}
 		}
 		else if (be instanceof ChoreographyTask) {
@@ -467,11 +467,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			for (MessageFlow mf : elem.getMessageFlowRef()) {
 				InteractionNode in = mf.getSourceRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					return createFailureStatus(ctx,be,"Message Flow source is not a Participant of the Choreography Task");
+					return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_48);
 				}
 				in = mf.getTargetRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					return createFailureStatus(ctx,be,"Message Flow target is not a Participant of the Choreography Task");
+					return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_49);
 				}
 			}
 		}
@@ -553,11 +553,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	private IStatus validateEvent(IValidationContext ctx, Event event) {
 		Process process = findProcess(event);
 		if (process!=null && process.isIsExecutable()) {
-			EStructuralFeature feature = event.eClass().getEStructuralFeature("eventDefinitions");
+			EStructuralFeature feature = event.eClass().getEStructuralFeature("eventDefinitions"); //$NON-NLS-1$
 			Assert.isNotNull(feature);
 			List<EventDefinition> eventdefs = (List<EventDefinition>) event.eGet(feature);
 			if (eventdefs.size()==0) {
-				return createMissingFeatureStatus(ctx,event,"eventDefinitions");
+				return createMissingFeatureStatus(ctx,event,"eventDefinitions"); //$NON-NLS-1$
 			}
 			for (EventDefinition ed : eventdefs) {
 				IStatus status = validateEventDefinition(ctx,ed);
@@ -575,31 +575,31 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					&& ted.getTimeDuration() == null
 					&& ted.getTimeCycle() == null
 			) {
-				return createFailureStatus(ctx,ed,"Timer Event has no Timer definition");
+				return createFailureStatus(ctx,ed,Messages.BPMN2ValidationConstraints_52);
 			}
 		} else if (ed instanceof SignalEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((SignalEventDefinition) ed).getSignalRef())) {
-				return createMissingFeatureStatus(ctx,ed,"signalRef");
+				return createMissingFeatureStatus(ctx,ed,"signalRef"); //$NON-NLS-1$
 			}
 		} else if (ed instanceof ErrorEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((ErrorEventDefinition) ed).getErrorRef())) {
-				return createMissingFeatureStatus(ctx,ed,"errorRef");
+				return createMissingFeatureStatus(ctx,ed,"errorRef"); //$NON-NLS-1$
 			}
 		} else if (ed instanceof ConditionalEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((ConditionalEventDefinition) ed).getCondition())) {
-				return createMissingFeatureStatus(ctx,ed,"condition");
+				return createMissingFeatureStatus(ctx,ed,"condition"); //$NON-NLS-1$
 			}
 		} else if (ed instanceof EscalationEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((EscalationEventDefinition) ed).getEscalationRef())) {
-				return createMissingFeatureStatus(ctx,ed,"escalationRef");
+				return createMissingFeatureStatus(ctx,ed,"escalationRef"); //$NON-NLS-1$
 			}
 		} else if (ed instanceof MessageEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((MessageEventDefinition) ed).getMessageRef())) {
-				return createMissingFeatureStatus(ctx,ed,"messageRef");
+				return createMissingFeatureStatus(ctx,ed,"messageRef"); //$NON-NLS-1$
 			}
 		} else if (ed instanceof CompensateEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((CompensateEventDefinition) ed).getActivityRef())) {
-				return createMissingFeatureStatus(ctx,ed,"activityRef");
+				return createMissingFeatureStatus(ctx,ed,"activityRef"); //$NON-NLS-1$
 			}
 		}
 		return null;
@@ -616,12 +616,12 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			
 			if (needOutgoing) {
 				if ((fn.getOutgoing() == null || fn.getOutgoing().size() < 1)) {
-					return createMissingFeatureStatus(ctx,fn,"outgoing");
+					return createMissingFeatureStatus(ctx,fn,"outgoing"); //$NON-NLS-1$
 				}
 			}
 			if (needIncoming) {
 				if ((fn.getIncoming() == null || fn.getIncoming().size() < 1)) {
-					return createMissingFeatureStatus(ctx,fn,"incoming");
+					return createMissingFeatureStatus(ctx,fn,"incoming"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -631,7 +631,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	
 	private IStatus validateItemAwareElement(IValidationContext ctx, ItemAwareElement elem) {
 		if (!isValidForExecutableProcess(elem, elem.getItemSubjectRef())) {
-			return createMissingFeatureStatus(ctx,elem,"itemSubjectRef");
+			return createMissingFeatureStatus(ctx,elem,"itemSubjectRef"); //$NON-NLS-1$
 		}
 		return ctx.createSuccessStatus();
 	}
@@ -688,7 +688,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					(ModelUtil.isStringWrapper(structureRef) &&
 					ModelUtil.getStringWrapperValue(structureRef).isEmpty())) {
 				
-				return createMissingFeatureStatus(ctx,be,"structureRef");
+				return createMissingFeatureStatus(ctx,be,"structureRef"); //$NON-NLS-1$
 			}
 		}
 		else if (be instanceof Event) {

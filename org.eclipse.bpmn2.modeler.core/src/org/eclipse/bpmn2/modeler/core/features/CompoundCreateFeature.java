@@ -114,7 +114,7 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		int index = 0;
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
 			String optional = ft.getProperty(ToolPaletteDescriptor.TOOLPART_OPTIONAL);
-			if ("true".equals(optional)) {
+			if ("true".equals(optional)) { //$NON-NLS-1$
 				if (index<selection.length) {
 					boolean replace = true;
 					PictogramElement pe = selection[index++];

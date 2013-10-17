@@ -100,7 +100,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         }
         ValidationResult result = new ValidationResult();
         if (resource.getContents().isEmpty()) {
-            ValidatorMessage message = ValidatorMessage.create("Invalid bpmn2 file", modelFile);
+            ValidatorMessage message = ValidatorMessage.create(Messages.BPMN2ProjectValidator_Invalid_File, modelFile);
             message.setType(getTargetRuntime().getProblemMarkerId());
             result.add(message);
         } else {
@@ -164,19 +164,19 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 					Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(project);
 					if (preferences.getCheckProjectNature()) {
 						Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-						String title = "Configure BPMN2 Project Nature";
-						String message = "The project '"+
+						String title = Messages.BPMN2ProjectValidator_Title;
+						String message = Messages.BPMN2ProjectValidator_2+
 								project.getName()+
-								"' has not been configured with the BPMN2 Project Nature.\n\n"+
-								"Adding the BPMN2 Project Nature will cause all BPMN2 files in this project "+
-								"to be validated automatically whenever the project is built.\n\n"+
-								"Do you want to add this Nature to the Project now?";
+								Messages.BPMN2ProjectValidator_3+
+								Messages.BPMN2ProjectValidator_4+
+								Messages.BPMN2ProjectValidator_5+
+								Messages.BPMN2ProjectValidator_6;
 						MessageDialogWithToggle result = MessageDialogWithToggle.open(
 								MessageDialog.QUESTION,
 								shell,
 								title,
 								message,
-								"Don't ask me again", // toggle message
+								Messages.BPMN2ProjectValidator_Dont_Ask_Again, // toggle message
 								false, // toggle state
 								null, // pref store
 								null, // pref key
@@ -254,7 +254,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
             if (ics.getResultLocus().size() > 0) {
                 StringBuffer relatedUris = new StringBuffer();
                 for (EObject eobject : ics.getResultLocus()) {
-                    relatedUris.append(EcoreUtil.getURI(eobject).toString()).append(" ");
+                    relatedUris.append(EcoreUtil.getURI(eobject).toString()).append(" "); //$NON-NLS-1$
                 }
                 relatedUris.deleteCharAt(relatedUris.length() - 1);
                 String uris = relatedUris.toString();

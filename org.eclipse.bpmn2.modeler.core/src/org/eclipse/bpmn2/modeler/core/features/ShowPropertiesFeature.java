@@ -34,12 +34,12 @@ public class ShowPropertiesFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Show Properties";
+		return Messages.ShowPropertiesFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Display a Property configuration popup dialog for the selected item";
+		return Messages.ShowPropertiesFeature_Title;
 	}
 
 	@Override

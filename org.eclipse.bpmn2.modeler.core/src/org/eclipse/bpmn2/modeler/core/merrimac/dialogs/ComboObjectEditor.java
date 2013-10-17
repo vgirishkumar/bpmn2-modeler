@@ -251,7 +251,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		throw new OperationCanceledException("Dialog Cancelled");
+		throw new OperationCanceledException("Dialog Cancelled"); //$NON-NLS-1$
 	}
 	
 	protected EObject editObject(EObject value) throws Exception {
@@ -259,7 +259,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		dialog.setFeatureEType(featureEType);
 		if ( dialog.open() == Window.OK)
 			return dialog.getNewObject();
-		throw new OperationCanceledException("Dialog Cancelled");
+		throw new OperationCanceledException("Dialog Cancelled"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -293,7 +293,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				Hashtable<String,Object> choices = getChoiceOfValues(object, feature);
 				if (canSetNull()) {
 					// selecting this one will set the target's value to null
-					comboViewer.add("");
+					comboViewer.add(""); //$NON-NLS-1$
 				}
 				
 				// add all other possible selections

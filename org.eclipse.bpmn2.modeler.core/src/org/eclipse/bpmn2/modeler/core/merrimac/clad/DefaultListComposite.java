@@ -63,7 +63,7 @@ public class DefaultListComposite extends AbstractListComposite {
 			// this is not a containment list so we can't add it
 			// because we don't know where the new object belongs
 			
-			MessageDialog.openError(getShell(), "Internal Error",
+			MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 					"Can not create a new " +
 					listItemClass.getName() +
 					" because the list is not a control. " +
@@ -79,7 +79,7 @@ public class DefaultListComposite extends AbstractListComposite {
 			}
 			newItem = Bpmn2ModelerFactory.createFeature(object,feature,listItemClass);
 			if (newItem==null) {
-				MessageDialog.openError(getShell(), "Internal Error",
+				MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 						"Can not create a new " +
 						listItemClass.getName() +
 						" because its Object Factory is unknown."
@@ -119,7 +119,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite#editListItem(org.eclipse.emf.ecore.EObject, org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	protected EObject editListItem(EObject object, EStructuralFeature feature) {
-		MessageDialog.openError(getShell(), "Internal Error",
+		MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 				"A List Item Editor has not been defined for "+
 				ModelUtil.getDisplayName(object, feature)
 				);
@@ -242,7 +242,7 @@ public class DefaultListComposite extends AbstractListComposite {
 					"because it is required by "+(plural?"these other elements.":"this other element.")
 			);
 			dlg.setAddCancelButton(false);
-			dlg.setTitle("Cannot Delete Item");
+			dlg.setTitle(Messages.DefaultListComposite_Cannot_Delete_Title);
 
 			dlg.open();
 			return false;
@@ -298,7 +298,7 @@ public class DefaultListComposite extends AbstractListComposite {
 		public String getText(Object element) {
 			String type = ModelUtil.getLabel(element);
 			String name = ModelUtil.getDisplayName(element);
-			return type + ": " + name;
+			return type + ": " + name; //$NON-NLS-1$
 		}
 
 		@Override

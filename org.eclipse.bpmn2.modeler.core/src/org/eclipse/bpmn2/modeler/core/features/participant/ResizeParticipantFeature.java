@@ -33,8 +33,8 @@ import org.eclipse.graphiti.services.Graphiti;
 
 public class ResizeParticipantFeature extends DefaultResizeShapeFeature {
 
-	public static final String POOL_RESIZE_PROPERTY = "pool.resize";
-	public static final String RESIZE_FIRST_LANE = "resize.first.lane";
+	public static final String POOL_RESIZE_PROPERTY = "pool.resize"; //$NON-NLS-1$
+	public static final String RESIZE_FIRST_LANE = "resize.first.lane"; //$NON-NLS-1$
 	
 	public ResizeParticipantFeature(IFeatureProvider fp) {
 		super(fp);

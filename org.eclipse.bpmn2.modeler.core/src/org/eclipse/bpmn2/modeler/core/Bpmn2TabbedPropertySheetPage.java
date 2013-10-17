@@ -40,7 +40,7 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage implem
 		if (selection instanceof IStructuredSelection) {
 			// ugly hack to disable selection while source viewer is active
 			if (diagramEditor.getAdapter(StructuredTextEditor.class)!=null) {
-				selection = new StructuredSelection("");
+				selection = new StructuredSelection(""); //$NON-NLS-1$
 			}
 			super.selectionChanged(part, selection);
 		}

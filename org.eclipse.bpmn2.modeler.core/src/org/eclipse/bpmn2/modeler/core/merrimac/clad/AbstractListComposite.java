@@ -171,13 +171,13 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			columnProvider = new ListCompositeColumnProvider(this, canModify);
 			
 			// default is to include property name as the first column
-			EStructuralFeature nameAttribute = listItemClass.getEStructuralFeature("name");
-			EStructuralFeature idAttribute = listItemClass.getEStructuralFeature("id");
+			EStructuralFeature nameAttribute = listItemClass.getEStructuralFeature("name"); //$NON-NLS-1$
+			EStructuralFeature idAttribute = listItemClass.getEStructuralFeature("id"); //$NON-NLS-1$
 			if (nameAttribute!=null)
 				columnProvider.add(object, listItemClass, nameAttribute);
 
 			for (EAttribute a1 : listItemClass.getEAllAttributes()) {
-				if ("anyAttribute".equals(a1.getName())) {
+				if ("anyAttribute".equals(a1.getName())) { //$NON-NLS-1$
 					List<EStructuralFeature> anyAttributes = new ArrayList<EStructuralFeature>();
 					// are there any actual "anyAttribute" instances we can look at
 					// to get the feature names and types from?
@@ -347,7 +347,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		else {
 			label = ModelUtil.getLabel(listItemClass);
 		}
-		final String prefName = "list."+listItemClass.getName()+".expanded";
+		final String prefName = "list."+listItemClass.getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
 		
 		////////////////////////////////////////////////////////////
 		// Collect columns to be displayed and build column provider
@@ -497,7 +497,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					else {
 						label = ModelUtil.getLabel(o);
 					}
-					detailSection.setText(label+" Details");
+					detailSection.setText(label+Messages.AbstractListComposite_Details);
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
 					enable = !detailComposite.isEmpty();
 					detailSection.setExpanded(enable);
@@ -543,7 +543,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			List<TableColumn> removed = new ArrayList<TableColumn>();
 			for (TableColumn tc : (List<TableColumn>)columnProvider.getColumns()) {
 				if (tc.feature!=null) {
-					if (!"id".equals(tc.feature.getName())) {
+					if (!"id".equals(tc.feature.getName())) { //$NON-NLS-1$
 						if (!isModelObjectEnabled(listItemClass, tc.feature)) {
 							removed.add(tc);
 						}
@@ -563,7 +563,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 				ExpandableComposite.TWISTIE |
 				ExpandableComposite.COMPACT |
 				ExpandableComposite.TITLE_BAR);
-		section.setText(label+" List");
+		section.setText(label+Messages.AbstractListComposite_List);
 
 		final Composite tableComposite = toolkit.createComposite(section, SWT.NONE);
 		section.setClient(tableComposite);
@@ -615,9 +615,9 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	    tableToolBarManager = new ToolBarManager(SWT.FLAT);
 	    ToolBar toolbar = tableToolBarManager.createControl(section);
 
-	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/add.png");
+	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/add.png"); //$NON-NLS-1$
 		if ((style & ADD_BUTTON)!=0) {
-			addAction = new Action("Add", id) {
+			addAction = new Action(Messages.AbstractListComposite_Add, id) {
 				@Override
 				public void run() {
 					super.run();
@@ -642,12 +642,12 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			
 			if ((style & DELETE_BUTTON)!=0) {
 				removeIsDelete = true;
-				id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/delete.png");
+				id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/delete.png"); //$NON-NLS-1$
 			}
 			else {
-				id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/remove.png");
+				id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/remove.png"); //$NON-NLS-1$
 			}
-			removeAction = new Action(removeIsDelete ? "Delete" : "Remove", id) {
+			removeAction = new Action(removeIsDelete ? Messages.AbstractListComposite_Delete : Messages.AbstractListComposite_Remove, id) {
 				@Override
 				public void run() {
 					super.run();
@@ -686,8 +686,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		}
 		
 		if ((style & MOVE_BUTTONS)!=0) {
-			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/up.png");
-			upAction = new Action("Move Up", id) {
+			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/up.png"); //$NON-NLS-1$
+			upAction = new Action(Messages.AbstractListComposite_Move_Up, id) {
 				@Override
 				public void run() {
 					super.run();
@@ -706,8 +706,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			tableToolBarManager.add(upAction);
 			upAction.setEnabled(false);
 	
-			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/down.png");
-			downAction = new Action("Move Down", id) {
+			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/down.png"); //$NON-NLS-1$
+			downAction = new Action(Messages.AbstractListComposite_Move_Down, id) {
 				@Override
 				public void run() {
 					super.run();
@@ -728,8 +728,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		}
 		
 		if ((style & EDIT_BUTTON)!=0) {
-			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/edit.png");
-			editAction = new Action("Edit", id) {
+			id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/edit.png"); //$NON-NLS-1$
+			editAction = new Action(Messages.AbstractListComposite_Edit, id) {
 				@Override
 				public void run() {
 					super.run();
@@ -773,13 +773,13 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.EXPANDED |
 				ExpandableComposite.TITLE_BAR);
-		section.setText(label+" Details");
+		section.setText(label+Messages.AbstractListComposite_Details);
 		section.setVisible(false);
 
 	    detailToolBarManager = new ToolBarManager(SWT.FLAT);
 	    ToolBar toolbar = detailToolBarManager.createControl(section);
-	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/close.png");
-	    detailToolBarManager.add( new Action("Close", id) {
+	    ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/close.png"); //$NON-NLS-1$
+	    detailToolBarManager.add( new Action(Messages.AbstractListComposite_Close, id) {
 			@Override
 			public void run() {
 				super.run();

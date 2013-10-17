@@ -50,9 +50,9 @@ public class DirectEditParticipantFeature extends AbstractDirectEditingFeature {
 	@Override
 	public String checkValueValid(String value, IDirectEditingContext context) {
 		if (value.length() < 1) {
-			return "Please enter descriptive name.";
-		} else if (value.contains("\n")) {
-			return "Line breakes are not allowed.";
+			return Messages.DirectEditParticipantFeature_Invalid_Empty;
+		} else if (value.contains("\n")) { //$NON-NLS-1$
+			return Messages.DirectEditParticipantFeature_Invalid_Linebreak;
 		}
 		return null;
 	}

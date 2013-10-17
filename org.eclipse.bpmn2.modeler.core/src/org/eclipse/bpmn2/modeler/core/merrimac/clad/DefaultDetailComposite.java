@@ -86,7 +86,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				EStructuralFeature f = PACKAGE.getDocumentation_Text();
 				ModelUtil.setMultiLine(documentation, f, true);
 				TextObjectEditor documentationEditor = new TextObjectEditor(this,documentation,f);
-				documentationEditor.createControl(getAttributesParent(),"Documentation");
+				documentationEditor.createControl(getAttributesParent(),Messages.DefaultDetailComposite_Documentation);
 				return null;
 			}
 		}
@@ -101,9 +101,9 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 	 */
 	protected Composite bindProperty(EObject be, String property) {
 		Composite composite = null;
-		String[] propArray = property.split("\\.");
+		String[] propArray = property.split("\\."); //$NON-NLS-1$
 		String prop0 = propArray[0];
-		String[] featureAndClassArray = prop0.split("#");
+		String[] featureAndClassArray = prop0.split("#"); //$NON-NLS-1$
 		String featureName = featureAndClassArray[0];
 		EStructuralFeature feature = getFeature(be,featureName);
 		EClass eclass = null;
@@ -119,10 +119,10 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		}
 		
 		// reconstruct the remainder of the property string (if any)
-		property = "";
+		property = ""; //$NON-NLS-1$
 		for (int i=1; i<propArray.length; ++i) {
 			if (!property.isEmpty())
-				property += ".";
+				property += "."; //$NON-NLS-1$
 			property += propArray[i];
 		}
 		
@@ -146,7 +146,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 					
 					for (Object o : values) {
 						if (eclass.isInstance(o)) {
-							propArray = property.split("[\\.#]");
+							propArray = property.split("[\\.#]"); //$NON-NLS-1$
 							featureName = propArray[0];
 							feature = getFeature((EObject)o,featureName);
 							composite = bindProperty((EObject)o, property);

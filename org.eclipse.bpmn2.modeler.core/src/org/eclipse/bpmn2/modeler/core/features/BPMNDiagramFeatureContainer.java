@@ -140,13 +140,13 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 		@Override
 		public String getName() {
 			if (preferences.getEnableConnectionRouting())
-				return "Disable automatic Connection Routing";
-			return "Enable automatic Connection Routing";
+				return Messages.BPMNDiagramFeatureContainer_Disable_Name;
+			return Messages.BPMNDiagramFeatureContainer_Enable_Name;
 		}
 
 		@Override
 		public String getDescription() {
-			return "";
+			return Messages.BPMNDiagramFeatureContainer_Disable_Enable_Description;
 		}
 
 		@Override
@@ -170,12 +170,12 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 		
 		@Override
 		public String getName() {
-			return "Re-route all Connections";
+			return Messages.BPMNDiagramFeatureContainer_Reroute_All_Name;
 		}
 
 		@Override
 		public String getDescription() {
-			return "Re-route all connections in the current diagram using the selected routing strategy";
+			return Messages.BPMNDiagramFeatureContainer_Reroute_All_Description;
 		}
 
 		@Override

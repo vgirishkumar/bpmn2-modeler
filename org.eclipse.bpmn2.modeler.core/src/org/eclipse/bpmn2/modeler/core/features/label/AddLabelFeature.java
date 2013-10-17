@@ -84,7 +84,7 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 			link(textContainerShape, baseElement);
 		}
 		
-		Graphiti.getPeService().setPropertyValue(textContainerShape, GraphicsUtil.LABEL_PROPERTY, "true");
+		Graphiti.getPeService().setPropertyValue(textContainerShape, GraphicsUtil.LABEL_PROPERTY, "true"); //$NON-NLS-1$
 		
 		updatePictogramElement(textContainerShape);
 		layoutPictogramElement(textContainerShape);

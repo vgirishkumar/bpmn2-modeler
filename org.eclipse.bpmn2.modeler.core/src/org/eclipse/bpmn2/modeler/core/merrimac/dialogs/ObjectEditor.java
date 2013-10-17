@@ -65,7 +65,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		this.object = object;
 		this.feature = feature;
 		this.style = SWT.NONE;
-    	messages = JavaReflectionUtil.findClass(parent, "Messages");
+    	messages = JavaReflectionUtil.findClass(parent, "Messages"); //$NON-NLS-1$
 	}
 	
 	/**
@@ -162,11 +162,11 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected String getToolTipText() {
 		String fieldName;
 		Field field;
-		String text = "";
+		String text = ""; //$NON-NLS-1$
     	if (messages!=null) {
     		try {
     			// fetch the description for this EClass and feature
-	    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description";
+	    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 //				text += "\n" + fieldName + "\n";
 	    		field = messages.getField(fieldName);
 	    		text += (String)field.get(null);
@@ -174,7 +174,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
     		catch (Exception e) {
 	    		try {
 	    			// if a description is not found for this EClass, try "Any"
-		    		fieldName = "UI_Any_" + feature.getName() + "_description";
+		    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
 //	    			text += "\n" + fieldName + "\n";
 		    		field = messages.getField(fieldName);
 		    		text += (String)field.get(null);

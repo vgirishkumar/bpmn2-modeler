@@ -30,12 +30,12 @@ public class ResourcePropertyTester extends PropertyTester {
 			if (prefs != null)
 				rt = prefs.getRuntime();
 
-			if ("targetRuntimeId".equals(property)) {
+			if ("targetRuntimeId".equals(property)) { //$NON-NLS-1$
 				if (rt != null) {
 					return rt.getId().equals(expectedValue);
 				}
 			}
-			else if ("toolPaletteProfile".equals(property)) {
+			else if ("toolPaletteProfile".equals(property)) { //$NON-NLS-1$
 				if (rt != null) {
 					ToolPaletteDescriptor tpd = rt.getToolPalette(object);
 					if (tpd != null) {
@@ -47,7 +47,7 @@ public class ResourcePropertyTester extends PropertyTester {
 					}
 				}
 			}
-			if ("doCoreValidation".equals(property)) {
+			if ("doCoreValidation".equals(property)) { //$NON-NLS-1$
 				if (prefs!=null) {
 					String value = Boolean.toString( prefs.getDoCoreValidation() );
 					expectedValue = expectedValue.toString();

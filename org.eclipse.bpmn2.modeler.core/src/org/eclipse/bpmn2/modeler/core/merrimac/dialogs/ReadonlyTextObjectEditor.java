@@ -34,7 +34,7 @@ public class ReadonlyTextObjectEditor extends TextAndButtonObjectEditor {
 		}
 		else {
 			String msg = "Can not display "+feature.getName()+" for "+object.eClass().getName();
-			MessageDialog.openError(getDiagramEditor().getSite().getShell(), "Internal Error!", msg);
+			MessageDialog.openError(getDiagramEditor().getSite().getShell(), Messages.ReadonlyTextObjectEditor_Title, msg);
 		}
 	}
 

@@ -16,9 +16,9 @@ public interface IConnectionRouter {
 	// this is a way to pass additional info to the connection router in the form of a string;
 	// the info is attached to the Connection as a Property.
 	// see Graphiti.getPeService().setPropertyValue()
-	public static final String ROUTING_INFO = "routing.info";
-	public static final String ROUTING_INFO_FORCE = "force";
-	public static final String ROUTING_INFO_BENDPOINT = "bendpoint";
+	public static final String ROUTING_INFO = "routing.info"; //$NON-NLS-1$
+	public static final String ROUTING_INFO_FORCE = "force"; //$NON-NLS-1$
+	public static final String ROUTING_INFO_BENDPOINT = "bendpoint"; //$NON-NLS-1$
 	
 	public boolean route(Connection connection);
 	public void dispose();

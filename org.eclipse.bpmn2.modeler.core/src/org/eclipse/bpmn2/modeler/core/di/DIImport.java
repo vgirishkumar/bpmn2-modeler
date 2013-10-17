@@ -97,7 +97,7 @@ import org.eclipse.swt.widgets.Display;
 @SuppressWarnings("restriction")
 public class DIImport {
 
-	public static final String IMPORT_PROPERTY = DIImport.class.getSimpleName().concat(".import");
+	public static final String IMPORT_PROPERTY = DIImport.class.getSimpleName().concat(".import"); //$NON-NLS-1$
 
 	private DiagramEditor editor;
 //	private Diagram diagram;
@@ -398,7 +398,7 @@ public class DIImport {
 				BPMNShape currentShape = iterator.next();
 				BaseElement bpmnElement = currentShape.getBpmnElement();
 				if (bpmnElement!=null) {
-					diagnostics.add(IStatus.WARNING, bpmnElement, "Dependency not found");
+					diagnostics.add(IStatus.WARNING, bpmnElement, Messages.DIImport_Dependency_not_found);
 				}
 				
 			}
@@ -497,7 +497,7 @@ public class DIImport {
 	private void createShape(BPMNShape shape) {
 		BaseElement bpmnElement = shape.getBpmnElement();
 		if (bpmnElement==null) {
-			diagnostics.add(IStatus.ERROR, shape, "The referenced BPMN element does not exist");
+			diagnostics.add(IStatus.ERROR, shape, Messages.DIImport_Reference_not_found);
 			return;
 		}
 
@@ -509,7 +509,7 @@ public class DIImport {
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
 
 		if (addFeature == null) {
-			diagnostics.add(IStatus.WARNING, bpmnElement, "Cannot add graphics");
+			diagnostics.add(IStatus.WARNING, bpmnElement, Messages.DIImport_No_Add_Feature);
 			return;
 		}
 
@@ -796,7 +796,7 @@ public class DIImport {
 			}
 		}
 		else if (bpmnElement==null) {
-			diagnostics.add(IStatus.ERROR, bpmnEdge, "The referenced BPMN element does not exist");
+			diagnostics.add(IStatus.ERROR, bpmnEdge, Messages.DIImport_Reference_not_found);
 			return;
 		}
 
@@ -814,11 +814,11 @@ public class DIImport {
 		} else {
 			String message;
 			if (se==null && te==null)
-				message = "Source and Target shapes do not exist";
+				message = Messages.DIImport_No_Source_or_Target;
 			else if (se==null)
-				message = "Source shape does not exist";
+				message = Messages.DIImport_No_Source;
 			else
-				message = "Target shape does not exist";
+				message = Messages.DIImport_No_Target;
 
 			diagnostics.add(IStatus.WARNING, bpmnElement, message);
 		}
@@ -880,7 +880,7 @@ public class DIImport {
 			featureProvider.link(connection, new Object[] { bpmnElement, bpmnEdge });
 			return connection;
 		} else {
-			diagnostics.add(IStatus.WARNING, bpmnElement,"Cannot create graphics");
+			diagnostics.add(IStatus.WARNING, bpmnElement,Messages.DIImport_No_Create_Feature);
 		}
 		return null;
 	}

@@ -72,7 +72,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		}
 		
 		private void setDefaultId() {
-			id = "V-" + ID++;
+			id = "V-" + ID++; //$NON-NLS-1$
 		}
 	}
 	
@@ -85,7 +85,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		public String type;
 		
 		public Property() {
-			this.name = "unknown";
+			this.name = "unknown"; //$NON-NLS-1$
 		}
 		
 		public Property(String name, String description) {
@@ -234,7 +234,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		// if the object has an "id", assign it now.
 		String id = ModelUtil.setID(eObject,containingResource);
 		// also set a default name
-		EStructuralFeature feature = eObject.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = eObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null) {
 			if (id!=null)
 				eObject.eSet(feature, ModelUtil.toDisplayName(id));
@@ -275,7 +275,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		while (it.hasNext()) {
 			EObject o = it.next();
 			if (type.isInstance(o)) {
-				EStructuralFeature fName = o.eClass().getEStructuralFeature("name");
+				EStructuralFeature fName = o.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 				if (fName!=null && o.eGet(fName)!=null && o.eGet(fName).equals(name)) {
 					return (EStructuralFeature)o;
 				}
@@ -425,13 +425,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 				if (property.ref!=null) {
 					// navigate down the newly created custom task to find the object reference
 					childObject = modelObject;
-					String[] segments = property.ref.split("/");
+					String[] segments = property.ref.split("/"); //$NON-NLS-1$
 					for (String s : segments) {
 						// is the feature an Elist?
 						int index = s.indexOf('#');
 						if (index>0) {
 							index = Integer.parseInt(s.substring(index+1));
-							s = s.split("#")[0];
+							s = s.split("#")[0]; //$NON-NLS-1$
 						}
 						childFeature = childObject.eClass().getEStructuralFeature(s);
 						childObject = (EObject)getValue(childObject, childFeature, index);
@@ -476,7 +476,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		List<Property> result = new ArrayList<Property>();
 		List<Property> props = new ArrayList<Property>();
 		props.addAll(getProperties());
-		String names[] = path.split("/");
+		String names[] = path.split("/"); //$NON-NLS-1$
 		getProperties(props,names,0,result);
 		return result;
 	}

@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 
 public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 
-	public final static String TOOLPART_ID = "ToolPartID";
-	public final static String TOOLPART_OPTIONAL = "ToolPartOptional";
+	public final static String TOOLPART_ID = "ToolPartID"; //$NON-NLS-1$
+	public final static String TOOLPART_OPTIONAL = "ToolPartOptional"; //$NON-NLS-1$
 	
 	// The Drawers
 	public static class CategoryDescriptor {
@@ -116,7 +116,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 			@Override
 			public boolean add(ToolPart tp) {
 				if (tp.getName().isEmpty())
-					System.out.println("");
+					System.out.println(""); //$NON-NLS-1$
 				return super.add(tp);
 			}
 		};
@@ -137,14 +137,14 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		public ToolPart parseToolObjectString(String object) {
 			ToolPart parentToolPart = null;
 			ToolPart toolPart = null;
-			String toolPartName = "";
+			String toolPartName = ""; //$NON-NLS-1$
 			Stack<ToolPart> toolPartStack = new Stack<ToolPart>();
 			ToolPart result = null;
 			char chars[] = object.toCharArray();
 			for (int i=0; i<chars.length; ++i) {
 				char c = chars[i];
 				if (c=='+') {
-					if (!"".equals(toolPartName)) {
+					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
 						if (parentToolPart==null) {
 							toolParts.add(toolPart);
@@ -159,16 +159,16 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 					else if (parentToolPart==null)
 						parentToolPart = toolPart;
 					toolPartStack.push(parentToolPart);
-					toolPartName = "";
+					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c=='-') {
-					if (!"".equals(toolPartName))
+					if (!"".equals(toolPartName)) //$NON-NLS-1$
 						parentToolPart.children.add( new ToolPart(this, toolPartName) );
 					parentToolPart = toolPartStack.pop();
-					toolPartName = "";
+					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c==',') {
-					if (!"".equals(toolPartName)) {
+					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
 						if (parentToolPart==null) {
 							toolParts.add(toolPart);
@@ -178,7 +178,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						}
 						if (result==null)
 							result = toolPart;
-						toolPartName = "";
+						toolPartName = ""; //$NON-NLS-1$
 					}
 				}
 				else if (c=='[') {
@@ -191,14 +191,14 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 					}
 					if (result==null)
 						result = toolPart;
-					toolPartName = "";
+					toolPartName = ""; //$NON-NLS-1$
 					
 					// data for preceding object type follows:
 					// [name=value] or [name1=value1,name2=value2]
 					// are valid
 					++i;
 					do {
-						String prop = "";
+						String prop = ""; //$NON-NLS-1$
 						while (i<chars.length) {
 							c = chars[i++];
 							if (c=='\\')
@@ -207,7 +207,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 								break;
 							prop += c;
 						}
-						String value = "";
+						String value = ""; //$NON-NLS-1$
 						boolean quote = false;
 						while (i<chars.length) {
 							c = chars[i++];
@@ -227,7 +227,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						--i;
 					}
 				}
-				else if ("".equals(toolPartName)) {
+				else if ("".equals(toolPartName)) { //$NON-NLS-1$
 					if (Character.isJavaIdentifierStart(c))
 						toolPartName += c;
 				}
@@ -346,32 +346,32 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	}
 
 	protected void create(IConfigurationElement e) {
-		id = e.getAttribute("id");
-		type = e.getAttribute("type");
-		profile = e.getAttribute("profile");
+		id = e.getAttribute("id"); //$NON-NLS-1$
+		type = e.getAttribute("type"); //$NON-NLS-1$
+		profile = e.getAttribute("profile"); //$NON-NLS-1$
 		for (IConfigurationElement c : e.getChildren()) {
-			if (c.getName().equals("category")) {
-				String cid = c.getAttribute("id");
-				String name = c.getAttribute("name");
-				String description = c.getAttribute("description");
-				String icon = c.getAttribute("icon");
+			if (c.getName().equals("category")) { //$NON-NLS-1$
+				String cid = c.getAttribute("id"); //$NON-NLS-1$
+				String name = c.getAttribute("name"); //$NON-NLS-1$
+				String description = c.getAttribute("description"); //$NON-NLS-1$
+				String icon = c.getAttribute("icon"); //$NON-NLS-1$
 				CategoryDescriptor category = addCategory(cid, name, description, icon);
-				cid = c.getAttribute("before");
+				cid = c.getAttribute("before"); //$NON-NLS-1$
 				if (cid!=null)
 					category.setBefore(cid);
-				cid = c.getAttribute("after");
+				cid = c.getAttribute("after"); //$NON-NLS-1$
 				if (cid!=null)
 					category.setAfter(cid);
-				cid = c.getAttribute("fromPalette");
+				cid = c.getAttribute("fromPalette"); //$NON-NLS-1$
 				if (cid!=null)
 					category.setFromPalette(cid);
 				for (IConfigurationElement t : c.getChildren()) {
-					if (t.getName().equals("tool")) {
-						String tid = t.getAttribute("id");
-						name = t.getAttribute("name");
-						description = t.getAttribute("description");
-						icon = t.getAttribute("icon");
-						String object = t.getAttribute("object");
+					if (t.getName().equals("tool")) { //$NON-NLS-1$
+						String tid = t.getAttribute("id"); //$NON-NLS-1$
+						name = t.getAttribute("name"); //$NON-NLS-1$
+						description = t.getAttribute("description"); //$NON-NLS-1$
+						icon = t.getAttribute("icon"); //$NON-NLS-1$
+						String object = t.getAttribute("object"); //$NON-NLS-1$
 						ToolDescriptor tool = null;
 						
 						if (object!=null && !object.isEmpty()) {
@@ -380,19 +380,19 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 						else {
 							tool = category.addTool(tid, name, description, icon);
 							for (IConfigurationElement tc : t.getChildren()) {
-								if ("object".equals(tc.getName())) {
-									String id = tc.getAttribute("id");
-									String type = tc.getAttribute("type");
-									String optional = tc.getAttribute("optional");
+								if ("object".equals(tc.getName())) { //$NON-NLS-1$
+									String id = tc.getAttribute("id"); //$NON-NLS-1$
+									String type = tc.getAttribute("type"); //$NON-NLS-1$
+									String optional = tc.getAttribute("optional"); //$NON-NLS-1$
 									ToolPart tp = tool.parseToolObjectString(type);
 									if (id!=null && !id.isEmpty())
 										tp.getProperties().put(TOOLPART_ID, id);
-									if ("true".equals(optional))
+									if ("true".equals(optional)) //$NON-NLS-1$
 										tp.getProperties().put(TOOLPART_OPTIONAL, optional);
 								}
 							}
 						}
-						tid = c.getAttribute("fromPalette");
+						tid = c.getAttribute("fromPalette"); //$NON-NLS-1$
 						if (tid!=null)
 							tool.setFromPalette(cid);
 					}

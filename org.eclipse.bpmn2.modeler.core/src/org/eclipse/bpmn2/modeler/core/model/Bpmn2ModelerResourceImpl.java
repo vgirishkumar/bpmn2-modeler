@@ -105,7 +105,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
-	public static final String BPMN2_CONTENT_TYPE_ID = "org.eclipse.bpmn2.content-type.xml";
+	public static final String BPMN2_CONTENT_TYPE_ID = "org.eclipse.bpmn2.content-type.xml"; //$NON-NLS-1$
 	protected BpmnXmlHelper xmlHelper;
 	protected QNameURIHandler uriHandler;
 	public HashMap xmlNameToFeatureMap = new HashMap();
@@ -223,7 +223,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         this.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
         this.getDefaultSaveOptions().put(XMLResource.OPTION_ELEMENT_HANDLER, new ElementHandlerImpl(true));
-        this.getDefaultSaveOptions().put(XMLResource.OPTION_ENCODING, "UTF-8");
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_ENCODING, "UTF-8"); //$NON-NLS-1$
         this.getDefaultSaveOptions().put(XMLResource.OPTION_USE_CACHED_LOOKUP_TABLE, new ArrayList<Object>());
         
         // some interesting things to play with:
@@ -359,18 +359,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 								Object value = obj.eGet(f);
 								if (ModelUtil.isStringWrapper(value)) {
 									String localpart = ModelUtil.getStringWrapperValue(value);
-									if (localpart!=null && !localpart.isEmpty() && !localpart.contains(":")) {
+									if (localpart!=null && !localpart.isEmpty() && !localpart.contains(":")) { //$NON-NLS-1$
 										String prefix = helper.getPrefix(namespaceURI);
 										if (prefix==null || prefix.isEmpty()) {
 											for (int index = 0; true; ++index) {
-												prefix = "ns" + index;
+												prefix = "ns" + index; //$NON-NLS-1$
 												String ns = helper.getPrefixToNamespaceMap().get(prefix);
 												if (ns==null)
 													break;
 											}
 											helper.addPrefix(prefix, namespaceURI);	
 										}
-										ModelUtil.setStringWrapperValue(value, prefix + ":" + localpart);
+										ModelUtil.setStringWrapperValue(value, prefix + ":" + localpart); //$NON-NLS-1$
 									}
 								}
 							}
@@ -399,7 +399,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				URI referencingURI = ImportHelper.makeURICanonical(resourceURI);
 				String location = ModelUtil.getStringWrapperValue(itemDef.getStructureRef());
 				if (location!=null) {
-					int i = location.indexOf("$");
+					int i = location.indexOf("$"); //$NON-NLS-1$
 					if (i>0)
 						location = location.substring(0,i);
 					URI uri = URI.createURI(location).resolve(referencingURI);
@@ -428,7 +428,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			if ( qnameMap.contains(eReference) ) {
 				// This reference might be a QName (according to the BPMN2 spec!)
 				// or it might not, in the case of some jBPM Java type references.
-				int i = ids.indexOf(":");
+				int i = ids.indexOf(":"); //$NON-NLS-1$
 				if (i>0) {
 					// if the ID string is a QName, try to resolve and load the object
 					String prefix = ids.substring(0,i);
@@ -470,7 +470,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			// "Official" BPMN 2.0 xsd says these SHOULD be QNames, the bpmn2 EMF
 			// model has these defined as "resolveProxies=false" which means they
 			// will NOT get resolved.
-			if (/*!eReference.isResolveProxies() && */ids.contains(":")) {
+			if (/*!eReference.isResolveProxies() && */ids.contains(":")) { //$NON-NLS-1$
 				// Resolve QNames here: if they are internal objects,
 				// simply replace the ID string with the URI fragment.
 				// If they are not internal objects, then there's a
@@ -504,13 +504,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         		// that the XSI namespace prefix is ALWAYS "xsi" and they WILL create
         		// a duplicate namespace declaration if one already existed under a
         		// different prefix. This would result a nasty warning from the parser.
-        		if (XSI_URI.equals(value) && name.startsWith("xmlns:")) {
-        			int i = name.indexOf(":");
+        		if (XSI_URI.equals(value) && name.startsWith("xmlns:")) { //$NON-NLS-1$
+        			int i = name.indexOf(":"); //$NON-NLS-1$
         			String prefix = name.substring(i+1);
         			if (!ExtendedMetaData.XSI_PREFIX.equals(prefix))
         				return;
         		}
-        		if (name.contains(":schemaLocation")) {
+        		if (name.contains(":schemaLocation")) { //$NON-NLS-1$
         			if (!XSI_SCHEMA_LOCATION.equals(name))
         				return;
         		}
@@ -624,7 +624,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             
 			// don't save Assignments if they are invalid: Assignments must have
 			// both a "from" and "to" expression and they may not be empty strings.
-			if (o instanceof DataAssociation && "assignment".equals(f.getName())) {
+			if (o instanceof DataAssociation && "assignment".equals(f.getName())) { //$NON-NLS-1$
 				DataAssociation da = (DataAssociation)o;
 				for (Assignment a : da.getAssignment()) {
 					Expression from = a.getFrom();
@@ -975,7 +975,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		public URI deresolve(URI uri) {
 			String fragment = uri.fragment();
-			if (fragment != null && !fragment.startsWith("/")) {
+			if (fragment != null && !fragment.startsWith("/")) { //$NON-NLS-1$
 				// return just fragment (i.e. without the '#') but only if local reference
 				URI otherURI = uri.trimFragment();
 				if (baseURI.equals(otherURI))
@@ -988,13 +988,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		public String convertQNameToUri(String qName) {
-			if (qName.contains("#") || qName.contains("/")) {
+			if (qName.contains("#") || qName.contains("/")) { //$NON-NLS-1$ //$NON-NLS-2$
 				// We already have an URI and not QName, e.g. URL
 				return qName;
 			}
 			
 			// Split into prefix and local part (fragment)
-			String[] parts = qName.split(":");
+			String[] parts = qName.split(":"); //$NON-NLS-1$
 			String prefix, fragment;
 			if (parts.length == 1) {
 				prefix = null;
@@ -1005,7 +1005,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			} else
 				throw new IllegalArgumentException("Illegal QName: " + qName);
 
-			if (fragment.contains(".")) {
+			if (fragment.contains(".")) { //$NON-NLS-1$
 				// HACK: officially IDs can contain ".", but unfortunately
 				// XmlHandler calls resolve also for xsi:schemaLocation stuff
 				// and similar, that are
@@ -1023,7 +1023,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				String uriString = xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 				URI uri = URI.createURI(uriString);
 				ResourceSet rs = ModelUtil.slightlyHackedResourceSet(xmlHelper.getResource().getResourceSet());
-				Resource r = ((Bpmn2ModelerResourceSetImpl)rs).getResource(uri, true, "wsdl"); // the only problem here...
+				Resource r = ((Bpmn2ModelerResourceSetImpl)rs).getResource(uri, true, "wsdl"); // the only problem here... //$NON-NLS-1$
 				if (r instanceof WSDLResourceImpl) {
 					o = r.getContents().get(0);
 					Definition def = (Definition)o;
@@ -1059,7 +1059,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			Object o = super.getValue(eObject, eStructuralFeature);
 			if (qnameMap.contains(eStructuralFeature)) {
 				List<String> prefixes = urisToPrefixes.get(getTargetNamespace());
-				if (prefixes!=null && prefixes.contains(""))
+				if (prefixes!=null && prefixes.contains("")) //$NON-NLS-1$
 					isQNameFeature = false;
 				else
 					isQNameFeature = true;
@@ -1077,7 +1077,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				if (ModelUtil.isStringWrapper(obj)) {
 					s = ModelUtil.getStringWrapperValue(obj);
 				}
-				else if (s.contains("#")) {
+				else if (s.contains("#")) { //$NON-NLS-1$
 					// object is a reference possibly to another document
 					Import imp = importHandler.findImportForObject(resource, obj);
 					if (imp!=null) {
@@ -1085,7 +1085,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						if (localname!=null) {
 							String prefix = NamespaceUtil.getPrefixForNamespace(resource, imp.getNamespace());
 							if (prefix!=null) {
-								s = prefix + ":" + localname;
+								s = prefix + ":" + localname; //$NON-NLS-1$
 								return s;
 							}
 						}
@@ -1145,7 +1145,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						}
 					}
 				}
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 			return null;
 		}
@@ -1157,10 +1157,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		 * @return the string "s" prefixed with the NS prefix for the targetNamespace.
 		 */
 		private String convertToQName(String s) {
-			if (s!=null && !s.contains(":")) {
+			if (s!=null && !s.contains(":")) { //$NON-NLS-1$
 				String prefix = getTargetNamespacePrefix();
 				if (prefix!=null && !prefix.isEmpty()) {
-					s = prefix + ":" + s;
+					s = prefix + ":" + s; //$NON-NLS-1$
 				}
 			}
 			return s;
@@ -1210,7 +1210,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						if (p.name.equals(featureName)) {
 							String type = p.type;
 							if (type==null)
-								type = "EString";
+								type = "EString"; //$NON-NLS-1$
 							EClassifier eClassifier = ModelUtil.getEClassifierFromString(
 									rt.getModelDescriptor().getEPackage(),type);
 							if (eClassifier instanceof EDataType) {

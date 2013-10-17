@@ -20,7 +20,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 
 public interface ICustomElementFeatureContainer extends IFeatureContainer {
 
-	public final static String CUSTOM_ELEMENT_ID = "custom.element.id";
+	public final static String CUSTOM_ELEMENT_ID = "custom.element.id"; //$NON-NLS-1$
 
 	public String getDescription();
 	

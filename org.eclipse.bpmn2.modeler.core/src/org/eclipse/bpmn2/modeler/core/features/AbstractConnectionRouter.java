@@ -46,7 +46,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 		Assert.isTrue(info!=null && !info.isEmpty());
 		String newInfo = getRoutingInfo(connection);
 		if (!newInfo.isEmpty())
-			newInfo += ",";
+			newInfo += ","; //$NON-NLS-1$
 		newInfo += info;
 		
 		peService.setPropertyValue(connection, ROUTING_INFO, newInfo);
@@ -62,8 +62,8 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 		if (info!=null && !info.isEmpty()) {
 			newInfo = getRoutingInfo(connection);
 			if (newInfo!=null && !newInfo.isEmpty()) {
-				String a[] = newInfo.split(",");
-				String b[] = info.split(",");
+				String a[] = newInfo.split(","); //$NON-NLS-1$
+				String b[] = info.split(","); //$NON-NLS-1$
 				for (int i=0; i<a.length; ++i) {
 					for (String sb : b) {
 						if (a[i].startsWith(sb)) {
@@ -72,11 +72,11 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 						}
 					}
 				}
-				newInfo = "";
+				newInfo = ""; //$NON-NLS-1$
 				for (int i=0; i<a.length; ++i) {
 					if (a[i]!=null && !a[i].isEmpty()) {
 						if (!newInfo.isEmpty())
-							newInfo += ",";
+							newInfo += ","; //$NON-NLS-1$
 						newInfo += a[i];
 					}
 				}
@@ -92,22 +92,22 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	public static String getRoutingInfo(Connection connection) {
 		String info = peService.getPropertyValue(connection, ROUTING_INFO);
 		if (info==null || info.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		return info;
 	}
 
 	public static String setRoutingInfoInt(Connection connection, String info, int value) {
-		removeRoutingInfo(connection, info+"=");
-		return addRoutingInfo(connection, info+"="+value);
+		removeRoutingInfo(connection, info+"="); //$NON-NLS-1$
+		return addRoutingInfo(connection, info+"="+value); //$NON-NLS-1$
 	}
 
 	public static int getRoutingInfoInt(Connection connection, String info) {
 		String oldInfo = getRoutingInfo(connection);
-		String a[] = oldInfo.split(",");
+		String a[] = oldInfo.split(","); //$NON-NLS-1$
 		for (String s : a) {
-			if (oldInfo.startsWith(info+"=")) {
+			if (oldInfo.startsWith(info+"=")) { //$NON-NLS-1$
 				try {
-					String b[] = s.split("=");
+					String b[] = s.split("="); //$NON-NLS-1$
 					return Integer.parseInt(b[1]);
 				}
 				catch (Exception e) {

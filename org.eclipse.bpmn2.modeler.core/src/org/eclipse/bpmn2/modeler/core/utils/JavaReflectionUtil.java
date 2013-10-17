@@ -52,8 +52,8 @@ public class JavaReflectionUtil {
 		while (clazz!=null);
 		try {
 			// last resort: try the UI plugin, this is where the Messages class is defined
-			Bundle b = OSGIUtils.getDefault().getBundle("org.eclipse.bpmn2.modeler.ui");
-			clazz = b.loadClass("org.eclipse.bpmn2.modeler.ui.Messages");
+			Bundle b = OSGIUtils.getDefault().getBundle("org.eclipse.bpmn2.modeler.ui"); //$NON-NLS-1$
+			clazz = b.loadClass("org.eclipse.bpmn2.modeler.ui.Messages"); //$NON-NLS-1$
 			Class result = findClass(clazz, simpleName);
 			if (result!=null)
 				return result;
@@ -66,8 +66,8 @@ public class JavaReflectionUtil {
 		ClassLoader cl = clazz.getClassLoader();
 		String packageName = clazz.getPackage().getName();
 		int index;
-		while ((index = packageName.lastIndexOf(".")) != -1) {
-			String className = packageName + "." + simpleName; 
+		while ((index = packageName.lastIndexOf(".")) != -1) { //$NON-NLS-1$
+			String className = packageName + "." + simpleName;  //$NON-NLS-1$
 			try {
 				return Class.forName(className, true, cl);
 			} catch (ClassNotFoundException e) {

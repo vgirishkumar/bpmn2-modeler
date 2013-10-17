@@ -35,8 +35,8 @@ import org.eclipse.graphiti.services.IPeService;
 public class AddEventFeature<T extends Event>
 	extends AbstractBpmn2AddElementFeature<T> {
 
-	public static final String EVENT_ELEMENT = "event.graphics.element";
-	public static final String EVENT_CIRCLE = "event.graphics.element.circle";
+	public static final String EVENT_ELEMENT = "event.graphics.element"; //$NON-NLS-1$
+	public static final String EVENT_CIRCLE = "event.graphics.element.circle"; //$NON-NLS-1$
 
 	public AddEventFeature(IFeatureProvider fp) {
 		super(fp);

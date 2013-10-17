@@ -36,7 +36,7 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Participant> {
 
-	public static final String MULTIPLICITY = "multiplicity";
+	public static final String MULTIPLICITY = "multiplicity"; //$NON-NLS-1$
 	public static final int DEFAULT_POOL_WIDTH = 600;
 	public static final int DEFAULT_POOL_HEIGHT = 150;
 
