@@ -82,7 +82,7 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 			}
 			else if (be instanceof ExternalProcess) {
 				// TODO: hook into jBPM guvnor instance to fetch additional info maybe?
-				bindAttribute(be, "name");
+				bindAttribute(be, "name"); //$NON-NLS-1$
 				return;
 			}
 			
@@ -94,11 +94,11 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 				// create our own for Process
 				bindDescription(be);
 				
-				bindAttribute(process, "name");
+				bindAttribute(process, "name"); //$NON-NLS-1$
 //				bindAttribute(process, "id");
 //				bindAttribute(process, "anyAttribute");
 //				bindAttribute(process, "isExecutable");
-				bindList(process,"documentation");
+				bindList(process,"documentation"); //$NON-NLS-1$
 //				bindAttribute(process, "adHoc");
 //				bindList(process, "properties"); // this has moved to JbpmDataItemsDetailComposite
 //				bindList(process, "laneSets"); // don't need this

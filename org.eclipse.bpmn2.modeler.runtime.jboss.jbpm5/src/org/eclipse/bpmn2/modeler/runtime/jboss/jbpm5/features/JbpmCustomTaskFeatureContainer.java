@@ -92,7 +92,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 
 		@Override
 		public String getCreateImageId() {
-			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
+			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon");  //$NON-NLS-1$
 			if (iconPath != null && iconPath.trim().length() > 0) {
 				return iconPath.trim();
 			}
@@ -162,7 +162,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, Task businessObject) {
 			super.decorateShape(context, containerShape, businessObject);
-			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon"); 
+			final String iconPath = (String) customTaskDescriptor.getPropertyValue("icon");  //$NON-NLS-1$
 			if (iconPath != null && iconPath.trim().length() > 0) {
 				GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 				IGaService service = Graphiti.getGaService();
@@ -179,7 +179,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		
 		List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
 		for (EStructuralFeature f : features) {
-			if ("taskName".equals(f.getName())) {
+			if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 				Object attrValue = object.eGet(f);
 				if (attrValue!=null) {
 					// search the extension attributes for a "taskName" and compare it
@@ -246,7 +246,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 						Task task = (Task)o;
 						List<EStructuralFeature> features = ModelUtil.getAnyAttributes(task);
 						for (EStructuralFeature f : features) {
-							if ("taskName".equals(f.getName())) {
+							if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 								// make sure the Work Item Definition exists
 								String taskName = (String)task.eGet(f);
 								return ((JBPM5RuntimeExtension)rte).getWorkItemDefinition(taskName) != null;
@@ -274,10 +274,10 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			BPMN2Editor editor = (BPMN2Editor)getFeatureProvider().getDiagramTypeProvider().getDiagramEditor();
 			PictogramElement pe = ((ICustomContext) context).getPictogramElements()[0];
 			final Task task = (Task)Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-			String taskName = "";
+			String taskName = ""; //$NON-NLS-1$
 			List<EStructuralFeature> features = ModelUtil.getAnyAttributes(task);
 			for (EStructuralFeature f : features) {
-				if ("taskName".equals(f.getName())) {
+				if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 					taskName = (String)task.eGet(f);
 					break;
 				}
@@ -373,7 +373,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		 */
 		@Override
 		public String getName() {
-			return "Configure Work Item";
+			return Messages.JbpmCustomTaskFeatureContainer_Name;
 		}
 
 		/* (non-Javadoc)
@@ -381,7 +381,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		 */
 		@Override
 		public String getDescription() {
-			return "Configure the Parameters for this Custom Task";
+			return Messages.JbpmCustomTaskFeatureContainer_Description;
 		}
 
 		/* (non-Javadoc)

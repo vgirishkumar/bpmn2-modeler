@@ -36,7 +36,7 @@ public class JbpmItemDefinitionDetailComposite extends
 	
 	@Override
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
-		if ("structureRef".equals(reference.getName()) &&
+		if ("structureRef".equals(reference.getName()) && //$NON-NLS-1$
 				isModelObjectEnabled(object.eClass(), reference)) {
 			
 			if (parent==null)

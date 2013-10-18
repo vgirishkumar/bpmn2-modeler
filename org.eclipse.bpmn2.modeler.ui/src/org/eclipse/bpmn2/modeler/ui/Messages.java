@@ -24,6 +24,8 @@ public class Messages extends NLS {
 
 	private static String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.messages"; //$NON-NLS-1$
 	
+	public static String Activator_Error;
+
 	public static String SchemaImportDialog_0;
 	public static String SchemaImportDialog_1;
 	public static String SchemaImportDialog_2;
@@ -81,6 +83,8 @@ public class Messages extends NLS {
 
 	public static String Bpmn2PreferencePage_HomePage_Description;
 	public static String Bpmn2PreferencePage_EditorPage_Description;
+
+	public static String CommonLabels_Data_Type;
 
 	public static String UI_UnknownDiagram_long_description;
 	public static String UI_ProcessDiagram_long_description;

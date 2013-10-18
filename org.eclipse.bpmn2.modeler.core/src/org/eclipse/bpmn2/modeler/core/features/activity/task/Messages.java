@@ -11,4 +11,7 @@ public class Messages extends NLS {
 
 	private Messages() {
 	}
+
+	public static String DirectEditTaskFeature_Invalid_Empty;
+	public static String DirectEditTaskFeature_Invalid_Linebreak;
 }

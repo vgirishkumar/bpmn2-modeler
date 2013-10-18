@@ -66,6 +66,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -573,10 +574,13 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 
 					targetRuntime = TargetRuntime.getDefaultRuntime();
 					MessageDialog.openError(
-							Display.getDefault().getActiveShell(),
-							Messages.Bpmn2Preferences_19,
-							"The Target Runtime plugin for id '"+id+"'"+
-							"\ncould not be loaded, using "+targetRuntime.getDescription()+" instead."
+						Display.getDefault().getActiveShell(),
+						Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
+						NLS.bind(
+							Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
+							id,
+							targetRuntime.getDescription()
+						)
 					);
 				}
 				

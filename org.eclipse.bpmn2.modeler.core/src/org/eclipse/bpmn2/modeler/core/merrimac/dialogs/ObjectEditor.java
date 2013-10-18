@@ -33,6 +33,7 @@ import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -183,7 +184,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	    		}
     		}
     		if (text==null || text.isEmpty())
-    			text = "No description for "+label.getText();
+    			text = NLS.bind(Messages.ObjectEditor_No_Description, label.getText());
     	}
     	return text;
 	}
@@ -257,9 +258,15 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		boolean success = ModelUtil.setValue(domain, object, feature, result);
 		if (!success) {
 			ErrorUtils.showErrorMessage(
-					"Can't set '"+ModelUtil.getDisplayName(object)+
-					"' "+ModelUtil.getLabel(object,feature)+
-					" with value '"+ModelUtil.getDisplayName(result)+"'");
+				NLS.bind(
+					Messages.ObjectEditor_Set_Error_Message,
+					new Object[] {
+						ModelUtil.getDisplayName(object),
+						ModelUtil.getLabel(object,feature),
+						ModelUtil.getDisplayName(result)
+					}
+				)
+			);
 			return false;
 		}
 		return true;

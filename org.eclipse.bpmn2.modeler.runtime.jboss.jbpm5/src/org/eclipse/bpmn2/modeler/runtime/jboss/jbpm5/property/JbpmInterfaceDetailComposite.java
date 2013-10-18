@@ -31,7 +31,7 @@ public class JbpmInterfaceDetailComposite extends InterfaceDetailComposite {
 
 	@Override
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
-		if ("implementationRef".equals(reference.getName()) &&
+		if ("implementationRef".equals(reference.getName()) && //$NON-NLS-1$
 				isModelObjectEnabled(object.eClass(), reference)) {
 			
 			if (parent==null)

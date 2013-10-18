@@ -56,9 +56,9 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"rootElements#Process.global",
-						"rootElements#Process.properties",
-						"rootElements#Process.resources",
+						"rootElements#Process.global", //$NON-NLS-1$
+						"rootElements#Process.properties", //$NON-NLS-1$
+						"rootElements#Process.resources", //$NON-NLS-1$
 				};
 				
 				@Override
@@ -88,7 +88,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 						@Override
 						protected EObject addListItem(EObject object, EStructuralFeature feature) {
 							// generate a unique global variable name
-							String base = "globalVar";
+							String base = "globalVar"; //$NON-NLS-1$
 							int suffix = 1;
 							String name = base + suffix;
 							for (;;) {
@@ -114,7 +114,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 						}
 					};
 					globalsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_Global());
-					globalsTable.setTitle("Global List for "+ModelUtil.getLongDisplayName(process));
+					globalsTable.setTitle(Messages.JbpmDataItemsDetailComposite_Title+ModelUtil.getLongDisplayName(process));
 				}
 			}
 		}

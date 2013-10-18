@@ -42,7 +42,7 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 	
 	@Override
 	public void createBindings(final EObject be) {
-		final EStructuralFeature ioSpecificationFeature = be.eClass().getEStructuralFeature("ioSpecification");
+		final EStructuralFeature ioSpecificationFeature = be.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 		if (ioSpecificationFeature != null) {
 			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)
 			InputOutputSpecification ioSpecification = (InputOutputSpecification)be.eGet(ioSpecificationFeature);
@@ -51,18 +51,18 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 				InsertionAdapter.add(be, ioSpecificationFeature, ioSpecification);
 			}
 			
-			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs");
+			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs"); //$NON-NLS-1$
 			if (isModelObjectEnabled(ioSpecification.eClass(),dataInputsFeature)) {
 				dataInputsTable = new JbpmIoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
 				dataInputsTable.bindList(ioSpecification, dataInputsFeature);
-				dataInputsTable.setTitle("Input Parameter Mapping");
+				dataInputsTable.setTitle(Messages.JbpmIoParametersDetailComposite_Input_Mapping_Title);
 			}
 			
-			EStructuralFeature dataOutputsFeature = getFeature(ioSpecification, "dataOutputs");
+			EStructuralFeature dataOutputsFeature = getFeature(ioSpecification, "dataOutputs"); //$NON-NLS-1$
 			if (isModelObjectEnabled(ioSpecification.eClass(),dataOutputsFeature)) {
 				dataOutputsTable = new JbpmIoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
 				dataOutputsTable.bindList(ioSpecification, dataOutputsFeature);
-				dataOutputsTable.setTitle("Output Parameter Mapping");
+				dataOutputsTable.setTitle(Messages.JbpmIoParametersDetailComposite_Output_Mapping_Title);
 			}
 		}
 	}
@@ -91,7 +91,7 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 		List<Property> props = null;
 		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(activity);
 		if (adapter!=null) {
-			props = adapter.getProperties("ioSpecification/dataInputs/name");
+			props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			if (props!=null) {
 				for (Property p : props) {
 					Object propName = p.getFirstStringValue();

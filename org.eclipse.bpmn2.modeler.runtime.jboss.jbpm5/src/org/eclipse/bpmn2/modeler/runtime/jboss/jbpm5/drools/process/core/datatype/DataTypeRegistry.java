@@ -37,16 +37,16 @@ public class DataTypeRegistry {
 		
 		if (instance==null) {
 			instance = new Hashtable<String,DataTypeFactory>();
-			instance.put("BooleanDataType", new NewInstanceDataTypeFactory(BooleanDataType.class));
-			instance.put("EnumDataType", new NewInstanceDataTypeFactory(EnumDataType.class));
-			instance.put("FloatDataType", new NewInstanceDataTypeFactory(FloatDataType.class));
-			instance.put("IntegerDataType", new NewInstanceDataTypeFactory(IntegerDataType.class));
-			instance.put("StringDataType", new NewInstanceDataTypeFactory(StringDataType.class));
-			instance.put("UndefinedDataType", new NewInstanceDataTypeFactory(UndefinedDataType.class));
+			instance.put("BooleanDataType", new NewInstanceDataTypeFactory(BooleanDataType.class)); //$NON-NLS-1$
+			instance.put("EnumDataType", new NewInstanceDataTypeFactory(EnumDataType.class)); //$NON-NLS-1$
+			instance.put("FloatDataType", new NewInstanceDataTypeFactory(FloatDataType.class)); //$NON-NLS-1$
+			instance.put("IntegerDataType", new NewInstanceDataTypeFactory(IntegerDataType.class)); //$NON-NLS-1$
+			instance.put("StringDataType", new NewInstanceDataTypeFactory(StringDataType.class)); //$NON-NLS-1$
+			instance.put("UndefinedDataType", new NewInstanceDataTypeFactory(UndefinedDataType.class)); //$NON-NLS-1$
 		}
 		DataTypeFactory factory = instance.get(type);
 		if (factory==null)
-			factory = instance.get("UndefinedDataType");
+			factory = instance.get("UndefinedDataType"); //$NON-NLS-1$
 		return factory;
 	}
 }

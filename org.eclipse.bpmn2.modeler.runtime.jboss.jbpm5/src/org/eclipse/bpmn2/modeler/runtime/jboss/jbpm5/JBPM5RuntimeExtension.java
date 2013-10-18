@@ -107,16 +107,16 @@ import org.xml.sax.InputSource;
 @SuppressWarnings("restriction")
 public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSetListener {
 	
-	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5";
+	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5"; //$NON-NLS-1$
 	
-	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools";
+	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools"; //$NON-NLS-1$
 	private static final String[] typeLanguages = new String[] {
-		"http://www.java.com/javaTypes", "Java",
+		"http://www.java.com/javaTypes", "Java", //$NON-NLS-1$ //$NON-NLS-2$
 	};
 	private static final String [] expressionLanguages = new String[] {
-		"http://www.mvel.org/2.0", "mvel",
-		"http://www.java.com/java", "java",
-		"http://www.jboss.org/drools/rule", "Rule",
+		"http://www.mvel.org/2.0", "mvel", //$NON-NLS-1$ //$NON-NLS-2$
+		"http://www.java.com/java", "java", //$NON-NLS-1$ //$NON-NLS-2$
+		"http://www.jboss.org/drools/rule", "Rule", //$NON-NLS-1$ //$NON-NLS-2$
 	};
 	private List<WorkItemDefinition> workItemDefinitions;
 	private static boolean initialized = false;
@@ -237,13 +237,13 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 									@Override
 									public void run() {
 										MessageDialog.openError(Display.getDefault().getActiveShell(),
-												"Duplicate Custom Task",
-												"A Custom Task with id '"+
+												Messages.JBPM5RuntimeExtension_Duplicate_Task_Title,
+												Messages.JBPM5RuntimeExtension_Duplicate_Task_Message+
 												ctd.getId()+
-												"' was already defined.\n"+
-												"The new Custom Task defined in the file: "+
-												wid.getDefinitionFile().getFullPath().toString()+"\n"+
-												"will be ignored.");
+												"' was already defined.\n"+ //$NON-NLS-1$
+												"The new Custom Task defined in the file: "+ //$NON-NLS-1$
+												wid.getDefinitionFile().getFullPath().toString()+"\n"+ //$NON-NLS-1$
+												"will be ignored."); //$NON-NLS-1$
 									}
 								});
 							}
@@ -272,7 +272,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 			String id = wid.getName();
 			String name = wid.getName();
 			CustomTaskDescriptor ct = new CustomTaskDescriptor(id,name);
-			ct.setType("Task");
+			ct.setType("Task"); //$NON-NLS-1$
 			ct.setDescription(wid.getName());
 			ct.setFeatureContainer(new JbpmCustomTaskFeatureContainer());
 			ct.getFeatureContainer().setCustomTaskDescriptor(ct);
@@ -283,7 +283,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 			
 			// push the icon into the image registry
 			IProject project = Bpmn2Preferences.getActiveProject();
-			String iconPath = getWIDPropertyValue("icon", wid);
+			String iconPath = getWIDPropertyValue("icon", wid); //$NON-NLS-1$
 			if (iconPath != null) {
 				Path tempPath = new Path(iconPath);
 				String iconName = tempPath.lastSegment();
@@ -320,19 +320,19 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	 * @return
 	 */
 	private String getWIDPropertyValue ( String propName, WorkItemDefinition wid) {
-		if (propName.equalsIgnoreCase("taskname")) {
+		if (propName.equalsIgnoreCase("taskname")) { //$NON-NLS-1$
 			return wid.getName();
 		}
-		if (propName.equalsIgnoreCase("displayName")) {
+		if (propName.equalsIgnoreCase("displayName")) { //$NON-NLS-1$
 			return wid.getDisplayName();
 		}
-		if (propName.equalsIgnoreCase("icon")) {
+		if (propName.equalsIgnoreCase("icon")) { //$NON-NLS-1$
 			return wid.getIcon();
 		}
-		if (propName.equalsIgnoreCase("customEditor")) {
+		if (propName.equalsIgnoreCase("customEditor")) { //$NON-NLS-1$
 			return wid.getCustomEditor();
 		}
-		if (propName.equalsIgnoreCase("eclipse:customEditor")) {
+		if (propName.equalsIgnoreCase("eclipse:customEditor")) { //$NON-NLS-1$
 			return wid.getEclipseCustomEditor();
 		}
 		return null;
@@ -348,11 +348,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		String name = propName;
 		String value = getWIDPropertyValue(propName, wid);
 		String description = null;
-		String type = "EString";
+		String type = "EString"; //$NON-NLS-1$
 		Property prop = new Property(name, description);
 		prop.type = type;
-		if (value == null && propName.equalsIgnoreCase("icon")) {
-			value = "task.png";
+		if (value == null && propName.equalsIgnoreCase("icon")) { //$NON-NLS-1$
+			value = "task.png"; //$NON-NLS-1$
 		}
 		if (value!=null)
 			prop.getValues().add(value);
@@ -371,11 +371,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] instanceof Property) {
 				Property prop = (Property) values[i];
-				if (prop.name.equals("dataInputs")) {
+				if (prop.name.equals("dataInputs")) { //$NON-NLS-1$
 					inputCounter++;
-					Property dataInputAssociations = new Property ( "dataInputAssociations", null);
-					Property targetRef = new Property ("targetRef", null);
-					targetRef.ref = "ioSpecification/dataInputs#" + inputCounter;
+					Property dataInputAssociations = new Property ( "dataInputAssociations", null); //$NON-NLS-1$
+					Property targetRef = new Property ("targetRef", null); //$NON-NLS-1$
+					targetRef.ref = "ioSpecification/dataInputs#" + inputCounter; //$NON-NLS-1$
 					dataInputAssociations.getValues().add(targetRef);
 					ct.getProperties().add(dataInputAssociations);
 				}
@@ -400,11 +400,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	 * @param wid
 	 */
 	private Property createIOSpecificationSection ( CustomTaskDescriptor ct, WorkItemDefinition wid ) {
-		Property ioSpecification = new Property ( "ioSpecification", null);
+		Property ioSpecification = new Property ( "ioSpecification", null); //$NON-NLS-1$
 		
 		for (Entry<String, String> entry : wid.getParameters().entrySet()) {
-			Property dataInputs = new Property("dataInputs", null);
-			Property dataInputsName = new Property("name", null);
+			Property dataInputs = new Property("dataInputs", null); //$NON-NLS-1$
+			Property dataInputsName = new Property("name", null); //$NON-NLS-1$
 			dataInputsName.getValues().add(entry.getKey());
 			dataInputs.getValues().add(dataInputsName);
 			ioSpecification.getValues().add(dataInputs);
@@ -420,8 +420,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 //			ioSpecification.getValues().add(dataOutputs);
 //		} else {
 			for (Entry<String, String> entry : wid.getResults().entrySet()) {
-				Property dataOutputs = new Property("dataOutputs", null);
-				Property dataOutputsName = new Property("name", null);
+				Property dataOutputs = new Property("dataOutputs", null); //$NON-NLS-1$
+				Property dataOutputsName = new Property("name", null); //$NON-NLS-1$
 				dataOutputsName.getValues().add(entry.getKey());
 				dataOutputs.getValues().add(dataOutputsName);
 				ioSpecification.getValues().add(dataOutputs);
@@ -431,20 +431,20 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		Object[] values = ioSpecification.getValues().toArray();
 		int inputCounter = -1;
 		int outputCounter = -1;
-		Property inputSets = new Property("inputSets", null);
-		Property outputSets = new Property("outputSets", null);
+		Property inputSets = new Property("inputSets", null); //$NON-NLS-1$
+		Property outputSets = new Property("outputSets", null); //$NON-NLS-1$
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] instanceof Property) {
 				Property prop = (Property) values[i];
-				if (prop.name.equals("dataInputs")) {
+				if (prop.name.equals("dataInputs")) { //$NON-NLS-1$
 					inputCounter++;
-					Property inputSetsRef = new Property ("dataInputRefs", null);
-					inputSetsRef.ref = "ioSpecification/dataInputs#" + inputCounter;
+					Property inputSetsRef = new Property ("dataInputRefs", null); //$NON-NLS-1$
+					inputSetsRef.ref = "ioSpecification/dataInputs#" + inputCounter; //$NON-NLS-1$
 					inputSets.getValues().add(inputSetsRef);
-				} else 	if (prop.name.equals("dataOutputs")) {
+				} else 	if (prop.name.equals("dataOutputs")) { //$NON-NLS-1$
 					outputCounter++;
-					Property outputSetsRef = new Property ("dataOutputRefs", null);
-					outputSetsRef.ref = "ioSpecification/dataOutputs#" + outputCounter;
+					Property outputSetsRef = new Property ("dataOutputRefs", null); //$NON-NLS-1$
+					outputSetsRef.ref = "ioSpecification/dataOutputs#" + outputCounter; //$NON-NLS-1$
 					outputSets.getValues().add(outputSetsRef);
 				}
 			}
@@ -464,7 +464,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	 * @param wid
 	 */
 	private void setBasicProps ( CustomTaskDescriptor ct, WorkItemDefinition wid) {
-		String[] basicProps = new String[] { "taskName", "displayName", "icon" };
+		String[] basicProps = new String[] { "taskName", "displayName", "icon" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		for (int i = 0; i < basicProps.length; i++) {
 			Property prop = getPropertyFromWID(basicProps[i], wid);
 			ct.getProperties().add(prop);
@@ -482,8 +482,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		
 		public boolean visit (IResource resource) throws CoreException {
 			if (resource.getType() == IResource.FILE) {
-				if ("conf".equalsIgnoreCase(((IFile)resource).getFileExtension()) ||
-						"wid".equalsIgnoreCase(((IFile)resource).getFileExtension())) {
+				if ("conf".equalsIgnoreCase(((IFile)resource).getFileExtension()) || //$NON-NLS-1$
+						"wid".equalsIgnoreCase(((IFile)resource).getFileExtension())) { //$NON-NLS-1$
 					widFiles.add((IFile)resource);
 					return true;
 				}
@@ -491,7 +491,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 			else if (resource.getType() == IResource.FOLDER) {
 				// skip over "bin" and "target" folders
 				String name = resource.getName();
-				if ("bin".equals(name) || "target".equals(name))
+				if ("bin".equals(name) || "target".equals(name)) //$NON-NLS-1$ //$NON-NLS-2$
 					return false;
 			}
 			return true;

@@ -11,4 +11,7 @@ public class Messages extends NLS {
 
 	private Messages() {
 	}
+
+	public static String ObjectDescriptor_New;
+	public static String ObjectDescriptor_Unnamed;
 }

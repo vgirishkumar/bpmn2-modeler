@@ -57,7 +57,7 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 			// are defined in either the target runtime contributing plugin itself, or dynamically
 			// by the target runtime plugin invoked during editor startup.
 			if (JbpmIoParametersDetailComposite.isCustomTaskIOParameter((ItemAwareElement)be)) {
-				EStructuralFeature f = be.eClass().getEStructuralFeature("name");
+				EStructuralFeature f = be.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 				adapter.setProperty(f, ExtendedPropertiesAdapter.UI_CAN_EDIT, Boolean.FALSE);
 			}
 		}

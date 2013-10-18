@@ -35,12 +35,12 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 				Object f = notification.getFeature();
 				if (f instanceof EStructuralFeature) {
 					EStructuralFeature feature = (EStructuralFeature)f;
-					EStructuralFeature idFeature = object.eClass().getEStructuralFeature("id");
-					EStructuralFeature nameFeature = object.eClass().getEStructuralFeature("name");
-					EStructuralFeature identifierFeature = object.eClass().getEStructuralFeature("identifier");
+					EStructuralFeature idFeature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+					EStructuralFeature nameFeature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+					EStructuralFeature identifierFeature = object.eClass().getEStructuralFeature("identifier"); //$NON-NLS-1$
 					if (identifierFeature!=null)
 						nameFeature = identifierFeature;
-                    if ("name".equals(feature.getName()) || "identifier".equals(feature.getName())) {
+                    if ("name".equals(feature.getName()) || "identifier".equals(feature.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
 						if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue))
@@ -67,7 +67,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 							}
 						}
 					}
-                    else if ("id".equals(feature.getName())) {
+                    else if ("id".equals(feature.getName())) { //$NON-NLS-1$
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
 						if (newValue!=oldValue && newValue!=null && !newValue.equals(oldValue)) 
@@ -104,7 +104,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 		do {
 			dup = findDuplicateId(object,uniqueId);
 			if (dup!=null) {
-				uniqueId = id + "_" + i++;
+				uniqueId = id + "_" + i++; //$NON-NLS-1$
 			}
 		}
 		while (dup!=null);
@@ -119,7 +119,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 			while (iter.hasNext()) {
 				EObject o = iter.next();
 				if (o!=object) {
-					EStructuralFeature f = o.eClass().getEStructuralFeature("id");
+					EStructuralFeature f = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 					if (f!=null) {
 						Object existingId = o.eGet(f);
 						if (id.equals(existingId))
@@ -141,7 +141,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 	public void setTarget(Notifier newTarget) {
 		if (newTarget instanceof EObject) {
 			EObject object = (EObject)newTarget;
-			EStructuralFeature feature = object.eClass().getEStructuralFeature("name");
+			EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (feature!=null) {
 				Object oldValue = null;
 				Object newValue = object.eGet(feature);

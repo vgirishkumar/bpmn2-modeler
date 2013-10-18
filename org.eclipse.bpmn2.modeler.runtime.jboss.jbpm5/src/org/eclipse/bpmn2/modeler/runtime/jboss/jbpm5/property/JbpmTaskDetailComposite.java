@@ -75,7 +75,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 
 	@Override
 	protected boolean isModelObjectEnabled(String className, String featureName) {
-		if ("DataInput".equals(className))
+		if ("DataInput".equals(className)) //$NON-NLS-1$
 			return true;
 		return super.isModelObjectEnabled(className, featureName);
 	}
@@ -105,7 +105,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 			// (i.e. the I/O Parameter mappings) and create Object Editors for them.
 			// If the Task does not define these parameter mappings, create temporary objects
 			// for the editors (these will go away if they are not touched by the user)
-			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name");
+			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			InputOutputSpecification ioSpec = task.getIoSpecification();
 			if (ioSpec==null) {
 				ioSpec = createModelObject(InputOutputSpecification.class);
@@ -194,13 +194,13 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				EAttribute attribute = PACKAGE.getFormalExpression_Body();
 				String dataType = property.type;
 				ObjectEditor editor = null;
-				if ("EInt".equals(dataType)) {
+				if ("EInt".equals(dataType)) { //$NON-NLS-1$
 					editor = new IntObjectEditor(this,fromExpression,attribute);
 				}
-				else if ("EBoolean".equals(dataType)) {
+				else if ("EBoolean".equals(dataType)) { //$NON-NLS-1$
 					editor = new BooleanObjectEditor(this,fromExpression,attribute);
 				}
-				else if ("ID".equals(dataType)) {
+				else if ("ID".equals(dataType)) { //$NON-NLS-1$
 					editor = new NCNameObjectEditor(this,fromExpression,attribute);
 				}
 				else {
@@ -214,11 +214,11 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 
 	@Override
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
-		if (feature.getName().equals("resources")) {
+		if (feature.getName().equals("resources")) { //$NON-NLS-1$
 			if (isModelObjectEnabled(object.eClass(), feature)) {
 				ActorsListComposite actors = new ActorsListComposite(this);
 				actors.bindList(object, feature);
-				actors.setTitle("Actors");
+				actors.setTitle(Messages.JbpmTaskDetailComposite_Actors_Title);
 				return actors;
 			}
 			return null;
@@ -230,7 +230,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	public class ActorsNameTableColumn extends TableColumn {
 		public ActorsNameTableColumn(EObject object) {
 			super(object, PACKAGE.getFormalExpression_Body());
-			setHeaderText("Name");
+			setHeaderText(Messages.JbpmTaskDetailComposite_Actors_Name_Column);
 			setEditable(true);
 		}
 	}
@@ -288,7 +288,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 			owner.setResourceAssignmentExpression(resourceAssignment);
 			task.getResources().add(owner);
 
-			expression.setBody("New Actor");
+			expression.setBody(Messages.JbpmTaskDetailComposite_Actors_Label);
 			
 			return expression;
 		}

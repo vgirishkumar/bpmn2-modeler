@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -64,10 +65,8 @@ public class DefaultListComposite extends AbstractListComposite {
 			// because we don't know where the new object belongs
 			
 			MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
-					"Can not create a new " +
-					listItemClass.getName() +
-					" because the list is not a control. " +
-					"The default addListItem() method must be implemented."
+				NLS.bind(Messages.DefaultListComposite_Error_Internal_Error_Message_No_List,
+					listItemClass.getName())
 			);
 			return null;
 		}
@@ -80,9 +79,8 @@ public class DefaultListComposite extends AbstractListComposite {
 			newItem = Bpmn2ModelerFactory.createFeature(object,feature,listItemClass);
 			if (newItem==null) {
 				MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
-						"Can not create a new " +
-						listItemClass.getName() +
-						" because its Object Factory is unknown."
+					NLS.bind(Messages.DefaultListComposite_Internal_Error_Message_No_Factory,
+						listItemClass.getName())
 				);
 			}
 			else if (!list.contains(newItem))
@@ -120,9 +118,9 @@ public class DefaultListComposite extends AbstractListComposite {
 	 */
 	protected EObject editListItem(EObject object, EStructuralFeature feature) {
 		MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
-				"A List Item Editor has not been defined for "+
-				ModelUtil.getDisplayName(object, feature)
-				);
+			NLS.bind(Messages.DefaultListComposite_Internal_Error_Message_No_Editor,
+				ModelUtil.getDisplayName(object, feature))
+		);
 		return null;
 	}
 	
@@ -236,10 +234,9 @@ public class DefaultListComposite extends AbstractListComposite {
 			dlg.setContentProvider(provider);
 			dlg.setLabelProvider(provider);
 			dlg.setInput(references);
-			boolean plural = references.size()>1;
 			dlg.setMessage(
-					"The selected "+ModelUtil.getLabel(objectToDelete)+" can not be deleted\n"+
-					"because it is required by "+(plural?"these other elements.":"this other element.")
+				NLS.bind(Messages.DefaultListComposite_Cannot_Delete_Message,
+					ModelUtil.getLabel(objectToDelete))
 			);
 			dlg.setAddCancelButton(false);
 			dlg.setTitle(Messages.DefaultListComposite_Cannot_Delete_Title);

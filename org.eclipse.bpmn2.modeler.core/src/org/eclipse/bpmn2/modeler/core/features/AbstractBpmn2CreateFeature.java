@@ -36,6 +36,7 @@ import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * This is the Create Feature base class for all BPMN2 model elements which are considered "shapes"
@@ -76,7 +77,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@Override
 	public String getCreateDescription() {
-		return "Create " + ModelUtil.toDisplayName(getBusinessObjectClass().getName());
+		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toDisplayName(getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)

@@ -74,6 +74,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.validation.AbstractModelConstraint;
 import org.eclipse.emf.validation.EMFEventType;
 import org.eclipse.emf.validation.IValidationContext;
+import org.eclipse.osgi.util.NLS;
 
 public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
@@ -136,9 +137,9 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		// change error message slightly for connections
 		String message;
 		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = ModelUtil.getLabel(object) + Messages.BPMN2ValidationConstraints_3 + ModelUtil.getLabel(object, feature) + Messages.BPMN2ValidationConstraints_4;
+			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Connection, ModelUtil.getLabel(object), ModelUtil.getLabel(object, feature));
 		else
-			message = ModelUtil.getLabel(object) + Messages.BPMN2ValidationConstraints_5 + ModelUtil.getLabel(object, feature);
+			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Feature, ModelUtil.getLabel(object), ModelUtil.getLabel(object, feature));
 		IStatus status = ctx.createFailureStatus(message);
 		ctx.addResult(object);
 		return status;
@@ -674,11 +675,15 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 								ModelUtil.getStringWrapperValue(structureRef).isEmpty()))
 							continue;
 						return createFailureStatus(ctx,be,
-								"The "+ id.getItemKind() + " " +
-								(id.isIsCollection() ? "Collection " : "")+
-								"Data Type \"" +
-								ModelUtil.getDisplayName(id) +
-								"\" is already defined.");
+							NLS.bind(
+								Messages.BPMN2ValidationConstraints_Duplicate_Data_Type,
+								new Object[] {
+									id.getItemKind(),
+									(id.isIsCollection() ? "[]" : ""), //$NON-NLS-1$ //$NON-NLS-2$
+									ModelUtil.getDisplayName(id)
+								}
+							)
+						);
 					}
 				}
 			}
@@ -715,8 +720,14 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					if (i!=param) {
 						String n1 = param.getName();
 						String n2 = i.getName();
-						if (n1!=null && n2!=null && n1.equals(n2))
-							return ctx.createFailureStatus("Input Parameter \""+param.getName()+"\" is already defined");
+						if (n1!=null && n2!=null && n1.equals(n2)) {
+							return ctx.createFailureStatus(
+								NLS.bind(
+									Messages.BPMN2ValidationConstraints_Duplicate_Input,
+									param.getName()
+								)
+							);
+						}
 					}
 				}
 			}
@@ -735,8 +746,14 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					if (i!=param) {
 						String n1 = param.getName();
 						String n2 = i.getName();
-						if (n1!=null && n2!=null && n1.equals(n2))
-							return ctx.createFailureStatus("Output Parameter \""+param.getName()+"\" is already defined");
+						if (n1!=null && n2!=null && n1.equals(n2)) {
+							return ctx.createFailureStatus(
+									NLS.bind(
+										Messages.BPMN2ValidationConstraints_Duplicate_Output,
+										param.getName()
+									)
+								);
+						}
 					}
 				}
 			}

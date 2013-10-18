@@ -28,6 +28,7 @@ import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.core.runtime.Assert;
 
 /**
@@ -96,7 +97,7 @@ public class ObjectDescriptor<T extends EObject> {
 				}
 			}
 			if (value==null)
-				value = "Unnamed " + text;
+				value = NLS.bind(Messages.ObjectDescriptor_Unnamed, text);
 			return (String)value;
 		}
 		return name;
@@ -262,8 +263,10 @@ public class ObjectDescriptor<T extends EObject> {
 		if (feature!=null && !newObject.eIsSet(feature)) {
 			if (id!=null)
 				newObject.eSet(feature, ModelUtil.toDisplayName(id));
-			else
-				newObject.eSet(feature, "New "+ModelUtil.toDisplayName(newObject.eClass().getName()));
+			else {
+				String name = ModelUtil.toDisplayName(newObject.eClass().getName());
+				newObject.eSet(feature, NLS.bind(Messages.ObjectDescriptor_New, name));
+			}
 		}
 		return newObject;
 	}

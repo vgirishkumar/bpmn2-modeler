@@ -4,7 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.preferences.messages"; //$NON-NLS-1$
-	public static String Bpmn2Preferences_19;
+	public static String Bpmn2Preferences_No_Runtime_Plugin_Title;
 	public static String Bpmn2Preferences_Activities;
 	public static String Bpmn2Preferences_Always_False;
 	public static String Bpmn2Preferences_Always_true;
@@ -21,6 +21,7 @@ public class Messages extends NLS {
 	public static String Bpmn2Preferences_Horizontal;
 	public static String Bpmn2Preferences_Marker_Visible;
 	public static String Bpmn2Preferences_Message_Visible;
+	public static String Bpmn2Preferences_No_Runtime_Plugin_Message;
 	public static String Bpmn2Preferences_None;
 	public static String Bpmn2Preferences_Show_Advanced_Properties;
 	public static String Bpmn2Preferences_Show_Descriptions;

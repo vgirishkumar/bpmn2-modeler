@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -56,7 +57,8 @@ public class PropertiesCompositeFactory {
 		else if (AbstractDetailComposite.class.isAssignableFrom(composite))
 			map = detailRegistry.get(rt);
 		else
-			throw new IllegalArgumentException("Unknown Composite type: "+composite.getName());
+			throw new IllegalArgumentException(
+				NLS.bind(Messages.PropertiesCompositeFactory_Unknown_Type,composite.getName()));
 		
 		if (map==null) {
 			map = new Hashtable<Class,Class>();
@@ -273,12 +275,13 @@ public class PropertiesCompositeFactory {
 	
 	private static void logError(Class eClass, Exception e) {
 		Activator.logError(e);
-		MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.PropertiesCompositeFactory_Internal_Error_Title,
-				"The property sheet for the object type:\n\n"+
-				eClass+"\n\nhas not been defined or is not visible."+
-				"\n\nCause: "+
-				e+"\n\n"+ 
-				"Using the default property sheet instead.");
+		MessageDialog.openError(
+			Display.getDefault().getActiveShell(),
+			Messages.PropertiesCompositeFactory_Internal_Error_Title,
+			NLS.bind(Messages.PropertiesCompositeFactory_No_Property_Sheet,
+				eClass,
+				e.getMessage())
+		);
 	}
 
 }

@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
@@ -36,10 +37,7 @@ public class FixDuplicateIdsDialog extends ListSelectionDialog {
 	
 	public FixDuplicateIdsDialog(List<Tuple<EObject,EObject>> duplicates) {
 		super(Display.getDefault().getActiveShell(), duplicates, contentProvider, labelProvider,
-				"This file is corrupt because multiple elements have the same ID!\n"+
-				"You can repair this file by reassigning new IDs for the duplicate elements.\n" +
-				"Simply select the elements for which you wish to reassign new IDs.\n" +
-				"Note that if you do not \"Select All\", the file will still be corrupt.");
+				Messages.FixDuplicateIdsDialog_Message);
 		this.duplicates = duplicates;
 	}
 	
@@ -165,10 +163,11 @@ public class FixDuplicateIdsDialog extends ListSelectionDialog {
 			Tuple<EObject,EObject> tuple = (Tuple<EObject,EObject>)element;
 			EObject o1 = tuple.getFirst();
 			EObject o2 = tuple.getSecond();
-			String message =
-				ModelUtil.getLongDisplayName(o1) + " and " +
-				ModelUtil.getLongDisplayName(o2) + " have the same ID";
-			return message;
+			return NLS.bind(
+				Messages.FixDuplicateIdsDialog_Duplicate_ID,
+				ModelUtil.getLongDisplayName(o1),
+				ModelUtil.getLongDisplayName(o2)
+			);
 		}
 		
 	}

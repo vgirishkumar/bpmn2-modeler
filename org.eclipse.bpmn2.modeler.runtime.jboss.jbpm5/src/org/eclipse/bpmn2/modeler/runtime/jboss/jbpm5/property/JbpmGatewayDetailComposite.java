@@ -53,7 +53,7 @@ public class JbpmGatewayDetailComposite extends GatewayDetailComposite {
 			add(new SequenceFlowListColumn(object,1)); // identifier (from -> to)
 			if (object instanceof ExclusiveGateway || object instanceof InclusiveGateway)
 				add(new SequenceFlowListColumn(object,2)); // Condition (expression)
-			if (object.eClass().getEStructuralFeature("default")!=null) {
+			if (object.eClass().getEStructuralFeature("default")!=null) { //$NON-NLS-1$
 				add(new SequenceFlowListColumn(object,3)); // Is Default (boolean)
 			}
 		}

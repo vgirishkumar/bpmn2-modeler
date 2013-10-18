@@ -34,9 +34,9 @@ public class JbpmMultiInstanceDetailComposite extends
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"inputDataItem",
-						"loopDataInputRef",
-						"loopCardinality",
+						"inputDataItem", //$NON-NLS-1$
+						"loopDataInputRef", //$NON-NLS-1$
+						"loopCardinality", //$NON-NLS-1$
 				};
 				
 				@Override

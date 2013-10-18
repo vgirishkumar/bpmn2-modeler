@@ -38,6 +38,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
@@ -371,11 +372,11 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 
 	private void doLoad(final Resource resource, IProgressMonitor monitor) {
 		try {
-			String taskName = Messages.Bpmn2ModelerResourceSetImpl_Loading_Title + resource.getURI();
+			String taskName = NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Title, resource.getURI());
 			monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
 			Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
 			if (!resource.isLoaded()) {
-				throw new Exception(Messages.Bpmn2ModelerResourceSetImpl_Loading_Not_Found);
+				throw new Exception(Messages.Bpmn2ModelerResourceSetImpl_Loading_Resource_Not_Found);
 			}
 		}
 		catch (final Exception e) {
@@ -387,8 +388,9 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					if (e instanceof InvocationTargetException) {
 						msg = ((InvocationTargetException) e).getTargetException().getMessage();
 					}
-					MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.Bpmn2ModelerResourceSetImpl_Loading_Error,
-							"Loading Resource "+resource.getURI()+" failed!\n"+msg);
+					MessageDialog.openError(Display.getDefault().getActiveShell(),
+						Messages.Bpmn2ModelerResourceSetImpl_Loading_Error,
+						NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error_Message,resource.getURI(),msg));
 				}
 				
 			});

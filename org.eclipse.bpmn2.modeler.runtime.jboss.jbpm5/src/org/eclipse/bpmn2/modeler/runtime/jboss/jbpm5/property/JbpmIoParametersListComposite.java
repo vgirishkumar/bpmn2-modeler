@@ -87,14 +87,14 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 					ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(activity);
 					if (adapter!=null && !(adapter.getDescriptor() instanceof CustomTaskDescriptor)) {
 						if (JbpmIoParametersListComposite.this.isInput)
-							props = adapter.getProperties("ioSpecification/dataInputs/name");
+							props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 						else
-							props = adapter.getProperties("ioSpecification/dataOutputs/name");
+							props = adapter.getProperties("ioSpecification/dataOutputs/name"); //$NON-NLS-1$
 					
 						List<Object> filtered = new ArrayList<Object>();
 						for (Object e : elements) {
 							boolean skip = false;
-							EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name");
+							EStructuralFeature f = ((EObject)e).eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 							if (f!=null) {
 								Object elementName = (String) ((EObject)e).eGet(f);
 								for (Property p : props) {

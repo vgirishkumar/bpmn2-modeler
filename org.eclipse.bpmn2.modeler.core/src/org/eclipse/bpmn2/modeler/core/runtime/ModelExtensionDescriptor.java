@@ -39,6 +39,7 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl.SimpleFeatureMapEntry;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Bob Brodt
@@ -239,7 +240,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 			if (id!=null)
 				eObject.eSet(feature, ModelUtil.toDisplayName(id));
 			else
-				eObject.eSet(feature, "New "+ModelUtil.toDisplayName(eObject.eClass().getName()));
+				eObject.eSet(feature, NLS.bind(Messages.ModelExtensionDescriptor_Create,
+					ModelUtil.toDisplayName(eObject.eClass().getName())));
 		}
 
 		return eObject;

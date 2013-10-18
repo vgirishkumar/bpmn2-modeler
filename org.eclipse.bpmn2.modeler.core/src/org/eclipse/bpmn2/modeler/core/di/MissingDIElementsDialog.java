@@ -32,10 +32,8 @@ public class MissingDIElementsDialog extends CheckedTreeSelectionDialog {
 	public MissingDIElementsDialog(DiagramElementTree missing) {
 		this(Display.getDefault().getActiveShell(), missing, missing);
 		this.missing = missing;
-		setTitle(Messages.Title);
-		setMessage(
-				"These items do not have Diagram Elements and can not be shown in the editor.\n"+
-				"Please select the items for which you would like to create Diagram Elements.");
+		setTitle(Messages.MissingDIElementsDialog_Title);
+		setMessage(Messages.MissingDIElementsDialog_Message);
 		setInput(missing);
 		setContainerMode(true);
 		setInitialSelections(missing.getChildren().toArray());

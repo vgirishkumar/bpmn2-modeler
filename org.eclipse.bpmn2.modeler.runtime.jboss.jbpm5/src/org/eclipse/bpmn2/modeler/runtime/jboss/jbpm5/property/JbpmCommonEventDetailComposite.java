@@ -56,7 +56,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 	@Override
 	protected AbstractListComposite bindList(final EObject object, EStructuralFeature feature, EClass listItemClass) {
 		if (isModelObjectEnabled(object.eClass(), feature)) {
-			if ("eventDefinitions".equals(feature.getName())) {
+			if ("eventDefinitions".equals(feature.getName())) { //$NON-NLS-1$
 				eventsTable = new EventDefinitionsListComposite(this, (Event)object) {
 
 					public AbstractDetailComposite createDetailComposite(Composite parent, Class eClass) {
@@ -82,8 +82,8 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 							eventDefinitions = ((CatchEvent)event).getEventDefinitions();
 							
 						if (eventDefinitions.size()>0) {
-							MessageDialog.openError(getShell(), "Not Supported",
-								"Can not add more than one Event Definition"
+							MessageDialog.openError(getShell(), Messages.JbpmCommonEventDetailComposite_Error_Title,
+								Messages.JbpmCommonEventDetailComposite_Error_Message
 							);
 							return null;
 						}
@@ -91,7 +91,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 					}
 				};
 				eventsTable.bindList(object, feature);
-				eventsTable.setTitle("Event Definitions");
+				eventsTable.setTitle(Messages.JbpmCommonEventDetailComposite_Title);
 				return eventsTable;
 			}
 			return super.bindList(object, feature, listItemClass);

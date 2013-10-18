@@ -76,12 +76,9 @@ public class ImportDiagnostics implements IStructuredContentProvider, ILabelProv
 				Activator.logStatus(new Status(d.severity, Activator.PLUGIN_ID, getText(d)));
 			}
 			dlg.setInput(entries);
-			dlg.setMessage(
-					"The following errors were detected while trying to load this file.\n"+
-					"Please see the Error Log for more information."
-			);
+			dlg.setMessage(Messages.ImportDiagnostics_Message);
 			dlg.setAddCancelButton(false);
-			dlg.setTitle("BPMN2 Modeler - Import Errors");
+			dlg.setTitle(Messages.ImportDiagnostics_Title);
 			dlg.open();
 		}
 	}

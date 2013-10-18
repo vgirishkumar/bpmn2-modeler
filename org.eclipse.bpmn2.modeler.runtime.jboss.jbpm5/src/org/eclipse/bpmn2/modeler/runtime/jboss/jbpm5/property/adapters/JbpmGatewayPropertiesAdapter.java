@@ -36,8 +36,8 @@ public class JbpmGatewayPropertiesAdapter extends
     		public Hashtable<String, Object> getChoiceOfValues(Object context) {
     			EObject object = adopt(context);
     			Hashtable<String, Object> choices = super.getChoiceOfValues(context);
-    			choices.remove("Unspecified");
-    			choices.remove("Mixed");
+    			choices.remove("Unspecified"); //$NON-NLS-1$
+    			choices.remove("Mixed"); //$NON-NLS-1$
     			return choices;
     		}
     	});

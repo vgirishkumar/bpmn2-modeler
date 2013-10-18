@@ -88,6 +88,7 @@ import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -710,10 +711,16 @@ public class ModelUtil {
 				EClassifier dt = attr.getEType();
 				if (dt==null || !eDataType.getInstanceClass().isAssignableFrom(dt.getInstanceClass()))
 					throw new IllegalArgumentException(
-							"The attribute "+
-							childObject.eClass().getName()+"."+attr.getName()+
-							" of type "+attr.getEType().getName()+
-							" is not assignment compatible with value '"+value.toString()+"'");
+						NLS.bind(
+							Messages.ModelUtil_Illegal_Value,
+							new Object[] {
+								childObject.eClass().getName(),
+								attr.getName(),
+								attr.getEType().getName(),
+								value.toString()
+							}
+						)
+					);
 				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
 			}
 		}
@@ -733,7 +740,7 @@ public class ModelUtil {
 	
 	public static EAttribute createDynamicAttribute(EPackage pkg, EObject object, String name, String type) {
 		if (isBpmnPackage(pkg)) {
-			throw new IllegalArgumentException("Can not add dynamic attribute to "+pkg.getName());
+			throw new IllegalArgumentException(NLS.bind(Messages.ModelUtil_Illegal_EPackage_For_Attribute, pkg.getName()));
 		}
 		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
 		EAttribute attr = null;
@@ -761,10 +768,15 @@ public class ModelUtil {
 		if (type!=null) {
 			eClassifier = getEClassifierFromString(pkg,type);
 			if (eClassifier==null || !(eClassifier instanceof EDataType)) {
-				String message = "The model extension attribute '"+
-						name+"' for type '"+eClass.getName()+
-						"' can not be created because '"+
-						type+"' is not a known data type.";
+				String message =
+					NLS.bind(
+						Messages.ModelUtil_Unknown_Attribute_Data_Type,
+						new Object[] {
+							name,
+							eClass.getName(),
+							type
+						}
+					);
 	
 				MessageDialog.openError(Display.getDefault().getActiveShell(),
 						Messages.ModelUtil_Internal_Error,
@@ -793,7 +805,7 @@ public class ModelUtil {
 	
 	public static EReference createDynamicReference(EPackage pkg, EObject object, String name, String type) {
 		if (isBpmnPackage(pkg)) {
-			throw new IllegalArgumentException("Can not add dynamic reference to "+pkg.getName());
+			throw new IllegalArgumentException(NLS.bind(Messages.ModelUtil_Illegal_EPackage_For_Reference,pkg.getName()));
 		}
 		EClass eClass = object instanceof EClass ? (EClass)object : object.eClass(); 
 		EReference ref = null;
@@ -824,10 +836,15 @@ public class ModelUtil {
 		if (type!=null) {
 			eClassifier = getEClassifierFromString(pkg,type);
 			if (eClassifier==null || !(eClassifier instanceof EClass)) {
-				String message = "The model extension reference '"+
-						name+"' for object '"+eClass.getName()+
-						"' can not be created because '"+
-						type+"' is not a known object type.";
+				String message =
+					NLS.bind(
+						Messages.ModelUtil_Unknown_Reference_Object_Type,
+						new Object[] {
+							name,
+							eClass.getName(),
+							type
+						}
+					);
 	
 				MessageDialog.openError(Display.getDefault().getActiveShell(),
 						Messages.ModelUtil_Internal_Error,
@@ -1480,18 +1497,18 @@ public class ModelUtil {
 		if (feature!=null) {
 			String name = (String)object.eGet(feature);
 			if (name==null || name.isEmpty())
-				name = "Unnamed " + objName;
+				name = Messages.ModelUtil_Unnamed_Object + objName;
 			else
-				name = objName + " \"" + name + "\"";
+				name = objName + " \"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 			return name;
 		}
 		feature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 		if (feature!=null) {
 			String id = (String)object.eGet(feature);
 			if (id==null || id.isEmpty())
-				id = "Unknown " + objName;
+				id = Messages.ModelUtil_Unknown_Object + objName;
 			else
-				id = objName + " \"" + id + "\"";
+				id = objName + " \"" + id + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 			return id;
 		}
 		feature = object.eClass().getEStructuralFeature("qName"); //$NON-NLS-1$

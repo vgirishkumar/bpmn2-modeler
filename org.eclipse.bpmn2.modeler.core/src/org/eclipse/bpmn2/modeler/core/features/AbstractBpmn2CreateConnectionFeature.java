@@ -40,6 +40,7 @@ import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * This is the Create Feature base class for all BPMN2 model elements which are considered "connections"
@@ -121,7 +122,8 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 */
 	@Override
 	public String getCreateDescription() {
-		return "Create " + ModelUtil.toDisplayName( getBusinessObjectClass().getName());
+		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
+				ModelUtil.toDisplayName( getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)

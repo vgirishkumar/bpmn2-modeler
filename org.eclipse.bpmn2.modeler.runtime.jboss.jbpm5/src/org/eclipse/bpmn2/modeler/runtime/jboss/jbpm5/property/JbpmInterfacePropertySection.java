@@ -73,8 +73,8 @@ public class JbpmInterfacePropertySection extends InterfacePropertySection {
         	// this also requires that the JbpmImportDialog is moved to the core plugin
         	// also JbpmModelUtil.ImportHandler
             super.bindList(theobject);
-            ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/import.png");
-            Action importAction = new Action("Import", id) {
+            ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/20/import.png"); //$NON-NLS-1$
+            Action importAction = new Action(Messages.JbpmInterfacePropertySection_Import_Action, id) {
                 @Override
                 public void run() {
                     super.run();

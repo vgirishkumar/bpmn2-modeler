@@ -25,6 +25,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -109,9 +110,9 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	@Override
 	protected String getTitle() {
 		if (createNew)
-			title = "Create New " + ModelUtil.getLabel(newObject);
+			title = NLS.bind(Messages.FeatureEditingDialog_Create, ModelUtil.getLabel(newObject));
 		else
-			title = "Edit " + ModelUtil.getLabel(newObject);
+			title = NLS.bind(Messages.FeatureEditingDialog_Edit, ModelUtil.getLabel(newObject));
 		return title;
 	}
 	

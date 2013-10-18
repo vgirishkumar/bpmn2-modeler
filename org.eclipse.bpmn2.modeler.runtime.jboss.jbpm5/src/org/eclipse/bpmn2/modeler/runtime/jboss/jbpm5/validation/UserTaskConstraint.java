@@ -28,7 +28,7 @@ import org.eclipse.emf.validation.IValidationContext;
 
 public class UserTaskConstraint extends AbstractModelConstraint {
 	private IDiagramProfile profile;
-	private String uuid = "uuid";
+	private String uuid = "uuid"; //$NON-NLS-1$
 
 	@Override
 	public IStatus validate(IValidationContext ctx) {
@@ -40,7 +40,7 @@ public class UserTaskConstraint extends AbstractModelConstraint {
 				String taskName = null;
 				Iterator<FeatureMap.Entry> utiter = ut.getAnyAttribute().iterator();
 				for (DataInput di : ut.getIoSpecification().getDataInputs()) {
-					if ("TaskName".equalsIgnoreCase(di.getName())) {
+					if ("TaskName".equalsIgnoreCase(di.getName())) { //$NON-NLS-1$
 						for (DataInputAssociation dia : ut.getDataInputAssociations()) {
 							if (dia.getTargetRef() == di) {
 								if (dia.getAssignment().size()!=0) {
@@ -58,15 +58,15 @@ public class UserTaskConstraint extends AbstractModelConstraint {
 					}
 				}
 				if (taskName==null) {
-					return ctx.createFailureStatus("User Task has no task name");
+					return ctx.createFailureStatus(Messages.UserTaskConstraint_No_Name);
 				}
 				else {
 					// TODO:
 					if (taskName != null) {
 						String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
-						String taskFormName = taskName + "-taskform";
+						String taskFormName = taskName + "-taskform"; //$NON-NLS-1$
 						if (!ServletUtil.assetExistsInGuvnor(packageAssetInfo[0], taskFormName, profile)) {
-							ctx.createFailureStatus("User Task has no task form defined");
+							ctx.createFailureStatus(Messages.UserTaskConstraint_No_Form);
 						}
 					}
 				}
@@ -105,7 +105,7 @@ public class UserTaskConstraint extends AbstractModelConstraint {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
-				return ctx.createFailureStatus("Internal Validation Error for User Task: "+e.getMessage());
+				return ctx.createFailureStatus(Messages.UserTaskConstraint_Internal_Error+e.getMessage());
 			}	
 		}
 		return ctx.createSuccessStatus();

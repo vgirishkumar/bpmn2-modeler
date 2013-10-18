@@ -52,13 +52,13 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 
 	@Override
 	public void createBindings(EObject be) {
-		scriptFormatEditor = new ComboObjectEditor(this,be,be.eClass().getEStructuralFeature("scriptFormat")) {
+		scriptFormatEditor = new ComboObjectEditor(this,be,be.eClass().getEStructuralFeature("scriptFormat")) { //$NON-NLS-1$
 
 			@Override
 			protected Hashtable<String, Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
 				Hashtable<String, Object> choiceOfValues = new Hashtable<String, Object>();
-				choiceOfValues.put("Java", "http://www.java.com/java");
-				choiceOfValues.put("MVEL", "http://www.mvel.org/2.0");
+				choiceOfValues.put("Java", "http://www.java.com/java"); //$NON-NLS-1$ //$NON-NLS-2$
+				choiceOfValues.put("MVEL", "http://www.mvel.org/2.0"); //$NON-NLS-1$ //$NON-NLS-2$
 				return choiceOfValues;
 			}
 			
@@ -68,11 +68,11 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 			}
 			
 		};
-		scriptFormatEditor.createControl(getAttributesParent(),"Script Language");
+		scriptFormatEditor.createControl(getAttributesParent(),Messages.JbpmScriptTaskDetailComposite_Script_Language);
 
-		scriptEditor = new TextObjectEditor(this,be,be.eClass().getEStructuralFeature("script"));
-		scriptEditor.createControl(getAttributesParent(),"Script");
+		scriptEditor = new TextObjectEditor(this,be,be.eClass().getEStructuralFeature("script")); //$NON-NLS-1$
+		scriptEditor.createControl(getAttributesParent(),"Script"); //$NON-NLS-1$
 
-		bindAttribute(be,"isForCompensation");
+		bindAttribute(be,Messages.JbpmScriptTaskDetailComposite_8);
 	}
 }

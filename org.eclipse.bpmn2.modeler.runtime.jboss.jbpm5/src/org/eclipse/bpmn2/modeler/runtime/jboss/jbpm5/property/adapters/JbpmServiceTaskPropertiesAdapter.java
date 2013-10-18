@@ -48,7 +48,7 @@ public class JbpmServiceTaskPropertiesAdapter extends ServiceTaskPropertiesAdapt
 				public Hashtable<String, Object> getChoiceOfValues(Object context) {
 					if (choiceOfValues==null) {
 						choiceOfValues = super.getChoiceOfValues(context);
-						choiceOfValues.put("SwitchYard Service", "##SwitchYard");
+						choiceOfValues.put("SwitchYard Service", "##SwitchYard"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					return choiceOfValues;
 				}

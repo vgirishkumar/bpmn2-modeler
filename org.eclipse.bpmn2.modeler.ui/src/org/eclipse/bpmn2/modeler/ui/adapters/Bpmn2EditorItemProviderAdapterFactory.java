@@ -72,6 +72,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.PropertyExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ActivityPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallActivityPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallChoreographyPropertiesAdapter;
@@ -222,7 +223,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 						if (context instanceof EObject)
 							object = (EObject)context;
 						if (ModelUtil.isStringWrapper(object)) {
-							return "Item Type";
+							return Messages.CommonLabels_Data_Type;
 						}
 						return super.getLabel(context);
 					}

@@ -92,6 +92,7 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
@@ -455,9 +456,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						}
 						return;
 					} catch (Exception e) {
-						String msg = "Invalid or unknown reference from:\n  " +
-								object + "\nfeature:\n  " + eReference +
-								"\nto:\n  " + value;
+						String msg = NLS.bind(
+							Messages.Bpmn2ModelerResourceImpl_Invalid_Reference,
+							new Object[] {object, eReference, value});
 						IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
 								msg, e);
 						Activator.getDefault().logStatus(s);
@@ -1003,7 +1004,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				prefix = parts[0];
 				fragment = parts[1];
 			} else
-				throw new IllegalArgumentException("Illegal QName: " + qName);
+				throw new IllegalArgumentException(Messages.Bpmn2ModelerResourceImpl_Illegal_QName + qName);
 
 			if (fragment.contains(".")) { //$NON-NLS-1$
 				// HACK: officially IDs can contain ".", but unfortunately

@@ -13,7 +13,10 @@ public class Messages extends NLS {
 	public static String DIImport_No_Source_or_Target;
 	public static String DIImport_No_Target;
 	public static String DIImport_Reference_not_found;
-	public static String Title;
+	public static String ImportDiagnostics_Message;
+	public static String ImportDiagnostics_Title;
+	public static String MissingDIElementsDialog_Message;
+	public static String MissingDIElementsDialog_Title;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -40,6 +40,7 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.transaction.ResourceSetListener;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
@@ -150,15 +151,16 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			doit = true;
 		}
 		if (doit) {
-			String text =
-					"This Property Sheet is empty because the model element\n" +
-					"\"" + be.eClass().getName() + "\" has no visible features.\n\n" +
-					"At least one of these element features must be enabled:\n";
+			String text = NLS.bind(
+				Messages.AbstractDetailComposite_Empty_Property_Sheet,
+				be.eClass().getName());
+			
+			String elements = "";
 			String props[] = getPropertiesProvider().getProperties();
 			for (String s : props) {
-				text += "    " + s + "\n";
+				elements += "    " + s + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			text += "\nPlease configure the Tool Enablement Preferences for this project accordingly.";
+			text += NLS.bind(Messages.AbstractDetailComposite_Empty_Property_Sheet_Elements,elements);
 
 			Label label = createLabel(this, text);
 			label.setData(EMPTY_LABEL_PROPERTY);

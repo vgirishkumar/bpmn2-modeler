@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -152,9 +153,12 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 							composite = bindProperty((EObject)o, property);
 							if (composite instanceof AbstractListComposite) {
 								((AbstractListComposite)composite).setTitle(
-										getPropertiesProvider().getLabel((EObject)o,feature)+
-										" List for "+
-										ModelUtil.getLongDisplayName((EObject)o));
+									NLS.bind(
+										Messages.DefaultDetailComposite_List_Title,
+										getPropertiesProvider().getLabel((EObject)o,feature),
+										ModelUtil.getLongDisplayName((EObject)o)
+									)
+								);
 							}
 						}
 					}

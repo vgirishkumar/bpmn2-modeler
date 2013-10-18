@@ -70,6 +70,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -98,23 +99,23 @@ public class JbpmModelUtil {
 						if (processes.size()>0) {
 							Process process = processes.get(0);
 							String structName = clazz.getElementName();
-							int index = structName.lastIndexOf(".");
+							int index = structName.lastIndexOf("."); //$NON-NLS-1$
 							if (index>0)
 								structName = structName.substring(index+1);
-							String varName = structName + "Var";
+							String varName = structName + "Var"; //$NON-NLS-1$
 							index = 1;
 							boolean done;
 							do {
 								done = true;
 								for (Property p : process.getProperties()) {
 									if (varName.equals(p.getName())) {
-										varName = structName + "Var" + index++; 
+										varName = structName + "Var" + index++;  //$NON-NLS-1$
 										done = false;
 										break;
 									}
 								}
 							} while (!done);
-							Property var = (Property) Bpmn2ModelerFactory.createFeature(processes.get(0), "properties");
+							Property var = (Property) Bpmn2ModelerFactory.createFeature(processes.get(0), "properties"); //$NON-NLS-1$
 							var.setName(varName);
 							var.setId(varName);
 							var.setItemSubjectRef(itemDef);
@@ -178,7 +179,7 @@ public class JbpmModelUtil {
 				else {
 					if (recursive) {
 						Shell shell = Display.getDefault().getActiveShell();
-						MessageDialog.openError(shell, "Error", "No processes defined!");
+						MessageDialog.openError(shell, Messages.JbpmModelUtil_No_Process_Title, Messages.JbpmModelUtil_No_Process_Message);
 					}
 					return null;
 				}
@@ -191,7 +192,11 @@ public class JbpmModelUtil {
 			if (className.equals(it.getName())) {
 				if (recursive) {
 					Shell shell = Display.getDefault().getActiveShell();
-					MessageDialog.openWarning(shell, "Warning", "The import '"+className+"' already exists.");
+					MessageDialog.openWarning(shell, Messages.JbpmModelUtil_Duplicate_Import_Title,
+						NLS.bind(
+							Messages.JbpmModelUtil_Duplicate_Import_Message,className
+						)
+					);
 				}
 				return null;
 			}
@@ -264,7 +269,7 @@ public class JbpmModelUtil {
 		Definitions defs = ModelUtil.getDefinitions(object);
 
 		// add all native types (as defined in the DataTypeRegistry)
-		DataTypeRegistry.getFactory("dummy");
+		DataTypeRegistry.getFactory("dummy"); //$NON-NLS-1$
 		for (Entry<String, DataTypeFactory> e : DataTypeRegistry.instance.entrySet()) {
 			DataType dt = e.getValue().createDataType();
 			if (dt instanceof EnumDataType || dt instanceof UndefinedDataType)
@@ -287,7 +292,7 @@ public class JbpmModelUtil {
 				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
 				itemDef.setItemKind(ItemKind.INFORMATION);
 				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
-				itemDef.setId("_"+dts);
+				itemDef.setId("_"+dts); //$NON-NLS-1$
 				if (defs!=null) {
 					InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
 				}
@@ -419,7 +424,7 @@ public class JbpmModelUtil {
 			definitions.getRelationships().add(rel);
 			rel.getSources().add(definitions);
 			rel.getTargets().add(definitions);
-			rel.setType("Simulation");
+			rel.setType(Messages.JbpmModelUtil_Simulation);
 			ModelUtil.setID(rel);
 		}
 		else {
@@ -442,7 +447,7 @@ public class JbpmModelUtil {
 		if (processAnalysisData.getScenario().size()==0) {
 			Scenario scenario = BpsimFactory.eINSTANCE.createScenario();
 			ModelUtil.setID(scenario, resource);
-			scenario.setName("Scenario 1");
+			scenario.setName(Messages.JbpmModelUtil_Scenario_Name);
 			ScenarioParameters scenarioParams = BpsimFactory.eINSTANCE.createScenarioParameters();
 			scenarioParams.setBaseTimeUnit(TimeUnit.MS);
 			scenario.setScenarioParameters(scenarioParams);

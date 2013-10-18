@@ -52,14 +52,14 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"name",
-						"imports",
-						"rootElements#ItemDefinition",
-						"rootElements#Resource",
-						"rootElements#Message",
-						"rootElements#Error",
-						"rootElements#Signal",
-						"rootElements#Escalation",
+						"name", //$NON-NLS-1$
+						"imports", //$NON-NLS-1$
+						"rootElements#ItemDefinition", //$NON-NLS-1$
+						"rootElements#Resource", //$NON-NLS-1$
+						"rootElements#Message", //$NON-NLS-1$
+						"rootElements#Error", //$NON-NLS-1$
+						"rootElements#Signal", //$NON-NLS-1$
+						"rootElements#Escalation", //$NON-NLS-1$
 				};
 				
 				@Override
@@ -73,7 +73,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 
 	@Override
 	protected Composite bindFeature(EObject object, EStructuralFeature feature, EClass eItemClass) {
-		if ("imports".equals(feature.getName())) {
+		if ("imports".equals(feature.getName())) { //$NON-NLS-1$
 			if (object instanceof Definitions) {
 				Definitions definitions = (Definitions)object;
 				for (RootElement re : definitions.getRootElements()) {
@@ -98,7 +98,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 							}	
 						};
 						importsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_ImportType());
-						importsTable.setTitle("Imports");
+						importsTable.setTitle(Messages.JbpmDefinitionsPropertyComposite_Imports_Title);
 						return importsTable;
 					}
 				}

@@ -44,7 +44,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
 				@Override
 				public String getLabel(Object context) {
-					return "Name";
+					return Messages.JbpmGlobalTypePropertiesAdapter_Name;
 				}
     		});	
 
@@ -56,7 +56,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
 				@Override
 				public String getLabel(Object context) {
-					return "Data Type";
+					return Messages.JbpmGlobalTypePropertiesAdapter_Data_Type_Label;
 				}
 				
 				@Override
@@ -90,7 +90,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 
 			@Override
 			public String getLabel(Object context) {
-				return "Global Variable";
+				return Messages.JbpmGlobalTypePropertiesAdapter_Label;
 			}
 
 			@Override

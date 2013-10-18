@@ -39,7 +39,7 @@ public class JbpmImportDialog extends DefaultSchemaImportDialog {
 		Composite contents = (Composite) super.createDialogArea(parent);
 		
 		final Button button = new Button(contents, SWT.CHECK);
-		button.setText("Create Process Variables for imported Java Types");
+		button.setText(Messages.JbpmImportDialog_Create_Process_Variables_Label);
 		button.setSelection(createVariables);
 		button.addSelectionListener(new SelectionAdapter() {
 

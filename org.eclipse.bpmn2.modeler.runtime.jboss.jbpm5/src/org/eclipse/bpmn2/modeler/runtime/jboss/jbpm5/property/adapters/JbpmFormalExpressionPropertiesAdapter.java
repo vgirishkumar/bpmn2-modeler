@@ -44,8 +44,8 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 				public String getLabel(Object context) {
 					FormalExpression object = adopt(context);
 					if (object.eContainer() instanceof SequenceFlow)
-						return "Condition Language";
-					return "Script Language";
+						return Messages.JbpmFormalExpressionPropertiesAdapter_Condition_Language;
+					return Messages.JbpmFormalExpressionPropertiesAdapter_Script_Language;
 				}
 	
 				@Override
@@ -58,7 +58,7 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 						choiceOfValues.put(s[i+1], s[i]);
 					}
 					if (!(object.eContainer() instanceof SequenceFlow))
-						choiceOfValues.remove("Rule");
+						choiceOfValues.remove(Messages.JbpmFormalExpressionPropertiesAdapter_Rule);
 					return choiceOfValues;
 				}
 				

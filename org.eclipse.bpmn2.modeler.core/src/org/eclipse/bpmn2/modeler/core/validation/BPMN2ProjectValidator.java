@@ -51,6 +51,7 @@ import org.eclipse.emf.validation.service.ModelValidationService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -165,12 +166,10 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 					if (preferences.getCheckProjectNature()) {
 						Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 						String title = Messages.BPMN2ProjectValidator_Title;
-						String message = Messages.BPMN2ProjectValidator_2+
-								project.getName()+
-								Messages.BPMN2ProjectValidator_3+
-								Messages.BPMN2ProjectValidator_4+
-								Messages.BPMN2ProjectValidator_5+
-								Messages.BPMN2ProjectValidator_6;
+						String message = NLS.bind(
+							Messages.BPMN2ProjectValidator_No_Project_Nature,
+							project.getName()
+						);
 						MessageDialogWithToggle result = MessageDialogWithToggle.open(
 								MessageDialog.QUESTION,
 								shell,

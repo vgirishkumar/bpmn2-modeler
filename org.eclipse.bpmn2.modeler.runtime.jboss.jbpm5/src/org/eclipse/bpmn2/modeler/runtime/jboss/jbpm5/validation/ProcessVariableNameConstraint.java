@@ -22,6 +22,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.AbstractModelConstraint;
 import org.eclipse.emf.validation.IValidationContext;
+import org.eclipse.osgi.util.NLS;
 
 public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 
@@ -50,9 +51,10 @@ public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 					id2 = ((BaseElement)o2).getId();
 				if (id1!=null && id2!=null) {
 					if (id1.equals(id2)) {
-						String msg =
-								ModelUtil.getLabel(o1) + " \"" + ModelUtil.getDisplayName(o1) + "\" and " +
-								ModelUtil.getLabel(o2) + " \"" + ModelUtil.getDisplayName(o2) + "\" have the same ID";
+						String msg = NLS.bind(
+								Messages.ProcessVariableNameConstraint_Duplicate_ID,
+								ModelUtil.getLabel(o1)+" "+ModelUtil.getDisplayName(o1),
+								ModelUtil.getLabel(o2)+" "+ModelUtil.getDisplayName(o2));
 						return ctx.createFailureStatus(msg);
 					}
 				}

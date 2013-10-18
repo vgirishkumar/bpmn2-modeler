@@ -4,6 +4,8 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.features.messages"; //$NON-NLS-1$
+	public static String AbstractBpmn2CreateConnectionFeature_Create;
+	public static String AbstractBpmn2CreateFeature_Create;
 	public static String AbstractUpdateBaseElementFeature_Name;
 	public static String BPMNDiagramFeatureContainer_Disable_Enable_Description;
 	public static String BPMNDiagramFeatureContainer_Disable_Name;
