@@ -20,7 +20,6 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -121,7 +120,7 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 						
 					});
 					
-					dialog.setTitle("Select an Interface for the new Operation");
+					dialog.setTitle(Messages.OperationPropertiesAdapter_Title);
 					dialog.setAddCancelButton(true);
 					dialog.setHelpAvailable(false);
 					dialog.setInput(new Object());

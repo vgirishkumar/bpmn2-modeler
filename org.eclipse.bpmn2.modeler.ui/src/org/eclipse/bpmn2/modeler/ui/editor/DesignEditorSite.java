@@ -97,13 +97,13 @@ public class DesignEditorSite extends MultiPageEditorSite {
 			// node type = element
 			PictogramElement pe = null;
 			Element elem = (Element)node;
-			String value = elem.getAttribute("bpmnElement");
+			String value = elem.getAttribute("bpmnElement"); //$NON-NLS-1$
 			if (value!=null) {
 				pe = findPictogramElement(value);
 			}
 			
 			if (pe==null) {
-				value = elem.getAttribute("id");
+				value = elem.getAttribute("id"); //$NON-NLS-1$
 				if (value!=null)
 					pe = findPictogramElement(value);
 			}

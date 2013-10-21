@@ -103,7 +103,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 				IPaletteCompartmentEntry ce = (IPaletteCompartmentEntry)element;
 				return ce.getLabel();
 			}
-			return "?";
+			return "?"; //$NON-NLS-1$
 		}
 
 		public Image getImage(Object element) {

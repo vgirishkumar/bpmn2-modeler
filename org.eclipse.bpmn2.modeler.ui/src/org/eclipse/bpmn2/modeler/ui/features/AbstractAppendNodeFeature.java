@@ -107,7 +107,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 				IPaletteCompartmentEntry ce = (IPaletteCompartmentEntry)element;
 				return ce.getLabel();
 			}
-			return "?";
+			return "?"; //$NON-NLS-1$
 		}
 
 		public Image getImage(Object element) {

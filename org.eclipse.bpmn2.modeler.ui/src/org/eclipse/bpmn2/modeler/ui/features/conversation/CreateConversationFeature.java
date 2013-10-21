@@ -31,7 +31,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conversation> {
 
 	public CreateConversationFeature(IFeatureProvider fp) {
-		super(fp, "Conversation", "Create "+"Conversation");
+		super(fp, Messages.CreateConversationFeature_Name, Messages.CreateConversationFeature_Description);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conver
 			Resource resource = ModelUtil.getResource(getDiagram());
 			bo = Bpmn2ModelerFactory.create(Conversation.class);
 			ModelHandler mh = ModelHandler.getInstance(getDiagram());
-			bo.setName("Conversation");
+			bo.setName(Messages.CreateConversationFeature_Name);
 	        BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
 	        mh.addConversationNode(bpmnDiagram,bo);
 			ModelUtil.setID(bo);

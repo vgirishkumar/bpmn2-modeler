@@ -62,6 +62,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -191,12 +192,12 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				new TableColumn(object,feature) {
 					public String getText(Object element) {
 						EObject o = (EObject)element;
-						return o.eClass().getName().replace("EventDefinition", "");
+						return o.eClass().getName().replace("EventDefinition", ""); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 
 					@Override
 					public String getHeaderText() {
-						return "Event Type";
+						return Messages.EventDefinitionsListComposite_Event_Type_Header;
 					}
 					
 					@Override
@@ -207,7 +208,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				}
 			).setEditable(false);
 		columnProvider.addRaw(
-				new TableColumn(object,object.eClass().getEStructuralFeature("id")) {
+				new TableColumn(object,object.eClass().getEStructuralFeature("id")) { //$NON-NLS-1$
 					public String getText(Object element) {
 						if (element instanceof CancelEventDefinition) {
 						}
@@ -241,12 +242,12 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						}
 						if (element instanceof TimerEventDefinition) {
 						}
-						return "";
+						return ""; //$NON-NLS-1$
 					}
 
 					@Override
 					public String getHeaderText() {
-						return "Event ID";
+						return Messages.EventDefinitionsListComposite_Event_ID_Header;
 					}
 					
 					@Override
@@ -346,15 +347,15 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				++index;
 				if (parameters.size()<=index) {
 					if (!inTransaction)
-						throw new IllegalStateException("Not in a transaction");
-					String name = ed.getId().replace("EventDefinition", "");
+						throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
+					String name = ed.getId().replace("EventDefinition", ""); //$NON-NLS-1$ //$NON-NLS-2$
 					if (isInput) {
 						element = Bpmn2ModelerFactory.create(resource, DataInput.class);
-						((DataInput)element).setName(name+"_Input");
+						((DataInput)element).setName(name+"_Input"); //$NON-NLS-1$
 					}
 					else {
 						element = Bpmn2ModelerFactory.create(resource, DataOutput.class);
-						((DataOutput)element).setName(name+"_Output");
+						((DataOutput)element).setName(name+"_Output"); //$NON-NLS-1$
 					}
 					if (itemDefinition!=null) {
 						element.setItemSubjectRef(itemDefinition);
@@ -373,7 +374,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 					}
 					if (association==null) {
 						if (!inTransaction)
-							throw new IllegalStateException("Not in a transaction");
+							throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 						association = Bpmn2ModelerFactory.create(resource, DataInputAssociation.class);
 						association.setTargetRef(element);
 						associations.add(association);
@@ -388,7 +389,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 					}
 					if (association==null) {
 						if (!inTransaction)
-							throw new IllegalStateException("Not in a transaction");
+							throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 						association = Bpmn2ModelerFactory.create(resource, DataOutputAssociation.class);
 						association.getSourceRef().add(element);
 						associations.add(association);
@@ -396,7 +397,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				}
 				if (ioSet==null) {
 					if (!inTransaction)
-						throw new IllegalStateException("Not in a transaction");
+						throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 					if (isInput) {
 						ioSet = (BaseElement) Bpmn2ModelerFactory.create(resource, InputSet.class);
 						throwEvent.setInputSet((InputSet)ioSet);
@@ -409,14 +410,14 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				if (isInput) {
 					if (!((InputSet)ioSet).getDataInputRefs().contains(element)) {
 						if (!inTransaction)
-							throw new IllegalStateException("Not in a transaction");
+							throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 						((InputSet)ioSet).getDataInputRefs().add((DataInput)element);
 					}
 				}
 				else {
 					if (!((OutputSet)ioSet).getDataOutputRefs().contains(element)) {
 						if (!inTransaction)
-							throw new IllegalStateException("Not in a transaction");
+							throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 						((OutputSet)ioSet).getDataOutputRefs().add((DataOutput)element);
 					}
 				}
@@ -485,12 +486,22 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				}
 				if (param!=null) {
 					dataAssociationComposite.setBusinessObject(param.getFirst());
-					String type = eventDefinition.eClass().getName().replace("EventDefinition", "");
+					String type = eventDefinition.eClass().getName().replace("EventDefinition", ""); //$NON-NLS-1$ //$NON-NLS-2$
 					if (event instanceof ThrowEvent) {
-						dataAssociationComposite.getFromGroup().setText("Map Outgoing "+type+" Data From:");
+						dataAssociationComposite.getFromGroup().setText(
+							NLS.bind(
+								Messages.EventDefinitionsListComposite_Map_Outgoing,
+								type
+							)
+						);
 					}
 					else {
-						dataAssociationComposite.getToGroup().setText("Map Incoming "+type+" Data To:");
+						dataAssociationComposite.getToGroup().setText(
+							NLS.bind(
+								Messages.EventDefinitionsListComposite_Map_Incoming,
+								type
+							)
+						);
 					}
 				}
 			}

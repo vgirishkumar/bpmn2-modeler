@@ -49,7 +49,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 	
 	public Bpmn2PropertyPage() {
 		super();
-		setTitle("BPMN2");
+		setTitle("BPMN2"); //$NON-NLS-1$
 		setDescription(Messages.Bpmn2PreferencePage_HomePage_Description);
 	}
 
@@ -119,7 +119,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 		Group group = new Group(container, SWT.BORDER);
 		group.setLayout(new GridLayout(3,false));
 		group.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-		group.setText("Default values for BPMN Diagram Interchange (DI) optional attributes");
+		group.setText(Messages.Bpmn2PropertyPage_DI_Defaults_Title);
 
 		cboIsHorizontal = new BPMNDIAttributeDefaultCombo(group);
 		cboIsHorizontal.setText(Bpmn2Preferences.PREF_IS_HORIZONTAL_LABEL);

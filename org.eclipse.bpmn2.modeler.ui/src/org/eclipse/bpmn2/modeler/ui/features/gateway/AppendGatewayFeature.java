@@ -38,12 +38,12 @@ public class AppendGatewayFeature extends AbstractAppendNodeFeature<Gateway> {
 
 	@Override
 	public String getName() {
-		return "Append Gateway";
+		return Messages.AppendGatewayFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Create a new Gateway and connect it to this item";
+		return Messages.AppendGatewayFeature_Description;
 	}
 
 	@Override

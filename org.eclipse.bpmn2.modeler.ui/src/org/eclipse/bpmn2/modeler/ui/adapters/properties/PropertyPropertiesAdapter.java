@@ -53,7 +53,7 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 
 			@Override
 			public void setDisplayName(String text) {
-				int i = text.lastIndexOf("/");
+				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
 				text = text.trim();
@@ -75,10 +75,10 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 							break;
 					}
 					else if (container instanceof Activity || container instanceof Process) {
-						text = ModelUtil.getDisplayName(container) + "/" + text;
+						text = ModelUtil.getDisplayName(container) + "/" + text; //$NON-NLS-1$
 					}
 					else if (container instanceof CatchEvent || container instanceof ThrowEvent) {
-						text = ModelUtil.getDisplayName(container) + "/" + text;
+						text = ModelUtil.getDisplayName(container) + "/" + text; //$NON-NLS-1$
 					}
 					container = container.eContainer();
 				}
@@ -103,26 +103,26 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 			
 			@Override
 			public String getLabel(Object context) {
-				return "Variable";
+				return Messages.PropertyPropertiesAdapter_Variable;
 			}
 		});
 	}
 
 	public static Property createProperty(List<Property> properties) {
-		String base = "localVar";
+		String base = Messages.PropertyPropertiesAdapter_LocalVar_Prefix;
 		
 		Resource resource = null;
 		if (properties instanceof EcoreEList) {
 			EObject owner = ((EcoreEList)properties).getEObject();
 			resource = owner.eResource();
 			if (owner instanceof Event) {
-				base = "eventVar";
+				base = Messages.PropertyPropertiesAdapter_EventVar_Prefix;
 			}
 			else if (owner instanceof Process) {
-				base = "processVar";
+				base = Messages.PropertyPropertiesAdapter_ProcessVar_Prefix;
 			}
 			else if (owner instanceof Task) {
-				base = "taskVar";
+				base = Messages.PropertyPropertiesAdapter_TaskVar_Prefix;
 			}
 		}
 		

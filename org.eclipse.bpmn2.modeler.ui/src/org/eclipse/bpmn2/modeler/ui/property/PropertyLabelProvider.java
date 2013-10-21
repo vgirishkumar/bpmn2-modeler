@@ -41,7 +41,7 @@ public class PropertyLabelProvider extends LabelProvider {
 		if (object!=null) {
 			CustomTaskDescriptor ctd = getCustomTaskDescriptor(object); 
 			if (ctd!=null) {
-				return PropertyUtil.getImage("CustomTask");
+				return PropertyUtil.getImage("CustomTask"); //$NON-NLS-1$
 			}
 			return PropertyUtil.getImage(object);
 		}
@@ -66,7 +66,7 @@ public class PropertyLabelProvider extends LabelProvider {
 				// and the object's name (which could be the same)
 				String name = ctd.getName();
 				if (!text.equals(name))
-					return name + ": " + text;
+					return name + ": " + text; //$NON-NLS-1$
 			}
 			return text;
 		}

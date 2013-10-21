@@ -60,7 +60,7 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 			return null;
 		}
 		if (be!=null) {
-			EStructuralFeature feature = be.eClass().getEStructuralFeature("ioSpecification");
+			EStructuralFeature feature = be.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 			if (feature!=null && isModelObjectEnabled(be, feature))
 				return be;
 		}

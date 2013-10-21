@@ -89,12 +89,12 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getName() {
-	    return "Whitebox";
+	    return Messages.WhiteboxFeature_Name;
 	}
 	
 	@Override
 	public String getDescription() {
-	    return "Link a Process Diagram to this Participant Band";
+	    return Messages.WhiteboxFeature_Description;
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		List<BPMNDiagram> diagramList = new ArrayList<BPMNDiagram>();
 		BPMNDiagram newDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
 		ModelUtil.setID(newDiagram, resource);
-        newDiagram.setName("New Process");
+        newDiagram.setName(Messages.WhiteboxFeature_New_Process);
 
 		BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
 		ModelUtil.setID(plane, resource);
@@ -203,7 +203,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		}
 		if (changesDone) {
 			if (result==newDiagram) { // the new one
-				String name = "Process for "+ModelUtil.getDisplayName(participant);
+				String name = Messages.WhiteboxFeature_Process_For+ModelUtil.getDisplayName(participant);
 		        process.setName(name);
 		        newDiagram.setName(name);
 		        definitions.getRootElements().add(process);

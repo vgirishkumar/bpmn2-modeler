@@ -45,12 +45,12 @@ public class ShowDiagramPageFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return "Show Diagram";
+		return Messages.ShowDiagramPageFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Switch to the Diagram Page that contains the details of this activity";
+		return Messages.ShowDiagramPageFeature_Description;
 	}
 
 	@Override

@@ -85,12 +85,12 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getName() {
-	    return "Add Message";
+	    return Messages.AddChoreographyMessageFeature_Name;
 	}
 	
 	@Override
 	public String getDescription() {
-	    return "Add a Message definition to this Choreography Participant";
+	    return Messages.AddChoreographyMessageFeature_Description;
 	}
 
 	@Override

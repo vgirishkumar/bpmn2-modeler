@@ -116,7 +116,7 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 
 			@Override
 			public String getLabel(Object context) {
-				return "Multiplicity";
+				return Messages.ParticipantPropertiesAdapter_Multiplicity;
 			}
 
 			@Override
@@ -124,9 +124,9 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 				 Participant object = adopt(context);
 				 ParticipantMultiplicity pm = object.getParticipantMultiplicity();
 				 if (pm!=null) {
-					 return pm.getMinimum() + ".." + pm.getMaximum();
+					 return pm.getMinimum() + ".." + pm.getMaximum(); //$NON-NLS-1$
 				 }
-				 return "";
+				 return ""; //$NON-NLS-1$
 			}
 
     	});

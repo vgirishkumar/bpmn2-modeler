@@ -26,39 +26,67 @@ public class Messages extends NLS {
 	
 	public static String Activator_Error;
 
-	public static String SchemaImportDialog_0;
-	public static String SchemaImportDialog_1;
-	public static String SchemaImportDialog_2;
-	public static String SchemaImportDialog_3;
-	public static String SchemaImportDialog_4;
-	public static String SchemaImportDialog_5;
-	public static String SchemaImportDialog_6;
-	public static String SchemaImportDialog_7;
 	public static String SchemaImportDialog_15;
-	public static String SchemaImportDialog_8;
-	public static String SchemaImportDialog_9;
-	public static String SchemaImportDialog_10;
-	public static String SchemaImportDialog_11;
-	public static String SchemaImportDialog_12;
-	public static String SchemaImportDialog_17;
-	public static String SchemaImportDialog_13;
-	public static String SchemaImportDialog_19;
-	public static String SchemaImportDialog_18;
-	public static String SchemaImportDialog_14;
 	public static String SchemaImportDialog_16;
 
 	public static String SchemaImportDialog_20;
-	public static String SchemaImportDialog_21;
-	public static String SchemaImportDialog_22;
-	public static String SchemaImportDialog_23;
-	public static String SchemaImportDialog_24;
-	public static String SchemaImportDialog_25;
-	public static String SchemaImportDialog_26;
-	public static String SchemaImportDialog_27;
-	public static String SchemaImportDialog_28;
-	public static String SchemaImportDialog_29;
-	public static String SchemaImportDialog_30;
-	public static String SchemaImportDialog_31;
+	public static String SchemaImportDialog_BPMN2_Button;
+
+	public static String SchemaImportDialog_Browse_BPMN2_Title;
+
+	public static String SchemaImportDialog_Browse_Button;
+
+	public static String SchemaImportDialog_Browse_Java_Title;
+
+	public static String SchemaImportDialog_Browse_WSDL_Title;
+
+	public static String SchemaImportDialog_Browse_XML_Title;
+
+	public static String SchemaImportDialog_Browse_XSD_Title;
+
+	public static String SchemaImportDialog_File_System_Button;
+
+	public static String SchemaImportDialog_Import_Source_Title;
+
+	public static String SchemaImportDialog_Import_Type_Title;
+
+	public static String SchemaImportDialog_Interfaces_Label;
+
+	public static String SchemaImportDialog_Invalid_Location;
+
+	public static String SchemaImportDialog_Java_Button;
+
+	public static String SchemaImportDialog_Java_Types_Label;
+
+	public static String SchemaImportDialog_Load_Button;
+
+	public static String SchemaImportDialog_Load_Failed_Message;
+
+	public static String SchemaImportDialog_Loaded_Message;
+
+	public static String SchemaImportDialog_Loading_Message;
+
+	public static String SchemaImportDialog_Location_Label;
+
+	public static String SchemaImportDialog_Ports_Title;
+
+	public static String SchemaImportDialog_Select_Java_Message;
+
+	public static String SchemaImportDialog_Select_Resource_Title;
+
+	public static String SchemaImportDialog_Structure_Label;
+
+	public static String SchemaImportDialog_Type_Label;
+
+	public static String SchemaImportDialog_Types_Label;
+
+	public static String SchemaImportDialog_URL_Button;
+
+	public static String SchemaImportDialog_Workspace_Button;
+
+	public static String SchemaImportDialog_WSDL_Button;
+
+	public static String SchemaImportDialog_XSD_Button;
 
 	public static String XSDSchemaTreeNode_1;
 	public static String XSDSchemaTreeNode_0;
@@ -81,10 +109,70 @@ public class Messages extends NLS {
 	public static String XSDTypeDefinitionAdapter_XSD_Type_1;
 	public static String XSDSimpleTypeDefinitionAdapter_0;
 
+	public static String Bpmn2EditorPreferencePage_Activities;
+
+	public static String Bpmn2EditorPreferencePage_Change_Button;
+
+	public static String Bpmn2EditorPreferencePage_Connections;
+
+	public static String Bpmn2EditorPreferencePage_Containers;
+
+	public static String Bpmn2EditorPreferencePage_Data_Elements;
+
+	public static String Bpmn2EditorPreferencePage_Events;
+
+	public static String Bpmn2EditorPreferencePage_Fill_Color_Label;
+
+	public static String Bpmn2EditorPreferencePage_Foreground_Color_Label;
+
+	public static String Bpmn2EditorPreferencePage_Gateways;
+
+	public static String Bpmn2EditorPreferencePage_Label_Color_Label;
+
+	public static String Bpmn2EditorPreferencePage_Label_Font_Label;
+
+	public static String Bpmn2EditorPreferencePage_MultiSelected_Color_Label;
+
+	public static String Bpmn2EditorPreferencePage_Override_Size_Label;
+
+	public static String Bpmn2EditorPreferencePage_Routing_Style_Label;
+
+	public static String Bpmn2EditorPreferencePage_Selected_Color_Label;
+
+	public static String Bpmn2HomePreferencePage_Default_DI_Values_Title;
+
 	public static String Bpmn2PreferencePage_HomePage_Description;
 	public static String Bpmn2PreferencePage_EditorPage_Description;
 
+	public static String Bpmn2PropertyPage_DI_Defaults_Title;
+
 	public static String CommonLabels_Data_Type;
+
+	public static String DefaultSchemaImportDialog_All;
+
+	public static String DefaultSchemaImportDialog_BPMN2_Filter_1;
+
+	public static String DefaultSchemaImportDialog_BPMN2_Filter_2;
+
+	public static String DefaultSchemaImportDialog_BPMN2_Type;
+
+	public static String DefaultSchemaImportDialog_Java_Filter_1;
+
+	public static String DefaultSchemaImportDialog_Java_Filter_2;
+
+	public static String DefaultSchemaImportDialog_Java_Filter_3;
+
+	public static String DefaultSchemaImportDialog_Missing_Namespace_Message;
+
+	public static String DefaultSchemaImportDialog_WSDL_Filter;
+
+	public static String DefaultSchemaImportDialog_WSDL_Type;
+
+	public static String DefaultSchemaImportDialog_XML_Filter;
+
+	public static String DefaultSchemaImportDialog_XSD_Filter;
+
+	public static String DefaultSchemaImportDialog_XSD_Type;
 
 	public static String UI_UnknownDiagram_long_description;
 	public static String UI_ProcessDiagram_long_description;

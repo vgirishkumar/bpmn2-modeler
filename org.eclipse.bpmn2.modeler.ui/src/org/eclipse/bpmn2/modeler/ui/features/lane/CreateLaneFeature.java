@@ -33,7 +33,7 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 	private static int index = 1;
 
 	public CreateLaneFeature(IFeatureProvider fp) {
-		super(fp, "Lane", "Create "+"Lane");
+		super(fp, Messages.CreateLaneFeature_Name, Messages.CreateLaneFeature_Description);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 	@Override
 	public Object[] create(ICreateContext context) {
 		Lane lane = createBusinessObject(context);
-		lane.setName("Lane "+ModelUtil.getIDNumber(lane.getId()));
+		lane.setName(Messages.CreateLaneFeature_Default_Name+ModelUtil.getIDNumber(lane.getId()));
 		addGraphicalRepresentation(context, lane);
 		return new Object[] { lane };
 	}

@@ -35,12 +35,12 @@ public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
 
 	@Override
 	public String getName() {
-		return "Morph Activity";
+		return Messages.MorphActivityFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Change the Activity type";
+		return Messages.MorphActivityFeature_Description;
 	}
 
 	@Override

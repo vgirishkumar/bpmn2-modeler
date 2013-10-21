@@ -98,7 +98,7 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 	public static class CreateEscalationEventDefinition extends AbstractCreateEventDefinitionFeature<EscalationEventDefinition> {
 
 		public CreateEscalationEventDefinition(IFeatureProvider fp) {
-			super(fp, "Escalation Event Definition", "Create "+"Escalation Event Definition");
+			super(fp, Messages.EscalationEventDefinitionContainer_Name, Messages.EscalationEventDefinitionContainer_Description);
 		}
 
 		@Override

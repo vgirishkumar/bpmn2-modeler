@@ -106,7 +106,7 @@ public class Activator extends AbstractUIPlugin {
 				continue;
 			}
 			String name = f.getName();
-			if (name.startsWith("ICON_") || name.startsWith("CURSOR_") || name.startsWith("IMAGE_")) {   //$NON-NLS-1$ //$NON-NLS-2$
+			if (name.startsWith("ICON_") || name.startsWith("CURSOR_") || name.startsWith("IMAGE_")) {   //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				try {
 					String value = (String) f.get(null);
 					createImageDescriptor(registry, value, baseURL);

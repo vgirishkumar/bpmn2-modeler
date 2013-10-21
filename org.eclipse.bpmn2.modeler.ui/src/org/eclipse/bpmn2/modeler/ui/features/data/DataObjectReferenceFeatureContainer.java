@@ -64,7 +64,7 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 	public static class CreateDataObjectReferenceFeature extends AbstractCreateFlowElementFeature<DataObjectReference> {
 
 		public CreateDataObjectReferenceFeature(IFeatureProvider fp) {
-			super(fp, "Data Object Reference", "Create "+"Data Object Reference");
+			super(fp, Messages.DataObjectReferenceFeatureContainer_Name, Messages.DataObjectReferenceFeatureContainer_Description);
 		}
 
 		@Override

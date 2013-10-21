@@ -69,60 +69,60 @@ public class IoSetsListComposite extends DefaultListComposite {
 		setListItemClass(listItemClass);
 		
 		EStructuralFeature f;
-		f = listItemClass.getEStructuralFeature("name");
+		f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_0);
 		TableColumn tc;
 		tc = new IoSetNameColumn(ioSpecification,f);
 		tc.setEditable(true);
 		columnProvider.add(tc);
 
-		isInput = ("inputSets".equals(ioFeature.getName()));
+		isInput = (Messages.IoSetsListComposite_1.equals(ioFeature.getName()));
 		if (isInput) {
 			ioSet = ioSpecification.getInputSets();
 
-			f = listItemClass.getEStructuralFeature("dataInputRefs");
+			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_2);
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Input Parameters");
+			tc.setHeaderText(Messages.IoSetsListComposite_3);
 			columnProvider.add(tc);
 			
-			f = listItemClass.getEStructuralFeature("optionalInputRefs");
+			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_4);
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Optional Inputs");
+			tc.setHeaderText(Messages.IoSetsListComposite_5);
 			columnProvider.add(tc);
 			
-			f = listItemClass.getEStructuralFeature("whileExecutingInputRefs");
+			f = listItemClass.getEStructuralFeature("whileExecutingInputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Evaluated While Executing");
+			tc.setHeaderText(Messages.IoSetsListComposite_Evaluated_While_Executing_Header);
 			columnProvider.add(tc);
 			
 			if (!(container instanceof SendTask)) {
-				f = listItemClass.getEStructuralFeature("outputSetRefs");
+				f = listItemClass.getEStructuralFeature("outputSetRefs"); //$NON-NLS-1$
 				tc = new IoSetNameColumn(ioSpecification,f);
-				tc.setHeaderText("Output Sets Produced");
+				tc.setHeaderText(Messages.IoSetsListComposite_Output_Sets_Produced_Header);
 				columnProvider.add(tc);
 			}
 		}
 		else {
 			ioSet = ioSpecification.getOutputSets();
 
-			f = listItemClass.getEStructuralFeature("dataOutputRefs");
+			f = listItemClass.getEStructuralFeature("dataOutputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Output Parameters");
+			tc.setHeaderText(Messages.IoSetsListComposite_Output_Parameters_Header);
 			columnProvider.add(tc);
 			
-			f = listItemClass.getEStructuralFeature("optionalOutputRefs");
+			f = listItemClass.getEStructuralFeature("optionalOutputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Optional Outputs");
+			tc.setHeaderText(Messages.IoSetsListComposite_Option_Outputs_Header);
 			columnProvider.add(tc);
 			
-			f = listItemClass.getEStructuralFeature("whileExecutingOutputRefs");
+			f = listItemClass.getEStructuralFeature("whileExecutingOutputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText("Produced While Executing");
+			tc.setHeaderText(Messages.IoSetsListComposite_Produced_While_Executing_Header);
 			columnProvider.add(tc);
 			
 			if (!(container instanceof ReceiveTask)) {
-				f = listItemClass.getEStructuralFeature("inputSetRefs");
+				f = listItemClass.getEStructuralFeature("inputSetRefs"); //$NON-NLS-1$
 				tc = new IoSetNameColumn(ioSpecification,f);
-				tc.setHeaderText("Input Sets Required");
+				tc.setHeaderText(Messages.IoSetsListComposite_Input_Sets_Reqd_Header);
 				columnProvider.add(tc);
 			}
 		}
@@ -170,7 +170,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 		@Override
 		public void createBindings(EObject be) {
 			isInput = (be instanceof InputSet);
-			bindAttribute(be, "name");
+			bindAttribute(be, "name"); //$NON-NLS-1$
 
 			// find the IoSetsListComposite if there is one, so we can get the Activity
 			// that owns this critter
@@ -184,19 +184,19 @@ public class IoSetsListComposite extends DefaultListComposite {
 				parent = parent.getParent();
 			}
 			ioRefsEditor = new IoSetsFeatureEditor(this,be);
-			ioRefsEditor.create(isInput ? "dataInputRefs" : "dataOutputRefs");
+			ioRefsEditor.create(isInput ? "dataInputRefs" : "dataOutputRefs"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			optionalIoRefsEditor = new IoSetsFeatureEditor(this,be);
-			optionalIoRefsEditor.create(isInput ? "optionalInputRefs" : "optionalOutputRefs");
+			optionalIoRefsEditor.create(isInput ? "optionalInputRefs" : "optionalOutputRefs"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			whileExecIoRefsEditor = new IoSetsFeatureEditor(this,be);
-			whileExecIoRefsEditor.create(isInput ? "whileExecutingInputRefs" : "whileExecutingOutputRefs");
+			whileExecIoRefsEditor.create(isInput ? "whileExecutingInputRefs" : "whileExecutingOutputRefs"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			if (
 					(isInput && !(activity instanceof SendTask)) ||
 					(!isInput && !(activity instanceof ReceiveTask)) ) {
 				ioSetRefsEditor = new IoSetsFeatureEditor(this,be);
-				ioSetRefsEditor.create(isInput ? "outputSetRefs" : "inputSetRefs");
+				ioSetRefsEditor.create(isInput ? "outputSetRefs" : "inputSetRefs"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
@@ -209,7 +209,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 			public void create(String featureName) {
 				this.feature = object.eClass().getEStructuralFeature(featureName);
 				String label = ModelUtil.getLabel(object,feature);
-				label = label.replace(" Ref", "");
+				label = label.replace(" Ref", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				super.createControl(parent, label, style | SWT.MULTI);
 			}
 			
@@ -241,7 +241,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 					if (text==null)
 						text = name;
 					else
-						text += "\n" + name;
+						text += "\n" + name; //$NON-NLS-1$
 				}
 				setText(text);
 			}

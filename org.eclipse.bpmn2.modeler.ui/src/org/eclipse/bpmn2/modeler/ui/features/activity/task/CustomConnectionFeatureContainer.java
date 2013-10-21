@@ -43,7 +43,7 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
 			return customTaskDescriptor.getDescription();
-		return "Custom Connection";
+		return Messages.CustomConnectionFeatureContainer_Description;
 	}
 	
 	@Override

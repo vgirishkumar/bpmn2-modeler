@@ -44,6 +44,7 @@ import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
@@ -105,7 +106,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 			public String getText(Object element) {
 				if (((DataObject) element).getId() == null)
 					return ((DataObject) element).getName();
-				return "Reference existing \"" + ((DataObject) element).getName() + "\"";
+				return NLS.bind(Messages.DataObjectFeatureContainer_Ref, ((DataObject) element).getName());
 			}
 
 			public Image getImage(Object element) {
@@ -115,7 +116,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 		};
 
 		public CreateDataObjectFeature(IFeatureProvider fp) {
-			super(fp, "Data Object", "Create "+"Data Object");
+			super(fp, Messages.DataObjectFeatureContainer_Name, Messages.DataObjectFeatureContainer_Description);
 		}
 
 		@Override
@@ -147,7 +148,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 				dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
 				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
 				String oldName = dataObject.getName();
-				dataObject.setName("Create a new Data Object");
+				dataObject.setName(Messages.DataObjectFeatureContainer_New);
 				dataObject.setId(null);
 				EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
 				
@@ -195,7 +196,12 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 					} else {
 						mh.addFlowElement(targetBusinessObject,dataObjectReference);
 						ModelUtil.setID(dataObjectReference);
-						dataObjectReference.setName(result.getName() + " Ref");
+						dataObjectReference.setName(
+							NLS.bind(
+								Messages.DataObjectFeatureContainer_Default_Name,
+								result.getName()
+							)
+						);
 						dataObjectReference.setDataObjectRef(result);
 						dataObject = result;
 						bo = dataObjectReference;

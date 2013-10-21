@@ -48,7 +48,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
 			return customTaskDescriptor.getDescription();
-		return "Custom Shape";
+		return Messages.CustomShapeFeatureContainer_Description;
 	}
 
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {

@@ -43,7 +43,7 @@ public class SubProcessPropertySection extends DefaultPropertySection {
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		EObject bo = getBusinessObjectForSelection(selection);
-		if (bo.eClass().getName().equals("SubProcess"))
+		if (bo.eClass().getName().equals("SubProcess")) //$NON-NLS-1$
 			return true;
 		return false;
 	}

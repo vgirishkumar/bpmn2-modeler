@@ -66,7 +66,7 @@ public class ResourceAssignmentExpressionDetailComposite extends ExpressionDetai
 						Expression.class, this, SWT.NONE);
 			}
 			exprDetails.setBusinessObject(expr);
-			exprDetails.setTitle("Resource Assignment Expression");
+			exprDetails.setTitle(Messages.ResourceAssignmentExpressionDetailComposite_Title);
 		}
 	}
 }

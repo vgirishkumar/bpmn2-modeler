@@ -53,8 +53,8 @@ public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 					if (id1.equals(id2)) {
 						String msg = NLS.bind(
 								Messages.ProcessVariableNameConstraint_Duplicate_ID,
-								ModelUtil.getLabel(o1)+" "+ModelUtil.getDisplayName(o1),
-								ModelUtil.getLabel(o2)+" "+ModelUtil.getDisplayName(o2));
+								ModelUtil.getLabel(o1)+" "+ModelUtil.getDisplayName(o1), //$NON-NLS-1$
+								ModelUtil.getLabel(o2)+" "+ModelUtil.getDisplayName(o2)); //$NON-NLS-1$
 						return ctx.createFailureStatus(msg);
 					}
 				}

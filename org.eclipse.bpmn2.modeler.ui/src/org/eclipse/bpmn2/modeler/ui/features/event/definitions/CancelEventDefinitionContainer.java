@@ -97,7 +97,7 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static class CreateCancelEventDefinition extends AbstractCreateEventDefinitionFeature<CancelEventDefinition> {
 
 		public CreateCancelEventDefinition(IFeatureProvider fp) {
-			super(fp, "Cancel Event Definition", "Create "+"Cancel Event Definition");
+			super(fp, Messages.CancelEventDefinitionContainer_Name, Messages.CancelEventDefinitionContainer_Description);
 		}
 
 		@Override

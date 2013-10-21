@@ -112,8 +112,8 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		public String getLabel(Object context) {
 			Object object = adopt(context);
 			if (object instanceof DataInputAssociation)
-				return "Source";
-			return "Target";
+				return Messages.DataAssociationPropertiesAdapter_Source;
+			return Messages.DataAssociationPropertiesAdapter_Target;
 		}
 
 		@Override
@@ -124,11 +124,11 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			// DataStores are contained in the DocumentRoot
 			DataAssociation association = adopt(context);
 			EObject container = ModelUtil.getContainer(association);
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(container, "dataStore", new Class[] {DocumentRoot.class}) );
-			values.addAll( ModelUtil.collectAncestorObjects(container, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class}));
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) ); //$NON-NLS-1$
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) ); //$NON-NLS-1$
+			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) ); //$NON-NLS-1$
+			values.addAll( ModelUtil.collectAncestorObjects(container, "dataStore", new Class[] {DocumentRoot.class}) ); //$NON-NLS-1$
+			values.addAll( ModelUtil.collectAncestorObjects(container, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class})); //$NON-NLS-1$
 			
 			Activity activity = (Activity)ModelUtil.findNearestAncestor(container, new Class[] {Activity.class});
 			if (activity!=null) {
@@ -188,14 +188,14 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 						container = ModelUtil.findNearestAncestor(association, new Class[] {Event.class});
 					if (container==null)
 						container = ModelUtil.findNearestAncestor(association, new Class[] {Process.class});
-					containerFeature = container.eClass().getEStructuralFeature("properties");
+					containerFeature = container.eClass().getEStructuralFeature("properties"); //$NON-NLS-1$
 				}
 			}
 			else if (value instanceof DataStore) {
 				if (((DataStore)value).eContainer()==null) {
 					// this DataStore isn't owned by anything yet - figure out who the owner is
 					container = ModelUtil.findNearestAncestor(association, new Class[] {DocumentRoot.class});
-					containerFeature = container.eClass().getEStructuralFeature("dataStore");
+					containerFeature = container.eClass().getEStructuralFeature("dataStore"); //$NON-NLS-1$
 				}
 			}
 			else if (value instanceof String) {
@@ -213,12 +213,12 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 						container = ModelUtil.findNearestAncestor(container, new Class[] {Activity.class, Event.class, Process.class});
 						if (container==null)
 							return;
-						containerFeature = container.eClass().getEStructuralFeature("properties");
+						containerFeature = container.eClass().getEStructuralFeature("properties"); //$NON-NLS-1$
 						if (modelEnablement.isEnabled(container.eClass(), containerFeature))
 							break;
 					}
 						
-					containerFeature = container.eClass().getEStructuralFeature("properties");
+					containerFeature = container.eClass().getEStructuralFeature("properties"); //$NON-NLS-1$
 					property = Bpmn2ModelerFactory.create(Property.class);
 					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(property);
 					adapter.getObjectDescriptor().setDisplayName((String)value);

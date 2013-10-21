@@ -76,7 +76,7 @@ public class ResourceParameterBindingDetailComposite extends DefaultDetailCompos
 						Expression.class, this, SWT.NONE);
 			}
 			exprDetails.setBusinessObject(expr);
-			exprDetails.setTitle("Parameter Expression");
+			exprDetails.setTitle(Messages.ResourceParameterBindingDetailComposite_Expression_Label);
 		}
 	}
 

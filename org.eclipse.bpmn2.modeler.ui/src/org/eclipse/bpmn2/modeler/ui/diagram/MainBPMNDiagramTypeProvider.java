@@ -41,11 +41,11 @@ public class MainBPMNDiagramTypeProvider extends AbstractDiagramTypeProvider {
 			BPMNToolBehaviorProvider provider = null;
 			try {
 				for (IConfigurationElement e : config) {
-					if (e.getName().equals("toolProvider")) {
-						String id = e.getAttribute("id");
-						String runtimeId = e.getAttribute("runtimeId");
+					if (e.getName().equals("toolProvider")) { //$NON-NLS-1$
+						String id = e.getAttribute("id"); //$NON-NLS-1$
+						String runtimeId = e.getAttribute("runtimeId"); //$NON-NLS-1$
 						if (rt!=null && rt.getId().equals(runtimeId)) {
-							String className = e.getAttribute("class");
+							String className = e.getAttribute("class"); //$NON-NLS-1$
 							ClassLoader cl = rt.getRuntimeExtension().getClass().getClassLoader();
 							Constructor ctor = null;
 							Class providerClass = Class.forName(className, true, cl);

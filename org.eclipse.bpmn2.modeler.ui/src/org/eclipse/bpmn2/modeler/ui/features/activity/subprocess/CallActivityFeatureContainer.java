@@ -24,7 +24,6 @@ import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.GlobalTask;
 import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
@@ -36,7 +35,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.DeleteActivityFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.MorphActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -71,8 +69,8 @@ import org.eclipse.graphiti.services.IPeService;
 public class CallActivityFeatureContainer extends AbstractActivityFeatureContainer {
 
 	private static final int MARKER_OFFSET = 4;
-	private static final String CALL_ACTIVITY_REF_PROPERTY = "call.activity.ref";
-	private static final String GLOBAL_TASK_SHAPE_PROPERTY = "global.task.shape";
+	private static final String CALL_ACTIVITY_REF_PROPERTY = "call.activity.ref"; //$NON-NLS-1$
+	private static final String GLOBAL_TASK_SHAPE_PROPERTY = "global.task.shape"; //$NON-NLS-1$
 
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -210,7 +208,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		// editor to display its contents.
 		
 		public CreateCallActivityFeature(IFeatureProvider fp) {
-			super(fp, "Call Activity", "Create "+"Call Activity");
+			super(fp, Messages.CallActivityFeatureContainer_Name, Messages.CallActivityFeatureContainer_Description);
 		}
 
 		@Override
@@ -302,7 +300,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 
 	private String getCallableElementStringValue(CallableElement element) {
 		if (element == null) {
-			return "null";
+			return "null"; //$NON-NLS-1$
 		}
 		return element.getClass().getSimpleName();
 	}

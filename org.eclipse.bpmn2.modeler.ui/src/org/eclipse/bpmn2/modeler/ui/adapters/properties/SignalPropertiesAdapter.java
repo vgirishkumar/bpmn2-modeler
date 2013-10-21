@@ -39,12 +39,12 @@ public class SignalPropertiesAdapter extends RootElementPropertiesAdapter<Signal
 			@Override
 			public String getDisplayName(Object context) {
 				final Signal signal = adopt(context);
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 				if (signal.getName()!=null) {
 					text += signal.getName();
 				}
 				if (text.isEmpty())
-					text = "ID: " + signal.getId();
+					text = Messages.SignalPropertiesAdapter_ID + signal.getId();
 				return text;
 			}
     	});

@@ -42,7 +42,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 
 			@Override
 			public void setDisplayName(String text) {
-				int i = text.lastIndexOf("/");
+				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
 				text = text.trim();
@@ -58,10 +58,10 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 
 				if (text!=null) {
 					if (dataInput.isIsCollection())
-						text += "[]";
+						text += "[]"; //$NON-NLS-1$
 					String type = ModelUtil.getDisplayName(dataInput.getItemSubjectRef());
 					if (type!=null)
-						text += " (" + type + ")";
+						text += " (" + type + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return text;
 			}
@@ -86,7 +86,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 
 	public static DataInput createDataInput(Resource resource, List<DataInput> dataInputs) {
 	
-		String base = "input";
+		String base = "input"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
 		for (;;) {

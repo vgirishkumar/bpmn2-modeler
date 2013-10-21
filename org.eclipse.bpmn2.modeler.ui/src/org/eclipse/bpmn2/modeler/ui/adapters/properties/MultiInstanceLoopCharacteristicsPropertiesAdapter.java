@@ -105,7 +105,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 			// activity's InputOutputSpecification.
 			if (feature==LOOP_DATA_INPUT_REF || feature==LOOP_DATA_OUTPUT_REF) {
 				Activity container = (Activity)ModelUtil.getContainer(loopCharacteristics);
-				EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification");
+				EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 				if (f!=null) {
 					InputOutputSpecification ioSpecification = (InputOutputSpecification)container.eGet(f);
 					if (ioSpecification==null) {
@@ -130,7 +130,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 			if (feature == LOOP_DATA_INPUT_REF || feature == LOOP_DATA_OUTPUT_REF) {
 //				if (container instanceof Task)
 				{
-					EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification");
+					EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 					if (f!=null) {
 						InputOutputSpecification ioSpecification = (InputOutputSpecification)container.eGet(f);
 						if (ioSpecification!=null) {
@@ -145,7 +145,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 				if (container instanceof SubProcess) {
 					// Collect all DataObjects from Process and SubProcess ancestors
 					// DataObjects are FlowElements, so we will have to weed those out from other FlowElements.
-					List<EObject> flowElements = ModelUtil.collectAncestorObjects(loopCharacteristics, "flowElements", new Class[] {Process.class, SubProcess.class});
+					List<EObject> flowElements = ModelUtil.collectAncestorObjects(loopCharacteristics, "flowElements", new Class[] {Process.class, SubProcess.class}); //$NON-NLS-1$
 					for (EObject fe : flowElements) {
 						if (fe instanceof DataObjectReference) {
 							fe = ((DataObjectReference)fe).getDataObjectRef();

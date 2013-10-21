@@ -53,7 +53,7 @@ public class DataInputsListComposite extends DefaultListComposite {
 			throwEvent.setInputSet(inputSet);
 		}
 		// generate a unique parameter name
-		String base = "inParam";
+		String base = "inParam"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
 		for (;;) {

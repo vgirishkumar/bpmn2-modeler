@@ -303,8 +303,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		PropertiesCompositeFactory.register(Task.class, TaskDetailComposite.class);
 	}
 
-	public static final String EDITOR_ID = "org.eclipse.bpmn2.modeler.ui.bpmn2editor";
-	public static final String CONTRIBUTOR_ID = "org.eclipse.bpmn2.modeler.ui.PropertyContributor";
+	public static final String EDITOR_ID = "org.eclipse.bpmn2.modeler.ui.bpmn2editor"; //$NON-NLS-1$
+	public static final String CONTRIBUTOR_ID = "org.eclipse.bpmn2.modeler.ui.PropertyContributor"; //$NON-NLS-1$
 
 	private ModelHandler modelHandler;
 	private URI modelUri;
@@ -396,7 +396,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		modelUri = FileService.getInputUri(input);
 		if (modelUri==null)
-			throw new PartInitException("Can't create BPMN2Editor Input");
+			throw new PartInitException(Messages.BPMN2Editor_Cannot_Create_Editor_Input);
 		input = BPMN2DiagramCreator.createDiagram(input, modelUri, diagramType,targetNamespace,this);
 		diagramUri = ((Bpmn2DiagramEditorInput)input).getUri();
 
@@ -483,7 +483,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	}
 	
 	protected DiagramEditorInput convertToDiagramEditorInput(IEditorInput input) throws PartInitException {
-		IEditorInput newInput = createNewDiagramEditorInput(input, Bpmn2DiagramType.NONE, "");
+		IEditorInput newInput = createNewDiagramEditorInput(input, Bpmn2DiagramType.NONE, ""); //$NON-NLS-1$
 		if (newInput==null)
 			newInput = super.convertToDiagramEditorInput(input);
 		return (DiagramEditorInput) newInput;
@@ -793,7 +793,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		if (required==ITabDescriptorProvider.class) {
 			if (tabDescriptorProvider==null) {
 				IWorkbenchPage page = getEditorSite().getPage();
-				String viewID = "org.eclipse.ui.views.PropertySheet";
+				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
 				try {
 					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
 					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
@@ -1238,7 +1238,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	public static IEditorPart openEditor(URI modelURI) {
 		IEditorPart part = null;
 		try {
-			Bpmn2DiagramEditorInput input = BPMN2DiagramCreator.createDiagram(modelURI, Bpmn2DiagramType.NONE, "");
+			Bpmn2DiagramEditorInput input = BPMN2DiagramCreator.createDiagram(modelURI, Bpmn2DiagramType.NONE, ""); //$NON-NLS-1$
 			part = BPMN2DiagramCreator.openEditor(input);
 		}
 		catch (Exception e) {

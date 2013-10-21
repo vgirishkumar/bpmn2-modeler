@@ -151,7 +151,7 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		peService.setPropertyValue(choreographyContainer, PARTICIPANT_REF_IDS,
 				ChoreographyUtil.getParticipantRefIds(choreography));
 		Participant initiatingParticipant = choreography.getInitiatingParticipantRef();
-		String id = initiatingParticipant == null ? "null" : initiatingParticipant.getId();
+		String id = initiatingParticipant == null ? "null" : initiatingParticipant.getId(); //$NON-NLS-1$
 		peService.setPropertyValue(choreographyContainer, INITIATING_PARTICIPANT_REF, id);
 	}
 

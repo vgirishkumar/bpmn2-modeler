@@ -51,7 +51,7 @@ public class ResourceRolePropertiesAdapter extends ExtendedPropertiesAdapter<Res
 								ExtendedPropertiesAdapter.adapt(rae);
 						return adapter.getObjectDescriptor().getDisplayName(rae);
 					}
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 
 				@Override

@@ -95,7 +95,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 						for (DataState s : states) {
 							String label = s.getName();
 							if (label==null || label.isEmpty())
-								label = "ID: " + s.getId();
+								label = Messages.ItemAwareElementPropertiesAdapter_ID + s.getId();
 //							else
 //								label += " (ID: " +  s.getId() + ")";
 							choices.put(label,s);

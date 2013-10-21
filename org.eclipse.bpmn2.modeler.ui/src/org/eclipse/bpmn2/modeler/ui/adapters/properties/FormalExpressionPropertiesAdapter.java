@@ -72,7 +72,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 					FormalExpression expression = adopt(context);
 					String body = ModelUtil.getExpressionBody(expression);
 					if (body==null)
-						return "";
+						return ""; //$NON-NLS-1$
 					return body;
 	    		}
 	    		
@@ -80,8 +80,8 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 				public String getLabel(Object context) {
 					FormalExpression expression = adopt(context);
 					if (expression.eContainer() instanceof SequenceFlow)
-						return "Constraint";
-					return "Script";
+						return Messages.FormalExpressionPropertiesAdapter_Constraint;
+					return Messages.FormalExpressionPropertiesAdapter_Script;
 				}
 
 				@Override
@@ -99,7 +99,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     		new FeatureDescriptor<FormalExpression>(adapterFactory,object,language) {
 				@Override
 				public String getLabel(Object context) {
-					return "Script Language";
+					return Messages.FormalExpressionPropertiesAdapter_Script_Language;
 				}
 	
 				@Override

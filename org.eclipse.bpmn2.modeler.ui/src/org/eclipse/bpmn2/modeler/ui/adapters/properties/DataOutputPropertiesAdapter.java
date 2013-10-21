@@ -42,7 +42,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 
 			@Override
 			public void setDisplayName(String text) {
-				int i = text.lastIndexOf("/");
+				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
 				text = text.trim();
@@ -58,10 +58,10 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 
 				if (text!=null) {
 					if (dataOutput.isIsCollection())
-						text += "[]";
+						text += "[]"; //$NON-NLS-1$
 					String type = ModelUtil.getDisplayName(dataOutput.getItemSubjectRef());
 					if (type!=null)
-						text += " (" + type + ")";
+						text += " (" + type + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return text;
 			}
@@ -86,7 +86,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 
 	public static DataOutput createDataOutput(Resource resource, List<DataOutput> dataOutputs) {
 	
-		String base = "output";
+		String base = "output"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
 		for (;;) {

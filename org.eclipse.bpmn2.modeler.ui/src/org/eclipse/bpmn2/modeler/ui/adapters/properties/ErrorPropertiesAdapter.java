@@ -39,15 +39,15 @@ public class ErrorPropertiesAdapter extends RootElementPropertiesAdapter<Error> 
 			@Override
 			public String getDisplayName(Object context) {
 				final Error error = adopt(context);
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 				if (error.getName()!=null) {
 					text += error.getName();
 				}
 				else if (error.getErrorCode()!=null) {
-					text += "Error Code: " + error.getErrorCode();
+					text += Messages.ErrorPropertiesAdapter_Error_Code + error.getErrorCode();
 				}
 				if (text.isEmpty())
-					text = "ID: " + error.getId();
+					text = Messages.ErrorPropertiesAdapter_ID + error.getId();
 				return text;
 			}
     	});

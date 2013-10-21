@@ -93,7 +93,7 @@ public class MessageEventDefinitionContainer extends AbstractEventDefinitionFeat
 	public static class CreateMessageEventDefinition extends AbstractCreateEventDefinitionFeature<MessageEventDefinition> {
 
 		public CreateMessageEventDefinition(IFeatureProvider fp) {
-			super(fp, "Message Event Definition", "Create "+"Message Event Definition");
+			super(fp, Messages.MessageEventDefinitionContainer_Name, Messages.MessageEventDefinitionContainer_Description);
 		}
 
 		@Override

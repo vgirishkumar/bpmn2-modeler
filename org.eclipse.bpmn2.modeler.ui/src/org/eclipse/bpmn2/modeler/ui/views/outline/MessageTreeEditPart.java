@@ -46,9 +46,9 @@ public class MessageTreeEditPart extends AbstractGraphicsTreeEditPart {
 		if (getParent() instanceof OperationTreeEditPart) {
 			Operation operation = ((OperationTreeEditPart)getParent()).getOperation();
 			if (operation.getInMessageRef()==message)
-				return PropertyUtil.getImage("InMessage");
+				return PropertyUtil.getImage("InMessage"); //$NON-NLS-1$
 			if (operation.getOutMessageRef()==message)
-				return PropertyUtil.getImage("OutMessage");
+				return PropertyUtil.getImage("OutMessage"); //$NON-NLS-1$
 		}
 		return super.getImage();
 	}

@@ -48,7 +48,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 		super(detailComposite, DEFAULT_STYLE);
 		this.ioFeature = ioFeature;
 		this.ioSpecification = ioSpecification;
-		isInput = ("dataInputs".equals(ioFeature.getName()));
+		isInput = ("dataInputs".equals(ioFeature.getName())); //$NON-NLS-1$
 		if (container instanceof Activity) {
 			this.activity = (Activity)container;
 			columnProvider = new ListCompositeColumnProvider(this);
@@ -58,19 +58,19 @@ public class IoParametersListComposite extends DefaultListComposite {
 			EStructuralFeature f;
 			if (isInput) {
 				f = PACKAGE.getActivity_DataInputAssociations();
-				columnProvider.add(new IoParameterMappingColumn(activity,f)).setHeaderText("From");
+				columnProvider.add(new IoParameterMappingColumn(activity,f)).setHeaderText(Messages.IoParametersListComposite_From_Header);
 
-				f = (EAttribute)listItemClass.getEStructuralFeature("name");
-				columnProvider.add(new IoParameterNameColumn(activity,f)).setHeaderText("To");
+				f = (EAttribute)listItemClass.getEStructuralFeature("name"); //$NON-NLS-1$
+				columnProvider.add(new IoParameterNameColumn(activity,f)).setHeaderText(Messages.IoParametersListComposite_To_Header);
 
 				columnProvider.add(new TableColumn(activity,PACKAGE.getDataInput_IsCollection()));
 			}
 			else {
-				f = (EAttribute)listItemClass.getEStructuralFeature("name");
-				columnProvider.add(new IoParameterNameColumn(activity,f)).setHeaderText("From");
+				f = (EAttribute)listItemClass.getEStructuralFeature("name"); //$NON-NLS-1$
+				columnProvider.add(new IoParameterNameColumn(activity,f)).setHeaderText(Messages.IoParametersListComposite_From_Header);
 
 				f = PACKAGE.getActivity_DataOutputAssociations();
-				columnProvider.add(new IoParameterMappingColumn(activity,f)).setHeaderText("To");
+				columnProvider.add(new IoParameterMappingColumn(activity,f)).setHeaderText(Messages.IoParametersListComposite_To_Header);
 
 				columnProvider.add(new TableColumn(activity,PACKAGE.getDataOutput_IsCollection()));
 			}

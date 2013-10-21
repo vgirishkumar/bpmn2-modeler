@@ -75,14 +75,14 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		public void createBindings(EObject be) {
 
 			bindDescription(be);
-			bindAttribute(be,"id");
-			bindAttribute(be,"name");
-			bindList(be, "documentation");
+			bindAttribute(be,"id"); //$NON-NLS-1$
+			bindAttribute(be,"name"); //$NON-NLS-1$
+			bindList(be, "documentation"); //$NON-NLS-1$
 			redrawPage();
 		}
 
 		protected boolean isModelObjectEnabled(String className, String featureName) {
-			if (featureName!=null && "name".equals(featureName))
+			if (featureName!=null && "name".equals(featureName)) //$NON-NLS-1$
 					return true;
 			return super.isModelObjectEnabled(className,featureName);
 		}

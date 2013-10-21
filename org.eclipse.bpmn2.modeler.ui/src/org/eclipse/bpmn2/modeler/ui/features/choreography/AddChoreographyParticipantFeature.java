@@ -80,12 +80,12 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getName() {
-	    return "Add Participant";
+	    return Messages.AddChoreographyParticipantFeature_Name;
 	}
 	
 	@Override
 	public String getDescription() {
-	    return "Add a new Participant to this Choreography Task";
+	    return Messages.AddChoreographyParticipantFeature_Description;
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 				Participant participant = null;
 				List<Participant> participantList = new ArrayList<Participant>();
 				participant = Bpmn2ModelerFactory.create(Participant.class);
-				participant.setName("New Participant");
+				participant.setName(Messages.AddChoreographyParticipantFeature_New_Participant);
 				ModelUtil.setID(participant, task.eResource());
 				
 				participantList.add(participant);

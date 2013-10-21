@@ -126,12 +126,12 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	
 				if (be instanceof Participant) {
 					providedInterfacesTable = new ProvidedInterfaceListComposite(this);
-					providedInterfacesTable.bindList(be, getFeature(be, "interfaceRefs"));
+					providedInterfacesTable.bindList(be, getFeature(be, "interfaceRefs")); //$NON-NLS-1$
 				}
 				else if (be instanceof CallableElement) {
 					CallableElement ce = (CallableElement)be;
 					providedInterfacesTable = new ProvidedInterfaceListComposite(this);
-					providedInterfacesTable.bindList(be, getFeature(be, "supportedInterfaceRefs"));
+					providedInterfacesTable.bindList(be, getFeature(be, "supportedInterfaceRefs")); //$NON-NLS-1$
 				}
 			}
 		}
@@ -175,7 +175,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 				tc.setEditable(false);
 				
 				tc = new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
-				columnProvider.add(tc).setHeaderText("Implementation");
+				columnProvider.add(tc).setHeaderText("Implementation"); //$NON-NLS-1$
 				tc.setEditable(false);
 			}
 			return columnProvider;
@@ -196,9 +196,9 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		public void bindList(final EObject theobject, final EStructuralFeature thefeature) {
 			super.bindList(theobject, thefeature);
 			if (theobject instanceof Participant)
-				setTitle("Interfaces Provided by Participant");
+				setTitle(Messages.InterfacePropertySection_Participant_Title);
 			else if (theobject instanceof CallableElement)
-				setTitle("Interfaces Provided by Process");
+				setTitle(Messages.InterfacePropertySection_Process_Title);
 		}
 		
 		@Override
@@ -267,8 +267,8 @@ public class InterfacePropertySection extends DefaultPropertySection {
 					}
 					
 				});
-				dialog.setTitle("Interfaces");
-				dialog.setMessage("Select the Interface provided by this Process");
+				dialog.setTitle(Messages.InterfacePropertySection_Interfaces_Title);
+				dialog.setMessage(Messages.InterfacePropertySection_Interfaces_Message);
 				dialog.setAddCancelButton(true);
 				dialog.setHelpAvailable(false);
 				dialog.setInput(new Object());
@@ -281,9 +281,8 @@ public class InterfacePropertySection extends DefaultPropertySection {
 				iface = items.get(0);
 			}
 			else {
-				MessageDialog.openInformation(getShell(), "No Defined Interfaces",
-						"There are no new Interfaces to add.\n"+
-						"Please create a new Interface in the \"Defined Interfaces\" first."
+				MessageDialog.openInformation(getShell(), Messages.InterfacePropertySection_No_Interfaces_Error_Title,
+						Messages.InterfacePropertySection_No_Interfaces_Error_Message
 				);
 			}
 			

@@ -94,27 +94,27 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"anyAttribute",
-						"calledElementRef", // only used in CallActivity
-						"calledChoreographyRef", // only used in CallChoreography
-						"calledCollaborationRef", // only used in CallConversation
-						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask
-						"operationRef", // SendTask, ReceiveTask, ServiceTask
-						"messageRef", // SendTask, ReceiveTask
-						"instantiate", // ReceiveTask
-						"isForCompensation",
-						"script", "scriptFormat", // ScriptTask
-						"triggeredByEvent",
-						"cancelRemainingInstances",
-						"properties",
-						"resources",
-						"method",
-						"ordering",
-						"protocol",
+						"anyAttribute", //$NON-NLS-1$
+						"calledElementRef", // only used in CallActivity //$NON-NLS-1$
+						"calledChoreographyRef", // only used in CallChoreography //$NON-NLS-1$
+						"calledCollaborationRef", // only used in CallConversation //$NON-NLS-1$
+						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask //$NON-NLS-1$
+						"operationRef", // SendTask, ReceiveTask, ServiceTask //$NON-NLS-1$
+						"messageRef", // SendTask, ReceiveTask //$NON-NLS-1$
+						"instantiate", // ReceiveTask //$NON-NLS-1$
+						"isForCompensation", //$NON-NLS-1$
+						"script", "scriptFormat", // ScriptTask //$NON-NLS-1$ //$NON-NLS-2$
+						"triggeredByEvent", //$NON-NLS-1$
+						"cancelRemainingInstances", //$NON-NLS-1$
+						"properties", //$NON-NLS-1$
+						"resources", //$NON-NLS-1$
+						"method", //$NON-NLS-1$
+						"ordering", //$NON-NLS-1$
+						"protocol", //$NON-NLS-1$
 						//"startQuantity", // these are "Advanced" features and should be used
 						//"completionQuantity", // with caution, according to the BPMN 2.0 spec
-						"completionCondition",
-						"loopCharacteristics",
+						"completionCondition", //$NON-NLS-1$
+						"loopCharacteristics", //$NON-NLS-1$
 				};
 				
 				@Override
@@ -127,7 +127,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
-		if ("implementation".equals(attribute.getName())) {
+		if ("implementation".equals(attribute.getName())) { //$NON-NLS-1$
 			ObjectEditor editor = new ServiceImplementationObjectEditor(this,object,attribute);
 			editor.createControl(parent,label);
 		}
@@ -139,13 +139,13 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		if (!isModelObjectEnabled(object.eClass(), reference))
 			return;
 		
-		if ("loopCharacteristics".equals(reference.getName())) {
+		if ("loopCharacteristics".equals(reference.getName())) { //$NON-NLS-1$
 			final Activity activity = (Activity) businessObject;
 			LoopCharacteristics loopCharacteristics = (LoopCharacteristics) activity.getLoopCharacteristics();
 				
 			Composite composite = getAttributesParent();
 
-			createLabel(composite, "Loop Characteristics:");
+			createLabel(composite, Messages.ActivityDetailComposite_Loop_Characteristics_Label);
 			
 			Composite buttonComposite = toolkit.createComposite(composite);
 			buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -153,7 +153,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			layout.marginWidth = 20;
 			buttonComposite.setLayout(layout);
 			
-			noneButton = toolkit.createButton(buttonComposite, "None", SWT.RADIO);
+			noneButton = toolkit.createButton(buttonComposite, Messages.ActivityDetailComposite_None, SWT.RADIO);
 			noneButton.setSelection(loopCharacteristics == null);
 			noneButton.addSelectionListener(new SelectionAdapter() {
 				
@@ -173,7 +173,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				}
 			});
 			
-			addStandardLoopButton = toolkit.createButton(buttonComposite, "Standard", SWT.RADIO);
+			addStandardLoopButton = toolkit.createButton(buttonComposite, Messages.ActivityDetailComposite_Standard, SWT.RADIO);
 			addStandardLoopButton.setSelection(loopCharacteristics instanceof StandardLoopCharacteristics);
 			addStandardLoopButton.addSelectionListener(new SelectionAdapter() {
 				
@@ -193,7 +193,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				}
 			});
 
-			addMultiLoopButton = toolkit.createButton(buttonComposite, "Multi-Instance", SWT.RADIO);
+			addMultiLoopButton = toolkit.createButton(buttonComposite, Messages.ActivityDetailComposite_MultiInstance, SWT.RADIO);
 			addMultiLoopButton.setSelection(loopCharacteristics instanceof MultiInstanceLoopCharacteristics);
 			addMultiLoopButton.addSelectionListener(new SelectionAdapter() {
 				
@@ -219,7 +219,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				loopCharacteristicsComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 				loopCharacteristicsComposite.setBusinessObject(loopCharacteristics);
 				loopCharacteristicsComposite.setTitle(loopCharacteristics instanceof StandardLoopCharacteristics ?
-						"Standard Loop Characteristics" : "Multi-Instance Loop Characteristics");
+						Messages.ActivityDetailComposite_Standard_Loop_Characteristics_Label : Messages.ActivityDetailComposite_MultiInstance_Loop_Characteristics_Label);
 			}
 			else if (loopCharacteristicsComposite!=null) {
 				loopCharacteristicsComposite.dispose();
@@ -227,7 +227,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 
 		}
-		else if ("calledElementRef".equals(reference.getName())) {
+		else if ("calledElementRef".equals(reference.getName())) { //$NON-NLS-1$
 			// Handle CallActivity.calledElementRef
 			//
 			String displayName = getPropertiesProvider().getLabel(object, reference);
@@ -244,7 +244,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			};
 			editor.createControl(parent,displayName);
 		}
-		else if ("calledChoreographyRef".equals(reference.getName())) {
+		else if ("calledChoreographyRef".equals(reference.getName())) { //$NON-NLS-1$
 			// Handle CallChoreography.calledChoreographyRef
 			//
 			// FIXME: This section should really be in a different detail composite class.
@@ -264,7 +264,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			};
 			editor.createControl(parent,displayName);
 		}
-		else if ("calledCollaborationRef".equals(reference.getName())) {
+		else if ("calledCollaborationRef".equals(reference.getName())) { //$NON-NLS-1$
 			// Handle CallConversation.calledCollaborationRef
 			//
 			// FIXME: This section should really be in a different detail composite class.
@@ -284,7 +284,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			};
 			editor.createControl(parent,displayName);
 		}
-		else if ("operationRef".equals(reference.getName())) {
+		else if ("operationRef".equals(reference.getName())) { //$NON-NLS-1$
 			// Handle ServiceTask.operationRef
 			final Activity serviceTask = (Activity)object;
 			final String displayName = getPropertiesProvider().getLabel(object, reference);
@@ -497,7 +497,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				// display the "From" association widgets
 				inputComposite.setVisible(true);
 				inputComposite.setBusinessObject(input);
-				inputComposite.getFromGroup().setText("Map Outgoing Message Data From:");
+				inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
 			}
 			else
 				inputComposite.setVisible(false);
@@ -505,7 +505,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			if (operation.getOutMessageRef()!=null) {
 				outputComposite.setVisible(true);
 				outputComposite.setBusinessObject(output);
-				outputComposite.getToGroup().setText("Map Incoming Message Data To:");
+				outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
 			}
 			else
 				outputComposite.setVisible(false);

@@ -66,14 +66,14 @@ public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
 			@Override
 			public void buildContextMenu(IMenuManager manager) {
 				super.buildContextMenu(manager);
-				IAction action = getDiagramContainer().getActionRegistry().getAction("show.or.hide.source.view");
+				IAction action = getDiagramContainer().getActionRegistry().getAction("show.or.hide.source.view"); //$NON-NLS-1$
 				action.setText(action.getText());
 				manager.add(action);
 
 				int pageIndex = bpmn2Editor.getMultipageEditor().getActivePage();
 				int lastPage = bpmn2Editor.getMultipageEditor().getDesignPageCount();
 				if (pageIndex > 0 && pageIndex < lastPage) {
-					action = getDiagramContainer().getActionRegistry().getAction("delete.page");
+					action = getDiagramContainer().getActionRegistry().getAction("delete.page"); //$NON-NLS-1$
 					action.setText(action.getText());
 					action.setEnabled(action.isEnabled());
 					manager.add(action);

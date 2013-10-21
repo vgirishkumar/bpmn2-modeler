@@ -119,17 +119,17 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 			EObject o = (EObject)getModel();
 			text = getText(o);
 		}
-		return text == null ? "" : text;
+		return text == null ? "" : text; //$NON-NLS-1$
 	}
 	
 	protected String getText(EObject o) {
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		if (o!=null) {
 			text = labelProvider.getText(o);
 			if (text==null) {
 				text = ModelUtil.getDisplayName(o);
 				if (text==null || text.isEmpty()) {
-					EStructuralFeature f = o.eClass().getEStructuralFeature("id");
+					EStructuralFeature f = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 					if (f!=null)
 						text = o.eGet(f).toString();
 				}

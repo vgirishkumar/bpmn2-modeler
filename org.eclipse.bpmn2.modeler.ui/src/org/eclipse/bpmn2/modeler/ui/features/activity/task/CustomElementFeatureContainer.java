@@ -55,7 +55,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
 			return customTaskDescriptor.getDescription();
-		return "Custom Task";
+		return Messages.CustomElementFeatureContainer_Description;
 	}
 
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {

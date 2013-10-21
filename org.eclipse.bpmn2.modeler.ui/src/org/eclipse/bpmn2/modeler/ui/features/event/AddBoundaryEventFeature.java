@@ -39,7 +39,7 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<BoundaryEvent> {
 
-	public static final String BOUNDARY_EVENT_RELATIVE_Y = "boundary.event.relative.y";
+	public static final String BOUNDARY_EVENT_RELATIVE_Y = "boundary.event.relative.y"; //$NON-NLS-1$
 
 	private final IPeService peService = Graphiti.getPeService();
 	private final IGaService gaService = Graphiti.getGaService();

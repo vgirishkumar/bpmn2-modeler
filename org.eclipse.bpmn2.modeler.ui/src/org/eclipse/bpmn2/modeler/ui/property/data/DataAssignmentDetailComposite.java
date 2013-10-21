@@ -87,14 +87,14 @@ public class DataAssignmentDetailComposite extends DefaultDetailComposite {
 						Expression.class, this, SWT.NONE);
 			}
 			toDetails.setBusinessObject(toExp);
-			toDetails.setTitle("To Expression");
+			toDetails.setTitle(Messages.DataAssignmentDetailComposite_From_Title);
 	
 			if (fromDetails==null) {
 				fromDetails = PropertiesCompositeFactory.createDetailComposite(
 						Expression.class, this, SWT.NONE);
 			}
 			fromDetails.setBusinessObject(fromExp);
-			fromDetails.setTitle("From Expression");
+			fromDetails.setTitle(Messages.DataAssignmentDetailComposite_To_Title);
 		}
 	}
 }

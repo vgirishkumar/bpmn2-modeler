@@ -71,6 +71,7 @@ import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
@@ -78,7 +79,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	public static final int ENVELOPE_WIDTH = 30;
 	public static final int ENVELOPE_HEIGHT = 20;
-	public static final String IS_REFERENCE = "is.reference";
+	public static final String IS_REFERENCE = "is.reference"; //$NON-NLS-1$
 
 	@Override
 	public Object getApplyObject(IContext context) {
@@ -288,7 +289,8 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			public String getText(Object element) {
 				if (((Message) element).getId() == null)
 					return ((Message) element).getName();
-				return "Copy of existing \"" + ((Message) element).getName() + "\"";
+				return NLS.bind(
+					Messages.MessageFeatureContainer_Default_Name, ((Message) element).getName());
 			}
 
 			public Image getImage(Object element) {
@@ -298,7 +300,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		};
 
 		public CreateMessageFeature(IFeatureProvider fp) {
-			super(fp, "Message", "Create "+"Message");
+			super(fp, Messages.MessageFeatureContainer_Name, Messages.MessageFeatureContainer_Description);
 		}
 
 		@Override
@@ -321,7 +323,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			Message message = null;
 			message = Bpmn2ModelerFactory.create(Message.class);
 			String oldName = message.getName();
-			message.setName("Create a new Message");
+			message.setName(Messages.MessageFeatureContainer_New);
 			message.setId(null);
 			EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
 			Definitions definitions = ModelUtil.getDefinitions(targetBusinessObject);

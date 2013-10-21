@@ -47,12 +47,12 @@ public class SchemaImportDialog {
 				Activator.UI_EXTENSION_ID);
 		try {
 			for (IConfigurationElement e : config) {
-				if (e.getName().equals("importDialog")) {
-					String id = e.getAttribute("id");
-					String runtimeId = e.getAttribute("runtimeId");
+				if (e.getName().equals("importDialog")) { //$NON-NLS-1$
+					String id = e.getAttribute("id"); //$NON-NLS-1$
+					String runtimeId = e.getAttribute("runtimeId"); //$NON-NLS-1$
 					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 					if (rt!=null && rt.getId().equals(runtimeId)) {
-						delegate = (SelectionStatusDialog)e.createExecutableExtension("class");
+						delegate = (SelectionStatusDialog)e.createExecutableExtension("class"); //$NON-NLS-1$
 						break;
 					}
 				}

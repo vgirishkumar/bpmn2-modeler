@@ -85,6 +85,7 @@ import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
@@ -93,8 +94,8 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 	// the property used to store the current Association's direction;
 	// the value can be one of the AssociationDirection enumerations (a null
 	// or empty string is the same as "None")
-	public static final String ASSOCIATION_DIRECTION = "association.direction";
-	public static final String ARROWHEAD_DECORATOR = "arrowhead.decorator";
+	public static final String ASSOCIATION_DIRECTION = "association.direction"; //$NON-NLS-1$
+	public static final String ARROWHEAD_DECORATOR = "arrowhead.decorator"; //$NON-NLS-1$
 	
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -231,7 +232,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		// allow user to select a dataInput:
 		// create a throw away object as a placeholder in our popup list
 		DataInput dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
-		dataInput.setName("Create new input parameter for "+ModelUtil.getDisplayName(target));
+		dataInput.setName(
+			NLS.bind(
+				Messages.DataAssociationFeatureContainer_New_Input_For,
+				ModelUtil.getDisplayName(target)
+			)
+		);
 		DataInput result = dataInput;
 		// build the popup list
 		List<DataInput> list = new ArrayList<DataInput>();
@@ -294,7 +300,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		// allow user to select a dataOutput:
 		// create a throw away object as a placeholder in our popup list
 		DataOutput dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
-		dataOutput.setName("Create new output parameter for "+ModelUtil.getDisplayName(source));
+		dataOutput.setName(
+			NLS.bind(
+				Messages.DataAssociationFeatureContainer_New_Output_For,
+				ModelUtil.getDisplayName(source)
+			)
+		);
 		DataOutput result = dataOutput;
 		// build the popup list
 		List<DataOutput> list = new ArrayList<DataOutput>();
@@ -359,8 +370,11 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			ItemAwareElement element = (ItemAwareElement) object;
 			if (element.getId()==null)
 				return ModelUtil.getDisplayName(object);
-			String text = "Use \"" + ModelUtil.getDisplayName(object) + "\"";
-			String mapping = " (unmapped)";
+			String text = NLS.bind(
+				Messages.DataAssociationFeatureContainer_Reference_To,
+				ModelUtil.getDisplayName(object)
+			);
+			String mapping = Messages.DataAssociationFeatureContainer_Unmapped;
 			if (element instanceof DataOutput) {
 				List<DataOutputAssociation> doa = null;
 				if (element.eContainer() instanceof InputOutputSpecification) {
@@ -375,7 +389,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				for (DataOutputAssociation d : doa) {
 					if (d.getSourceRef().contains(element)) {
 						if (d.getTargetRef()!=null) {
-							mapping = " (mapped to " + ModelUtil.getDisplayName(d.getTargetRef()) + ")";
+							mapping = NLS.bind(
+								Messages.DataAssociationFeatureContainer_Mapped_To, ModelUtil.getDisplayName(d.getTargetRef())
+							);
 						}
 						break;
 					}
@@ -395,7 +411,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				for (DataInputAssociation d : dia) {
 					if (d.getTargetRef()==element) {
 						if (d.getSourceRef().size()>0) {
-							mapping = " (mapped to " + ModelUtil.getDisplayName(d.getSourceRef().get(0)) + ")";
+							mapping = NLS.bind(
+								Messages.DataAssociationFeatureContainer_Mapped_To,
+								ModelUtil.getDisplayName(d.getSourceRef().get(0))
+							);
 						}
 						break;
 					}
@@ -413,7 +432,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 	public class CreateDataAssociationFeature extends AbstractCreateFlowFeature<DataAssociation, BaseElement, BaseElement> {
 
 		public CreateDataAssociationFeature(IFeatureProvider fp) {
-			super(fp, "Data Association", "Create "+"Data Association");
+			super(fp, Messages.DataAssociationFeatureContainer_Name, Messages.DataAssociationFeatureContainer_Description);
 		}
 
 		@Override
@@ -521,7 +540,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					Activity activity = (Activity) source;
 					ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
-						ioSpec = Bpmn2ModelerFactory.createFeature(activity, "ioSpecification", InputOutputSpecification.class);
+						ioSpec = Bpmn2ModelerFactory.createFeature(activity, "ioSpecification", InputOutputSpecification.class); //$NON-NLS-1$
 					}
 					if (ioSpec.getOutputSets().size()==0) {
 						outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
@@ -559,7 +578,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					Activity activity = (Activity) target;
 					ioSpec = activity.getIoSpecification();
 					if (ioSpec==null) {
-						ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
+						ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification"); //$NON-NLS-1$
 					}
 					if (ioSpec.getInputSets().size()==0) {
 						inputSet = Bpmn2ModelerFactory.create(InputSet.class);
@@ -643,7 +662,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 	
 	private static String getDirection(DataAssociation businessObject) {
-		return (businessObject instanceof DataInputAssociation) ? "input" : "output";
+		return (businessObject instanceof DataInputAssociation) ? "input" : "output"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private static void setAssociationDirection(Connection connection, DataAssociation businessObject) {
@@ -652,7 +671,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		String newDirection = getDirection(businessObject);
 		String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
 		if (oldDirection==null || oldDirection.isEmpty())
-			oldDirection = "";
+			oldDirection = ""; //$NON-NLS-1$
 
 		if (!oldDirection.equals(newDirection)) {
 			ConnectionDecorator sourceDecorator = null;
@@ -660,9 +679,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			for (ConnectionDecorator d : connection.getConnectionDecorators()) {
 				String s = peService.getPropertyValue(d, ARROWHEAD_DECORATOR);
 				if (s!=null) {
-					if (s.equals("source"))
+					if (s.equals("source")) //$NON-NLS-1$
 						sourceDecorator = d;
-					else if (s.equals("target"))
+					else if (s.equals("target")) //$NON-NLS-1$
 						targetDecorator = d;
 				}
 			}
@@ -677,7 +696,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				targetDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
 				Polyline arrowhead = gaService.createPolyline(targetDecorator, new int[] { -l, w, 0, 0, -l, -w });
 				StyleUtil.applyStyle(arrowhead, businessObject);
-				peService.setPropertyValue(targetDecorator, ARROWHEAD_DECORATOR, "target");
+				peService.setPropertyValue(targetDecorator, ARROWHEAD_DECORATOR, "target"); //$NON-NLS-1$
 			}
 		
 			// update the property value in the Connection PictogramElement
@@ -710,7 +729,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			String newDirection = getDirection(businessObject);
 			String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
 			if (oldDirection==null || oldDirection.isEmpty())
-				oldDirection = "";
+				oldDirection = ""; //$NON-NLS-1$
 
 			if (!oldDirection.equals(newDirection)) {
 				return Reason.createTrueReason();
@@ -787,8 +806,8 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 			catch (RollbackException e) {
 				ErrorDialog.openError(Display.getDefault().getActiveShell(),
-						"Error Commiting Model Changes",
-						"An error occurred while trying to commit changes.", new Status(IStatus.ERROR,
+						Messages.DataAssociationFeatureContainer_Commit_Error_Title,
+						Messages.DataAssociationFeatureContainer_Commit_Error_Message, new Status(IStatus.ERROR,
 								Activator.PLUGIN_ID, e.getMessage(), e));
 			}
 		}
@@ -879,7 +898,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 			else if (oldElement instanceof CatchEvent) {
 				if (isInput)
-					throw new IllegalArgumentException("Invalid Source");
+					throw new IllegalArgumentException(Messages.DataAssociationFeatureContainer_Invalid_Source);
 				else {
 					List<DataOutputAssociation> dataOutputAssociations = ((CatchEvent)oldElement).getDataOutputAssociation();
 					for (DataOutputAssociation doa : dataOutputAssociations) {
@@ -901,7 +920,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					}
 				}
 				else
-					throw new IllegalArgumentException("Invalid Target");
+					throw new IllegalArgumentException(Messages.DataAssociationFeatureContainer_Invalid_Target);
 			}
 			else if (oldElement instanceof ItemAwareElement) {
 				newAssociation = oldAssociation;
@@ -919,7 +938,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				Activity activity = (Activity) newElement;
 				ioSpec = activity.getIoSpecification();
 				if (ioSpec==null) {
-					ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification");
+					ioSpec = (InputOutputSpecification) Bpmn2ModelerFactory.createFeature(activity, "ioSpecification"); //$NON-NLS-1$
 				}
 				if (isInput) {
 					List<DataInput> dataInputs = null;
@@ -963,7 +982,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			}
 			else if (newElement instanceof CatchEvent) {
 				if (isInput)
-					throw new IllegalArgumentException("Invalid Source");
+					throw new IllegalArgumentException(Messages.DataAssociationFeatureContainer_Invalid_Source);
 				else {
 					CatchEvent event = (CatchEvent)newElement;
 					outputSet = event.getOutputSet();
@@ -992,7 +1011,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					}
 				}
 				else
-					throw new IllegalArgumentException("Invalid Target");
+					throw new IllegalArgumentException(Messages.DataAssociationFeatureContainer_Invalid_Target);
 			}
 			else if (newElement instanceof ItemAwareElement) {
 				

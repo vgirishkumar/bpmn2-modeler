@@ -230,7 +230,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			return new String();
 		}
 		Iterator<Participant> iterator = choreography.getParticipantRefs().iterator();
-		String delim = ":";
+		String delim = ":"; //$NON-NLS-1$
 		StringBuilder sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			Participant participant = iterator.next();
@@ -247,7 +247,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			return new String();
 		}
 		Iterator<MessageFlow> iterator = choreography.getMessageFlowRef().iterator();
-		String delim = ":";
+		String delim = ":"; //$NON-NLS-1$
 		StringBuilder sb = new StringBuilder();
 		while (iterator.hasNext()) {
 			MessageFlow message = iterator.next();
@@ -759,7 +759,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		if (flow!=null) {
 			if (flow.getMessageRef()==null && create) {
 				Message msg = Bpmn2ModelerFactory.create(Message.class);
-				msg.setName("Undefined Message");
+				msg.setName(Messages.ChoreographyUtil_Undefined_Message);
 				ModelUtil.getDefinitions(flow).getRootElements().add(msg);
 				flow.setMessageRef(msg);
 				ModelUtil.setID(msg);
@@ -780,7 +780,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			String itemDefinitionName = ModelUtil.getDisplayName(flow.getMessageRef().getItemRef());
 			String text = itemDefinitionName;
 			if (messageName!=null && !messageName.isEmpty())
-				text += "/" + messageName;
+				text += "/" + messageName; //$NON-NLS-1$
 			text = messageName;
 			return text;
 		}
@@ -793,7 +793,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				return mesg.getId();
 			return mesg.getName();
 		} else {
-			String type = "(" + ModelUtil.getDisplayName(mesg.getItemRef()) +")";
+			String type = "(" + ModelUtil.getDisplayName(mesg.getItemRef()) +")"; //$NON-NLS-1$ //$NON-NLS-2$
 			if (mesg.getName()==null)
 				return type; 
 			return mesg.getName() + type;

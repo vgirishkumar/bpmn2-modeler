@@ -116,7 +116,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 					String namespace = operation.getEnclosingDefinition().getTargetNamespace();
 					String prefix = NamespaceUtil.getPrefixForNamespace(resource, namespace);
 					if (prefix!=null && !prefix.isEmpty())
-						text = prefix + ":" + name;
+						text = prefix + ":" + name; //$NON-NLS-1$
 					else
 						text += name;
 				}
@@ -134,7 +134,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 		public EObject createFeature(Resource resource, Object context, EClass eClass) {
 			final T object = adopt(context);
 
-			EObject impl = ModelUtil.createStringWrapper("");
+			EObject impl = ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 			object.eSet(feature,impl);
 			return impl;
 		}
@@ -148,7 +148,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 					return value;
 				return getDisplayName(context);
 			}
-			return ModelUtil.createStringWrapper("");
+			return ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 		}
 
 		@Override

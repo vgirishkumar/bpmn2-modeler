@@ -47,7 +47,7 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
 	    		public String getDisplayName(Object context) {
 	    			GlobalScriptTask task = adopt(context);
 					if (task.getScript()==null)
-						return "";
+						return ""; //$NON-NLS-1$
 					return task.getScript();
 	    		}
     	});
@@ -60,7 +60,7 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
 	    		public String getDisplayName(Object context) {
 	    			GlobalScriptTask task = adopt(context);
 					if (task.getScriptLanguage()==null)
-						return "";
+						return ""; //$NON-NLS-1$
 					return task.getScriptLanguage();
 	    		}
     	});

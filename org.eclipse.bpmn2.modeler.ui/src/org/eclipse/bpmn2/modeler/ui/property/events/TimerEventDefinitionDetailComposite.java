@@ -79,7 +79,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 
 		Composite composite = getAttributesParent();
 
-		Label label = createLabel(composite, "Timer Type");
+		Label label = createLabel(composite, Messages.TimerEventDefinitionDetailComposite_Type);
 		Composite buttonComposite = toolkit.createComposite(composite);
 		buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		FillLayout layout = new FillLayout();
@@ -89,9 +89,9 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 		
 		FormalExpression exp = null;
 		
-		timeDateButton = toolkit.createButton(buttonComposite, "Time/Date", SWT.RADIO);
-		timeCycleButton = toolkit.createButton(buttonComposite, "Interval", SWT.RADIO);
-		timeDurationButton = toolkit.createButton(buttonComposite, "Duration", SWT.RADIO);
+		timeDateButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Time_Date, SWT.RADIO);
+		timeCycleButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Interval, SWT.RADIO);
+		timeDurationButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Duration, SWT.RADIO);
 		
 		if (!isModelObjectEnabled(event.eClass(), PACKAGE.getTimerEventDefinition_TimeDate()))
 			timeDateButton.setVisible(false);
@@ -121,7 +121,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 		}
 			
 		if (ModelUtil.getExpressionBody(exp)==null)
-			exp.setBody("");
+			exp.setBody(""); //$NON-NLS-1$
 		
 		timeValueEditor = new TextObjectEditor(this, exp, PACKAGE.getFormalExpression_Body());
 		
@@ -137,7 +137,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeCycle());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeDate(exp);
-							exp.setBody("");
+							exp.setBody(""); //$NON-NLS-1$
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMEDATE;
 						}
@@ -158,7 +158,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDate());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeCycle(exp);
-							exp.setBody("");
+							exp.setBody(""); //$NON-NLS-1$
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMECYCLE;
 						}
@@ -179,7 +179,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDate());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeCycle());
 							event.setTimeDuration(exp);
-							exp.setBody("");
+							exp.setBody(""); //$NON-NLS-1$
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMEDURATION;
 						}
@@ -188,7 +188,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 			}
 		});
 		
-		timeValueEditor.createControl(composite, "Value");
+		timeValueEditor.createControl(composite, Messages.TimerEventDefinitionDetailComposite_Value);
 	}
 
 }

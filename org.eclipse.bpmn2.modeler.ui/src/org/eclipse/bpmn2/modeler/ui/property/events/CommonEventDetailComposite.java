@@ -74,7 +74,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 			// is added and the Cancel Activity checkbox is hidden.
 			final BoundaryEvent be = (BoundaryEvent) bo;
 			ObjectEditor editor = new TextObjectEditor(this,be, Bpmn2Package.eINSTANCE.getBoundaryEvent_AttachedToRef());
-			Text text = (Text) editor.createControl(getAttributesParent(),"Attached To");
+			Text text = (Text) editor.createControl(getAttributesParent(),Messages.CommonEventDetailComposite_Attached_To_Label);
 			text.setEditable(false);
 		}
 		
@@ -161,13 +161,13 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"isInterrupting",
-						"parallelMultiple",
-						"cancelActivity",
-						"eventDefinitions",
+						"isInterrupting", //$NON-NLS-1$
+						"parallelMultiple", //$NON-NLS-1$
+						"cancelActivity", //$NON-NLS-1$
+						"eventDefinitions", //$NON-NLS-1$
 //						"dataInputs",
 //						"dataOutputs",
-						"properties"
+						"properties" //$NON-NLS-1$
 				};
 				
 				@Override
@@ -183,31 +183,31 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
 		if (object instanceof CatchEvent || object instanceof ThrowEvent) {
 			if (isModelObjectEnabled(object.eClass(), feature)) {
-				if ("eventDefinitions".equals(feature.getName())) {
+				if ("eventDefinitions".equals(feature.getName())) { //$NON-NLS-1$
 					eventsTable = new EventDefinitionsListComposite(this, (Event)object);
 					eventsTable.bindList(object, feature);
-					eventsTable.setTitle("Event Definitions");
+					eventsTable.setTitle(Messages.CommonEventDetailComposite_Event_Definition_Title);
 					return eventsTable;
 				}
-				if ("dataInputs".equals(feature.getName())) {
+				if ("dataInputs".equals(feature.getName())) { //$NON-NLS-1$
 					if (object instanceof ThrowEvent) {
 						ThrowEvent throwEvent = (ThrowEvent)object;
 						inputTable = new DataInputsListComposite(this, throwEvent);
 						inputTable.bindList(object, feature);
-						inputTable.setTitle("Input Parameters");
+						inputTable.setTitle(Messages.CommonEventDetailComposite_Input_Parameters_Title);
 						return inputTable;
 					}
 				}
-				if ("dataOutputs".equals(feature.getName())) {
+				if ("dataOutputs".equals(feature.getName())) { //$NON-NLS-1$
 					if (object instanceof CatchEvent) {
 						CatchEvent catchEvent = (CatchEvent)object;
 						outputTable = new DataOutputsListComposite(this, catchEvent);
 						outputTable.bindList(catchEvent, feature);
-						outputTable.setTitle("Output Parameters");
+						outputTable.setTitle(Messages.CommonEventDetailComposite_Output_Parameters_Title);
 						return outputTable;
 					}
 				}
-				if ("properties".equals(feature.getName())) {
+				if ("properties".equals(feature.getName())) { //$NON-NLS-1$
 					return super.bindList(object, feature, listItemClass);
 				}
 			}

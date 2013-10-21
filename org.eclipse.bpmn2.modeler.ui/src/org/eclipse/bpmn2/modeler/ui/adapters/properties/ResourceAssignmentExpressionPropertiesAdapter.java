@@ -52,7 +52,7 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 						text = ModelUtil.getExpressionBody((FormalExpression)rae.getExpression());
 					}
 					if (text==null)
-						return "";
+						return ""; //$NON-NLS-1$
 					return text;
 				}
 

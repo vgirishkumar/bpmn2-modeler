@@ -35,12 +35,12 @@ public class AppendActivityFeature extends AbstractAppendNodeFeature<Activity> {
 
 	@Override
 	public String getName() {
-		return "Append Activity";
+		return Messages.AppendActivityFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Create a new Activity and connect it to this item";
+		return Messages.AppendActivityFeature_Description;
 	}
 
 	@Override

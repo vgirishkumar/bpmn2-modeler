@@ -39,15 +39,15 @@ public class EscalationPropertiesAdapter extends RootElementPropertiesAdapter<Es
 			@Override
 			public String getDisplayName(Object context) {
 				final Escalation escalation = adopt(context);
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 				if (escalation.getName()!=null) {
 					text += escalation.getName();
 				}
 				else if (escalation.getEscalationCode()!=null) {
-					text += "Escalation Code: " + escalation.getEscalationCode();
+					text += Messages.EscalationPropertiesAdapter_Escalation_Code + escalation.getEscalationCode();
 				}
 				if (text.isEmpty())
-					text = "ID: " + escalation.getId();
+					text = Messages.EscalationPropertiesAdapter_ID + escalation.getId();
 				return text;
 			}
     	});

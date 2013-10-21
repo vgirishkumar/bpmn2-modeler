@@ -100,7 +100,7 @@ public class ErrorEventDefinitionContainer extends AbstractEventDefinitionFeatur
 	public static class CreateErrorEventDefinition extends AbstractCreateEventDefinitionFeature<ErrorEventDefinition> {
 
 		public CreateErrorEventDefinition(IFeatureProvider fp) {
-			super(fp, "Error Event Definition", "Create "+"Error Event Definition");
+			super(fp, Messages.ErrorEventDefinitionContainer_Name, Messages.ErrorEventDefinitionContainer_Description);
 		}
 
 		@Override

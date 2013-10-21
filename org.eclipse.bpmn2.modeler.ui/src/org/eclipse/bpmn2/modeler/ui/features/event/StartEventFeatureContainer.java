@@ -39,7 +39,7 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 
-	static final String INTERRUPTING = "interrupting";
+	static final String INTERRUPTING = "interrupting"; //$NON-NLS-1$
 
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -84,7 +84,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 	public class CreateStartEventFeature extends AbstractCreateEventFeature<StartEvent> {
 
 		public CreateStartEventFeature(IFeatureProvider fp) {
-			super(fp, "Start Event", "Create "+"Start Event");
+			super(fp, Messages.StartEventFeatureContainer_1, Messages.StartEventFeatureContainer_2+Messages.StartEventFeatureContainer_3);
 		}
 
 		@Override
@@ -103,7 +103,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 
 	protected static class UpdateStartEventFeature extends AbstractUpdateEventFeature {
 
-		public static String START_EVENT_MARKER = "marker.start.event";
+		public static String START_EVENT_MARKER = "marker.start.event"; //$NON-NLS-1$
 
 		/**
 		 * @param fp

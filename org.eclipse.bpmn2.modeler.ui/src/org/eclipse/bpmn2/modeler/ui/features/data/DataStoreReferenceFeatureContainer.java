@@ -65,6 +65,7 @@ import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
@@ -219,7 +220,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			public String getText(Object element) {
 				if (((DataStore) element).getId() == null)
 					return ((DataStore) element).getName();
-				return "Reference existing \"" + ((DataStore) element).getName() + "\"";
+				return NLS.bind(Messages.DataStoreReferenceFeatureContainer_Ref, ((DataStore) element).getName());
 			}
 
 			public Image getImage(Object element) {
@@ -229,7 +230,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 		};
 
 		public CreateDataStoreReferenceFeature(IFeatureProvider fp) {
-			super(fp, "Data Store", "Create Data Store");
+			super(fp, Messages.DataStoreReferenceFeatureContainer_Name, Messages.DataStoreReferenceFeatureContainer_Description);
 		}
 
 		@Override
@@ -266,7 +267,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 
 				DataStore dataStore = Bpmn2ModelerFactory.create(DataStore.class);
 				String oldName = dataStore.getName();
-				dataStore.setName("Create a new Data Store");
+				dataStore.setName(Messages.DataStoreReferenceFeatureContainer_New);
 				dataStore.setId(null);
 
 				List<DataStore> dataStoreList = new ArrayList<DataStore>();
@@ -298,7 +299,12 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 						dataStore.setName(oldName);
 						bo.setName(dataStore.getName());
 					} else
-						bo.setName(result.getName() + " Ref");
+						bo.setName(
+							NLS.bind(
+								Messages.DataStoreReferenceFeatureContainer_Default_Name,
+								result.getName()
+							)
+						);
 	
 					bo.setDataStoreRef(result);
 					ModelUtil.setID(bo, mh.getResource());

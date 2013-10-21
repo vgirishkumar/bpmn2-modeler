@@ -269,7 +269,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 				addPage(pageIndex, sourceViewer, input);
 				tabFolder.getItem(pageIndex).setShowClose(true);
 				
-				setPageText(pageIndex,"Source");
+				setPageText(pageIndex,Messages.BPMN2MultiPageEditor_Source_Tab);
 				setActivePage(pageIndex);
 
 				updateTabs();

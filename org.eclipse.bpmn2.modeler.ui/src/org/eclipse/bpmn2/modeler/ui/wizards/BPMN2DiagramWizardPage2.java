@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -57,9 +58,9 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	 * @param pageName
 	 */
 	public BPMN2DiagramWizardPage2(ISelection selection) {
-		super("wizardPage2");
-		setTitle("BPMN2 Diagram File");
-		setDescription("Select file name.");
+		super("wizardPage2"); //$NON-NLS-1$
+		setTitle(Messages.BPMN2DiagramWizardPage2_Title);
+		setDescription(Messages.BPMN2DiagramWizardPage2_Description);
 		this.selection = selection;
 	}
 
@@ -74,7 +75,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 		Label label = new Label(container, SWT.NULL);
-		label.setText("&Location:");
+		label.setText(Messages.BPMN2DiagramWizardPage2_Location_Label);
 
 		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -83,13 +84,13 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 		containerText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				targetNamespaceText.setText("");
+				targetNamespaceText.setText(""); //$NON-NLS-1$
 				dialogChanged(true);
 			}
 		});
 
 		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
+		button.setText(Messages.BPMN2DiagramWizardPage2_Browse_Button);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -97,7 +98,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 			}
 		});
 		label = new Label(container, SWT.NULL);
-		label.setText("&File name:");
+		label.setText(Messages.BPMN2DiagramWizardPage2_File_Name_Label);
 
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		fileText.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 2, 1));
@@ -109,7 +110,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 		});
 
 		label = new Label(container, SWT.NULL);
-		label.setText("&Target Namespace:");
+		label.setText(Messages.BPMN2DiagramWizardPage2_TargetNamespace_Label);
 
 		targetNamespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		targetNamespaceText.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 2, 1));
@@ -127,7 +128,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	}
 
 	private Bpmn2DiagramType getDiagramType() {
-		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1");
+		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1"); //$NON-NLS-1$
 		return page1.getDiagramType();
 	}
 		
@@ -136,37 +137,37 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	 */
 
 	private void updatePageDescription() {
-		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1");
-		String descriptionType = "Unknown Diagram Type";
+		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1"); //$NON-NLS-1$
+		String descriptionType = Messages.BPMN2DiagramWizardPage2_Error_Unknown_Type;
 		switch (page1.getDiagramType()) {
 		case PROCESS:
-			descriptionType = "Process Diagram";
+			descriptionType = Messages.BPMN2DiagramWizardPage2_Process_Diagram;
 			break;
 		case COLLABORATION:
-			descriptionType = "Collaboration Diagram";
+			descriptionType = Messages.BPMN2DiagramWizardPage2_Collaboration_Diagram;
 			break;
 		case CHOREOGRAPHY:
-			descriptionType = "Choreography Diagram";
+			descriptionType = Messages.BPMN2DiagramWizardPage2_Choreography_Diagram;
 			break;
 		default:
 			break;
 		}
-		setDescription("Enter a file name for the new "+descriptionType);
+		setDescription(Messages.BPMN2DiagramWizardPage2_Filename_Prompt+descriptionType);
 	}
 	
 	private void updateFilename() {
-		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1");
-		String fileType = "unknown";
-		String filename = fileType+".bpmn";
+		BPMN2DiagramWizardPage1 page1 = (BPMN2DiagramWizardPage1)getWizard().getPage("wizardPage1"); //$NON-NLS-1$
+		String fileType = "unknown"; //$NON-NLS-1$
+		String filename = fileType+Messages.BPMN2DiagramWizardPage2_BPMN_Extension;
 		switch (page1.getDiagramType()) {
 		case PROCESS:
-			fileType = "process";
+			fileType = "process"; //$NON-NLS-1$
 			break;
 		case COLLABORATION:
-			fileType = "collaboration";
+			fileType = "collaboration"; //$NON-NLS-1$
 			break;
 		case CHOREOGRAPHY:
-			fileType = "choreography";
+			fileType = "choreography"; //$NON-NLS-1$
 			break;
 		default:
 			return;
@@ -178,7 +179,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 			if (text!=null && !text.equals(getContainerName()))
 				containerText.setText(text);
 			for (int i=1; ; ++i) {
-				filename = fileType+"_" + i + ".bpmn";
+				filename = fileType+"_" + i + Messages.BPMN2DiagramWizardPage2_BPMN_Extension; //$NON-NLS-1$
 				IResource file = container.findMember(filename);
 				if (file==null) {
 					break;
@@ -231,7 +232,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 
 	private void handleBrowse() {
 		ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace()
-				.getRoot(), false, "Select Folder for the diagram");
+				.getRoot(), false, Messages.BPMN2DiagramWizardPage2_Select_Folder_Title);
 		if (dialog.open() == Window.OK) {
 			Object[] result = dialog.getResult();
 			if (result.length == 1) {
@@ -254,7 +255,7 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 				TargetRuntime rt = Bpmn2Preferences.getInstance(diagramContainer.getProject()).getRuntime();
 				String targetNamespace = rt.getRuntimeExtension().getTargetNamespace(getDiagramType());
 				if (targetNamespace==null)
-					targetNamespace = "";
+					targetNamespace = ""; //$NON-NLS-1$
 				
 				if (rt!=TargetRuntime.getDefaultRuntime() && !targetNamespace.isEmpty()) {
 					// Target Runtime will provide its own target namespace
@@ -284,15 +285,15 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	private boolean validateContainer() {
 		IContainer container = getFileContainer();
 		if (container==null) {
-			setErrorMessage("Project and Folder must exist");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_No_Container);
 			return false;
 		}
 		if ((container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			setErrorMessage("Folder must exist");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_No_Folder);
 			return false;
 		}
 		if (!container.isAccessible()) {
-			setErrorMessage("Project must be writable");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_Container_Readonly);
 			return false;
 		}
 		return true;
@@ -305,28 +306,28 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 		IContainer container = getFileContainer();
 		String fileName = getFileName();
 		if (fileName.length() == 0) {
-			setErrorMessage("Name must be specified");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_No_Filename);
 			return false;
 		}
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
-			setErrorMessage("Name must be valid");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_Filename_Invalid);
 			return false;
 		}
 		int dotLoc = fileName.lastIndexOf('.');
 		if (dotLoc != -1) {
 			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("bpmn") == false && ext.equalsIgnoreCase("bpmn2") == false) {
-				setErrorMessage("File extension must be \"bpmn\" or \"bpmn2\"");
+			if (ext.equalsIgnoreCase("bpmn") == false && ext.equalsIgnoreCase("bpmn2") == false) { //$NON-NLS-1$ //$NON-NLS-2$
+				setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_Extension_Invalid);
 				return false;
 			}
 		}
 		else {
-			setErrorMessage("Name is missing a file extension");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_No_Extension);
 			return false;
 		}
 		IResource file = container.findMember(fileName);
 		if (file!=null) {
-			setErrorMessage("The file "+fileName+" already exists in this Project Folder");
+			setErrorMessage(NLS.bind(Messages.BPMN2DiagramWizardPage2_Error_Duplicate_File,fileName));
 			return false;
 		}
 		return true;
@@ -335,12 +336,12 @@ public class BPMN2DiagramWizardPage2 extends WizardPage {
 	private boolean validateTargetNamespace() {
 		String targetNamespace = targetNamespaceText.getText();
 		if (targetNamespace==null || targetNamespace.isEmpty()) {
-			setErrorMessage("Target Namespace must be specified");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_No_TargetNamespace);
 			return false;
 		}
 		URI uri = URI.createURI(targetNamespace);
 		if (!(uri.hasAuthority() &&uri.hasAbsolutePath())) {
-			setErrorMessage("Target Namespace must be in the form 'http://absolute/path'");
+			setErrorMessage(Messages.BPMN2DiagramWizardPage2_Error_Invalid_TargetNamespace);
 			return false;
 		}
 		return true;

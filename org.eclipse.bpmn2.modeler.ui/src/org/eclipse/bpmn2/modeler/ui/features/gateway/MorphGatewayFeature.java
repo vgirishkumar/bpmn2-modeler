@@ -35,12 +35,12 @@ public class MorphGatewayFeature extends AbstractMorphNodeFeature<Gateway> {
 
 	@Override
 	public String getName() {
-		return "Morph Gateway";
+		return Messages.MorphGatewayFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Change the Gateway type";
+		return Messages.MorphGatewayFeature_Description;
 	}
 
 	@Override

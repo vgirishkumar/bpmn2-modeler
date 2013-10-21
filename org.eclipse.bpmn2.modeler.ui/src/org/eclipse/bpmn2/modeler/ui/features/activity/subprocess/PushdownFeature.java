@@ -51,6 +51,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Bob Brodt
@@ -69,13 +70,13 @@ public class PushdownFeature extends AbstractCustomFeature {
 	
 	@Override
 	public String getName() {
-	    return "Push down";
+	    return Messages.PushdownFeature_Name;
 	}
 	
 	@Override
 	public String getDescription() {
 		if (description==null)
-			description = "Push the contents of this Container into a new Diagram";
+			description = Messages.PushdownFeature_Description;
 		return description;
 	}
 
@@ -104,7 +105,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
-			description = "Push the contents of this "+ModelUtil.getLabel(bo)+" into a new Diagram";
+			description = NLS.bind(Messages.PushdownFeature_Description_1,ModelUtil.getLabel(bo));
 			
 			if (bo instanceof Participant) {
 				bo = ((Participant)bo).getProcessRef();

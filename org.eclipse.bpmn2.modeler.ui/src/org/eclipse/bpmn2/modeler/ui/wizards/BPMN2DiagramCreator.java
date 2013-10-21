@@ -40,7 +40,7 @@ public class BPMN2DiagramCreator {
 	public static Bpmn2DiagramEditorInput createDiagram(IEditorInput oldInput, URI modelUri, Bpmn2DiagramType diagramType, String targetNamespace, BPMN2Editor diagramEditor) {
 
 		String modelName = modelUri.trimFragment().trimFileExtension().lastSegment();
-		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", modelName, true);
+		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", modelName, true); //$NON-NLS-1$
 
 		String diagramName = FileService.createTempName(modelName);
 		URI diagramUri = URI.createFileURI(diagramName);
@@ -85,7 +85,7 @@ public class BPMN2DiagramCreator {
 					}
 					result[0] = part;
 				} catch (PartInitException e) {
-					String error = "Error while opening diagram editor";
+					String error = Messages.BPMN2DiagramCreator_Create_Error;
 					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, error, e);
 					ErrorUtils.showErrorWithLogging(status);
 				}

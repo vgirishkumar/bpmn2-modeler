@@ -185,9 +185,9 @@ public class FileService {
 	}
 
 	private static String createMessage(Map<URI, Throwable> failedSaves) {
-		final StringBuilder buf = new StringBuilder("The following resources could not be saved:");
+		final StringBuilder buf = new StringBuilder(Messages.FileService_Save_Error);
 		for (final Entry<URI, Throwable> entry : failedSaves.entrySet()) {
-			buf.append("\nURI: ").append(entry.getKey().toString()).append(", cause: \n")
+			buf.append("\nURI: ").append(entry.getKey().toString()).append(",\n") //$NON-NLS-1$ //$NON-NLS-2$
 					.append(getExceptionAsString(entry.getValue()));
 		}
 		return buf.toString();
@@ -279,10 +279,10 @@ public class FileService {
 	}
 	
 	public static String createTempName(String name) {
-		String tempDir = System.getProperty("java.io.tmpdir");
+		String tempDir = System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
 		if (!tempDir.endsWith(File.separator))
 			tempDir += File.separator;
-		String tempName = tempDir + name + "." + EcoreUtil.generateUUID();
+		String tempName = tempDir + name + "." + EcoreUtil.generateUUID(); //$NON-NLS-1$
 		return tempName;
 	}
 	
@@ -293,7 +293,7 @@ public class FileService {
 	public static File createTempFile(String name, InputStream istream) {
 		File tempFile = null;
 		try {
-			tempFile = File.createTempFile(name, ".bpmn");
+			tempFile = File.createTempFile(name, ".bpmn"); //$NON-NLS-1$
 			if (istream!=null) {
 				OutputStream ostream = new FileOutputStream(tempFile);
 	
@@ -317,7 +317,7 @@ public class FileService {
 	}
 	
 	public static boolean isTempFile(URI uri) {
-		String tempDir = System.getProperty("java.io.tmpdir");
+		String tempDir = System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
 		String uriDir = uri.trimFragment().trimSegments(1).devicePath();
 		return tempDir!=null && tempDir.compareToIgnoreCase(uriDir)==0;
 	}

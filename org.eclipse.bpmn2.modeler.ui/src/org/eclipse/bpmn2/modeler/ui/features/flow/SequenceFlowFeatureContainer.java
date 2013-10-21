@@ -71,10 +71,10 @@ import org.eclipse.graphiti.util.IColorConstant;
 
 public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureContainer {
 
-	private static final String IS_DEFAULT_FLOW_PROPERTY = "is.default.flow";
-	private static final String IS_CONDITIONAL_FLOW_PROPERTY = "is.conditional.flow";
-	private static final String DEFAULT_MARKER_PROPERTY = "default.marker";
-	private static final String CONDITIONAL_MARKER_PROPERTY = "conditional.marker";
+	private static final String IS_DEFAULT_FLOW_PROPERTY = "is.default.flow"; //$NON-NLS-1$
+	private static final String IS_CONDITIONAL_FLOW_PROPERTY = "is.conditional.flow"; //$NON-NLS-1$
+	private static final String DEFAULT_MARKER_PROPERTY = "default.marker"; //$NON-NLS-1$
+	private static final String CONDITIONAL_MARKER_PROPERTY = "conditional.marker"; //$NON-NLS-1$
 
 	@Override
 	public boolean canApplyTo(Object o) {
@@ -157,7 +157,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	public static class CreateSequenceFlowFeature extends AbstractCreateFlowFeature<SequenceFlow, FlowNode, FlowNode> {
 
 		public CreateSequenceFlowFeature(IFeatureProvider fp) {
-			super(fp, "Sequence Flow", "Create "+"Sequence Flow");
+			super(fp, Messages.SequenceFlowFeatureContainer_Name, Messages.SequenceFlowFeatureContainer_Description);
 		}
 
 		@Override
@@ -366,7 +366,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	private static SequenceFlow getDefaultFlow(FlowNode node) {
 		if (isDefaultAttributeSupported(node)) {
 			try {
-				return (SequenceFlow) node.getClass().getMethod("getDefault").invoke(node);
+				return (SequenceFlow) node.getClass().getMethod("getDefault").invoke(node); //$NON-NLS-1$
 			} catch (Exception e) {
 				Activator.logError(e);
 			}

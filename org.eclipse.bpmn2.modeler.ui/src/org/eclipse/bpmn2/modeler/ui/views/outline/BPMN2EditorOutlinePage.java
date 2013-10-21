@@ -291,7 +291,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 			}
 		};
 		showBusinessModelOutlineAction.setImageDescriptor(Activator.getDefault().getImageDescriptor(IConstants.ICON_BUSINESS_MODEL));
-		showBusinessModelOutlineAction.setToolTipText("Business Model");
+		showBusinessModelOutlineAction.setToolTipText(Messages.BPMN2EditorOutlinePage_Business_Model_Title);
 		tbm.add(showBusinessModelOutlineAction);
 
 		showInterchangeModelOutlineAction = new Action() {
@@ -305,7 +305,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 			}
 		};
 		showInterchangeModelOutlineAction.setImageDescriptor(Activator.getDefault().getImageDescriptor(IConstants.ICON_INTERCHANGE_MODEL));
-		showInterchangeModelOutlineAction.setToolTipText("Diagram Interchange Model");
+		showInterchangeModelOutlineAction.setToolTipText(Messages.BPMN2EditorOutlinePage_DI_Model_Title);
 		tbm.add(showInterchangeModelOutlineAction);
 		
 		
@@ -317,7 +317,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 			}
 		};
 		showOverviewAction.setImageDescriptor(Activator.getDefault().getImageDescriptor(IConstants.ICON_THUMBNAIL));
-		showOverviewAction.setToolTipText("Thumbnail");
+		showOverviewAction.setToolTipText(Messages.BPMN2EditorOutlinePage_Thumbnail_Title);
 		
 		tbm.add(showOverviewAction);
 

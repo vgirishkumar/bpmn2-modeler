@@ -54,7 +54,7 @@ public class DataOutputsListComposite extends DefaultListComposite {
 			catchEvent.setOutputSet(outputSet);
 		}
 		// generate a unique parameter name
-		String base = "outParam";
+		String base = "outParam"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
 		for (;;) {

@@ -85,7 +85,7 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 		nameText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				fileText.setText(nameText.getText() + ".bpmn2"); //$NON-NLS-1$
-				String processid = packageText.getText() + "." + nameText.getText();
+				String processid = packageText.getText() + "." + nameText.getText(); //$NON-NLS-1$
 				processid = SyntaxCheckerUtils.toNCName(processid.replaceAll(" ", "_")); //$NON-NLS-1$ //$NON-NLS-2$
 				processIdText.setText(processid);
 				dialogChanged();

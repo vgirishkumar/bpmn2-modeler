@@ -38,12 +38,12 @@ public class AppendEventFeature extends AbstractAppendNodeFeature<Event> {
 
 	@Override
 	public String getName() {
-		return "Append Event";
+		return Messages.AppendEventFeature_Name;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Create a new Event and connect it to this item";
+		return Messages.AppendEventFeature_Description;
 	}
 
 	@Override

@@ -76,6 +76,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -203,7 +204,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	@Override
 	public void createBindings(EObject be) {
 
-		String sectionTitle = "";
+		String sectionTitle = ""; //$NON-NLS-1$
 		
 		association = null;
 		if (be instanceof DataInput) {
@@ -222,7 +223,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 		GridData gridData;
 		fromGroup = new Group(this, SWT.NONE);
-		fromGroup.setText("From");
+		fromGroup.setText(Messages.DataAssociationDetailComposite_From_Title);
 		fromGroup.setLayout(new GridLayout(3,false));
 		gridData = new GridData(SWT.FILL,SWT.TOP,true,false,3,1);
 		fromGroup.setLayoutData(gridData);
@@ -232,7 +233,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 
 		toGroup = new Group(this, SWT.NONE);
-		toGroup.setText("To");
+		toGroup.setText(Messages.DataAssociationDetailComposite_To_Title);
 		toGroup.setLayout(new GridLayout(3,false));
 		gridData = new GridData(SWT.FILL,SWT.TOP,true,false,3,1);
 		toGroup.setLayoutData(gridData);
@@ -261,8 +262,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			}
 			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
-			sectionTitle = (isInput ? "Input" : "Output") +
-				" Parameter Mapping Details";
+			sectionTitle = (isInput ? Messages.DataAssociationDetailComposite_Input_Parameter_Mapping_Title : Messages.DataAssociationDetailComposite_Output_Parameter_Mapping_Title);
 		}
 		else if (container instanceof ThrowEvent) {
 			ThrowEvent throwEvent = (ThrowEvent)container;
@@ -274,7 +274,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			}
 			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
-			sectionTitle = "Data Input Mapping Details";
+			sectionTitle = Messages.DataAssociationDetailComposite_Data_Input_Mapping_Title;
 		}
 		else if (container instanceof CatchEvent) {
 			CatchEvent catchEvent = (CatchEvent)container;
@@ -286,7 +286,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			}
 			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
-			sectionTitle = "Data Output Mapping Details";
+			sectionTitle = Messages.DataAssociationDetailComposite_Data_Output_Mapping_Title;
 		}
 		else {
 			super.createBindings(be);
@@ -535,7 +535,12 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	private void createWidgets() {
 		
 		if (association==null && !(businessObject instanceof DataInput || businessObject instanceof DataOutput)) {
-			this.createLabel(this, "The I/O Parameter \""+parameterName+"\" can not have Mappings.");
+			this.createLabel(this,
+				NLS.bind(
+					Messages.DataAssociationDetailComposite_Invalid_Parameter,
+					parameterName
+				)
+			);
 			return;
 		} else {
 			EObject container = ModelUtil.getContainer(businessObject);
@@ -573,7 +578,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 		Group group = !isInput ? toGroup : fromGroup;
 		if (mapPropertyButton==null) {
-			mapPropertyButton = toolkit.createButton(group, "Variable", SWT.RADIO);
+			mapPropertyButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_Variable_Button, SWT.RADIO);
 			mapPropertyButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 
 			mapPropertyButton.addSelectionListener(new SelectionAdapter() {
@@ -592,7 +597,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 		
 		if (mapTransformationButton==null) {
-			mapTransformationButton = toolkit.createButton(group, "Transformation", SWT.RADIO);
+			mapTransformationButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_Transform_Button, SWT.RADIO);
 			mapTransformationButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 			
 			mapTransformationButton.addSelectionListener(new SelectionAdapter() {
@@ -611,7 +616,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 		
 		if (mapExpressionButton==null) {
-			mapExpressionButton = toolkit.createButton(group, "Expression", SWT.RADIO);
+			mapExpressionButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_Expression_Button, SWT.RADIO);
 			mapExpressionButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 			
 			mapExpressionButton.addSelectionListener(new SelectionAdapter() {
@@ -630,7 +635,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		}
 
 		if (advancedMappingButton==null) {
-			advancedMappingButton = toolkit.createButton(group, "Advanced Mapping", SWT.RADIO);
+			advancedMappingButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_Advanced_Button, SWT.RADIO);
 			advancedMappingButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 			
 			advancedMappingButton.addSelectionListener(new SelectionAdapter() {
@@ -685,11 +690,11 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 										String[] properties = null;
 										if (isInput) {
 											properties = new String[] {
-													"sourceRef"
+													"sourceRef" //$NON-NLS-1$
 											};
 										} else {
 											properties = new String[] {
-													"targetRef"
+													"targetRef" //$NON-NLS-1$
 											};
 										}
 										return properties; 
@@ -711,7 +716,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						}						
 					};
 					propertyDetailsComposite.setBusinessObject(association);
-					propertyDetailsComposite.setTitle("Variables");
+					propertyDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Variables_Title);
 				}
 			}
 			else {
@@ -767,7 +772,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 							Expression.class, transformationComposite, SWT.NONE);
 				}
 				transformationDetailsComposite.setBusinessObject(transformation);
-				transformationDetailsComposite.setTitle("Transformation");
+				transformationDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Transform_Title);
 	
 			}
 			else {
@@ -839,7 +844,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 							Expression.class, expressionComposite, SWT.NONE);
 				}
 				expressionDetailsComposite.setBusinessObject(expression);//association.getexpression());
-				expressionDetailsComposite.setTitle("Expression");
+				expressionDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Expression_Title);
 			}
 			else {
 				if (expressionComposite!=null) {
@@ -887,14 +892,14 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 							Expression.class, transformationComposite, SWT.NONE);
 				}
 				transformationDetailsComposite.setBusinessObject(transformation);//association.getTransformation());
-				transformationDetailsComposite.setTitle("Transformation");
+				transformationDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Transform_Title);
 				
 				if (assignmentsTable!=null)
 					assignmentsTable.dispose();
 				assignmentsTable = new AssignmentListComposite(transformationComposite);
 				assignmentsTable.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
-				assignmentsTable.bindList(association, association.eClass().getEStructuralFeature("assignment"));
-				assignmentsTable.setTitle("Assignments");
+				assignmentsTable.bindList(association, association.eClass().getEStructuralFeature("assignment")); //$NON-NLS-1$
+				assignmentsTable.setTitle(Messages.DataAssociationDetailComposite_Assignments_Title);
 			}
 			else {
 				if (transformationComposite!=null) {
@@ -947,13 +952,13 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			public String getText(Object element) {
 				Object value = ((EObject)element).eGet(feature);
 				if (value==null) {
-					return "";
+					return ""; //$NON-NLS-1$
 				}
 				if (value instanceof FormalExpression) {
 					FormalExpression exp = (FormalExpression)value;
 					String body = ModelUtil.getExpressionBody(exp);
 					if (body==null||body.isEmpty())
-						body = "<empty>";
+						body = Messages.DataAssociationDetailComposite_Empty;
 					return body;
 				}
 				return value.toString();

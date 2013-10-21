@@ -28,7 +28,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Participant> {
 	
 	public CreateParticipantFeature(IFeatureProvider fp) {
-	    super(fp, "Pool", "Create "+"Pool");
+	    super(fp, Messages.CreateParticipantFeature_Name, Messages.CreateParticipantFeature_Description);
     }
 
 	@Override
@@ -39,12 +39,12 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
 	@Override
 	public Object[] create(ICreateContext context) {
 		Participant participant = createBusinessObject(context);
-		participant.setName("Pool " + ModelUtil.getIDNumber(participant.getId()));
+		participant.setName(Messages.CreateParticipantFeature_Default_Pool_Name + ModelUtil.getIDNumber(participant.getId()));
 
 		Process process = Bpmn2ModelerFactory.create(participant.eResource(), Process.class);
 		participant.setProcessRef(process);
 
-		process.setName(participant.getName() + " Process");
+		process.setName(participant.getName() + Messages.CreateParticipantFeature_Default_Process_Name);
 		if (participant.eContainer() instanceof Collaboration) {
 			process.setDefinitionalCollaborationRef((Collaboration)participant.eContainer());
 		}

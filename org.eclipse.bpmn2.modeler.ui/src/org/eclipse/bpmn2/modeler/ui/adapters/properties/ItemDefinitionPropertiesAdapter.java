@@ -55,7 +55,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			new FeatureDescriptor<ItemDefinition>(adapterFactory,object,ref) {
 				@Override
 				public String getLabel(Object context) {
-					return "Structure";
+					return Messages.ItemDefinitionPropertiesAdapter_Structure;
 				}
 
 				@Override
@@ -68,7 +68,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	    		@Override
 				public EObject createFeature(Resource resource, Object context, EClass eClass) {
 					final ItemDefinition itemDefinition = adopt(context);
-					EObject structureRef = ModelUtil.createStringWrapper("");
+					EObject structureRef = ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 					itemDefinition.setStructureRef(structureRef);
 					return structureRef;
 	    		}
@@ -89,7 +89,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 					if (value instanceof String) {
 						if (itemDefinition.getStructureRef()==null) {
 							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
-							value = ((String) value).replace(oldValue, "");
+							value = ((String) value).replace(oldValue, ""); //$NON-NLS-1$
 						}
 						value = SyntaxCheckerUtils.toNCName((String)value);
 						value = ModelUtil.createStringWrapper((String)value);
@@ -151,7 +151,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	 * Methods for dealing with ItemDefinitions
 	 */
 	public static String getLabel() {
-		return "Data Type";
+		return Messages.ItemDefinitionPropertiesAdapter_Data_Type;
 	}
 
 	public static ItemDefinition createItemDefinition(Resource resource) {
@@ -166,18 +166,18 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	}
 	
 	public static String getDisplayName(ItemDefinition itemDefinition) {
-		String name = "";
+		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			name = getStructureName(itemDefinition);
 			if (itemDefinition.isIsCollection())
-				name += "[]";
+				name += "[]"; //$NON-NLS-1$
 		}
 		return name;
 	}
 	
 	public static String getStructureName(ItemDefinition itemDefinition) {
 		Resource resource = ModelUtil.getResource(itemDefinition);
-		String name = "";
+		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();
 			if (value!=null) {

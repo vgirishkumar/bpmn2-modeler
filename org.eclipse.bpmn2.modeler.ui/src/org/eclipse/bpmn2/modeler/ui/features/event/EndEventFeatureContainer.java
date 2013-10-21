@@ -85,7 +85,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 	public static class CreateEndEventFeature extends AbstractCreateEventFeature<EndEvent> {
 
 		public CreateEndEventFeature(IFeatureProvider fp) {
-			super(fp, "End Event", "Create "+"End Event");
+			super(fp, Messages.EndEventFeatureContainer_0, Messages.EndEventFeatureContainer_1+Messages.EndEventFeatureContainer_2);
 		}
 
 		@Override
@@ -104,7 +104,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 
 	protected static class UpdateEndEventFeature extends AbstractUpdateEventFeature {
 
-		public static String END_EVENT_MARKER = "marker.end.event";
+		public static String END_EVENT_MARKER = "marker.end.event"; //$NON-NLS-1$
 
 		/**
 		 * @param fp

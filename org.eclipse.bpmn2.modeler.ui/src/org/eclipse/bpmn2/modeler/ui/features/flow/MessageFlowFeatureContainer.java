@@ -82,7 +82,7 @@ import org.eclipse.graphiti.util.IColorConstant;
 
 public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureContainer {
 
-	public final static String MESSAGE_REF = "message.ref";
+	public final static String MESSAGE_REF = "message.ref"; //$NON-NLS-1$
 	final static IPeService peService = Graphiti.getPeService();
 	final static IGaService gaService = Graphiti.getGaService();
 
@@ -171,7 +171,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	protected static String messageToString(Message message) {
 		if (message==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return message.getId();
 	}
 	
@@ -277,7 +277,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			moveFeature.moveShape(moveContext);
 		}
 		fp.link(decorator, new Object[] {message, messageShape});
-		peService.setPropertyValue(decorator, MESSAGE_REF, "true");
+		peService.setPropertyValue(decorator, MESSAGE_REF, "true"); //$NON-NLS-1$
 		// Set our MessageFlow ID in the Message shape. Sadly Graphiti shape properties
 		// can only hold Strings, so if the MessageFlow ID is null, we need to assign
 		// a new one to it.
@@ -359,7 +359,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	public static class CreateMessageFlowFeature extends AbstractCreateFlowFeature<MessageFlow, InteractionNode, InteractionNode> {
 
 		public CreateMessageFlowFeature(IFeatureProvider fp) {
-			super(fp, "Message Flow", "Create "+"Message Flow");
+			super(fp, Messages.MessageFlowFeatureContainer_Name, Messages.MessageFlowFeatureContainer_Description);
 		}
 
 		@Override
@@ -506,7 +506,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		public void postDelete(IDeleteContext context) {
 			MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(messageFlowConnection);
 			messageFlow.setMessageRef(null);
-			peService.setPropertyValue(messageFlowConnection, MESSAGE_REF, "");
+			peService.setPropertyValue(messageFlowConnection, MESSAGE_REF, ""); //$NON-NLS-1$
 		}
 
 	}
@@ -530,17 +530,17 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 				
 				String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
 				if (oldMessageRef==null)
-					oldMessageRef = "";
+					oldMessageRef = ""; //$NON-NLS-1$
 				
 				String newMessageRef = messageToString(messageFlow.getMessageRef());
 				
 				if (!oldMessageRef.equals(newMessageRef)) {
-					return Reason.createTrueReason("Message Ref Changed");
+					return Reason.createTrueReason(Messages.MessageFlowFeatureContainer_Ref_Changed);
 				}
 				
 				// check if connection has been moved or reconnected
 				if (messageDecoratorMoved(connection))
-					return Reason.createTrueReason("Message Decorator Moved");
+					return Reason.createTrueReason(Messages.MessageFlowFeatureContainer_Decorator_Moved);
 			}
 			return super.updateNeeded(context);
 		}
@@ -554,7 +554,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 				Message message = messageFlow.getMessageRef();
 				String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
 				if (oldMessageRef==null)
-					oldMessageRef = "";
+					oldMessageRef = ""; //$NON-NLS-1$
 				
 				String newMessageRef = messageToString(messageFlow.getMessageRef());
 				

@@ -29,15 +29,16 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 
-	public static String UNSPECIFIED_LABEL = "Unspecified";
-	public static String UNSPECIFIED_VALUE = "##unspecified";
-	public static String WEBSERVICE_LABEL = "Web Service";
-	public static String WEBSERVICE_VALUE = "##WebService";
+	public static String UNSPECIFIED_LABEL = Messages.ServiceImplementationObjectEditor_Unspecified_Label;
+	public static String UNSPECIFIED_VALUE = "##unspecified"; //$NON-NLS-1$
+	public static String WEBSERVICE_LABEL = Messages.ServiceImplementationObjectEditor_Web_Service_Label;
+	public static String WEBSERVICE_VALUE = "##WebService"; //$NON-NLS-1$
 	
 	public ServiceImplementationObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
@@ -52,7 +53,7 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 		if (editButton==null)
 			return true;
 		Object value = object.eGet(feature);
-		if (value instanceof String && ((String)value).startsWith("##"))
+		if (value instanceof String && ((String)value).startsWith("##")) //$NON-NLS-1$
 			return false;
 		return true;
 	}
@@ -84,11 +85,11 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 		Hashtable<String,Object> choices = getChoiceOfValues(object, feature);
 		ImplementationEditingDialog dialog = new ImplementationEditingDialog(
 				getDiagramEditor().getEditorSite().getShell(), 
-				"Create New Implementation URI", 
+				Messages.ServiceImplementationObjectEditor_Create_New_Title, 
 				choices, null);
 		if ( dialog.open() == Window.OK)
 			return ModelUtil.createStringWrapper( dialog.getValue() );
-		throw new OperationCanceledException("Dialog Cancelled");
+		throw new OperationCanceledException(Messages.ServiceImplementationObjectEditor_Dialog_Cancelled);
 	}
 	
 	protected EObject editObject(EObject value) throws Exception {
@@ -96,7 +97,7 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 		final String oldValue = ModelUtil.getStringWrapperValue(value);
 		ImplementationEditingDialog dialog = new ImplementationEditingDialog(
 				getDiagramEditor().getEditorSite().getShell(), 
-				"Edit Implementation URI", 
+				Messages.ServiceImplementationObjectEditor_Edit_Title, 
 				choices, oldValue);
 		if ( dialog.open() == Window.OK) {
 			final String newValue = dialog.getValue();
@@ -110,7 +111,7 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 							TreeIterator<EObject> iter = definitions.eAllContents();
 							while (iter.hasNext()) {
 								EObject o = iter.next();
-								EStructuralFeature f = o.eClass().getEStructuralFeature("implementation");
+								EStructuralFeature f = o.eClass().getEStructuralFeature("implementation"); //$NON-NLS-1$
 								if (f!=null) {
 									String implementation = (String)o.eGet(f);
 									if (oldValue.equals(implementation)) {
@@ -125,7 +126,7 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 				return ModelUtil.createStringWrapper( dialog.getValue() );
 			}
 		}
-		throw new OperationCanceledException("Dialog Cancelled");
+		throw new OperationCanceledException(Messages.ServiceImplementationObjectEditor_Dialog_Cancelled);
 	}
 	
 	protected Hashtable<String,Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
@@ -141,11 +142,11 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 			TreeIterator<EObject> iter = definitions.eAllContents();
 			while (iter.hasNext()) {
 				EObject o = iter.next();
-				EStructuralFeature f = o.eClass().getEStructuralFeature("implementation");
+				EStructuralFeature f = o.eClass().getEStructuralFeature("implementation"); //$NON-NLS-1$
 				if (f!=null) {
 					String implementation = (String)o.eGet(f);
 					if (implementation!=null && !implementation.isEmpty() &&
-							!implementation.startsWith("##")) {
+							!implementation.startsWith("##")) { //$NON-NLS-1$
 						if (!choices.containsKey(implementation)) {
 							choices.put(implementation, ModelUtil.createStringWrapper(implementation));
 						}
@@ -161,21 +162,21 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 			super(
 					shell,
 					title,
-					"Implementation",
+					Messages.ServiceImplementationObjectEditor_Implementation_Title,
 					uriString,
 					new IInputValidator() {
 
 						@Override
 						public String isValid(String newText) {
 							if (newText==null || newText.isEmpty())
-								return "Implementation can not be empty";
+								return Messages.ServiceImplementationObjectEditor_Invalid_Empty;
 							if (newText.equals(uriString))
 								return null;
 							if (choices.containsKey(newText) || choices.containsValue(newText))
-								return "The Implementation URI '"+newText+"' is already defined.";
+								return NLS.bind(Messages.ServiceImplementationObjectEditor_Invalid_Duplicate,newText);
 							URI uri = URI.createURI(newText);
 							if (!(uri.hasAuthority() &&uri.hasAbsolutePath())) {
-								return "Implementation URI must be in the form 'http://absolute/path'";
+								return Messages.ServiceImplementationObjectEditor_Invalid_URI;
 							}
 							return null;
 						}

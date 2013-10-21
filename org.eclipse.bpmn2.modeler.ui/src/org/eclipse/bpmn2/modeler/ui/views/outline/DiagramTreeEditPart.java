@@ -105,7 +105,7 @@ public class DiagramTreeEditPart extends AbstractGraphicsTreeEditPart {
 		BPMNDiagram bpmnDiagram = (BPMNDiagram) BusinessObjectUtil.getBusinessObjectForPictogramElement(getDiagram());
 		if (bpmnDiagram!=null && bpmnDiagram.getName()!=null)
 			return bpmnDiagram.getName();
-		return "";
+		return ""; //$NON-NLS-1$
 		
 	}
 }

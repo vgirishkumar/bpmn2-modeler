@@ -110,7 +110,7 @@ import org.eclipse.swt.widgets.Display;
 
 public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
-	public final static String DEFAULT_PALETTE_ID = "org.bpmn2.modeler.toolpalette.default.categories";
+	public final static String DEFAULT_PALETTE_ID = "org.bpmn2.modeler.toolpalette.default.categories"; //$NON-NLS-1$
 	
 	BPMNFeatureProvider featureProvider;
 	ModelEnablementDescriptor modelEnablements;
@@ -160,14 +160,14 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 
 	public void createPaletteProfilesGroup(BPMN2Editor editor, PaletteRoot paletteRoot) {
 		TargetRuntime rt = editor.getTargetRuntime();
-		PaletteDrawer drawer = new PaletteDrawer("Profiles", null);
+		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
 		int size = 0;
 		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
 
 		for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
 			String profile = med.getProfile();
 			if (profile==null)
-				profile = "Unnamed "+(size+1);
+				profile = Messages.BPMNToolBehaviorProvider_Unnamed_Profile+(size+1);
 			drawer.add(new ProfileSelectionToolEntry(editor, profile));
 			++size;
 		}
@@ -382,7 +382,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 	
 	private void createEventsCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Events", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label, null);
 
 		createEntries(FeatureMap.EVENTS, compartmentEntry);
 
@@ -391,7 +391,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createOtherCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Other", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Other_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
 		createEntries(FeatureMap.OTHER, compartmentEntry);
@@ -401,7 +401,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createDataCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Data Items", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
 		createEntries(FeatureMap.DATA, compartmentEntry);
@@ -411,7 +411,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createEventDefinitionsCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Event Definitions", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
 		createEntries(FeatureMap.EVENT_DEFINITIONS, compartmentEntry);
@@ -421,7 +421,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createGatewaysCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Gateways", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label, null);
 
 		createEntries(FeatureMap.GATEWAYS, compartmentEntry);
 
@@ -430,7 +430,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createTasksCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Tasks", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Tasks_Drawer_Label, null);
 
 		createEntries(FeatureMap.TASKS, compartmentEntry);
 
@@ -439,7 +439,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 
 	private void createConnectors(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry("Connectors", null);
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label, null);
 
 		createEntries(FeatureMap.CONNECTORS, compartmentEntry);
 
@@ -536,7 +536,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 				
 				String category = tc.getCategory();
 				if (category==null || category.isEmpty())
-					category = "Custom Tasks";
+					category = Messages.BPMNToolBehaviorProvider_Custom_Tasks_Drawer_Label;
 				
 				compartmentEntry = categories.get(category);
 				if (compartmentEntry==null) {
@@ -703,12 +703,12 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		// 3.c. build a reasonable description for the context button action 
 		for (int i=0; i<names.size(); ++i) {
 			if (description==null)
-				description = "Click and drag to create a\n";
+				description = Messages.BPMNToolBehaviorProvider_Click_Drag_Prompt;
 			description += names.get(i);
 			if (i+2 == names.size())
-				description += " or ";
+				description += Messages.BPMNToolBehaviorProvider_Click_Drag_Prompt_Last_Separator;
 			else if (i+1 < names.size())
-				description += ", ";
+				description += Messages.BPMNToolBehaviorProvider_Click_Drag_Prompt_Separator;
 		}
 		button.setDescription(description);
 
@@ -773,18 +773,18 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		}
 		// temp debugging stuff to dump connection routing info
 		for (PictogramElement pe : context.getPictogramElements()) {
-			String id = Graphiti.getPeService().getPropertyValue(pe, "ROUTING_NET_CONNECTION");
-			System.out.println("id="+id);
+			String id = Graphiti.getPeService().getPropertyValue(pe, "ROUTING_NET_CONNECTION"); //$NON-NLS-1$
+			System.out.println("id="+id); //$NON-NLS-1$
 			if (pe instanceof FreeFormConnection) {
 				FreeFormConnection c = (FreeFormConnection)pe;
 				int i=0;
 				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(c.getStart());
-				System.out.println("0: "+loc.getX()+","+loc.getY());
+				System.out.println("0: "+loc.getX()+","+loc.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 				for (Point p : c.getBendpoints()) {
-					System.out.println(++i+": "+p.getX()+","+p.getY());
+					System.out.println(++i+": "+p.getX()+","+p.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				loc = Graphiti.getPeService().getLocationRelativeToDiagram(c.getEnd());
-				System.out.println(++i+": "+loc.getX()+","+loc.getY());
+				System.out.println(++i+": "+loc.getX()+","+loc.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return null;

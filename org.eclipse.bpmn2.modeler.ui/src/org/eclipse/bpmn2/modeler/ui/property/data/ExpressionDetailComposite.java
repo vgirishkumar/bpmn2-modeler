@@ -40,9 +40,9 @@ public class ExpressionDetailComposite extends DefaultDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"language",
-						"body",
-						"evaluatesToTypeRef"
+						"language", //$NON-NLS-1$
+						"body", //$NON-NLS-1$
+						"evaluatesToTypeRef" //$NON-NLS-1$
 				};
 				
 				@Override
@@ -57,7 +57,7 @@ public class ExpressionDetailComposite extends DefaultDetailComposite {
 	@Override
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
-		if (isModelObjectEnabled(object.eClass(), attribute) && "language".equals(attribute.getName())) {
+		if (isModelObjectEnabled(object.eClass(), attribute) && "language".equals(attribute.getName())) { //$NON-NLS-1$
 
 			if (parent==null)
 				parent = getAttributesParent();
