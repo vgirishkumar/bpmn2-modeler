@@ -548,7 +548,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	private void loadPreferences(IProject project) {
 		preferences = Bpmn2Preferences.getInstance(project);
 		preferences.load();
-		preferences.getGlobalPreferences().addPropertyChangeListener(this);
+		preferences.getPreferenceStore().addPropertyChangeListener(this);
 	}
 
 	/**
@@ -573,23 +573,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return targetRuntime;
 	}
 	
-	public String getModelEnablementProfile() {
-		if (modelEnablementProfile==null) {
-			modelEnablementProfile = getPreferences().getDefaultModelEnablementProfile();
-		}
-		if (modelEnablementProfile==null || modelEnablementProfile.isEmpty()) {
-			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(this);
-			List<ModelEnablementDescriptor> med = getTargetRuntime().getModelEnablements(diagramType);
-			if (med.size()>0)
-				modelEnablementProfile = med.get(0).getProfile();
-		}
-		return modelEnablementProfile;
-	}
-	
-	public void setModelEnablementProfile(String profile) {
-		modelEnablementProfile = profile;
-	}
-	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {
 		if (targetRuntime==null && input!=null) {
 			 // If the project has not been configured for a specific runtime through the "BPMN2"
@@ -611,8 +594,6 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 				targetRuntime = TargetRuntime.getDefaultRuntime();
 			
 			TargetRuntime.setCurrentRuntime(targetRuntime);
-			String profile = getPreferences().getDefaultModelEnablementProfile();
-			setModelEnablementProfile(profile);
 		}
 		return targetRuntime;
 	}
@@ -830,11 +811,13 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		}
 		if (required == ModelEnablementDescriptor.class) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
-			return getTargetRuntime().getModelEnablements(diagramType, getModelEnablementProfile());
+			String profile = getPreferences().getDefaultToolProfile(diagramType);
+			return getTargetRuntime().getModelEnablements(diagramType, profile);
 		}
 		if (required == ToolPaletteDescriptor.class) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
-			return getTargetRuntime().getToolPalette(diagramType, getModelEnablementProfile());
+			String profile = getPreferences().getDefaultToolProfile(diagramType);
+			return getTargetRuntime().getToolPalette(diagramType, profile);
 		}
 		if (required == NotificationFilter.class) {
 			if (saveInProgress)
@@ -864,7 +847,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			}
 		}
 		ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
-		getPreferences().getGlobalPreferences().removePropertyChangeListener(this);
+		getPreferences().getPreferenceStore().removePropertyChangeListener(this);
 		
 		getResourceSet().eAdapters().remove(getEditorAdapter());
 		removeSelectionListener();
@@ -1087,7 +1070,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			ModelHandlerLocator.remove(modelUri);
 			modelUri = newURI;
 			if (preferences!=null) {
-				preferences.getGlobalPreferences().removePropertyChangeListener(this);
+				preferences.getPreferenceStore().removePropertyChangeListener(this);
 				preferences.dispose();
 				preferences = null;
 			}
