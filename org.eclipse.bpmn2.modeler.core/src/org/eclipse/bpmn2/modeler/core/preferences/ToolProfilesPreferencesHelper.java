@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
@@ -30,6 +31,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -41,21 +43,11 @@ import org.osgi.service.prefs.BackingStoreException;
 public class ToolProfilesPreferencesHelper {
 
 	private ModelEnablements modelEnablements;
-	private static HashSet<EClass> elementSet = new HashSet<EClass>();
+	private static HashSet<EClass> elementSet = null;
 	private TargetRuntime targetRuntime;
 	private Bpmn2DiagramType diagramType;
 	private String profile;
-
-	static {
-		Bpmn2Package i = Bpmn2Package.eINSTANCE;
-		final List<EClass> items = new ArrayList<EClass>();
-		for (EClassifier eclassifier : i.getEClassifiers() ) {
-			if (eclassifier instanceof EClass && eclassifier!=i.getDocumentRoot()) {
-				items.add((EClass)eclassifier);
-			}
-		}
-		elementSet.addAll(items);
-	}
+	private static boolean enableIdAttribute = false;
 
 	private ToolProfilesPreferencesHelper() {
 	}
@@ -64,16 +56,84 @@ public class ToolProfilesPreferencesHelper {
 		this.targetRuntime = rt;
 		this.diagramType = diagramType;
 		this.profile = profile;
+		createElementSet();
+	}
+
+	/**
+	 * Create the list of EClasses that are candidates for our enable/disable tree.
+	 * As a first cut, select only top-level classes from the Bpmn2Package, then
+	 * add any classes that were enabled in any of the Target Runtime plugins.
+	 */
+	private void createElementSet() {
+		if (elementSet==null) {
+			elementSet = new HashSet<EClass>();
+			Bpmn2Package pkg = Bpmn2Package.eINSTANCE;
+			EList<EClassifier> allClassifiers = pkg.getEClassifiers();
+			final List<EClass> elements = new ArrayList<EClass>();
+			for (EClassifier candidate : allClassifiers) {
+				if (candidate instanceof EClass && candidate!=pkg.getDocumentRoot()) {
+					boolean add = true;
+					for (EClassifier ec : allClassifiers) {
+						if (ec!=candidate && ec instanceof EClass) {
+							for (EClass superType : ((EClass)ec).getESuperTypes()) {
+								if (superType == candidate) {
+									add = false;
+									break;
+								}
+							}
+						}
+					}
+					if (add)
+						elements.add((EClass)candidate);
+				}
+			}
+			elementSet.addAll(elements);
+			
+			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					for (String name : med.getAllEnabled()) {
+						int i = name.indexOf(".");
+						if (i>0)
+							name = name.substring(i);
+						EClassifier ec = pkg.getEClassifier(name);
+						if (ec instanceof EClass && !elementSet.contains(ec)) {
+							elementSet.add((EClass)ec);
+							System.out.println(ec.getName());
+						}
+					}
+				}
+			}
+		}
 	}
 	
+	public static void setEnableIdAttribute(boolean enabled) {
+		enableIdAttribute = enabled;
+	}
+
+	public static boolean getEnableIdAttribute() {
+		return enableIdAttribute;
+	}
+
 	public void setModelEnablements(ModelEnablements me) {
-		this.modelEnablements = me;
+		modelEnablements = me;
+		if (modelEnablements!=null)
+			modelEnablements.setEnableIdAttribute(enableIdAttribute);
 	}
 
 	public ModelEnablements getModelEnablements() {
 		return modelEnablements;
 	}
-	
+
+	public void copyModelEnablements(ModelEnablements copyMe) {
+		if (modelEnablements==null) {
+			modelEnablements = new ModelEnablements(targetRuntime);
+		}
+		modelEnablements.setEnabledAll(false);
+		for (String name : copyMe.getAllEnabled()) {
+			modelEnablements.setEnabled(name, true);
+		}
+	}
+
 	public void clear() {
 		if (modelEnablements!=null)
 			modelEnablements.setEnabledAll(false);
@@ -315,20 +375,22 @@ public class ToolProfilesPreferencesHelper {
 		}
 	}
 
-	public void importPreferences(String path) throws FileNotFoundException, IOException, BackingStoreException {
-//		Properties p = new Properties();
-//		p.load(new FileInputStream(path));
-//
-//		for (Object k : p.keySet()) {
-//			Object object = p.get(k);
-//			if (k instanceof String && object instanceof String) {
-//				preferences.setBoolean((String) k, Boolean.parseBoolean((String) object));
-//			}
-//		}
-//		preferences.save();
+	public void importProfile(String path) throws FileNotFoundException, IOException, BackingStoreException {
+		Properties p = new Properties();
+		p.load(new FileInputStream(path));
+		
+		ModelEnablements me = new ModelEnablements(targetRuntime);
+
+		for (Object key : p.keySet()) {
+			Object value = p.get(key);
+			if (key instanceof String && value instanceof String) {
+				boolean enabled = Boolean.parseBoolean((String) value);
+				me.setEnabled((String) key, enabled);
+			}
+		}
 	}
 
-	public void exportPreferences(String path) throws BackingStoreException, FileNotFoundException, IOException {
+	public void exportProfile(String path) throws BackingStoreException, FileNotFoundException, IOException {
 		FileWriter fw = new FileWriter(path);
 		boolean writeXml = path.endsWith(".xml"); //$NON-NLS-1$
 

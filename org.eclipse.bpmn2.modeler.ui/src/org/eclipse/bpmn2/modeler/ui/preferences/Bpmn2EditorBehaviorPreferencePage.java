@@ -19,6 +19,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -27,7 +28,11 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 @SuppressWarnings("nls")
 public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	Bpmn2Preferences preferences;
+	// Page ID must be the same as defined in plugin.xml
+	public static String PAGE_ID = "org.eclipse.bpmn2.modeler.Behavior";
+
+	private Bpmn2Preferences preferences;
+	private SettableBooleanFieldEditor btnShowIds;
 	
 	public Bpmn2EditorBehaviorPreferencePage() {
 		super(GRID);
@@ -50,11 +55,11 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 				getFieldEditorParent());
 		addField(showDescriptions);
 
-		BooleanFieldEditor showIds = new BooleanFieldEditor(
+		btnShowIds = new SettableBooleanFieldEditor(
 				Bpmn2Preferences.PREF_SHOW_ID_ATTRIBUTE,
 				Bpmn2Preferences.PREF_SHOW_ID_ATTRIBUTE_LABEL,
 				getFieldEditorParent());
-		addField(showIds);
+		addField(btnShowIds);
 
 		BooleanFieldEditor checkProjectNature = new BooleanFieldEditor(
 				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE,
@@ -155,5 +160,39 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 		preferences.setToDefault(Bpmn2Preferences.PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS);
 		preferences.setToDefault(Bpmn2Preferences.PREF_DO_CORE_VALIDATION);
 		super.performDefaults();
+	}
+	
+	public class SettableBooleanFieldEditor extends BooleanFieldEditor {
+		public SettableBooleanFieldEditor(String prefShowIdAttribute, String prefShowIdAttributeLabel,
+				Composite fieldEditorParent) {
+			super(prefShowIdAttribute, prefShowIdAttributeLabel, fieldEditorParent);
+		}
+
+		public void setSelection(boolean enable) {
+			Button btn = getChangeControl(getFieldEditorParent());
+			btn.setSelection(enable);
+		}
+	}
+	
+	/**
+	 * The "Show ID Attribute" preference is shared with the Tool Profiles page.
+	 * 
+	 * @return
+	 */
+	public boolean getShowIdAttribute() {
+		if (btnShowIds!=null)
+			return btnShowIds.getBooleanValue();
+		return preferences.getShowIdAttribute();
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (visible && btnShowIds!=null) {
+			// copy the "Show ID Attribute" setting from the Behavior page if it is active
+			ToolProfilesPreferencePage page = (ToolProfilesPreferencePage) Bpmn2HomePreferencePage.getPage(getContainer(), ToolProfilesPreferencePage.PAGE_ID);
+			if (page!=null)
+				btnShowIds.setSelection(page.getShowIdAttribute());
+		}
 	}
 }

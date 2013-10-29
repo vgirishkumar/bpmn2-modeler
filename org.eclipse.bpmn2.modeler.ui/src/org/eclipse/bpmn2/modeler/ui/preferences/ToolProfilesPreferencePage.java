@@ -24,27 +24,19 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.ICheckStateProvider;
-import org.eclipse.jface.viewers.IElementComparer;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -63,6 +55,9 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public class ToolProfilesPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
+	// Page ID must be the same as defined in plugin.xml
+	public static String PAGE_ID = "org.eclipse.bpmn2.modeler.Profiles";
+	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime currentRuntime;
 	private Bpmn2DiagramType currentDiagramType;
@@ -76,11 +71,15 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	private Button btnUseAsDefaultProfile;
 	private Button btnCreateProfile;
 	private Button btnDeleteProfile;
-	private CheckboxTreeViewer bpmnTreeViewer;
+	private Button btnShowIds;
+	private ModelEnablementTreeViewer bpmnTreeViewer;
 	private Tree bpmnTree;
-	private CheckboxTreeViewer extensionTreeViewer;
+	private ModelEnablementTreeViewer extensionTreeViewer;
 	private Tree extensionTree;
 
+	// a list of ToolProfilesPreferencesHelpers, one for each permutation of Target Runtime, Diagram Type
+	// and Tool Profiles defined in the Preferences. Helpers contain the Model Enablement list and are used
+	// as factories for Model Enablement Tree Entries. 
 	private Hashtable<TargetRuntime,
 				Hashtable<Bpmn2DiagramType,
 					Hashtable<String, ToolProfilesPreferencesHelper>>> helpers =
@@ -98,6 +97,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	@Override
 	public void init(IWorkbench workbench) {
 		preferences = Bpmn2Preferences.getInstance();
+		ToolProfilesPreferencesHelper.setEnableIdAttribute(preferences.getShowIdAttribute());
 	}
 
 	private ToolProfilesPreferencesHelper getHelper(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
@@ -121,7 +121,14 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			helper.setModelEnablements(me);
 			map2.put(profile, helper);
 		}
-
+		else {
+			ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
+			ModelEnablements me = helper.getModelEnablements();
+			if (me==null) {
+				me = preferences.getModelEnablements(rt, diagramType, profile);
+			}
+			helper.setModelEnablements(me);
+		}
 
 		return helper;
 	}
@@ -234,21 +241,29 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			public void widgetSelected(SelectionEvent e) {
 				CreateProfileDialog dlg = new CreateProfileDialog(parent.getShell());
 				if (dlg.open() == Window.OK) {
-					if (dlg.getCopyRuntime()!=null) {
-						TargetRuntime saveRuntime = currentRuntime;
-						Bpmn2DiagramType saveDiagramType = currentDiagramType;
-						currentRuntime = dlg.getCopyRuntime();
-						currentDiagramType = dlg.getCopyDiagramType();
-						currentProfile = dlg.getCopyProfile();
-						fillModelEnablementTrees();
-						currentRuntime = saveRuntime;
-						currentDiagramType = saveDiagramType;
-					}					
 					currentProfile = dlg.getValue();
 					preferences.createToolProfile(currentRuntime, currentDiagramType, currentProfile);
 					preferences.setDefaultToolProfile(currentRuntime, currentDiagramType, currentProfile);
+					if (dlg.getCopyProfile()!=null) {
+						// make a copy of an existing Tool Profile: get the Model Enablements to be copied
+						Bpmn2DiagramType saveDiagramType = currentDiagramType;
+						currentDiagramType = dlg.getCopyDiagramType();
+						currentProfile = dlg.getCopyProfile();
+						ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+						ModelEnablements copyMe = helper.getModelEnablements();
+
+						// create a helper for the new Tool Profile
+						currentProfile = dlg.getValue();
+						currentDiagramType = saveDiagramType;
+						helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+						
+						// and copy the ModelEnablements into it
+						helper.copyModelEnablements(copyMe);
+						preferences.setModelEnablements(currentRuntime, currentDiagramType, currentProfile, helper.getModelEnablements());
+					}					
+					currentProfile = dlg.getValue();
 					fillProfilesCombo();
-					loadModelEnablements();
+					fillModelEnablementTrees();
 				}
 			}
 		});
@@ -259,25 +274,57 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		btnDeleteProfile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				preferences.deleteToolProfile(currentRuntime, currentDiagramType, currentProfile);
-				fillProfilesCombo();
-				loadModelEnablements();
+				if (MessageDialog.openQuestion(getShell(),
+						"Confirm",
+						"This operation can not be undone.\nAre you sure you want to delete this Tool Profile?")) {
+					
+					preferences.deleteToolProfile(currentRuntime, currentDiagramType, currentProfile);
+					fillProfilesCombo();
+					fillModelEnablementTrees();
+				}
 			}
 		});
 
 		fillProfilesCombo();
-
 		
-		final Composite treesContainer = new Composite(container, SWT.BORDER);
-		treesContainer.setLayout(new GridLayout(2, true));
+		btnShowIds = new Button(buttonContainer, SWT.CHECK);
+		btnShowIds.setText("Show ID attributes (Advanced Behavior)");
+		btnShowIds.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		btnShowIds.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
+				getHelper(currentRuntime, currentDiagramType, currentProfile);
+				fillModelEnablementTrees();
+			}
+		});
+		btnShowIds.setSelection(preferences.getShowIdAttribute());
+		
+		final Composite treesContainer = new Composite(container, SWT.NONE);
+		treesContainer.setLayout(new GridLayout(2, false));
 		treesContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		
 		// Create Checkbox Tree Viwers for standard BPMN 2.0 elements and any extension elements
-		bpmnTreeViewer = createCheckboxTreeViewer(treesContainer, Messages.ToolProfilePreferencePage_Standard_Elements_Label);
+		ICheckStateListener checkStateListener = new ICheckStateListener() {
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				boolean checked = event.getChecked();
+				Object element = event.getElement();
+				if (element instanceof ModelEnablementTreeEntry) {
+					ModelEnablementTreeEntry entry = (ModelEnablementTreeEntry)element;
+					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+					helper.setEnabled(entry, checked);
+				}
+			}
+		};
+		
+		bpmnTreeViewer = new ModelEnablementTreeViewer(treesContainer, Messages.ToolProfilePreferencePage_Standard_Elements_Label);
 		bpmnTree = bpmnTreeViewer.getTree();
+		bpmnTreeViewer.addCheckStateListener(checkStateListener);
 
-		extensionTreeViewer = createCheckboxTreeViewer(treesContainer, Messages.ToolProfilePreferencePage_Extension_Elements_Label);
+		extensionTreeViewer = new ModelEnablementTreeViewer(treesContainer, Messages.ToolProfilePreferencePage_Extension_Elements_Label);
 		extensionTree = extensionTreeViewer.getTree();
+		extensionTreeViewer.addCheckStateListener(checkStateListener);
 
 		// adjust height of the tree viewers to fill their container when dialog is resized
 		// oddly enough, setting GridData.widthHint still causes the controls to fill available
@@ -308,10 +355,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 					try {
 						bpmnEntries.clear();
 						extensionEntries.clear();
-						getHelper(currentRuntime, currentDiagramType, currentProfile).importPreferences(path);
-						loadModelEnablements();
-						bpmnTreeViewer.refresh();
-						extensionTreeViewer.refresh();
+						getHelper(currentRuntime, currentDiagramType, currentProfile).importProfile(path);
+						fillModelEnablementTrees();
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -328,7 +373,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				String path = dialog.open();
 				if (path != null) {
 					try {
-						getHelper(currentRuntime, currentDiagramType, currentProfile).exportPreferences(path);
+						getHelper(currentRuntime, currentDiagramType, currentProfile).exportProfile(path);
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -393,156 +438,17 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	
 	private void fillModelEnablementTrees() {
 		loadModelEnablements();
-		initDataBindings(bpmnTreeViewer, bpmnEntries);
-		initDataBindings(extensionTreeViewer, extensionEntries);
+		bpmnTreeViewer.setInput(bpmnEntries);
+		extensionTreeViewer.setInput(extensionEntries);
 
 		if (TargetRuntime.DEFAULT_RUNTIME_ID.equals(currentRuntime.getId())) {
-			extensionTree.setVisible(false);
-			GridData data = (GridData)extensionTree.getLayoutData();
-			data.exclude = true;
+			extensionTreeViewer.setVisible(false);
 		}
 		else {
-			extensionTree.setVisible(true);
-			GridData data = (GridData)extensionTree.getLayoutData();
-			data.exclude = false;
+			extensionTreeViewer.setVisible(true);
 		}
-		extensionTree.getParent().layout();
 	}
 	
-	private CheckboxTreeViewer createCheckboxTreeViewer(Composite parent, String name) {
-		
-		Composite container = new Composite(parent, SWT.NULL);
-		container.setLayout(new GridLayout(1, true));
-		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-		final Label label = new Label(container, SWT.NONE);
-		label.setText(name);
-		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-
-		final CheckboxTreeViewer treeViewer = new CheckboxTreeViewer(container, SWT.BORDER);
-		final Tree tree = treeViewer.getTree();
-
-		GridData data = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
-		data.heightHint = 200;
-		data.widthHint = 50;
-		tree.setLayoutData(data);
-		treeViewer.setCheckStateProvider(new ICheckStateProvider() {
-			@Override
-			public boolean isChecked(Object element) {
-				if (element instanceof ModelEnablementTreeEntry) {
-					ModelEnablementTreeEntry modelEnablementTreeEntry = (ModelEnablementTreeEntry)element;
-					if (modelEnablementTreeEntry.getChildren().size()>0) {
-						for (ModelEnablementTreeEntry child : modelEnablementTreeEntry.getChildren()) {
-							if (child.getEnabled())
-								return true;
-						}
-						return false;
-					}
-					return modelEnablementTreeEntry.getEnabled();
-				}
-				return false;
-			}
-
-			@Override
-			public boolean isGrayed(Object element) {
-				if (element instanceof ModelEnablementTreeEntry) {
-					ModelEnablementTreeEntry modelEnablementTreeEntry = (ModelEnablementTreeEntry)element;
-					int countEnabled = 0;
-					for (ModelEnablementTreeEntry child : modelEnablementTreeEntry.getChildren()) {
-						if (child.getEnabled())
-							++countEnabled;
-					}
-					return countEnabled>0 && countEnabled != modelEnablementTreeEntry.getChildren().size();
-				}
-				return false;
-			}
-			
-		});
-		
-		treeViewer.addCheckStateListener(new ICheckStateListener() {
-			@Override
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				boolean checked = event.getChecked();
-				Object element = event.getElement();
-				if (element instanceof ModelEnablementTreeEntry) {
-					ModelEnablementTreeEntry modelEnablementTreeEntry = (ModelEnablementTreeEntry)element;
-					updateDescendents(modelEnablementTreeEntry, checked);
-					updateAncestors(modelEnablementTreeEntry.getParent(), checked);
-					
-					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
-					helper.setEnabled(modelEnablementTreeEntry, checked);
-				}
-			}
-			
-			void updateDescendents(ModelEnablementTreeEntry modelEnablementTreeEntry, boolean checked) {
-				for (ModelEnablementTreeEntry child : modelEnablementTreeEntry.getChildren()) {
-					updateDescendents(child,checked);
-				}
-				modelEnablementTreeEntry.setSubtreeEnabled(checked);
-				treeViewer.setSubtreeChecked(modelEnablementTreeEntry, checked);
-				
-				treeViewer.setChecked(modelEnablementTreeEntry, checked);
-				treeViewer.setGrayed(modelEnablementTreeEntry, false);
-				for (ModelEnablementTreeEntry friend : modelEnablementTreeEntry.getFriends()) {
-					updateAncestors(friend, checked);
-					if (friend.getParent()!=null)
-						updateAncestors(friend.getParent(), checked);
-				}
-				for (ModelEnablementTreeEntry child : modelEnablementTreeEntry.getChildren()) {
-					for (ModelEnablementTreeEntry friend : child.getFriends()) {
-						if (child.getParent()!=null)
-							updateAncestors(child.getParent(), checked);
-						updateAncestors(friend, checked);
-					}
-				}
-			}
-			
-			void updateAncestors(ModelEnablementTreeEntry parent, boolean checked) {
-				while (parent!=null) {
-					int enabled = parent.getSubtreeEnabledCount();
-					int size = parent.getSubtreeEnabledCount();
-					if (enabled==0) {
-						treeViewer.setChecked(parent, false);
-						parent.setEnabled(false);
-						checked = true;
-					}
-					else if (enabled==size) {
-						treeViewer.setChecked(parent, true);
-						treeViewer.setGrayed(parent, false);
-						parent.setEnabled(true);
-					}
-					else {
-						treeViewer.setGrayChecked(parent, true);
-						parent.setEnabled(true);
-					}
-					
-					for (ModelEnablementTreeEntry friend : parent.getFriends()) {
-						updateAncestors(friend, checked);
-					}
-					bpmnTreeViewer.refresh(parent);
-					extensionTreeViewer.refresh(parent);
-					parent = parent.getParent();
-				}
-			}
-		});
-
-		treeViewer.setComparer(new IElementComparer() {
-
-			@Override
-			public boolean equals(Object a, Object b) {
-				return a == b;
-			}
-
-			@Override
-			public int hashCode(Object element) {
-				return System.identityHashCode(element);
-			}
-		});
-		treeViewer.setUseHashlookup(true);
-		
-		return treeViewer;
-	}
-
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
@@ -551,6 +457,9 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		path = Bpmn2Preferences.getModelEnablementsPath(currentRuntime, currentDiagramType, currentProfile);
 		preferences.setToDefault(path);
 		fillProfilesCombo();
+		// force the helper's Model Enablements to be reloaded from default preferences
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+		helper.setModelEnablements(null);
 		fillModelEnablementTrees();
 	}
 
@@ -600,110 +509,27 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				}
 			}
 
+			preferences.setShowIdAttribute(btnShowIds.getSelection());
 			if (btnUseAsDefaultProfile.getSelection())
 				preferences.setDefaultToolProfile(currentRuntime, currentDiagramType, currentProfile);
-			
+
 			preferences.save();
 		} catch (BackingStoreException e) {
 			Activator.showErrorWithLogging(e);
 		}
 		return true;
 	}
-
-	protected DataBindingContext initDataBindings(CheckboxTreeViewer treeViewer, List<ModelEnablementTreeEntry> entries) {
-		if (treeViewer==null || entries==null)
-			return null;
-		
-		DataBindingContext bindingContext = new DataBindingContext();
-		//
-		treeViewer.setContentProvider(new ITreeContentProvider() {
-
-			@Override
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			}
-
-			@Override
-			public void dispose() {
-			}
-
-			@Override
-			public boolean hasChildren(Object element) {
-				if (element instanceof ModelEnablementTreeEntry) {
-					return !((ModelEnablementTreeEntry) element).getChildren().isEmpty();
-				}
-				return false;
-			}
-
-			@Override
-			public Object getParent(Object element) {
-				if (element instanceof ModelEnablementTreeEntry) {
-					return ((ModelEnablementTreeEntry) element).getParent();
-				}
-				return null;
-			}
-
-			@Override
-			public Object[] getElements(Object inputElement) {
-				if (inputElement instanceof WritableList) {
-					return ((WritableList) inputElement).toArray();
-				}
-				return null;
-			}
-
-			@Override
-			public Object[] getChildren(Object parentElement) {
-				if (parentElement instanceof ModelEnablementTreeEntry) {
-					return ((ModelEnablementTreeEntry) parentElement).getChildren().toArray();
-				}
-				return null;
-			}
-		});
-
-		treeViewer.setLabelProvider(new ILabelProvider() {
-			@Override
-			public void removeListener(ILabelProviderListener listener) {
-			}
-
-			@Override
-			public boolean isLabelProperty(Object element, String property) {
-				return false;
-			}
-
-			@Override
-			public void dispose() {
-
-			}
-
-			@Override
-			public void addListener(ILabelProviderListener listener) {
-			}
-
-			@Override
-			public Image getImage(Object element) {
-				return null;
-			}
-
-			@Override
-			public String getText(Object element) {
-				if (element instanceof ModelEnablementTreeEntry) {
-					return ((ModelEnablementTreeEntry) element).getName();
-				}
-				return null;
-			}
-		});
-		WritableList writableList = new WritableList(entries, ModelEnablementTreeEntry.class);
-		treeViewer.setInput(writableList);
-		//
-		return bindingContext;
-	}
 	
 	private class CreateProfileDialog extends InputDialog {
 
 		private String copySelection = null;
-		private TargetRuntime copyRuntime = null;
 		
 		public CreateProfileDialog(Shell parentShell) {
-			super(parentShell, "Create New Profile", "Enter a profile name", "", new IInputValidator() {
+			super(parentShell,
+					"Create New Profile",
+					NLS.bind("Enter the name of the new Profile to create in Target Runtime \"{0}\"", currentRuntime.getName()),
+					"",
+					new IInputValidator() {
 
 				@Override
 				public String isValid(String newText) {
@@ -720,23 +546,20 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		}
 
 		public String getCopyProfile() {
-			if (copySelection!=null) {
-				String a[] = copySelection.split("/");
-				return a[2];
+			if (copySelection!=null && copySelection.contains("/")) {
+				int i = copySelection.indexOf("/");
+				return copySelection.substring(i+1);
 			}
 			return null;
 		}
 
 		public Bpmn2DiagramType getCopyDiagramType() {
-			if (copySelection!=null) {
-				String a[] = copySelection.split("/");
-				return Bpmn2DiagramType.fromString(a[1]);
+			if (copySelection!=null && copySelection.contains("/")) {
+				int i = copySelection.indexOf("/");
+				String s = copySelection.substring(0,i);
+				return Bpmn2DiagramType.fromString(s);
 			}
 			return null;
-		}
-		
-		public TargetRuntime getCopyRuntime() {
-			return copyRuntime;
 		}
 		
 		@Override
@@ -757,17 +580,13 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					copySelection = cboCopy.getText();
-					copyRuntime = (TargetRuntime) cboCopy.getData(copySelection);
 				}
 			});
 			
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
-					for (String profile : preferences.getAllToolProfiles(rt, diagramType)) {
-						String key = rt.getName() + "/" + diagramType + "/" + profile;
-						cboCopy.add(key);
-						cboCopy.setData(key, rt);
-					}
+			for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
+				for (String profile : preferences.getAllToolProfiles(currentRuntime, diagramType)) {
+					String key = diagramType + "/" + profile;
+					cboCopy.add(key);
 				}
 			}
 			cboCopy.setEnabled(false);
@@ -783,6 +602,28 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			});
 			
 			return composite;
+		}
+	}
+	
+	/**
+	 * The "Show ID Attribute" preference is shared with the Behavior page.
+	 * 
+	 * @return
+	 */
+	public boolean getShowIdAttribute() {
+		if (btnShowIds!=null)
+			return btnShowIds.getSelection();
+		return preferences.getShowIdAttribute();
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (visible && btnShowIds!=null) {
+			// copy the "Show ID Attribute" setting from the Behavior page if it is active
+			Bpmn2EditorBehaviorPreferencePage page = (Bpmn2EditorBehaviorPreferencePage) Bpmn2HomePreferencePage.getPage(getContainer(), Bpmn2EditorBehaviorPreferencePage.PAGE_ID);
+			if (page!=null)
+				btnShowIds.setSelection(page.getShowIdAttribute());
 		}
 	}
 }

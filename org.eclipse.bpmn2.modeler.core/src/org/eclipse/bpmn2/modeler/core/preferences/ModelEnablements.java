@@ -11,7 +11,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -20,13 +19,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.graphiti.features.IFeature;
 
 public class ModelEnablements {
 	
+	// Map of enabled EClasses and their enabled Features
 	private Hashtable<String, HashSet<String>> classes = new Hashtable<String, HashSet<String>>();
 	private TargetRuntime targetRuntime = null;
+	private int enableIdAttribute = -1;
 	
 	// require a TargetRuntime!
 	private ModelEnablements() {
@@ -34,6 +34,14 @@ public class ModelEnablements {
 
 	public ModelEnablements(TargetRuntime targetRuntime) {
 		this.targetRuntime = targetRuntime;
+	}
+
+	public void setEnableIdAttribute(boolean enabled) {
+		enableIdAttribute = enabled ? 1 : 0;
+	}
+
+	public boolean getEnableIdAttribute() {
+		return enableIdAttribute == 1;
 	}
 	
 	public void setEnabledAll(boolean enabled) {
@@ -99,6 +107,13 @@ public class ModelEnablements {
 		}
 	}
 	
+	/**
+	 * Check if the given EClass is a candidate for enablement, by checking if its containing
+	 * EPackage is either the one defined by the TargetRuntime, or one of the BPMN2 packages.
+	 * 
+	 * @param eClass - the EClass to check.
+	 * @return true if the EClass is valid, false if not.
+	 */
 	private boolean isValid(EClass eClass) {
 		if (eClass!=null && eClass.getInstanceClass() != EObject.class) {
 			EPackage pkg = eClass.getEPackage();
@@ -109,6 +124,13 @@ public class ModelEnablements {
 		return false;
 	}
 	
+	/**
+	 * Find an EClass by name. The EPackage defined by the TargetRuntime is searched first,
+	 * then the BPMN2 packages.
+	 * 
+	 * @param className - name of an EClass.
+	 * @return the EClass instance or null if not found.
+	 */
 	private EClass getEClass(String className) {
 		// try the runtime package first
 		EClass eClass = (EClass)targetRuntime.getModelDescriptor().getEPackage().getEClassifier(className);
@@ -143,21 +165,85 @@ public class ModelEnablements {
 		}
 	}
 	
-	public void setEnabled(String className, boolean enabled) {
-		if (className.indexOf(".")>0) {
-			String a[] = className.split("\\.");
-			setEnabled(a[0], a[1], enabled);
+	/**
+	 * Sets enablement for the given named element, which may be either just an EClass
+	 * name or an EClass feature.
+	 * 
+	 * @param name - element name which may be in the form "eclass" or "eclass.feature" 
+	 * @param enabled - if true add the EClass and/or EClass and Feature to our class map,
+	 * if false, remove the element.
+	 */
+	public void setEnabled(String name, boolean enabled) {
+		int i = name.indexOf(".");
+		if (i>0) {
+			setEnabled(name.substring(0,i), name.substring(i+1), enabled);
 			return;
 		}
-		EClass eClass = getEClass(className);
+		// enable or disable just the class
+		EClass eClass = getEClass(name);
+		setEnabledSingle(eClass, enabled);
 		
+		if (enabled) {
+			// and enable all of its contained and referenced types
+			if (eClass!=null) {
+				HashSet<String> features = classes.get(name);
+				
+				for (EAttribute a : eClass.getEAllAttributes()) {
+					features.add(a.getName());
+				}
+				for (EReference a : eClass.getEAllContainments()) {
+					features.add(a.getName());
+//					setEnabledSingle(a.getEReferenceType(), true);
+				}
+				for (EReference a : eClass.getEAllReferences()) {
+					features.add(a.getName());
+//					setEnabledSingle(a.getEReferenceType(), true);
+				}
+			}
+		}
+		else {
+			// remove any reference or containment list features
+			// of this type for other elements 
+			List<String> removed = new ArrayList<String>();
+			for (Entry<String, HashSet<String>> entry : classes.entrySet()) {
+				EClass ec = getEClass(entry.getKey());
+				if (ec!=null) {
+					HashSet<String> features = entry.getValue();
+	
+					for (EReference a : ec.getEAllContainments()) {
+						// if this feature is a reference to the
+						// class being disabled, remove it
+						if (a.getEReferenceType() == eClass)
+							removed.add(a.getName());
+					}
+					for (EReference a : ec.getEAllReferences()) {
+						if (a.getEReferenceType() == eClass)
+							removed.add(a.getName());
+					}
+					features.removeAll(removed);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Sets enablement for the given EClass as well as all EClasses referenced by it.
+	 * NOTE: Not sure if this is required/wanted for the UI.
+	 * 
+	 * @param eClass - the EClass which will be added to, or removed from our list of
+	 * enabled classes, depending on the "enabled" flag. 
+	 * @param enabled - if true, add the EClass and all of its referenced classes,
+	 * if false, remove the EClass and all of its referenced classes.
+	 */
+	public void setEnabledAll(EClass eClass, boolean enabled) {
+
 		// enable or disable the class
 		setEnabledSingle(eClass,enabled);
 		
 		if (enabled) {
 			// and enable all of its contained and referenced types
 			if (eClass!=null) {
-				HashSet<String> features = classes.get(className);
+				HashSet<String> features = classes.get(eClass.getName());
 				
 				for (EAttribute a : eClass.getEAllAttributes()) {
 					features.add(a.getName());
@@ -248,16 +334,17 @@ public class ModelEnablements {
 
 	public boolean isEnabled(String className, String featureName) {
 		if ("id".equals(featureName)) { //$NON-NLS-1$
-			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
-			if (!prefs.getShowIdAttribute())
+			// this needs to happen very late in the lifecycle of this class because we don't want
+			// to force loading of the Bpmn2Preferences (and setting up default preference values)
+			// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
+			// See Bpmn2Preferences#loadDefaults()
+			if (enableIdAttribute== -1) {
+				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
+				setEnableIdAttribute(prefs.getShowIdAttribute());
+			}
+			if (!getEnableIdAttribute())
 				return false;
 		}
-//		if (prefs.getOverrideModelEnablementProfile() && profile.equals(prefs.getDefaultToolProfile(Bpmn2DiagramType.NONE))) {
-//			String name = className;
-//			if (featureName!=null && !featureName.isEmpty())
-//				name += "." + featureName; //$NON-NLS-1$
-//			return getToolEnablementPreferences().isEnabled(name);
-//		}
 		if (className==null)
 			return true;
 		if (classes.containsKey(className)) { // && isOverride()) {
@@ -284,9 +371,9 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className) {
-		if (className.indexOf(".")>0) {
-			String a[] = className.split("\\.");
-			return isEnabled(a[0], a[1]);
+		int i = className.indexOf(".");
+		if (i>0) {
+			return isEnabled(className.substring(0,i), className.substring(i+1));
 		}
 		return isEnabled(className, null);
 	}

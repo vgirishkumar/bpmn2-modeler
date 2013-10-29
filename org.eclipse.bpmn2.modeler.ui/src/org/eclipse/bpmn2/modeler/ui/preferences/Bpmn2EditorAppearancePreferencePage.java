@@ -38,6 +38,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -53,6 +55,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -118,19 +121,26 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		GridLayout layout = (GridLayout)parent.getLayout();
 		
 		container = new Composite(parent, SWT.NONE);
-		container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1));
+		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		container.setLayout(new GridLayout(2, false));
-		container.setFont(parent.getFont());
         
         elementsTreeViewer = new TreeViewer(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-        elementsTreeViewer.getControl().setFont(parent.getFont());
-        GridData data = new GridData(SWT.FILL,SWT.TOP,true,false,1,1);
-		data.heightHint = 200;
-        elementsTreeViewer.getControl().setLayoutData(data);
+        Tree elementsTree = elementsTreeViewer.getTree();
+        GridData data = new GridData(SWT.FILL,SWT.TOP,true,true,1,1);
+		data.heightHint = 50;
+        elementsTree.setLayoutData(data);
         
         elementsTreeViewer.setContentProvider(new BEListContentProvider());
         elementsTreeViewer.setLabelProvider(new BEListLabelProvider());
         elementsTreeViewer.addSelectionChangedListener(new BEListSelectionChangedListener());
+		parent.addControlListener(new ControlAdapter() {
+			@Override
+			public void controlResized(ControlEvent e) {
+				GridData gd = (GridData) elementsTreeViewer.getTree().getLayoutData();
+				gd.heightHint = 1000;
+				container.layout();
+			}
+		});
         
         styleEditors = new Composite(container, SWT.NONE);
         styleEditors.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));

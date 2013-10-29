@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.preferences;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.TristateCheckboxFieldEditor;
@@ -17,7 +20,13 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.preference.IPreferencePage;
+import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.IntegerFieldEditor;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -113,4 +122,19 @@ public class Bpmn2HomePreferencePage
 		preferences.setToDefault(Bpmn2Preferences.PREF_CONNECTION_TIMEOUT);
 		super.performDefaults();
 	}
+	
+	public static IPreferencePage getPage(IPreferencePageContainer container, String nodeId) {
+		PreferenceDialog pd = (PreferenceDialog) container;
+		PreferenceManager pm = pd.getPreferenceManager();
+
+		List nodes = pm.getElements(PreferenceManager.POST_ORDER);
+		for (Iterator i = nodes.iterator(); i.hasNext();) {
+			IPreferenceNode node = (IPreferenceNode) i.next();
+			if (node.getId().equals(nodeId)) {
+				return node.getPage();
+			}
+		}
+		return null;
+	}
+
 }

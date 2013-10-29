@@ -68,7 +68,7 @@
 	      <page
 	            category="org.eclipse.bpmn2.modeler.BPMN2/org.eclipse.bpmn2.modeler.Editor"
 	            class="org.eclipse.bpmn2.modeler.ui.preferences.Bpmn2EditorAppearancePreferencePage"
-	            id="org.eclipse.bpmn2.modeler.Behavior"
+	            id="org.eclipse.bpmn2.modeler.Appearance"
 	            name="%PREFERENCE_PAGE_APPEARANCE"/>
 	      <page
 	            category="org.eclipse.bpmn2.modeler.BPMN2/org.eclipse.bpmn2.modeler.Editor"
@@ -1082,6 +1082,7 @@
 				
 			<!-- copy the enablements from "Process" diagram type -->
 			<!-- and then add these objects -->
+			<enable object="Collaboration"/>
 			<enable object="Participant"/>
 			<enable object="Lane"/>
 			<enable object="MessageFlow"/>
@@ -1159,7 +1160,7 @@
 		<style object="Conversation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="DataAssociation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="DataInput" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataObject" foreground="546778" background="D4E7F8" textColor="546778" font="Arial,10,-,-"/>
+		<style object="DataObject" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="DataOutput" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="DataStoreReference" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="EndEvent" foreground="7F0000" background="FF8080" textColor="7F0000" font="arial,10,-,-"/>

@@ -666,7 +666,11 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		// more and more just to get things done.
 		// Think about either reorganizing these two plugins, or simply combining them...
 		DiagramEditor diagramEditor = ModelUtil.getEditor(object);
-		return (ModelEnablementDescriptor) diagramEditor.getAdapter(ModelEnablementDescriptor.class);
+		TargetRuntime rt = (TargetRuntime) diagramEditor.getAdapter(TargetRuntime.class);
+		ArrayList<ModelEnablementDescriptor> meds = rt.getModelEnablements();
+		if (meds.size()>0)
+			return meds.get(0);
+		return null;
 	}
 	
 	public ArrayList<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)

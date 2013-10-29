@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
@@ -114,7 +115,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	public final static String DEFAULT_PALETTE_ID = "org.bpmn2.modeler.toolpalette.default.categories"; //$NON-NLS-1$
 	
 	BPMNFeatureProvider featureProvider;
-	ModelEnablementDescriptor modelEnablements;
+	ModelEnablements modelEnablements;
 	ModelDescriptor modelDescriptor;
 	Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	List<IPaletteCompartmentEntry> palette;
@@ -163,14 +164,12 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 
 	public void createPaletteProfilesGroup(BPMN2Editor editor, PaletteRoot paletteRoot) {
 		TargetRuntime rt = editor.getTargetRuntime();
-		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
-		int size = 0;
 		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
 
-		for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
-			String profile = med.getProfile();
-			if (profile==null)
-				profile = Messages.BPMNToolBehaviorProvider_Unnamed_Profile+(size+1);
+		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
+		int size = 0;
+
+		for (String profile : editor.getPreferences().getAllToolProfiles(rt, diagramType)) {
 			drawer.add(new ProfileSelectionToolEntry(editor, profile));
 			++size;
 		}
@@ -193,7 +192,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(object);
 			String profile = editor.getPreferences().getDefaultToolProfile(diagramType);
 			TargetRuntime rt = editor.getTargetRuntime();
-			modelEnablements = rt.getModelEnablements(diagramType, profile);
+			modelEnablements = editor.getModelEnablements();
 			featureProvider = (BPMNFeatureProvider)getFeatureProvider();
 			modelDescriptor = rt.getModelDescriptor();
 			

@@ -364,9 +364,17 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 			}
 		}
 		else if (key.equals(PREF_SHAPE_STYLE)) {
+			// Use ShapeStyles defined in the Default Target Runtime if an extension does not provide its own. 
+			Map<Class, ShapeStyle> defaultShapeStyles = TargetRuntime.getDefaultRuntime().getShapeStyles();
 			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
 				String path = getShapeStylePath(rt);
 				Preferences prefs = defaultPreferences.node(path);
+				if (rt!=TargetRuntime.getDefaultRuntime()) {
+					for (Entry<Class, ShapeStyle> entry : defaultShapeStyles.entrySet()) {
+						String value = ShapeStyle.encode(entry.getValue());
+						prefs.put(entry.getKey().getSimpleName(), value);
+					}
+				}
 				for (Entry<Class, ShapeStyle> entry : rt.getShapeStyles().entrySet()) {
 					String value = ShapeStyle.encode(entry.getValue());
 					prefs.put(entry.getKey().getSimpleName(), value);
@@ -693,14 +701,19 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				Preferences prefs = null;
 				String path = getToolProfilePath(rt, diagramType);
 				String keys[] = null;
+				boolean populate = false;
 				if (projectPreferences!=null && useProjectPreferences) {
-					if (!projectPreferences.nodeExists(path))
+					if (!projectPreferences.nodeExists(path)) {
+						populate = true;
 						keys = defaultPreferences.node(path).keys();
+					}
 					prefs = projectPreferences.node(path);
 				}
 				else {
-					if (!instancePreferences.nodeExists(path))
+					if (!instancePreferences.nodeExists(path)) {
 						keys = defaultPreferences.node(path).keys();
+						populate = true;
+					}
 					prefs = instancePreferences.node(path);
 				}
 	
@@ -711,11 +724,12 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				for (String p : keys) {
 					if (profile.equals(p)) {
 						result = false;
-						break;
 					}
+					if (populate)
+						prefs.putBoolean(p, false);
 				}
 				if (result) {
-					prefs.putBoolean(profile, false);
+					prefs.putBoolean(profile, true);
 				}
 			}
 			catch (BackingStoreException e) {
@@ -732,14 +746,19 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				Preferences prefs = null;
 				String path = getToolProfilePath(rt, diagramType);
 				String keys[] = null;
+				boolean populate = false;
 				if (projectPreferences!=null && useProjectPreferences) {
-					if (!projectPreferences.nodeExists(path))
+					if (!projectPreferences.nodeExists(path)) {
 						keys = defaultPreferences.node(path).keys();
+						populate = true;
+					}
 					prefs = projectPreferences.node(path);
 				}
 				else {
-					if (!instancePreferences.nodeExists(path))
+					if (!instancePreferences.nodeExists(path)) {
 						keys = defaultPreferences.node(path).keys();
+						populate = true;
+					}
 					prefs = instancePreferences.node(path);
 				}
 	
@@ -747,10 +766,11 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 					keys = prefs.keys();
 	
 				for (String p : keys) {
+					if (populate)
+						prefs.putBoolean(p, false);
 					if (profile.equals(p)) {
 						result = true;
 						prefs.remove(p);
-						break;
 					}
 				}
 				if (result && prefs.keys().length>0) {
@@ -798,6 +818,10 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + diagramType + "/" + profile;
 	}
 
+	public ModelEnablements getModelEnablements(Bpmn2DiagramType diagramType, String profile) {
+		return getModelEnablements(getRuntime(), diagramType, profile);
+	}
+	
 	public ModelEnablements getModelEnablements(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
 		ModelEnablements me = new ModelEnablements(rt);
 		if (profile!=null && !profile.isEmpty()) {
@@ -843,8 +867,6 @@ public class Bpmn2Preferences implements IPreferenceChangeListener, IPropertyCha
 				}
 			
 				for (String s : me.getAllEnabled()) {
-					if (s.startsWith("Activity"))
-						System.out.println("oops");
 					prefs.putBoolean(s, true);
 				}
 				return true;

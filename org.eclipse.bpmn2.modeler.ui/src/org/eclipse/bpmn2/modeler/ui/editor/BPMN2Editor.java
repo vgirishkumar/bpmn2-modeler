@@ -90,6 +90,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -324,7 +325,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime targetRuntime;
-	private String modelEnablementProfile;
+	private ModelEnablements modelEnablements;
 	private boolean importInProgress;
 	private BPMN2EditorSelectionSynchronizer synchronizer;
 
@@ -573,6 +574,15 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		return targetRuntime;
 	}
 	
+	public ModelEnablements getModelEnablements() {
+		if (modelEnablements==null) {
+			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
+			String profile = getPreferences().getDefaultToolProfile(diagramType);
+			modelEnablements = getPreferences().getModelEnablements(diagramType, profile);
+		}
+		return modelEnablements;
+	}
+	
 	protected TargetRuntime getTargetRuntime(IEditorInput input) {
 		if (targetRuntime==null && input!=null) {
 			 // If the project has not been configured for a specific runtime through the "BPMN2"
@@ -809,10 +819,8 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 			if (multipageEditor.getActiveEditor() == multipageEditor.getSourceViewer())
 				return multipageEditor.getSourceViewer();
 		}
-		if (required == ModelEnablementDescriptor.class) {
-			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
-			String profile = getPreferences().getDefaultToolProfile(diagramType);
-			return getTargetRuntime().getModelEnablements(diagramType, profile);
+		if (required == ModelEnablements.class) {
+			return getModelEnablements();
 		}
 		if (required == ToolPaletteDescriptor.class) {
 			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
@@ -950,6 +958,7 @@ public class BPMN2Editor extends DiagramEditor implements IPropertyChangeListene
 		
 		// remember this for later
 		this.bpmnDiagram = bpmnDiagram;
+		modelEnablements = null;
 	}
 
 	@Override
