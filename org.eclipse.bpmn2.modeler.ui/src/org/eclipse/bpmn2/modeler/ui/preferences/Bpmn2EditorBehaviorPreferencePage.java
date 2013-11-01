@@ -75,6 +75,12 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 //				getFieldEditorParent());
 //		addField(simplifyLists);
 
+		BooleanFieldEditor usePopupDialogForLists = new BooleanFieldEditor(
+		Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS,
+		Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS_LABEL,
+		getFieldEditorParent());
+		addField(usePopupDialogForLists);
+
 		//////////////////////////////////////////////////////////////////////////////
 		
 		TristateCheckboxFieldEditor popupConfigDialog = new TristateCheckboxFieldEditor(

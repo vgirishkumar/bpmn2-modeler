@@ -46,6 +46,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -69,6 +70,9 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
@@ -77,12 +81,13 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 
-public class Bpmn2Preferences implements IResourceChangeListener {
+public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChangeListener {
 	public final static String PREF_TARGET_RUNTIME = "target.runtime"; //$NON-NLS-1$
 	public final static String PREF_TARGET_RUNTIME_LABEL = Messages.Bpmn2Preferences_Target_Runtime;
 	public final static String PREF_SHOW_ADVANCED_PROPERTIES = "show.advanced.properties"; //$NON-NLS-1$
@@ -106,6 +111,9 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 
 	public final static String PREF_CONNECTION_TIMEOUT = "connection.timeout"; //$NON-NLS-1$
 	public final static String PREF_CONNECTION_TIMEOUT_LABEL = Messages.Bpmn2Preferences_Timeout;
+
+	public final static String PREF_USE_POPUP_DIALOG_FOR_LISTS = "popup.detail.dialog"; //$NON-NLS-1$
+	public final static String PREF_USE_POPUP_DIALOG_FOR_LISTS_LABEL = Messages.Bpmn2Preferences_Use_Popup_Dialog_For_Lists;
 
 	public final static String PREF_POPUP_CONFIG_DIALOG = "popup.config.dialog"; //$NON-NLS-1$
 	public final static String PREF_POPUP_CONFIG_DIALOG_LABEL = Messages.Bpmn2Preferences_Config_Dialog;
@@ -135,6 +143,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 	private static Hashtable<IProject,Bpmn2Preferences> instances = null;
 	private static IProject activeProject;
 	private static ListenerList preferenceChangeListeners;
+	private static IPreferenceStore preferenceStore;
 
 	private IProject project;
 	private boolean useProjectPreferences;
@@ -157,6 +166,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 	private boolean showIdAttribute;
 	private boolean checkProjectNature;
 	private boolean simplifyLists;
+	private boolean usePopupDialogForLists;
 	private boolean doCoreValidation;
 	private BPMNDIAttributeDefault isHorizontal;
 	private BPMNDIAttributeDefault isExpanded;
@@ -172,6 +182,8 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 		this.project = project;
 		
 		IPreferencesService preferenceService = Platform.getPreferencesService();
+		if (preferenceStore==null)
+			preferenceStore = Activator.getDefault().getPreferenceStore();
 		if (instancePreferences==null)
 			instancePreferences = (IEclipsePreferences) preferenceService.getRootNode().node(InstanceScope.SCOPE).node(Activator.PLUGIN_ID);
 		if (defaultPreferences==null)
@@ -179,6 +191,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 
 		if (project != null) {
 			projectPreferences = (IEclipsePreferences) preferenceService.getRootNode().node(ProjectScope.SCOPE).node(project.getName()).node(Activator.PLUGIN_ID);
+			preferenceStore.addPropertyChangeListener(this);
 			
 			try {
 				projectPreferences.sync();
@@ -215,7 +228,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 	 * @return project preferences
 	 */
 	public static Bpmn2Preferences getInstance(EObject object) {
-		return getInstance(object.eResource());
+		return getInstance(ModelUtil.getResource(object));
 	}
 	
 	public static Bpmn2Preferences getInstance(Resource resource) {
@@ -279,6 +292,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 		if (project!=null)
 			instances.remove(project);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		preferenceStore.removePropertyChangeListener(this);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +306,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 			defaultPreferences.putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			defaultPreferences.putBoolean(PREF_CHECK_PROJECT_NATURE, true);
 			defaultPreferences.putBoolean(PREF_SIMPLIFY_LISTS, true);
+			defaultPreferences.putBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, false);
 			defaultPreferences.putBoolean(PREF_SHOW_DESCRIPTIONS, true);
 			defaultPreferences.put(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.DEFAULT_TRUE.name());
 			defaultPreferences.put(PREF_IS_EXPANDED, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
@@ -384,6 +399,11 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 		return false;
 	}
 	
+	public void reload() {
+		cached = false;
+		cache();
+	}
+	
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
@@ -396,6 +416,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
 			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
 			simplifyLists = getBoolean(PREF_SIMPLIFY_LISTS, true);
+			usePopupDialogForLists = getBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
@@ -424,6 +445,7 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 			putBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
 			putBoolean(PREF_CHECK_PROJECT_NATURE, checkProjectNature);
 			putBoolean(PREF_SIMPLIFY_LISTS, simplifyLists);
+			putBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, usePopupDialogForLists);
 			setBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, isHorizontal);
 
 			setBPMNDIAttributeDefault(PREF_IS_EXPANDED, isExpanded);
@@ -856,6 +878,15 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 		simplifyLists = simplify;
 	}
 	
+	public boolean getUsePopupDialogForLists() {
+		return usePopupDialogForLists;
+	}
+	
+	public void setUsePopupDialogForLists(boolean enable) {
+		putBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS,enable);
+		usePopupDialogForLists = enable;
+	}
+	
 	public boolean getShowPopupConfigDialog(Object context) {
 		if (popupConfigDialog!=0) {
 			if (context instanceof Task || context instanceof ChoreographyActivity) {
@@ -1211,7 +1242,9 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 				}
 			}
 			else {
-				instancePreferences.put(key, defaultPreferences.get(key,""));
+				if (projectPreferences!=null)
+					projectPreferences.remove(key);
+				instancePreferences.remove(key);
 			}
 		}
 		catch (BackingStoreException e) {
@@ -1487,5 +1520,19 @@ public class Bpmn2Preferences implements IResourceChangeListener {
 	public void setBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault value) {
 		PreferencesHelper helper = new PreferencesHelper(key, true);
 		helper.put(value.name());
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());
+	
+		// notify all other Bpmn2Preferences instances (if any)
+		if (instances!=null) {
+			for (Entry<IProject, Bpmn2Preferences> entry : instances.entrySet()) {
+				Bpmn2Preferences pref = entry.getValue();
+				if (pref!=this)
+					pref.firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());
+			}
+		}
 	}
 }

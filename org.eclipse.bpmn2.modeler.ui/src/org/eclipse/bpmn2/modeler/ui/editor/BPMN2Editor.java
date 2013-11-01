@@ -1198,6 +1198,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void preferenceChange(PreferenceChangeEvent event) {
+		getPreferences().reload();
+		
 		if (event.getKey().contains("/"+Bpmn2Preferences.PREF_MODEL_ENABLEMENT+"/"))
 			modelEnablements = null;
 

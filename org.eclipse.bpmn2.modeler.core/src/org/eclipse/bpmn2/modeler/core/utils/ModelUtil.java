@@ -984,18 +984,27 @@ public class ModelUtil {
 		return false;
 	}
 	
+	/**
+	 * Given an EObject always returns the BPMN2 Resource that is associated with that object.
+	 * This may involve searching for all Resources in the ResourceSet that the EObject belongs to.
+	 * This also searches for a Resource in the object's InsertionAdapter if the object is not yet
+	 * contained in any Resource.
+	 * 
+	 * @param object
+	 * @return
+	 */
 	public static Resource getResource(EObject object) {
 		Resource resource = null;
-		if (object instanceof Shape) {
-			ResourceSet rs = object.eResource().getResourceSet();
-			for (Resource r : rs.getResources()) {
-				if (r instanceof Bpmn2Resource) {
-					return r;
+		if (object!=null) {
+			resource = object.eResource();
+			if (resource!=null) {
+				ResourceSet rs = resource.getResourceSet();
+				for (Resource r : rs.getResources()) {
+					if (r instanceof Bpmn2Resource) {
+						return r;
+					}
 				}
 			}
-		}
-		else  if (object!=null) {
-			resource = object.eResource();
 			if (resource==null) {
 				InsertionAdapter insertionAdapter = AdapterUtil.adapt(object, InsertionAdapter.class);
 				if (insertionAdapter!=null)

@@ -839,6 +839,10 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		}
 	}
 	
+	public Bpmn2Resource getResource() {
+		return bpmnResource;
+	}
+	
 	protected void setProblemMarkerId(String id) {
 		problemMarkerId = id;
 	}

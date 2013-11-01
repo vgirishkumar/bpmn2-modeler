@@ -344,7 +344,7 @@ public class ModelEnablements {
 			// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
 			// See Bpmn2Preferences#loadDefaults()
 			if (enableIdAttribute== -1) {
-				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
+				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(targetRuntime.getResource());
 				setEnableIdAttribute(prefs.getShowIdAttribute());
 			}
 			if (!getEnableIdAttribute())
