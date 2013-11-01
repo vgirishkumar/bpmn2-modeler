@@ -1031,7 +1031,7 @@ public class ModelUtil {
 	}
 	
 	public static Definitions getDefinitions(Resource resource) {
-		if (resource!=null) {
+		if (resource!=null && !resource.getContents().isEmpty() && !resource.getContents().get(0).eContents().isEmpty()) {
 			Object defs = resource.getContents().get(0).eContents().get(0);
 			if (defs instanceof Definitions)
 				return (Definitions)defs;
@@ -1331,10 +1331,6 @@ public class ModelUtil {
 		if (feature==null)
 			return null;
 		
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
-		if (adapter!=null)
-			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
-		
 		if (feature.getEType() instanceof EEnum) {
 			EEnum en = (EEnum)feature.getEType();
 			Hashtable<String,Object> choices = new Hashtable<String,Object>();
@@ -1343,6 +1339,10 @@ public class ModelUtil {
 			}
 			return choices;
 		}
+		
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		if (adapter!=null)
+			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
 		return null;
 	}
 
@@ -1592,6 +1592,12 @@ public class ModelUtil {
 
 	public static DiagramEditor getEditor(EObject object) {
 		Resource resource = InsertionAdapter.getResource(object);
+		if(resource!=null)
+			return getEditor(resource.getResourceSet());
+		return null;
+	}
+
+	public static DiagramEditor getEditor(Resource resource) {
 		if(resource!=null)
 			return getEditor(resource.getResourceSet());
 		return null;

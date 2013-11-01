@@ -61,17 +61,19 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 				getFieldEditorParent());
 		addField(btnShowIds);
 
-		BooleanFieldEditor checkProjectNature = new BooleanFieldEditor(
-				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE,
-				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE_LABEL,
-				getFieldEditorParent());
-		addField(checkProjectNature);
+		// This belongs in Project Property Page
+//		BooleanFieldEditor checkProjectNature = new BooleanFieldEditor(
+//				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE,
+//				Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE_LABEL,
+//				getFieldEditorParent());
+//		addField(checkProjectNature);
 
-		BooleanFieldEditor simplifyLists = new BooleanFieldEditor(
-				Bpmn2Preferences.PREF_SIMPLIFY_LISTS,
-				Bpmn2Preferences.PREF_SIMPLIFY_LISTS_LABEL,
-				getFieldEditorParent());
-		addField(simplifyLists);
+		// TODO: is this useful? probably not
+//		BooleanFieldEditor simplifyLists = new BooleanFieldEditor(
+//				Bpmn2Preferences.PREF_SIMPLIFY_LISTS,
+//				Bpmn2Preferences.PREF_SIMPLIFY_LISTS_LABEL,
+//				getFieldEditorParent());
+//		addField(simplifyLists);
 
 		//////////////////////////////////////////////////////////////////////////////
 		
