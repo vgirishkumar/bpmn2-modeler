@@ -464,6 +464,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		// Allow the runtime extension to construct custom tasks and whatever else it needs
 		// custom tasks should be added to the current target runtime's custom tasks list
 		// where they will be picked up by the toolpalette refresh.
+		setActiveEditor(this);	// set the Bpmn2Preferences.activeProject just before RT extension is initialized
 		getTargetRuntime().getRuntimeExtension().initialize(this);
 
 		// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
