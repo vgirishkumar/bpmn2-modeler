@@ -104,8 +104,11 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 			if (adapter==null)
 				adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
 			if (adapter!=null) {
-				if (eObject instanceof EClass)
-					eObject = getDummyObject((EClass)eObject);
+				if (eObject instanceof EClass) {
+					EObject dummy = getDummyObject((EClass)eObject);
+					if (dummy!=null)
+						eObject = dummy;
+				}
 				adapter.setTarget(eObject);
 				adapter.getObjectDescriptor().setObject(eObject);
 				if (feature!=null)
@@ -128,7 +131,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	 */
 	public static EObject getDummyObject(EClass eclass) {
 		EObject object = dummyObjects.get(eclass);
-		if (object==null && eclass.eContainer() instanceof EPackage) {
+		if (object==null && eclass.eContainer() instanceof EPackage && !eclass.isAbstract()) {
 	    	EPackage pkg = (EPackage)eclass.eContainer();
 	    	object = pkg.getEFactoryInstance().create(eclass);
 			dummyObjects.put(eclass, object);

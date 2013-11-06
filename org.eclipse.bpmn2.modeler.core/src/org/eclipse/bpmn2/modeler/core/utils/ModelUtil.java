@@ -1432,6 +1432,8 @@ public class ModelUtil {
 					return true;
 				if (Bpmn2Package.eINSTANCE.getRootElement().isSuperTypeOf((EClass)feature.getEType()))
 					return true;
+				if (feature.isMany())
+					return true;
 				return false;
 			}
 			return true;

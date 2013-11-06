@@ -56,6 +56,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	protected boolean cancel = false;
 	protected boolean abortOnCancel = true;
 	protected Transaction transaction;
+	protected ScrolledForm form;
 	protected Composite dialogContent;
     private Text errorMessageText;
     private IPropertiesCompositeFactory compositeFactory = null;
@@ -76,7 +77,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	@Override
 	protected void createFormContent(IManagedForm mform) {
 		super.createFormContent(mform); 
-		final ScrolledForm form = mform.getForm();
+		form = mform.getForm();
 		form.setExpandHorizontal(true);
 		form.setExpandVertical(true);
 		form.setText(null);
@@ -103,15 +104,6 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		data.right = new FormAttachment(100, 0);
 		dialogContent.setLayoutData(data);
 		
-		// The AbstractDetailComposite controls don't actually get constructed until
-		// setBusinessObject() is called - the business object determines which controls
-		// are required.
-		// We can now safely set the background color of all controls to match the dialog.
-		dialogContent.setBackground(form.getBackground());
-		for (Control k : dialogContent.getChildren()) {
-			k.setBackground(form.getBackground());
-		}
-
 		form.setContent(body);
 		getShell().pack();
 	}
@@ -208,8 +200,25 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		});
 		
 		aboutToOpen();
+
+		adapt(dialogContent);
 		
 		return super.open();
+	}
+	
+	protected void adapt(Composite content) {
+		
+		// The AbstractDetailComposite controls don't actually get constructed until
+		// setBusinessObject() is called - the business object determines which controls
+		// are required. So, this needs to happen very late in the dialog lifecycle.
+		// We can now safely set the background color of all controls to match the dialog.
+		content.setBackground(form.getBackground());
+		for (Control k : content.getChildren()) {
+			k.setBackground(form.getBackground());
+			if (k instanceof Composite) {
+				adapt((Composite)k);
+			}
+		}
 	}
 	
 	@Override

@@ -216,7 +216,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 				}
 			}
 			if (columnProvider.getColumns().size()==0) {
-				if (idAttribute!=null && getPreferences().getShowIdAttribute())
+				if (idAttribute!=null)
 					columnProvider.addRaw(object, idAttribute);
 			}
 		}

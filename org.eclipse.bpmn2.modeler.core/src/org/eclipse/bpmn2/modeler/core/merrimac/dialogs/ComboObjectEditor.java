@@ -365,6 +365,8 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		if (newValue==null) {
 			if (oldValue!=null)
 				return true;
+			else
+				return false;
 		}
 		else if (adapter!=null) {
 			if (!adapter.getObjectDescriptor().equals(oldValue))

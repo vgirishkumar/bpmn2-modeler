@@ -269,8 +269,7 @@
 			id="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
-			features="anyAttribute implementation isForCompensation"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
 			label="%propertyTab.label.11">
 		</propertyTab>
@@ -944,7 +943,9 @@
 			<enable object="Lane"/>
 			<enable object="LaneSet"/>
 			<enable object="Resource"/>
+			<enable object="ResourceAssignmentExpression"/>
 			<enable object="ResourceParameter"/>
+			<enable object="ResourceParameterBinding"/>
 			<enable object="ResourceRole"/>
 			
 			<!-- this is intended to be a baseclass for global tasks and Process and -->
@@ -1053,7 +1054,9 @@
 			<enable object="Lane"/>
 			<enable object="LaneSet"/>
 			<enable object="Resource"/>
+			<enable object="ResourceAssignmentExpression"/>
 			<enable object="ResourceParameter"/>
+			<enable object="ResourceParameterBinding"/>
 			<enable object="ResourceRole"/>
 			
 			<disable object="CallableElement"/>

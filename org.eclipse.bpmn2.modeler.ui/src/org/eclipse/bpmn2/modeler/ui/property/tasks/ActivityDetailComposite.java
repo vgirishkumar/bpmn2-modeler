@@ -101,9 +101,13 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"implementation", // used by BusinessRuleTask, SendTask, ReceiveTask, UserTask and ServiceTask //$NON-NLS-1$
 						"operationRef", // SendTask, ReceiveTask, ServiceTask //$NON-NLS-1$
 						"messageRef", // SendTask, ReceiveTask //$NON-NLS-1$
+						"scriptFormat", "script", // ScriptTask //$NON-NLS-1$ //$NON-NLS-2$
 						"instantiate", // ReceiveTask //$NON-NLS-1$
 						"isForCompensation", //$NON-NLS-1$
-						"script", "scriptFormat", // ScriptTask //$NON-NLS-1$ //$NON-NLS-2$
+						//"startQuantity", // these are "Advanced" features and should be used
+						//"completionQuantity", // with caution, according to the BPMN 2.0 spec
+						"completionCondition", //$NON-NLS-1$
+						"loopCharacteristics", //$NON-NLS-1$
 						"triggeredByEvent", //$NON-NLS-1$
 						"cancelRemainingInstances", //$NON-NLS-1$
 						"properties", //$NON-NLS-1$
@@ -111,10 +115,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						"method", //$NON-NLS-1$
 						"ordering", //$NON-NLS-1$
 						"protocol", //$NON-NLS-1$
-						//"startQuantity", // these are "Advanced" features and should be used
-						//"completionQuantity", // with caution, according to the BPMN 2.0 spec
-						"completionCondition", //$NON-NLS-1$
-						"loopCharacteristics", //$NON-NLS-1$
 				};
 				
 				@Override

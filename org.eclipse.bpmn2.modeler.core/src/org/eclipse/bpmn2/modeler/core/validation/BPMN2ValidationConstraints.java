@@ -57,6 +57,7 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.ProcessType;
 import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
@@ -174,6 +175,9 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				}
 			}
 			else {
+				if (ProcessType.NONE.equals(process.getProcessType())) {
+					return createFailureStatus(ctx, be, "Process type must be either \"Private\" or \"Public\"");
+				}
 				// report errors only
 			}
 		}

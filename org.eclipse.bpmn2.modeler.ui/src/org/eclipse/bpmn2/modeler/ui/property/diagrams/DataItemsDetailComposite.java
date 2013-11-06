@@ -52,8 +52,8 @@ public class DataItemsDetailComposite extends DefaultDetailComposite {
 				String[] properties = new String[] {
 						"rootElements#Process.properties", //$NON-NLS-1$
 						"rootElements#Process.resources", //$NON-NLS-1$
-						"rootElements#Process.correlationSubscriptions", //$NON-NLS-1$
-						"rootElements#Process.collaborations", //$NON-NLS-1$
+// TODO: fix this						"rootElements#Process.correlationSubscriptions", //$NON-NLS-1$
+// TODO: fix this						"rootElements#Process.collaborations", //$NON-NLS-1$
 				};
 				
 				@Override
