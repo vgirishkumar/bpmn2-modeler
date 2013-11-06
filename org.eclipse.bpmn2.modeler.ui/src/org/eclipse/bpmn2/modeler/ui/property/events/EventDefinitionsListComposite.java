@@ -188,6 +188,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	@Override
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		columnProvider = super.getColumnProvider(object,feature);
+		columnProvider.remove(0); // get rid of the ID column
 		columnProvider.add(
 				new TableColumn(object,feature) {
 					public String getText(Object element) {

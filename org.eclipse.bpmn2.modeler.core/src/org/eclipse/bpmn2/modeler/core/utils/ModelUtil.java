@@ -999,9 +999,11 @@ public class ModelUtil {
 			resource = object.eResource();
 			if (resource!=null) {
 				ResourceSet rs = resource.getResourceSet();
-				for (Resource r : rs.getResources()) {
-					if (r instanceof Bpmn2Resource) {
-						return r;
+				if (rs!=null) {
+					for (Resource r : rs.getResources()) {
+						if (r instanceof Bpmn2Resource) {
+							return r;
+						}
 					}
 				}
 			}

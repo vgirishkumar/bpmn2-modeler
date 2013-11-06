@@ -604,7 +604,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (mapTransformationButton.getSelection()) {
-						showPropertyWidgets(false);
+						showPropertyWidgets(true);
 						showExpressionWidgets(false);
 						showAdvancedMappingWidgets(false);
 
@@ -642,7 +642,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (advancedMappingButton.getSelection()) {
-						showPropertyWidgets(false);
+						showPropertyWidgets(true);
 						showTransformationWidgets(false);
 						showExpressionWidgets(false);
 						
