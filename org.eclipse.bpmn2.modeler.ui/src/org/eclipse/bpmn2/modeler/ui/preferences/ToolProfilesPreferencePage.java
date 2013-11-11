@@ -352,7 +352,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		elementsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		
 		btnShowIds = new Button(elementsContainer, SWT.CHECK);
-		btnShowIds.setText("Show ID attributes (Advanced Behavior)");
+		btnShowIds.setText("Show ID attributes (Editor Behavior)");
 		btnShowIds.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		btnShowIds.addSelectionListener(new SelectionAdapter() {
 			@Override

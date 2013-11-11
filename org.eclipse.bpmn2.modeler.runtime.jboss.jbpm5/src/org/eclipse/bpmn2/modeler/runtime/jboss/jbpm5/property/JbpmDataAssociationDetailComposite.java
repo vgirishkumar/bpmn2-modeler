@@ -62,7 +62,7 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 			}
 		}
 		
-		setAllowedMapTypes(MapType.Property.getValue() | MapType.Expression.getValue());
+		setAllowedMapTypes(MapType.Property.getValue() | MapType.SingleAssignment.getValue());
 		super.createBindings(be);
 	}
 }

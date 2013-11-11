@@ -67,7 +67,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 								if (object instanceof CatchEvent)
 									getDataAssociationComposite().setAllowedMapTypes(MapType.Property.getValue());
 								else
-									getDataAssociationComposite().setAllowedMapTypes(MapType.Property.getValue() | MapType.Expression.getValue());
+									getDataAssociationComposite().setAllowedMapTypes(MapType.Property.getValue() | MapType.SingleAssignment.getValue());
 							}
 						};
 						return details;

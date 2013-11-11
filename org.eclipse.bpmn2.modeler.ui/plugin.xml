@@ -972,116 +972,30 @@
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				type="Process"
-				profile="Simple Process">
-			<enable object="Definitions"/>
+				profile="Simple Process"
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
+			<disable object="DataAssociation"/>
+			<disable object="UserTask"/>
+			<disable object="ScriptTask"/>
+			<disable object="BusinessRuleTask"/>
+			<disable object="ComplexGateway"/>
+			<disable object="EventBasedGateway"/>
+			<disable object="Transaction"/>
+			<disable object="AdHocSubProcess"/>
+			<disable object="CallActivity"/>
 
-			<!-- process -->
-			<enable object="Process"/>
-			<enable object="SubProcess"/>
-
-			<!-- gateways -->
-			<enable object="ExclusiveGateway"/>
-			<enable object="InclusiveGateway"/>
-
-			<!-- tasks -->
-			<enable object="CallActivity"/>
-			<enable object="ManualTask"/>
-			<enable object="ReceiveTask"/>
-			<enable object="ScriptTask"/>
-			<enable object="SendTask"/>
-			<enable object="ServiceTask"/>
-			<enable object="Task"/>
-			<enable object="UserTask"/>
-
-			<!-- connections -->
-			<enable object="SequenceFlow"/>
-			<enable object="Association"/>
-			<enable object="DataAssociation"/>
-
-			<!-- events -->
-			<enable object="StartEvent"/>
-			<enable object="EndEvent"/>
-			<enable object="IntermediateCatchEvent"/>
-			<enable object="IntermediateThrowEvent"/>
-			<enable object="Escalation"/>
-			<enable object="CatchEvent"/>
-			<enable object="ThrowEvent"/>
-			<enable object="BoundaryEvent"/>
-			<enable object="Signal"/>
-			<enable object="Error"/>
-
-			<!-- event definitions -->
-			<enable object="ConditionalEventDefinition"/>
-			<enable object="TimerEventDefinition"/>
-			<enable object="SignalEventDefinition"/>
-			<enable object="MessageEventDefinition"/>
-			<enable object="EscalationEventDefinition"/>
-			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition" feature="name"/>
-			<enable object="ErrorEventDefinition"/>
-			<enable object="CancelEventDefinition"/>
-			<enable object="TerminateEventDefinition"/>
-			<enable object="ComplexBehaviorDefinition"/>
-			<enable object="ImplicitThrowEvent"/>
-			
-
-			<!-- data definitions -->
-			<enable object="Import"/>
-			<enable object="InputOutputSpecification"/>
-			<enable object="InputSet"/>
-			<enable object="OutputSet"/>
-			<enable object="Operation"/>
-			<enable object="Interface"/>
-			<enable object="ItemDefinition"/>
-			<enable object="Message"/>
-			<enable object="DataInput"/>
-			<enable object="DataInputAssociation"/>
-			<enable object="DataOutput"/>
-			<enable object="DataOutputAssociation"/>
-			<enable object="Property"/>
-			<enable object="ItemAwareElement"/>
-			<enable object="DataState"/>
-			<enable object="DataStore"/>
-			<enable object="DataStoreReference"/>
-			<enable object="DataObjectReference"/>
-			<enable object="DataObject"/>
-			<enable object="Group"/>
-			<enable object="TextAnnotation"/>
-			<enable object="ExtensionAttributeValue"/>
-			<enable object="ExtensionAttributeDefinition"/>
-			<enable object="StandardLoopCharacteristics"/>
-			<enable object="MultiInstanceLoopCharacteristics"/>
-			<enable object="Lane"/>
-			<enable object="LaneSet"/>
-			<enable object="Resource"/>
-			<enable object="ResourceAssignmentExpression"/>
-			<enable object="ResourceParameter"/>
-			<enable object="ResourceParameterBinding"/>
-			<enable object="ResourceRole"/>
-			
-			<disable object="CallableElement"/>
-			
-			<disable object="MessageFlow"/>
-			<disable object="ConversationLink"/>
-			<disable object="ConversationAssociation"/>
-			<disable object="Collaboration"/>
-			<disable object="Choreography"/>
-			<disable object="ConversationNode"/>
-			<disable object="MessageFlowAssociation"/>
-			<disable object="Participant"/>
-			<disable object="ParticipantAssociation"/>
-			<disable object="ParticipantMultiplicity"/>
-			
-			<enable object="Assignment"/>
-			<enable object="FormalExpression"/>
-			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
+			<disable object="ConditionalEventDefinition"/>
+			<disable object="LinkEventDefinition"/>
+			<disable object="CancelEventDefinition"/>
+			<disable object="CompensateEventDefinition"/>
+				
 		</modelEnablement>
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				type="Collaboration"
 				profile="Default Collaboration"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Choreography:Default Process">
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
 				
 			<!-- copy the enablements from "Process" diagram type -->
 			<!-- and then add these objects -->
@@ -1099,7 +1013,7 @@
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				type="Choreography"
 				profile="Default Choreography"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Choreography:Default Process">
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
 				
 			<!-- copy the enablements from "Process" diagram type -->
 			<!-- and then add these objects -->

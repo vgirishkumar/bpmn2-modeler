@@ -944,6 +944,25 @@ public class ModelUtil {
 			public boolean eIsProxy() {
 				return false;
 			}
+
+			@Override
+			public boolean equals(Object object) {
+				if (object instanceof DynamicEObjectImpl) {
+					DynamicEObjectImpl that = (DynamicEObjectImpl) object;
+					if (eProxyURI()==null) {
+						return that.eProxyURI()==null;
+					}
+					String thisString = eProxyURI().toString();
+					String thatString = that.eProxyURI() == null ? null : that.eProxyURI().toString();
+					return thisString.equals(thatString);
+				}
+				else if (object instanceof String) {
+					String thisString = eProxyURI().toString();
+					return thisString.equals(object);
+				}
+				return super.equals(object);
+			}
+			
 		};
 		de.eSetClass(EcorePackage.eINSTANCE.getEObject());
 		de.eSetProxyURI(URI.createURI(value));

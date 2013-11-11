@@ -36,11 +36,10 @@ public class JbpmServiceTaskDetailComposite extends JbpmTaskDetailComposite {
 	}
 	
 	@Override
-	
-	protected void createMessageAssociations(final Activity serviceTask, final EReference reference, final Operation operation) {
-		super.createMessageAssociations(serviceTask, reference, operation);
+	protected void createMessageAssociations(final Composite container, final Activity serviceTask, final EReference reference, final Operation operation) {
+		super.createMessageAssociations(container, serviceTask, reference, operation);
 		inputComposite.setAllowedMapTypes(MapType.Property.getValue());
-		outputComposite.setAllowedMapTypes(MapType.Property.getValue() | MapType.Expression.getValue());
+		outputComposite.setAllowedMapTypes(MapType.Property.getValue() | MapType.SingleAssignment.getValue());
 	}
 	
 }
