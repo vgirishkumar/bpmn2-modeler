@@ -1,0 +1,1078 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 14 (filtered)">
+<title>Eclipse BPMN2 Modeler User Guide (Version 1.0.1)</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Lucida Console";
+	panose-1:2 11 6 9 4 5 4 2 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+h1
+	{mso-style-link:"Heading 1 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+h2
+	{mso-style-link:"Heading 2 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#DBE5F1;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h3
+	{mso-style-link:"Heading 3 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h4
+	{mso-style-link:"Heading 4 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h5
+	{mso-style-link:"Heading 5 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h6
+	{mso-style-link:"Heading 6 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+p.MsoHeading7, li.MsoHeading7, div.MsoHeading7
+	{mso-style-link:"Heading 7 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading8, li.MsoHeading8, div.MsoHeading8
+	{mso-style-link:"Heading 8 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading9, li.MsoHeading9, div.MsoHeading9
+	{mso-style-link:"Heading 9 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+p.MsoToc1, li.MsoToc1, div.MsoToc1
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc2, li.MsoToc2, div.MsoToc2
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:10.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc3, li.MsoToc3, div.MsoToc3
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:20.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc4, li.MsoToc4, div.MsoToc4
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:33.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc5, li.MsoToc5, div.MsoToc5
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:44.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc6, li.MsoToc6, div.MsoToc6
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:55.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc7, li.MsoToc7, div.MsoToc7
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:66.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc8, li.MsoToc8, div.MsoToc8
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:77.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc9, li.MsoToc9, div.MsoToc9
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:88.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-style-link:"Header Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-style-link:"Footer Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoCaption, li.MsoCaption, div.MsoCaption
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+p.MsoTof, li.MsoTof, div.MsoTof
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"Title Char";
+	margin-top:.5in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:26.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoSubtitle, li.MsoSubtitle, div.MsoSubtitle
+	{mso-style-link:"Subtitle Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:50.0pt;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+em
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.25pt;
+	font-style:normal;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Balloon Text Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{mso-style-link:"No Spacing Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoQuote, li.MsoQuote, div.MsoQuote
+	{mso-style-link:"Quote Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	font-style:italic;}
+p.MsoIntenseQuote, li.MsoIntenseQuote, div.MsoIntenseQuote
+	{mso-style-link:"Intense Quote Char";
+	margin-top:10.0pt;
+	margin-right:.8in;
+	margin-bottom:0in;
+	margin-left:.9in;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	font-style:italic;}
+span.MsoSubtleEmphasis
+	{color:#243F60;
+	font-style:italic;}
+span.MsoIntenseEmphasis
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:bold;}
+span.MsoSubtleReference
+	{color:#4F81BD;
+	font-weight:bold;}
+span.MsoIntenseReference
+	{color:#4F81BD;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-style:italic;}
+span.MsoBookTitle
+	{letter-spacing:.45pt;
+	font-weight:bold;
+	font-style:italic;}
+p.MsoBibliography, li.MsoBibliography, div.MsoBibliography
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTocHeading, li.MsoTocHeading, div.MsoTocHeading
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:bold;}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-link:"Heading 1";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#4F81BD;
+	font-weight:bold;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-link:"Heading 2";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#DBE5F1;}
+span.Heading3Char
+	{mso-style-name:"Heading 3 Char";
+	mso-style-link:"Heading 3";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+span.Heading4Char
+	{mso-style-name:"Heading 4 Char";
+	mso-style-link:"Heading 4";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading5Char
+	{mso-style-name:"Heading 5 Char";
+	mso-style-link:"Heading 5";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading6Char
+	{mso-style-name:"Heading 6 Char";
+	mso-style-link:"Heading 6";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading7Char
+	{mso-style-name:"Heading 7 Char";
+	mso-style-link:"Heading 7";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading8Char
+	{mso-style-name:"Heading 8 Char";
+	mso-style-link:"Heading 8";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading9Char
+	{mso-style-name:"Heading 9 Char";
+	mso-style-link:"Heading 9";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-link:Title;
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.SubtitleChar
+	{mso-style-name:"Subtitle Char";
+	mso-style-link:Subtitle;
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.NoSpacingChar
+	{mso-style-name:"No Spacing Char";
+	mso-style-link:"No Spacing";}
+span.QuoteChar
+	{mso-style-name:"Quote Char";
+	mso-style-link:Quote;
+	font-style:italic;}
+span.IntenseQuoteChar
+	{mso-style-name:"Intense Quote Char";
+	mso-style-link:"Intense Quote";
+	color:#4F81BD;
+	font-style:italic;}
+span.HeaderChar
+	{mso-style-name:"Header Char";
+	mso-style-link:Header;
+	font-style:italic;}
+span.FooterChar
+	{mso-style-name:"Footer Char";
+	mso-style-link:Footer;
+	font-style:italic;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";
+	font-style:italic;}
+p.Code, li.Code, div.Code
+	{mso-style-name:Code;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpFirst, li.CodeCxSpFirst, div.CodeCxSpFirst
+	{mso-style-name:CodeCxSpFirst;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpMiddle, li.CodeCxSpMiddle, div.CodeCxSpMiddle
+	{mso-style-name:CodeCxSpMiddle;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpLast, li.CodeCxSpLast, div.CodeCxSpLast
+	{mso-style-name:CodeCxSpLast;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.TableorFigureReference, li.TableorFigureReference, div.TableorFigureReference
+	{mso-style-name:"Table or Figure Reference";
+	mso-style-link:"Table or Figure Reference Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+span.ListParagraphChar
+	{mso-style-name:"List Paragraph Char";
+	mso-style-link:"List Paragraph";}
+span.CodeChar
+	{mso-style-name:"Code Char";
+	mso-style-link:Code;
+	font-family:"Lucida Console";}
+span.TableorFigureReferenceChar
+	{mso-style-name:"Table or Figure Reference Char";
+	mso-style-link:"Table or Figure Reference";
+	color:#365F91;
+	font-weight:bold;}
+p.Hint, li.Hint, div.Hint
+	{mso-style-name:Hint;
+	mso-style-link:"Hint Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+p.Caution, li.Caution, div.Caution
+	{mso-style-name:Caution;
+	mso-style-link:"Caution Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+span.HintChar
+	{mso-style-name:"Hint Char";
+	mso-style-link:Hint;
+	color:#4F81BD;
+	font-style:normal;}
+span.CautionChar
+	{mso-style-name:"Caution Char";
+	mso-style-link:Caution;
+	color:#4F81BD;
+	font-style:normal;}
+.MsoChpDefault
+	{font-family:"Trebuchet MS","sans-serif";}
+.MsoPapDefault
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-US link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<div style='border:solid #4F81BD 3.0pt;padding:0in 0in 0in 0in;background:#4F81BD'>
+
+<h1><a name="_Toc371905990">Figures and Tables</a></h1>
+
+</div>
+
+<p class=MsoTof><a href="#_Toc372182398">Figure 1: Install Software Wizard
+Dialog<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182399">Figure 2: BPMN2 Modeler Overview<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>4</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182400">Figure 3: XML Source View<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>5</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182401">Figure 4: Eclipse &quot;New File&quot;
+Wizard<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>7</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182402">Figure 5: BPMN2 Metamodel Editor<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>7</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182403">Figure 6: BPMN2 Modeler Wizard Page 1<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>8</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182404">Figure 7: BPMN2 Modeler Wizard Page 2<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>8</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182405">Figure 8: jBPM New File Wizard<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>9</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182406">Figure 9: Tool Palette<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>10</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182407">Figure 10: Tool Palette Configuration<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>11</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182408">Figure 11: Tool Palette Profiles<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182409">Figure 12: Context Button Pad<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182410">Figure 13: Tabbed Property View<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>14</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182411">Figure 14: List and Detail widget in
+normal an expanded views<span style='color:windowtext;display:none;text-decoration:
+none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>15</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182412">Figure 15: Nested List and Detail
+widgets<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>16</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182413">Figure 16: Process Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>17</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182414">Figure 17: Interfaces Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>18</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182415">Figure 18: Definitions Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>19</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182416">Figure 19: Data Items Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>23</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182417">Figure 20: Manual Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>23</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182418">Figure 21: Standard Loop
+Characteristics<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>24</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182419">Figure 22: Mult-Instance Loop
+Characteristics<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>25</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182420">Figure 23: I/O Parameters Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>27</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182421">Figure 24: Parameter Mapping Details<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>28</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182422">Figure 25: Ad Hoc Sub-Process Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>30</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182423">Figure 26: Business Rule Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>31</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182424">Figure 27: Call Activity Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>31</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182425">Figure 28: Receive Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>32</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182426">Figure 29: Script Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>32</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182427">Figure 30: Send Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>33</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182428">Figure 31: Service Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>33</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182429">Figure 32: Sub-Process Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>34</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182430">Figure 33: Transaction Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>34</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182431">Figure 34: User Task Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>35</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182432">Figure 35: Gateway Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>35</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182433">Figure 36: Event Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>37</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182434">Figure 37: Event Definitions Selection
+Dialog<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>37</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182435">Figure 38: Error Event Definition
+Details<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>38</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182436">Figure 39: Escalation Event Definition
+Details<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>38</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182437">Figure 40: Message Event Definition
+Details<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>39</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182438">Figure 41: Signal Event Definition
+Details<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>39</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182439">Figure 42: Data Object Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>40</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182440">Figure 43: Sequence Flow Tab<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>41</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182441">Figure 59: Outline Viewer Title Bar
+Buttons<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>41</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182442">Figure 60: Sample Process<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>42</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182443">Figure 61: Business Model<span
+style='font-size:11.0pt;line-height:115%;color:windowtext;text-decoration:none'>  </span>
+Figure 62: DI Model  Figure 63: Thumbnail<span style='color:windowtext;
+display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>42</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182444">Figure 44: BPMN2 Element Property
+Dialogs<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>43</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182445">Figure 45: Data Type (“Item
+Definition”) Editing Dialog<span style='color:windowtext;display:none;
+text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>43</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182446">Figure 46: Variable
+(&quot;Property&quot;) Editing Dialog<span style='color:windowtext;display:
+none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>44</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182447">Figure 47: Message Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>44</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182448">Figure 48: Error Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>45</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182449">Figure 49: Signal Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>45</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182450">Figure 50: Escalation Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>46</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182451">Figure 51: Data Store Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>46</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182452">Figure 52: File Import Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>47</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182453">Figure 53: Import Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>48</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182454">Figure 54: Namespace Editing Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>48</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182455">Figure 55: Edit Resource Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>49</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182456">Figure 56: Edit Resource Parameter
+Dialog<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>49</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182457">Figure 57: Edit Resource Role Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>49</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182458">Figure 58: Export Diagram Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>50</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182459">Figure 64: BPMN2 General Settings<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>52</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182460">Figure 65: Editor Appearance (Shapes)<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>53</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182461">Figure 66: Editor Appearance
+(Connections)<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>54</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182462">Figure 67: Editor Behavior<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>55</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182463">Figure 68: Create Profile Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>56</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182464">Figure 69: Tool Profiles (Model
+Enablement)<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>56</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182465">Figure 70: Tool Profiles (Tool
+Palette)<span style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>57</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182466">Figure 71: jBPM Runtime Preferences<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>58</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182467">Figure 72: WSIL Browser Preferences<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>59</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182468">Figure 73: Project-Specific Settings<span
+style='color:windowtext;display:none;text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>59</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182469">Figure 74: jBPM Tool Profiles
+Preference Page<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>62</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182470">Figure 75: Java Type Import Dialog<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>63</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182471">Figure 76: Example Process Diagram<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>78</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182472">Figure 77: Example Collaboration
+Diagram<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>79</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182473">Figure 78: Example Choreography
+Diagram<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>80</span></a></p>
+
+<p class=MsoTof><a href="#_Toc372182474">Figure 79: Example Conversation
+Diagram<span style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>80</span></a></p>
+
+<p class=MsoNormal></p>
+
+<p class=MsoTof><span class=MsoHyperlink><a href="#_Toc372182475">Table 1:
+Eclipse Platform Compatibility<span style='color:windowtext;display:none;
+text-decoration:none'> </span><span
+style='color:windowtext;display:none;text-decoration:none'>1</span></a></span></p>
+
+<p class=MsoTof><a href="#_Toc372182476">Table 2: BPMN 2.0 Elements not
+supported by jBPM<span style='color:windowtext;display:none;text-decoration:
+none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>61</span></a></p>
+
+<div style='border:solid #4F81BD 3.0pt;padding:0in 0in 0in 0in;background:#4F81BD'>
+
+<h1><a name="_Toc371905991">References</a></h1>
+
+</div>
+
+<table class=MsoNormalTable border=0 cellpadding=0 width="100%"
+ style='width:100.0%'>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[1] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>&quot;Business Process Model and Notation
+  (BPMN),&quot; OMG, 1 2011. [Online]. Available:
+  http://www.omg.org/spec/BPMN/2.0/.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[2] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>J. Freund and B. Rücker, Real Life BPMN, Berlin:
+  Camunda, 2012. </p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[3] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>T. Allweyer, BPMN 2.0 - Introduction to the Standard
+  for Business Process Modeling, Books on Demand GmbH, Norderstedt, 2010. </p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[4] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>&quot;Eclipse BPMN2,&quot; [Online]. Available:
+  http://www.eclipse.org/modeling/mdt/?project=bpmn2#bpmn2.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[5] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>&quot;Business Process Simulation Interchange
+  Standard,&quot; BPSim.org, [Online]. Available: http://www.bpsim.org/.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[6] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>P. Brittenham, &quot;An overview of the Web Services
+  Inspection Language,&quot; IBM, 1 6 2002. [Online]. Available:
+  http://www.ibm.com/developerworks/webservices/library/ws-wsilover/.</p>
+  </td>
+ </tr>
+ <tr>
+  <td width="1%" valign=top style='width:1.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>[7] </p>
+  </td>
+  <td valign=top style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoBibliography>J. Hat, &quot;jBPM Documentation Library,&quot;
+  [Online]. Available: http://www.jboss.org/jbpm/documentation.</p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+</div>
+
+</body>
+
+</html>

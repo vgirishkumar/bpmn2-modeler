@@ -1,0 +1,1149 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 14 (filtered)">
+<title>Eclipse BPMN2 Modeler User Guide (Version 1.0.1)</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Lucida Console";
+	panose-1:2 11 6 9 4 5 4 2 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+h1
+	{mso-style-link:"Heading 1 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+h2
+	{mso-style-link:"Heading 2 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#DBE5F1;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h3
+	{mso-style-link:"Heading 3 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h4
+	{mso-style-link:"Heading 4 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h5
+	{mso-style-link:"Heading 5 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h6
+	{mso-style-link:"Heading 6 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+p.MsoHeading7, li.MsoHeading7, div.MsoHeading7
+	{mso-style-link:"Heading 7 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading8, li.MsoHeading8, div.MsoHeading8
+	{mso-style-link:"Heading 8 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading9, li.MsoHeading9, div.MsoHeading9
+	{mso-style-link:"Heading 9 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+p.MsoToc1, li.MsoToc1, div.MsoToc1
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc2, li.MsoToc2, div.MsoToc2
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:10.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc3, li.MsoToc3, div.MsoToc3
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:20.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc4, li.MsoToc4, div.MsoToc4
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:33.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc5, li.MsoToc5, div.MsoToc5
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:44.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc6, li.MsoToc6, div.MsoToc6
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:55.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc7, li.MsoToc7, div.MsoToc7
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:66.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc8, li.MsoToc8, div.MsoToc8
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:77.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc9, li.MsoToc9, div.MsoToc9
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:88.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-style-link:"Header Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-style-link:"Footer Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoCaption, li.MsoCaption, div.MsoCaption
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+p.MsoTof, li.MsoTof, div.MsoTof
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"Title Char";
+	margin-top:.5in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:26.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoSubtitle, li.MsoSubtitle, div.MsoSubtitle
+	{mso-style-link:"Subtitle Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:50.0pt;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+em
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.25pt;
+	font-style:normal;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Balloon Text Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{mso-style-link:"No Spacing Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoQuote, li.MsoQuote, div.MsoQuote
+	{mso-style-link:"Quote Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	font-style:italic;}
+p.MsoIntenseQuote, li.MsoIntenseQuote, div.MsoIntenseQuote
+	{mso-style-link:"Intense Quote Char";
+	margin-top:10.0pt;
+	margin-right:.8in;
+	margin-bottom:0in;
+	margin-left:.9in;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	font-style:italic;}
+span.MsoSubtleEmphasis
+	{color:#243F60;
+	font-style:italic;}
+span.MsoIntenseEmphasis
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:bold;}
+span.MsoSubtleReference
+	{color:#4F81BD;
+	font-weight:bold;}
+span.MsoIntenseReference
+	{color:#4F81BD;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-style:italic;}
+span.MsoBookTitle
+	{letter-spacing:.45pt;
+	font-weight:bold;
+	font-style:italic;}
+p.MsoBibliography, li.MsoBibliography, div.MsoBibliography
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTocHeading, li.MsoTocHeading, div.MsoTocHeading
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:bold;}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-link:"Heading 1";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#4F81BD;
+	font-weight:bold;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-link:"Heading 2";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#DBE5F1;}
+span.Heading3Char
+	{mso-style-name:"Heading 3 Char";
+	mso-style-link:"Heading 3";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+span.Heading4Char
+	{mso-style-name:"Heading 4 Char";
+	mso-style-link:"Heading 4";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading5Char
+	{mso-style-name:"Heading 5 Char";
+	mso-style-link:"Heading 5";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading6Char
+	{mso-style-name:"Heading 6 Char";
+	mso-style-link:"Heading 6";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading7Char
+	{mso-style-name:"Heading 7 Char";
+	mso-style-link:"Heading 7";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading8Char
+	{mso-style-name:"Heading 8 Char";
+	mso-style-link:"Heading 8";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading9Char
+	{mso-style-name:"Heading 9 Char";
+	mso-style-link:"Heading 9";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-link:Title;
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.SubtitleChar
+	{mso-style-name:"Subtitle Char";
+	mso-style-link:Subtitle;
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.NoSpacingChar
+	{mso-style-name:"No Spacing Char";
+	mso-style-link:"No Spacing";}
+span.QuoteChar
+	{mso-style-name:"Quote Char";
+	mso-style-link:Quote;
+	font-style:italic;}
+span.IntenseQuoteChar
+	{mso-style-name:"Intense Quote Char";
+	mso-style-link:"Intense Quote";
+	color:#4F81BD;
+	font-style:italic;}
+span.HeaderChar
+	{mso-style-name:"Header Char";
+	mso-style-link:Header;
+	font-style:italic;}
+span.FooterChar
+	{mso-style-name:"Footer Char";
+	mso-style-link:Footer;
+	font-style:italic;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";
+	font-style:italic;}
+p.Code, li.Code, div.Code
+	{mso-style-name:Code;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpFirst, li.CodeCxSpFirst, div.CodeCxSpFirst
+	{mso-style-name:CodeCxSpFirst;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpMiddle, li.CodeCxSpMiddle, div.CodeCxSpMiddle
+	{mso-style-name:CodeCxSpMiddle;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpLast, li.CodeCxSpLast, div.CodeCxSpLast
+	{mso-style-name:CodeCxSpLast;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.TableorFigureReference, li.TableorFigureReference, div.TableorFigureReference
+	{mso-style-name:"Table or Figure Reference";
+	mso-style-link:"Table or Figure Reference Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+span.ListParagraphChar
+	{mso-style-name:"List Paragraph Char";
+	mso-style-link:"List Paragraph";}
+span.CodeChar
+	{mso-style-name:"Code Char";
+	mso-style-link:Code;
+	font-family:"Lucida Console";}
+span.TableorFigureReferenceChar
+	{mso-style-name:"Table or Figure Reference Char";
+	mso-style-link:"Table or Figure Reference";
+	color:#365F91;
+	font-weight:bold;}
+p.Hint, li.Hint, div.Hint
+	{mso-style-name:Hint;
+	mso-style-link:"Hint Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+p.Caution, li.Caution, div.Caution
+	{mso-style-name:Caution;
+	mso-style-link:"Caution Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+span.HintChar
+	{mso-style-name:"Hint Char";
+	mso-style-link:Hint;
+	color:#4F81BD;
+	font-style:normal;}
+span.CautionChar
+	{mso-style-name:"Caution Char";
+	mso-style-link:Caution;
+	color:#4F81BD;
+	font-style:normal;}
+.MsoChpDefault
+	{font-family:"Trebuchet MS","sans-serif";}
+.MsoPapDefault
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-US link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<div style='border:solid #4F81BD 3.0pt;padding:0in 0in 0in 0in;background:#4F81BD'>
+
+<h1>Popup Dialogs</h1>
+
+</div>
+
+<p class=MsoNormal>Popup dialogs are used throughout the editor to prompt for
+additional configuration information or command confirmation. This section describes
+some the more “interesting” of these dialogs.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905891"></a><a name="_Popup_Property_Dialog"></a>BPMN2
+Element Property Dialogs</h2>
+
+</div>
+
+<p class=MsoNormal>As described in the section on <a href="#_Context_Button_Pad">Graphical
+Editing</a>, you do have the option of closing the Property Viewer and using
+popup dialogs to configure the elements. In this case, the property tabs are
+laid out horizontally in a popup dialog, instead of vertically (as in the
+Property View). Also, the <b>Description</b> tab is omitted to save space.</p>
+
+<p class=MsoNormal>Like the Property View, the content of the Property Dialog
+varies, depending on which element is being edited. Here is an example of the
+Property Dialog showing the settings for a <span class=MsoSubtleReference>Manual
+Task</span>:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=366
+height=244 id="Picture 146" src="POPUP%20DIALOGS_files/image003.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182444">Figure </a>44: BPMN2 Element Property
+Dialogs</p>
+
+<div style='border:solid #4F81BD 1.0pt;padding:2.0pt 4.0pt 1.0pt 10.0pt;
+margin-left:.2in;margin-right:1.0in'>
+
+<p class=Hint style='margin-top:.25in;margin-right:0in;margin-bottom:.25in;
+margin-left:.25in'><span style='font-family:Symbol;color:windowtext'><img
+width=11 height=11 src="POPUP%20DIALOGS_files/image001.gif" alt="*"><span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span>As
+a shortcut to speed configuration of BPMN2 elements, you can configure the
+editor to have the <a href="#_Editor_Behavior">Property Dialog pop up
+automatically</a> when an element is dragged onto the Drawing Canvas from the
+Tool Palette.</p>
+
+</div>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905892"></a><a name="_New_Data_Type"></a>Data Type Dialog</h2>
+
+</div>
+
+<p class=MsoNormal>Data Types (a.k.a. “<a href="#_Data_Type_(ItemDefinition)">Item
+Definitions</a>”) use the following configuration dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=244
+height=130 id="Picture 105" src="POPUP%20DIALOGS_files/image004.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182445">Figure </a>45: Data Type (“Item
+Definition”) Editing Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Item Kind</b> – indicates whether the item is Physical or
+Informational</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Is Collection</b> – if checked, the item represents a
+collection of data</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Structure</b> – a reference to the actual structure of the
+data. By default, this is an XSD type, but may also be other language data
+types (e.g. Java) depending on the <a href="#_Definitions_Tab">Type System</a> defined
+for the <span class=MsoSubtleReference>Process</span>.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905893"></a><a name="_Message_Dialog"></a><a
+name="_Variable_Dialog"></a>Variable Dialog</h2>
+
+</div>
+
+<p class=MsoNormal>Variables (a.k.a. “<a href="#_Variable_(Property)">Properties</a>”)
+are configured with the following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=288
+height=153 id="Picture 98" src="POPUP%20DIALOGS_files/image005.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182446">Figure </a>46: Variable
+(&quot;Property&quot;) Editing Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name</b> – the variable name</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data State</b> – an application-defined state such as
+“initialized” or “staging”.  See also <a href="#_Data_Elements">Data Elements</a>.</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data Type</b> – the type and structure of the variable (see
+above)</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905894">Message Dialog</a></h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Message">Messages</a> are configured with the
+following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=311
+height=158 id="Picture 148" src="POPUP%20DIALOGS_files/image006.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182447">Figure </a>47: Message Editing Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name </b>– the name of the <span class=MsoSubtleReference>Message</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data Type</b> – the type and structure of the <span
+class=MsoSubtleReference>Message</span> payload</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905895"></a><a name="_Error_Dialog"></a>Error Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Error">Errors</a> are configured with the
+following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=237
+height=156 id="Picture 149" src="POPUP%20DIALOGS_files/image007.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182448">Figure </a>48: Error Editing Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name</b> – the name of the <span class=MsoSubtleReference>Error</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Error Code</b> – an application-specific value that can be
+used by Activities in, e.g. condition expressions to test for specific error
+types</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data Type</b> – the type and structure of the <span
+class=MsoSubtleReference>Error</span> payload (if any)</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905896"></a><a name="_Signal_Dialog"></a>Signal Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Signal">Signals</a> are configured with the
+following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=231
+height=151 id="Picture 150" src="POPUP%20DIALOGS_files/image008.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182449">Figure </a>49: Signal Editing
+Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name</b> – the name of the <span class=MsoSubtleReference>Signal</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data Type</b> – the type and structure of the <span
+class=MsoSubtleReference>Signal</span> payload (if any)</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905897"></a><a name="_Escalation_Dialog"></a>Escalation
+Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Escalation">Escalations</a> are configured with
+the following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=253
+height=169 id="Picture 151" src="POPUP%20DIALOGS_files/image009.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182450">Figure </a>50: Escalation Editing
+Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name</b> – the name of the <span class=MsoSubtleReference>Escalation</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Error Code</b> – an application-specific value that can be
+used by Activities in, e.g. condition expressions to test for specific
+escalation types</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data Type</b> – the type and structure of the <span
+class=MsoSubtleReference>Escalation</span> payload (if any)</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905898"></a><a name="_Data_Store_Dialog"></a>Data Store
+Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Data_Store">Data Stores</a> are configured with
+the following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=312
+height=185 id="Picture 152" src="POPUP%20DIALOGS_files/image010.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182451">Figure </a>51: Data Store Editing
+Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Name</b> – the name of the <span class=MsoSubtleReference>Data
+Store</span>. This is typically a database table or file name, depending on the
+underlying technology used to persist the data.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Capacity</b> – an application-specific value that represents
+the maximum capacity of the Data Store</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Is Unlimited </b>– if checked, indicates the Data Store
+capacity is unlimited. This overrides the <b>Capacity</b> value.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+class=MsoSubtleReference><span style='font-family:Symbol;color:windowtext;
+font-weight:normal'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><b>Data Type</b> – the type and structure of the <span
+class=MsoSubtleReference>Data Store</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Data State</b> – an application-specific state of the data,
+e.g. “committed”, “archived”, etc. See also <a href="#_Data_Elements">Data
+Elements</a>.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905899"></a><a name="_Resource_Import_Dialog"></a><a
+name="_File_Import_Dialog"></a>File Import Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Definitions_Tab">Imports</a> are used whenever
+data definitions required by the <span class=MsoSubtleReference>Process</span>
+are maintained in an external file or some online resource (e.g. a web server.)
+The File Import dialog allows you to select and preview these resources before
+importing:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=280
+height=335 id="Picture 100" src="POPUP%20DIALOGS_files/image011.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182452">Figure </a>52: File Import Dialog</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Import Type </b>– selects the type of file to import, one of
+the following:</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>XML Schema (XSD) - for data type definitions</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Web Service Definition (WSDL) – for Web Service Interface
+definitions</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>BPMN 2.0 Diagram (BPMN2) – for BPMN2 Process definitions</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Java – for data type definitions if the data <b>Type Language</b>
+is <a href="http://www.java.com/javaTypes">http://www.java.com/javaTypes</a>.
+See <a href="#_Definitions_Tab">Process Definitions</a> for more information.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Import Source </b>– the location to search for the import
+file:</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Workspace – the Eclipse Workspace</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>File System – the local host file system</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>URL – on online web server</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>WSIL – using the WSIL directory. See <a href="#_WSIL_Browser">WSIL
+Browser</a> for more information.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Resource Selection Pane – this section displays the available
+files in the selected <b>Import Source</b></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>Preview Pane – this section displays the parsed contents of a
+selected file.</p>
+
+<p class=MsoNormal>Clicking the <b>OK</b> button adds the selected file to the
+list of Imports and creates additional BPMN2 elements as appropriate:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>XSD</b> – creates Data Type definitions for each of the
+element definitions contained in the XSD file.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>WSDL</b> – creates <span class=MsoSubtleReference>Interfaces</span>,
+<span class=MsoSubtleReference>Operations</span>, <span
+class=MsoSubtleReference>Message</span> types, <span class=MsoSubtleReference>Error</span>
+types and Data Types from the WSDL file.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>BPMN2</b> – creates <span class=MsoSubtleReference>Interface</span>
+references and <span class=MsoSubtleReference>Process</span> references defined
+in the BPMN2 file. These are then available for use by <span
+class=MsoSubtleReference>Activities</span> in the <span
+class=MsoSubtleReference>Process</span> (e.g., <span class=MsoSubtleReference>Service
+Tasks</span>, <span class=MsoSubtleReference>Call Activities</span>, etc.)</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Java</b> – imported Java files create the following BPMN2
+elements:</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Classes – create <span class=MsoSubtleReference>Interfaces</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Class methods – create <span class=MsoSubtleReference>Operations</span>
+for these <span class=MsoSubtleReference>Interfaces</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Method Parameters – create <span class=MsoSubtleReference>Messages</span>
+and Data Types for each of the parameters</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Method return values – create <span class=MsoSubtleReference>Messages</span>
+and Data Types</p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:1.0in;text-indent:-.25in'><span
+style='font-family:"Courier New"'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span>Method “throw” declarations create <span
+class=MsoSubtleReference>Errors</span> and Data Types for the Java Exception</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905900">Import Editing Dialog</a></h2>
+
+</div>
+
+<p class=MsoNormal>Editing an imported file from the <b>Imports List</b> in the
+<a href="#_Definitions_Tab">Process Definitions</a> property tab displays the
+following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=323
+height=179 id="Picture 147" src="POPUP%20DIALOGS_files/image012.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182453">Figure </a>53: Import Editing
+Dialog</p>
+
+<p class=MsoNormal>Note that only the <b>Prefix</b> can be edited, all other
+fields are read-only. Clicking the <img border=0 width=18 height=17
+id="Picture 153" src="POPUP%20DIALOGS_files/image013.jpg">button displays this
+dialog which allows you to select a namespace prefix:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=275
+height=111 id="Picture 103" src="POPUP%20DIALOGS_files/image014.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182454">Figure </a>54: Namespace Editing
+Dialog</p>
+
+<p class=MsoNormal>The editor will check to ensure that the new prefix is not
+already in use.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905901"></a><a name="_Resource_Dialog"></a>Resource Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Resource">Resources</a> are configured with the
+following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=358
+height=202 id="Picture 138" src="POPUP%20DIALOGS_files/image015.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182455">Figure </a>55: Edit Resource Dialog</p>
+
+<div style='border-top:solid #4F81BD 1.0pt;border-left:solid #4F81BD 1.0pt;
+border-bottom:none;border-right:none;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3><a name="_Toc371905902">Resource Parameter Dialog</a></h3>
+
+</div>
+
+<p class=MsoNormal>A <span class=MsoSubtleReference>Resource </span>may require
+one or more<span class=MsoSubtleReference> Resource Parameters</span>; these are
+configured with the following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=274
+height=174 id="Picture 139" src="POPUP%20DIALOGS_files/image016.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182456">Figure </a>56: Edit Resource
+Parameter Dialog</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905903"></a><a name="_Category_Dialog"></a>Resource Role Dialog</h2>
+
+</div>
+
+<p class=MsoNormal><a href="#_Resource">Resource Roles</a> are configured with
+the following dialog:</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=284
+height=159 id="Picture 166" src="POPUP%20DIALOGS_files/image017.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182457">Figure </a>57: Edit Resource Role
+Dialog</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905904"></a><a name="_Export_Diagram_Dialog"></a>Export
+Diagram Dialog</h2>
+
+</div>
+
+<p class=MsoNormal>This dialog is invoked from the <a href="#_Drawing_Canvas">Drawing
+Canvas context menu</a>. It is used to save the currently selected diagram as
+an image file. The image can be saved in several different formats and sizes.</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img border=0 width=278
+height=168 id="Picture 1" src="POPUP%20DIALOGS_files/image018.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182458">Figure </a>58: Export Diagram
+Dialog</p>
+
+</div>
+
+</body>
+
+</html>

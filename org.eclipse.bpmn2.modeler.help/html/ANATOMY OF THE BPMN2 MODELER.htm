@@ -1,0 +1,845 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 14 (filtered)">
+<title>Eclipse BPMN2 Modeler User Guide (Version 1.0.1)</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Lucida Console";
+	panose-1:2 11 6 9 4 5 4 2 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+h1
+	{mso-style-link:"Heading 1 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+h2
+	{mso-style-link:"Heading 2 Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#DBE5F1;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h3
+	{mso-style-link:"Heading 3 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h4
+	{mso-style-link:"Heading 4 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h5
+	{mso-style-link:"Heading 5 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h6
+	{mso-style-link:"Heading 6 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+p.MsoHeading7, li.MsoHeading7, div.MsoHeading7
+	{mso-style-link:"Heading 7 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading8, li.MsoHeading8, div.MsoHeading8
+	{mso-style-link:"Heading 8 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading9, li.MsoHeading9, div.MsoHeading9
+	{mso-style-link:"Heading 9 Char";
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:9.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+p.MsoToc1, li.MsoToc1, div.MsoToc1
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc2, li.MsoToc2, div.MsoToc2
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:10.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc3, li.MsoToc3, div.MsoToc3
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:20.0pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc4, li.MsoToc4, div.MsoToc4
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:33.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc5, li.MsoToc5, div.MsoToc5
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:44.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc6, li.MsoToc6, div.MsoToc6
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:55.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc7, li.MsoToc7, div.MsoToc7
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:66.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc8, li.MsoToc8, div.MsoToc8
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:77.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoToc9, li.MsoToc9, div.MsoToc9
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:5.0pt;
+	margin-left:88.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-style-link:"Header Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-style-link:"Footer Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoCaption, li.MsoCaption, div.MsoCaption
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+p.MsoTof, li.MsoTof, div.MsoTof
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"Title Char";
+	margin-top:.5in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:26.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoSubtitle, li.MsoSubtitle, div.MsoSubtitle
+	{mso-style-link:"Subtitle Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:50.0pt;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+em
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.25pt;
+	font-style:normal;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Balloon Text Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{mso-style-link:"No Spacing Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{mso-style-link:"List Paragraph Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{mso-style-link:"List Paragraph Char";
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoQuote, li.MsoQuote, div.MsoQuote
+	{mso-style-link:"Quote Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	font-style:italic;}
+p.MsoIntenseQuote, li.MsoIntenseQuote, div.MsoIntenseQuote
+	{mso-style-link:"Intense Quote Char";
+	margin-top:10.0pt;
+	margin-right:.8in;
+	margin-bottom:0in;
+	margin-left:.9in;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;
+	font-style:italic;}
+span.MsoSubtleEmphasis
+	{color:#243F60;
+	font-style:italic;}
+span.MsoIntenseEmphasis
+	{color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:bold;}
+span.MsoSubtleReference
+	{color:#4F81BD;
+	font-weight:bold;}
+span.MsoIntenseReference
+	{color:#4F81BD;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-style:italic;}
+span.MsoBookTitle
+	{letter-spacing:.45pt;
+	font-weight:bold;
+	font-style:italic;}
+p.MsoBibliography, li.MsoBibliography, div.MsoBibliography
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";}
+p.MsoTocHeading, li.MsoTocHeading, div.MsoTocHeading
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	background:#4F81BD;
+	border:none;
+	padding:0in;
+	font-size:11.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:bold;}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-link:"Heading 1";
+	color:white;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#4F81BD;
+	font-weight:bold;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-link:"Heading 2";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#DBE5F1;}
+span.Heading3Char
+	{mso-style-name:"Heading 3 Char";
+	mso-style-link:"Heading 3";
+	color:#243F60;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+span.Heading4Char
+	{mso-style-name:"Heading 4 Char";
+	mso-style-link:"Heading 4";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading5Char
+	{mso-style-name:"Heading 5 Char";
+	mso-style-link:"Heading 5";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading6Char
+	{mso-style-name:"Heading 6 Char";
+	mso-style-link:"Heading 6";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading7Char
+	{mso-style-name:"Heading 7 Char";
+	mso-style-link:"Heading 7";
+	color:#365F91;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading8Char
+	{mso-style-name:"Heading 8 Char";
+	mso-style-link:"Heading 8";
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading9Char
+	{mso-style-name:"Heading 9 Char";
+	mso-style-link:"Heading 9";
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-link:Title;
+	color:#4F81BD;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.SubtitleChar
+	{mso-style-name:"Subtitle Char";
+	mso-style-link:Subtitle;
+	color:#595959;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.NoSpacingChar
+	{mso-style-name:"No Spacing Char";
+	mso-style-link:"No Spacing";}
+span.QuoteChar
+	{mso-style-name:"Quote Char";
+	mso-style-link:Quote;
+	font-style:italic;}
+span.IntenseQuoteChar
+	{mso-style-name:"Intense Quote Char";
+	mso-style-link:"Intense Quote";
+	color:#4F81BD;
+	font-style:italic;}
+span.HeaderChar
+	{mso-style-name:"Header Char";
+	mso-style-link:Header;
+	font-style:italic;}
+span.FooterChar
+	{mso-style-name:"Footer Char";
+	mso-style-link:Footer;
+	font-style:italic;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";
+	font-style:italic;}
+p.Code, li.Code, div.Code
+	{mso-style-name:Code;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpFirst, li.CodeCxSpFirst, div.CodeCxSpFirst
+	{mso-style-name:CodeCxSpFirst;
+	mso-style-link:"Code Char";
+	margin-top:10.0pt;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpMiddle, li.CodeCxSpMiddle, div.CodeCxSpMiddle
+	{mso-style-name:CodeCxSpMiddle;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:0in;
+	margin-left:.2in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.CodeCxSpLast, li.CodeCxSpLast, div.CodeCxSpLast
+	{mso-style-name:CodeCxSpLast;
+	mso-style-link:"Code Char";
+	margin-top:0in;
+	margin-right:1.0in;
+	margin-bottom:10.0pt;
+	margin-left:.2in;
+	line-height:115%;
+	border:none;
+	padding:0in;
+	font-size:8.0pt;
+	font-family:"Lucida Console";}
+p.TableorFigureReference, li.TableorFigureReference, div.TableorFigureReference
+	{mso-style-name:"Table or Figure Reference";
+	mso-style-link:"Table or Figure Reference Char";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:8.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#365F91;
+	font-weight:bold;}
+span.ListParagraphChar
+	{mso-style-name:"List Paragraph Char";
+	mso-style-link:"List Paragraph";}
+span.CodeChar
+	{mso-style-name:"Code Char";
+	mso-style-link:Code;
+	font-family:"Lucida Console";}
+span.TableorFigureReferenceChar
+	{mso-style-name:"Table or Figure Reference Char";
+	mso-style-link:"Table or Figure Reference";
+	color:#365F91;
+	font-weight:bold;}
+p.Hint, li.Hint, div.Hint
+	{mso-style-name:Hint;
+	mso-style-link:"Hint Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+p.Caution, li.Caution, div.Caution
+	{mso-style-name:Caution;
+	mso-style-link:"Caution Char";
+	margin-top:.25in;
+	margin-right:1.0in;
+	margin-bottom:.25in;
+	margin-left:.45in;
+	text-indent:-.25in;
+	border:none;
+	padding:0in;
+	font-size:10.0pt;
+	font-family:"Trebuchet MS","sans-serif";
+	color:#4F81BD;}
+span.HintChar
+	{mso-style-name:"Hint Char";
+	mso-style-link:Hint;
+	color:#4F81BD;
+	font-style:normal;}
+span.CautionChar
+	{mso-style-name:"Caution Char";
+	mso-style-link:Caution;
+	color:#4F81BD;
+	font-style:normal;}
+.MsoChpDefault
+	{font-family:"Trebuchet MS","sans-serif";}
+.MsoPapDefault
+	{margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-US link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<div style='border:solid #4F81BD 3.0pt;padding:0in 0in 0in 0in;background:#4F81BD'>
+
+<h1><a name="_Toc371905847"></a><a name="_Anatomy_of_the"></a>Anatomy of the
+BPMN2 Modeler</h1>
+
+</div>
+
+<p class=MsoNormal style='page-break-after:avoid'>As shown in the screenshot
+below, BPMN2 Modeler has all of the features of a well-behaved Graphiti editor:
+the Drawing Canvas in the main area of the editor window, collapsible Tool Palette
+on the right, tabbed Property sheets, and an Outline Viewer with both tree and
+thumbnail views.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905848">Editor Tabs</a></h2>
+
+</div>
+
+<p class=MsoNormal style='page-break-after:avoid'>The BPMN2 Modeler has multiple
+pages, or tabs; each tab is used to display a separate BPMN Diagram. </p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img width=512 height=384
+id="Picture 14" src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image003.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182399">Figure </a>2: BPMN2 Modeler
+Overview</p>
+
+<p class=MsoNormal>Note that there are two sets of tabs: one set at the top of
+the editor window and another set at the bottom. The tabs at the top are used
+to flip between different diagrams, while the ones at the bottom are the
+contents of collapsed Sub-Processes contained within the same diagram.
+Procedures for managing diagram and Sub-Process tabs will be discussed in a
+later section.</p>
+
+<p class=MsoNormal style='page-break-after:avoid'>A special tab is available
+for an XML source view of the BPMN diagram, as shown in the following
+screenshot.</p>
+
+<p class=MsoNormal style='page-break-after:avoid'><img width=512 height=384
+id="Picture 15" src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image004.jpg"></p>
+
+<p class=MsoCaption><a name="_Toc372182400">Figure </a>3: XML Source View</p>
+
+<div style='border:solid #4F81BD 1.0pt;padding:2.0pt 4.0pt 1.0pt 10.0pt;
+margin-left:.2in;margin-right:1.0in'>
+
+<p class=Hint style='margin-top:.25in;margin-right:0in;margin-bottom:.25in;
+margin-left:.25in'><span style='font-family:Symbol;color:windowtext'><img
+width=11 height=11 src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image001.gif"
+alt="*"><span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span>The XML view is read-only as of this version, however fully
+synchronized text and graphical editing is planned for a future release.</p>
+
+</div>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905849"></a><a name="_Drawing_Canvas"></a>Drawing Canvas</h2>
+
+</div>
+
+<p class=MsoNormal>The Drawing Canvas occupies the majority of the editing
+window and behaves as you would expect: BPMN process elements can be placed on
+the canvas by selecting them from the Tool Palette and clicking anywhere on the
+canvas; elements can be moved by clicking and dragging; elements can be
+connected (with, e.g. <span class=MsoSubtleReference>Sequence Flows</span>, <span
+class=MsoSubtleReference>Associations</span>, <span class=MsoSubtleReference>Data
+Flows</span>, etc.) by selecting a connection tool from the palette and then
+first clicking the source element, then the target element.</p>
+
+<p class=MsoNormal>The canvas also has its own context menu, which includes the
+following actions:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Re-route all connections</b> – forces all connections to be
+laid out according to their currently selected layout algorithm. See the <a
+href="#_Connections">Connection Routing</a> section for more information.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Validate</b> – checks the file for missing/incorrectly
+configured elements and reports these in the Problems view. Problems are also
+highlighted on the canvas with a warning (<img border=0 width=12 height=12
+id="Picture 16" src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image005.jpg">)
+or error (<img border=0 width=12 height=12 id="Picture 17"
+src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image006.jpg">) decorator on
+the problem element.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Show/hide Source View</b> – is used to show or hide the XML
+source tab.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Delete Diagram</b> – deletes the currently active diagram tab.</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in'><span
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><b>Export Diagram</b> – is used to save a snapshot image of the
+entire diagram, in various selectable image formats and sizes. See the <a
+href="#_Export_Diagram_Dialog">Export Diagram Dialog</a> section.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905850"></a><a name="_Tool_Palette_1"></a>Tool Palette</h2>
+
+</div>
+
+<p class=MsoNormal>The <a href="#_Tool_Palette">Tool Palette</a> is, by
+default, located along the right edge of the Drawing Canvas. It consists of
+several “tool drawers” which contain the “tools” that are dragged onto the
+Drawing Canvas to create BPMN2 elements.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905851"></a><a name="_Outline_View_1"></a>Outline View</h2>
+
+</div>
+
+<p class=MsoNormal>The <a href="#_Outline_View">Outline View</a> is separate
+from the editor and is intended to show a hierarchical, tree oriented view of
+the file. This view is synchronized with the Drawing Canvas; when an element is
+selected on the canvas, it is highlighted in the Outline View. Conversely when
+an item in the Outline is selected, it is also highlighted on the Drawing
+Canvas.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905852">Property View</a></h2>
+
+</div>
+
+<p class=MsoNormal>The <a href="#_Property_View">Property View</a> is used to
+edit the attributes of the currently selected element. This view is also synchronized
+with the Outline View such that when a tree element is selected in the Outline,
+its attributes are displayed in the Property View.</p>
+
+<div style='border:solid #DBE5F1 3.0pt;padding:0in 0in 0in 0in;background:#DBE5F1'>
+
+<h2><a name="_Toc371905853"></a><a name="_Menu_&amp;_Toolbar"></a>Menu &amp;
+Toolbar</h2>
+
+</div>
+
+<p class=MsoNormal><b>Diagram</b> Main Menu Action – This Main Menu bar item
+allows you to create a new Process, Choreography or Collaboration diagram. The
+new diagram will be initially empty and appear as a new tab at the top of the
+editor window. See the section on <a href="#_Diagram_Types">BPMN 2.0 Diagram
+Types</a> for more information.</p>
+
+<p class=MsoNormal><img border=0 width=28 height=20 id="Picture 43"
+src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image007.jpg"> <b>Undo/Redo</b>
+– These Toolbar actions undo or redo the last editing operation performed. If
+the operation changed some attribute of an element (for example, its name) the
+undo/redo affects only that attribute.</p>
+
+<p class=MsoNormal><img border=0 width=70 height=20 id="Picture 38"
+src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image008.jpg"> <b>Zoom</b> –
+This Toolbar action are used to magnify or reduce the diagram. </p>
+
+<p class=MsoNormal><img border=0 width=125 height=20 id="Picture 39"
+src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image009.jpg"> <b>Alignment
+Tools</b> – These Toolbar actions are used to align multiple shapes with each
+other either horizontally, vertically, or normalize their widths or heights.</p>
+
+<p class=MsoNormal><img border=0 width=19 height=20 id="Picture 40"
+src="ANATOMY%20OF%20THE%20BPMN2%20MODELER_files/image010.jpg"> <b>Hide Context
+Buttons</b> – This Toolbar action disables the Context Button Pad. When the
+mouse is hovered over an element, an irregularly shaped “pad” pops up and
+surrounds the element. This pad contains a number of editing buttons which
+affect the element. The <b>Hide Context Buttons</b> Toolbar toggle button
+disables the display of this Button Pad. See the <a href="#_Context_Button_Pad">Context
+Button Pad</a> section for more information.</p>
+
+</div>
+
+</body>
+
+</html>

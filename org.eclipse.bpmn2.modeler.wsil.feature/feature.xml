@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.bpmn2.modeler.wsil.feature"
-      label="WSIL Support Feature"
+      label="BPMN2 Modeler - WSIL Support Feature"
       version="1.0.1.qualifier"
       provider-name="Eclipse.org">
 

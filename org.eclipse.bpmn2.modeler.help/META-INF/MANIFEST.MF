@@ -6,6 +6,7 @@ Bundle-Version: 1.0.1.qualifier
 Bundle-Activator: org.eclipse.bpmn2.modeler.help.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.help
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Eclipse-LazyStart: true

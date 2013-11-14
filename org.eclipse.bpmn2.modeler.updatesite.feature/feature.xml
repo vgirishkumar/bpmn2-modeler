@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.bpmn2.modeler.updatesite.feature"
-      label="BPMN2 Modeler Updatesite"
+      label="BPMN2 Modeler - Updatesite"
       version="0.2.6.qualifier"
       provider-name="Eclipse.org">
 
@@ -22,11 +22,11 @@ Red Hat, Inc. - initial API and implementation
    <includes
          id="org.eclipse.bpmn2.modeler.feature"
          version="0.0.0"/>
-         
+
    <includes
          id="org.eclipse.bpmn2.modeler.jboss.runtime.feature"
          version="0.0.0"/>
-         
+
    <includes
          id="org.eclipse.bpmn2.modeler.examples.feature"
          version="0.0.0"/>
