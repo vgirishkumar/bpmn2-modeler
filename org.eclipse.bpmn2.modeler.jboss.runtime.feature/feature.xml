@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.bpmn2.modeler.jboss.runtime.feature"
-      label="JBoss jBPM5 Runtime Extension Feature"
+      label="JBoss jBPM Runtime Extension Feature"
       version="1.0.1.qualifier"
       provider-name="Eclipse.org">
 

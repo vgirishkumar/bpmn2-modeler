@@ -21,6 +21,6 @@
   <artifactId>org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5</artifactId>
   <version>1.0.1-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
-  <name>BPMN2 Modeler jBPM5 Runtime</name>
-  <description>BPMN2 Modeler Runtime Specialization for JBoss jBPM5</description>
+  <name>BPMN2 Modeler jBPM Runtime</name>
+  <description>BPMN2 Modeler Runtime Specialization for JBoss jBPM</description>
 </project>

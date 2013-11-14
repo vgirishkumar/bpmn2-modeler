@@ -29,7 +29,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	// Page ID must be the same as defined in plugin.xml
-	public static String PAGE_ID = "org.eclipse.bpmn2.modeler.Behavior";
+	public static String PAGE_ID = "org.eclipse.bpmn2.modeler.Behavior"; //$NON-NLS-1$
 
 	private Bpmn2Preferences preferences;
 	private SettableBooleanFieldEditor btnShowIds;

@@ -176,7 +176,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			}
 			else {
 				if (ProcessType.NONE.equals(process.getProcessType())) {
-					return createFailureStatus(ctx, be, "Process type must be either \"Private\" or \"Public\"");
+					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_0);
 				}
 				// report errors only
 			}

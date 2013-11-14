@@ -253,7 +253,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	protected String initializeDescription() {
 		EObject object = (EObject)target;
 		String name = ""; //$NON-NLS-1$
-		String description = "";
+		String description = ""; //$NON-NLS-1$
 		if (object instanceof BPMNDiagram) {
 			switch(ModelUtil.getDiagramType(object)) {
 			case NONE:
@@ -278,7 +278,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 					if (fe instanceof ChoreographyActivity) {
 						ChoreographyActivity ca = (ChoreographyActivity) fe;
 						if (ca.getParticipantRefs().contains(participant)) {
-							name = "ParticipantBand";
+							name = "ParticipantBand"; //$NON-NLS-1$
 							break;
 						}
 					}

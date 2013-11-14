@@ -155,7 +155,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				Messages.AbstractDetailComposite_Empty_Property_Sheet,
 				be.eClass().getName());
 			
-			String elements = "";
+			String elements = ""; //$NON-NLS-1$
 			String props[] = getPropertiesProvider().getProperties();
 			for (String s : props) {
 				elements += "    " + s + "\n"; //$NON-NLS-1$ //$NON-NLS-2$

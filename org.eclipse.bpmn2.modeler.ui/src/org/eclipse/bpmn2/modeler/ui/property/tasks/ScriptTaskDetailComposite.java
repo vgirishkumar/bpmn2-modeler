@@ -42,7 +42,7 @@ public class ScriptTaskDetailComposite extends ActivityDetailComposite {
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute) {
-		if ("script".equals(attribute.getName())) {
+		if ("script".equals(attribute.getName())) { //$NON-NLS-1$
 			scriptEditor = new TextObjectEditor(this,object,attribute);
 			scriptEditor.createControl(getAttributesParent(),Messages.ScriptTaskDetailComposite_Script_Label);
 		}

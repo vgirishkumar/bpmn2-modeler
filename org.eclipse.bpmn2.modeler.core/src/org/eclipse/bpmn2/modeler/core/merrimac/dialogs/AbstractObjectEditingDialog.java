@@ -95,7 +95,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		
 		dialogContent = createDialogContent(body);
 		if (compositeFactory!=null)
-			dialogContent.setData("factory", compositeFactory);
+			dialogContent.setData("factory", compositeFactory); //$NON-NLS-1$
 		
 		data = new FormData();
 		data.top = new FormAttachment(0, 0);

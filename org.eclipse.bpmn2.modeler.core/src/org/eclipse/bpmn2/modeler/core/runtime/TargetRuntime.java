@@ -216,7 +216,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 								me.setDiagramType(Bpmn2DiagramType.fromString(type));
 								me.setProfile(profile);
 								if (ref!=null) {
-									String a[] = ref.split(":");
+									String a[] = ref.split(":"); //$NON-NLS-1$
 									TargetRuntime rt = TargetRuntime.getRuntime(a[0]);
 									type = a[1];
 									profile = a[2];
@@ -307,7 +307,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							me.setDiagramType(Bpmn2DiagramType.fromString(type));
 							me.setProfile(profile);
 							if (ref!=null) {
-								String a[] = ref.split(":");
+								String a[] = ref.split(":"); //$NON-NLS-1$
 								TargetRuntime rt = TargetRuntime.getRuntime(a[0]);
 								type = a[1];
 								profile = a[2];

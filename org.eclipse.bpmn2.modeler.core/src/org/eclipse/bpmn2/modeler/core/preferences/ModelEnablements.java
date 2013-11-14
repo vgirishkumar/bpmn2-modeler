@@ -95,7 +95,7 @@ public class ModelEnablements {
 	public void setEnabled(String[] list) {
 		setEnabledAll(false);
 		for (String s : list) {
-			int i = s.indexOf(".");
+			int i = s.indexOf("."); //$NON-NLS-1$
 			setEnabled(s.substring(0,i), s.substring(i+1), true);
 		}
 	}
@@ -179,7 +179,7 @@ public class ModelEnablements {
 	 * if false, remove the element.
 	 */
 	public void setEnabled(String name, boolean enabled) {
-		int i = name.indexOf(".");
+		int i = name.indexOf("."); //$NON-NLS-1$
 		if (i>0) {
 			setEnabled(name.substring(0,i), name.substring(i+1), enabled);
 			return;
@@ -376,7 +376,7 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className) {
-		int i = className.indexOf(".");
+		int i = className.indexOf("."); //$NON-NLS-1$
 		if (i>0) {
 			return isEnabled(className.substring(0,i), className.substring(i+1));
 		}
