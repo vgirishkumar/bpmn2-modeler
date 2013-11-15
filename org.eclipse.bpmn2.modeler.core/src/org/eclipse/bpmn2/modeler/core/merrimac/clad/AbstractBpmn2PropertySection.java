@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -72,6 +73,12 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 			cachedWorkbenchWindow.getPartService().addPartListener(
 				partActivationListener);
 		}
+	}
+
+	@Override
+	public void aboutToBeShown() {
+		super.aboutToBeShown();
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getParent(), IHelpContexts.Property_View);
 	}
 
 	@Override

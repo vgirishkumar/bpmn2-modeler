@@ -462,15 +462,15 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			
 			if (operation.getOutMessageRef()!=null) {
 				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
-				output.setItemSubjectRef(operation.getInMessageRef().getItemRef());
-				output.setIsCollection(operation.getInMessageRef().getItemRef().isIsCollection());
+				output.setItemSubjectRef(operation.getOutMessageRef().getItemRef());
+				output.setIsCollection(operation.getOutMessageRef().getItemRef().isIsCollection());
 				if (changed) {
 					ioSpec.getDataOutputs().add(output);
 					ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
 				}
 				else {
 					if (ioSpec.getDataOutputs().size()!=1 ||
-							ioSpec.getDataOutputs().get(0).getItemSubjectRef() != operation.getInMessageRef().getItemRef()) {
+							ioSpec.getDataOutputs().get(0).getItemSubjectRef() != operation.getOutMessageRef().getItemRef()) {
 						final InputOutputSpecification ios = ioSpec;
 						final DataOutput o = output;
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
