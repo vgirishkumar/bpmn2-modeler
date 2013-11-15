@@ -1,8 +1,10 @@
+mkdir ../html.tmp
+cd ../html
 for file in *.htm
 do
 	awk -F"a href=" '
 	BEGIN {
-		while (getline < "links.txt") {
+		while (getline < "../scripts/links.txt") {
 			split($0, a, "\t");
 			link = a[1]
 			fn = a[2]
@@ -30,5 +32,5 @@ do
 		else {
 			print
 		}
-	} ' "$file" >output/"$file"
+	} ' "$file" >../html.tmp/"$file"
 done

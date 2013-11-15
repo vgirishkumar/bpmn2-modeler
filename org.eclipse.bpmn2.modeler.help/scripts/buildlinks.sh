@@ -1,4 +1,5 @@
-> links.txt
+cd ../html
+> ../scripts/links.txt
 for file in *.htm
 do
 	awk -F"<a name=" '
@@ -15,5 +16,5 @@ do
 
 		}
 	}
-	' "$file" >>links.txt
+	' "$file" >>../scripts/links.txt
 done
