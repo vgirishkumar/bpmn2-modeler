@@ -10,3 +10,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.help
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Eclipse-LazyStart: true
+Export-Package: org.eclipse.bpmn2.modeler.help

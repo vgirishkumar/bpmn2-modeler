@@ -11,15 +11,16 @@
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
+import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 public class ProcessDiagramPropertySection extends DefaultPropertySection {
 
@@ -31,12 +32,16 @@ public class ProcessDiagramPropertySection extends DefaultPropertySection {
 	 */
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new ProcessDiagramDetailComposite(this);
+		AbstractDetailComposite composite = new ProcessDiagramDetailComposite(this);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, IHelpContexts.Property_View_Process_Tab);
+		return composite;
 	}
 
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
-		return new ProcessDiagramDetailComposite(parent,style);
+		AbstractDetailComposite composite = new ProcessDiagramDetailComposite(parent,style);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, IHelpContexts.Property_View_Process_Tab);
+		return composite;
 	}
 
 	@Override

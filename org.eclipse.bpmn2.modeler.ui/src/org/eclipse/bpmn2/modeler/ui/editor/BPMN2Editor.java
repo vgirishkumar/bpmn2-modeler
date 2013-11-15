@@ -105,6 +105,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
+import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
@@ -927,6 +928,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public void createPartControl(Composite parent) {
 		if (getGraphicalViewer()==null) {
 			super.createPartControl(parent);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IHelpContexts.TOC);
 		}
 	}
 	
