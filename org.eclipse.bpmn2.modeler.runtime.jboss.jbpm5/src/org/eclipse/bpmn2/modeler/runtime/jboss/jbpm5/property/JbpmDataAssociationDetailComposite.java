@@ -73,26 +73,33 @@ public class JbpmDataAssociationDetailComposite extends DataAssociationDetailCom
 				break;
 			}
 		}
-		boolean enabled = true;
-		if (activity instanceof ServiceTask) {
-			enabled = ((ServiceTask)activity).getOperationRef()==null;
-		}
-		else if (activity instanceof SendTask) {
-			enabled = ((SendTask)activity).getOperationRef()==null && ((SendTask)activity).getMessageRef()==null;
-		}
-		else if (activity instanceof ReceiveTask) {
-			enabled = ((ReceiveTask)activity).getOperationRef()==null && ((ReceiveTask)activity).getMessageRef()==null;
-		}
-		else if (CustomTaskDescriptor.getDescriptor(activity) != null && JbpmIoParametersDetailComposite.isCustomTaskIOParameter((ItemAwareElement)be)) {
-			enabled = false;
-		}
+
+		// TODO: for now we will show both "From" and "To", the DataInput or Output as well as the
+		// process data object it is associated with, just in case the user needs to change the
+		// DataInput/Output name or data type.
+		// The data type is set to be whatever the Operation's InMessage and OutMessage are.
+		// Does this need to be here?
 		
-		if (businessObject instanceof DataInput) {
-			setShowToGroup(enabled);
-		}
-		else {
-			setShowFromGroup(enabled);
-		}
+//		boolean enabled = true;
+//		if (activity instanceof ServiceTask) {
+//			enabled = ((ServiceTask)activity).getOperationRef()==null;
+//		}
+//		else if (activity instanceof SendTask) {
+//			enabled = ((SendTask)activity).getOperationRef()==null && ((SendTask)activity).getMessageRef()==null;
+//		}
+//		else if (activity instanceof ReceiveTask) {
+//			enabled = ((ReceiveTask)activity).getOperationRef()==null && ((ReceiveTask)activity).getMessageRef()==null;
+//		}
+//		else if (CustomTaskDescriptor.getDescriptor(activity) != null && JbpmIoParametersDetailComposite.isCustomTaskIOParameter((ItemAwareElement)be)) {
+//			enabled = false;
+//		}
+//
+//		if (businessObject instanceof DataInput) {
+//			setShowToGroup(enabled);
+//		}
+//		else {
+//			setShowFromGroup(enabled);
+//		}
 		
 		super.createBindings(be);
 	}
