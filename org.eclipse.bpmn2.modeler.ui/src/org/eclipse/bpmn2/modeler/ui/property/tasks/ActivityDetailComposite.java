@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.LoopCharacteristics;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.OutputSet;
@@ -302,8 +303,8 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	}
 	
 	private void bindOperationMessageRef(final Composite container, final Activity activity, final EReference operationRef, final EReference messageRef) {
-		final String displayName = getPropertiesProvider().getLabel(activity, operationRef);
-		final ObjectEditor editor = new ComboObjectEditor(this,activity,operationRef) {
+		final String operationLabel = getPropertiesProvider().getLabel(activity, operationRef);
+		final ObjectEditor operationEditor = new ComboObjectEditor(this,activity,operationRef) {
 			@Override
 			protected boolean setValue(final Object result) {
 				TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
@@ -329,9 +330,18 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				return true;
 			}
 		};
-		editor.createControl(container,displayName);
-		if (messageRef!=null)
-			super.bindReference(container, activity, messageRef);
+		operationEditor.createControl(container,operationLabel);
+		
+		if (messageRef!=null) {
+			final String messageLabel = getPropertiesProvider().getLabel(activity, messageRef);
+			final ObjectEditor messageEditor = new ComboObjectEditor(this,activity,messageRef) {
+				@Override
+				protected boolean canSetNull() {
+					return false;
+				}
+			};
+			messageEditor.createControl(container,messageLabel);
+		}
 		
 		createMessageAssociations(container, activity, operationRef, (Operation)activity.eGet(operationRef));
 	}
@@ -371,7 +381,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 		}
 		else {
-			TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 			Resource resource = activity.eResource();
 			InputOutputSpecification ioSpec = activity.getIoSpecification();
 			if (ioSpec==null) {
@@ -380,15 +389,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				if (changed) {
 					activity.setIoSpecification(ioSpec);
 				}
-				else {
-					final InputOutputSpecification ios = ioSpec;
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							activity.setIoSpecification(ios);
-						}
-					});
-				}
 			}
 			if (ioSpec.getInputSets().size()==0) {
 				final InputSet inputSet = Bpmn2ModelerFactory.create(resource, InputSet.class);
@@ -396,30 +396,12 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				if (changed) {
 					ioSpec.getInputSets().add(inputSet);
 				}
-				else {
-					final InputOutputSpecification ios = ioSpec;
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							ios.getInputSets().add(inputSet);
-						}
-					});
-				}
 			}
 			if (ioSpec.getOutputSets().size()==0) {
 				final OutputSet outputSet = Bpmn2ModelerFactory.create(resource, OutputSet.class);
 				ModelUtil.setID(outputSet);
 				if (changed) {
 					ioSpec.getOutputSets().add(outputSet);
-				}
-				else {
-					final InputOutputSpecification ios = ioSpec;
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							ios.getOutputSets().add(outputSet);
-						}
-					});
 				}
 			}
 			DataInput input = null;
@@ -433,56 +415,35 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				ioSpec.getOutputSets().get(0).getDataOutputRefs().clear();
 			}
 			
-			if (operation.getInMessageRef()!=null) {
+			Message inMessage = (activity instanceof ServiceTask) ? operation.getInMessageRef() : operation.getOutMessageRef();
+			Message outMessage = (activity instanceof ServiceTask) ? operation.getOutMessageRef() : operation.getInMessageRef();
+			if (activity instanceof SendTask)
+				outMessage = null;
+			else if (activity instanceof ReceiveTask)
+				inMessage = null;
+
+			if (inMessage!=null) {
 				// display the "From" association widgets
 				input = Bpmn2ModelerFactory.create(resource, DataInput.class);
-				input.setItemSubjectRef(operation.getInMessageRef().getItemRef());
-				input.setIsCollection(operation.getInMessageRef().getItemRef().isIsCollection());
+				if (inMessage.getItemRef()!=null) {
+					input.setItemSubjectRef(inMessage.getItemRef());
+					input.setIsCollection(inMessage.getItemRef().isIsCollection());
+				}
 				if (changed) {
 					ioSpec.getDataInputs().add(input);
 					ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
 				}
-				else {
-					if (ioSpec.getDataInputs().size()!=1 ||
-							ioSpec.getDataInputs().get(0).getItemSubjectRef() != operation.getInMessageRef().getItemRef()) {
-						final InputOutputSpecification ios = ioSpec;
-						final DataInput i = input;
-						domain.getCommandStack().execute(new RecordingCommand(domain) {
-							@Override
-							protected void doExecute() {
-								ios.getDataInputs().clear();
-								ios.getDataInputs().add(i);
-								ios.getInputSets().get(0).getDataInputRefs().add(i);
-							}
-						});
-					}
-					input = ioSpec.getDataInputs().get(0);
-				}
 			}
 			
-			if (operation.getOutMessageRef()!=null) {
+			if (outMessage!=null) {
 				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
-				output.setItemSubjectRef(operation.getOutMessageRef().getItemRef());
-				output.setIsCollection(operation.getOutMessageRef().getItemRef().isIsCollection());
+				if (outMessage.getItemRef()!=null) {
+					output.setItemSubjectRef(outMessage.getItemRef());
+					output.setIsCollection(outMessage.getItemRef().isIsCollection());
+				}
 				if (changed) {
 					ioSpec.getDataOutputs().add(output);
 					ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
-				}
-				else {
-					if (ioSpec.getDataOutputs().size()!=1 ||
-							ioSpec.getDataOutputs().get(0).getItemSubjectRef() != operation.getOutMessageRef().getItemRef()) {
-						final InputOutputSpecification ios = ioSpec;
-						final DataOutput o = output;
-						domain.getCommandStack().execute(new RecordingCommand(domain) {
-							@Override
-							protected void doExecute() {
-								ios.getDataOutputs().clear();
-								ios.getDataOutputs().add(o);
-								ios.getOutputSets().get(0).getDataOutputRefs().add(o);
-							}
-						});
-					}
-					output = ioSpec.getDataOutputs().get(0);
 				}
 			}
 			
@@ -492,6 +453,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				final InputSet inputSet = ioSpec.getInputSets().get(0);
 				if (!inputSet.getDataInputRefs().contains(input)) {
 					final DataInput i = input;
+					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
@@ -506,6 +468,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				final OutputSet outputSet = ioSpec.getOutputSets().get(0);
 				if (!outputSet.getDataOutputRefs().contains(output)) {
 					final DataOutput o = output;
+					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
@@ -515,33 +478,45 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				}
 			}
 			
-			if (operation.getInMessageRef()!=null &&
-					(activity instanceof ReceiveTask ||
-							activity instanceof ServiceTask)) {
-				// display the "From" association widgets
-				inputComposite.setVisible(true);
-				inputComposite.setBusinessObject(input);
-				if (activity instanceof ServiceTask)
+			if (activity instanceof ServiceTask) {
+				if (inMessage!=null) {
+					// display the "From" association widgets
+					inputComposite.setVisible(true);
+					inputComposite.setBusinessObject(input);
 					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Request_Message);
+				}
 				else
-					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
-			}
-			else
-				inputComposite.setVisible(false);
-			
-			if (operation.getOutMessageRef()!=null &&
-					(activity instanceof SendTask ||
-							activity instanceof ServiceTask)) {
-				outputComposite.setVisible(true);
-				outputComposite.setBusinessObject(output);
-				if (activity instanceof ServiceTask)
+					inputComposite.setVisible(false);
+				
+				if (outMessage!=null) {
+					outputComposite.setVisible(true);
+					outputComposite.setBusinessObject(output);
 					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Response_Message);
+				}
 				else
-					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
+					outputComposite.setVisible(false);
 			}
-			else
-				outputComposite.setVisible(false);
+			else if (activity instanceof SendTask) {
+				if (inMessage!=null) {
+					inputComposite.setVisible(true);
+					inputComposite.setBusinessObject(input);
+					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
+				}
+				else
+					inputComposite.setVisible(false);
+			}
+			else if (activity instanceof ReceiveTask) {
+				if (outMessage!=null) {
+					outputComposite.setVisible(true);
+					outputComposite.setBusinessObject(output);
+					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
+				}
+				else
+					outputComposite.setVisible(false);
+			}
 		}
+		if (changed)
+			redrawPage();
 	}
 	
 	private void createNewDiagram(final BaseElement bpmnElement) {

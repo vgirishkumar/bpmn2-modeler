@@ -142,10 +142,12 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 
 	public void redrawPage() {
 		if (getPropertySection()!=null) {
-			getParent().layout();
 			getPropertySection().layout();
+			getParent().layout();
+			layout();
 		}
-		else {
+		else
+		{
 			ModelUtil.recursivelayout(getParent());
 		}
 	}

@@ -51,7 +51,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -479,6 +478,11 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			tableSection.setExpanded(true);
 	}
 	
+	public void setBusinessObject(EObject object) {
+		super.setBusinessObject(object);
+		showDetails(false);
+	}
+	
 	private void showDetails(boolean enable) {
 		if (detailSection==null)
 			return;
@@ -683,6 +687,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
+			addAction.setId("add");
 			tableToolBarManager.add(addAction);
 		}
 		
@@ -729,6 +734,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
+			removeAction.setId("remove");
 			tableToolBarManager.add(removeAction);
 			removeAction.setEnabled(false);
 		}
@@ -751,6 +757,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
+			upAction.setId("up");
 			tableToolBarManager.add(upAction);
 			upAction.setEnabled(false);
 	
@@ -771,6 +778,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
+			downAction.setId("down");
 			tableToolBarManager.add(downAction);
 			downAction.setEnabled(false);
 		}
@@ -804,6 +812,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 				}
 			};
+			editAction.setId("edit");
 			tableToolBarManager.add(editAction);
 			editAction.setEnabled(false);
 		}
@@ -848,6 +857,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		// AbstractDetailComposite.refresh(), then set the new input into the table
 		if (table.contains(n) || notification.getEventType() == -1) {
 			tableViewer.setInput(table);
+			tableViewer.refresh(true);
 			return; // quick exit before the exhaustive search that follows
 		}
 		if (n instanceof EObject) {
@@ -855,6 +865,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			if (refreshIfNeededRecursive((EObject)n, table, visited))
 				return;
 		}
+	}
+	
+	public ToolBarManager getToolBarManager() {
+		return tableToolBarManager;
 	}
 	
 	@SuppressWarnings("rawtypes")

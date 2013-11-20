@@ -431,7 +431,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		while (parent!=null) {
 			parent = parent.getParent();
 			if (parent instanceof AbstractDetailComposite) {
-				parent.layout();
+				((AbstractDetailComposite)parent).redrawPage();
 				break;
 			}
 		}

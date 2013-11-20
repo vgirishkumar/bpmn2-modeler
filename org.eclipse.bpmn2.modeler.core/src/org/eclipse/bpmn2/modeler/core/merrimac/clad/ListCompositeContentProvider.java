@@ -42,6 +42,10 @@ public class ListCompositeContentProvider implements IStructuredContentProvider 
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if (newInput instanceof EList) {
+			list = (EList<EObject>)newInput;
+			object = listComposite.getBusinessObject();
+		}
 	}
 
 	@Override

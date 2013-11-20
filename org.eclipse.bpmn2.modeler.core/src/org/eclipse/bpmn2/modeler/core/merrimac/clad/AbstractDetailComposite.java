@@ -596,10 +596,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		});
 	}
 	
-	public boolean needRefresh(EObject be) {
-		return getBusinessObject() != be;
-	}
-	
 	public void setPropertiesProvider(AbstractPropertiesProvider provider) {
 		propertiesProvider = provider;
 	}

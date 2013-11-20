@@ -79,9 +79,4 @@ public class DataItemsDetailComposite extends DefaultDetailComposite {
 			return null;
 		return super.bindList(object, feature, listItemClass);
 	}
-
-	@Override
-	public boolean needRefresh(EObject be) {
-		return super.needRefresh(be);
-	}
 }
