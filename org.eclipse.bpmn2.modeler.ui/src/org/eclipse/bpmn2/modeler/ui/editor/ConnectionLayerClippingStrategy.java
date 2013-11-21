@@ -26,6 +26,7 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -61,6 +62,12 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 				Object model = part.getModel();
 				if (model instanceof Connection) {
 					Connection connection = (Connection)model;
+					AnchorContainer source = connection.getStart().getParent();
+					AnchorContainer target = connection.getEnd().getParent();
+					if (source.eContainer() != target.eContainer()) {
+						// don't clip the connection if source and target are not in the same container
+						return new Rectangle[] {childFigure.getBounds()};
+					}
 					BaseElement businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
 					if (businessObject instanceof MessageFlow) {
 						ContainerShape messageShape = MessageFlowFeatureContainer.findMessageShape(connection);
