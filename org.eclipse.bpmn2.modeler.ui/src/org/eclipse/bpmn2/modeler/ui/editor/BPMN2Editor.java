@@ -109,6 +109,7 @@ import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.property.PropertyTabDescriptorProvider;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
@@ -860,6 +861,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
 		getPreferences().removePreferenceChangeListener(this);
+		
+		// get rid of cached Property Tab Descriptors
+		if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)
+			((PropertyTabDescriptorProvider)tabDescriptorProvider).disposeTabDescriptors(bpmnResource);
 		
 		getResourceSet().eAdapters().remove(getEditorAdapter());
 		removeSelectionListener();

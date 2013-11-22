@@ -80,6 +80,16 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			td.getSectionDescriptors().add(this);
 		}
 		
+		public Bpmn2SectionDescriptor(Bpmn2TabDescriptor td, Bpmn2SectionDescriptor that) {
+			tab = td.getId();
+			id = tab + ".section" + hashCode(); //$NON-NLS-1$
+			this.sectionClass = that.sectionClass;
+			this.appliesToClasses.addAll(that.appliesToClasses);
+			this.enablesFor = that.enablesFor;
+			this.filterClassName = that.filterClassName;
+			this.filter = that.filter;
+		}
+		
 		@Override
 		public String getId() {
 			return id;

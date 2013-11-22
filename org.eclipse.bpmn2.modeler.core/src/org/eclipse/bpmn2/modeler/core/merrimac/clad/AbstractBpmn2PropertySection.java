@@ -77,7 +77,9 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	@Override
 	public void aboutToBeShown() {
 		super.aboutToBeShown();
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getParent(), IHelpContexts.Property_View);
+		Composite parent = getParent();
+		if (parent!=null && !parent.isDisposed())
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IHelpContexts.Property_View);
 	}
 
 	@Override
