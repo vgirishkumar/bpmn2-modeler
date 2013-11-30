@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
 import org.eclipse.bpmn2.Definitions;
@@ -46,6 +47,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.Transaction;
@@ -102,12 +104,25 @@ public class FeatureSupport {
 	public static boolean isValidArtifactTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
 		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
-		boolean intoParticipant = isTargetParticipant(context);
+		boolean intoParticipant = isTargetParticipant(context) && !isChoreographyParticipantBand(context.getTargetContainer());
 		boolean intoSubProcess = isTargetSubProcess(context);
+		boolean intoSubChoreography = isTargetSubChoreography(context);
 		boolean intoGroup = isTargetGroup(context);
-		return (intoDiagram || intoLane || intoParticipant || intoSubProcess) && !intoGroup;
+		return (intoDiagram || intoLane || intoParticipant || intoSubProcess || intoSubChoreography) && !intoGroup;
 	}
-	
+
+	public static boolean isChoreographyParticipantBand(PictogramElement element) {
+		EObject container = element.eContainer();
+		if (container instanceof PictogramElement) {
+			PictogramElement containerElem = (PictogramElement) container;
+			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(containerElem);
+			if (bo instanceof ChoreographyActivity) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static boolean isValidDataTarget(ITargetContext context) {
 		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
 		boolean intoDiagram = containerBO instanceof BPMNDiagram;
@@ -123,6 +138,10 @@ public class FeatureSupport {
 	
 	public static boolean isTargetSubProcess(ITargetContext context) {
 		return BusinessObjectUtil.containsElementOfType(context.getTargetContainer(), SubProcess.class);
+	}
+	
+	public static boolean isTargetSubChoreography(ITargetContext context) {
+		return BusinessObjectUtil.containsElementOfType(context.getTargetContainer(), SubChoreography.class);
 	}
 
 	public static boolean isTargetLane(ITargetContext context) {

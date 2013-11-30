@@ -192,11 +192,6 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
-		public boolean canCreate(ICreateContext context) {
-			return true;
-		}
-
-		@Override
 		public String getStencilImageId() {
 			return ImageProvider.IMG_16_GROUP;
 		}
