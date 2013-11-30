@@ -1058,6 +1058,8 @@
 			<enable object="TerminateEventDefinition"/>
 
 			<enable object="MessageFlow"/>
+			<enable object="Participant"/>
+			
 			<disable object="ConversationLink"/>
 			<disable object="ConversationAssociation"/>
 			<disable object="Collaboration"/>

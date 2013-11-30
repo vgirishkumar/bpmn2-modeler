@@ -112,12 +112,13 @@ import org.eclipse.swt.widgets.Display;
 
 public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
-	BPMN2Editor editor;
-	TargetRuntime targetRuntime;
-	BPMNFeatureProvider featureProvider;
-	ModelEnablements modelEnablements;
-	Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
-	List<IPaletteCompartmentEntry> palette;
+	protected BPMN2Editor editor;
+	protected TargetRuntime targetRuntime;
+	protected BPMNFeatureProvider featureProvider;
+	protected ModelEnablements modelEnablements;
+	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
+	protected List<IPaletteCompartmentEntry> palette;
+	private boolean isDefaultPalette;
 	
 	protected class ProfileSelectionToolEntry extends ToolEntry {
 		BPMN2Editor editor;
@@ -288,14 +289,20 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 	
 	private void createDefaultpalette() {
-		createConnectors(palette);
-		createTasksCompartments(palette);
-		createGatewaysCompartments(palette);
-		createEventsCompartments(palette);
-		createEventDefinitionsCompartments(palette);
-		createDataCompartments(palette);
-		createOtherCompartments(palette);
-//		createCustomTasks(palette);
+		try {
+			isDefaultPalette = true;
+			createConnectors(palette);
+			createTasksCompartments(palette);
+			createGatewaysCompartments(palette);
+			createEventsCompartments(palette);
+			createEventDefinitionsCompartments(palette);
+			createDataCompartments(palette);
+			createOtherCompartments(palette);
+			createCustomTasks(palette);
+		}
+		finally {
+			isDefaultPalette = false;
+		}
 	}
 	
 	public List<IToolEntry> getTools() {
@@ -452,8 +459,12 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		}
 	}
 	
+	private boolean isEnabled(String className) {
+		return isDefaultPalette || modelEnablements.isEnabled(className);
+	}
+	
 	private void createEntry(Class c, PaletteCompartmentEntry compartmentEntry) {
-		if (modelEnablements.isEnabled(c.getSimpleName())) {
+		if (isEnabled(c.getSimpleName())) {
 			IFeature feature = featureProvider.getCreateFeatureForBusinessObject(c);
 			if (feature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;
@@ -771,8 +782,8 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		// temp debugging stuff to dump connection routing info
 		for (PictogramElement pe : context.getPictogramElements()) {
 			String id = Graphiti.getPeService().getPropertyValue(pe, "ROUTING_NET_CONNECTION"); //$NON-NLS-1$
-			System.out.println("id="+id); //$NON-NLS-1$
 			if (pe instanceof FreeFormConnection) {
+				System.out.println("id="+id); //$NON-NLS-1$
 				FreeFormConnection c = (FreeFormConnection)pe;
 				int i=0;
 				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(c.getStart());
