@@ -137,9 +137,12 @@ public class Bpmn2TabDescriptor extends AbstractTabDescriptor {
 		if (image!=null)
 			td.image = new Image(Display.getDefault(), this.image, SWT.IMAGE_COPY);
 		td.indented = this.indented;
+		td.popup = this.popup;
+		td.image = this.image;
 		for (Bpmn2SectionDescriptor sd : (List<Bpmn2SectionDescriptor>)getSectionDescriptors()) {
 			td.getSectionDescriptors().add(new Bpmn2SectionDescriptor(td, sd));
 		}
+
 		return td;
 	}
 

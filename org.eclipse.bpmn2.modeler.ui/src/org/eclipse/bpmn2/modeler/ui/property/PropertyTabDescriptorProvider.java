@@ -137,8 +137,8 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 			desc.removeAll(emptyTabs);
 		
 		if (advancedPropertyTab!=null) {
-			desc.remove(advancedPropertyTab);
-			desc.add(advancedPropertyTab);
+			if (desc.remove(advancedPropertyTab))
+				desc.add(advancedPropertyTab);
 		}
 		
 		// make copies of all tab descriptors to prevent cross-talk between editors

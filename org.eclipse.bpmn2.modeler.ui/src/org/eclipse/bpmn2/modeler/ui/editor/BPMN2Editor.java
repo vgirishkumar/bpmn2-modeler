@@ -1211,6 +1211,12 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		if (event.getKey().contains("/"+Bpmn2Preferences.PREF_MODEL_ENABLEMENT+"/")) //$NON-NLS-1$ //$NON-NLS-2$
 			modelEnablements = null;
 
+		if (event.getKey().contains(Bpmn2Preferences.PREF_SHOW_ADVANCED_PROPERTIES)) {
+			// get rid of cached Property Tab Descriptors
+			if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)
+				((PropertyTabDescriptorProvider)tabDescriptorProvider).disposeTabDescriptors(bpmnResource);
+		}
+		
 		if (event.getKey().contains("/"+Bpmn2Preferences.PREF_SHAPE_STYLE+"/")) { //$NON-NLS-1$ //$NON-NLS-2$
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
