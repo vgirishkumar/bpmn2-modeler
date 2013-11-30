@@ -996,7 +996,7 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 		};
 		FILTER_NAMES = wsdl_FILTER_NAMES;
 
-		resourceFilter = ".bpmn, .bpmn2"; //$NON-NLS-1$
+		resourceFilter = ".bpmn,.bpmn2"; //$NON-NLS-1$
 		if (fResourceComposite!=null)
 			fResourceComposite.setFileFilter(resourceFilter);
 	}
