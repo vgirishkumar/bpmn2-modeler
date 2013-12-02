@@ -118,7 +118,6 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	protected ModelEnablements modelEnablements;
 	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	protected List<IPaletteCompartmentEntry> palette;
-	private boolean isDefaultPalette;
 	
 	protected class ProfileSelectionToolEntry extends ToolEntry {
 		BPMN2Editor editor;
@@ -289,20 +288,14 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 	
 	private void createDefaultpalette() {
-		try {
-			isDefaultPalette = true;
-			createConnectors(palette);
-			createTasksCompartments(palette);
-			createGatewaysCompartments(palette);
-			createEventsCompartments(palette);
-			createEventDefinitionsCompartments(palette);
-			createDataCompartments(palette);
-			createOtherCompartments(palette);
-			createCustomTasks(palette);
-		}
-		finally {
-			isDefaultPalette = false;
-		}
+		createConnectors(palette);
+		createTasksCompartments(palette);
+		createGatewaysCompartments(palette);
+		createEventsCompartments(palette);
+		createEventDefinitionsCompartments(palette);
+		createDataCompartments(palette);
+		createOtherCompartments(palette);
+		createCustomTasks(palette);
 	}
 	
 	public List<IToolEntry> getTools() {
@@ -460,7 +453,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	}
 	
 	private boolean isEnabled(String className) {
-		return isDefaultPalette || modelEnablements.isEnabled(className);
+		return modelEnablements.isEnabled(className);
 	}
 	
 	private void createEntry(Class c, PaletteCompartmentEntry compartmentEntry) {

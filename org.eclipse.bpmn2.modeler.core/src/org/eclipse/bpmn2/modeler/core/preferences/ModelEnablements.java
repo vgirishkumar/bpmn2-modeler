@@ -86,6 +86,17 @@ public class ModelEnablements {
 		}
 	}
 	
+	public void copy(ModelEnablements me) {
+		classes.clear();
+		
+		for (Entry<String, HashSet<String>> entry : me.classes.entrySet()) {
+			String className = entry.getKey();
+			HashSet<String> features = new HashSet<String>();
+			features.addAll(entry.getValue());
+			classes.put(className, features);
+		}
+	}
+	
 	private void setEnabled(List<EClass> eClasses, boolean enabled) {
 		for (EClass c : eClasses) {
 			setEnabled(c,enabled);

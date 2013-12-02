@@ -852,4 +852,16 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			return BPMN2_MARKER_ID;
 		return problemMarkerId;
 	}
+
+	@Override
+	public boolean equals(Object arg0) {
+		if (arg0 instanceof TargetRuntime) {
+			if (id!=null && id.equals(((TargetRuntime)arg0).getId()))
+				return true;
+		}
+		else if (arg0 instanceof String) {
+			return ((String)arg0).equals(id);
+		}
+		return super.equals(arg0);
+	}
 }
