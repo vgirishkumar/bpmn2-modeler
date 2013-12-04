@@ -196,9 +196,11 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		categories.clear();
 		ToolPaletteDescriptor toolPaletteDescriptor = targetRuntime.getToolPalette(diagramType, profile);
 		if (toolPaletteDescriptor!=null) {
+			boolean needCustomTaskDrawer = true;
 			for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
 				if (ToolPaletteDescriptor.DEFAULT_PALETTE_ID.equals(category.getId())) {
 					createDefaultpalette();
+					needCustomTaskDrawer = false;
 					continue;
 				}
 				
@@ -232,7 +234,8 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 				else if (compartmentEntry.getToolEntries().size()>0)
 					palette.add(compartmentEntry);
 			}
-			createCustomTasks(palette);
+			if (needCustomTaskDrawer)
+				createCustomTasks(palette);
 		}
 		else
 		{

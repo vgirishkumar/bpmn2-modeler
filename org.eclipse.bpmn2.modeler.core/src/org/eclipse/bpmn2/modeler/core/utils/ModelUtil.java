@@ -1553,7 +1553,7 @@ public class ModelUtil {
 		if (feature!=null) {
 			String name = (String)object.eGet(feature);
 			if (name==null || name.isEmpty())
-				name = Messages.ModelUtil_Unnamed_Object + objName;
+				name = NLS.bind(Messages.ModelUtil_Unnamed_Object, objName);
 			else
 				name = objName + " \"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 			return name;

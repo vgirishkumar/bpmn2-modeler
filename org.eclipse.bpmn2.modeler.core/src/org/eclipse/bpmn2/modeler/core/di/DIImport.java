@@ -66,6 +66,7 @@ import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -799,6 +800,18 @@ public class DIImport {
 			diagnostics.add(IStatus.ERROR, bpmnEdge, Messages.DIImport_Reference_not_found);
 			return;
 		}
+		else {
+			// this could be some custom connection: it must define "sourceRef" and "targetRef"
+			// features so we know how to connect it.
+			EStructuralFeature sf = bpmnElement.eClass().getEStructuralFeature("sourceRef");
+			EStructuralFeature tf = bpmnElement.eClass().getEStructuralFeature("targetRef");
+			if (sf!=null && tf!=null) {
+				source = (EObject) bpmnElement.eGet(sf);
+				target = (EObject) bpmnElement.eGet(tf);
+				se = elements.get(source);
+				te = elements.get(target);
+			}
+		}
 
 		ModelUtil.addID(bpmnElement);
 		
@@ -840,10 +853,10 @@ public class DIImport {
 		}
 		
 		if (sourceElement == null) {
-			bpmnEdge.setSourceElement(DIUtils.findBPMNEdge((BaseElement) source));
+			bpmnEdge.setSourceElement(DIUtils.findBPMNShape((BaseElement) source));
 		}
 		if (targetElement == null) {
-			bpmnEdge.setTargetElement(DIUtils.findBPMNEdge((BaseElement) target));
+			bpmnEdge.setTargetElement(DIUtils.findBPMNShape((BaseElement) target));
 		}
 	}
 
