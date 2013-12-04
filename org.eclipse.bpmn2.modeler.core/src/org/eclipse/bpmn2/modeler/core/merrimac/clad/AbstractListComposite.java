@@ -306,7 +306,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			int realIndex = 0;
 			for (EObject o : list) {
 				EClass ec = o.eClass();
-				if (ec == listItemClass) {
+				if (listItemClass.isInstance(ec)) {
 					tempMap[index] = realIndex;
 					++index;
 				}

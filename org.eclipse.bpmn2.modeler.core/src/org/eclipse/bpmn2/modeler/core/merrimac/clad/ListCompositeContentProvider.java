@@ -60,7 +60,7 @@ public class ListCompositeContentProvider implements IStructuredContentProvider 
 			List<EObject> elements = new ArrayList<EObject>();
 			for (EObject o : list) {
 				EClass ec = o.eClass();
-				if (ec == listItemClass)
+				if (listItemClass.isInstance(ec))
 					elements.add(o);
 			}
 			return elements.toArray(new EObject[elements.size()]);
