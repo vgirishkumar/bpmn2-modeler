@@ -173,10 +173,34 @@ public abstract class AbstractCreateFlowFeature<
 				return true;
 			}
 			else if (source instanceof SubProcess) {
+				EObject container = source.eContainer();
+				while (container!=null) {
+					if (container instanceof Process) {
+						((Process)container).getArtifacts().add((Association)connection);
+						return true;
+					}
+					if (container instanceof Collaboration) {
+						((Collaboration)container).getArtifacts().add((Association)connection);
+						return true;
+					}
+					container = container.eContainer();
+				}
 				((SubProcess)source).getArtifacts().add((Association)connection);
 				return true;
 			}
 			else if (source instanceof SubChoreography) {
+				EObject container = source.eContainer();
+				while (container!=null) {
+					if (container instanceof Process) {
+						((Process)container).getArtifacts().add((Association)connection);
+						return true;
+					}
+					if (container instanceof Collaboration) {
+						((Collaboration)container).getArtifacts().add((Association)connection);
+						return true;
+					}
+					container = container.eContainer();
+				}
 				((SubChoreography)source).getArtifacts().add((Association)connection);
 				return true;
 			}

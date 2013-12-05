@@ -591,6 +591,9 @@ public class ModelUtil {
 	}
 	
 	public static Bpmn2DiagramType getDiagramType(EObject object) {
+		if (object instanceof Diagram) {
+			object = BusinessObjectUtil.getBusinessObjectForPictogramElement((Diagram)object);
+		}
 		if (object instanceof BPMNDiagram)
 			return getDiagramType((BPMNDiagram)object);
 		DiagramEditor editor = getDiagramEditor(object);

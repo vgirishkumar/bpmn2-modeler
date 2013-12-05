@@ -25,6 +25,8 @@ import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
@@ -173,6 +175,30 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		@Override
 		protected Class<FlowNode> getTargetClass() {
 			return FlowNode.class;
+		}
+
+		@Override
+		public boolean canCreate(ICreateConnectionContext context) {
+			FlowNode source = getSourceBo(context);
+			FlowNode target = getTargetBo(context);
+			if (source==null || target==null)
+				return false;
+			if (source==target)
+				return true;
+			
+			EObject sourceContainer = source.eContainer();
+			while (sourceContainer!=null) {
+				if (sourceContainer instanceof Process || sourceContainer instanceof SubProcess)
+					break;
+				sourceContainer = sourceContainer.eContainer();
+			}
+			EObject targetContainer = target.eContainer();
+			while (targetContainer!=null) {
+				if (targetContainer instanceof Process || targetContainer instanceof SubProcess)
+					break;
+				targetContainer = targetContainer.eContainer();
+			}
+			return sourceContainer==targetContainer;
 		}
 		
 		@Override
