@@ -16,7 +16,8 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature;
-import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.func.IDirectEditing;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
@@ -47,7 +48,7 @@ public class DirectEditFlowElementFeature extends AbstractDirectEditingFeature {
 	public boolean canDirectEdit(IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		return bo != null && bo instanceof FlowElement && context.getGraphicsAlgorithm() instanceof Text;
+		return bo != null && bo instanceof FlowElement;
 	}
 
 	private FlowElement getBusinessObject(IDirectEditingContext context) {

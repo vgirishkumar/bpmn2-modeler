@@ -24,7 +24,7 @@ import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -38,10 +38,8 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 
 	@Override
 	protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
-		if (bo != null && ga instanceof Text) {
-			int padding = GraphicsUtil.TASK_IMAGE_SIZE;
-			int size = ((Text)ga).getFont().getSize();
-			Graphiti.getGaService().setLocationAndSize(ga, 5, 10, newWidth - 10, size);
+		if (bo != null && ga instanceof AbstractText) {
+			Graphiti.getGaService().setLocationAndSize(ga, 5, 10, newWidth - 10, newHeight);
 			return true;
 		}
 		return false;

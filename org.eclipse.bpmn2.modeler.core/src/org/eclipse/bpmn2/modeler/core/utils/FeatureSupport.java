@@ -362,8 +362,8 @@ public class FeatureSupport {
 	
 				for (Shape s : children) {
 					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof Text) {
-						Text text = (Text)childGa;
+					if (childGa instanceof AbstractText) {
+						AbstractText text = (AbstractText)childGa;
 						text.setAngle(-90);
 						service.setLocationAndSize(text, 5, 0, 15, newHeight);
 					} else if (childGa instanceof Polyline) {
@@ -388,8 +388,8 @@ public class FeatureSupport {
 	
 				for (Shape s : children) {
 					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof Text) {
-						Text text = (Text)childGa;
+					if (childGa instanceof AbstractText) {
+						AbstractText text = (AbstractText)childGa;
 						text.setAngle(0);
 						service.setLocationAndSize(text, 0, 5, newWidth, 15);
 					} else if (childGa instanceof Polyline) {
@@ -428,14 +428,13 @@ public class FeatureSupport {
 			GraphicsAlgorithm ga = root.getGraphicsAlgorithm();
 			for (Shape s : root.getChildren()) {
 				GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-				if (childGa instanceof Text) {
+				if (childGa instanceof AbstractText) {
+					AbstractText text = (AbstractText)childGa;
 					if (horz) {
-						Text text = (Text)childGa;
 						text.setAngle(-90);
 						service.setLocationAndSize(text, 5, 0, 15, ga.getHeight());
 					}
 					else {
-						Text text = (Text)childGa;
 						text.setAngle(0);
 						service.setLocationAndSize(text, 0, 5, ga.getWidth(), 15);
 					}

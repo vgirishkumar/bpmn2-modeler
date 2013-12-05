@@ -39,7 +39,8 @@ import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
-import org.eclipse.graphiti.mm.algorithms.Text;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -82,11 +83,11 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 
 		Shape nameShape = peService.createShape(containerShape, false);
 
-		Text text = gaService.createDefaultText(getDiagram(), nameShape);
+		MultiText text = gaService.createDefaultMultiText(getDiagram(), nameShape);
 		text.setValue(businessObject.getName());
 		StyleUtil.applyStyle(text, businessObject);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
 		setTextLocation(containerShape, text, width, height);
 		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
 		GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
@@ -155,9 +156,8 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		peService.setPropertyValue(choreographyContainer, INITIATING_PARTICIPANT_REF, id);
 	}
 
-	protected void setTextLocation(ContainerShape choreographyContainer, Text text, int w, int h) {
-		int y = (h / 2) - (TEXT_H / 2);
-		gaService.setLocationAndSize(text, 0, y, w, TEXT_H);
+	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
+		gaService.setLocationAndSize(text, 5, 5, w - 5, h);
 	}
 
 	protected boolean isShowNames() {
