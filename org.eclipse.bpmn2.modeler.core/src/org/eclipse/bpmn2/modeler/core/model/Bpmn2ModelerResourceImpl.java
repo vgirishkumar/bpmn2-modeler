@@ -276,7 +276,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					error.setColumn(handler.getColumnNumber());
 					error.setLocation(handler.getLocation());
 					resource.getErrors().add(error);
-					throw e;
+					throw new IOException(e);
 				}
 			}
 		};
