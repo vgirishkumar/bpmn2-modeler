@@ -684,6 +684,9 @@ public class ImportUtil {
             		// don't create Operations for Constructors
             		continue;
             	}
+            	if (method.getElementName().contains("<")) {
+            		continue;
+            	}
                 org.eclipse.bpmn2.Operation bpmn2op = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Operation.class);
                 bpmn2op.setImplementationRef(ModelUtil.createStringWrapper(method.getElementName()));
                 bpmn2op.setName(method.getElementName());
