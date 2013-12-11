@@ -13,12 +13,14 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.activity.LayoutActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -39,8 +41,22 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 	@Override
 	protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
 		if (bo != null && ga instanceof AbstractText) {
-			Graphiti.getGaService().setLocationAndSize(ga, 5, 10, newWidth - 10, newHeight);
-			return true;
+			// this hook will be called for all shapes contained by the expandable activity;
+			// make sure we only set size/location for our own text
+			EObject container = shape.eContainer();
+			while (container!=null) {
+				if (container instanceof ContainerShape) {
+					EObject object = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+					if (object instanceof FlowElementsContainer) {
+						GraphicsAlgorithm parentGa = ((ContainerShape)container).getGraphicsAlgorithm();
+						newWidth = parentGa.getWidth();
+						newHeight = parentGa.getHeight();
+						Graphiti.getGaService().setLocationAndSize(ga, 5, 10, newWidth - 10, newHeight);
+						return true;
+					}
+				}
+				container = container.eContainer();
+			}
 		}
 		return false;
 	}
