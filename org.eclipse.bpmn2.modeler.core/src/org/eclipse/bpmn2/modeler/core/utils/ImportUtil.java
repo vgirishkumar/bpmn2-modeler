@@ -91,7 +91,11 @@ public class ImportUtil {
 			kind = ""; //$NON-NLS-1$
 		else
 			return null;
-		uri = URI.createURI( imp.getLocation() );
+		String location = imp.getLocation();
+		if (location==null) {
+			location = "";
+		}
+		uri = URI.createURI(location);
 		return loadImport(uri,kind);
 	}
 	
@@ -485,7 +489,7 @@ public class ImportUtil {
 					if (ref instanceof EObject) {
 						URI uri = EcoreUtil.getURI((EObject)ref);
 						String uriString = uri.trimFragment().toString();
-						if (loc.equals(uriString))
+						if (uriString.equals(loc))
 							deleteInterface(definitions, intf);
 					}
 				}
@@ -497,7 +501,7 @@ public class ImportUtil {
 					if (ref instanceof EObject) {
 						URI uri = EcoreUtil.getURI((EObject)ref);
 						String uriString = uri.trimFragment().toString();
-						if (loc.equals(uriString))
+						if (uriString.equals(loc))
 							EcoreUtil.delete(itemDef);
 					}
 				}
@@ -509,7 +513,7 @@ public class ImportUtil {
 					if (ref instanceof EObject) {
 						URI uri = EcoreUtil.getURI((EObject) ref);
 						String uriString = uri.trimFragment().toString();
-						if (loc.equals(uriString))
+						if (uriString.equals(loc))
 							deleteInterface(definitions, intf);
 					}
 				}
@@ -1143,13 +1147,15 @@ public class ImportUtil {
 	 * @param structName - the type string that defines the structure of the ItemDefinition
 	 */
 	public static void deleteItemDefinition(Definitions definitions, Import imp, String structName) {
-		EObject structureRef = ModelUtil.createStringWrapper(structName);
-		ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
-		if (itemDef==null)
-			itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
-		
-		if (itemDef!=null) {
-			EcoreUtil.delete(itemDef);
+		if (structName!=null && !structName.isEmpty()) {
+			EObject structureRef = ModelUtil.createStringWrapper(structName);
+			ItemDefinition itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
+			if (itemDef==null)
+				itemDef = findItemDefinition(definitions, imp, structureRef, ItemKind.INFORMATION);
+			
+			if (itemDef!=null) {
+				EcoreUtil.delete(itemDef);
+			}
 		}
 	}
 }

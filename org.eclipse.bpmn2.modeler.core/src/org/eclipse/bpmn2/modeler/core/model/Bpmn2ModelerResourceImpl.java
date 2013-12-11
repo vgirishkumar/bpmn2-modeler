@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.model;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,6 +70,7 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -255,11 +257,64 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	@Override
 	protected XMLLoad createXMLLoad() {
 		return new XMLLoadImpl(createXMLHelper()) {
+			Bpmn2ModelerXmlHandler handler;
+			
 			@Override
 			protected DefaultHandler makeDefaultHandler() {
-				return new Bpmn2ModelerXmlHandler(resource, helper, options);
+				handler = new Bpmn2ModelerXmlHandler(resource, helper, options);
+				return handler;
+			}
+			
+			@Override
+			public void load(XMLResource resource, InputStream inputStream, Map<?, ?> options) throws IOException {
+				try {
+					super.load(resource, inputStream, options);
+				}
+				catch (Exception e) {
+					DiagnosticWrappedException error = new DiagnosticWrappedException(e);
+					error.setLine(handler.getLineNumber());
+					error.setColumn(handler.getColumnNumber());
+					error.setLocation(handler.getLocation());
+					resource.getErrors().add(error);
+					throw e;
+				}
 			}
 		};
+	}
+
+	class DiagnosticWrappedException extends WrappedException implements Resource.Diagnostic {
+		private static final long serialVersionUID = 1L;
+		private String location;
+		private int column;
+		private int line;
+		
+		public DiagnosticWrappedException(Exception exception) {
+			super(exception);
+		}
+
+		public void setLocation(String location) {
+			this.location = location;
+		}
+
+		public String getLocation() {
+			return location;
+		}
+
+		public void setColumn(int column) {
+			this.column = column;;
+		}
+
+		public int getColumn() {
+			return column;
+		}
+
+		public void setLine(int line) {
+			this.line = line;
+		}
+
+		public int getLine() {
+			return line;
+		}
 	}
 
 	@Override
@@ -483,6 +538,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					ids = resolvedURI.fragment();
 			}
 			super.setValueFromId(object, eReference, ids);
+		}
+
+		public int getLineNumber() {
+			return super.getLineNumber();
+		}
+
+		public int getColumnNumber() {
+			return super.getColumnNumber();
+		}
+
+		public String getLocation() {
+			return super.getLocation();
 		}
 	}
 	

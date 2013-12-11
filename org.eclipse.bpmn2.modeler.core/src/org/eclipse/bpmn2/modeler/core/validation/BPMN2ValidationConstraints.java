@@ -105,9 +105,15 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			if (eObj instanceof BaseElement) {
 				return validateBaseElement(ctx, (BaseElement) eObj);
 			}
+			else {
+				validateEObject(ctx,eObj);
+			}
 		} else { // In the case of live mode.
 			if (eObj instanceof BaseElement) {
 				return validateBaseElementLive(ctx, (BaseElement) eObj);
+			}
+			else {
+				validateEObject(ctx,eObj);
 			}
 		}
 
@@ -122,6 +128,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				ctx.addResult(def);
 				return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_2);
 			}			
+		}
+		for (Import imp : def.getImports()) {
+			IStatus status = validateEObject(ctx, imp);
+			if (!status.isOK())
+				return status;
 		}
 		
 		return ctx.createSuccessStatus();
@@ -179,22 +190,6 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_0);
 				}
 				// report errors only
-			}
-		}
-		else if (be instanceof Import) {
-			Import elem = (Import)be;
-			if (warnings) {
-			}
-			else {
-				if (isEmpty(elem.getLocation())) {
-					return createMissingFeatureStatus(ctx,be,"location"); //$NON-NLS-1$
-				}
-				if (isEmpty(elem.getNamespace())) {
-					return createMissingFeatureStatus(ctx,be,"namespace"); //$NON-NLS-1$
-				}
-				if (isEmpty(elem.getImportType())) {
-					return createMissingFeatureStatus(ctx,be,"importType"); //$NON-NLS-1$
-				}
 			}
 		}
 		else if (be instanceof Error) {
@@ -642,6 +637,27 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
+	private IStatus validateEObject(IValidationContext ctx, EObject be) {
+		if (be instanceof Import) {
+			Import elem = (Import)be;
+			if (warnings) {
+			}
+			else {
+				if (isEmpty(elem.getLocation())) {
+					return createMissingFeatureStatus(ctx,be,"location"); //$NON-NLS-1$
+				}
+				if (isEmpty(elem.getNamespace())) {
+					return createMissingFeatureStatus(ctx,be,"namespace"); //$NON-NLS-1$
+				}
+				if (isEmpty(elem.getImportType())) {
+					return createMissingFeatureStatus(ctx,be,"importType"); //$NON-NLS-1$
+				}
+			}
+		}
+		
+		return ctx.createSuccessStatus();
+	}
+	
 	@SuppressWarnings("rawtypes")
 	private static boolean isEmpty(Object object) {
 		if (object instanceof String) {
