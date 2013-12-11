@@ -306,7 +306,8 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			int realIndex = 0;
 			for (EObject o : list) {
 				EClass ec = o.eClass();
-				if (listItemClass.isInstance(ec)) {
+				boolean isSubType = ec.getESuperTypes().contains(listItemClass);
+				if (ec == listItemClass || isSubType) {
 					tempMap[index] = realIndex;
 					++index;
 				}

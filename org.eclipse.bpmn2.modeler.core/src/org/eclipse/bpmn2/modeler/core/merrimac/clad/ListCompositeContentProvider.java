@@ -50,17 +50,17 @@ public class ListCompositeContentProvider implements IStructuredContentProvider 
 
 	@Override
 	public Object[] getElements(Object inputElement) {
+		// display all items in the list that are subclasses of listItemClass
 		EClass listItemClass = listComposite.getListItemClass(object,feature);
 		if (listItemClass==null) {
-			// display all items in the list that are subclasses of listItemClass
 			return list.toArray();
 		}
 		else {
-			// we're only interested in display specific EClass instances
 			List<EObject> elements = new ArrayList<EObject>();
 			for (EObject o : list) {
 				EClass ec = o.eClass();
-				if (listItemClass.isInstance(ec))
+				boolean isSubType = ec.getESuperTypes().contains(listItemClass);
+				if (ec == listItemClass || isSubType)
 					elements.add(o);
 			}
 			return elements.toArray(new EObject[elements.size()]);
