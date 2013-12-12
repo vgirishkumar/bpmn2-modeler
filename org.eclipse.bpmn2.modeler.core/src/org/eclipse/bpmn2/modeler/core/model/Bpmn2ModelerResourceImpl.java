@@ -1145,7 +1145,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				if (ModelUtil.isStringWrapper(obj)) {
 					s = ModelUtil.getStringWrapperValue(obj);
 				}
-				else if (s.contains("#")) { //$NON-NLS-1$
+				else if (s!=null && s.contains("#")) { //$NON-NLS-1$
 					// object is a reference possibly to another document
 					Import imp = importHandler.findImportForObject(resource, obj);
 					if (imp!=null) {

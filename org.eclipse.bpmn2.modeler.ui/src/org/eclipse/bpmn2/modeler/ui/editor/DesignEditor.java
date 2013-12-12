@@ -426,7 +426,7 @@ public class DesignEditor extends BPMN2Editor {
 								BPMNPlane plane = bpmnDiagram.getPlane();
 								BaseElement process = plane.getBpmnElement();
 								DIUtils.deleteDiagram(DesignEditor.this.getDiagramBehavior(), bpmnDiagram);
-								EcoreUtil.delete(process);
+								EcoreUtil.delete(process, true);
 							}
 						});
 					}

@@ -198,7 +198,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 						Graphiti.getPeService().deletePictogramElement((Connection)pe);
 					}
 				}
-				EcoreUtil.delete(edge);
+				EcoreUtil.delete(edge,true);
 			}
 		}
 		else if (element!=null) {

@@ -145,7 +145,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 					if (bpmnDiagram != null) {
 						DIUtils.deleteDiagram(getDiagramBehavior(), bpmnDiagram);
 					}
-					EcoreUtil.delete(calledActivity);
+					EcoreUtil.delete(calledActivity, true);
 				}
 			}
 		};
