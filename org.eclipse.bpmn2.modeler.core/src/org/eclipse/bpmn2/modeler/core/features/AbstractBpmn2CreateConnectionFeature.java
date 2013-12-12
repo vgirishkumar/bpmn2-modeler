@@ -138,6 +138,10 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
 		CONNECTION businessObject = (CONNECTION)adapter.getObjectDescriptor().createObject(resource,eclass);
+		EStructuralFeature nameFeature = businessObject.eClass().getEStructuralFeature("name");
+		if (nameFeature!=null) {
+			businessObject.eUnset(nameFeature);
+		}
 		SOURCE source = getSourceBo(context);
 		TARGET target = getTargetBo(context);
 		EStructuralFeature sourceRefFeature = businessObject.eClass().getEStructuralFeature("sourceRef"); //$NON-NLS-1$
