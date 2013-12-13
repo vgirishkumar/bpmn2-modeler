@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.bpmn2.modeler.feature"
       label="BPMN2 Modeler - Diagram Editor"
-      version="1.0.1.qualifier"
+      version="1.0.2.qualifier"
       provider-name="Eclipse.org">
 
    <copyright>
