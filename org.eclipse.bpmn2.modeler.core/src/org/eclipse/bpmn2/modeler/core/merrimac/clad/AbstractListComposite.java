@@ -688,7 +688,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			addAction.setId("add");
+			addAction.setId("add"); //$NON-NLS-1$
 			tableToolBarManager.add(addAction);
 		}
 		
@@ -735,7 +735,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			removeAction.setId("remove");
+			removeAction.setId("remove"); //$NON-NLS-1$
 			tableToolBarManager.add(removeAction);
 			removeAction.setEnabled(false);
 		}
@@ -758,7 +758,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			upAction.setId("up");
+			upAction.setId("up"); //$NON-NLS-1$
 			tableToolBarManager.add(upAction);
 			upAction.setEnabled(false);
 	
@@ -779,7 +779,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					});
 				}
 			};
-			downAction.setId("down");
+			downAction.setId("down"); //$NON-NLS-1$
 			tableToolBarManager.add(downAction);
 			downAction.setEnabled(false);
 		}
@@ -813,7 +813,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					}
 				}
 			};
-			editAction.setId("edit");
+			editAction.setId("edit"); //$NON-NLS-1$
 			tableToolBarManager.add(editAction);
 			editAction.setEnabled(false);
 		}

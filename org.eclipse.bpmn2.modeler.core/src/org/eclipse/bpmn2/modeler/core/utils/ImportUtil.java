@@ -93,7 +93,7 @@ public class ImportUtil {
 			return null;
 		String location = imp.getLocation();
 		if (location==null) {
-			location = "";
+			location = ""; //$NON-NLS-1$
 		}
 		uri = URI.createURI(location);
 		return loadImport(uri,kind);
@@ -684,7 +684,7 @@ public class ImportUtil {
             		// don't create Operations for Constructors
             		continue;
             	}
-            	if (method.getElementName().contains("<")) {
+            	if (method.getElementName().contains("<")) { //$NON-NLS-1$
             		continue;
             	}
             	if ((method.getFlags() & Flags.AccPublic) == 0) {

@@ -803,8 +803,8 @@ public class DIImport {
 		else {
 			// this could be some custom connection: it must define "sourceRef" and "targetRef"
 			// features so we know how to connect it.
-			EStructuralFeature sf = bpmnElement.eClass().getEStructuralFeature("sourceRef");
-			EStructuralFeature tf = bpmnElement.eClass().getEStructuralFeature("targetRef");
+			EStructuralFeature sf = bpmnElement.eClass().getEStructuralFeature("sourceRef"); //$NON-NLS-1$
+			EStructuralFeature tf = bpmnElement.eClass().getEStructuralFeature("targetRef"); //$NON-NLS-1$
 			if (sf!=null && tf!=null) {
 				source = (EObject) bpmnElement.eGet(sf);
 				target = (EObject) bpmnElement.eGet(tf);
