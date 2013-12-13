@@ -1,10 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.bpmn2.modeler.runtime.example;singleton:=true
-Bundle-Version: 1.0.1.qualifier
-Bundle-Activator: org.eclipse.bpmn2.modeler.runtime.example.Activator
-Bundle-Vendor: %providerName
+Bundle-Name: Org.eclipse.bpmn2.modeler.examples.modelreader
+Bundle-SymbolicName: org.eclipse.bpmn2.modeler.examples.modelreader
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.eclipse.bpmn2.modeler.examples.modelreader
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.core.runtime,
  org.eclipse.ui.views.properties.tabbed,
@@ -17,7 +16,4 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.bpmn2.modeler.core,
  org.eclipse.bpmn2.modeler.ui,
  org.eclipse.bpmn2
-Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.eclipse.bpmn2;version="0.7.0",
- org.eclipse.core.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
