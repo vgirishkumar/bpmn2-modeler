@@ -46,6 +46,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			return false;
 		}
 		ContainerShape targetContainer = context.getTargetContainer();
+		if (FeatureSupport.isLabelShape(targetContainer))
+			return false; // can't move a shape into a label
+		
 		if (Graphiti.getPeService().getProperty(targetContainer, RoutingNet.LANE)!=null) {
 			int x = context.getX();
 			int y = context.getY();
