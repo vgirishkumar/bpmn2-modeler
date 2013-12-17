@@ -12,9 +12,14 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Artifact;
+import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -62,10 +67,13 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		if (bo instanceof ItemAwareElement) {
 			bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(context.getTargetContainer());
 			if (bo instanceof Lane) {
-				if (!FeatureSupport.isLaneOnTop((Lane)bo))
-					return false;
+				if (FeatureSupport.isLaneOnTop((Lane)bo))
+					return true;
 			}
-			return true;
+			if (bo instanceof FlowElementsContainer) {
+				return true;
+			}
+			return false;
 		}
 		return context.getSourceContainer() != null
 				&& context.getSourceContainer().equals(context.getTargetContainer());
