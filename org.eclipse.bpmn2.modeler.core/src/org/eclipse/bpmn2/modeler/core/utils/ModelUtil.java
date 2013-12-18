@@ -1253,22 +1253,36 @@ public class ModelUtil {
 		return new ArrayList<ExtensionAttributeValue>();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
+		addExtensionAttributeValue(object, feature, value, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, boolean delay) {
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
 			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(ExtensionAttributeValue.class);
+			ModelUtil.setID(newItem);
 			FeatureMap map = newItem.getValue();
 			map.add(feature, value);
-			list.add(newItem);
-			ModelUtil.setID(newItem);
+			if (delay) {
+				InsertionAdapter.add(object, evf, newItem, feature, value);
+			}
+			else {
+				list.add(newItem);
+			}
 		}
 		else {
 			ExtensionAttributeValue oldItem = (ExtensionAttributeValue) list.get(0);
-			FeatureMap map = oldItem.getValue();
-			map.add(feature, value);
+			if (delay) {
+				InsertionAdapter.add(object, evf, oldItem, feature, value);
+			}
+			else {
+				FeatureMap map = oldItem.getValue();
+				map.add(feature, value);
+			}
 		}
 	}
 
