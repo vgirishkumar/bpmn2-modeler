@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.core.validation;
 import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
@@ -614,6 +615,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				needOutgoing = false;
 			if (fn instanceof CatchEvent)
 				needIncoming = false;
+			
+			if (fn.eContainer() instanceof AdHocSubProcess) {
+				needIncoming = false;
+				needOutgoing = false;
+			}
 			
 			if (needOutgoing) {
 				if ((fn.getOutgoing() == null || fn.getOutgoing().size() < 1)) {
