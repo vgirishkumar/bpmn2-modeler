@@ -104,7 +104,7 @@ public class FeatureSupport {
 	public static boolean isValidArtifactTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
 		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
-		boolean intoParticipant = isTargetParticipant(context) && !isChoreographyParticipantBand(context.getTargetContainer());
+		boolean intoParticipant = isTargetParticipant(context);
 		boolean intoSubProcess = isTargetSubProcess(context);
 		boolean intoSubChoreography = isTargetSubChoreography(context);
 		boolean intoGroup = isTargetGroup(context);
@@ -126,12 +126,12 @@ public class FeatureSupport {
 	public static boolean isValidDataTarget(ITargetContext context) {
 		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
 		boolean intoDiagram = containerBO instanceof BPMNDiagram;
-		boolean intoSubProcess = containerBO instanceof SubProcess;
+		boolean intoSubProcess = containerBO instanceof FlowElementsContainer;
 		if (intoSubProcess || intoDiagram)
 			return true;
-		if (FeatureSupport.isTargetLane(context) && FeatureSupport.isTargetLaneOnTop(context))
+		if (isTargetLane(context) && isTargetLaneOnTop(context))
 			return true;
-		if (FeatureSupport.isTargetParticipant(context))
+		if (isTargetParticipant(context))
 			return true;
 		return false;
 	}
@@ -163,7 +163,8 @@ public class FeatureSupport {
 	}
 	
 	public static boolean isTargetParticipant(ITargetContext context) {
-		return isParticipant(context.getTargetContainer());
+		return isParticipant(context.getTargetContainer()) &&
+				!isChoreographyParticipantBand(context.getTargetContainer());
 	}
 
 	public static boolean isParticipant(PictogramElement element) {

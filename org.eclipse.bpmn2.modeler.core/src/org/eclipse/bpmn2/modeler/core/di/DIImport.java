@@ -35,6 +35,7 @@ import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Lane;
@@ -657,6 +658,8 @@ public class DIImport {
 		ContainerShape targetContainer = diagram;
 		int x = (int) shape.getBounds().getX();
 		int y = (int) shape.getBounds().getY();
+		int w = (int) shape.getBounds().getWidth();
+		int h = (int) shape.getBounds().getHeight();
 
 		// find a correct container element
 		List<Lane> lanes = null;
@@ -678,9 +681,17 @@ public class DIImport {
 			}
 			if (!(targetContainer instanceof Diagram)) {
 				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(targetContainer);
-				x -= loc.getX();
-				y -= loc.getY();
-			
+				// if the flow element is not visible make it a child of the diagram
+				// this is only valid for ItemAwareElements
+				if (element instanceof ItemAwareElement) {
+					if (!GraphicsUtil.intersects(targetContainer, x, y, w, h)) {
+						targetContainer = diagram;
+					}
+				}
+				if (targetContainer != diagram) {
+					x -= loc.getX();
+					y -= loc.getY();
+				}
 			}
 		}
 		else if (lanes!=null && !lanes.isEmpty()) {
@@ -714,10 +725,11 @@ public class DIImport {
 		// This is the graphical Z-order, from top to bottom, of the BPMNShape elements.
 		for (int i=entries.size()-1; i>=0; --i) {
 			Entry<BaseElement, PictogramElement> entry = entries.get(i);
-			BaseElement key = entry.getKey();
-			if ((key instanceof Lane && FeatureSupport.isLaneOnTop((Lane)key)) ||
-					key instanceof Participant ||
-					key instanceof SubProcess) {
+			BaseElement be = entry.getKey();
+			PictogramElement pe = entry.getValue();
+			if ((be instanceof Lane && FeatureSupport.isLaneOnTop((Lane)be)) ||
+					(be instanceof Participant && !FeatureSupport.isChoreographyParticipantBand(pe)) ||
+					be instanceof FlowElementsContainer) {
 				ContainerShape value = (ContainerShape)entry.getValue();
 				if (GraphicsUtil.intersects(value, x, y, w, h)) {
 					targetContainer = (ContainerShape) value;
