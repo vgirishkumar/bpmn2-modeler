@@ -450,7 +450,7 @@ public class DesignEditor extends BPMN2Editor {
 		@Override
 		public void resourceSetChanged(ResourceSetChangeEvent event) {
 			boolean debug = Activator.getDefault().isDebugging();
-			
+
 			for (Notification n : event.getNotifications()) {
 				int et = n.getEventType();
 				Object notifier = n.getNotifier();
@@ -485,7 +485,7 @@ public class DesignEditor extends BPMN2Editor {
 							multipageEditor.addDesignPage(bpmnDiagram);
 						else
 							addDesignPage(bpmnDiagram);
-						break;
+//						break;
 					}
 				} else if (et == Notification.REMOVE) {
 					if (debug) {
@@ -504,7 +504,7 @@ public class DesignEditor extends BPMN2Editor {
 							multipageEditor.removeDesignPage(bpmnDiagram);
 						else
 							removeDesignPage(bpmnDiagram);
-						break;
+//						break;
 					}
 				} else if (et == Notification.SET) {
 					// check if we need to change the tab names

@@ -354,7 +354,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		if (obj.eClass() != null) {
 			EStructuralFeature idAttr = obj.eClass().getEIDAttribute();
 			if (idAttr != null && !obj.eIsSet(idAttr)) {
+				obj.eSetDeliver(false);
 				ModelUtil.setID(obj);
+				obj.eSetDeliver(true);
 			}
 		}
 	}

@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
@@ -1134,6 +1135,19 @@ public class ModelUtil {
 		return list;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> getAllObjectsOfType(Resource resource, final Class<T> class1) {
+		ArrayList<T> l = new ArrayList<T>();
+		TreeIterator<EObject> iter = resource.getAllContents();
+		while (iter.hasNext()) {
+			Object t = iter.next();
+			if (class1.isInstance(t)) {
+				l.add((T) t);
+			}
+		}
+		return l;
+	}
+
 	public static boolean compare(Object v1, Object v2) {
 		if (v1==null) {
 			if (v2!=null)
@@ -1739,4 +1753,13 @@ public class ModelUtil {
 		return list;
 	}
 	
+	public static boolean isParticipantBand(Participant participant) {
+		Resource resource = ModelUtil.getResource(participant);
+		for (ChoreographyActivity ca : ModelUtil.getAllObjectsOfType(resource, ChoreographyActivity.class)) {
+			if (ca.getParticipantRefs().contains(participant)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -179,27 +179,12 @@ public class DIImport {
 					importConnections(ownedElement);
 
 //					relayoutLanes(ownedElement);
-
+					
 					// search for BPMN elements that do not have the DI elements
 					// needed to render them in the editor
-					Display.getDefault().asyncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							final DIGenerator generator = new DIGenerator(DIImport.this);
-							if (generator.hasMissingDIElements()) {
-								// and generate them
-								domain.getCommandStack().execute(new RecordingCommand(domain) {
-									@Override
-									protected void doExecute() {
-										generator.generateMissingDIElements();
-									}
-								});
-							}
-						}
-						
-					});
 				}
+				DIGenerator generator = new DIGenerator(DIImport.this);
+				generator.generateMissingDIElements();
 				
 				layoutAll();
 			}
