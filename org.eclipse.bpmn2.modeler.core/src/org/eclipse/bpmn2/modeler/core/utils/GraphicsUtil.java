@@ -283,8 +283,13 @@ public class GraphicsUtil {
 	// TODO: Think about line break in the ui...
 	public static int getLabelHeight(AbstractText text) {
 		if (text.getValue() != null && !text.getValue().isEmpty()) {
+			int height = 14;
 			String[] strings = text.getValue().split(LINE_BREAK);
-			return strings.length * 14;
+			if (strings.length>0) {
+				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(strings[0], text.getFont());
+				height = dim.getHeight();
+			}
+			return strings.length * height;
 		}
 		return 0;
 	}

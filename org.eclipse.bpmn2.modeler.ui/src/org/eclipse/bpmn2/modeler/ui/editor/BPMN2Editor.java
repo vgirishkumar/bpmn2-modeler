@@ -192,10 +192,15 @@ import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
@@ -1228,6 +1233,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
+					IFeatureProvider fp = BPMN2Editor.this.getDiagramTypeProvider().getFeatureProvider();
 					IPeService peService = Graphiti.getPeService();
 					TreeIterator<EObject> iter = getDiagramTypeProvider().getDiagram().eAllContents();
 					while (iter.hasNext()) {
@@ -1246,6 +1252,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 										}
 									}
 			
+								}
+							}
+							if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+								UpdateContext context = new UpdateContext(pe);
+								IUpdateFeature feature = fp.getUpdateFeature(context);
+								if (feature!=null) {
+									feature.update(context);
 								}
 							}
 						}
