@@ -855,6 +855,8 @@ public class FeatureSupport {
 	}
 
 	public static boolean isLabelShape(Shape shape) {
+		if (shape==null)
+			return false;
 		return Graphiti.getPeService().getPropertyValue(shape, GraphicsUtil.LABEL_PROPERTY) != null;
 	}
 

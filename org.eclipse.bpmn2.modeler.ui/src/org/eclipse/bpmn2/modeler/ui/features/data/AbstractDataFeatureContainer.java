@@ -51,11 +51,6 @@ public abstract class AbstractDataFeatureContainer extends BaseElementFeatureCon
 	}
 
 	@Override
-	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
-		return null;
-	}
-
-	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
 		return new LayoutBaseElementTextFeature(fp) {
 
