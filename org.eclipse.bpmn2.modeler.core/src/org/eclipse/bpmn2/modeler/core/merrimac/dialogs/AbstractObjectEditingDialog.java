@@ -15,7 +15,6 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.IPropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.validation.LiveValidationListener;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationErrorHandler;
 import org.eclipse.core.runtime.IStatus;
@@ -29,7 +28,6 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -60,6 +58,10 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	protected Composite dialogContent;
     private Text errorMessageText;
     private IPropertiesCompositeFactory compositeFactory = null;
+	// If this property is set on a Control, then don't try to
+	// adapt the Control's colors/fonts/etc. to dialog defaults
+    // This is used by the Description Styled Text widget.
+	public final static String DO_NOT_ADAPT = "do_not_adapt";
     
 	public AbstractObjectEditingDialog(DiagramEditor editor, EObject object) {
 		super(editor.getEditorSite().getShell());
@@ -214,6 +216,10 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		// We can now safely set the background color of all controls to match the dialog.
 		content.setBackground(form.getBackground());
 		for (Control k : content.getChildren()) {
+			Object data = k.getData(AbstractObjectEditingDialog.DO_NOT_ADAPT);
+			if (data instanceof Boolean && (Boolean)data == true)
+				continue;
+			
 			k.setBackground(form.getBackground());
 			if (k instanceof Composite) {
 				adapt((Composite)k);
