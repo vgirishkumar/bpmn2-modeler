@@ -149,18 +149,27 @@ public abstract class AbstractCreateFlowFeature<
 	 * as a special case in
 	 * @link org.eclipse.bpmn2.modeler.ui.features.flow.DataAssociationFeatureContainer#createBusinessObject()
 	 * 
+	 * Note that this method recursively walks up the source object's containment hierarchy
+	 * as it tries to find the correct container for the connection.
+	 * 
 	 * @param connection - the connection to be added to a container element
-	 * @param source
-	 * @param target
-	 * @return
+	 * @param source - the source object of the connection
+	 * @param target - the target object of the connection
+	 * @return true if the connection was added to a container
 	 */
 	private boolean addConnectionToContainer(CONNECTION connection, SOURCE source, TARGET target) {
+		EObject sourceContainer = source.eContainer();
+		EObject targetContainer = target.eContainer();
 		if (connection instanceof SequenceFlow) {
 			if (source instanceof Participant) {
 				if (((Participant)source).getProcessRef()!=null) {
 					((Participant)source).getProcessRef().getFlowElements().add((SequenceFlow)connection);
 					return true;
 				}
+			}
+			else if (sourceContainer instanceof FlowElementsContainer && sourceContainer == targetContainer) {
+				((FlowElementsContainer)sourceContainer).getFlowElements().add((SequenceFlow)connection);
+				return true;
 			}
 			else if (source instanceof FlowElementsContainer) {
 				((FlowElementsContainer)source).getFlowElements().add((SequenceFlow)connection);
@@ -173,33 +182,31 @@ public abstract class AbstractCreateFlowFeature<
 				return true;
 			}
 			else if (source instanceof SubProcess) {
-				EObject container = source.eContainer();
-				while (container!=null) {
-					if (container instanceof Process) {
-						((Process)container).getArtifacts().add((Association)connection);
+				while (sourceContainer!=null) {
+					if (sourceContainer instanceof Process) {
+						((Process)sourceContainer).getArtifacts().add((Association)connection);
 						return true;
 					}
-					if (container instanceof Collaboration) {
-						((Collaboration)container).getArtifacts().add((Association)connection);
+					if (sourceContainer instanceof Collaboration) {
+						((Collaboration)sourceContainer).getArtifacts().add((Association)connection);
 						return true;
 					}
-					container = container.eContainer();
+					sourceContainer = sourceContainer.eContainer();
 				}
 				((SubProcess)source).getArtifacts().add((Association)connection);
 				return true;
 			}
 			else if (source instanceof SubChoreography) {
-				EObject container = source.eContainer();
-				while (container!=null) {
-					if (container instanceof Process) {
-						((Process)container).getArtifacts().add((Association)connection);
+				while (sourceContainer!=null) {
+					if (sourceContainer instanceof Process) {
+						((Process)sourceContainer).getArtifacts().add((Association)connection);
 						return true;
 					}
-					if (container instanceof Collaboration) {
-						((Collaboration)container).getArtifacts().add((Association)connection);
+					if (sourceContainer instanceof Collaboration) {
+						((Collaboration)sourceContainer).getArtifacts().add((Association)connection);
 						return true;
 					}
-					container = container.eContainer();
+					sourceContainer = sourceContainer.eContainer();
 				}
 				((SubChoreography)source).getArtifacts().add((Association)connection);
 				return true;

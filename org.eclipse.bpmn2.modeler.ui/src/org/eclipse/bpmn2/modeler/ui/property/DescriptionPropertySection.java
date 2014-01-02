@@ -35,24 +35,24 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 	 */
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new DescriptionPropertyComposite(this);		
+		return new DescriptionDetailComposite(this);		
 	}
 
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
-		 return new DescriptionPropertyComposite(parent, style);
+		 return new DescriptionDetailComposite(parent, style);
 	}
 
-	public class DescriptionPropertyComposite extends DefaultDetailComposite {
+	public class DescriptionDetailComposite extends DefaultDetailComposite {
 
 		/**
 		 * @param section
 		 */
-		public DescriptionPropertyComposite(AbstractBpmn2PropertySection section) {
+		public DescriptionDetailComposite(AbstractBpmn2PropertySection section) {
 			super(section);
 		}
 		
-		public DescriptionPropertyComposite(Composite parent, int style) {
+		public DescriptionDetailComposite(Composite parent, int style) {
 			super(parent,style);
 		}
 
@@ -87,7 +87,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		protected void bindDescription(EObject be) {
 			// don't display the description text if disabled in preferences,
 			// or if this is a popup configuration dialog.
-			if (Bpmn2Preferences.getInstance(be).getShowDescriptions() && !isPopupDialog) {
+			if (Bpmn2Preferences.getInstance(be).getShowDescriptions()) {
 				String description = getDescription(be);
 	
 				if (description != null) {

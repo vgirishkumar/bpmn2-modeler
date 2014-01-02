@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -46,6 +44,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			return false;
 		}
 		ContainerShape targetContainer = context.getTargetContainer();
+		if (FeatureSupport.isLabelShape(targetContainer))
+			return false; // can't move a shape into a label
+		
 		if (Graphiti.getPeService().getProperty(targetContainer, RoutingNet.LANE)!=null) {
 			int x = context.getX();
 			int y = context.getY();
@@ -54,15 +55,6 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			((MoveShapeContext)context).setY(y + loc.getY());
 			((MoveShapeContext)context).setSourceContainer(targetContainer.getContainer());
 			((MoveShapeContext)context).setTargetContainer(targetContainer.getContainer());
-		}
-		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(context.getShape());
-		if (bo instanceof ItemAwareElement) {
-			bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(context.getTargetContainer());
-			if (bo instanceof Lane) {
-				if (!FeatureSupport.isLaneOnTop((Lane)bo))
-					return false;
-			}
-			return true;
 		}
 		return context.getSourceContainer() != null
 				&& context.getSourceContainer().equals(context.getTargetContainer());

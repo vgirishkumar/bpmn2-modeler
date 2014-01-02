@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
@@ -51,7 +52,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
@@ -84,8 +84,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.eclipse.emf.ecore.xmi.IllegalValueException;
-import org.eclipse.emf.ecore.xmi.XMIException;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -355,7 +354,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		if (obj.eClass() != null) {
 			EStructuralFeature idAttr = obj.eClass().getEIDAttribute();
 			if (idAttr != null && !obj.eIsSet(idAttr)) {
+				obj.eSetDeliver(false);
 				ModelUtil.setID(obj);
+				obj.eSetDeliver(true);
 			}
 		}
 	}
@@ -551,6 +552,51 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public String getLocation() {
 			return super.getLocation();
 		}
+
+        @Override
+        public void startElement(String uri, String localName, String name) {
+			super.startElement(uri, localName, name);
+		    EObject peekObject = objects.peekEObject();
+            if (peekObject!=null && peekObject.eClass() == Bpmn2Package.eINSTANCE.getExpression()) {
+            	// If the element is an Expression (not a FormalExpression) then use the CDATA
+            	// as the body of a Formal Expression (because Expression does not have a body)
+                text = new StringBuffer();
+            }
+		}
+		
+		@Override
+        public void endElement(String uri, String localName, String name) {
+            EObject peekObject = objects.peek();
+            if (peekObject!=null && peekObject.eClass() == Bpmn2Package.eINSTANCE.getExpression()) {
+            	// if the element is an Expression, replace it with a FormalExpression and set
+            	// its body using the CDATA of the Expression element.
+   				FormalExpression fe = Bpmn2Factory.eINSTANCE.createFormalExpression();
+   				EObject owner = peekObject.eContainer();
+   				if (owner!=null) {
+	   				for (EStructuralFeature f : owner.eClass().getEAllStructuralFeatures()) {
+	   					if (owner.eGet(f) == peekObject) {
+	   		   				owner.eSet(f, fe);
+	   		   				break;
+	   					}
+	   				}
+	   				objects.pop();
+	   				objects.push(fe);
+	                types.pop();
+	                types.push(Bpmn2Package.eINSTANCE.getFormalExpression_Body());
+	                
+	                EStructuralFeature mixedFeature = extendedMetaData.getMixedFeature(fe.eClass());
+	                if (mixedFeature != null)
+	                {
+	                  mixedTargets.push((FeatureMap)fe.eGet(mixedFeature));
+	                }
+	                else
+	                {
+	                  mixedTargets.push(null);
+	                }
+   				}
+            }
+            super.endElement(uri, localName, name);
+        }
 	}
 	
 	public class Bpmn2ModelerXMLSave extends XMLSaveImpl {

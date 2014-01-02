@@ -222,7 +222,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			displayName = ModelUtil.toDisplayName(reference.getName());
 
 			if (reference.getEType() == PACKAGE.getExpression() || reference.getEType() == PACKAGE.getFormalExpression()) {
-				FormalExpression expression = (FormalExpression)object.eGet(reference);
+				Expression expression = (Expression)object.eGet(reference);
 				if (expression==null) {
 					expression = createModelObject(FormalExpression.class);
 					InsertionAdapter.add(object, reference, expression);

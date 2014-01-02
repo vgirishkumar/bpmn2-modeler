@@ -12,18 +12,17 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature;
-import org.eclipse.graphiti.func.IDirectEditing;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
-public class DirectEditFlowElementFeature extends AbstractDirectEditingFeature {
+public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 
-	public DirectEditFlowElementFeature(IFeatureProvider fp) {
+	public DirectEditBaseElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -34,24 +33,34 @@ public class DirectEditFlowElementFeature extends AbstractDirectEditingFeature {
 
 	@Override
 	public String getInitialValue(IDirectEditingContext context) {
-		return getBusinessObject(context).getName();
+		BaseElement be = getBusinessObject(context);
+		EStructuralFeature feature = be.eClass().getEStructuralFeature("name");
+		if (feature!=null)
+			return (String) be.eGet(feature);
+		return "";
 	}
 
 	@Override
 	public void setValue(String value, IDirectEditingContext context) {
-		getBusinessObject(context).setName(value);
-		PictogramElement e = context.getPictogramElement();
-		updatePictogramElement(((Shape) e).getContainer());
+		BaseElement be = getBusinessObject(context);
+		EStructuralFeature feature = be.eClass().getEStructuralFeature("name");
+		if (feature!=null) {
+			be.eSet(feature, value);
+			PictogramElement e = context.getPictogramElement();
+			updatePictogramElement(((Shape) e).getContainer());
+		}
 	}
 
 	@Override
 	public boolean canDirectEdit(IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		return bo != null && bo instanceof FlowElement;
+		if (bo instanceof BaseElement && ((BaseElement)bo).eClass().getEStructuralFeature("name")!=null)
+			return true;
+		return false;
 	}
 
-	private FlowElement getBusinessObject(IDirectEditingContext context) {
-		return (FlowElement) getBusinessObjectForPictogramElement(context.getPictogramElement());
+	private BaseElement getBusinessObject(IDirectEditingContext context) {
+		return (BaseElement) getBusinessObjectForPictogramElement(context.getPictogramElement());
 	}
 }

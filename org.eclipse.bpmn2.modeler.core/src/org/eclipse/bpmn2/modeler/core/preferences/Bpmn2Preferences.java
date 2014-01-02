@@ -232,7 +232,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public static Bpmn2Preferences getInstance(Resource resource) {
-		return getInstance(resource.getURI());
+		if (resource!=null)
+			return getInstance(resource.getURI());
+		return getInstance();
 	}
 	
 	/**

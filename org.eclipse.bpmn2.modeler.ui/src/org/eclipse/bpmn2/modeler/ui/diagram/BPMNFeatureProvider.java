@@ -382,9 +382,12 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		
 		// The special LabelFeatureContainer is used to add labels to figures that were
 		// added within the given IContext
-		Object property = context.getProperty(ContextConstants.LABEL_CONTEXT);
-		if ( property!=null && (Boolean)property )
-			return containers.get(LabelFeatureContainer.class);
+		LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
+		if (lfc.getApplyObject(context)!=null)
+			return lfc;
+//		Object property = context.getProperty(ContextConstants.LABEL_CONTEXT);
+//		if ( property!=null && (Boolean)property )
+//			return containers.get(LabelFeatureContainer.class);
 		
 		EObject object = getApplyObject(context);
 		if (object!=null) {

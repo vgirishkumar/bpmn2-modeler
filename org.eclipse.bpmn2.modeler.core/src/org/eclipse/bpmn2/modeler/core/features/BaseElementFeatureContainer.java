@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.features.label.RemoveLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
+import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -62,7 +63,12 @@ public abstract class BaseElementFeatureContainer implements IShapeFeatureContai
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
 		return new RemoveLabelFeature(fp);
 	}
-	
+
+	@Override
+	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
+		return new DirectEditBaseElementFeature(fp);
+	}
+
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return new ICustomFeature[] {

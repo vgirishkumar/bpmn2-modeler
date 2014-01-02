@@ -171,11 +171,11 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 			if (item instanceof ActionContributionItem) {
 				ActionContributionItem ai = (ActionContributionItem)item;
 				IAction action = ai.getAction();
-				if ("add".equals(action.getId())) {
+				if ("add".equals(action.getId())) { //$NON-NLS-1$
 //					ai.setVisible(enable);
 					action.setEnabled(enable);
 				}
-				if ("remove".equals(action.getId())) {
+				if ("remove".equals(action.getId())) { //$NON-NLS-1$
 					ai.setVisible(enable);
 //					action.setEnabled(enable);
 				}

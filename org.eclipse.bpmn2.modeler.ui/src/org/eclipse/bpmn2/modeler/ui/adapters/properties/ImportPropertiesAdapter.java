@@ -25,7 +25,7 @@ public class ImportPropertiesAdapter extends ExtendedPropertiesAdapter<Import> {
 			public String getDisplayName(Object context) {
 				Import imp = adopt(context);
 				String text = imp.getLocation();
-				return text==null ? "" : text;
+				return text==null ? "" : text; //$NON-NLS-1$
 			}
 			
 			@Override

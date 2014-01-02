@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
@@ -1134,6 +1135,19 @@ public class ModelUtil {
 		return list;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> getAllObjectsOfType(Resource resource, final Class<T> class1) {
+		ArrayList<T> l = new ArrayList<T>();
+		TreeIterator<EObject> iter = resource.getAllContents();
+		while (iter.hasNext()) {
+			Object t = iter.next();
+			if (class1.isInstance(t)) {
+				l.add((T) t);
+			}
+		}
+		return l;
+	}
+
 	public static boolean compare(Object v1, Object v2) {
 		if (v1==null) {
 			if (v2!=null)
@@ -1253,22 +1267,36 @@ public class ModelUtil {
 		return new ArrayList<ExtensionAttributeValue>();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
+		addExtensionAttributeValue(object, feature, value, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, boolean delay) {
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {
 			ExtensionAttributeValue newItem = Bpmn2ModelerFactory.create(ExtensionAttributeValue.class);
+			ModelUtil.setID(newItem);
 			FeatureMap map = newItem.getValue();
 			map.add(feature, value);
-			list.add(newItem);
-			ModelUtil.setID(newItem);
+			if (delay) {
+				InsertionAdapter.add(object, evf, newItem, feature, value);
+			}
+			else {
+				list.add(newItem);
+			}
 		}
 		else {
 			ExtensionAttributeValue oldItem = (ExtensionAttributeValue) list.get(0);
-			FeatureMap map = oldItem.getValue();
-			map.add(feature, value);
+			if (delay) {
+				InsertionAdapter.add(object, evf, oldItem, feature, value);
+			}
+			else {
+				FeatureMap map = oldItem.getValue();
+				map.add(feature, value);
+			}
 		}
 	}
 
@@ -1725,4 +1753,13 @@ public class ModelUtil {
 		return list;
 	}
 	
+	public static boolean isParticipantBand(Participant participant) {
+		Resource resource = ModelUtil.getResource(participant);
+		for (ChoreographyActivity ca : ModelUtil.getAllObjectsOfType(resource, ChoreographyActivity.class)) {
+			if (ca.getParticipantRefs().contains(participant)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
