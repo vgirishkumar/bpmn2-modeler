@@ -80,6 +80,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
@@ -240,6 +241,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	}
 
 	public void save(Map<?, ?> options) throws IOException {
+		uriHandler.setBaseURI(getURI());
+		xmlHelper.setResource(this);
 		super.save(options);
 	}
 
@@ -359,6 +362,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				obj.eSetDeliver(true);
 			}
 		}
+	}
+
+	@Override
+	public void setURI(URI uri) {
+		super.setURI(uri);
+		xmlHelper.setResource(this);
+		uriHandler.setBaseURI(uri);
 	}
 
 	/**

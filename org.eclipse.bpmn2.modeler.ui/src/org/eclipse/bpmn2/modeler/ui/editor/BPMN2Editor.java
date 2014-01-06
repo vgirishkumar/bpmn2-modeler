@@ -92,7 +92,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -180,6 +179,7 @@ import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -192,9 +192,7 @@ import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -226,7 +224,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.ide.ResourceUtil;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
@@ -484,6 +481,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			}
 		});
 
+		Definitions definitions = ModelUtil.getDefinitions(bpmnResource);
+		if (definitions!=null) {
+			// we'll need this in case doSaveAs()
+			((Bpmn2DiagramEditorInput)input).setTargetNamespace(definitions.getTargetNamespace());
+			((Bpmn2DiagramEditorInput)input).setInitialDiagramType(ModelUtil.getDiagramType(this));
+		}
+		
 		// Reset the save point and initialize the undo stack
 		commandStack.saveIsDone();
 		commandStack.flush();
@@ -1023,10 +1027,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		
         IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(newFilePath);
         IWorkbenchPage page = getSite().getPage();
-        
         try {
-        	// Save the current(old) file
-        	doSave(null);
         	// if new file exists, close its editor (if open) and delete the existing file
             if (newFile.exists()) {
     			IEditorPart editorPart = ResourceUtil.findEditor(page, newFile);
@@ -1040,26 +1041,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			showErrorDialogWithLogging(e);
 			return;
 		}
-
-        // open new editor
-    	try {
-			page.openEditor(new FileEditorInput(newFile), BPMN2Editor.EDITOR_ID);
-		} catch (PartInitException e1) {
-			showErrorDialogWithLogging(e1);
-			return;
-		}
-    	
-    	// and close the old editor
-		IEditorPart editorPart = ResourceUtil.findEditor(page, oldFile);
-		if (editorPart!=null)
-			page.closeEditor(editorPart, false);
-		
-    	try {
-			newFile.refreshLocal(IResource.DEPTH_ZERO,null);
-		} catch (CoreException e) {
-			showErrorDialogWithLogging(e);
-			return;
-		}
+        
+        // change the Resource URI and save it to the new file
+		URI newURI = URI.createPlatformResourceURI(newFile.getFullPath().toString(), true);
+    	handleResourceMoved(bpmnResource,newURI);
+    	doSave(null);
 	}
 
 	public void closeEditor() {
@@ -1098,6 +1084,18 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	public boolean handleResourceMoved(Resource resource, URI newURI) {
 		URI oldURI = resource.getURI();
+		// The XML loader uses a lazy reference loading: references to internal objects
+		// are initialized as proxies until first accessed (with eGet()).
+		// Before we change the URI, make sure all references are resolved
+		// otherwise the proxy URI (of unresolved references) will still be the old one.
+		TreeIterator<EObject> iter = resource.getAllContents();
+		while (iter.hasNext()) {
+			EObject o = iter.next();
+			for (EReference r : o.eClass().getEAllReferences()) {
+				// the eGet() will handle proxy resolving
+				o.eGet(r);
+			}
+		}
 		resource.setURI(newURI);
 		
 		if (modelUri.equals(oldURI)) {
@@ -1111,6 +1109,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			targetRuntime = null;
 			modelHandler = ModelHandlerLocator.createModelHandler(modelUri, (Bpmn2ResourceImpl)resource);
 			ModelHandlerLocator.put(diagramUri, modelHandler);
+			
+	    	Bpmn2DiagramEditorInput input = (Bpmn2DiagramEditorInput)getEditorInput();
+	    	input.updateUri(newURI);
+	    	multipageEditor.setInput(input);
 		}
 		else if (diagramUri.equals(oldURI)) {
 			ModelHandlerLocator.remove(diagramUri);

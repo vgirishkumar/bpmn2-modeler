@@ -551,7 +551,6 @@ public class DIGenerator {
 
 			bpmnDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
 			bpmnDiagram.setName(ModelUtil.getDisplayName(container));
-System.out.println("created BPMNDiagram "+bpmnDiagram.getName());
 			bpmnDiagram.setPlane(plane);
 
 			definitions.getDiagrams().add(bpmnDiagram);
