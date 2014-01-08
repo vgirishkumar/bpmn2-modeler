@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDesc
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -47,7 +48,12 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomElementFeatureC
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -57,6 +63,7 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.datatypes.IRectangle;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.FeatureCheckerAdapter;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -633,8 +640,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		PictogramElement pe = context.getPictogramElement();
 		IFeatureProvider fp = getFeatureProvider();
 
-		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphicsUtil.LABEL_PROPERTY);
-		if (Boolean.parseBoolean(labelProperty)) {
+		if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
 			// labels don't have a buttonpad
 			setGenericContextButtons(data, pe, 0);
 			return data;
@@ -716,7 +722,40 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		if (button.getDragAndDropFeatures().size() > 0) {
 			data.getDomainSpecificContextButtons().add(button);
 		}
-
+		
+		final FigureCanvas canvas = (FigureCanvas)editor.getGraphicalViewer().getControl();
+		Rectangle canvasBounds = canvas.getViewport().getBounds();
+		final int hOffset = canvas.getViewport().getHorizontalRangeModel().getValue();
+		final int vOffset = canvas.getViewport().getVerticalRangeModel().getValue();
+		final int canvasRight = canvasBounds.width + hOffset;
+		final int canvasBottom = canvasBounds.height + vOffset;
+		final int canvasTop = vOffset;
+		IRectangle padBounds = data.getPadLocation();
+		final int padRight = padBounds.getX() + padBounds.getWidth() + 30;
+		final int padTop = padBounds.getY() - 30;
+		final int padBottom = padBounds.getY() + padBounds.getHeight() + 30;
+		
+		if (padRight>canvasRight || padTop<canvasTop || padBottom>canvasBottom) {
+			Job job = new Job("scroll") {
+				@Override
+				protected IStatus run (IProgressMonitor monitor) {
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							if (padRight>canvasRight)
+								canvas.scrollToX(hOffset + padRight - canvasRight);
+							if (padTop<canvasTop)
+								canvas.scrollToY(vOffset + padTop - canvasTop);
+							if (padBottom>canvasBottom)
+								canvas.scrollToY(vOffset + padBottom - canvasBottom);
+						}
+					});
+					return Status.OK_STATUS;
+				}			 		
+			};	
+			job.schedule(600);
+		}
+		
 		return data;
 	}
 
