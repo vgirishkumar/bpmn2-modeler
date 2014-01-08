@@ -126,7 +126,7 @@ public class LabelFeatureContainer implements IShapeFeatureContainer, IConnectio
 
 	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
-		return new DefaultMoveShapeFeature(fp);
+		return new MoveLabelFeature(fp);
 	}
 
 	@Override
