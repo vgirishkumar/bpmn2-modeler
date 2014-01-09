@@ -48,16 +48,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomElementFeatureC
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.draw2d.Border;
-import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -67,7 +58,6 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.datatypes.IRectangle;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.FeatureCheckerAdapter;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -726,61 +716,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		if (button.getDragAndDropFeatures().size() > 0) {
 			data.getDomainSpecificContextButtons().add(button);
 		}
-		
-		final FigureCanvas canvas = (FigureCanvas)editor.getGraphicalViewer().getControl();
-		Rectangle canvasBounds = canvas.getViewport().getBounds();
-		final int hOffset = canvas.getViewport().getHorizontalRangeModel().getValue();
-		final int vOffset = canvas.getViewport().getVerticalRangeModel().getValue();
-		final int canvasRight = canvasBounds.width + hOffset;
-		final int canvasBottom = canvasBounds.height + vOffset;
-		final int canvasTop = vOffset;
-		final IRectangle padBounds = data.getPadLocation();
-		final int padRight = padBounds.getX() + padBounds.getWidth() + 30;
-		final int padTop = padBounds.getY() - 30;
-		final int padBottom = padBounds.getY() + padBounds.getHeight() + 30;
-		
-		if (padRight>canvasRight || padTop<canvasTop || padBottom>canvasBottom) {
-			final Point oldMouseLocation = getMouseLocation(getFeatureProvider());
-			// wait a few milliseconds for the mouse to settle down...
-			Job job1 = new Job("scroll") {
-				@Override
-				protected IStatus run (IProgressMonitor monitor) {
-					Point loc = getMouseLocation(getFeatureProvider());
-					oldMouseLocation.setX(loc.getX());
-					oldMouseLocation.setY(loc.getY());
-					return Status.OK_STATUS;
-				}
-			};
-			job1.schedule(1000);
-			
-			// if the mouse hasn't moved, then go ahead and do the canvas scrolling
-			// 
-			Job job2 = new Job("scroll") {
-				@Override
-				protected IStatus run (IProgressMonitor monitor) {
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							Point loc = getMouseLocation(getFeatureProvider());
-							if (oldMouseLocation.getX()!=loc.getX() || oldMouseLocation.getY()!=loc.getY())
-								return;
-							int x = hOffset;
-							int y = vOffset;
-							if (padRight>canvasRight)
-								x = hOffset + padRight - canvasRight;
-							if (padTop<canvasTop)
-								y = vOffset + padTop - canvasTop;
-							if (padBottom>canvasBottom)
-								y = vOffset + padBottom - canvasBottom;
-							canvas.scrollSmoothTo(x, y);
-						}
-					});
-					return Status.OK_STATUS;
-				}			 		
-			};	
-			job2.schedule(1100);
-		}
-		
+
 		return data;
 	}
 

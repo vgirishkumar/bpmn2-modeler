@@ -173,6 +173,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicDiagnostic;
@@ -187,9 +189,11 @@ import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -979,7 +983,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		getDiagramBehavior().getRefreshBehavior().initRefresh();
 		setPictogramElementsForSelection(null);
 		// set Diagram as contents for the graphical viewer and refresh
-		getGraphicalViewer().setContents(diagram);
+		GraphicalViewer viewer = getGraphicalViewer();
+		viewer.setContents(diagram);
+		EditPart ep = viewer.getRootEditPart().getContents();
+		if (ep instanceof AbstractGraphicalEditPart) {
+			IFigure fig = ((AbstractGraphicalEditPart)ep).getFigure();
+			fig.setBorder(new MarginBorder(50));
+		}
 		
 		ConnectionLayerClippingStrategy.applyTo(getGraphicalViewer());
 		
