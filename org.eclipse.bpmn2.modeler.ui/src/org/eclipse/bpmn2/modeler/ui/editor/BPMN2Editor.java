@@ -187,6 +187,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.gef.EditPart;
@@ -329,6 +330,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
     private IResourceChangeListener markerChangeListener;
 	private boolean workbenchShutdown = false;
 	private static BPMN2Editor activeEditor;
+	// We need this to find BPMN2 Editors that are already open for this file
+	// Used when opening a New Editor window for an already open editor.
+	private IEditorInput currentInput;
 	private static ITabDescriptorProvider tabDescriptorProvider;
 	private BPMN2EditingDomainListener editingDomainListener;
 	
@@ -359,6 +363,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		return activeEditor;
 	}
 	
+	public IEditorInput getCurrentInput() {
+		return currentInput;
+	}
+	
 	private void setActiveEditor(BPMN2Editor editor) {
 		activeEditor = editor;
 		if (activeEditor!=null) {
@@ -379,6 +387,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 			
 		setActiveEditor(this);
+		currentInput = input;
 		
 		if (this.getDiagramBehavior()==null) {
 			super.init(site, input);
@@ -443,6 +452,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		catch (Exception e) {
 			Activator.logError(e);
 		}
+
+		// Check if this is a New Editor Window for an already open editor
+		currentInput = input;
+		BPMN2Editor otherEditor = findOpenEditor(this,input);
 		
 		// Determine which Target Runtime to use for this input and initialize the ResourceSet
 		TargetRuntime targetRuntime = getTargetRuntime(input);
@@ -454,8 +467,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		// own ResourceFactory if needed.
 		targetRuntime.setResourceSet(resourceSet);
 		
-		// Now create the BPMN2 model resource.
-		bpmnResource = (Bpmn2ResourceImpl) resourceSet.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+		// Now create the BPMN2 model resource, or reuse the one from the already open editor.
+		if (otherEditor==null) {
+			bpmnResource = (Bpmn2ResourceImpl) resourceSet.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
+		}
+		else {
+			bpmnResource = otherEditor.bpmnResource;
+		}
 		
 		// Set this input in Graphiti DiagramEditor
 		super.setInput(input);
@@ -475,26 +493,29 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		setActiveEditor(this);	// set the Bpmn2Preferences.activeProject just before RT extension is initialized
 		getTargetRuntime().getRuntimeExtension().initialize(this);
 
-		// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
-		BasicCommandStack commandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
-		commandStack.execute(new RecordingCommand(getEditingDomain()) {
-			@Override
-			protected void doExecute() {
-				importDiagram();
-				getTargetRuntime().setResource(bpmnResource);
+		if (otherEditor==null) {
+			// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
+			BasicCommandStack commandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
+			commandStack.execute(new RecordingCommand(getEditingDomain()) {
+				@Override
+				protected void doExecute() {
+					importDiagram();
+				}
+			});
+	
+			Definitions definitions = ModelUtil.getDefinitions(bpmnResource);
+			if (definitions!=null) {
+				// we'll need this in case doSaveAs()
+				((Bpmn2DiagramEditorInput)input).setTargetNamespace(definitions.getTargetNamespace());
+				((Bpmn2DiagramEditorInput)input).setInitialDiagramType(ModelUtil.getDiagramType(this));
 			}
-		});
-
-		Definitions definitions = ModelUtil.getDefinitions(bpmnResource);
-		if (definitions!=null) {
-			// we'll need this in case doSaveAs()
-			((Bpmn2DiagramEditorInput)input).setTargetNamespace(definitions.getTargetNamespace());
-			((Bpmn2DiagramEditorInput)input).setInitialDiagramType(ModelUtil.getDiagramType(this));
+			// Reset the save point and initialize the undo stack
+			commandStack.saveIsDone();
+			commandStack.flush();
 		}
-		
-		// Reset the save point and initialize the undo stack
-		commandStack.saveIsDone();
-		commandStack.flush();
+
+		// tell our TargetRuntime about this resource
+		getTargetRuntime().setResource(bpmnResource);
 		
 		// Load error markers
 		loadMarkers();
@@ -868,18 +889,29 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		int instances = 0;
 		IWorkbenchPage[] pages = getEditorSite().getWorkbenchWindow().getPages();
 		for (IWorkbenchPage p : pages) {
-			IEditorReference[] refs = p.getEditorReferences();
-			instances += refs.length;
-		}
-		File diagramFile = new File(diagramUri.toFileString());
-		if (diagramFile.exists()) {
-			try {
-				diagramFile.delete();
-			}
-			catch (Exception e) {
+			IEditorReference[] refs = p.findEditors(null, EDITOR_ID, IWorkbenchPage.MATCH_ID);
+			for (IEditorReference r : refs) {
+				if (r.getEditor(false) instanceof BPMN2MultiPageEditor) {
+					if (((BPMN2MultiPageEditor)r.getEditor(false)).designEditor != this)
+						++instances;
+				}
 			}
 		}
-		ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
+		BPMN2Editor otherEditor = findOpenEditor(this, getEditorInput());
+		if (otherEditor==null) {
+			// we can delete the Graphiti Diagram file if there are no other
+			// editor windows open for this BPMN2 file.
+			File diagramFile = new File(diagramUri.toFileString());
+			if (diagramFile.exists()) {
+				try {
+					diagramFile.delete();
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+		if (modelHandler!=null)
+			ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
 		getPreferences().removePreferenceChangeListener(this);
 		
 		// get rid of cached Property Tab Descriptors
@@ -931,6 +963,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	
 	public URI getModelUri() {
 		return modelUri;
+	}
+	
+	public URI getDiagramUri() {
+		return diagramUri;
 	}
 	
 	public ModelHandler getModelHandler() {
@@ -1278,6 +1314,31 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				}
 			});
 		}
+	}
+	
+	public static BPMN2Editor findOpenEditor(IEditorPart newEditor, IEditorInput newInput) {
+		if (newEditor!=null && newInput!=null) {
+			IWorkbenchPage[] pages = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages();
+			for (IWorkbenchPage page : pages) {
+				IEditorReference[] otherEditors = page.findEditors(newInput, null, IWorkbenchPage.MATCH_INPUT);
+				for (IEditorReference ref : otherEditors) {
+					IEditorPart part = ref.getEditor(true);
+					if (part instanceof BPMN2MultiPageEditor) {
+						BPMN2Editor otherEditor = ((BPMN2MultiPageEditor)part).getDesignEditor();
+						if (otherEditor!=newEditor) {
+							return otherEditor;
+						}
+					}
+					else if (part instanceof BPMN2Editor) {
+						BPMN2Editor otherEditor = (BPMN2Editor)part;
+						if (otherEditor!=newEditor) {
+							return otherEditor;
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	public static IEditorPart openEditor(URI modelURI) {
