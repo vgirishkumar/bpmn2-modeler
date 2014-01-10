@@ -74,7 +74,8 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 				BPMN2Editor editor = (BPMN2Editor) dc;
 				BPMN2Editor openEditor = BPMN2Editor.findOpenEditor(editor, editor.getCurrentInput());
 				if (openEditor!=null) {
-					editingDomain = openEditor.getEditingDomain();
+					BPMN2EditorUpdateBehavior updateBehavior = (BPMN2EditorUpdateBehavior) openEditor.getDiagramBehavior().getUpdateBehavior();
+					editingDomain = updateBehavior.editingDomain;
 				}
 			}
 			if (editingDomain==null) {

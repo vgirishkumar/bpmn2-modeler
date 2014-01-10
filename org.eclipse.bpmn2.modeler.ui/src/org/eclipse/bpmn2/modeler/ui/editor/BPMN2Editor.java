@@ -887,7 +887,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public void dispose() {
 		// clear ID mapping tables if no more instances of editor are active
 		int instances = 0;
-		IWorkbenchPage[] pages = getEditorSite().getWorkbenchWindow().getPages();
+		IWorkbenchPage[] pages = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages();
 		for (IWorkbenchPage p : pages) {
 			IEditorReference[] refs = p.findEditors(null, EDITOR_ID, IWorkbenchPage.MATCH_ID);
 			for (IEditorReference r : refs) {
@@ -1120,6 +1120,31 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	////////////////////////////////////////////////////////////////////////////////
 	
 	public boolean handleResourceChanged(Resource resource) {
+		if (resource==bpmnResource) {
+			URI newURI = resource.getURI();
+			if (!modelUri.equals(newURI)) {
+				ModelHandlerLocator.remove(modelUri);
+				modelUri = newURI;
+				if (preferences!=null) {
+					preferences.removePreferenceChangeListener(this);
+					preferences.dispose();
+					preferences = null;
+				}
+				targetRuntime = null;
+				modelHandler = ModelHandlerLocator.createModelHandler(modelUri, (Bpmn2ResourceImpl)resource);
+				ModelHandlerLocator.put(diagramUri, modelHandler);
+				
+		    	Bpmn2DiagramEditorInput input = (Bpmn2DiagramEditorInput)getEditorInput();
+		    	input.updateUri(newURI);
+		    	multipageEditor.setInput(input);
+			}
+		}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				updateDirtyState();
+		    	refreshTitle();
+			}
+		});
 		return true;
 	}
 
@@ -1144,7 +1169,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		resource.setURI(newURI);
 		
-		if (modelUri.equals(oldURI)) {
+		if (resource == bpmnResource) {
 			ModelHandlerLocator.remove(modelUri);
 			modelUri = newURI;
 			if (preferences!=null) {
@@ -1159,6 +1184,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	    	Bpmn2DiagramEditorInput input = (Bpmn2DiagramEditorInput)getEditorInput();
 	    	input.updateUri(newURI);
 	    	multipageEditor.setInput(input);
+	    	
+	    	handleResourceChanged(resource);
 		}
 		else if (diagramUri.equals(oldURI)) {
 			ModelHandlerLocator.remove(diagramUri);
