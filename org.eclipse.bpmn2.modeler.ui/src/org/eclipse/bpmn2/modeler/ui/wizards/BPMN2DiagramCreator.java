@@ -77,17 +77,15 @@ public class BPMN2DiagramCreator {
 					// when the workbench is first starting up, then deleting
 					// the old temp file before all copies of the editor are
 					// initialized can cause problems.
-					Job delete = new Job("delete temp file") {
+					Display.getDefault().asyncExec(new Runnable() {
 						@Override
-						protected IStatus run(IProgressMonitor monitor) {
+						public void run() {
 							try {
 								oldTempFile.delete();
 							} catch (Exception e) {
 							}
-							return Status.OK_STATUS;
 						}
-					};
-					delete.schedule(10000);
+					});
 				}
 			}
 			String diagramName = FileService.createTempName(modelName);
