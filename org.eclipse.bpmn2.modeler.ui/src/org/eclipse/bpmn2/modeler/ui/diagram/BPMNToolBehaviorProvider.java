@@ -106,6 +106,8 @@ import org.eclipse.graphiti.tb.IDecorator;
 import org.eclipse.graphiti.tb.IImageDecorator;
 import org.eclipse.graphiti.tb.ImageDecorator;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
+import org.eclipse.graphiti.util.ILocationInfo;
+import org.eclipse.graphiti.util.LocationInfo;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
@@ -852,5 +854,15 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 			}
 		}
 		return super.getCommandFeature(context, hint);
+	}
+
+	public ILocationInfo getLocationInfo(PictogramElement pe, ILocationInfo locationInfo) {
+		if (locationInfo==null) {
+			if (pe instanceof ContainerShape) {
+				ContainerShape shape = (ContainerShape) pe;
+				locationInfo = new LocationInfo(shape, shape.getGraphicsAlgorithm());
+			}
+		}
+		return locationInfo;
 	}
 }
