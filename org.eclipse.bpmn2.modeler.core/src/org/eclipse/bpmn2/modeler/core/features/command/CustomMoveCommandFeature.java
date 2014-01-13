@@ -1,16 +1,13 @@
 package org.eclipse.bpmn2.modeler.core.features.command;
 
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.context.impl.MoveContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 public class CustomMoveCommandFeature extends AbstractCustomFeature implements ICustomCommandFeature {
@@ -30,22 +27,15 @@ public class CustomMoveCommandFeature extends AbstractCustomFeature implements I
 			direction = direction.replace("10", "");
 		}
 		
-		switch (direction) {
-		case "moveup":
+		if ("moveup".equals(direction)) 
 			dy = -1;
-			break;
-		case "movedown":
+		else if ("movedown".equals(direction)) 
 			dy = 1;
-			break;
-		case "moveleft":
+		else if ("moveleft".equals(direction)) 
 			dx = -1;
-			break;
-		case "moveright":
+		else if ("moveright".equals(direction)) 
 			dx = 1;
-			break;
-		default:
-			break;
-		}
+		
 		dx *= mult;
 		dy *= mult;
 		
