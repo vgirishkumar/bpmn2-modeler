@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
+import org.eclipse.bpmn2.modeler.core.features.command.ICustomCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -69,6 +70,7 @@ import org.eclipse.graphiti.features.IFeatureCheckerHolder;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
+import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -840,4 +842,15 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		
         return decorators.toArray(new IDecorator[decorators.size()]);
     }
+
+	@Override
+	public ICustomFeature getCommandFeature(CustomContext context, String hint) {
+		for (ICustomFeature cf : getFeatureProvider().getCustomFeatures(context)) {
+			if (cf instanceof ICustomCommandFeature && ((ICustomCommandFeature)cf).isAvailable(hint)) {
+				context.putProperty(ICustomCommandFeature.COMMAND_HINT, hint);
+				return cf;
+			}
+		}
+		return super.getCommandFeature(context, hint);
+	}
 }

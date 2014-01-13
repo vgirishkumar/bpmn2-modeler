@@ -1168,7 +1168,7 @@
            </with>
         </visibleWhen>
 	    </menu>
-	 </menuContribution>
+	</menuContribution>
 	<menuContribution
 	    locationURI= "menu:org.eclipse.bpmn2.modeler.diagram.menu?after=additions">
 	    <command
@@ -1187,5 +1187,101 @@
 	       label= "%command.label.1">
 	    </command>
 	</menuContribution>
-</extension>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+ARROW_UP">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveup">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+ARROW_DOWN">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="movedown">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+ARROW_LEFT">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveleft">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+ARROW_RIGHT">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveright">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+M2+ARROW_UP">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveup10">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+M2+ARROW_DOWN">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="movedown10">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+M2+ARROW_LEFT">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveleft10">
+			</parameter>
+		</key>
+	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+M2+ARROW_RIGHT">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="moveright10">
+			</parameter>
+		</key>
+	</extension>
 </plugin>
