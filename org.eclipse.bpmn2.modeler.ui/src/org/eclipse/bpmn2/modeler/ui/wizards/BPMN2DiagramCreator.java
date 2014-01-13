@@ -24,14 +24,17 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -68,12 +71,23 @@ public class BPMN2DiagramCreator {
 			// delete old temp file if necessary
 			if (oldInput instanceof Bpmn2DiagramEditorInput) {
 				URI oldUri = ((Bpmn2DiagramEditorInput)oldInput).getUri();
-				File oldTempFile = new File(oldUri.toFileString());
+				final File oldTempFile = new File(oldUri.toFileString());
 				if (oldTempFile!=null && oldTempFile.exists()) {
-					try {
-						oldTempFile.delete();
-					} catch (Exception e) {
-					}
+					// If two or more editor windows are open on the same file
+					// when the workbench is first starting up, then deleting
+					// the old temp file before all copies of the editor are
+					// initialized can cause problems.
+					Job delete = new Job("delete temp file") {
+						@Override
+						protected IStatus run(IProgressMonitor monitor) {
+							try {
+								oldTempFile.delete();
+							} catch (Exception e) {
+							}
+							return Status.OK_STATUS;
+						}
+					};
+					delete.schedule(10000);
 				}
 			}
 			String diagramName = FileService.createTempName(modelName);
