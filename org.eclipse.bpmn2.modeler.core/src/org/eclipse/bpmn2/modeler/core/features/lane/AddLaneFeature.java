@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -231,6 +232,12 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 			if (context.getTargetContainer() instanceof Diagram) {
 				return super.getHeight(context);
 			}
+			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+			if (copiedBpmnShape instanceof BPMNShape) {
+				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
+				if (b!=null)
+					return (int) b.getHeight();
+			}
 			int height = context.getTargetContainer().getGraphicsAlgorithm().getHeight();
 			
 			Bounds bounds = getPreviousBounds(context);
@@ -247,6 +254,12 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null){
 			if (context.getTargetContainer() instanceof Diagram) {
 				return super.getWidth(context);
+			}
+			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+			if (copiedBpmnShape instanceof BPMNShape) {
+				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
+				if (b!=null)
+					return (int) b.getWidth();
 			}
 			int width = context.getTargetContainer().getGraphicsAlgorithm().getWidth();
 			
