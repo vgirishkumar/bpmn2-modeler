@@ -583,7 +583,7 @@ public class ImportUtil {
      * @param type - the Java type that corresponds to this Interface
      * @return the newly created object, or an existing Interface with the same name and implementation reference
      */
-    public Interface createInterface(Definitions definitions, Import imp, IType type) {
+    public Interface createInterface(Definitions definitions, Import imp, IType type, IMethod[] methods) {
         Interface intf = Bpmn2ModelerFactory.create(Interface.class);
         intf.setName(type.getElementName());
         intf.setImplementationRef(ModelUtil.createStringWrapper(type.getFullyQualifiedName('.')));
@@ -593,7 +593,7 @@ public class ImportUtil {
         
         definitions.getRootElements().add(intf);
         ModelUtil.setID(intf);
-        createOperations(definitions, imp, intf, type);
+        createOperations(definitions, imp, intf, type, methods);
         
         return intf;
     }
@@ -677,9 +677,11 @@ public class ImportUtil {
      * @param intf - the Interface to which this Operation will be added
      * @param type - the Java type that corresponds to this Interface
      */
-    public void createOperations(Definitions definitions, Import imp, Interface intf, IType type) {
+    public void createOperations(Definitions definitions, Import imp, Interface intf, IType type, IMethod[] methods) {
         try {
-            for (IMethod method : type.getMethods()) {
+        	if (methods==null)
+        		methods = type.getMethods();
+            for (IMethod method : methods) {
             	if (method.isConstructor()) {
             		// don't create Operations for Constructors
             		continue;
@@ -690,6 +692,9 @@ public class ImportUtil {
             	if ((method.getFlags() & Flags.AccPublic) == 0) {
             		continue;
             	}
+				if (method.getNumberOfParameters()!=1) {
+					continue;
+				}
                 org.eclipse.bpmn2.Operation bpmn2op = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Operation.class);
                 bpmn2op.setImplementationRef(ModelUtil.createStringWrapper(method.getElementName()));
                 bpmn2op.setName(method.getElementName());

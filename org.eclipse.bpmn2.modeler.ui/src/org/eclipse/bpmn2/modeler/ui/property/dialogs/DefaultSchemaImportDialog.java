@@ -292,6 +292,7 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 					fLoaderJob.cancel();
 				}
 			}
+			setSelectionResult(null);
 			break;
 		}
 
@@ -732,7 +733,7 @@ public class DefaultSchemaImportDialog extends SelectionStatusDialog {
 	
 	 
 	@SuppressWarnings("boxing")
-	void loadDone () {				
+	protected void loadDone () {
 		
 		long elapsed = System.currentTimeMillis() - fRunnableStart;
 		
