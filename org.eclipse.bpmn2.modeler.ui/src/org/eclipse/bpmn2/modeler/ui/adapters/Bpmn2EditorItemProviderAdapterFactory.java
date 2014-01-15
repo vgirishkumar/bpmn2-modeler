@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.CallConversation;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.CategoryValue;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.CorrelationKey;
@@ -86,6 +87,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallActivityPropertiesAd
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallChoreographyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallConversationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CatchEventPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.CategoryValuePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CompensateEventDefinitionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationKeyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyBindingPropertiesAdapter;
@@ -735,6 +737,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
 			return new CorrelationPropertyPropertiesAdapter(adapterFactory,object);
+        }
+
+		@Override
+        public ExtendedPropertiesAdapter caseCategoryValue(CategoryValue object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+			return new CategoryValuePropertiesAdapter(adapterFactory,object);
         }
 
     };

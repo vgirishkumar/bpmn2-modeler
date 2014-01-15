@@ -76,6 +76,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(be,"id"); //$NON-NLS-1$
 			bindAttribute(be,"name"); //$NON-NLS-1$
 			bindList(be, "documentation"); //$NON-NLS-1$
+			bindReference(be, "categoryValueRef");
 		}
 
 		protected boolean isModelObjectEnabled(String className, String featureName) {

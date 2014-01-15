@@ -24,6 +24,7 @@ import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -114,6 +115,17 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 				if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
 					FeatureSupport.updateConnection(getFeatureProvider(), connection);
 				}
+			}
+		}
+
+		FeatureSupport.updateCategoryValues(getFeatureProvider(), shape);
+		
+		for (Anchor a : shape.getAnchors()) {
+			for (Connection c : a.getIncomingConnections()) {
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
+			}
+			for (Connection c : a.getOutgoingConnections()) {
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
 			}
 		}
 

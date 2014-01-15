@@ -76,10 +76,16 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 //		addField(simplifyLists);
 
 		BooleanFieldEditor usePopupDialogForLists = new BooleanFieldEditor(
-		Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS,
-		Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS_LABEL,
-		getFieldEditorParent());
+				Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS,
+				Bpmn2Preferences.PREF_USE_POPUP_DIALOG_FOR_LISTS_LABEL,
+				getFieldEditorParent());
 		addField(usePopupDialogForLists);
+
+		BooleanFieldEditor propagateGroupCategories = new BooleanFieldEditor(
+				Bpmn2Preferences.PREF_PROPAGATE_GROUP_CATEGORIES,
+				Bpmn2Preferences.PREF_PROPAGATE_GROUP_CATEGORIES_LABEL,
+				getFieldEditorParent());
+		addField(propagateGroupCategories);
 
 		//////////////////////////////////////////////////////////////////////////////
 		

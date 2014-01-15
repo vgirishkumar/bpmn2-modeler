@@ -139,6 +139,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_SIMPLIFY_LISTS_LABEL = Messages.Bpmn2Preferences_Simplify_Lists;
 	public final static String PREF_DO_CORE_VALIDATION = "do.core.validation"; //$NON-NLS-1$
 	public final static String PREF_DO_CORE_VALIDATION_LABEL = Messages.Bpmn2Preferences_Do_Core_Validation;
+	public final static String PREF_PROPAGATE_GROUP_CATEGORIES = "propagate.group.categories"; //$NON-NLS-1$
+	public final static String PREF_PROPAGATE_GROUP_CATEGORIES_LABEL = Messages.Bpmn2Preferences_Propagate_Group_Categories;
 
 	private static Hashtable<IProject,Bpmn2Preferences> instances = null;
 	private static IProject activeProject;
@@ -168,6 +170,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private boolean simplifyLists;
 	private boolean usePopupDialogForLists;
 	private boolean doCoreValidation;
+	private boolean propagateGroupCategories;
 	private BPMNDIAttributeDefault isHorizontal;
 	private BPMNDIAttributeDefault isExpanded;
 	private BPMNDIAttributeDefault isMessageVisible;
@@ -323,6 +326,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, false);
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
 			defaultPreferences.putBoolean(PREF_DO_CORE_VALIDATION, true);
+			defaultPreferences.putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 
 			defaultPreferences.put(PREF_CONNECTION_TIMEOUT, "1000"); //$NON-NLS-1$
 			
@@ -434,6 +438,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			popupConfigDialogFor[5] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
 
 			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, true);
+			propagateGroupCategories = getBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 
 			cached = true;
 		}
@@ -464,6 +469,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, popupConfigDialogFor[4]);
 			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, popupConfigDialogFor[5]);
 			putBoolean(PREF_DO_CORE_VALIDATION, doCoreValidation);
+			putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, propagateGroupCategories);
 		}
 		
 		for (Entry<Class, ShapeStyle> entry : shapeStyles.entrySet()) {
@@ -953,6 +959,15 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public void setDoCoreValidation(boolean enable) {
 		putBoolean(PREF_DO_CORE_VALIDATION,enable);
 		doCoreValidation = enable;
+	}
+	
+	public boolean getPropagateGroupCategories() {
+		return propagateGroupCategories;
+	}
+	
+	public void setPropagateGroupCategories(boolean enable) {
+		putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES,enable);
+		propagateGroupCategories = enable;
 	}
 
 	public boolean isHorizontalDefault() {

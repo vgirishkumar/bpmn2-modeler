@@ -48,6 +48,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	// This is used in ComboObjectEditor (maybe others in the future)
 	public final static String UI_CAN_EDIT_INLINE = "ui.can.edit.inline"; //$NON-NLS-1$
 	public final static String UI_CAN_CREATE_NEW = "ui.can.create.new"; //$NON-NLS-1$
+	// For Combo boxes (ComboObjectEditor), this indicates that an empty selection will be added to the list of possible choices;
+	// For Text fields (TextObjectEditor), this indicates that the actual value of a feature should be used as the edit field text
+	// instead of its textual representation as returned by @link ModelUtil#getDisplayName(). In this case, if the value is null,
+	// it will be replaced with an empty string.
 	public final static String UI_CAN_SET_NULL = "ui.can.set.null"; //$NON-NLS-1$
 	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice"; //$NON-NLS-1$
 	public static final String PROPERTY_DESCRIPTOR = "property.descriptor"; //$NON-NLS-1$

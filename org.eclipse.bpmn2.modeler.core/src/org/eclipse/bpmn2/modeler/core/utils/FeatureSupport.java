@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.ImplicitThrowEvent;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
@@ -46,6 +47,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
@@ -63,6 +65,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -74,7 +77,6 @@ import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -558,6 +560,11 @@ public class FeatureSupport {
 		} else if (o instanceof Lane) {
 			Lane l = (Lane) o;
 			return l.getName();
+		} else if (o instanceof Group) {
+			Group g = (Group) o;
+			if (g.getCategoryValueRef()!=null)
+				return ModelUtil.getDisplayName(g.getCategoryValueRef());
+			return "";
 		}
 		return null;
 	}
@@ -1053,6 +1060,47 @@ public class FeatureSupport {
 			}
 		}
 		updateConnections(fp, ac, alreadyUpdated);
+	}
+
+	public static void updateCategoryValues(IFeatureProvider fp, PictogramElement pe) {
+		
+		Resource resource = ModelUtil.getResource(pe);
+		if (Bpmn2Preferences.getInstance(resource).getPropagateGroupCategories()) {
+			// only do this if User Preference is enabled: assign the Group's CategoryValue
+			// to the FlowElement represented by the given PictogramElement
+			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
+			FlowElement flowElement = BusinessObjectUtil.getFirstElementOfType(pe, FlowElement.class);
+			if (flowElement==null)
+				return;
+			// remove any previous Category Values from this FlowElement
+			flowElement.getCategoryValueRef().clear();
+			
+			// find all Groups in this Resource and check if it contains the given FlowElement
+			if (pe instanceof ContainerShape) {
+				for (Group group : ModelUtil.getAllObjectsOfType(resource, Group.class)) {
+					for (PictogramElement groupShape : Graphiti.getLinkService().getPictogramElements(diagram, group)) {
+						if (groupShape instanceof ContainerShape) {
+							for (ContainerShape flowElementShape : FeatureSupport.findGroupedShapes((ContainerShape) groupShape)) {
+								FlowElement fe = BusinessObjectUtil.getFirstElementOfType(flowElementShape, FlowElement.class);
+								if (fe==flowElement) {
+									fe.getCategoryValueRef().add(group.getCategoryValueRef());
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (pe instanceof Connection && flowElement instanceof SequenceFlow) {
+				SequenceFlow sf = (SequenceFlow) flowElement;
+				FlowNode source = sf.getSourceRef();
+				FlowNode target = sf.getTargetRef();
+				
+				sf.getCategoryValueRef().clear();
+				sf.getCategoryValueRef().addAll(source.getCategoryValueRef());
+				sf.getCategoryValueRef().addAll(target.getCategoryValueRef());
+			}
+		}
 	}
 	
 }

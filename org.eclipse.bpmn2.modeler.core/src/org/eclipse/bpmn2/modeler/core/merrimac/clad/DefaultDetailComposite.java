@@ -218,10 +218,8 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			String displayName = getPropertiesProvider().getLabel(object, reference);
-			displayName = ModelUtil.toDisplayName(reference.getName());
-
 			if (reference.getEType() == PACKAGE.getExpression() || reference.getEType() == PACKAGE.getFormalExpression()) {
+				String displayName = getPropertiesProvider().getLabel(object, reference);
 				Expression expression = (Expression)object.eGet(reference);
 				if (expression==null) {
 					expression = createModelObject(FormalExpression.class);
