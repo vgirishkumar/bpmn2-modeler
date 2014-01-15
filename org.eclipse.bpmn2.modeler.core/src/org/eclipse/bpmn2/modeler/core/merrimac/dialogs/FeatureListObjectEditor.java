@@ -99,8 +99,8 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		references = getValue();
 		updateTextField();
 
-		boolean canEdit = ModelUtil.canEdit(object,feature);
-		boolean canCreateNew = ModelUtil.canCreateNew(object,feature);
+		boolean canEdit = canEdit();
+		boolean canCreateNew = canCreateNew();
 
 		if (canEdit || canCreateNew) {
 			buttons =  getToolkit().createComposite(composite);

@@ -231,22 +231,6 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		return combo;
 	}
 	
-	protected boolean canEdit() {
-		return ModelUtil.canEdit(object,feature);
-	}
-	
-	protected boolean canEditInline() {
-		return ModelUtil.canEditInline(object,feature);
-	}
-	
-	protected boolean canCreateNew() {
-		return ModelUtil.canCreateNew(object,feature);
-	}
-	
-	protected boolean canSetNull() {
-		return ModelUtil.canSetNull(object,feature);
-	}
-	
 	protected EObject createObject() throws Exception {
 		FeatureEditingDialog dialog = createFeatureEditingDialog(null);
 		dialog.setFeatureEType(featureEType);
