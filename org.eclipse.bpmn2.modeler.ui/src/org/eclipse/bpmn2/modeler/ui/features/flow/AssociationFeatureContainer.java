@@ -211,6 +211,9 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public boolean canCreate(ICreateConnectionContext context) {
+			if (!super.canCreate(context))
+				return false;
+			
 			if ( context.getTargetPictogramElement() instanceof FreeFormConnection ) {
 				// TODO: fix this so it works with Manhattan router
 				return true;

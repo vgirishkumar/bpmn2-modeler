@@ -18,14 +18,10 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
@@ -84,16 +80,18 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(object,"name"); //$NON-NLS-1$
 			bindList(object, "documentation"); //$NON-NLS-1$
 			EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef");
-			if (isModelObjectEnabled(object.eClass(), reference)) {
-				String displayName = getPropertiesProvider().getLabel(object, reference);
-
-				ObjectEditor editor = new FeatureListObjectEditor(this,object,reference) {
-					@Override
-					protected boolean canEdit() {
-						return !Bpmn2Preferences.getInstance(object).getPropagateGroupCategories();
-					}
-				};
-				editor.createControl(getAttributesParent(),displayName);
+			if (reference!=null) {
+				if (isModelObjectEnabled(object.eClass(), reference)) {
+					String displayName = getPropertiesProvider().getLabel(object, reference);
+	
+					ObjectEditor editor = new FeatureListObjectEditor(this,object,reference) {
+						@Override
+						protected boolean canEdit() {
+							return !Bpmn2Preferences.getInstance(object).getPropagateGroupCategories();
+						}
+					};
+					editor.createControl(getAttributesParent(),displayName);
+				}
 			}
 		}
 

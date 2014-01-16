@@ -21,7 +21,6 @@ import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
@@ -38,6 +37,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -58,7 +58,17 @@ public abstract class AbstractCreateFlowFeature<
 	public boolean canCreate(ICreateConnectionContext context) {
 		SOURCE source = getSourceBo(context);
 		TARGET target = getTargetBo(context);
-		return source != null && target != null;
+		if (source!=null && target!=null) {
+			// Make sure only one connection of each type is created for the same
+			// source and target objects, i.e. you can't have two SequenceFlows
+			// with the same source and target objects.
+			AnchorContainer sourceContainer = context.getSourceAnchor().getParent();
+			AnchorContainer targetContainer = context.getTargetAnchor().getParent();
+			if (!canCreateConnection(sourceContainer, targetContainer, getBusinessObjectClass()))
+				return false;
+			return true;
+		}
+		return false;
 	}
 
 	@Override

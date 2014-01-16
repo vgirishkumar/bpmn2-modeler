@@ -136,6 +136,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (!(source instanceof DataOutput))
 				return true;
 		}
+		
 		return false;
 	}
 
@@ -458,7 +459,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (super.canCreate(context)) {
 				BaseElement source = getSourceBo(context);
 				BaseElement target = getTargetBo(context);
-				return canConnect(source, target);
+				return DataAssociationFeatureContainer.canConnect(source, target);
 			}
 			return false;
 		}
@@ -768,7 +769,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				target = BusinessObjectUtil.getFirstElementOfType(context.getTargetPictogramElement(), BaseElement.class);
 				source = BusinessObjectUtil.getFirstElementOfType(connection.getStart().getParent(), BaseElement.class);
 			}
-			return canConnect(source, target);
+			return DataAssociationFeatureContainer.canConnect(source, target);
 		}
 
 		@Override
