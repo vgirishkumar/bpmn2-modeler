@@ -266,7 +266,10 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					else
 						container.eSet(containerFeature, value);
 				}
-				association.getSourceRef().add(value);
+				if (value==null)
+					association.getSourceRef().clear();
+				else
+					association.getSourceRef().add(value);
 			}
 			else {
 				if (container!=null) {
@@ -276,7 +279,10 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 						container.eSet(containerFeature, value);
 				}
 				updateConnectionIfNeeded(association, value);
-				association.getSourceRef().set(0,value);
+				if (value==null)
+					association.getSourceRef().clear();
+				else
+					association.getSourceRef().set(0,value);
 			}
 			if (association.getTargetRef()!=null) {
 				ItemAwareElement targetRef = association.getTargetRef();

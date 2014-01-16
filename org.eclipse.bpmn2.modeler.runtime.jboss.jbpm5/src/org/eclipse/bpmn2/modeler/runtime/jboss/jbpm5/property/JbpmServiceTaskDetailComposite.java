@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite.MapType;
@@ -40,11 +41,16 @@ public class JbpmServiceTaskDetailComposite extends JbpmTaskDetailComposite {
 	}
 	
 	@Override
-	protected void createMessageAssociations(final Composite container, final Activity serviceTask, final EReference reference, final Operation operation) {
-		Operation oldOperation = (Operation) serviceTask.eGet(reference);
+	protected void createMessageAssociations(Composite container, Activity serviceTask,
+			EReference operationRef, Operation operation,
+			EReference messageRef, Message message) {
+		Operation oldOperation = (Operation) serviceTask.eGet(operationRef);
 		boolean changed = (oldOperation != operation);
 
-		super.createMessageAssociations(container, serviceTask, reference, operation);
+		super.createMessageAssociations(container, serviceTask,
+				operationRef, operation,
+				messageRef, message);
+		
 		final InputOutputSpecification ioSpec = serviceTask.getIoSpecification();
 
 		if (ioSpec!=null) {

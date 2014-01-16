@@ -345,7 +345,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			if (dataOutputAssoc==null) {
 				// none found, create a new one
 				dataOutputAssoc = (DataOutputAssociation) Bpmn2ModelerFactory.createFeature(source, sourceFeature);
-				dataOutputAssoc.getSourceRef().add(dataOutput);
+				if (dataOutput==null)
+					dataOutputAssoc.getSourceRef().clear();
+				else
+					dataOutputAssoc.getSourceRef().add(dataOutput);
 			}
 		}
 		return dataOutputAssoc;

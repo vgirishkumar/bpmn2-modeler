@@ -536,7 +536,10 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						}
 						else {
 							DataOutputAssociation doAssociation = modelHandler.create(DataOutputAssociation.class);
-							doAssociation.getSourceRef().add(parameter);
+							if (parameter==null)
+								doAssociation.getSourceRef().clear();
+							else
+								doAssociation.getSourceRef().add(parameter);
 							association = doAssociation;
 							InsertionAdapter.add(
 									activity,

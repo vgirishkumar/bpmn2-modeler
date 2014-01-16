@@ -392,7 +392,8 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						if (!inTransaction)
 							throw new IllegalStateException(Messages.EventDefinitionsListComposite_No_Transaction);
 						association = Bpmn2ModelerFactory.create(resource, DataOutputAssociation.class);
-						association.getSourceRef().add(element);
+						if (element!=null)
+							association.getSourceRef().add(element);
 						associations.add(association);
 					}
 				}
