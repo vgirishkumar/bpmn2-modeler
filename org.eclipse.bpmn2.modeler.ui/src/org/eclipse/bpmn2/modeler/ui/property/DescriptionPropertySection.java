@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.ui.property;
 
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -79,18 +80,20 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(object,"id"); //$NON-NLS-1$
 			bindAttribute(object,"name"); //$NON-NLS-1$
 			bindList(object, "documentation"); //$NON-NLS-1$
-			EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef");
-			if (reference!=null) {
-				if (isModelObjectEnabled(object.eClass(), reference)) {
-					String displayName = getPropertiesProvider().getLabel(object, reference);
-	
-					ObjectEditor editor = new FeatureListObjectEditor(this,object,reference) {
-						@Override
-						protected boolean canEdit() {
-							return !Bpmn2Preferences.getInstance(object).getPropagateGroupCategories();
-						}
-					};
-					editor.createControl(getAttributesParent(),displayName);
+			if (!(object instanceof Group)) {
+				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef");
+				if (reference!=null) {
+					if (isModelObjectEnabled(object.eClass(), reference)) {
+						String displayName = getPropertiesProvider().getLabel(object, reference);
+		
+						ObjectEditor editor = new FeatureListObjectEditor(this,object,reference) {
+							@Override
+							protected boolean canEdit() {
+								return !Bpmn2Preferences.getInstance(object).getPropagateGroupCategories();
+							}
+						};
+						editor.createControl(getAttributesParent(),displayName);
+					}
 				}
 			}
 		}
