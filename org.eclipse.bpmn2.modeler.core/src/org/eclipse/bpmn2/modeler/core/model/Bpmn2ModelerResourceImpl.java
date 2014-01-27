@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
@@ -737,6 +738,25 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	            	}
             	}
             }
+            
+            if (o!=null && o instanceof Documentation) {
+            	Documentation doc = (Documentation)o;
+            	if (doc.getText()==null || doc.getText().isEmpty())
+            		return false;
+            }
+            
+            if (f!=null && f.getEType() == Bpmn2Package.eINSTANCE.getDocumentation()) {
+            	EList<Documentation> docList = (EList<Documentation>)o.eGet(f);
+            	if (docList.isEmpty())
+            		return false;
+            	int empty = 0;
+            	for (Documentation doc : docList) {
+            		if (doc.getText()==null || doc.getText().isEmpty())
+            			++empty;
+            	}
+            	if (empty==docList.size())
+            		return false;
+            }            	
             
             // don't serialize the "body" attribute of FormalExpressions because the expression text
             // is already in the CDATA section of the <bpmn2:expression> element. This would cause
