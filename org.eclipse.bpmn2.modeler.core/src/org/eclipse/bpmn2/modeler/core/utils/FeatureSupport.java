@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CategoryValue;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
@@ -830,7 +831,9 @@ public class FeatureSupport {
 		// these will be moved along with the Group
 		List<ContainerShape> list = new ArrayList<ContainerShape>();
 		if (diagram!=null && isGroupShape(groupShape)) {
-			for (PictogramElement child : diagram.getChildren()) {
+			TreeIterator<EObject> iter = diagram.eAllContents();
+			while (iter.hasNext()) {
+				EObject child = iter.next();
 				if (child instanceof ContainerShape
 						&& child!=groupShape
 						&& !list.contains(child)) {
@@ -843,6 +846,9 @@ public class FeatureSupport {
 						}
 					}
 					else if (GraphicsUtil.contains(groupShape, shape)) {
+						if (!list.contains(shape)) {
+							list.add(shape);
+						}
 						// find this shape's parent ContainerShape if it has one
 						while (!(shape.getContainer() instanceof Diagram)) {
 							shape = shape.getContainer();
@@ -1078,12 +1084,16 @@ public class FeatureSupport {
 			// find all Groups in this Resource and check if it contains the given FlowElement
 			if (pe instanceof ContainerShape) {
 				for (Group group : ModelUtil.getAllObjectsOfType(resource, Group.class)) {
+					CategoryValue cv = group.getCategoryValueRef();
+					if (cv==null)
+						continue;
+					
 					for (PictogramElement groupShape : Graphiti.getLinkService().getPictogramElements(diagram, group)) {
 						if (groupShape instanceof ContainerShape) {
 							for (ContainerShape flowElementShape : FeatureSupport.findGroupedShapes((ContainerShape) groupShape)) {
 								FlowElement fe = BusinessObjectUtil.getFirstElementOfType(flowElementShape, FlowElement.class);
 								if (fe==flowElement) {
-									fe.getCategoryValueRef().add(group.getCategoryValueRef());
+									fe.getCategoryValueRef().add(cv);
 									break;
 								}
 							}

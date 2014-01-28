@@ -43,6 +43,7 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -88,7 +89,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
-		return new AbstractDefaultDeleteFeature(fp);
+		return new DeleteGroupFeature(fp);
 	}
 
 	@Override
@@ -410,5 +411,25 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
 			}
 		}
+	}
+	
+	public class DeleteGroupFeature extends AbstractDefaultDeleteFeature {
+
+		public DeleteGroupFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public void delete(IDeleteContext context) {
+			ContainerShape groupShape = (ContainerShape) context.getPictogramElement();
+			List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes(groupShape);
+			
+			super.delete(context);
+
+			for (ContainerShape cs : containedShapes) {
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
+			}
+		}
+		
 	}
 }
