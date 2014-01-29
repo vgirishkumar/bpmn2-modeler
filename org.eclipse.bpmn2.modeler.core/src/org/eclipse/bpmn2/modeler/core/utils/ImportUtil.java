@@ -23,7 +23,6 @@ import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
@@ -416,12 +415,14 @@ public class ImportUtil {
 
 					// create XSD types (if any) defined in the WSDL
 					Types t = wsdlDefinition.getETypes();
-					for (Object s : t.getSchemas()) {
-						if (s instanceof XSDSchema) {
-							XSDSchema schema = (XSDSchema)s;
-
-							for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
-								createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
+					if (t!=null) {
+						for (Object s : t.getSchemas()) {
+							if (s instanceof XSDSchema) {
+								XSDSchema schema = (XSDSchema)s;
+	
+								for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
+									createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
+								}
 							}
 						}
 					}
