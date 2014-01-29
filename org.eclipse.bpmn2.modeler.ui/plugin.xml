@@ -1293,4 +1293,16 @@
 			</parameter>
 		</key>
 	</extension>
+	
+	<extension point="org.eclipse.ui.bindings">
+		<key
+			commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			sequence="M1+D">
+			<parameter
+				id="org.eclipse.graphiti.ui.featureHint"
+				value="duplicate">
+			</parameter>
+		</key>
+	</extension>
 </plugin>

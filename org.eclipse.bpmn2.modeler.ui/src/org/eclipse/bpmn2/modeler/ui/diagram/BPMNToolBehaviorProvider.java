@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
+import org.eclipse.bpmn2.modeler.core.features.command.CustomKeyCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.command.ICustomCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -119,6 +120,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	protected ModelEnablements modelEnablements;
 	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	protected List<IPaletteCompartmentEntry> palette;
+	protected CustomKeyCommandFeature commandFeature = null;
 	
 	protected class ProfileSelectionToolEntry extends ToolEntry {
 		BPMN2Editor editor;
@@ -847,11 +849,12 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 
 	@Override
 	public ICustomFeature getCommandFeature(CustomContext context, String hint) {
-		for (ICustomFeature cf : getFeatureProvider().getCustomFeatures(context)) {
-			if (cf instanceof ICustomCommandFeature && ((ICustomCommandFeature)cf).isAvailable(hint)) {
-				context.putProperty(ICustomCommandFeature.COMMAND_HINT, hint);
-				return cf;
-			}
+		if (commandFeature==null)
+			commandFeature = new CustomKeyCommandFeature(getFeatureProvider());
+		
+		if (commandFeature.isAvailable(hint)) {
+			context.putProperty(ICustomCommandFeature.COMMAND_HINT, hint);
+			return commandFeature;
 		}
 		return super.getCommandFeature(context, hint);
 	}
