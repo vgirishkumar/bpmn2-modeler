@@ -1,5 +1,6 @@
 package org.eclipse.bpmn2.modeler.core.features.command;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -44,6 +45,12 @@ public class CustomMoveCommandFeature extends AbstractCustomFeature implements I
 			ContainerShape cs = (ContainerShape) pe;
 			MoveShapeContext moveContext = new MoveShapeContext(cs);
 			ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(cs);
+			EObject c = cs.eContainer();
+			if (c instanceof ContainerShape) {
+				ILocation lc = Graphiti.getPeService().getLocationRelativeToDiagram((ContainerShape)c);
+				loc.setX(loc.getX() - lc.getX());
+				loc.setY(loc.getY() - lc.getY());
+			}
 			moveContext.setDeltaX(dx);
 			moveContext.setDeltaY(dy);
 			moveContext.setX(loc.getX() + dx);
