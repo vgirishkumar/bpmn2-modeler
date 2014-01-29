@@ -528,6 +528,8 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
 		UpdateContext uc = new UpdateContext(newShape);
 		IUpdateFeature uf = getFeatureProvider().getUpdateFeature(uc);
+		// force an update to cause the newly created ContainerShape to be rendered properly
+		uc.putProperty(MultiUpdateFeature.FORCE_UPDATE_ALL, Boolean.TRUE);
 		uf.update(uc);
 		
 		if (newObject instanceof Activity) {
