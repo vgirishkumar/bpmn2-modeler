@@ -1068,6 +1068,28 @@ public class FeatureSupport {
 		updateConnections(fp, ac, alreadyUpdated);
 	}
 
+	public static void updateCategoryValues(IFeatureProvider fp, List<ContainerShape> shapes) {
+		// Update CategoryValues for SequenceFlows also
+		List<Connection> connections = new ArrayList<Connection>();
+		for (ContainerShape cs : shapes) {
+			updateCategoryValues(fp, cs);
+
+			for (Anchor a : cs.getAnchors()) {
+				for (Connection c : a.getIncomingConnections()) {
+					if (!connections.contains(c))
+						connections.add(c);
+				}
+				for (Connection c : a.getOutgoingConnections()) {
+					if (!connections.contains(c))
+						connections.add(c);
+				}
+			}
+		}
+		for (Connection c : connections) {
+			updateCategoryValues(fp, c);
+		}
+	}
+	
 	public static void updateCategoryValues(IFeatureProvider fp, PictogramElement pe) {
 		
 		Resource resource = ModelUtil.getResource(pe);

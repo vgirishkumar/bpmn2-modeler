@@ -248,9 +248,9 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			super.update(context);
 			
 			ContainerShape groupShape = (ContainerShape)context.getPictogramElement();
-			for (ContainerShape cs : FeatureSupport.findGroupedShapes(groupShape)) {
-				FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
-			}
+			List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes(groupShape);
+			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
+
 			return true;
 		}
 		
@@ -311,27 +311,10 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			}
 			for (ContainerShape cs : FeatureSupport.findGroupedShapes(groupShape)) {
 				if (!containedShapes.contains(cs)) {
-					FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
 					containedShapes.add(cs);
 				}
 			}
-			// Update CategoryValues for SequenceFlows also
-			List<Connection> connections = new ArrayList<Connection>();
-			for (ContainerShape cs : containedShapes) {
-				for (Anchor a : cs.getAnchors()) {
-					for (Connection c : a.getIncomingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-					for (Connection c : a.getOutgoingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-				}
-			}
-			for (Connection c : connections) {
-				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
-			}
+			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 		}
 	}
 
@@ -370,46 +353,10 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			DIUtils.updateDIShape(context.getPictogramElement());
 
 			List<ContainerShape> containedShapesAfterResize = FeatureSupport.findGroupedShapes(groupShape);
-			for (ContainerShape cs : containedShapesBeforeResize) {
-				if (!containedShapesAfterResize.contains(cs))
-					FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
-			}
-			for (ContainerShape cs : containedShapesAfterResize) {
-				if (!containedShapesBeforeResize.contains(cs))
-					FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
-			}
+			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapesBeforeResize);
+			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapesAfterResize);
 			
 			FeatureSupport.updateConnections(getFeatureProvider(), groupShape);
-
-			// Update CategoryValues for SequenceFlows also
-			List<Connection> connections = new ArrayList<Connection>();
-			for (ContainerShape cs : containedShapesBeforeResize) {
-				for (Anchor a : cs.getAnchors()) {
-					for (Connection c : a.getIncomingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-					for (Connection c : a.getOutgoingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-				}
-			}
-			for (ContainerShape cs : containedShapesAfterResize) {
-				for (Anchor a : cs.getAnchors()) {
-					for (Connection c : a.getIncomingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-					for (Connection c : a.getOutgoingConnections()) {
-						if (!connections.contains(c))
-							connections.add(c);
-					}
-				}
-			}
-			for (Connection c : connections) {
-				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
-			}
 		}
 	}
 	
@@ -426,9 +373,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			
 			super.delete(context);
 
-			for (ContainerShape cs : containedShapes) {
-				FeatureSupport.updateCategoryValues(getFeatureProvider(), cs);
-			}
+			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 		}
 		
 	}
