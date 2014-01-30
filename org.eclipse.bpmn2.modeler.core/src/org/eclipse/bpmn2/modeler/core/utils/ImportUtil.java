@@ -88,7 +88,7 @@ public class ImportUtil {
 		else if (IMPORT_TYPE_JAVA.equals(type))
 			kind = IMPORT_KIND_JAVA;
 		else if (IMPORT_TYPE_BPMN2.equals(type))
-			kind = ""; //$NON-NLS-1$
+			kind = "bpmn"; //$NON-NLS-1$
 		else
 			return null;
 		String location = imp.getLocation();
@@ -453,7 +453,7 @@ public class ImportUtil {
 	public static String makeURIRelative(URI baseURI, String s) {
 		// convert platform URI to a relative URI string
 		URI uri = URI.createURI(s);
-		uri = uri.deresolve(baseURI, false, true, true);
+//		uri = uri.deresolve(baseURI, false, true, true);
 		return uri.toString();
 	}
 	
