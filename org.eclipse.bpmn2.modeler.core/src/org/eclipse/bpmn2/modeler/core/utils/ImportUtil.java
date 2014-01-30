@@ -452,9 +452,10 @@ public class ImportUtil {
 
 	public static String makeURIRelative(URI baseURI, String s) {
 		// convert platform URI to a relative URI string
-		URI uri = URI.createURI(s);
+//		URI uri = URI.createURI(s);
 //		uri = uri.deresolve(baseURI, false, true, true);
-		return uri.toString();
+//		return uri.toString();
+		return s;
 	}
 	
 	/**
