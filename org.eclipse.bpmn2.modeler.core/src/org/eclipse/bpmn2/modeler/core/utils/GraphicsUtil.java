@@ -1627,7 +1627,7 @@ public class GraphicsUtil {
 	 * @return true if the line segment is vertical
 	 */
 	public final static boolean isVertical(Point p1, Point p2) {
-		return Math.abs(p1.getX() - p2.getX()) <= 2;
+		return Math.abs(p1.getX() - p2.getX()) == 0;
 	}
 	
 	/**
@@ -1638,7 +1638,7 @@ public class GraphicsUtil {
 	 * @return true if the line segment is horizontal
 	 */
 	public final static boolean isHorizontal(Point p1, Point p2) {
-		return Math.abs(p1.getY() - p2.getY()) <= 2;
+		return Math.abs(p1.getY() - p2.getY()) == 0;
 	}
 
 	/**

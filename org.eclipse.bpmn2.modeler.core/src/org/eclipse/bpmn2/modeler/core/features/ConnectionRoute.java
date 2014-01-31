@@ -209,7 +209,11 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 //							i = o1.crossings.size() - o2.crossings.size();
 							if (i==0) {
 								i = o1.getLength() - o2.getLength();
-								if (Math.abs(i)<=10) {
+								int m = Math.max(o1.getLength(), o2.getLength());
+								double r = 0;
+								if (m>0)
+									r = (double)Math.abs(i)/(double)m;
+								if (r<0.2 ) {
 									i = o1.getPoints().size() - o2.getPoints().size();
 //									if (i==0) {
 //										BoundaryAnchor ba1 = AnchorUtil.findNearestBoundaryAnchor(source, o1.get(0));
@@ -276,7 +280,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 						int x2 = p2.getX();
 						int x4 = p4.getX();
 						if ((x1 < x4 && x4 < x2) || (x1 > x4 && x4 > x2)) {
-							// this forms a vertical "U" - remove if the new configuration does not cause a collision
+							// this forms a horizontal "U" - remove if the new configuration does not cause a collision
 							Point p = GraphicsUtil.createPoint(x4, p2.getY());
 							if (router.getCollision(p,p4)==null) {
 								getPoints().set(i, p);
@@ -291,7 +295,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 						int y2 = p2.getY();
 						int y4 = p4.getY();
 						if ((y1 < y4 && y4 < y2) || (y1 > y4 && y4 > y2)) {
-							// this forms a horizontal "U"
+							// this forms a vertical "U"
 							Point p = GraphicsUtil.createPoint(p2.getX(), y4);
 							if (router.getCollision(p,p4)==null) {
 								getPoints().set(i, p);

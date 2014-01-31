@@ -77,7 +77,7 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 							return getClip(outer,inner);
 						}
 					}
-					else {
+					else if (businessObject!=null) {
 						EObject container = businessObject.eContainer();
 						if (container instanceof SubProcess) {
 							for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, container)) {
