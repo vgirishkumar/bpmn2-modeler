@@ -72,7 +72,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	protected LineSegment targetLeftEdge;
 	protected LineSegment targetRightEdge;
 	
-	static final int offset = 10;
+	static final int offset = 20;
 	static boolean testRouteSolver = false;
 	
 	enum Orientation {
