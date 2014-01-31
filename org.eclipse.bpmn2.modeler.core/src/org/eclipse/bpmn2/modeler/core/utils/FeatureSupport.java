@@ -75,6 +75,8 @@ import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.MmFactory;
+import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -94,6 +96,7 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class FeatureSupport {
 	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal"; //$NON-NLS-1$
+	public static final String TOOLTIP_PROPERTY = "tooltip"; //$NON-NLS-1$
 
 	public static boolean isValidFlowElementTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
@@ -1134,5 +1137,23 @@ public class FeatureSupport {
 			}
 		}
 	}
+
+	public static void setToolTip(GraphicsAlgorithm ga, String text) {
+		if (ga!=null) {
+			Property prop = MmFactory.eINSTANCE.createProperty();
+			prop.setKey(TOOLTIP_PROPERTY);
+			prop.setValue(text);
+			ga.getProperties().add(prop);
+		}
+	}
 	
+	public static String getToolTip(GraphicsAlgorithm ga) {
+		if (ga!=null) {
+			for (Property prop : ga.getProperties()) {
+				if (TOOLTIP_PROPERTY.equals(prop.getKey()))
+					return prop.getValue();
+			}
+		}
+		return null;
+	}
 }

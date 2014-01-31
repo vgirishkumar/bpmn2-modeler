@@ -82,6 +82,7 @@ import org.eclipse.graphiti.features.context.impl.MoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -867,5 +868,10 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 			}
 		}
 		return locationInfo;
+	}
+
+	@Override
+	public Object getToolTip(GraphicsAlgorithm ga) {
+		return FeatureSupport.getToolTip(ga);
 	}
 }
