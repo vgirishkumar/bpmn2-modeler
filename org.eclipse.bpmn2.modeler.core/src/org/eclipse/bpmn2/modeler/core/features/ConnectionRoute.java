@@ -211,7 +211,8 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 					if (i==0) {
 						i = o1.collisions.size() - o2.collisions.size();
 						if (i==0) {
-							i = o1.crossings.size() - o2.crossings.size();
+							// TODO: figure out why connection crossing detection isn't working!
+//							i = o1.crossings.size() - o2.crossings.size();
 							if (i==0) {
 								i = o1.getLength() - o2.getLength();
 								int m = Math.max(o1.getLength(), o2.getLength());

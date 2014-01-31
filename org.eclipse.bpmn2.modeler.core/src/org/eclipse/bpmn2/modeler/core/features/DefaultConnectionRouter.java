@@ -186,6 +186,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	}
 	
 	protected List<Connection> findCrossings(Point start, Point end) {
+		// TODO: figure out why this isn't working!
 		List<Connection> crossings = new ArrayList<Connection>();
 		List<Connection> allConnections = fp.getDiagramTypeProvider().getDiagram().getConnections();
 		for (Connection connection : allConnections) {
