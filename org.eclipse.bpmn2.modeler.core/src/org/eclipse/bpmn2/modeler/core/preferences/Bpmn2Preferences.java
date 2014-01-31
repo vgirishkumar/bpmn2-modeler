@@ -81,7 +81,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -144,7 +143,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS = "allow.multiple.connections"; //$NON-NLS-1$
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL = Messages.Bpmn2Preferences_Allow_Mutliple_Connections;
 
-	private static Hashtable<IProject,Bpmn2Preferences> instances = null;
+	private static Hashtable<IProject,Bpmn2Preferences> projectInstances = null;
+	private static Bpmn2Preferences globalInstance = null;
 	private static IProject activeProject;
 	private static ListenerList preferenceChangeListeners;
 	private static IPreferenceStore preferenceStore;
@@ -275,17 +275,19 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	 * @return project preferences
 	 */
 	public static Bpmn2Preferences getInstance(IProject project) {
-		if (instances==null) {
-			instances = new Hashtable<IProject,Bpmn2Preferences>();
+		Bpmn2Preferences pref = null;
+		if (project==null) {
+			if (globalInstance==null)
+				globalInstance = new Bpmn2Preferences(null);
+			pref = globalInstance;
 		}
-		Bpmn2Preferences pref;
-		if (project==null)
-			pref = new Bpmn2Preferences(null);
 		else {
-			pref = instances.get(project);
+			if (projectInstances==null)
+				projectInstances = new Hashtable<IProject,Bpmn2Preferences>();
+			pref = projectInstances.get(project);
 			if (pref==null) {
 				pref = new Bpmn2Preferences(project);
-				instances.put(project, pref);
+				projectInstances.put(project, pref);
 			}
 		}
 		return pref;
@@ -298,7 +300,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	public void dispose() {
 		if (project!=null)
-			instances.remove(project);
+			projectInstances.remove(project);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		preferenceStore.removePropertyChangeListener(this);
 	}
@@ -1559,8 +1561,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());
 	
 		// notify all other Bpmn2Preferences instances (if any)
-		if (instances!=null) {
-			for (Entry<IProject, Bpmn2Preferences> entry : instances.entrySet()) {
+		if (projectInstances!=null) {
+			for (Entry<IProject, Bpmn2Preferences> entry : projectInstances.entrySet()) {
 				Bpmn2Preferences pref = entry.getValue();
 				if (pref!=this)
 					pref.firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());
