@@ -193,7 +193,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			for (ConnectionRoute r : allRoutes) {
 				r.optimize();
 				int size = r.size();
-				for (int i=0; i<size-1; ++i) {
+//				for (int i=0; i<size-1; ++i) {
 					if (size>2) {
 						// is there a better anchor point for the start or end of this connection?
 						int n = 1;
@@ -220,11 +220,11 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 //						r.setRank(rank);
 //						break;
 //					}
-					if (GraphicsUtil.isSlanted(r.get(i),r.get(i+1))) {
-						r.setRank(rank);
-						break;
-					}
-				}
+//					if (GraphicsUtil.isSlanted(r.get(i),r.get(i+1))) {
+//						r.setRank(rank);
+//						break;
+//					}
+//				}
 //				AnchorLocation al = AnchorUtil.findNearestBoundaryAnchor(source, r.get(0)).locationType;
 //				if (al==AnchorLocation.LEFT || al==AnchorLocation.RIGHT) {
 //					if (Math.abs(r.get(0).getX() - r.get(1).getX()) <= delta)
