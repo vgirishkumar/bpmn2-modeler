@@ -204,9 +204,9 @@ public class ShapeLayoutManager {
 		}
 
 		// TODO: remove this temporary hack to fix Manhattan Router issue
-		for (ContainerShape child : childShapes) {
-			FeatureSupport.updateConnections(editor.getDiagramTypeProvider().getFeatureProvider(), child);
-		}
+//		for (ContainerShape child : childShapes) {
+//			FeatureSupport.updateConnections(editor.getDiagramTypeProvider().getFeatureProvider(), child);
+//		}
 	}
 
 	private void stackShapes(ContainerShape container, List<ContainerShape> unconnectedShapes) {

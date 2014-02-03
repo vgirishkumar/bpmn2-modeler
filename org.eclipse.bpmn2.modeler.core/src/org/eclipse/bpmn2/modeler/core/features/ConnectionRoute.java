@@ -214,15 +214,10 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 							// TODO: figure out why connection crossing detection isn't working!
 //							i = o1.crossings.size() - o2.crossings.size();
 							if (i==0) {
-								i = o1.getLength() - o2.getLength();
-//								int m = Math.max(o1.getLength(), o2.getLength());
-//								double r = 0;
-//								if (m>0)
-//									r = (double)Math.abs(i)/(double)m;
-//								if (r<0.2 )
+								i = o1.getPoints().size() - o2.getPoints().size();
 								if (i==0)
 								{
-									i = o1.getPoints().size() - o2.getPoints().size();
+									i = o1.getLength() - o2.getLength();
 //									if (i==0) {
 //										BoundaryAnchor ba1 = AnchorUtil.findNearestBoundaryAnchor(source, o1.get(0));
 //										BoundaryAnchor ba2 = AnchorUtil.findNearestBoundaryAnchor(source, o2.get(0));
