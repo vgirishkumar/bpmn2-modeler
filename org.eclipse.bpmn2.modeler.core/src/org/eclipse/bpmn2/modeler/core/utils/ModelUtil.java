@@ -702,15 +702,17 @@ public class ModelUtil {
 	/**
 	 * Removed "deprecated" annotation: ModelExtensionDescriptor.populateObject() needs this  
 	 */
-	public static EStructuralFeature addAnyAttribute(EObject childObject, String name, Object value) {
-		return addAnyAttribute(childObject, childObject.eClass().getEPackage().getNsURI(), name, value);
+	public static EStructuralFeature addAnyAttribute(EObject childObject, String name, String type, Object value) {
+		EPackage pkg = childObject.eClass().getEPackage();
+		String nsURI = pkg.getNsURI();
+		return addAnyAttribute(childObject, nsURI, name, type, value);
 	}
 	
 	/**
 	 * Removed "deprecated" annotation: ModelExtensionDescriptor.populateObject() needs this  
 	 */
 	@SuppressWarnings("unchecked")
-	public static EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, Object value) {
+	public static EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, String type, Object value) {
 		EStructuralFeature attr = null;
 		EStructuralFeature anyAttribute = childObject.eClass().getEStructuralFeature(Bpmn2Package.BASE_ELEMENT__ANY_ATTRIBUTE);
 		List<BasicFeatureMap.Entry> anyMap = (List<BasicFeatureMap.Entry>)childObject.eGet(anyAttribute);
@@ -727,8 +729,9 @@ public class ModelUtil {
 		}
 		
 		// this featuremap can only hold attributes, not elements
-		String type = "E" + value.getClass().getSimpleName(); //$NON-NLS-1$
-		EDataType eDataType = (EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
+		if (type==null)
+			type = "E" + value.getClass().getSimpleName(); //$NON-NLS-1$
+		EDataType eDataType = (EDataType)ModelUtil.getEClassifierFromString(null, type);//(EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
 		if (eDataType!=null) {
 			if (attr==null) {
 				attr = ExtendedMetaData.INSTANCE.demandFeature(namespace, name, false);

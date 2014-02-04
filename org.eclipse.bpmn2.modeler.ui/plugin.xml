@@ -149,6 +149,21 @@
 		</model>
 
 		<!-- ======================================== -->
+		<!-- ========= Default EndPoint Ext ========= -->
+		<!-- ======================================== -->
+		
+		<!-- TODO: how do we handle this?
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.none.modelExtension.endpoint"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			name="Default EndPoint Extension"
+			type="EndPoint">
+			<property name="name" type="EString"/>
+			<property name="value" type="WSDLElement"/>
+		</modelExtension>
+		-->
+		
+		<!-- ======================================== -->
 		<!-- ============  Property Tabs ============ -->
 		<!-- ======================================== -->
 
@@ -168,17 +183,13 @@
 			label="%propertyTab.label.0">
 		</propertyTab>
 
-		<!-- TODO: write a property details class to handle Participant features -->
-		<!--
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.participant.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
-			features="interfaceRefs endPointRefs participantMultiplicity"
+			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ParticipantPropertySection"
 			type="org.eclipse.bpmn2.Participant"
-			label="Participant">
+			label="%propertyTab.label.60">
 		</propertyTab>
-		-->
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
@@ -976,6 +987,7 @@
 			<enable object="Assignment"/>
 			<enable object="FormalExpression"/>
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
+			<enable object="EndPoint"/>
 		</modelEnablement>
 
 		<modelEnablement
@@ -1016,6 +1028,7 @@
 			<enable object="SubConversation"/>
 			<enable object="CallConversation"/>
 			<enable object="ConversationLink"/>
+			<enable object="EndPoint"/>
 		</modelEnablement>
 
 		<modelEnablement
@@ -1075,6 +1088,7 @@
 			<disable object="ConversationNode"/>
 			<disable object="ExtensionAttributeDefinition"/>
 			<disable object="MessageFlowAssociation"/>
+			<enable object="EndPoint"/>
 		</modelEnablement>
 
 		<style object="AdHocSubProcess" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
