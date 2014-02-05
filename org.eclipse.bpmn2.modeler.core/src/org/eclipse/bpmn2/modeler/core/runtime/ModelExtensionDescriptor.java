@@ -389,21 +389,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 
 		if (feature==null) {
 			EPackage pkg = getEPackage();
-			if (pkg==Bpmn2Package.eINSTANCE) {
-				feature = ModelUtil.getAnyAttribute(object, property.name);
-				if (feature==null) {
-					feature = ModelUtil.addAnyAttribute(object, "http://org.eclipse.bpmn2/extensions", property.name, property.type, "");
-				}
+			// if the Property has a "ref" or if its value is a Property
+			// then this must be an EReference
+			if (property.ref!=null || firstValue instanceof Property) {
+				feature = ModelUtil.createDynamicReference(pkg, object, property.name, property.type);
 			}
-			else {
-				// if the Property has a "ref" or if its value is a Property
-				// then this must be an EReference
-				if (property.ref!=null || firstValue instanceof Property) {
-					feature = ModelUtil.createDynamicReference(pkg, object, property.name, property.type);
-				}
-				else
-					feature = ModelUtil.createDynamicAttribute(pkg, object, property.name, property.type);
-			}
+			else
+				feature = ModelUtil.createDynamicAttribute(pkg, object, property.name, property.type);
 		}
 		
 		if (feature instanceof EAttribute) {
