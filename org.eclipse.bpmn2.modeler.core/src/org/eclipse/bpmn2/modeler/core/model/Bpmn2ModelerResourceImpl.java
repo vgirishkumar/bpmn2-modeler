@@ -1163,9 +1163,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			} catch (Exception e) {
 			}
 
-			String uriString = xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
-			
 			if (!isTargetNamespacePrefix) {
+				String uriString = xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 				URI uri = URI.createURI(uriString);
 				ResourceSet rs = ModelUtil.slightlyHackedResourceSet(xmlHelper.getResource().getResourceSet());
 				Resource r = ((Bpmn2ModelerResourceSetImpl)rs).getResource(uri, true, "wsdl"); // the only problem here... //$NON-NLS-1$
@@ -1184,7 +1183,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				return xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 			}
 			else {
-				return uriString;
+				return URI.createURI("").appendFragment(fragment).toString();
 			}
 		}
 	}
