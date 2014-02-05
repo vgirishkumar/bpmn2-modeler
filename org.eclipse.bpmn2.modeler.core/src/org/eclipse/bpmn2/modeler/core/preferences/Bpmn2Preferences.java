@@ -330,7 +330,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENT_DEFS, false);
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, false);
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
-			defaultPreferences.putBoolean(PREF_DO_CORE_VALIDATION, true);
+			defaultPreferences.putBoolean(PREF_DO_CORE_VALIDATION, false);
 			defaultPreferences.putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			defaultPreferences.putBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 
@@ -443,7 +443,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			popupConfigDialogFor[4] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, false);
 			popupConfigDialogFor[5] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
 
-			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, true);
+			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, false);
 			propagateGroupCategories = getBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			allowMultipleConnections = getBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 
@@ -453,40 +453,44 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	public synchronized void flush() throws BackingStoreException {
 		if (dirty) {
-			put(PREF_TARGET_RUNTIME,getRuntime().getId());
-			putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
-			putBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
-			putBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
-			putBoolean(PREF_CHECK_PROJECT_NATURE, checkProjectNature);
-			putBoolean(PREF_SIMPLIFY_LISTS, simplifyLists);
-			putBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, usePopupDialogForLists);
-			setBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, isHorizontal);
-
-			setBPMNDIAttributeDefault(PREF_IS_EXPANDED, isExpanded);
-			setBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, isMessageVisible);
-			setBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, isMarkerVisible);
-			
-			putInt(PREF_CONNECTION_TIMEOUT, connectionTimeout);
-
-			putInt(PREF_POPUP_CONFIG_DIALOG, popupConfigDialog);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, popupConfigDialogFor[0]);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_GATEWAYS, popupConfigDialogFor[1]);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENTS, popupConfigDialogFor[2]);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENT_DEFS, popupConfigDialogFor[3]);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, popupConfigDialogFor[4]);
-			putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, popupConfigDialogFor[5]);
-			putBoolean(PREF_DO_CORE_VALIDATION, doCoreValidation);
-			putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, propagateGroupCategories);
-			putBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, allowMultipleConnections);
+			if (useProjectPreferences) {
+				if (projectPreferences!=null) {
+					projectPreferences.flush();
+				}
+			}
+			else {
+				put(PREF_TARGET_RUNTIME,getRuntime().getId());
+				putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
+				putBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
+				putBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
+				putBoolean(PREF_CHECK_PROJECT_NATURE, checkProjectNature);
+				putBoolean(PREF_SIMPLIFY_LISTS, simplifyLists);
+				putBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, usePopupDialogForLists);
+				setBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, isHorizontal);
+	
+				setBPMNDIAttributeDefault(PREF_IS_EXPANDED, isExpanded);
+				setBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, isMessageVisible);
+				setBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, isMarkerVisible);
+				
+				putInt(PREF_CONNECTION_TIMEOUT, connectionTimeout);
+	
+				putInt(PREF_POPUP_CONFIG_DIALOG, popupConfigDialog);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, popupConfigDialogFor[0]);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_GATEWAYS, popupConfigDialogFor[1]);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENTS, popupConfigDialogFor[2]);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENT_DEFS, popupConfigDialogFor[3]);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, popupConfigDialogFor[4]);
+				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, popupConfigDialogFor[5]);
+				putBoolean(PREF_DO_CORE_VALIDATION, doCoreValidation);
+				putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, propagateGroupCategories);
+				putBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, allowMultipleConnections);
+			}
 		}
 		
 		for (Entry<Class, ShapeStyle> entry : shapeStyles.entrySet()) {
 			setShapeStyle(entry.getKey(), entry.getValue());
 		}
 		
-		if (projectPreferences!=null) {
-			projectPreferences.flush();
-		}
 		instancePreferences.flush();
 
 		dirty = false;
