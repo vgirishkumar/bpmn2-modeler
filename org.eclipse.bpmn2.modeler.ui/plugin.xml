@@ -32,14 +32,21 @@
 	</extension>
 
 	<extension point="org.eclipse.core.contenttype.contentTypes">
-		<content-type base-type="org.eclipse.core.runtime.xml"
+		<content-type
+			base-type="org.eclipse.core.runtime.xml"
 			id="org.eclipse.bpmn2.content-type.xml"
 			name="%content-type.name"
 			file-extensions="bpmn,bpmn2,bpmn20,xml"
-			priority="normal">
-			<describer class="org.eclipse.bpmn2.modeler.ui.BPMN2ContentDescriber">
+			priority="high">
+			<describer
+				class="org.eclipse.bpmn2.modeler.ui.BPMN2ContentDescriber"
+				plugin="org.eclipse.bpmn2.modeler.ui">
 			</describer>
 		</content-type>
+		<file-association
+			content-type="org.eclipse.bpmn2.content-type.xml"
+			file-extensions="bpmn,bpmn2">
+		</file-association>
 	</extension>
 
 	<extension
@@ -152,16 +159,13 @@
 		<!-- ========= Default EndPoint Ext ========= -->
 		<!-- ======================================== -->
 		
-		<!-- TODO: how do we handle this?
 		<modelExtension
 			id="org.eclipse.bpmn2.modeler.runtime.none.modelExtension.endpoint"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 			name="Default EndPoint Extension"
 			type="EndPoint">
-			<property name="name" type="EString"/>
-			<property name="value" type="WSDLElement"/>
+			<property name="serviceAddress" type="EString"/>
 		</modelExtension>
-		-->
 		
 		<!-- ======================================== -->
 		<!-- ============  Property Tabs ============ -->
@@ -558,7 +562,7 @@
 			id="org.eclipse.bpmn2.modeler.interface.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
+			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process org.eclipse.bpmn2.Participant"
 			label="%propertyTab.label.41">
 		</propertyTab>
 
@@ -987,7 +991,7 @@
 			<enable object="Assignment"/>
 			<enable object="FormalExpression"/>
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
-			<enable object="EndPoint"/>
+<!--			<enable object="EndPoint" feature="serviceAddress"/> -->
 		</modelEnablement>
 
 		<modelEnablement
@@ -1022,13 +1026,11 @@
 			<!-- and then add these objects -->
 			<enable object="Collaboration"/>
 			<enable object="Participant"/>
-			<enable object="Lane"/>
 			<enable object="MessageFlow"/>
 			<enable object="Conversation"/>
 			<enable object="SubConversation"/>
 			<enable object="CallConversation"/>
 			<enable object="ConversationLink"/>
-			<enable object="EndPoint"/>
 		</modelEnablement>
 
 		<modelEnablement
@@ -1088,7 +1090,6 @@
 			<disable object="ConversationNode"/>
 			<disable object="ExtensionAttributeDefinition"/>
 			<disable object="MessageFlowAssociation"/>
-			<enable object="EndPoint"/>
 		</modelEnablement>
 
 		<style object="AdHocSubProcess" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>

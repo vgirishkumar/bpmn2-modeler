@@ -1162,14 +1162,15 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				isTargetNamespacePrefix = xmlHelper.isTargetNamespace(prefix);
 			} catch (Exception e) {
 			}
+
+			String uriString = xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
+			
 			if (!isTargetNamespacePrefix) {
-				EObject o;
-				String uriString = xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 				URI uri = URI.createURI(uriString);
 				ResourceSet rs = ModelUtil.slightlyHackedResourceSet(xmlHelper.getResource().getResourceSet());
 				Resource r = ((Bpmn2ModelerResourceSetImpl)rs).getResource(uri, true, "wsdl"); // the only problem here... //$NON-NLS-1$
 				if (r instanceof WSDLResourceImpl) {
-					o = r.getContents().get(0);
+					EObject o = r.getContents().get(0);
 					Definition def = (Definition)o;
 					// if eReference -- operation.implementationref
 					// search all of these:
@@ -1182,8 +1183,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 				return xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 			}
-			else
-				return baseURI.appendFragment(fragment).toString();
+			else {
+				return uriString;
+			}
 		}
 	}
 	

@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
@@ -87,7 +88,6 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 						"relationships", //$NON-NLS-1$
 						"rootElements#PartnerEntity", //$NON-NLS-1$
 						"rootElements#PartnerRole", //$NON-NLS-1$
-						// TODO: how do we handle this?
 //						"rootElements#EndPoint", //$NON-NLS-1$
 						"rootElements#Resource", //$NON-NLS-1$
 						"rootElements#DataStore", //$NON-NLS-1$
@@ -480,7 +480,6 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 		}
 	}
 	
-	// TODO: finish this
 	public class EndPointListComposite extends DefaultListComposite {
 
 		public EndPointListComposite(AbstractBpmn2PropertySection section) {
@@ -492,66 +491,100 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			return Bpmn2Package.eINSTANCE.getEndPoint();
 		}
 		
-		protected int createColumnProvider(EObject object, EStructuralFeature feature) {
-			if (columnProvider==null) {
-				columnProvider = new ListCompositeColumnProvider(this);
+//		protected int createColumnProvider(EObject object, EStructuralFeature feature) {
+//			if (columnProvider==null) {
+//				columnProvider = new ListCompositeColumnProvider(this);
+//
+//				TargetRuntime rt = getTargetRuntime();
+//				for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
+//					if ("EndPoint".equals(md.getType())) {
+//
+//						for (Property p : md.getProperties()) {
+//							final String name = p.name;
+//							TableColumn tableColumn = new TableColumn(object,(EStructuralFeature)null) {
+//								@Override
+//								public String getHeaderText() {
+//									return ModelUtil.toDisplayName(name);
+//								}
+//				
+//								@Override
+//								public String getText(Object element) {
+//									if (element instanceof EndPoint) {
+//										EndPoint ep = (EndPoint) element;
+//										EStructuralFeature feature = ModelUtil.getAnyAttribute(ep, name);
+//										Object v = ep.eGet(feature);
+//										if (v!=null)
+//											return v.toString();
+//									}
+//									return ""; //$NON-NLS-1$
+//								}
+//
+//								@Override
+//								public CellEditor createCellEditor (Composite parent) {
+//									CellEditor ce = null;
+//									return ce;
+//								}
+//							};
+//							columnProvider.add(tableColumn);
+//						}
+//					}
+//				}
+//			}
+//			return columnProvider.getColumns().size();
+//		}
+//		
+//		@Override
+//		public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+//			AbstractDetailComposite composite = new DefaultDetailComposite(parent, style) {
+//
+//				protected boolean isModelObjectEnabled(EClass eclass, EStructuralFeature feature) {
+//					return true;
+//				}
+//				
+//				@Override
+//				public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
+//					if (propertiesProvider==null) {
+//						propertiesProvider = new AbstractPropertiesProvider(object) {
+//							String[] properties = null;
+//							
+//							@Override
+//							public String[] getProperties() {
+//								if (properties==null) {
+//									TargetRuntime rt = getTargetRuntime();
+//									for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
+//										if ("EndPoint".equals(md.getType())) {
+//											properties = new String[md.getProperties().size()];
+//											int i=0;
+//											for (Property p : md.getProperties()) {
+//												properties[i++] = p.name;
+//											}
+//										}
+//									}
+//								}
+//								
+//								return properties; 
+//							}
+//						};
+//					}
+//					return propertiesProvider;
+//				}
+//				
+//			};
+//			
+//			return composite;
+//		}
 
-				TargetRuntime rt = getTargetRuntime();
-				for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
-					if ("EndPoint".equals(md.getType())) {
-
-						for (Property p : md.getProperties()) {
-							final String name = p.name;
-							TableColumn tableColumn = new TableColumn(object,(EStructuralFeature)null) {
-								@Override
-								public String getHeaderText() {
-									return ModelUtil.toDisplayName(name);
-								}
-				
-								@Override
-								public String getText(Object element) {
-									if (element instanceof EndPoint) {
-										EndPoint ep = (EndPoint) element;
-										EStructuralFeature feature = ModelUtil.getAnyAttribute(ep, name);
-										Object v = ep.eGet(feature);
-										if (v!=null)
-											return v.toString();
-									}
-									return ""; //$NON-NLS-1$
-								}
-
-								@Override
-								public CellEditor createCellEditor (Composite parent) {
-									CellEditor ce = null;
-									// TODO: create a dialog cell editor for NS prefix
-									return ce;
-								}
-							};
-							columnProvider.add(tableColumn);
-						}
-					}
-				}
-			}
-			return columnProvider.getColumns().size();
-		}
-		
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
 			EObject ep = super.addListItem(object, feature);
-			TargetRuntime rt = getTargetRuntime();
-			for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
-				if ("EndPoint".equals(md.getType())) {
-					md.populateObject(ep, true);
-				}
-			}
+//			TargetRuntime rt = getTargetRuntime();
+//			for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
+//				if ("EndPoint".equals(md.getType())) {
+//					md.populateObject(ep, true);
+//				}
+//			}
 
 			return ep;
 		}
-
-		@Override
-		protected EObject editListItem(EObject object, EStructuralFeature feature) {
-			return super.editListItem(object, feature);
-		}
-		
 	}
 }

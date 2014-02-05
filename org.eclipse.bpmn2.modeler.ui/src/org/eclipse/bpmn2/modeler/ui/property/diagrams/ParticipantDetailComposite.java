@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection.ProvidedInterfaceListComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -37,6 +38,8 @@ import org.eclipse.swt.widgets.Composite;
  *
  */
 public class ParticipantDetailComposite extends DefaultDetailComposite {
+
+	protected ProvidedInterfaceListComposite providedInterfacesTable;
 
 	public ParticipantDetailComposite(Composite parent, int style) {
 		super(parent, style);
@@ -57,7 +60,6 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 						"processRef", //$NON-NLS-1$
 						"participantMultiplicity", //$NON-NLS-1$
 						"interfaceRefs", //$NON-NLS-1$
-						// TODO: finish this
 //						"endPointRefs", //$NON-NLS-1$
 				};
 				
@@ -70,6 +72,12 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 		return propertiesProvider;
 	}
 
+	@Override
+	public void cleanBindings() {
+		super.cleanBindings();
+		providedInterfacesTable = null;
+	}
+	
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
 		if (isModelObjectEnabled(object.eClass(), reference)) {
 			if (parent==null)
@@ -96,6 +104,10 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 				maxEditor.createControl(composite, "Maximum");
 				
 				minEditor.updateText();
+			}
+			else if ("interfaceRefs".equals(reference.getName())) {
+				providedInterfacesTable = new ProvidedInterfaceListComposite(this);
+				providedInterfacesTable.bindList(object, getFeature(object, "interfaceRefs")); //$NON-NLS-1$
 			}
 			else {
 				super.bindReference(parent, object, reference);
