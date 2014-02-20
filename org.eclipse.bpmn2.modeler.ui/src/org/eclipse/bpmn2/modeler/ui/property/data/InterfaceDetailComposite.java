@@ -14,10 +14,10 @@
 package org.eclipse.bpmn2.modeler.ui.property.data;
 
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -72,7 +72,7 @@ public class InterfaceDetailComposite extends DefaultDetailComposite {
 				parent = getAttributesParent();
 			
 			final Interface iface = (Interface)object;
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			SchemaObjectEditor editor = new SchemaObjectEditor(this,object,reference);
 			editor.createControl(parent,displayName);

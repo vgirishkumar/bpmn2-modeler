@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
@@ -55,7 +56,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 				if (parent==null)
 					parent = getAttributesParent();
 				
-				String displayName = ModelUtil.getLabel(object, reference);
+				String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 				ObjectEditor editor = new TextAndButtonObjectEditor(this,object,reference) {
 
 					@Override
@@ -71,7 +72,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 							
 						};
 						
-						String initialValue = ModelUtil.getDisplayName(object,feature);
+						String initialValue = ExtendedPropertiesProvider.getTextValue(object,feature);
 						InputDialog dialog = new InputDialog(
 								getShell(),
 								Messages.JbpmCallActivityDetailComposite_Title,

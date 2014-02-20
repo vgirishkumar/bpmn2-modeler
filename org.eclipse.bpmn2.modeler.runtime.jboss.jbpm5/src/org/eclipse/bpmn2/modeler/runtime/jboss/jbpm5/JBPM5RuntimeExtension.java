@@ -221,11 +221,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 				}
 				if (!workItemDefinitions.isEmpty()) {
 					List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
-					for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTasks()) {
+					for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors()) {
 						if (!d.isPermanent())
 							removed.add(d);
 					}
-					TargetRuntime.getCurrentRuntime().getCustomTasks().removeAll(removed);
+					TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors().removeAll(removed);
 				
 					java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
 					while(widIterator.hasNext()) {
@@ -349,7 +349,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		String value = getWIDPropertyValue(propName, wid);
 		String description = null;
 		String type = "EString"; //$NON-NLS-1$
-		Property prop = new Property(name, description);
+		Property prop = new Property(null, name, description);
 		prop.type = type;
 		if (value == null && propName.equalsIgnoreCase("icon")) { //$NON-NLS-1$
 			value = "task.png"; //$NON-NLS-1$
@@ -373,8 +373,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 				Property prop = (Property) values[i];
 				if (prop.name.equals("dataInputs")) { //$NON-NLS-1$
 					inputCounter++;
-					Property dataInputAssociations = new Property ( "dataInputAssociations", null); //$NON-NLS-1$
-					Property targetRef = new Property ("targetRef", null); //$NON-NLS-1$
+					Property dataInputAssociations = new Property (prop, "dataInputAssociations", null); //$NON-NLS-1$
+					Property targetRef = new Property (dataInputAssociations, "targetRef", null); //$NON-NLS-1$
 					targetRef.ref = "ioSpecification/dataInputs#" + inputCounter; //$NON-NLS-1$
 					dataInputAssociations.getValues().add(targetRef);
 					ct.getProperties().add(dataInputAssociations);
@@ -400,11 +400,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	 * @param wid
 	 */
 	private Property createIOSpecificationSection ( CustomTaskDescriptor ct, WorkItemDefinition wid ) {
-		Property ioSpecification = new Property ( "ioSpecification", null); //$NON-NLS-1$
+		Property ioSpecification = new Property (null,"ioSpecification", null); //$NON-NLS-1$
 		
 		for (Entry<String, String> entry : wid.getParameters().entrySet()) {
-			Property dataInputs = new Property("dataInputs", null); //$NON-NLS-1$
-			Property dataInputsName = new Property("name", null); //$NON-NLS-1$
+			Property dataInputs = new Property(ioSpecification,"dataInputs", null); //$NON-NLS-1$
+			Property dataInputsName = new Property(dataInputs,"name", null); //$NON-NLS-1$
 			dataInputsName.getValues().add(entry.getKey());
 			dataInputs.getValues().add(dataInputsName);
 			ioSpecification.getValues().add(dataInputs);
@@ -420,8 +420,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 //			ioSpecification.getValues().add(dataOutputs);
 //		} else {
 			for (Entry<String, String> entry : wid.getResults().entrySet()) {
-				Property dataOutputs = new Property("dataOutputs", null); //$NON-NLS-1$
-				Property dataOutputsName = new Property("name", null); //$NON-NLS-1$
+				Property dataOutputs = new Property(ioSpecification,"dataOutputs", null); //$NON-NLS-1$
+				Property dataOutputsName = new Property(dataOutputs,"name", null); //$NON-NLS-1$
 				dataOutputsName.getValues().add(entry.getKey());
 				dataOutputs.getValues().add(dataOutputsName);
 				ioSpecification.getValues().add(dataOutputs);
@@ -431,19 +431,19 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		Object[] values = ioSpecification.getValues().toArray();
 		int inputCounter = -1;
 		int outputCounter = -1;
-		Property inputSets = new Property("inputSets", null); //$NON-NLS-1$
-		Property outputSets = new Property("outputSets", null); //$NON-NLS-1$
+		Property inputSets = new Property(ioSpecification,"inputSets", null); //$NON-NLS-1$
+		Property outputSets = new Property(ioSpecification,"outputSets", null); //$NON-NLS-1$
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] instanceof Property) {
 				Property prop = (Property) values[i];
 				if (prop.name.equals("dataInputs")) { //$NON-NLS-1$
 					inputCounter++;
-					Property inputSetsRef = new Property ("dataInputRefs", null); //$NON-NLS-1$
+					Property inputSetsRef = new Property (inputSets,"dataInputRefs", null); //$NON-NLS-1$
 					inputSetsRef.ref = "ioSpecification/dataInputs#" + inputCounter; //$NON-NLS-1$
 					inputSets.getValues().add(inputSetsRef);
 				} else 	if (prop.name.equals("dataOutputs")) { //$NON-NLS-1$
 					outputCounter++;
-					Property outputSetsRef = new Property ("dataOutputRefs", null); //$NON-NLS-1$
+					Property outputSetsRef = new Property (outputSets,"dataOutputRefs", null); //$NON-NLS-1$
 					outputSetsRef.ref = "ioSpecification/dataOutputs#" + outputCounter; //$NON-NLS-1$
 					outputSets.getValues().add(outputSetsRef);
 				}

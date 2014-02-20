@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Factory;
@@ -23,6 +25,8 @@ import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.IResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.runtime.Assert;
@@ -38,6 +42,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EStringToStringMapEntryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Internal;
 import org.eclipse.emf.ecore.util.EcoreEMap;
 
 /**
@@ -118,26 +123,38 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	@Override
     public EObject create(EClass eClass) {
     	EObject object = super.create(eClass);
-//    	if (enableModelExtensions)
-    	{
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-	    	if (rt!=null) {
-    			String className = eClass.getName();
-	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
-	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
-	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
-    				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
-	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
-    			}
-	    		
-		    	for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-		    		if (className.equals(med.getType())) {
-		    			med.populateObject(object, eResource(), enableModelExtensions);
-		    			break;
+
+    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+    	if (rt!=null) {
+    		Resource resource = null;
+    		IResourceProvider adapter = ResourceProvider.getAdapter(this);
+    		if (adapter!=null)
+    			resource = adapter.getResource();
+    		
+			String className = eClass.getName();
+    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
+    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
+    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
+				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
+    			object = rt.getModelDescriptor().getEFactory().create(clazz);
+			}
+    		
+	    	for (ModelExtensionDescriptor med : rt.getModelExtensionDescriptors()) {
+	    		boolean done = false;
+	    		if (className.equals(med.getType())) {
+	    			med.populateObject(object, resource, enableModelExtensions);
+	    			done = true;
+	    		}
+	    		for (EClass st : eClass.getEAllSuperTypes()) {
+		    		if (st.getName().equals(med.getType())) {
+		    			med.populateObject(object, resource, enableModelExtensions);
 		    		}
-		    	}
+	    		}
+	    		if (done)
+	    			break;
 	    	}
     	}
+
     	return object;
     }
 
@@ -177,6 +194,10 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 			}
 		}
 		return newObject;
+	}
+	
+	public void setResource(Resource resource) {
+		this.eSetDirectResource((Internal) resource);
 	}
 	
 	public static EObject createFeature(EObject object, EStructuralFeature feature) {
@@ -228,7 +249,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
-			newObject = adapter.getFeatureDescriptor(feature).createFeature(resource, object, eClass);
+			newObject = adapter.getFeatureDescriptor(feature).createFeature(resource, eClass);
 		}
 		else {
 			// There is no properties adapter registered for this class. This can only happen if the object to
@@ -250,8 +271,23 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		return null;
 	}
 
-	private static boolean isBpmnPackage(EPackage pkg) {
-		return pkg == Bpmn2Package.eINSTANCE || pkg == BpmnDiPackage.eINSTANCE || pkg == DcPackage.eINSTANCE || pkg == DiPackage.eINSTANCE;
+	public static boolean isBpmnPackage(EPackage pkg) {
+		return	pkg == Bpmn2Package.eINSTANCE ||
+				pkg == BpmnDiPackage.eINSTANCE ||
+				pkg == DcPackage.eINSTANCE ||
+				pkg == DiPackage.eINSTANCE;
+	}
+
+	public static boolean isBpmnPackage(String nsURI) {
+		if (nsURI==null || nsURI.isEmpty())
+			return true;
+		
+		if (!nsURI.endsWith("-XMI"))
+			nsURI += "-XMI";
+		return	Bpmn2Package.eINSTANCE.getNsURI().equals(nsURI) ||
+				BpmnDiPackage.eINSTANCE.getNsURI().equals(nsURI) ||
+				DcPackage.eINSTANCE.getNsURI().equals(nsURI) ||
+				DiPackage.eINSTANCE.getNsURI().equals(nsURI);
 	}
 
 }

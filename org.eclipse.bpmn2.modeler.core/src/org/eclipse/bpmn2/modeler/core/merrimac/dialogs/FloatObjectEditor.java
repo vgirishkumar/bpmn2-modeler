@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.math.BigInteger;
+
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -84,9 +86,8 @@ public class FloatObjectEditor extends TextObjectEditor {
 
 				try {
 					final Double i = Double.parseDouble(text.getText());
-					if (!object.eGet(feature).equals(i)) {
+					if (!getValue().equals(i))
 						setFeatureValue(i);
-					}
 				} catch (NumberFormatException e) {
 					setFeatureValue(0L);
 				}
@@ -94,12 +95,7 @@ public class FloatObjectEditor extends TextObjectEditor {
 
 			@SuppressWarnings("rawtypes")
 			private void setFeatureValue(final double i) {
-				Class eTypeClass = feature.getEType().getInstanceClass();
-				if (Double.class.equals(eTypeClass) || double.class.equals(eTypeClass)) {
-					setValue(Double.valueOf((double)i));
-				}
-				else
-					setValue(Float.valueOf((float)i));
+				getBusinessObjectDelegate().setValue(object, feature, Double.toString(i));
 			}
 		});
 
@@ -118,4 +114,26 @@ public class FloatObjectEditor extends TextObjectEditor {
 
 		return text;
 	}
+		
+		public Double getValue() {
+			Object v = getBusinessObjectDelegate().getValue(object, feature);
+			if (v instanceof Short)
+				return ((Short)v).doubleValue();
+			if (v instanceof Integer)
+				return ((Integer)v).doubleValue();
+			if (v instanceof Long)
+				return ((Long)v).doubleValue();
+			if (v instanceof Double)
+				return (Double)v;
+			if (v instanceof BigInteger)
+				return ((BigInteger)v).doubleValue();
+			if (v instanceof String) {
+				try {
+					return Double.parseDouble((String)v);
+				}
+				catch (Exception e){
+				}
+			}
+			return new Double(0);
+		}
 }

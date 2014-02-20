@@ -286,4 +286,11 @@
            type="org.eclipse.emf.ecore.EObject">
      </propertyTester>
   </extension>
+  <extension
+        point="org.eclipse.emf.ecore.conversion_delegate">
+     <factory
+           class="org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory"
+           uri="org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory">
+     </factory>
+  </extension>
 </plugin>

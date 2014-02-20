@@ -47,32 +47,18 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
     	setFeatureDescriptor(feature,
 			new ItemDefinitionRefFeatureDescriptor<Property>(adapterFactory,object,feature) {
 				
-				@Override
-				public void setValue(Object context, final Object value) {
-					final Property property = adopt(context);
-
-					TransactionalEditingDomain domain = getEditingDomain(object);
-					if (domain==null && value instanceof EObject) {
-						domain = getEditingDomain(value);
-					}
-					if (domain!=null) {
-						domain.getCommandStack().execute(new RecordingCommand(domain) {
-							@Override
-							protected void doExecute() {
-								property.setItemSubjectRef(JbpmModelUtil.getDataType(property, value));
-							}
-						});
-					}
+	    		@Override
+	    		protected void internalSet(Property property, EStructuralFeature feature, Object value, int index) {
+					property.setItemSubjectRef(JbpmModelUtil.getDataType(property, value));
 				}
 				
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final Property property = adopt(context);
-					return JbpmModelUtil.collectAllDataTypes(property);
+				public Hashtable<String, Object> getChoiceOfValues() {
+					return JbpmModelUtil.collectAllDataTypes(object);
 				}
 				
 				@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
 			}

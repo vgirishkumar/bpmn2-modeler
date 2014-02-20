@@ -38,7 +38,7 @@ public class JbpmOnExitScriptPropertiesAdapter extends ExtendedPropertiesAdapter
 			new FeatureDescriptor<OnExitScriptType>(adapterFactory,object,ref) {
     		
 	    		@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
     	});

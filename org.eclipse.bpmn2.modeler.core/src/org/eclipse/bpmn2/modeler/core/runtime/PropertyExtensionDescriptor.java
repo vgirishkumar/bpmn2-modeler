@@ -27,8 +27,10 @@ import org.eclipse.emf.ecore.EObject;
  * @author Bob Brodt
  *
  */
-public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
+public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	
+	public final static String EXTENSION_NAME = "propertyExtension";
+
     protected String type;
     protected String adapterClassName;
 	private final IConfigurationElement element;
@@ -36,9 +38,14 @@ public class PropertyExtensionDescriptor extends BaseRuntimeDescriptor {
 	/**
 	 * @param rt
 	 */
-	public PropertyExtensionDescriptor(TargetRuntime rt, IConfigurationElement element) {
-		super(rt);
-		this.element = element;
+	public PropertyExtensionDescriptor(IConfigurationElement e) {
+		this.element = e;
+		type = e.getAttribute("type"); //$NON-NLS-1$
+		adapterClassName = e.getAttribute("class"); //$NON-NLS-1$
+	}
+	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
 	}
 
 	@SuppressWarnings("rawtypes")

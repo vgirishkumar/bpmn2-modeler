@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -119,7 +120,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	protected EObject editListItem(EObject object, EStructuralFeature feature) {
 		MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 			NLS.bind(Messages.DefaultListComposite_Internal_Error_Message_No_Editor,
-				ModelUtil.getDisplayName(object, feature))
+				ExtendedPropertiesProvider.getTextValue(object, feature))
 		);
 		return null;
 	}
@@ -235,7 +236,7 @@ public class DefaultListComposite extends AbstractListComposite {
 			dlg.setInput(references);
 			dlg.setMessage(
 				NLS.bind(Messages.DefaultListComposite_Cannot_Delete_Message,
-					ModelUtil.getLabel(objectToDelete))
+					ExtendedPropertiesProvider.getLabel(objectToDelete))
 			);
 			dlg.setAddCancelButton(false);
 			dlg.setTitle(Messages.DefaultListComposite_Cannot_Delete_Title);
@@ -293,7 +294,7 @@ public class DefaultListComposite extends AbstractListComposite {
 		@Override
 		public String getText(Object element) {
 			String type = ModelUtil.getLabel(element);
-			String name = ModelUtil.getDisplayName(element);
+			String name = ModelUtil.getTextValue(element);
 			return type + ": " + name; //$NON-NLS-1$
 		}
 

@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -50,8 +51,7 @@ public class CallConversationPropertiesAdapter extends ExtendedPropertiesAdapter
     		new RootElementRefFeatureDescriptor<CallConversation>(adapterFactory,object,ref) {
 			
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final CallConversation activity = adopt(context);
+				public Hashtable<String, Object> getChoiceOfValues() {
 					Hashtable<String, Object> choices = new Hashtable<String,Object>();
 					String label;
 					Definitions defs = ModelUtil.getDefinitions(object);
@@ -59,7 +59,7 @@ public class CallConversationPropertiesAdapter extends ExtendedPropertiesAdapter
 					// first add all local Collaborations
 					List<Collaboration> localCollaborations = ModelUtil.getAllRootElements(defs, Collaboration.class);
 					for (Collaboration elem : localCollaborations) {
-						label = ModelUtil.getDisplayName(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+						label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 						choices.put(label, elem);
 					}
 					
@@ -69,12 +69,12 @@ public class CallConversationPropertiesAdapter extends ExtendedPropertiesAdapter
 					for (Import imp : imports) {
 						if (ImportUtil.IMPORT_TYPE_BPMN2.equals(imp.getImportType())) {
 							// load the bpmn file and look for Collaborations
-							Object object = importer.loadImport(imp);
-							if (object instanceof DocumentRoot) {
-								Definitions importDefs = ((DocumentRoot)object).getDefinitions();
+							Object importedObject = importer.loadImport(imp);
+							if (importedObject instanceof DocumentRoot) {
+								Definitions importDefs = ((DocumentRoot)importedObject).getDefinitions();
 								for (RootElement elem : importDefs.getRootElements()) {
 									if (elem instanceof Collaboration) {
-										label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+										label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 										choices.put(label, elem);
 									}
 								}
@@ -83,7 +83,7 @@ public class CallConversationPropertiesAdapter extends ExtendedPropertiesAdapter
 					}
 	
 					// remove the Call Collaboration's owning Collaboration (can't make recursive calls?)
-					EObject parent = activity.eContainer();
+					EObject parent = object.eContainer();
 					while (parent!=null && !(parent instanceof RootElement)) {
 						parent = parent.eContainer();
 					}

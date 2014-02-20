@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -237,7 +238,7 @@ public class DesignEditor extends BPMN2Editor {
 				CTabItem item = new CTabItem(tabFolder, SWT.NONE);
 				item.setControl(container);
 				BaseElement be = bd.getPlane().getBpmnElement();
-				item.setText(ModelUtil.getDisplayName(be));
+				item.setText(ExtendedPropertiesProvider.getTextValue(be));
 				item.setData(bd);
 			}
 			

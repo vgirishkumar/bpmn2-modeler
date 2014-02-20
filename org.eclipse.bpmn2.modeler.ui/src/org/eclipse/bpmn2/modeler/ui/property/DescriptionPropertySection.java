@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -122,7 +123,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter!=null) {
 				// if this is a Custom Task, use the description provided by the <customTask> extension
-				if (ModelExtensionDescriptor.getModelExtensionAdapter(object) != null)
+				if (BaseRuntimeExtensionDescriptor.getDescriptor(object, ModelExtensionDescriptor.class) != null)
 					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION);
 				if (description==null)
 					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);

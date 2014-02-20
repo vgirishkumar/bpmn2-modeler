@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -31,7 +32,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xml.type.internal.DataValue.URI;
 import org.eclipse.wst.wsdl.Message;
 import org.eclipse.xsd.XSDElementDeclaration;
 
@@ -54,40 +54,37 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		
     	setFeatureDescriptor(ref,
 			new FeatureDescriptor<ItemDefinition>(adapterFactory,object,ref) {
+    		
 				@Override
-				public String getLabel(Object context) {
+				public String getLabel() {
 					return Messages.ItemDefinitionPropertiesAdapter_Structure;
 				}
 
 				@Override
-				public String getDisplayName(Object context) {
-					ItemDefinition itemDefinition = adopt(context);
-					String value = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
+				public String getTextValue() {
+					String value = ItemDefinitionPropertiesAdapter.getStructureName(object);
 					value = SyntaxCheckerUtils.fromXMLString((String)value);
 					return value;
 				}
 				
 	    		@Override
-				public EObject createFeature(Resource resource, Object context, EClass eClass) {
-					final ItemDefinition itemDefinition = adopt(context);
+				public EObject createFeature(Resource resource, EClass eClass) {
 					EObject structureRef = ModelUtil.createStringWrapper(""); //$NON-NLS-1$
-					itemDefinition.setStructureRef(structureRef);
+					object.setStructureRef(structureRef);
 					return structureRef;
 	    		}
 
 	    		@Override
-	    		public Object getValue(Object context) {
-					ItemDefinition itemDefinition = adopt(context);
-					Object value = ItemDefinitionPropertiesAdapter.getStructureRef(itemDefinition);
+	    		public Object getValue() {
+					Object value = ItemDefinitionPropertiesAdapter.getStructureRef(object);
 					if (value==null || (ModelUtil.isStringWrapper(value) && ModelUtil.getStringWrapperValue(value).isEmpty())) {
-						value = itemDefinition.getId();
+						value = object.getId();
 					}
 					return value;
 	    		}
 
 	    		@Override
-	    		public void setValue(Object context, Object value) {
-					ItemDefinition itemDefinition = adopt(context);
+	    		protected void internalSet(ItemDefinition itemDefinition, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof String) {
 						if (itemDefinition.getStructureRef()==null) {
 							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
@@ -96,26 +93,25 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 						value = SyntaxCheckerUtils.toXMLString((String)value);
 						value = ModelUtil.createStringWrapper((String)value);
 					}
-					super.setValue(context, value);
+					super.internalSet(itemDefinition, feature, value, index);
 	    		}
 
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					ItemDefinition itemDefinition = adopt(context);
-					return ItemDefinitionPropertiesAdapter.getChoiceOfValues(itemDefinition);
+				public Hashtable<String, Object> getChoiceOfValues() {
+					return ItemDefinitionPropertiesAdapter.getChoiceOfValues(object);
 				}
 			}
     	);
     	
 		setObjectDescriptor(new ObjectDescriptor<ItemDefinition>(adapterFactory, object) {
+			
 			@Override
-			public String getDisplayName(Object context) {
-				ItemDefinition itemDefinition = adopt(context);
-				return ItemDefinitionPropertiesAdapter.getDisplayName(itemDefinition);
+			public String getTextValue() {
+				return ItemDefinitionPropertiesAdapter.getDisplayName(object);
 			}
 			
 			@Override
-			public String getLabel(Object context) {
+			public String getLabel() {
 				return ItemDefinitionPropertiesAdapter.getLabel();
 			}
 			
@@ -178,7 +174,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	}
 	
 	public static String getStructureName(ItemDefinition itemDefinition) {
-		Resource resource = ModelUtil.getResource(itemDefinition);
+		Resource resource = ResourceProvider.getResource(itemDefinition);
 		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();

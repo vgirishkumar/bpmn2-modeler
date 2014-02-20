@@ -40,17 +40,16 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
     	final EStructuralFeature language = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
     	setFeatureDescriptor(language,
     		new FeatureDescriptor<FormalExpression>(adapterFactory,object,language) {
+    		
 				@Override
-				public String getLabel(Object context) {
-					FormalExpression object = adopt(context);
+				public String getLabel() {
 					if (object.eContainer() instanceof SequenceFlow)
 						return Messages.JbpmFormalExpressionPropertiesAdapter_Condition_Language;
 					return Messages.JbpmFormalExpressionPropertiesAdapter_Script_Language;
 				}
 	
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					FormalExpression object = adopt(context);
+				public Hashtable<String, Object> getChoiceOfValues() {
 					choiceOfValues = new Hashtable<String, Object>();
 					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 					String[] s = rt.getRuntimeExtension().getExpressionLanguages();

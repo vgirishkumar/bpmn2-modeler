@@ -19,6 +19,9 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
+import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -74,6 +77,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	protected TransactionalEditingDomainImpl editingDomain;
 	protected ModelHandler modelHandler;
 	protected boolean isPopupDialog;
+	private IBusinessObjectDelegate boDelegate;
 
 	public ListAndDetailCompositeBase(AbstractBpmn2PropertySection section) {
 		this(section, SWT.NONE);
@@ -140,6 +144,12 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return null;
 	}
 
+	public IBusinessObjectDelegate getBusinessObjectDelegate() {
+		if (boDelegate==null)
+			boDelegate = new DefaultBusinessObjectDelegate(editingDomain);
+		return boDelegate;
+	}
+	
 	public void redrawPage() {
 		if (getPropertySection()!=null) {
 			getPropertySection().layout();
@@ -223,11 +233,8 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected <T extends EObject> T createModelObject(Class clazz) {
 		T object = null;
-		EClass eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
-		if (eClass!=null) {
-			object = (T)Bpmn2ModelerFactory.eINSTANCE.create(eClass);
-			ModelUtil.setID(object, ModelUtil.getResource(businessObject));
-		}
+		object = getBusinessObjectDelegate().createObject(clazz);
+		ModelUtil.setID(object, ResourceProvider.getResource(businessObject));
 		return object;
 	}
 	
@@ -239,6 +246,9 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		return (Bpmn2Preferences) getDiagramEditor().getAdapter(Bpmn2Preferences.class);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.swt.widgets.Widget#setData(java.lang.Object)
+	 */
 	@Override
 	public void setData(Object object) {
 		if (object instanceof EObject)
@@ -405,18 +415,27 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		});
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.transaction.ResourceSetListener#isAggregatePrecommitListener()
+	 */
 	@Override
 	public boolean isAggregatePrecommitListener() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.transaction.ResourceSetListener#isPrecommitOnly()
+	 */
 	@Override
 	public boolean isPrecommitOnly() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.transaction.ResourceSetListener#isPostcommitOnly()
+	 */
 	@Override
 	public boolean isPostcommitOnly() {
 		// TODO Auto-generated method stub

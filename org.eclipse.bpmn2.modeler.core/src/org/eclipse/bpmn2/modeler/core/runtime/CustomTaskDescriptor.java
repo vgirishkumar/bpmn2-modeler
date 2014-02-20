@@ -14,15 +14,47 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "customTask";
 
 	protected ICustomElementFeatureContainer featureContainer;
 	protected String category;
 	protected String icon;
 	protected String propertyTabs[];
+	protected boolean permanent;
 	
+	public CustomTaskDescriptor(IConfigurationElement e) {
+		super(e);
+		category = e.getAttribute("category"); //$NON-NLS-1$
+		icon = e.getAttribute("icon"); //$NON-NLS-1$
+		String tabs = e.getAttribute("propertyTabs"); //$NON-NLS-1$
+		if (tabs!=null) {
+			propertyTabs = tabs.split(" "); //$NON-NLS-1$
+		}
+		try {
+			featureContainer = (ICustomElementFeatureContainer) e.createExecutableExtension("featureContainer");
+			featureContainer.setCustomTaskDescriptor(this);
+			featureContainer.setId(id);
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} //$NON-NLS-1$
+		setPermanent(true);
+	}
+	
+	@Deprecated
+	public CustomTaskDescriptor(String id, String name) {
+		super(id,name);
+	}
+	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
 	public String getIcon() {
 		return icon;
 	}
@@ -39,12 +71,6 @@ public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 		this.category = category;
 	}
 
-	protected boolean permanent;
-	
-	public CustomTaskDescriptor(String id, String name) {
-		super(id,name);
-	}
-	
 	public ICustomElementFeatureContainer getFeatureContainer() {
 		return featureContainer;
 	}
@@ -79,16 +105,6 @@ public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 		if (icon != null && icon.trim().length() > 0) {
 			String prefix = featureContainer.getClass().getPackage().getName();
 			return CustomTaskImageProvider.ICONS_FOLDER + size.value + "/" + icon.trim(); //$NON-NLS-1$
-		}
-		return null;
-	}
-	
-	public static CustomTaskDescriptor getDescriptor(EObject object) {
-		if (object!=null) {
-			ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(object);
-			if (adapter!=null && adapter.getDescriptor() instanceof CustomTaskDescriptor) {
-				return (CustomTaskDescriptor)adapter.getDescriptor();
-			}
 		}
 		return null;
 	}

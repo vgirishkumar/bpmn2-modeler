@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
@@ -181,7 +182,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 						}
 						if (changesDone) {
 							if (result==message) { // the new one
-								message.setName( ModelUtil.getDisplayName(message)); // ModelUtil.toDisplayName(message.getId()) );
+								message.setName( ExtendedPropertiesProvider.getTextValue(message)); // ModelUtil.toDisplayName(message.getId()) );
 								
 								mh.getDefinitions().getRootElements().add(result);
 							}
@@ -192,7 +193,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 							
 							if (parts.size() == 1) {
 								MessageFlow mf=mh.createMessageFlow(participant, parts.get(0));
-								mf.setName(ModelUtil.toDisplayName(mf.getId()));
+								mf.setName(ModelUtil.toCanonicalString(mf.getId()));
 								
 								Choreography choreography = (Choreography)ct.eContainer();
 								choreography.getMessageFlows().add(mf);

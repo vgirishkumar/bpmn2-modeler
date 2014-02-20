@@ -55,13 +55,13 @@ public class CustomTaskImageProvider {
 
 	public static void registerAvailableImages() {
 		if (!registered) {
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-				for (CustomTaskDescriptor ctd : rt.getCustomTasks()) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
 					String icon = ctd.getIcon();
 					if (icon!=null)
 						registerImage(ctd, icon);
 				}
-				for (ToolPaletteDescriptor tp : rt.getToolPalettes()) {
+				for (ToolPaletteDescriptor tp : rt.getToolPaletteDescriptors()) {
 					for (CategoryDescriptor cd : tp.getCategories()) {
 						for (ToolDescriptor td : cd.getTools()) {
 							String icon = td.getIcon();

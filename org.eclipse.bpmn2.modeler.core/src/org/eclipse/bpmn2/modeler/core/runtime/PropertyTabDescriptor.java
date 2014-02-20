@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -21,7 +22,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.tabbed.AbstractTabDescriptor;
 import org.eclipse.ui.views.properties.tabbed.TabContents;
 
-public class Bpmn2TabDescriptor extends AbstractTabDescriptor {
+public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRuntimeExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "propertyTab";
 
 	protected String id;
 	protected String category;
@@ -31,8 +34,10 @@ public class Bpmn2TabDescriptor extends AbstractTabDescriptor {
 	protected boolean indented = false;
 	protected Image image = null;
 	protected boolean popup = true;
+	protected TargetRuntime targetRuntime;
+	protected IFile configFile;
 
-	public Bpmn2TabDescriptor(IConfigurationElement e) {
+	public PropertyTabDescriptor(IConfigurationElement e) {
 		id = e.getAttribute("id"); //$NON-NLS-1$
 		category = e.getAttribute("category"); //$NON-NLS-1$
 		if (category==null || category.isEmpty())
@@ -45,14 +50,47 @@ public class Bpmn2TabDescriptor extends AbstractTabDescriptor {
 		s = e.getAttribute("popup"); //$NON-NLS-1$
 		if (s!=null && s.trim().equalsIgnoreCase("false")) //$NON-NLS-1$
 			popup = false;
+
+		Bpmn2SectionDescriptor sd = new Bpmn2SectionDescriptor(this,e);
 	}
-	
-	public Bpmn2TabDescriptor(String id, String category, String label) {
+
+	public PropertyTabDescriptor(String id, String category, String label) {
 		this.id = id;
 		if (category==null || category.isEmpty() )
 			category = "BPMN2"; //$NON-NLS-1$
 		this.category = category;
 		this.label = label;
+	}
+
+	public void dispose() {
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.remove(this);
+	}
+	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
+	public void setRuntime(TargetRuntime targetRuntime) {
+		this.targetRuntime = targetRuntime;
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.add(this);
+	}
+
+	public TargetRuntime getRuntime() {
+		return targetRuntime;
+	}
+	
+	public IFile getConfigFile() {
+		return configFile;
+	}
+
+	public void setConfigFile(IFile configFile) {
+		this.configFile = configFile;
+	}
+
+	public String getRuntimeId() {
+		return targetRuntime==null ? null : targetRuntime.getId();
 	}
 	
 	@Override
@@ -117,26 +155,28 @@ public class Bpmn2TabDescriptor extends AbstractTabDescriptor {
 
 	@Override
 	public Object clone() {
-		Bpmn2TabDescriptor td = new Bpmn2TabDescriptor(id, category, label);
+		PropertyTabDescriptor td = new PropertyTabDescriptor(id, category, label);
 		td.afterTab = this.afterTab;
 		td.replaceTab = this.replaceTab;
 		if (image!=null)
 			td.image = new Image(Display.getDefault(), this.image, SWT.IMAGE_COPY);
 		td.indented = this.indented;
+		td.targetRuntime = this.targetRuntime;
 //		for (Bpmn2SectionDescriptor sd : (List<Bpmn2SectionDescriptor>)getSectionDescriptors()) {
 //			clone.getSectionDescriptors().add( new Bpmn2SectionDescriptor(sd) );
 //		}
 		return td;
 	}
 
-	public Bpmn2TabDescriptor copy() {
-		Bpmn2TabDescriptor td = new Bpmn2TabDescriptor(id, category, label);
+	public PropertyTabDescriptor copy() {
+		PropertyTabDescriptor td = new PropertyTabDescriptor(id, category, label);
 		td.id += td.hashCode();
 		td.afterTab = this.afterTab;
 		td.replaceTab = this.replaceTab;
 		if (image!=null)
 			td.image = new Image(Display.getDefault(), this.image, SWT.IMAGE_COPY);
 		td.indented = this.indented;
+		td.targetRuntime = this.targetRuntime;
 		td.popup = this.popup;
 		td.image = this.image;
 		for (Bpmn2SectionDescriptor sd : (List<Bpmn2SectionDescriptor>)getSectionDescriptors()) {

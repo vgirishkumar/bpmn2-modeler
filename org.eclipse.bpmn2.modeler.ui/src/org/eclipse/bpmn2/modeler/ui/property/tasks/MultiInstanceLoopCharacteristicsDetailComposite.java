@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -159,12 +160,13 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			isSequentialEditor = new BooleanObjectEditor(this, getBO(), PACKAGE.getMultiInstanceLoopCharacteristics_IsSequential()) {
 				
 				protected boolean setValue(final Object result) {
-					if (!object.eGet(feature).equals(result)) {
+					Object oldValue = getBusinessObjectDelegate().getValue(object, feature);
+					if (oldValue!=result && !oldValue.equals(result)) {
 						TransactionalEditingDomain editingDomain = getDiagramEditor().getEditingDomain();
 						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 							@Override
 							protected void doExecute() {
-								object.eSet(feature, button.getSelection());
+								getBusinessObjectDelegate().setValue(object, feature, button.getSelection());
 								// This little bit of java jimnastics is needed to update the multi-instance marker on the activity.
 								// Because Graphiti's Resource change listener will only invoke an Update Feature on Pictogram Elements
 								// that are linked to business model objects; a change to the "is sequential" boolean attribute in the
@@ -684,7 +686,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		}
 		else if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_NoneBehaviorEventRef()) {
 			if (isModelObjectEnabled(lc.eClass(), reference)) {
-				String displayName = ModelUtil.getLabel(object, reference);
+				String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 				noneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
 				noneBehaviorEventEditor.setStyle(SWT.READ_ONLY);
 				noneBehaviorEventEditor.createControl(parent,displayName);
@@ -693,7 +695,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		}		
 		else if (reference == PACKAGE.getMultiInstanceLoopCharacteristics_OneBehaviorEventRef()) {
 			if (isModelObjectEnabled(lc.eClass(), reference)) {
-				String displayName = ModelUtil.getLabel(object, reference);
+				String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 				oneBehaviorEventEditor = new ComboObjectEditor(this,object,reference);
 				oneBehaviorEventEditor.setStyle(SWT.READ_ONLY);
 				oneBehaviorEventEditor.createControl(parent,displayName);
@@ -782,7 +784,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			String newText = ""; //$NON-NLS-1$
 			if (item!=null) {
 				String name = ModelUtil.getName(item);
-				String type = ModelUtil.getDisplayName(item.getItemSubjectRef());
+				String type = ExtendedPropertiesProvider.getTextValue(item.getItemSubjectRef());
 				if (name!=null)
 					newText = name;
 				if (type!=null)

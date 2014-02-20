@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Red Hat, Inc.
+ * Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc.
  *  All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -13,24 +13,28 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EObjectEList;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -50,12 +54,15 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		this.feature = feature;
 	}
 	
+	public EStructuralFeature getFeature() {
+		return feature;
+	}
+	
 	public void setLabel(String label) {
 		this.label = label;
 	}
 	
-	public String getLabel(Object context) {
-		EObject object = adopt(context);
+	public String getLabel() {
 		if (label==null) {
 			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(feature);
 			if (propertyDescriptor != null)
@@ -63,23 +70,22 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			else {
 				// If the referenced type is an EObject, we'll get an "E Class" label
 				// so use the feature name instead.
-				if (feature instanceof EReference && (feature.getEType().getInstanceClass()!=EObject.class))
-					label = ModelUtil.getLabel(feature.getEType());
+				if (feature instanceof EReference && (getEType().getInstanceClass()!=EObject.class))
+					label = ExtendedPropertiesProvider.getLabel(getEType());
 				else
-					label = ModelUtil.toDisplayName(feature.getName());
+					label = ModelUtil.toCanonicalString(feature.getName());
 			}
 		}
 		return label;
 	}
 	
 	@Override
-	public void setDisplayName(String text) {
+	public void setTextValue(String text) {
 		this.name = text;
 	}
 	
 	@Override
-	public String getDisplayName(Object context) {
-		EObject object = adopt(context);
+	public String getTextValue() {
 		if (name==null) {
 			String t = null;
 			// derive text from feature's value: default behavior is
@@ -148,11 +154,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	 * The implementation is responsible for interpreting this value by overriding the
 	 * setValue() method, and must update the object feature accordingly.
 	 * 
-	 * @param context
 	 * @return
 	 */
-	public Hashtable<String, Object> getChoiceOfValues(Object context) {
-		EObject object = context instanceof EObject ? (EObject)context : this.object;
+	public Hashtable<String, Object> getChoiceOfValues() {
 		if (choiceOfValues==null) {
 			List<String> names = null;
 			Collection values = null;
@@ -199,8 +203,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			EObject eObject = (EObject)value;
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
 			if (adapter!=null)
-				return adapter.getObjectDescriptor().getDisplayName(eObject);
-			return ModelUtil.toDisplayName( eObject.eClass().getName() );
+				return adapter.getObjectDescriptor().getTextValue();
+			return ModelUtil.toCanonicalString( eObject.eClass().getName() );
 		}
 		return value.toString();
 	}
@@ -209,8 +213,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		this.multiline = multiline ? 1 : -1;
 	}
 	
-	public boolean isMultiLine(Object context) {
-		EObject object = adopt(context);
+	public boolean isMultiLine() {
 		if (multiline==0) {
 			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(feature);
 			if (propertyDescriptor!=null)
@@ -218,49 +221,34 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		}
 		return multiline == 1;
 	}
-	
-	public EObject createFeature(Object context) {
-		EObject object = adopt(context);
-		if (context instanceof EClass)
-			return createFeature(object, (EClass)context);
-		return createFeature(context, null);
-	}		
-	
-	public EObject createFeature(Object context, EClass eclass) {
-		EObject object = adopt(context);
-		return createFeature(object.eResource(),context,eclass);
+
+	// TODO: does the API need the ability to override this? If not, get rid of it.
+	public EClassifier getEType() {
+		return feature.getEType();
 	}
-	
-	public EObject createFeature(Resource resource, Object context, EClass eclass) {
-		T object = adopt(context);
+
+	public EObject createFeature(Resource resource, EClass eclass) {
 		EObject newFeature = null;
-		try {
-			if (context instanceof EClass)
-				eclass = (EClass)context;
-			if (eclass==null)
-				eclass = (EClass)feature.getEType();
-			
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
-			if (adapter!=null) {
-				if (resource==null)
-					resource = object.eResource();
-				newFeature = adapter.getObjectDescriptor().createObject(resource, eclass);
-				// can we set the new object into the parent object?
-				if (newFeature.eContainer()!=null || // the new object is contained somewhere
-					feature instanceof EAttribute || // the new object is an attribute
-					// the feature is a containment reference which means the this.object owns it
-					(feature instanceof EReference && ((EReference)feature).isContainment()))
-				{
-					if (object.eGet(feature) instanceof List) {
-						((List)object.eGet(feature)).add(newFeature);
-					}
-					else
-						object.eSet(feature, newFeature);
+		if (eclass==null)
+			eclass = (EClass)getEType();
+		
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
+		if (adapter!=null) {
+			if (resource==null)
+				resource = object.eResource();
+			newFeature = adapter.getObjectDescriptor().createObject(resource, eclass);
+			// can we set the new object into the parent object?
+			if (newFeature.eContainer()!=null || // the new object is contained somewhere
+				feature instanceof EAttribute || // the new object is an attribute
+				// the feature is a containment reference which means the this.object owns it
+				(feature instanceof EReference && ((EReference)feature).isContainment()))
+			{
+				if (object.eGet(feature) instanceof List) {
+					((List)object.eGet(feature)).add(newFeature);
 				}
+				else
+					object.eSet(feature, newFeature);
 			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return newFeature;
 	}
@@ -270,81 +258,114 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	// setValue() may also know how to convert from other types, e.g. String,
 	// Integer, etc.
 	public Object getValue() {
-		return getValue(object);
+		return getValue(-1);
 	}
-	
-	public Object getValue(Object context) {
-		EObject object = adopt(context);
+
+	public Object getValue(int index) {
+		if (index>=0 && feature.isMany()) {
+			return ((List)object.eGet(feature)).get(index);
+		}
 		return object.eGet(feature);
 	}
-	
-	public void setValue(Object value) {
-		setValue(object,value);
+
+	public List<Object> getValueList() {
+		if (feature.isMany() && feature instanceof EReference && ((EReference)feature).isContainment()) {
+			return ((List)object.eGet(feature));
+		}
+		return Collections.EMPTY_LIST;
 	}
 	
-	public void setValue(Object context, final Object value) {
-		final T object = adopt(context);
-		
-		if (object.eGet(feature) instanceof EObjectEList) {
-			// the feature is a reference list - user must have meant to insert
-			// the value into this list...
-			final EObjectEList list = (EObjectEList)object.eGet(feature);
-			TransactionalEditingDomain editingDomain = getEditingDomain(object);
-			if (editingDomain == null) {
-				list.add(value);
-				insertRootElementIfNeeded(value);
-			} else {
-				editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
+	public boolean setValue(Object value) {
+		return setValue(value, -1);
+	}
+
+	public boolean setValue(Object value, final int index) {
+		try {
+			InsertionAdapter.executeIfNeeded(object);
+			if (value instanceof EObject) {
+				// make sure the new object is added to its control first
+				// so that it inherits the control's Resource and EditingDomain
+				// before we try to change its value.
+				InsertionAdapter.executeIfNeeded((EObject)value);
+			}
+			if (value instanceof String) {
+				// handle String to EDataType conversions
+				if (((String) value).isEmpty()) {
+					if (!(feature.getDefaultValue() instanceof String))
+						value = null;
+				}
+				else {
+					if (getEType() instanceof EDataType) {
+						EDataType eDataType = (EDataType)getEType();
+						try {
+							EFactory factory = eDataType.getEPackage().getEFactoryInstance();
+							value = factory.createFromString(eDataType, (String)value);
+						}
+						catch (Exception e)
+						{
+							EFactory factory = EcorePackage.eINSTANCE.getEFactoryInstance();
+							value = factory.createFromString(eDataType, (String)value);
+						}
+					}
+				}
+			}
+			
+			TransactionalEditingDomain domain = getEditingDomain(object);
+			if (domain!=null) {
+				final Object v = value;
+				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
 					protected void doExecute() {
-						list.add(value);
-						insertRootElementIfNeeded(value);
+						internalSet(object,feature,v, index);
+						internalPostSet(v);
 					}
 				});
 			}
-		}
-		else {
-			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(object, feature);
-			if (propertyDescriptor != null) {
-				propertyDescriptor.setPropertyValue(object, value);
-			}
 			else {
-				TransactionalEditingDomain editingDomain = getEditingDomain(object);
-				if (editingDomain == null) {
-					object.eSet(feature, value);
-					insertRootElementIfNeeded(value);
-				} else {
-					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-						@Override
-						protected void doExecute() {
-							object.eSet(feature, value);
-							insertRootElementIfNeeded(value);
-						}
-					});
+				internalSet(object,feature,value, index);
+				internalPostSet(value);
+			}
+		} catch (Exception e) {
+			ErrorUtils.showErrorMessage(e.getMessage());
+			Activator.logError(e);
+			return false;
+		}
+		return true;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
+		if (feature.isMany()) {
+			// NB: setting a List item to null into a List will clear the List!
+			if (value==null)
+				((List)object.eGet(feature)).clear();
+			else if (index<0)
+				((List)object.eGet(feature)).add(value);
+			else
+				((List)object.eGet(feature)).set(index,value);
+		}
+		else
+			object.eSet(feature, value);
+	}
+	
+	protected void internalPostSet(Object value) {
+		if (value instanceof EObject) {
+			ModelUtil.setID((EObject)value);
+			if (value instanceof RootElement && ((RootElement)value).eContainer()==null) {
+				// stuff all root elements into Definitions.rootElements
+				final Definitions definitions = ModelUtil.getDefinitions(object);
+				if (definitions!=null) {
+					if (!definitions.getRootElements().contains(value))
+						definitions.getRootElements().add((RootElement)value);
 				}
 			}
 		}
 	}
 
 	public void unset() {
-		unset(object);
+		setValue(feature.getDefaultValue());
 	}
-	
-	public void unset(Object context) {
-		final T object = adopt(context);
-		setValue(object, feature.getDefaultValue());
-	}
-	
-	private void insertRootElementIfNeeded(Object value) {
-		if (value instanceof RootElement && ((RootElement)value).eContainer()==null) {
-			// stuff all root elements into Definitions.rootElements
-			final Definitions definitions = ModelUtil.getDefinitions(object);
-			if (definitions!=null) {
-				definitions.getRootElements().add((RootElement)value);
-			}
-		}
-	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		Object thisValue = object.eGet(feature);
@@ -353,7 +374,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			return true;
 		
 		if (thisValue instanceof EObject && obj instanceof EObject) {
-			return compare((EObject)thisValue, (EObject)obj, false);
+			return ExtendedPropertiesAdapter.compare((EObject)thisValue, (EObject)obj, false);
 		}
 		
 		if (thisValue!=null && obj!=null)
@@ -370,7 +391,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			return true;
 		
 		if (thisValue instanceof EObject && obj instanceof EObject) {
-			return compare((EObject)thisValue, (EObject)obj, true);
+			return ExtendedPropertiesAdapter.compare((EObject)thisValue, (EObject)obj, true);
 		}
 		
 		if (thisValue!=null && obj!=null)

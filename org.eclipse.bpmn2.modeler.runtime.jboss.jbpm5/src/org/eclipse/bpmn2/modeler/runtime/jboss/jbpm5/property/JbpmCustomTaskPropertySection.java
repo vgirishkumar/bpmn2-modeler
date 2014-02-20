@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -52,7 +52,7 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 				
 				if (object.eClass() == Bpmn2Package.eINSTANCE.getTask() && isModelObjectEnabled(object)) {
-					List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
+					List<EStructuralFeature> features = ModelDecorator.getAnyAttributes(object);
 					for (EStructuralFeature f : features) {
 						if ("displayName".equals(f.getName())) //$NON-NLS-1$
 							return true;

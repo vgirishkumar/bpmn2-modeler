@@ -37,17 +37,16 @@ public class EscalationPropertiesAdapter extends RootElementPropertiesAdapter<Es
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Escalation>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				final Escalation escalation = adopt(context);
+			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$
-				if (escalation.getName()!=null) {
-					text += escalation.getName();
+				if (object.getName()!=null) {
+					text += object.getName();
 				}
-				else if (escalation.getEscalationCode()!=null) {
-					text += Messages.EscalationPropertiesAdapter_Escalation_Code + escalation.getEscalationCode();
+				else if (object.getEscalationCode()!=null) {
+					text += Messages.EscalationPropertiesAdapter_Escalation_Code + object.getEscalationCode();
 				}
 				if (text.isEmpty())
-					text = Messages.EscalationPropertiesAdapter_ID + escalation.getId();
+					text = Messages.EscalationPropertiesAdapter_ID + object.getId();
 				return text;
 			}
     	});

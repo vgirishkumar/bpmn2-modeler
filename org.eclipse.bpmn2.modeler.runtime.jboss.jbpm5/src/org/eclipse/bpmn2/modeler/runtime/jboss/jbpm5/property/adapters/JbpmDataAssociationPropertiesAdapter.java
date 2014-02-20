@@ -47,9 +47,8 @@ public class JbpmDataAssociationPropertiesAdapter extends
 		}
 
 		@Override
-		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-			EObject object = adopt(context);
-			Hashtable<String, Object> choices = super.getChoiceOfValues(context);
+		public Hashtable<String, Object> getChoiceOfValues() {
+			Hashtable<String, Object> choices = super.getChoiceOfValues();
 			
 			// GlobalType extensions can not be used for DataAssociations (as of jBPM 6)
 			// but maybe this will be supported in the future.

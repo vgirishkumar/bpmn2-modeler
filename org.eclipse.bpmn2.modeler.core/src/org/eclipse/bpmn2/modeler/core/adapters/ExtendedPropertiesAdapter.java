@@ -14,10 +14,16 @@
 package org.eclipse.bpmn2.modeler.core.adapters;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
@@ -32,12 +38,16 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
  *
  */
-public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
+public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvider {
 
 	// common property keys
 	public final static String LONG_DESCRIPTION = "long.description"; //$NON-NLS-1$
@@ -54,7 +64,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	// it will be replaced with an empty string.
 	public final static String UI_CAN_SET_NULL = "ui.can.set.null"; //$NON-NLS-1$
 	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice"; //$NON-NLS-1$
-	public static final String PROPERTY_DESCRIPTOR = "property.descriptor"; //$NON-NLS-1$
+	// the ObjectDescriptor object
+	public static final String OBJECT_DESCRIPTOR = "object.descriptor"; //$NON-NLS-1$
+	// the EMF Resource that the object will eventually (or already does?) belong to
+	public static final String RESOURCE = "resource"; //$NON-NLS-1$
 	// Line number in XML document where this object is defined
 	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
 	
@@ -67,13 +80,13 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	protected Hashtable <
 		String, // property key
 		Object> // value
-			objectProperties = new Hashtable <String,Object>();
+			objectProperties;
 	
 	protected AdapterFactory adapterFactory;
 	
 	@SuppressWarnings("rawtypes")
 	public ExtendedPropertiesAdapter(AdapterFactory adapterFactory, T object) {
-		super();
+		super(object.eResource());
 		this.adapterFactory = adapterFactory;
 		setTarget(object);
 	}
@@ -143,8 +156,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 		return object;
 	}
 
+	public AdapterFactory getAdapterFactory() {
+		return adapterFactory;
+	}
+	
 	public void setObjectDescriptor(ObjectDescriptor<T> pd) {
-		setProperty(PROPERTY_DESCRIPTOR,pd);
+		setProperty(OBJECT_DESCRIPTOR,pd);
 	}
 
 	private static EObject getFeatureClass(EObject object, EStructuralFeature feature) {
@@ -160,20 +177,26 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 
 	@SuppressWarnings("unchecked")
 	public ObjectDescriptor<T> getObjectDescriptor() {
-		ObjectDescriptor<T> pd = (ObjectDescriptor<T>) getProperty(PROPERTY_DESCRIPTOR);
+		ObjectDescriptor<T> pd = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
 		if (pd==null) {
 			pd = new ObjectDescriptor<T>(adapterFactory, (T)getTarget());
-			setProperty(PROPERTY_DESCRIPTOR,pd);
+			setProperty(OBJECT_DESCRIPTOR,pd);
 		}
 		return pd;
 	}
 
 	@SuppressWarnings("unchecked")
+	public boolean hasFeatureDescriptor(EStructuralFeature feature) {
+		FeatureDescriptor<T> pd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
+		return pd!=null;
+	}
+
+	@SuppressWarnings("unchecked")
 	public FeatureDescriptor<T> getFeatureDescriptor(EStructuralFeature feature) {
-		FeatureDescriptor<T> pd = (FeatureDescriptor<T>) getProperty(feature,PROPERTY_DESCRIPTOR);
+		FeatureDescriptor<T> pd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
 		if (pd==null) {
 			pd = new FeatureDescriptor<T>(adapterFactory, (T)getTarget(), feature);
-			setProperty(feature,PROPERTY_DESCRIPTOR,pd);
+			setProperty(feature,OBJECT_DESCRIPTOR,pd);
 		}
 		return pd;
 	}
@@ -184,11 +207,51 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 			props = new Hashtable<String,Object>();
 			featureProperties.put(feature,props);
 		}
-		props.put(PROPERTY_DESCRIPTOR, pd);
+		props.put(OBJECT_DESCRIPTOR, pd);
 	}
 
+	public EStructuralFeature getFeature(String name) {
+		EObject object = getObjectDescriptor().object;
+		if (object instanceof ExtensionAttributeValue) {
+			EObject container = ((ExtensionAttributeValue)object).eContainer();
+			if (container!=null) {
+				ExtendedPropertiesAdapter adapter = this.adapt(container);
+				if (adapter!=null)
+					return adapter.getFeature(name);
+			}
+		}
+		for (Entry<EStructuralFeature, Hashtable<String, Object>> entry : featureProperties.entrySet()) {
+			EStructuralFeature feature = entry.getKey();
+			if (feature.getName().equals(name)) {
+				return feature;
+			}
+		}
+		return null;
+	}
+
+	public List<EStructuralFeature> getFeatures() {
+		EObject object = getObjectDescriptor().object;
+		if (object instanceof ExtensionAttributeValue) {
+			EObject container = ((ExtensionAttributeValue)object).eContainer();
+			if (container!=null) {
+				ExtendedPropertiesAdapter adapter = this.adapt(container);
+				if (adapter!=null)
+					return adapter.getFeatures();
+			}
+		}
+		List<EStructuralFeature> features = new ArrayList<EStructuralFeature>();
+		features.addAll(featureProperties.keySet());
+		return features;
+	}
+
+	private Hashtable <String, Object> getObjectProperties() {
+		if (objectProperties==null)
+			objectProperties = new Hashtable <String,Object>();
+		return objectProperties;
+	}
+	
 	public Object getProperty(String key) {
-		return objectProperties.get(key);
+		return getObjectProperties().get(key);
 	}
 
 	public boolean getBooleanProperty(String key) {
@@ -199,7 +262,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	}
 
 	public void setProperty(String key, Object value) {
-		objectProperties.put(key, value);
+		if (value==null)
+			getObjectProperties().remove(key);
+		else
+			getObjectProperties().put(key, value);
 	}
 
 	public Object getProperty(EStructuralFeature feature, String key) {
@@ -305,8 +371,71 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 			description = (String)field.get(null);
 			setProperty(LONG_DESCRIPTION, description);
 		} catch (Exception e) {
+			// no biggie
 		}
     	
     	return description;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean compare(EObject thisObject, EObject otherObject, boolean similar) {
+		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {
+			// IDs are allowed to be different
+			if (similar && "id".equals(f.getName())) //$NON-NLS-1$
+				continue;
+			Object v1 = otherObject.eGet(f);
+			Object v2 = thisObject.eGet(f);
+			// both null? equal!
+			if (v1==null && v2==null)
+				continue;
+			// one or the other null? not equal!
+			if (v1==null || v2==null)
+				return false;
+			// both not null? do a default compare...
+			if (!v1.equals(v2)) {
+				// the default Object.equals(obj) fails:
+				// for Dynamic EObjects (used here as "proxies") only compare their proxy URIs 
+				if (ModelUtil.isStringWrapper(v1) && ModelUtil.isStringWrapper(v2)) {
+					v1 = ModelUtil.getStringWrapperValue(v1);
+					v2 = ModelUtil.getStringWrapperValue(v2);
+					if (v1==null && v2==null)
+						continue;
+					if (v1==null || v2==null)
+						return false;
+					if (v1.equals(v2))
+						continue;
+				}
+				else if (v1 instanceof EObject && v2 instanceof EObject) {
+					// for all other EObjects, do a deep compare...
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt((EObject)v1);
+					if (adapter!=null) {
+						if (adapter.getObjectDescriptor().compare((EObject)v2,similar))
+							continue;
+					}
+				}
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void setResource(Resource resource) {
+		setProperty(RESOURCE, resource);
+	}
+	
+	@Override
+	public Resource getResource() {
+		Resource resource = (Resource) getProperty(RESOURCE);
+		if (resource==null) {
+			ObjectDescriptor<T> pd = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
+			if (pd!=null) {
+				IResourceProvider rp = AdapterRegistry.INSTANCE.adapt(pd.object.eContainer(), IResourceProvider.class);
+				if (rp!=null && rp!=this)
+					resource = rp.getResource();
+			}
+		}
+		if (resource==null)
+			return super.getResource();
+		return resource;
 	}
 }

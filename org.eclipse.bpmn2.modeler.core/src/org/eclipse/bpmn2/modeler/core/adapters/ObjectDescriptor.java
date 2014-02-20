@@ -13,13 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
@@ -54,32 +55,27 @@ public class ObjectDescriptor<T extends EObject> {
 		this.label = label;
 	}
 	
-	public String getLabel(Object context) {
-		EObject object = (context instanceof EObject) ?
-				(EObject)context :
-				this.object;
+	public String getLabel() {
 		EClass eclass = (object instanceof EClass) ?
 				(EClass)object :
 				object.eClass();
 		if (label==null) {
-			label = ModelUtil.toDisplayName(eclass.getName());
+			label = ModelUtil.toCanonicalString(eclass.getName());
 		}
 		return label;
 	}
 	
-	public void setDisplayName(String name) {
+	public void setTextValue(String name) {
 		this.name = name;
 	}
 	
-	public String getDisplayName(Object context) {
+	public String getTextValue() {
 		if (name==null) {
-			T object = adopt(context);
-			
 			// derive text from feature's value: default behavior is
 			// to use the "name" attribute if there is one;
 			// if not, use the "id" attribute;
 			// fallback is to use the feature's toString()
-			String text = ModelUtil.toDisplayName(object.eClass().getName());
+			String text = ModelUtil.toCanonicalString(object.eClass().getName());
 			Object value = null;
 			EStructuralFeature f = null;
 			f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
@@ -139,7 +135,7 @@ public class ObjectDescriptor<T extends EObject> {
 		if (otherObject instanceof EObject) {
 			// compare feature values of both EObjects:
 			// this should take care of most of the BPMN2 elements
-			return compare(thisObject, (EObject)otherObject, false);
+			return ExtendedPropertiesAdapter.compare(thisObject, (EObject)otherObject, false);
 		}
 		return super.equals(otherObject);
 	}
@@ -149,54 +145,17 @@ public class ObjectDescriptor<T extends EObject> {
 		if (otherObject instanceof EObject) {
 			// compare feature values of both EObjects:
 			// this should take care of most of the BPMN2 elements
-			return compare(thisObject, (EObject)otherObject, true);
+			return ExtendedPropertiesAdapter.compare(thisObject, (EObject)otherObject, true);
 		}
 		return super.equals(otherObject);
 	}
 	
-	public static boolean compare(EObject thisObject, EObject otherObject, boolean similar) {
-		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {
-			// IDs are allowed to be different
-			if (similar && "id".equals(f.getName())) //$NON-NLS-1$
-				continue;
-			Object v1 = otherObject.eGet(f);
-			Object v2 = thisObject.eGet(f);
-			// both null? equal!
-			if (v1==null && v2==null)
-				continue;
-			// one or the other null? not equal!
-			if (v1==null || v2==null)
-				return false;
-			// both not null? do a default compare...
-			if (!v1.equals(v2)) {
-				// the default Object.equals(obj) fails:
-				// for Dynamic EObjects (used here as "proxies") only compare their proxy URIs 
-				if (ModelUtil.isStringWrapper(v1) && ModelUtil.isStringWrapper(v2)) {
-					v1 = ModelUtil.getStringWrapperValue(v1);
-					v2 = ModelUtil.getStringWrapperValue(v2);
-					if (v1==null && v2==null)
-						continue;
-					if (v1==null || v2==null)
-						return false;
-					if (v1.equals(v2))
-						continue;
-				}
-				else if (v1 instanceof EObject && v2 instanceof EObject) {
-					// for all other EObjects, do a deep compare...
-					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt((EObject)v1);
-					if (adapter!=null) {
-						if (adapter.getObjectDescriptor().compare((EObject)v1,(EObject)v2,similar))
-							continue;
-					}
-				}
-				return false;
-			}
-		}
-		return true;
+	protected boolean compare(EObject v2, boolean similar) {
+		return ExtendedPropertiesAdapter.compare(object, v2, similar);
 	}
-	
+
 	/**
-	 * Many methods accept java Objects as a context variable. In many cases (especially the
+	 * Some methods accept java Objects as a context variable. In many cases (especially the
 	 * default implementations) the context object must have the same type as the specialized
 	 * class. 
 	 * 
@@ -211,50 +170,88 @@ public class ObjectDescriptor<T extends EObject> {
 
 	public TransactionalEditingDomain getEditingDomain(Object context) {
 		T object = adopt(context);
+		// check the EObject's contained Resource
 		EditingDomain result = AdapterFactoryEditingDomain.getEditingDomainFor(object);
 		if (result == null) {
-			if (adapterFactory instanceof IEditingDomainProvider) {
-				result = ((IEditingDomainProvider) adapterFactory).getEditingDomain();
+			if (object instanceof IEditingDomainProvider) {
+				// the object itself may be a provider
+				result = ((IEditingDomainProvider) object).getEditingDomain();
 			}
-
-			if (result == null && adapterFactory instanceof ComposeableAdapterFactory) {
-				AdapterFactory rootAdapterFactory = ((ComposeableAdapterFactory) adapterFactory)
-						.getRootAdapterFactory();
-				if (rootAdapterFactory instanceof IEditingDomainProvider) {
-					result = ((IEditingDomainProvider) rootAdapterFactory).getEditingDomain();
+			if (result == null) {
+				// check the object's adapters for providers
+				IEditingDomainProvider provider = AdapterUtil.adapt(object, IEditingDomainProvider.class);
+				if (provider!=null) {
+					result = provider.getEditingDomain();
+				}
+				if (result == null) {
+					// finally, check our adapter factory
+					if (adapterFactory instanceof IEditingDomainProvider) {
+						result = ((IEditingDomainProvider) adapterFactory).getEditingDomain();
+					}
+					if (result == null) {
+						if (adapterFactory instanceof ComposeableAdapterFactory) {
+							AdapterFactory rootAdapterFactory = ((ComposeableAdapterFactory) adapterFactory)
+									.getRootAdapterFactory();
+							if (rootAdapterFactory instanceof IEditingDomainProvider) {
+								result = ((IEditingDomainProvider) rootAdapterFactory).getEditingDomain();
+							}
+						}
+					}
 				}
 			}
 		}
+		// it's gotta be a Transactional Editing Domain or nothing!
 		if (result instanceof TransactionalEditingDomain)
 			return (TransactionalEditingDomain)result;
 		return null;
 	}
 
 	public T createObject(Object context) {
-		return createObject(null,context);
+		return createObject(getResource(),context);
+	}
+	
+	public Resource getResource() {
+		return getAdapter().getResource();
+	}
+	
+	protected ExtendedPropertiesAdapter getAdapter() {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		return adapter;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public T createObject(Resource resource, Object context) {
-	
+		
 		EClass eClass = null;
 		if (context instanceof EClass) {
 			eClass = (EClass)context;
 		}
 		else if (context instanceof EObject) {
 			eClass = ((EObject)context).eClass();
-			if (resource==null)
-				resource = ((EObject)context).eResource();
 		}
 		else {
 			eClass = object.eClass();
 		}
 		Assert.isTrue(object.eClass().isSuperTypeOf(eClass));
 
-		T newObject = (T) eClass.getEPackage().getEFactoryInstance().create(eClass);
-		
 		if (resource==null)
-			resource = object.eResource();
+			resource = getResource();
+
+		// set the Resource into the Factory's adapter temporarily for use during
+		// object construction and initialization (@see ModelExtensionDescriptor)
+		EFactory factory = eClass.getEPackage().getEFactoryInstance();
+		IResourceProvider adapter = ResourceProvider.adapt(factory, resource);
+		T newObject = null;
+		synchronized(factory) {
+			try {
+				newObject = (T) factory.create(eClass);
+			}
+			finally {
+				// the factory is shared among editor instances,
+				// so make sure this is cleared when we're done
+				adapter.setResource(null);
+			}
+		}
 		
 		// if the object has an "id", assign it now.
 		String id = ModelUtil.setID(newObject,resource);
@@ -262,12 +259,16 @@ public class ObjectDescriptor<T extends EObject> {
 		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null && !newObject.eIsSet(feature)) {
 			if (id!=null)
-				newObject.eSet(feature, ModelUtil.toDisplayName(id));
+				newObject.eSet(feature, ModelUtil.toCanonicalString(id));
 			else {
-				String name = ModelUtil.toDisplayName(newObject.eClass().getName());
+				String name = ModelUtil.toCanonicalString(newObject.eClass().getName());
 				newObject.eSet(feature, NLS.bind(Messages.ObjectDescriptor_New, name));
 			}
 		}
+		
+		adapter = ExtendedPropertiesAdapter.adapt(newObject);
+		adapter.setResource(resource);
+		
 		return newObject;
 	}
 }

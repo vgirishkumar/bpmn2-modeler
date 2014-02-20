@@ -45,14 +45,13 @@ public class ThrowEventPropertiesAdapter extends EventPropertiesAdapter<ThrowEve
     	setFeatureDescriptor(feature, new FeatureDescriptor<ThrowEvent>(adapterFactory, object, feature) {
     		
 			@Override
-			public EObject createFeature(Resource resource, Object context, EClass eclass) {
-				final ThrowEvent throwEvent = adopt(context);
-				InputSet inputSet = throwEvent.getInputSet();
+			public EObject createFeature(Resource resource, EClass eclass) {
+				InputSet inputSet = object.getInputSet();
 				if (inputSet==null) {
 					inputSet = Bpmn2ModelerFactory.create(InputSet.class);
-					throwEvent.setInputSet(inputSet);
+					object.setInputSet(inputSet);
 				}
-				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, throwEvent.getDataInputs());
+				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, object.getDataInputs());
 				inputSet.getDataInputRefs().add(dataInput);
 
 				return dataInput;

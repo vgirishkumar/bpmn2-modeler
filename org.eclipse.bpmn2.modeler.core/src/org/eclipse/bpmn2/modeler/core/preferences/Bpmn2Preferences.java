@@ -44,9 +44,9 @@ import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -234,7 +234,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	 * @return project preferences
 	 */
 	public static Bpmn2Preferences getInstance(EObject object) {
-		return getInstance(ModelUtil.getResource(object));
+		return getInstance(ResourceProvider.getResource(object));
 	}
 	
 	public static Bpmn2Preferences getInstance(Resource resource) {
@@ -344,7 +344,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	private void loadDefaults(String key) {
 		if (key.equals(PREF_TOOL_PROFILE)) {
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
 					String defaultProfile = null;
 					for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
@@ -360,7 +360,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			
 		}
 		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
 					for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
 						String path = getModelEnablementsPath(rt, diagramType, med.getProfile());
@@ -374,19 +374,19 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		}
 		else if (key.equals(PREF_SHAPE_STYLE)) {
 			// Use ShapeStyles defined in the Default Target Runtime if an extension does not provide its own. 
-			Map<Class, ShapeStyle> defaultShapeStyles = TargetRuntime.getDefaultRuntime().getShapeStyles();
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+			List<ShapeStyle> defaultShapeStyles = TargetRuntime.getDefaultRuntime().getShapeStyles();
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				String path = getShapeStylePath(rt);
 				Preferences prefs = defaultPreferences.node(path);
 				if (rt!=TargetRuntime.getDefaultRuntime()) {
-					for (Entry<Class, ShapeStyle> entry : defaultShapeStyles.entrySet()) {
-						String value = ShapeStyle.encode(entry.getValue());
-						prefs.put(entry.getKey().getSimpleName(), value);
+					for (ShapeStyle ss : defaultShapeStyles) {
+						String value = ShapeStyle.encode(ss);
+						prefs.put(ss.getEClass().getName(), value);
 					}
 				}
-				for (Entry<Class, ShapeStyle> entry : rt.getShapeStyles().entrySet()) {
-					String value = ShapeStyle.encode(entry.getValue());
-					prefs.put(entry.getKey().getSimpleName(), value);
+				for (ShapeStyle ss : rt.getShapeStyles()) {
+					String value = ShapeStyle.encode(ss);
+					prefs.put(ss.getEClass().getName(), value);
 				}
 			}
 		}

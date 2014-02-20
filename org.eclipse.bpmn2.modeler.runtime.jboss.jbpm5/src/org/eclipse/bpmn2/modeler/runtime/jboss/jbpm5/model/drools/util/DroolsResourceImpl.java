@@ -39,6 +39,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
@@ -570,7 +571,7 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 							return p;
 					}
 					
-					for (GlobalType g : ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class)) {
+					for (GlobalType g : ModelDecorator.getAllExtensionAttributeValues(process, GlobalType.class)) {
 						if (ids.equals(g.getIdentifier()))
 							return g;
 					}

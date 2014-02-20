@@ -141,7 +141,7 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_20_CONDITION = PREFIX
 	        + ConditionalEventDefinition.class.getSimpleName().toLowerCase() + dot20;
 	public static final String IMG_20_TIMER = PREFIX + TimerEventDefinition.class.getSimpleName().toLowerCase() + dot20;
-	public static final String IMG_20_MULTIPLE = PREFIX + "multipleeventdefinition" + dot20; // FIXME //$NON-NLS-1$
+	public static final String IMG_20_MULTIPLE = PREFIX + "multipleeventdefinition" + dot20; //$NON-NLS-1$
 
 	public static final String IMG_16_ACTION = "default_action"; //$NON-NLS-1$
 	

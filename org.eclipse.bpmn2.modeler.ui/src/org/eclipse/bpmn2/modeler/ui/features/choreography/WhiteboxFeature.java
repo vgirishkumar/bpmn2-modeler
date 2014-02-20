@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -72,7 +73,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		}
 
 		public String getText(Object element) {
-			return ModelUtil.getDisplayName(element);
+			return ModelUtil.getTextValue(element);
 		}
 
 		public Image getImage(Object element) {
@@ -207,7 +208,7 @@ public class WhiteboxFeature extends AbstractCustomFeature {
 		
 		if (changesDone) {
 			if (result==newDiagram) { // the new one
-				String name = NLS.bind(Messages.WhiteboxFeature_Process_For, ModelUtil.getDisplayName(participant));
+				String name = NLS.bind(Messages.WhiteboxFeature_Process_For, ExtendedPropertiesProvider.getTextValue(participant));
 		        process.setName(name);
 		        newDiagram.setName(name);
 		        definitions.getRootElements().add(process);

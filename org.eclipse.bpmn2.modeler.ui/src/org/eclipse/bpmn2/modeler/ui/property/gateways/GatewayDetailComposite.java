@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
@@ -28,7 +29,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -248,13 +248,13 @@ public class GatewayDetailComposite extends DefaultDetailComposite {
 			case 1:
 				text = flow.getName();
 				if (text==null || text.isEmpty()) {
-					text = ModelUtil.getDisplayName(flow.getSourceRef());
+					text = ExtendedPropertiesProvider.getTextValue(flow.getSourceRef());
 					text += " -> "; //$NON-NLS-1$
-					text += ModelUtil.getDisplayName(flow.getTargetRef());
+					text += ExtendedPropertiesProvider.getTextValue(flow.getTargetRef());
 				}
 				break;
 			case 2:
-				text = ModelUtil.getDisplayName(flow.getConditionExpression());
+				text = ExtendedPropertiesProvider.getTextValue(flow.getConditionExpression());
 				if (text==null)
 					text = ""; //$NON-NLS-1$
 				break;

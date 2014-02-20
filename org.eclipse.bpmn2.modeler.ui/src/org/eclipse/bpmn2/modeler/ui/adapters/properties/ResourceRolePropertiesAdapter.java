@@ -44,27 +44,25 @@ public class ResourceRolePropertiesAdapter extends ExtendedPropertiesAdapter<Res
 			new FeatureDescriptor<ResourceRole>(adapterFactory,object,ref) {
 
 				@Override
-				public String getDisplayName(Object context) {
-					final ResourceRole rr = adopt(context);
-					ResourceAssignmentExpression rae = rr.getResourceAssignmentExpression();
+				public String getTextValue() {
+					ResourceAssignmentExpression rae = object.getResourceAssignmentExpression();
 					if (rae!=null) {
 						ExtendedPropertiesAdapter<ResourceAssignmentExpression> adapter =
 								ExtendedPropertiesAdapter.adapt(rae);
-						return adapter.getObjectDescriptor().getDisplayName(rae);
+						return adapter.getObjectDescriptor().getTextValue();
 					}
 					return ""; //$NON-NLS-1$
 				}
 
 				@Override
-				public void setValue(Object context, Object value) {
-					final ResourceRole rr = adopt(context);
+				protected void internalSet(ResourceRole rr, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof FormalExpression) {
 						ResourceAssignmentExpression rae = rr.getResourceAssignmentExpression();
 						if (rae!=null) {
 							ExtendedPropertiesAdapter<ResourceAssignmentExpression> adapter =
 									ExtendedPropertiesAdapter.adapt(rae);
 					    	EStructuralFeature raeFeature = Bpmn2Package.eINSTANCE.getResourceAssignmentExpression_Expression();
-							adapter.getFeatureDescriptor(raeFeature).setValue(rae, value);
+							adapter.getFeatureDescriptor(raeFeature).setValue(value);
 						}
 					}
 					else if (value instanceof ResourceAssignmentExpression) {

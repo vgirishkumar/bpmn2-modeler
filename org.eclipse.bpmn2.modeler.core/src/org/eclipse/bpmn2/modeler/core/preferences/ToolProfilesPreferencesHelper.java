@@ -89,8 +89,8 @@ public class ToolProfilesPreferencesHelper {
 			}
 			elementSet.addAll(elements);
 			
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				for (ModelEnablementDescriptor med : rt.getModelEnablementDescriptors()) {
 					for (String name : med.getAllEnabled()) {
 						int i = name.indexOf("."); //$NON-NLS-1$
 						if (i>0)
@@ -226,7 +226,7 @@ public class ToolProfilesPreferencesHelper {
 		bpmnModelExtensionsRoot.setName(Messages.ToolEnablementPreferences_BPMN_Extensions);
 
 		TargetRuntime rt = me.getRuntime();
-		for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+		for (ModelExtensionDescriptor med : rt.getModelExtensionDescriptors()) {
 			if (med.getProperties().size()>0) {
 				// this <modelExtension> has at least one <property>
 				// that can be enabled or disabled:
@@ -248,7 +248,7 @@ public class ToolProfilesPreferencesHelper {
 			// so far contains only EClass entries; the <property>
 			// elements will become their children.
 			for (ModelEnablementTreeEntry entry : bpmnModelExtensions) {
-				for (ModelExtensionDescriptor med2 : rt.getModelExtensions()) {
+				for (ModelExtensionDescriptor med2 : rt.getModelExtensionDescriptors()) {
 					if (entry.getName().equals(med2.getType())) {
 						ArrayList<ModelEnablementTreeEntry> children = new ArrayList<ModelEnablementTreeEntry>();
 						for (Property p : med2.getProperties()) {

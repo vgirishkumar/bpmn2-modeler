@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
@@ -43,7 +44,7 @@ public class JbpmItemDefinitionDetailComposite extends
 				parent = getAttributesParent();
 			
 			final ItemDefinition def = (ItemDefinition)object;
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			if (def.getItemKind().equals(ItemKind.INFORMATION)) {
 				JbpmImportObjectEditor editor = new JbpmImportObjectEditor(this,object,reference);

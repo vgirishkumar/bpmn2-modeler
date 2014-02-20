@@ -38,7 +38,7 @@ public class JbpmOnEntryScriptPropertiesAdapter extends ExtendedPropertiesAdapte
 			new FeatureDescriptor<OnEntryScriptType>(adapterFactory,object,ref) {
     		
 	    		@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
     	});

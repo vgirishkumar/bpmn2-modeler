@@ -45,14 +45,13 @@ public class CatchEventPropertiesAdapter extends EventPropertiesAdapter<CatchEve
     	setFeatureDescriptor(feature, new FeatureDescriptor<CatchEvent>(adapterFactory, object, feature) {
    		
 			@Override
-			public EObject createFeature(Resource resource, Object context, EClass eclass) {
-				final CatchEvent catchEvent = adopt(context);
-				OutputSet outputSet = catchEvent.getOutputSet();
+			public EObject createFeature(Resource resource, EClass eclass) {
+				OutputSet outputSet = object.getOutputSet();
 				if (outputSet==null) {
 					outputSet = Bpmn2ModelerFactory.create(OutputSet.class);
-					catchEvent.setOutputSet(outputSet);
+					object.setOutputSet(outputSet);
 				}
-				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, catchEvent.getDataOutputs());
+				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, object.getDataOutputs());
 				outputSet.getDataOutputRefs().add(dataOutput);
 
 				return dataOutput;

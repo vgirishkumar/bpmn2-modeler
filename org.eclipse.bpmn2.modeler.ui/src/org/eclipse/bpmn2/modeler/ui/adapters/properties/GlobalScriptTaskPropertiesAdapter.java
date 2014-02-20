@@ -39,16 +39,15 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
 			new FeatureDescriptor<GlobalScriptTask>(adapterFactory,object,ref) {
     		
 	    		@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
 
 				@Override
-	    		public String getDisplayName(Object context) {
-	    			GlobalScriptTask task = adopt(context);
-					if (task.getScript()==null)
+	    		public String getTextValue() {
+					if (object.getScript()==null)
 						return ""; //$NON-NLS-1$
-					return task.getScript();
+					return object.getScript();
 	    		}
     	});
     	
@@ -57,11 +56,10 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
 			new FeatureDescriptor<GlobalScriptTask>(adapterFactory,object,ref) {
     		
 	    		@Override
-	    		public String getDisplayName(Object context) {
-	    			GlobalScriptTask task = adopt(context);
-					if (task.getScriptLanguage()==null)
+	    		public String getTextValue() {
+					if (object.getScriptLanguage()==null)
 						return ""; //$NON-NLS-1$
-					return task.getScriptLanguage();
+					return object.getScriptLanguage();
 	    		}
     	});
 	}

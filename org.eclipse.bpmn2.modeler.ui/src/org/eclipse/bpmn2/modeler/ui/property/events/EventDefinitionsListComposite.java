@@ -42,6 +42,7 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
@@ -219,7 +220,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						}
 						if (element instanceof ConditionalEventDefinition) {
 							if (((ConditionalEventDefinition)element).getCondition()!=null)
-								return ModelUtil.getDisplayName(((ConditionalEventDefinition)element).getCondition());
+								return ExtendedPropertiesProvider.getTextValue(((ConditionalEventDefinition)element).getCondition());
 						}
 						if (element instanceof ErrorEventDefinition) {
 							if (((ErrorEventDefinition)element).getErrorRef()!=null)

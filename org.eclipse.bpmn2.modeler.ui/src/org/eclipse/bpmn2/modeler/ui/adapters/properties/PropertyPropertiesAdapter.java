@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -52,7 +53,7 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 		final FeatureDescriptor<Property> fd = new FeatureDescriptor<Property>(adapterFactory,object, f) {
 
 			@Override
-			public void setDisplayName(String text) {
+			public void setTextValue(String text) {
 				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
@@ -75,10 +76,10 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 							break;
 					}
 					else if (container instanceof Activity || container instanceof Process) {
-						text = ModelUtil.getDisplayName(container) + "/" + text; //$NON-NLS-1$
+						text = ExtendedPropertiesProvider.getTextValue(container) + "/" + text; //$NON-NLS-1$
 					}
 					else if (container instanceof CatchEvent || container instanceof ThrowEvent) {
-						text = ModelUtil.getDisplayName(container) + "/" + text; //$NON-NLS-1$
+						text = ExtendedPropertiesProvider.getTextValue(container) + "/" + text; //$NON-NLS-1$
 					}
 					container = container.eContainer();
 				}
@@ -91,18 +92,18 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 		setObjectDescriptor(new ObjectDescriptor<Property>(adapterFactory, object) {
 
 			@Override
-			public void setDisplayName(String text) {
-				fd.setDisplayName(text);
+			public void setTextValue(String text) {
+				fd.setTextValue(text);
 				ModelUtil.setID(object);
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
-				return fd.getChoiceString(context);
+			public String getTextValue() {
+				return fd.getChoiceString(object);
 			}
 			
 			@Override
-			public String getLabel(Object context) {
+			public String getLabel() {
 				return Messages.PropertyPropertiesAdapter_Variable;
 			}
 		});

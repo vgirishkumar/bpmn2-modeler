@@ -12,11 +12,11 @@ package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -61,7 +61,7 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 		
 		Shape textShape = peService.createShape(textContainerShape, false);
 		peService.setPropertyValue(textShape, UpdateLabelFeature.TEXT_ELEMENT, Boolean.toString(true));
-		String name = ModelUtil.getDisplayName(baseElement);
+		String name = ExtendedPropertiesProvider.getTextValue(baseElement);
 		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
 		StyleUtil.applyStyle(text, baseElement);
 		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);

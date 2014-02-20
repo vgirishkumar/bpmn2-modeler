@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CategoryValue;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
@@ -109,21 +110,19 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		}
 		
 		@Override
-		public String getLabel(Object context) {
-			Object object = adopt(context);
+		public String getLabel() {
 			if (object instanceof DataInputAssociation)
 				return Messages.DataAssociationPropertiesAdapter_Source;
 			return Messages.DataAssociationPropertiesAdapter_Target;
 		}
 
 		@Override
-		public Hashtable<String, Object> getChoiceOfValues(Object context) {
+		public Hashtable<String, Object> getChoiceOfValues() {
 			List<EObject> values = new ArrayList<EObject>();
 			// search for all Properties and DataStores
 			// Properties are contained in the nearest enclosing Process or Event;
 			// DataStores are contained in the DocumentRoot
-			DataAssociation association = adopt(context);
-			EObject container = ModelUtil.getContainer(association);
+			EObject container = ModelUtil.getContainer(object);
 			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) ); //$NON-NLS-1$
 			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) ); //$NON-NLS-1$
 			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) ); //$NON-NLS-1$
@@ -134,7 +133,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			if (activity!=null) {
 				InputOutputSpecification ioSpec = activity.getIoSpecification();
 				if (ioSpec!=null) {
-					if (association instanceof DataInputAssociation)
+					if (object instanceof DataInputAssociation)
 						values.addAll(ioSpec.getDataInputs());
 					else
 						values.addAll(ioSpec.getDataOutputs());
@@ -145,7 +144,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			if (callable!=null) {
 				InputOutputSpecification ioSpec = callable.getIoSpecification();
 				if (ioSpec!=null) {
-					if (association instanceof DataInputAssociation)
+					if (object instanceof DataInputAssociation)
 						values.addAll(ioSpec.getDataInputs());
 					else
 						values.addAll(ioSpec.getDataOutputs());
@@ -153,18 +152,17 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			}
 			
 			super.setChoiceOfValues(values);
-			return super.getChoiceOfValues(context);
+			return super.getChoiceOfValues();
 		}
 		
 		@Override
-		public EObject createFeature(Resource resource, Object context, EClass eClass) {
-			DataAssociation association = adopt(context);
+		public EObject createFeature(Resource resource, EClass eClass) {
 			// what kind of object should we create? Property or DataStore?
 			if (eClass==null) {
-				if (ModelUtil.findNearestAncestor(association, new Class[] {Process.class, Event.class}) != null)
+				if (ModelUtil.findNearestAncestor(object, new Class[] {Process.class, Event.class}) != null)
 					// nearest ancestor is a Process or Event, so new object will be a Property
 					eClass = Bpmn2Package.eINSTANCE.getProperty();
-				else if(ModelUtil.findNearestAncestor(association, new Class[] {DocumentRoot.class}) != null)
+				else if(ModelUtil.findNearestAncestor(object, new Class[] {DocumentRoot.class}) != null)
 					eClass = Bpmn2Package.eINSTANCE.getDataStore();
 			}			
 			if (eClass!=null) {
@@ -175,9 +173,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		public void setValue(Object context, Object value) {
-			final DataAssociation association = adopt(context);
-
+   		protected void internalSet(DataAssociation association, EStructuralFeature feature, Object value, int index) {
 			EObject container = null;
 			EStructuralFeature containerFeature = null;
 			if (value instanceof Property) {
@@ -200,7 +196,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			}
 			else if (value instanceof String) {
 				// first check if a property with this name already exists
-				Hashtable<String, Object> choices = getChoiceOfValues(object);
+				Hashtable<String, Object> choices = getChoiceOfValues();
 				Property property = (Property)choices.get(value);
 				if (property==null) {
 					// need to create a new one!
@@ -221,7 +217,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					containerFeature = container.eClass().getEStructuralFeature("properties"); //$NON-NLS-1$
 					property = Bpmn2ModelerFactory.create(Property.class);
 					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(property);
-					adapter.getObjectDescriptor().setDisplayName((String)value);
+					adapter.getObjectDescriptor().setTextValue((String)value);
 				}
 				value = property;
 			}
@@ -230,30 +226,11 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			final EStructuralFeature cf = containerFeature;
 			final ItemAwareElement v = (ItemAwareElement)value;
 			
-			TransactionalEditingDomain editingDomain = getEditingDomain(association);
 			if (feature == Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef()) {
-				if (editingDomain == null) {
-					setSourceRef(association, v, c, cf);
-				} else {
-					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-						@Override
-						protected void doExecute() {
-							setSourceRef(association, v, c, cf);
-						}
-					});
-				}
+				setSourceRef(association, v, c, cf);
 			}
 			else {
-				if (editingDomain == null) {
-					setTargetRef(association, v, c, cf);
-				} else {
-					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-						@Override
-						protected void doExecute() {
-							setTargetRef(association, v, c, cf);
-						}
-					});
-				}
+				setTargetRef(association, v, c, cf);
 			}
 		}
 

@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
@@ -1749,7 +1750,7 @@ public class GraphicsUtil {
 		if (be instanceof BaseElement) {
 			id = " " + ((BaseElement)be).getId(); //$NON-NLS-1$
 		}
-		String text = be.eClass().getName()+id+": "+ModelUtil.getDisplayName(be); //$NON-NLS-1$
+		String text = be.eClass().getName()+id+": "+ExtendedPropertiesProvider.getTextValue(be); //$NON-NLS-1$
 		return text;
 	}
 	

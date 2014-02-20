@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -236,7 +237,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		dataInput.setName(
 			NLS.bind(
 				Messages.DataAssociationFeatureContainer_New_Input_For,
-				ModelUtil.getDisplayName(target)
+				ExtendedPropertiesProvider.getTextValue(target)
 			)
 		);
 		DataInput result = dataInput;
@@ -304,7 +305,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		dataOutput.setName(
 			NLS.bind(
 				Messages.DataAssociationFeatureContainer_New_Output_For,
-				ModelUtil.getDisplayName(source)
+				ExtendedPropertiesProvider.getTextValue(source)
 			)
 		);
 		DataOutput result = dataOutput;
@@ -373,10 +374,10 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		public String getText(Object object) {
 			ItemAwareElement element = (ItemAwareElement) object;
 			if (element.getId()==null)
-				return ModelUtil.getDisplayName(object);
+				return ModelUtil.getTextValue(object);
 			String text = NLS.bind(
 				Messages.DataAssociationFeatureContainer_Reference_To,
-				ModelUtil.getDisplayName(object)
+				ModelUtil.getTextValue(object)
 			);
 			String mapping = Messages.DataAssociationFeatureContainer_Unmapped;
 			if (element instanceof DataOutput) {
@@ -394,7 +395,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					if (d.getSourceRef().contains(element)) {
 						if (d.getTargetRef()!=null) {
 							mapping = NLS.bind(
-								Messages.DataAssociationFeatureContainer_Mapped_To, ModelUtil.getDisplayName(d.getTargetRef())
+								Messages.DataAssociationFeatureContainer_Mapped_To, ExtendedPropertiesProvider.getTextValue(d.getTargetRef())
 							);
 						}
 						break;
@@ -417,7 +418,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 						if (d.getSourceRef().size()>0) {
 							mapping = NLS.bind(
 								Messages.DataAssociationFeatureContainer_Mapped_To,
-								ModelUtil.getDisplayName(d.getSourceRef().get(0))
+								ExtendedPropertiesProvider.getTextValue(d.getSourceRef().get(0))
 							);
 						}
 						break;

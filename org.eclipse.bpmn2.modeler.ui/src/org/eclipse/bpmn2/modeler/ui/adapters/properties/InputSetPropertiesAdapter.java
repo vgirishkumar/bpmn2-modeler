@@ -27,8 +27,8 @@ import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.OutputSetPropertiesAdapter.InputSetFeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -63,13 +63,12 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 		}
 		
 		@Override
-		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-			InputSet inputSet = adopt(context);
+		public Hashtable<String, Object> getChoiceOfValues() {
 			Hashtable<String, Object> values = new Hashtable<String, Object>();
 			List<DataInput> valid = new ArrayList<DataInput>();
 			if (feature == Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs()) {
 				// choices are all DataInputs in scope
-				EObject container = inputSet.eContainer();
+				EObject container = object.eContainer();
 				while (container!=null) {
 					if (container instanceof ThrowEvent) {
 						valid.addAll( ((ThrowEvent)container).getDataInputs() );
@@ -99,10 +98,10 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 			}
 			else {
 				// choices are only the DataInputs listed in "InputSet.dataInputRefs"
-				valid.addAll(inputSet.getDataInputRefs());
+				valid.addAll(object.getDataInputRefs());
 			}
 			for (DataInput data : valid) {
-				values.put( ModelUtil.getDisplayName(data), data);
+				values.put( ExtendedPropertiesProvider.getTextValue(data), data);
 			}
 			return values;
 		}		
@@ -116,15 +115,14 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 		
 		
 		@Override
-		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-			InputSet inputSet = adopt(context);
+		public Hashtable<String, Object> getChoiceOfValues() {
 			Hashtable<String, Object> values = new Hashtable<String, Object>();
-			EObject container = inputSet.eContainer();
+			EObject container = object.eContainer();
 			if (container instanceof InputOutputSpecification) {
 				// an InputSet.outputSetRefs can only reference OutputSets in the same InputOutputSpecification
 				InputOutputSpecification ioSpec = (InputOutputSpecification)container;
 				for (OutputSet os : ioSpec.getOutputSets()) {
-					values.put( ModelUtil.getDisplayName(os), os);
+					values.put( ExtendedPropertiesProvider.getTextValue(os), os);
 				}
 			}
 			return values;

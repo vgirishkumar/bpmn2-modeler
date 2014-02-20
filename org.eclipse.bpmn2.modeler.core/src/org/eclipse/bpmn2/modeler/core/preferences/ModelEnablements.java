@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.common.util.EList;
@@ -349,29 +350,79 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className, String featureName) {
+		// this needs to happen very late in the lifecycle of this class because we don't want
+		// to force loading of the Bpmn2Preferences (and setting up default preference values)
+		// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
+		// See Bpmn2Preferences#loadDefaults()
+		if (enableIdAttribute== -1) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
+			setEnableIdAttribute(prefs.getShowIdAttribute());
+		}
+		
 		if ("id".equals(featureName)) { //$NON-NLS-1$
-			// this needs to happen very late in the lifecycle of this class because we don't want
-			// to force loading of the Bpmn2Preferences (and setting up default preference values)
-			// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
-			// See Bpmn2Preferences#loadDefaults()
-			if (enableIdAttribute== -1) {
-				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(targetRuntime.getResource());
-				setEnableIdAttribute(prefs.getShowIdAttribute());
-			}
 			if (!getEnableIdAttribute())
 				return false;
 		}
+
 		if (className==null)
 			return true;
+		
 		if (classes.containsKey(className)) { // && isOverride()) {
 			if (featureName!=null && !featureName.isEmpty()) {
 				HashSet<String> features = classes.get(className);
-				return features.contains(featureName);
+				if (features.contains(featureName))
+					return true;
+				
+				// check all supertypes of the requested EClass
+				EClass eClass = getEClass(className);
+				if (eClass!=null) {
+					for (EClass st : eClass.getEAllSuperTypes()) {
+						className = st.getName();
+						if (classes.containsKey(className)) { // && isOverride()) {
+							if (featureName!=null && !featureName.isEmpty()) {
+								features = classes.get(className);
+								if (features.contains(featureName))
+									return true;
+								break;
+							}
+							return true;
+						}
+					}
+				}
 			}
 			return true;
 		}
 		
-		return false; //!isOverride();
+		// Check any model extensions - these are always enabled by default
+		// This is an expensive operation, so we'll cache these values.
+		//
+		// FIXME: if there ever comes a time when we'll want to reload model extensions
+		// while the editor is still active, we'll need to clear out this cache.
+		if (isEnabled(targetRuntime, className, featureName))
+			return true;
+		
+		// FIXME: should we also check the Default Target Runtime extensions?
+//		if (targetRuntime!=TargetRuntime.getDefaultRuntime())
+//			return isEnabled(TargetRuntime.getDefaultRuntime(), className, featureName);
+
+		return false;
+	}
+	
+	private boolean isEnabled(TargetRuntime targetRuntime, String className, String featureName) {
+		for (ModelExtensionDescriptor md : targetRuntime.getModelExtensionDescriptors()) {
+			if (md.isDefined(className, featureName)) {
+				this.setEnabled(className, featureName, true);
+				return true;
+			}
+		}
+		
+		for (ModelExtensionDescriptor md : targetRuntime.getCustomTaskDescriptors()) {
+			if (md.isDefined(className, featureName)) {
+				this.setEnabled(className, featureName, true);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean isEnabled(EClass eClass, EStructuralFeature feature) {

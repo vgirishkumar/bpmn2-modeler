@@ -17,20 +17,30 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
+import org.eclipse.bpmn2.modeler.core.EditControlProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.AbstractObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.DelegatingObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FloatObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -233,16 +243,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	 * @return the EStructuralFeature or null if the feature does not exist for this object
 	 */
 	protected EStructuralFeature getFeature(EObject object, String name) {
-		EStructuralFeature feature = ((EObject)object).eClass().getEStructuralFeature(name);
-		if (feature==null) {
-			// maybe it's an anyAttribute?
-			List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
-			for (EStructuralFeature f : anyAttributes) {
-				if (f.getName().equals(name))
-					return f;
-			}
-		}
-		return feature;
+		return getBusinessObjectDelegate().getFeature(object, name);
 	}
 
 	/**
@@ -251,22 +252,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	 * @return
 	 */
 	protected boolean isAttribute(EObject object, EStructuralFeature feature) {
-		// maybe it's an anyAttribute?
-		if (feature instanceof EAttribute)
-			return true;
-
-		if (feature != null) {
-			List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
-			for (EStructuralFeature f : anyAttributes) {
-				if (f.getName().equals(feature.getName())) {
-					if (f instanceof EAttribute)
-						return true;
-					break;
-				}
-			}
-		}
-		
-		return false;
+		return getBusinessObjectDelegate().isAttribute(object, feature);
 	}
 	
 	/**
@@ -276,11 +262,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	 * @return
 	 */
 	protected boolean isList(EObject object, EStructuralFeature feature) {
-		if (feature!=null) {
-			Object list = object.eGet(feature);
-			return (list instanceof EObjectContainmentEList);
-		}
-		return false;
+		return getBusinessObjectDelegate().isList(object, feature);
 	}
 
 	/**
@@ -290,7 +272,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	 */
 	protected boolean isReference(EObject object, EStructuralFeature feature) {
 		if (feature != null) {
-			List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(object);
+			List<EStructuralFeature> anyAttributes = ModelDecorator.getAnyAttributes(object);
 			for (EStructuralFeature f : anyAttributes) {
 				if (f.getName().equals(feature.getName())) {
 					if (f instanceof EReference)
@@ -433,8 +415,9 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			if (label==null)
 				label = getPropertiesProvider().getLabel(object, attribute);
 			
-			Class eTypeClass = attribute.getEType().getInstanceClass();
-			if (ModelUtil.isMultiChoice(object, attribute)) {
+			EClassifier eTypeClassifier = attribute.getEType();
+			Class eTypeClass = eTypeClassifier.getInstanceClass();
+			if (getBusinessObjectDelegate().isMultiChoice(object, attribute)) {
 				ObjectEditor editor = new ComboObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 			}
@@ -477,6 +460,14 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 						bindList(object,feature);
 				}
 			}
+			else if (eTypeClassifier instanceof EDataType) {
+				ConversionDelegate cd = EDataTypeConversionFactory.INSTANCE.createConversionDelegate(
+						(EDataType)eTypeClassifier);
+				if (cd instanceof EditControlProvider) {
+					ObjectEditor editor = new DelegatingObjectEditor(this,object,attribute, (EditControlProvider)cd);
+					editor.createControl(parent,label);
+				}
+			}
 		}
 	}
 	
@@ -506,14 +497,27 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			String displayName = getPropertiesProvider().getLabel(object, reference);
 
 			ObjectEditor editor = null;
-			if (ModelUtil.isMultiChoice(object, reference)) {
+			if (getBusinessObjectDelegate().isContainedFeature(object, reference)) {
+				EClass eClass = (EClass) reference.getEType();
+				// FIXME: how do we deal with lists of these things?
+				Object v = getBusinessObjectDelegate().getValue(object,reference);
+				EObject value = (EObject)v;
+				if (value==null) {
+					value = getBusinessObjectDelegate().createFeature(object,reference);
+					InsertionAdapter.add(object, reference, value);
+				}
+				AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass.getInstanceClass(), this, SWT.NONE);
+				detailComposite.setBusinessObject(value);
+				detailComposite.setTitle(getBusinessObjectDelegate().getLabel(value));
+			}
+			else if (getBusinessObjectDelegate().isMultiChoice(object, reference)) {
 				if (reference.isMany()) {
 					editor = new FeatureListObjectEditor(this,object,reference);
 				} else {
 					editor = new ComboObjectEditor(this,object,reference);
 				}
 			}
-			else if (ModelUtil.canCreateNew(object, reference)) {
+			else if (getBusinessObjectDelegate().canCreateNew(object, reference)) {
 				editor = new ReadonlyTextObjectEditor(this,object,reference);
 			}
 			else {
@@ -621,10 +625,11 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 						if (!list.contains(attribute.getName()))
 							list.add(attribute.getName());
 					}
-					// add the anyAttributes
-					List<EStructuralFeature> anyAttributes = ModelUtil.getAnyAttributes(o);
-					for (EStructuralFeature f : anyAttributes) {
-						if (f instanceof EAttribute && !list.contains(f.getName()))
+					// add the extension attributes and elements
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(o);
+					List<EStructuralFeature> features = adapter.getFeatures();
+					for (EStructuralFeature f : features) {
+						if (!list.contains(f.getName()))
 							list.add(f.getName());
 					}
 					String a[] = new String[list.size()];

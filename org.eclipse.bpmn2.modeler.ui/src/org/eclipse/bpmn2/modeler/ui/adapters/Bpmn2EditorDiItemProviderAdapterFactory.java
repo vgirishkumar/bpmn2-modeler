@@ -71,35 +71,33 @@ public class Bpmn2EditorDiItemProviderAdapterFactory extends BpmnDiItemProviderA
         	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
         	adapter.setObjectDescriptor(new ObjectDescriptor(adapterFactory, object) {
 				@Override
-				public String getLabel(Object context) {
-					EObject object = adopt(context);
+				public String getLabel() {
 		        	ExtendedPropertiesAdapter adapter = getBpmnElementAdapter(object);
 		        	if (adapter!=null) {
 		        		BaseElement bpmnElement = getBpmnElement(object);
 		        		if (bpmnElement!=null)
-		        			return adapter.getObjectDescriptor().getLabel(context);
+		        			return adapter.getObjectDescriptor().getLabel();
 		        	}
 		        	
 					if (ModelUtil.isStringWrapper(object)) {
 						return Messages.CommonLabels_Data_Type;
 					}
-					return super.getLabel(context);
+					return super.getLabel();
 				}
 
 				@Override
-				public String getDisplayName(Object context) {
-					EObject object = adopt(context);
+				public String getTextValue() {
 		        	ExtendedPropertiesAdapter adapter = getBpmnElementAdapter(object);
 		        	if (adapter!=null) {
 		        		BaseElement bpmnElement = getBpmnElement(object);
 		        		if (bpmnElement!=null)
-		        			return adapter.getObjectDescriptor().getDisplayName(context);
+		        			return adapter.getObjectDescriptor().getTextValue();
 		        	}
 		        	
 					if (ModelUtil.isStringWrapper(object)) {
 						return ModelUtil.getStringWrapperValue(object);
 					}
-					return super.getDisplayName(context);
+					return super.getTextValue();
 				}
         	});
         	return adapter;

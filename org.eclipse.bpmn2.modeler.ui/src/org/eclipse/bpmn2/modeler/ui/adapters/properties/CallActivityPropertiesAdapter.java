@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -52,14 +53,14 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 
     	setFeatureDescriptor(ce,
 			new RootElementRefFeatureDescriptor<CallActivity>(adapterFactory,object,ce) {
+    		
 				@Override
-				public String getLabel(Object context) {
+				public String getLabel() {
 					return Messages.CallActivityPropertiesAdapter_Called_Activity;
 				}
 				
 				@Override
-				public String getDisplayName(Object context) {
-					CallActivity object = adopt(context);
+				public String getTextValue() {
 					CallableElement ce = object.getCalledElementRef();
 					if (ce!=null && ce.eIsProxy()) {
 						URI uri = ((InternalEObject)ce).eProxyURI();
@@ -67,12 +68,11 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 							return uri.fragment();
 						return uri.lastSegment();
 					}
-					return super.getDisplayName(context);
+					return super.getTextValue();
 				}
 				
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final CallActivity activity = adopt(context);
+				public Hashtable<String, Object> getChoiceOfValues() {
 					Hashtable<String, Object> choices = new Hashtable<String,Object>();
 					String label;
 					Definitions defs = ModelUtil.getDefinitions(object);
@@ -80,7 +80,7 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 					// first add all local processes and global whatnots
 					List<CallableElement> localProcesses = ModelUtil.getAllRootElements(defs, CallableElement.class);
 					for (CallableElement elem : localProcesses) {
-						label = ModelUtil.getDisplayName(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+						label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 						choices.put(label, elem);
 					}
 					
@@ -90,12 +90,12 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 					for (Import imp : imports) {
 						if (ImportUtil.IMPORT_TYPE_BPMN2.equals(imp.getImportType())) {
 							// load the process file and look for callable elements
-							Object object = importer.loadImport(imp);
-							if (object instanceof DocumentRoot) {
-								Definitions importDefs = ((DocumentRoot)object).getDefinitions();
+							Object importedObject = importer.loadImport(imp);
+							if (importedObject instanceof DocumentRoot) {
+								Definitions importDefs = ((DocumentRoot)importedObject).getDefinitions();
 								for (RootElement elem : importDefs.getRootElements()) {
 									if (elem instanceof CallableElement) {
-										label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+										label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 										choices.put(label, elem);
 									}
 								}
@@ -104,7 +104,7 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 					}
 
 					// remove the Call Activity's owning CallableElement (can't make recursive calls?)
-					EObject parent = activity.eContainer();
+					EObject parent = object.eContainer();
 					while (parent!=null && !(parent instanceof CallableElement)) {
 						parent = parent.eContainer();
 					}

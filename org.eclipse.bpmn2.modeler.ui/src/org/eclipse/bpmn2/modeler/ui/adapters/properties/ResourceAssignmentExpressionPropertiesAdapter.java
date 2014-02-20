@@ -22,10 +22,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -45,11 +42,10 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 			new FeatureDescriptor<ResourceAssignmentExpression>(adapterFactory,object,ref) {
 
 				@Override
-				public String getDisplayName(Object context) {
-					ResourceAssignmentExpression rae = adopt(context);
+				public String getTextValue() {
 					String text = null;
-					if (rae.getExpression() instanceof FormalExpression) {
-						text = ModelUtil.getExpressionBody((FormalExpression)rae.getExpression());
+					if (object.getExpression() instanceof FormalExpression) {
+						text = ModelUtil.getExpressionBody((FormalExpression)object.getExpression());
 					}
 					if (text==null)
 						return ""; //$NON-NLS-1$
@@ -57,39 +53,15 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 				}
 
 				@Override
-				public void setValue(Object context, Object value) {
-					final ResourceAssignmentExpression rae = adopt(context);
+				protected void internalSet(ResourceAssignmentExpression rae, EStructuralFeature feature, Object value, int index) {
 					if (!(rae.getExpression() instanceof FormalExpression)) {
 						if (value instanceof String) {
 							final FormalExpression e = Bpmn2ModelerFactory.create(FormalExpression.class);
 							e.setBody((String) value);
-							TransactionalEditingDomain editingDomain = getEditingDomain(rae);
-							if (editingDomain == null) {
-								rae.eSet(feature, e);
-							} else {
-								editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-									@Override
-									protected void doExecute() {
-										rae.eSet(feature, e);
-										ModelUtil.setID(e);
-									}
-								});
-							}
+							rae.eSet(feature, e);
 						}
 						else if (value instanceof FormalExpression) {
-							final FormalExpression e = (FormalExpression)value;
-							TransactionalEditingDomain editingDomain = getEditingDomain(rae);
-							if (editingDomain == null) {
-								rae.eSet(feature, e);
-							} else {
-								editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-									@Override
-									protected void doExecute() {
-										rae.eSet(feature, e);
-										ModelUtil.setID(e);
-									}
-								});
-							}
+							rae.eSet(feature, (FormalExpression)value);
 						}
 					}
 				}
@@ -97,8 +69,8 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
     	);
     	setObjectDescriptor(new ObjectDescriptor<ResourceAssignmentExpression>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				return getFeatureDescriptor(ref).getDisplayName(context);
+			public String getTextValue() {
+				return getFeatureDescriptor(ref).getTextValue();
 			}
     	});
 	}

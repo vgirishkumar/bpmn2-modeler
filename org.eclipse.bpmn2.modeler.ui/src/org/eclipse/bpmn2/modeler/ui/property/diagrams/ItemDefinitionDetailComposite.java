@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -69,7 +70,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 					parent = getAttributesParent();
 				
 				if (label==null)
-					label = ModelUtil.getLabel(object, attribute);
+					label = ExtendedPropertiesProvider.getLabel(object, attribute);
 				
 				ObjectEditor editor = new ComboObjectEditor(this,object,attribute) {
 					protected boolean setValue(final Object result) {
@@ -100,7 +101,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 				parent = getAttributesParent();
 			
 			final ItemDefinition def = (ItemDefinition)object;
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			if (def.getItemKind().equals(ItemKind.INFORMATION)) {
 				SchemaObjectEditor editor = new SchemaObjectEditor(this,object,reference);

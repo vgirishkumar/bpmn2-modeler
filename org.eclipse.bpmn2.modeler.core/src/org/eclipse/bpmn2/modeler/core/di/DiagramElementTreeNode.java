@@ -16,9 +16,9 @@ import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
 
-public class DiagramElementTreeNode implements Iterable<DiagramElementTreeNode> {
+public class DiagramElementTreeNode extends SimpleTreeIterator<DiagramElementTreeNode> {
 	private static List<DiagramElementTreeNode> EMPTY = new ArrayList<DiagramElementTreeNode>();
 	private DiagramElementTreeNode parent;
 	private BaseElement baseElement;
@@ -129,52 +129,8 @@ public class DiagramElementTreeNode implements Iterable<DiagramElementTreeNode> 
 		return EMPTY;
 	}
 
-	/*
-	 * A simple depth-first tree iterator
-	 */
 	@Override
 	public Iterator<DiagramElementTreeNode> iterator() {
-		return new Iterator<DiagramElementTreeNode>() {
-			int iteratorIndex = -1;
-			int childIndex = 0;
-			List<Iterator<DiagramElementTreeNode>> iterators;
-			
-			@Override
-			public boolean hasNext() {
-				if (!hasChildren())
-					return false;
-				
-				if (iteratorIndex==-1) {
-					iteratorIndex = 0;
-					iterators = new ArrayList<Iterator<DiagramElementTreeNode>>();
-					for (DiagramElementTreeNode child : children) {
-						iterators.add(child.iterator());
-					}
-				}
-				return iteratorIndex<iterators.size() || childIndex<children.size();
-			}
-
-			@Override
-			public DiagramElementTreeNode next() {
-				if (!hasChildren())
-					return null;
-				while (iteratorIndex<iterators.size()) {
-					Iterator<DiagramElementTreeNode> iter = iterators.get(iteratorIndex);
-					if (iter.hasNext())
-						return iter.next();
-					++iteratorIndex;
-				}
-				if (childIndex<children.size()) {
-					return children.get(childIndex++);
-				}
-				return null;
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-			
-		};
+		return new TreeIterator(getChildren());
 	}
 }

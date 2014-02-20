@@ -18,11 +18,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -182,6 +183,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			if (nameAttribute!=null)
 				columnProvider.add(object, listItemClass, nameAttribute);
 
+			List<EStructuralFeature> added = new ArrayList<EStructuralFeature>();
 			for (EAttribute a1 : listItemClass.getEAllAttributes()) {
 				if ("anyAttribute".equals(a1.getName())) { //$NON-NLS-1$
 					List<EStructuralFeature> anyAttributes = new ArrayList<EStructuralFeature>();
@@ -199,6 +201,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 									if (f1 instanceof EAttribute && !anyAttributes.contains(f1)) {
 										columnProvider.add(object, listItemClass, f1);
 										anyAttributes.add(f1);
+										added.add(a1);
 									} 
 								}
 							}
@@ -207,15 +210,29 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 				}
 				else if (FeatureMap.Entry.class.equals(a1.getEType().getInstanceClass())) {
 					// TODO: how do we handle these?
-					if (a1 instanceof EAttribute)
+					if (a1 instanceof EAttribute) {
 						columnProvider.add(object, listItemClass, a1);
+						added.add(a1);
+					}
 				}
 				else {
 					
 					if (a1!=nameAttribute) {
-						if (a1!=idAttribute || getPreferences().getShowIdAttribute())
+						if (a1!=idAttribute || getPreferences().getShowIdAttribute()) {
 							columnProvider.add(object, listItemClass, a1);
+							added.add(a1);
+						}
 					}
+				}
+			}
+			// FIXME:
+			// add the extension attributes and elements
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(listItemClass);
+			if (adapter!=null) {
+				List<EStructuralFeature> features = adapter.getFeatures();
+				for (EStructuralFeature f : features) {
+					if (!added.contains(f))
+						columnProvider.add(object, listItemClass, f);
 				}
 			}
 			if (columnProvider.getColumns().size()==0) {
@@ -353,7 +370,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			label = ((AbstractDetailComposite)parent).getPropertiesProvider().getLabel(listItemClass);
 		}
 		else {
-			label = ModelUtil.getLabel(listItemClass);
+			label = ExtendedPropertiesProvider.getLabel(listItemClass);
 		}
 		final String prefName = "list."+listItemClass.getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
 		
@@ -554,8 +571,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					};
 					
 					dialog.setCompositeFactory(factory);
-					if (dialog.open() == Window.OK)
-						System.out.println();
+					dialog.open();
 				}
 			}
 		}
@@ -578,7 +594,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 						label = ((AbstractDetailComposite)parent).getPropertiesProvider().getLabel(o);
 					}
 					else {
-						label = ModelUtil.getLabel(o);
+						label = ExtendedPropertiesProvider.getLabel(o);
 					}
 					detailSection.setText(label+Messages.AbstractListComposite_Details);
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);

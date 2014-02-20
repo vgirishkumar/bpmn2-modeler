@@ -11,8 +11,8 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.data.InterfaceDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
 import org.eclipse.emf.ecore.EObject;
@@ -38,7 +38,7 @@ public class JbpmInterfaceDetailComposite extends InterfaceDetailComposite {
 				parent = getAttributesParent();
 			
 			final Interface iface = (Interface)object;
-			String displayName = ModelUtil.getLabel(object, reference);
+			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			JbpmImportObjectEditor editor = new JbpmImportObjectEditor(this,object,reference);
 			editor.createControl(parent,displayName);

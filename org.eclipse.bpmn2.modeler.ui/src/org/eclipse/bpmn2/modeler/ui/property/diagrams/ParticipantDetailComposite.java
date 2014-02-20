@@ -60,7 +60,7 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 						"processRef", //$NON-NLS-1$
 						"participantMultiplicity", //$NON-NLS-1$
 						"interfaceRefs", //$NON-NLS-1$
-//						"endPointRefs", //$NON-NLS-1$
+						"endPointRefs", //$NON-NLS-1$
 				};
 				
 				@Override

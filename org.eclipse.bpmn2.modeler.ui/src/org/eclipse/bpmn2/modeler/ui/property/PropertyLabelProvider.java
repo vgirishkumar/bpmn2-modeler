@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.ui.property;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -47,7 +48,7 @@ public class PropertyLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		EObject object = getBusinessObject(element);
 		if (object!=null) {
-			String text = ModelUtil.getDisplayName(object);
+			String text = ExtendedPropertiesProvider.getTextValue(object);
 			// check if this is a CustomTask
 			CustomTaskDescriptor ctd = getCustomTaskDescriptor(object); 
 			if (ctd!=null) {
@@ -80,7 +81,7 @@ public class PropertyLabelProvider extends LabelProvider {
 	private CustomTaskDescriptor getCustomTaskDescriptor(EObject object) {
 		TargetRuntime rt = getTargetRuntime(object);
 		if (rt!=null) {
-			for (CustomTaskDescriptor ctd : rt.getCustomTasks()) {
+			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
 				if (ctd.getFeatureContainer()!=null) {
 					String id = ctd.getFeatureContainer().getId(object);
 					if (id!=null) {

@@ -30,8 +30,8 @@ public class JbpmErrorPropertiesAdapter extends ErrorPropertiesAdapter {
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(adapterFactory, object, feature) {
 
     		@Override
-    		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-				return JbpmModelUtil.collectAllDataTypes(adopt(context));
+    		public Hashtable<String, Object> getChoiceOfValues() {
+				return JbpmModelUtil.collectAllDataTypes(object);
     		}
 	
     	});

@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -65,7 +65,7 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	
 	@SuppressWarnings("unchecked")
 	protected void addExtensionValue(EObject value) {
-		ModelUtil.addExtensionAttributeValue(businessObject, extensionValueFeature, value);
+		ModelDecorator.addExtensionAttributeValue(businessObject, extensionValueFeature, value);
 	}
 	
 	protected Object getListItem(EObject object, EStructuralFeature feature, int index) {

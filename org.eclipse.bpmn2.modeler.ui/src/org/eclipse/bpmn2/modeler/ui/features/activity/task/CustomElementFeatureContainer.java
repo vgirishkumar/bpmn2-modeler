@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
@@ -59,7 +59,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	}
 
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
-		EClass eClass = (EClass) ModelUtil.getEClassifierFromString(
+		EClass eClass = (EClass) ModelDecorator.findEClassifier(
 				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
 		return ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
 	}
@@ -147,7 +147,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 			((IAddContext)context).getNewObject() instanceof EObject ) {
 			EObject object = (EObject) ((IAddContext)context).getNewObject();
 			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
+			for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
 				id = ct.getFeatureContainer().getId(object);
 				if (id!=null) {
 					context.putProperty(CUSTOM_ELEMENT_ID, id);

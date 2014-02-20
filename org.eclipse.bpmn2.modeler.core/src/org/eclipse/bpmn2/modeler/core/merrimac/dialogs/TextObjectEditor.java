@@ -58,7 +58,7 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		if (testMultiLine && ModelUtil.isMultiLine(object,feature)) {
+		if (testMultiLine && super.isMultiLineText()) {
 			multiLine = true;
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
@@ -100,12 +100,9 @@ public class TextObjectEditor extends ObjectEditor {
 		});
 
 		// ask the object if this feature is read-only
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-		if (adapter!=null && feature!=null) {
-			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
-			if (result instanceof Boolean)
-				setEditable((Boolean)result);
-		}
+		Object result = getExtendedProperty(ExtendedPropertiesAdapter.UI_CAN_EDIT);
+		if (result instanceof Boolean)
+			setEditable((Boolean)result);
 
 		return text;
 	}
@@ -189,17 +186,14 @@ public class TextObjectEditor extends ObjectEditor {
 	 */
 	protected String getText() {
 		boolean useActualValue = false;
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
-		if (adapter!=null) {
-			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
-			if (result instanceof Boolean)
-				useActualValue = ((Boolean)result);
-		}
+		Object result = this.getExtendedProperty(ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
+		if (result instanceof Boolean)
+			useActualValue = ((Boolean)result);
 		if (useActualValue) {
-			Object value = ModelUtil.getValue(object, feature);
+			Object value = getBusinessObjectDelegate().getValue(object, feature);
 			return value==null ? "" : value.toString();
 		}
-		return ModelUtil.getDisplayName(object, feature);
+		return getBusinessObjectDelegate().getTextValue(object, feature);
 	}
 
 	@Override

@@ -286,7 +286,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 						be.eSet(feature, object);
 					}
 					else {
-						md.setValueFromString(be, feature, value, true);
+						be.eSet(feature, value);
 					}
 				}
 			}

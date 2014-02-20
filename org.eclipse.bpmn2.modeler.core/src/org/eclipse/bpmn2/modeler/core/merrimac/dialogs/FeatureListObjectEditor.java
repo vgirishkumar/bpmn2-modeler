@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IConstants;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
@@ -72,7 +73,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 
 		@Override
 		public String getText(Object element) {
-			return ModelUtil.getDisplayName(element);
+			return ModelUtil.getTextValue(element);
 		}
 	}
 	
@@ -247,10 +248,10 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		String listText = ""; //$NON-NLS-1$
 		if (references != null) {
 			for (int i = 0; i < references.size() - 1; i++) {
-				listText += ModelUtil.getDisplayName(references.get(i)) + ", ";
+				listText += ExtendedPropertiesProvider.getTextValue(references.get(i)) + ", ";
 			}
 			if (references.size() > 0) {
-				listText += ModelUtil.getDisplayName(references.get(references.size() - 1));
+				listText += ExtendedPropertiesProvider.getTextValue(references.get(references.size() - 1));
 			}
 		}
 

@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.IPropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.LiveValidationListener;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationErrorHandler;
 import org.eclipse.core.runtime.IStatus;

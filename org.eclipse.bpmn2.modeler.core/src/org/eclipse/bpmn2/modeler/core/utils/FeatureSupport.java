@@ -58,6 +58,8 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -567,7 +569,7 @@ public class FeatureSupport {
 		} else if (o instanceof Group) {
 			Group g = (Group) o;
 			if (g.getCategoryValueRef()!=null)
-				return ModelUtil.getDisplayName(g.getCategoryValueRef());
+				return ExtendedPropertiesProvider.getTextValue(g.getCategoryValueRef());
 			return "";
 		}
 		return null;
@@ -1095,7 +1097,7 @@ public class FeatureSupport {
 	
 	public static void updateCategoryValues(IFeatureProvider fp, PictogramElement pe) {
 		
-		Resource resource = ModelUtil.getResource(pe);
+		Resource resource = ResourceProvider.getResource(pe);
 		if (Bpmn2Preferences.getInstance(resource).getPropagateGroupCategories()) {
 			// only do this if User Preference is enabled: assign the Group's CategoryValue
 			// to the FlowElement represented by the given PictogramElement

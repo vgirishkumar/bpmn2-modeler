@@ -37,14 +37,13 @@ public class SignalPropertiesAdapter extends RootElementPropertiesAdapter<Signal
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Signal>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				final Signal signal = adopt(context);
+			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$
-				if (signal.getName()!=null) {
-					text += signal.getName();
+				if (object.getName()!=null) {
+					text += object.getName();
 				}
 				if (text.isEmpty())
-					text = Messages.SignalPropertiesAdapter_ID + signal.getId();
+					text = Messages.SignalPropertiesAdapter_ID + object.getId();
 				return text;
 			}
     	});

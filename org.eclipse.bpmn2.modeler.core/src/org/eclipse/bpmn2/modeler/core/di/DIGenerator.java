@@ -42,6 +42,7 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -190,7 +191,7 @@ public class DIGenerator {
 		}
 		boolean missing = (elements.get(be) == null && diagnostics.get(be) == null);
 		if (missing)
-			GraphicsUtil.dump("Missing DI element for: "+be.eClass().getName()+" '"+ModelUtil.getDisplayName(be)+"'");
+			GraphicsUtil.dump("Missing DI element for: "+be.eClass().getName()+" '"+ExtendedPropertiesProvider.getTextValue(be)+"'");
 		return missing;
 	}
 	
@@ -550,7 +551,7 @@ public class DIGenerator {
 			plane.setBpmnElement(container);
 
 			bpmnDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
-			bpmnDiagram.setName(ModelUtil.getDisplayName(container));
+			bpmnDiagram.setName(ExtendedPropertiesProvider.getTextValue(container));
 			bpmnDiagram.setPlane(plane);
 
 			definitions.getDiagrams().add(bpmnDiagram);

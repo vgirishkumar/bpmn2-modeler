@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Category;
 import org.eclipse.bpmn2.CategoryValue;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
@@ -45,9 +46,8 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
     	setFeatureDescriptor(ref,
 			new FeatureDescriptor<CategoryValue>(adapterFactory,object,ref) {
 				@Override
-				public String getDisplayName(Object context) {
-					CategoryValue categoryValue = adopt(context);
-					return CategoryValuePropertiesAdapter.getDisplayName(categoryValue);
+				public String getTextValue() {
+					return CategoryValuePropertiesAdapter.getDisplayName(object);
 				}
 
 				@Override
@@ -56,14 +56,13 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
 				}
 
 				@Override
-				public void setValue(Object context, Object value) {
-					CategoryValue categoryValue = adopt(context);
+		   		protected void internalSet(CategoryValue categoryValue, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof String) {
 						int i = ((String) value).indexOf(":");
 						if (i>=0)
 							value = ((String) value).substring(i+1);
 					}
-					super.setValue(context, value);
+					super.internalSet(categoryValue, feature, value, index);
 				}
 				
 			}
@@ -72,9 +71,8 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
     	
 		setObjectDescriptor(new ObjectDescriptor<CategoryValue>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				CategoryValue categoryValue = adopt(context);
-				return CategoryValuePropertiesAdapter.getDisplayName(categoryValue);
+			public String getTextValue() {
+				return CategoryValuePropertiesAdapter.getDisplayName(object);
 			}
 		});
 	}

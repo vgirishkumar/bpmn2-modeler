@@ -17,12 +17,15 @@ import java.lang.reflect.Constructor;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.core.runtime.IConfigurationElement;
 
 /**
  * @author Bob Brodt
  *
  */
-public class FeatureContainerDescriptor extends BaseRuntimeDescriptor {
+public class FeatureContainerDescriptor extends BaseRuntimeExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "featureContainer";
 
 	protected String type;
 	protected String containerClassName;
@@ -30,8 +33,13 @@ public class FeatureContainerDescriptor extends BaseRuntimeDescriptor {
 	/**
 	 * @param rt
 	 */
-	public FeatureContainerDescriptor(TargetRuntime rt) {
-		super(rt);
+	public FeatureContainerDescriptor(IConfigurationElement e) {
+		type = e.getAttribute("type"); //$NON-NLS-1$
+		containerClassName = e.getAttribute("class"); //$NON-NLS-1$
+	}
+	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
 	}
 
 	public Class getType() {
@@ -43,7 +51,7 @@ public class FeatureContainerDescriptor extends BaseRuntimeDescriptor {
 		}
 		return null;
 	}
-	
+
 	public IFeatureContainer getFeatureContainer() {
 		try {
 			ClassLoader cl = this.getRuntime().getRuntimeExtension().getClass().getClassLoader();

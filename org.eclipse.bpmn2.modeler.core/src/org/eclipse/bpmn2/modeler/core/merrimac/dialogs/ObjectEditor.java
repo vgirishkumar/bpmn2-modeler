@@ -15,7 +15,9 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
+import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
@@ -28,7 +30,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -60,6 +61,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected int style;
 	protected Class messages;
 	protected boolean isWidgetUpdating = false;
+	private IBusinessObjectDelegate boDelegate;
 
 	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
@@ -95,6 +97,21 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		Control c = createControl(parent,label,style);
 		c.setData(IConstants.NOTIFY_CHANGE_LISTENER_KEY, this);
 		return c; 
+	}
+
+	public IBusinessObjectDelegate getBusinessObjectDelegate() {
+		if (boDelegate==null)
+			boDelegate = new DefaultBusinessObjectDelegate(getDiagramEditor().getEditingDomain());
+		return boDelegate;
+	}
+
+	protected Object getExtendedProperty(String property) {
+		Object result = null;
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null && feature!=null) {
+			result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
+		}
+		return result;
 	}
 	
 	public EStructuralFeature getFeature() {
@@ -201,41 +218,44 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		
 		
 		boolean applies = false;
-    	String image = null;
     	String text = null;
-        ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
-        		object, ValidationStatusAdapter.class);
-        if (statusAdapter != null) {
-            final IStatus status = statusAdapter.getValidationStatus();
-            if (status.isMultiStatus()) {
-            	for (IStatus s : status.getChildren()) {
-            		if (statusApplies(s)) {
-            			applies = true;
-            			break;
-            		}
-            	}
-            }
-            else if (statusApplies(status))
-            	applies = true;
-            
-            if (applies) {
-	            text = status.getMessage();
-	            switch (status.getSeverity()) {
-	            case IStatus.INFO:
-	                image = ISharedImages.IMG_OBJS_INFO_TSK;
-	                break;
-	            case IStatus.WARNING:
-	                image = ISharedImages.IMG_DEC_FIELD_WARNING;
-	                break;
-	            case IStatus.ERROR:
-	                image = ISharedImages.IMG_DEC_FIELD_ERROR;
-	                break;
-	            default:
-	                break;
+    	String image = null;
+
+    	if (isVisible()) {
+	        ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+	        		object, ValidationStatusAdapter.class);
+	        if (statusAdapter != null) {
+	            final IStatus status = statusAdapter.getValidationStatus();
+	            if (status.isMultiStatus()) {
+	            	for (IStatus s : status.getChildren()) {
+	            		if (statusApplies(s)) {
+	            			applies = true;
+	            			break;
+	            		}
+	            	}
 	            }
-            }
-        }
-        
+	            else if (statusApplies(status))
+	            	applies = true;
+	            
+	            if (applies) {
+		            text = status.getMessage();
+		            switch (status.getSeverity()) {
+		            case IStatus.INFO:
+		                image = ISharedImages.IMG_OBJS_INFO_TSK;
+		                break;
+		            case IStatus.WARNING:
+		                image = ISharedImages.IMG_DEC_FIELD_WARNING;
+		                break;
+		            case IStatus.ERROR:
+		                image = ISharedImages.IMG_DEC_FIELD_ERROR;
+		                break;
+		            default:
+		                break;
+		            }
+	            }
+	        }
+		}
+		
         if (applies) {
         	if (decoration==null) {
         		decoration = new ControlDecoration(label, SWT.TOP | SWT.LEFT);
@@ -254,16 +274,15 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	}
 	
 	protected boolean setValue(final Object result) {
-		TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-		boolean success = ModelUtil.setValue(domain, object, feature, result);
+		boolean success = getBusinessObjectDelegate().setValue(object, feature, result);
 		if (!success) {
 			ErrorUtils.showErrorMessage(
 				NLS.bind(
 					Messages.ObjectEditor_Set_Error_Message,
 					new Object[] {
-						ModelUtil.getDisplayName(object),
-						ModelUtil.getLabel(object,feature),
-						ModelUtil.getDisplayName(result)
+						getBusinessObjectDelegate().getTextValue(object),
+						getBusinessObjectDelegate().getLabel(object,feature),
+						ModelUtil.getTextValue(result)
 					}
 				)
 			);
@@ -283,6 +302,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		label.setVisible(visible);
 		GridData data = (GridData)label.getLayoutData();
 		data.exclude = !visible;
+		updateLabelDecorator();
 	}
 	
 	public boolean isVisible() {
@@ -295,6 +315,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			label = null;
 		}
 		if (decoration!=null) {
+    		decoration.hide();
 			decoration.dispose();
 			decoration = null;
 		}
@@ -304,20 +325,24 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		return label;
 	}
 
+	protected boolean isMultiLineText() {
+		return getBusinessObjectDelegate().isMultiLineText(object,feature);
+	}
+	
 	protected boolean canEdit() {
-		return ModelUtil.canEdit(object,feature);
+		return getBusinessObjectDelegate().canEdit(object,feature);
 	}
 
 	protected boolean canCreateNew() {
-		return ModelUtil.canCreateNew(object,feature);
+		return getBusinessObjectDelegate().canCreateNew(object,feature);
 	}
 
 	protected boolean canEditInline() {
-		return ModelUtil.canEditInline(object,feature);
+		return getBusinessObjectDelegate().canEditInline(object,feature);
 	}
 
 	protected boolean canSetNull() {
-		return ModelUtil.canSetNull(object,feature);
+		return getBusinessObjectDelegate().canSetNull(object,feature);
 	}
 
 	protected boolean canAdd() {

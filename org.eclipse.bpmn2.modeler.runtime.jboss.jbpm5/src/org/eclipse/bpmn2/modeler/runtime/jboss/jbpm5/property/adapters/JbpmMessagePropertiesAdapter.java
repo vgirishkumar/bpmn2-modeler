@@ -29,15 +29,9 @@ public class JbpmMessagePropertiesAdapter extends MessagePropertiesAdapter {
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature) {
 
-    		@Override
-			public String getLabel(Object context) {
-				// TODO Auto-generated method stub
-				return super.getLabel(context);
-			}
-
 			@Override
-    		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-				return JbpmModelUtil.collectAllDataTypes(adopt(context));
+    		public Hashtable<String, Object> getChoiceOfValues() {
+				return JbpmModelUtil.collectAllDataTypes(object);
     		}
 	
     	});

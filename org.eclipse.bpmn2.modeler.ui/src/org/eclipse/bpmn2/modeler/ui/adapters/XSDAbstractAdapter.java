@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.bpmn2.modeler.core.adapters.AbstractAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.IStatefullAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.emf.ecore.EObject;
@@ -46,7 +47,7 @@ public class XSDAbstractAdapter extends AbstractAdapter
 		// if this is 
 		if (context instanceof EObject) {
 			EObject eObject = (EObject) context;
-			return ModelUtil.getNamespacePrefix(eObject, namespace);
+			return NamespaceUtil.getNamespacePrefix(eObject, namespace);
 		} else if (context instanceof Map) {
 			return (String) ((Map)context).get(namespace);
 		}

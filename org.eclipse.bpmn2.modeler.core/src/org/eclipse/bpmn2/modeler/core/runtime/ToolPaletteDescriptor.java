@@ -17,7 +17,9 @@ import java.util.Stack;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
-public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
+public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "toolPalette";
 
 	public final static String TOOLPART_ID = "ToolPartID"; //$NON-NLS-1$
 	public final static String TOOLPART_OPTIONAL = "ToolPartOptional"; //$NON-NLS-1$
@@ -339,12 +341,13 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 	String profile; // the model enablement profile for which this toolPalette is to be used
 	// the list of categories in the toolPalette
 	List<CategoryDescriptor> categories = new ArrayList<CategoryDescriptor>();
+
 	
 	public ToolPaletteDescriptor() {
 		super();
 	}
-
-	protected void create(IConfigurationElement e) {
+	
+	public ToolPaletteDescriptor(IConfigurationElement e) {
 		id = e.getAttribute("id"); //$NON-NLS-1$
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		profile = e.getAttribute("profile"); //$NON-NLS-1$
@@ -400,6 +403,10 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		}
 	}
 	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
 	protected CategoryDescriptor addCategory(String id, String name, String description, String icon) {
 		CategoryDescriptor category = null;
 		for (CategoryDescriptor cd : categories) {

@@ -48,9 +48,8 @@ public class OperationRefFeatureDescriptor<T extends BaseElement> extends Featur
 	}
 
 	@Override
-	public Hashtable<String, Object> getChoiceOfValues(Object context) {
-		final T object = adopt(context);
-		Hashtable<String,Object> choices = super.getChoiceOfValues(context);
+	public Hashtable<String, Object> getChoiceOfValues() {
+		Hashtable<String,Object> choices = super.getChoiceOfValues();
 
 		// collect all defined Interfaces and add their Operations to the list of available choices
 		// Whether or not the Interface is actually supported by the underlying Process is a job

@@ -11,11 +11,11 @@
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.ResourceRole;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -38,7 +38,7 @@ public class ResourceRoleListComposite extends DefaultListComposite {
 	@Override
 	public void bindList(EObject theobject, EStructuralFeature thefeature) {
 		super.bindList(theobject, thefeature);
-		ModelUtil.setLabel(theobject, thefeature, Messages.ResourceRoleListComposite_Roles_Label);
+		ExtendedPropertiesProvider.setLabel(theobject, thefeature, Messages.ResourceRoleListComposite_Roles_Label);
 	}
 	
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {

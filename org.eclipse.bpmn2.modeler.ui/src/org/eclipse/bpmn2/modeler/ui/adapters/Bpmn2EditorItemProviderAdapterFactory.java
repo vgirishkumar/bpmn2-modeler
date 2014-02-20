@@ -162,7 +162,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 	public Adapter adaptNew(Notifier object, Object type) {
 		if (type == ExtendedPropertiesAdapter.class && object instanceof EObject) {
 		    Adapter adapter = bpmn2ModelSwitch.doSwitch((EObject) object);
-		    if (adapter!=null && !(object instanceof EClass)) {
+		    if (adapter!=null && !(object instanceof EClass) && !((EObject)object).eAdapters().contains(adapter)) {
 				((EObject)object).eAdapters().add(adapter);
 		    }
 			return adapter;
@@ -188,8 +188,8 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
     		super();
     		this.adapterFactory = adapterFactory;
     		// This adapter can handle the <propertyExtension>s from foreign models also!
-    		for (TargetRuntime rt : TargetRuntime.getAllRuntimes()){
-	    		for (PropertyExtensionDescriptor ped : rt.getPropertyExtensions()) {
+    		for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()){
+	    		for (PropertyExtensionDescriptor ped : rt.getPropertyExtensionDescriptors()) {
 	    			AdapterRegistry.INSTANCE.registerFactory(ped.getInstanceClass(), adapterFactory);
 	    		}
     		}
@@ -211,7 +211,8 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
          * 
          * If no adapter is found for the given EObject, a generic one is constructed and returned.
          */
-        @Override
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		@Override
 		public ExtendedPropertiesAdapter defaultCase(EObject object) {
         	ExtendedPropertiesAdapter adapter = null;
         	if (object instanceof EClass) {
@@ -261,25 +262,19 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 	        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
 	        	adapter.setObjectDescriptor(new ObjectDescriptor(adapterFactory, object) {
 					@Override
-					public String getLabel(Object context) {
-						EObject object = this.object;
-						if (context instanceof EObject)
-							object = (EObject)context;
+					public String getLabel() {
 						if (ModelUtil.isStringWrapper(object)) {
 							return Messages.CommonLabels_Data_Type;
 						}
-						return super.getLabel(context);
+						return super.getLabel();
 					}
 	
 					@Override
-					public String getDisplayName(Object context) {
-						EObject object = this.object;
-						if (context instanceof EObject)
-							object = (EObject)context;
+					public String getTextValue() {
 						if (ModelUtil.isStringWrapper(object)) {
 							return ModelUtil.getStringWrapperValue(object);
 						}
-						return super.getDisplayName(context);
+						return super.getTextValue();
 					}
 	        	});
         	}

@@ -30,8 +30,8 @@ public class JbpmEscalationPropertiesAdapter extends EscalationPropertiesAdapter
     	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(adapterFactory, object, feature) {
 
     		@Override
-    		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-				return JbpmModelUtil.collectAllDataTypes(adopt(context));
+    		public Hashtable<String, Object> getChoiceOfValues() {
+				return JbpmModelUtil.collectAllDataTypes(object);
     		}
 	
     	});

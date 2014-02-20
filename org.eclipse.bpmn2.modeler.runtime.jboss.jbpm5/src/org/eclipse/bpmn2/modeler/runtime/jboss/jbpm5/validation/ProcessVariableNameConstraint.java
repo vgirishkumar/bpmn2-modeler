@@ -15,6 +15,7 @@ import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.core.runtime.IStatus;
@@ -53,8 +54,8 @@ public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 					if (id1.equals(id2)) {
 						String msg = NLS.bind(
 								Messages.ProcessVariableNameConstraint_Duplicate_ID,
-								ModelUtil.getLabel(o1)+" "+ModelUtil.getDisplayName(o1), //$NON-NLS-1$
-								ModelUtil.getLabel(o2)+" "+ModelUtil.getDisplayName(o2)); //$NON-NLS-1$
+								ExtendedPropertiesProvider.getLabel(o1)+" "+ExtendedPropertiesProvider.getTextValue(o1), //$NON-NLS-1$
+								ExtendedPropertiesProvider.getLabel(o2)+" "+ExtendedPropertiesProvider.getTextValue(o2)); //$NON-NLS-1$
 						return ctx.createFailureStatus(msg);
 					}
 				}

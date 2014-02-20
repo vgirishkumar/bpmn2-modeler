@@ -22,14 +22,13 @@ public class ImportPropertiesAdapter extends ExtendedPropertiesAdapter<Import> {
     	
 		setObjectDescriptor(new ObjectDescriptor<Import>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				Import imp = adopt(context);
-				String text = imp.getLocation();
+			public String getTextValue() {
+				String text = object.getLocation();
 				return text==null ? "" : text; //$NON-NLS-1$
 			}
 			
 			@Override
-			public String getLabel(Object context) {
+			public String getLabel() {
 				return Messages.ImportPropertiesAdapter_Import;
 			}
 		});

@@ -64,21 +64,9 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
     	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
     		
     		@Override
-    		public void setValue(Object context, final Object value) {
+    		protected void internalSet(ReceiveTask receiveTask, EStructuralFeature feature, Object value, int index) {
     			if (value instanceof Message || value==null) {
-	    			final ReceiveTask object = adopt(context);
-	    			final Message message = (Message)value; 
-					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
-					if (editingDomain == null) {
-						setMessageRef(object, message);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-								setMessageRef(object, message);
-							}
-						});
-					}
+					setMessageRef(receiveTask, (Message)value);
     			}
     		}
     		
@@ -92,21 +80,9 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
     		
     		@Override
-   		public void setValue(Object context, final Object value) {
+    		protected void internalSet(ReceiveTask receiveTask, EStructuralFeature feature, Object value, int index) {
     			if (value instanceof Operation || value==null) {
-	    			final ReceiveTask object = adopt(context);
-	    			final Operation operation = (Operation)value; 
-					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
-					if (editingDomain == null) {
-						setOperationRef(object, operation);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-								setOperationRef(object, operation);
-							}
-						});
-					}
+					setOperationRef(receiveTask, (Operation)value);
     			}
     		}
     		

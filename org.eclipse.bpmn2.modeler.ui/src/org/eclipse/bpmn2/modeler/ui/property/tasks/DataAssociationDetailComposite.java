@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -705,7 +706,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 						@Override
 						protected void bindReference(Composite parent, EObject object, EReference reference) {
-							String displayName = ModelUtil.getLabel(object, reference);
+							String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 							ObjectEditor editor = new ComboObjectEditor(this,object,reference);
 							editor.createControl(parent,displayName);
 						}

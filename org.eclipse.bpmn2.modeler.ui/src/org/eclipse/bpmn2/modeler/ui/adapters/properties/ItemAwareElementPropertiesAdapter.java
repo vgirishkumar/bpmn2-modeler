@@ -22,8 +22,8 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -54,9 +54,9 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
     	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(adapterFactory,object,feature) {
+    		
 				@Override
-				public void setValue(Object context, Object value) {
-					final ItemAwareElement element = adopt(context);
+				protected void internalSet(ItemAwareElement element, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof String) {
 						// construct a DataState from the given name string
 						DataState ds = Bpmn2ModelerFactory.create(DataState.class);
@@ -64,33 +64,24 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 						value = ds;
 					}
 					if (value instanceof DataState) {
-						final DataState oldValue = (DataState) element.eGet(feature);
+						DataState oldValue = (DataState) element.eGet(feature);
 						if (value != oldValue) {
 							// if this DataState belongs to some other ItemAwareElement, make a copy
-							final DataState newValue = (DataState)(((DataState)value).eContainer()!=null ?
-								EcoreUtil.copy((DataState) value) : value);
-							TransactionalEditingDomain editingDomain = getEditingDomain(element);
-							if (editingDomain == null) {
-								element.eSet(feature, value);
-							} else {
-								editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-									@Override
-									protected void doExecute() {
-										element.eSet(feature, newValue);
-										newValue.setId(null);
-										ModelUtil.setID(newValue);
-									}
-								});
-							}
+							DataState newValue = null;
+							if (((DataState)value).eContainer()!=null)
+								newValue = EcoreUtil.copy((DataState) value);
+							else
+								newValue = (DataState)value;
+							element.eSet(feature, newValue);
 						}
 					}
 				}
 
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
+				public Hashtable<String, Object> getChoiceOfValues() {
 					Hashtable<String,Object> choices = new Hashtable<String,Object>();
 					try {
-						Resource resource = ModelUtil.getResource(object);
+						Resource resource = ResourceProvider.getResource(object);
 						List<DataState> states = ModelHandler.getAll(resource, DataState.class);
 						for (DataState s : states) {
 							String label = s.getName();

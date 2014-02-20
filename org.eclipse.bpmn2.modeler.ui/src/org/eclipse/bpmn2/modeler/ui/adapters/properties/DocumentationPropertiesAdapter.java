@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
@@ -42,27 +43,13 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
 			new FeatureDescriptor<Documentation>(adapterFactory,object,textFeature) {
     		
     			@Override
-    			
-    			public void setValue(Object context, final Object value) {
-    				final Documentation documentation = adopt(context);
-    				final String text = value==null ? "" : value.toString();
-    				InsertionAdapter.executeIfNeeded(documentation);
-    				TransactionalEditingDomain editingDomain = getEditingDomain(documentation);
-    				final BaseElement owner = (BaseElement) documentation.eContainer();
-					if (editingDomain == null) {
-						documentation.setText(text);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-								documentation.setText(text);
-							}
-						});
-					}
+    	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {
+    				String text = value==null ? "" : value.toString();
+					documentation.setText(text);
     			}
 
 				@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					// formal expression body is always a multiline text field
 					return true;
 				}

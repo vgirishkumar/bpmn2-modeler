@@ -12,31 +12,51 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 
-public class BaseRuntimeDescriptor {
-	
+public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensionDescriptor {
+
 	protected TargetRuntime targetRuntime;
+	protected IFile configFile;
+
+	public static <T extends BaseRuntimeExtensionDescriptor> T getDescriptor(EObject object, Class type) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null) {
+			return (T)adapter.getProperty(type.getName());
+		}
+		return null;
+	}
 	
-	public BaseRuntimeDescriptor() {
+	public BaseRuntimeExtensionDescriptor() {
 	}
 
-	public BaseRuntimeDescriptor(TargetRuntime rt) {
+	public void dispose() {
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.remove(this);
+	}
+
+	public BaseRuntimeExtensionDescriptor(TargetRuntime rt) {
 		targetRuntime = rt;
+	}
+	
+	public IFile getConfigFile() {
+		return configFile;
+	}
+
+	public void setConfigFile(IFile configFile) {
+		this.configFile = configFile;
 	}
 	
 	public TargetRuntime getRuntime() {
@@ -45,6 +65,8 @@ public class BaseRuntimeDescriptor {
 
 	public void setRuntime(TargetRuntime targetRuntime) {
 		this.targetRuntime = targetRuntime;
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.add(this);
 	}
 	
 	public EPackage getEPackage() {
@@ -96,58 +118,5 @@ public class BaseRuntimeDescriptor {
 			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(name);
 		}
 		return eClass;
-	}
-	
-	public void setValueFromString(EObject object, EStructuralFeature feature, Object value, boolean force) {
-		// should not set null value features
-		if (value == null) {
-			return;
-		}
-		
-		if (feature.isMany()) {
-			((EList)object.eGet(feature)).add(value);
-		}
-		else {
-			if (value instanceof String) {
-				EDataType eDataType = (EDataType)feature.getEType();
-				try {
-					// TODO: figure out why feature.eClass().getEPackage().getEFactoryInstance() doesn't
-					// return the correct factory!
-					EFactory factory = ModelUtil.getEPackage(feature).getEFactoryInstance();
-					value = factory.createFromString(eDataType, (String)value);
-				}
-				catch (Exception e)
-				{
-					EFactory factory = EcorePackage.eINSTANCE.getEFactoryInstance();
-					value = factory.createFromString(eDataType, (String)value);
-				}
-			}
-
-			if (object.eClass().getEStructuralFeature(feature.getName())!=null) {
-				// this feature exists for this object, so we can set it directly
-				// but only if it's not already set.
-				if (!object.eIsSet(feature) || force) {
-					object.eSet(feature, value);
-				}
-			}
-			else {
-				// the feature does not exist in this object, so we either need to
-				// create an "anyAttribute" entry or, if the object is an ExtensionAttributeValue,
-				// create an entry in its "value" feature map.
-				if (object instanceof ExtensionAttributeValue) {
-					ModelUtil.addExtensionAttributeValue(object.eContainer(), feature, value);
-				}
-				else {
-					EStructuralFeature f = ModelUtil.getAnyAttribute(object, feature.getName());
-					if (f!=null) {
-						if (object.eGet(f)!=null)
-							return;
-					}
-					if (!object.eIsSet(feature) || force) {
-						object.eSet(feature, value);
-					}
-				}
-			}
-		}
 	}
 }

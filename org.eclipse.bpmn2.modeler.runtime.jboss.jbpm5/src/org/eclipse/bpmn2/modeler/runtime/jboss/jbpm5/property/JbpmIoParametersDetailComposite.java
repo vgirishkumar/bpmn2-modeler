@@ -21,9 +21,9 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
 import org.eclipse.emf.ecore.EObject;
@@ -72,8 +72,8 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 	}
 	
 	public static boolean isCustomTask(EObject object) {
-		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(object);
-		if (adapter!=null && adapter.getDescriptor() instanceof CustomTaskDescriptor) {
+		CustomTaskDescriptor ctd = BaseRuntimeExtensionDescriptor.getDescriptor(object, CustomTaskDescriptor.class);
+		if (ctd!=null) {
 			return true;
 		}
 		return false;
@@ -93,9 +93,9 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 			return false;
 		
 		List<Property> props = null;
-		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(activity);
-		if (adapter!=null) {
-			props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+		CustomTaskDescriptor ctd = BaseRuntimeExtensionDescriptor.getDescriptor(activity, CustomTaskDescriptor.class);
+		if (ctd!=null) {
+			props = ctd.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			if (props!=null) {
 				for (Property p : props) {
 					Object propName = p.getFirstStringValue();

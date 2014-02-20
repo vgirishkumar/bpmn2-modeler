@@ -17,7 +17,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2TabDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.PropertyTabDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
@@ -64,17 +64,17 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 			rt = ((BPMN2Editor)bpmn2Editor).getTargetRuntime(this);
 		}
 		
-		List<Bpmn2TabDescriptor> desc = null;
+		List<PropertyTabDescriptor> desc = null;
 		if (rt!=TargetRuntime.getDefaultRuntime()) {
-			desc = TargetRuntime.getDefaultRuntime().getTabDescriptors();
-			desc.addAll(rt.getTabDescriptors());
+			desc = TargetRuntime.getDefaultRuntime().buildPropertyTabDescriptors();
+			desc.addAll(rt.buildPropertyTabDescriptors());
 		}
 		else
-			desc = rt.getTabDescriptors();
+			desc = rt.buildPropertyTabDescriptors();
 		
 		// do tab replacement
-		ArrayList<Bpmn2TabDescriptor> replaced = new ArrayList<Bpmn2TabDescriptor>();
-		for (Bpmn2TabDescriptor d : desc) {
+		ArrayList<PropertyTabDescriptor> replaced = new ArrayList<PropertyTabDescriptor>();
+		for (PropertyTabDescriptor d : desc) {
 			String replacedId = d.getReplaceTab();
 			if (replacedId!=null) {
 				String[] replacements = replacedId.split(" "); //$NON-NLS-1$
@@ -87,7 +87,7 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 							// ask the section if it wants to replace this tab
 							if (s.doReplaceTab(id, part, selection)) {
 								// replace the tab whose ID is specified as "replaceTab" in this tab.
-								Bpmn2TabDescriptor replacedTab = TargetRuntime.findTabDescriptor(id);
+								PropertyTabDescriptor replacedTab = TargetRuntime.findPropertyTabDescriptor(id);
 								if (replacedTab!=null) {
 									replaced.add(replacedTab);
 									int i = desc.indexOf(replacedTab);
@@ -105,7 +105,7 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 			desc.removeAll(replaced);
 
 		for (int i=desc.size()-1; i>=0; --i) {
-			Bpmn2TabDescriptor d = desc.get(i);
+			PropertyTabDescriptor d = desc.get(i);
 			for (int j=i-1; j>=0; --j) {
 				if (desc.get(j)==d) {
 					desc.remove(i);
@@ -116,9 +116,9 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 		
 		// remove empty tabs
 		// also move the advanced tab to end of list
-		ArrayList<Bpmn2TabDescriptor> emptyTabs = new ArrayList<Bpmn2TabDescriptor>();
-		Bpmn2TabDescriptor advancedPropertyTab = null;
-		for (Bpmn2TabDescriptor d : desc) {
+		ArrayList<PropertyTabDescriptor> emptyTabs = new ArrayList<PropertyTabDescriptor>();
+		PropertyTabDescriptor advancedPropertyTab = null;
+		for (PropertyTabDescriptor d : desc) {
 			boolean empty = true;
 			for (Bpmn2SectionDescriptor s : (List<Bpmn2SectionDescriptor>) d.getSectionDescriptors()) {
 				if (s.appliesTo(part, selection)) {
@@ -143,11 +143,13 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 		
 		// make copies of all tab descriptors to prevent cross-talk between editors
 		replaced.clear(); // we'll just reuse an ArrayList from before...
-		for (Bpmn2TabDescriptor td : desc) {
+		for (PropertyTabDescriptor td : desc) {
 			// Note that the copy() makes the Tab Descriptor IDs and Section IDs unique.
 			// This is important because the TabbedPropertySheetPage uses these IDs to
 			// look up the Sections.
-			replaced.add(td.copy()); 
+			String rtid = td.getRuntimeId();
+			if (rtid==null || rt.getId().equals(rtid))
+				replaced.add(td.copy()); 
 		}
 		
 		// save this in the cache.

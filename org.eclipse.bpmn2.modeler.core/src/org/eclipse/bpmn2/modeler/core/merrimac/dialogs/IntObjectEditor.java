@@ -20,8 +20,10 @@ import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -96,12 +98,7 @@ public class IntObjectEditor extends TextObjectEditor {
 
 			@SuppressWarnings("rawtypes")
 			private void setFeatureValue(final long i) {
-				Class eTypeClass = feature.getEType().getInstanceClass();
-				if (Long.class.equals(eTypeClass) || long.class.equals(eTypeClass)) {
-					setValue(Long.valueOf((long)i));
-				}
-				else
-					setValue(Integer.valueOf((int)i));
+				getBusinessObjectDelegate().setValue(object, feature, Long.toString(i));
 			}
 		});
 
@@ -122,7 +119,7 @@ public class IntObjectEditor extends TextObjectEditor {
 	}
 	
 	public Long getValue() {
-		Object v = object.eGet(feature);
+		Object v = getBusinessObjectDelegate().getValue(object, feature);
 		if (v instanceof Short)
 			return ((Short)v).longValue();
 		if (v instanceof Integer)

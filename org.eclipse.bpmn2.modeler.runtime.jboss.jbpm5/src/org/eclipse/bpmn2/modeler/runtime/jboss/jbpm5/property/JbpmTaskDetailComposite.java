@@ -40,8 +40,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.NCNameObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
@@ -98,14 +98,14 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	 */
 	protected void createInputParameterBindings(Task task) {
 		
-		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
-		if (adapter != null) {
+		ModelExtensionDescriptor med = BaseRuntimeExtensionDescriptor.getDescriptor(task, ModelExtensionDescriptor.class);
+		if (med != null) {
 			// This Task object has <modelExtension> properties defined in the plugin.xml
 			// check if any of the <property> elements extend the DataInputs or DataOutputs
 			// (i.e. the I/O Parameter mappings) and create Object Editors for them.
 			// If the Task does not define these parameter mappings, create temporary objects
 			// for the editors (these will go away if they are not touched by the user)
-			List<Property> props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+			List<Property> props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			InputOutputSpecification ioSpec = task.getIoSpecification();
 			if (ioSpec==null) {
 				ioSpec = createModelObject(InputOutputSpecification.class);
@@ -207,7 +207,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					editor = new TextObjectEditor(this,fromExpression,attribute);
 					((TextObjectEditor)editor).setMultiLine(false);
 				}
-				editor.createControl(getAttributesParent(),ModelUtil.toDisplayName(name));
+				editor.createControl(getAttributesParent(),ModelUtil.toCanonicalString(name));
 			}
 		}
 	}

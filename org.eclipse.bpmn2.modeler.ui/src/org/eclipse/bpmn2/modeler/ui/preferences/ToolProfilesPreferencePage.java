@@ -490,7 +490,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 
 	private void fillRuntimesCombo() {
 		int i = 0;
-		for (TargetRuntime r : TargetRuntime.getAllRuntimes()) {
+		for (TargetRuntime r : TargetRuntime.createTargetRuntimes()) {
 			cboRuntimes.add(r.getName());
 			cboRuntimes.setData(r.getName(), r);
 			if (r == currentRuntime)
@@ -628,8 +628,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 								kids.addAll(defaultToolPalette.getCategories());
 							}
 							else if (cd.getFromPalette()!=null) {
-								for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-									for (ToolPaletteDescriptor td : rt.getToolPalettes()) {
+								for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+									for (ToolPaletteDescriptor td : rt.getToolPaletteDescriptors()) {
 										if (cd.getFromPalette().equals(td.getId())) {
 											for (CategoryDescriptor cd2 : td.getCategories()) {
 												if (cd.getId().equals(cd2.getId())) {
@@ -844,7 +844,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private void loadCategory(CategoryDescriptor cd, Class c) {
-		ToolDescriptor td = new ToolDescriptor(cd, null, ModelUtil.toDisplayName(c.getSimpleName()),null,null);
+		ToolDescriptor td = new ToolDescriptor(cd, null, ModelUtil.toCanonicalString(c.getSimpleName()),null,null);
 		cd.getTools().add(td);
 		ToolPart tp = new ToolPart(td,c.getSimpleName());
 		td.getToolParts().add(tp);
@@ -854,7 +854,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	public boolean performOk() {
 		setErrorMessage(null);
 		try {
-			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
 					for (String profile : preferences.getAllToolProfiles(rt, diagramType)) {
 						if (hasHelper(rt, diagramType, profile)) {

@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -110,9 +111,9 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	@Override
 	protected String getTitle() {
 		if (createNew)
-			title = NLS.bind(Messages.FeatureEditingDialog_Create, ModelUtil.getLabel(newObject));
+			title = NLS.bind(Messages.FeatureEditingDialog_Create, ExtendedPropertiesProvider.getLabel(newObject));
 		else
-			title = NLS.bind(Messages.FeatureEditingDialog_Edit, ModelUtil.getLabel(newObject));
+			title = NLS.bind(Messages.FeatureEditingDialog_Edit, ExtendedPropertiesProvider.getLabel(newObject));
 		return title;
 	}
 	

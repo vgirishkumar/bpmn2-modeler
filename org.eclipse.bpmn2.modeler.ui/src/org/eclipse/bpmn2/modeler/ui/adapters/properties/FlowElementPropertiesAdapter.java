@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -45,7 +46,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(adapterFactory,object, f) {
 
 			@Override
-			public void setDisplayName(String text) {
+			public void setTextValue(String text) {
 				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
@@ -54,27 +55,26 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
+			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$
-				T flowElement = adopt(context); 
 				if (feature.getName().equals("name")) //$NON-NLS-1$
-					return (String)flowElement.getName();
+					return (String)object.getName();
 
-				EStructuralFeature f = flowElement.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+				EStructuralFeature f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 				if (f!=null) {
-					String name = (String)flowElement.eGet(f);
+					String name = (String)object.eGet(f);
 					if (name!=null && !name.isEmpty())
 						text = name;
 				}
 				if (text.isEmpty()) {
-					f = flowElement.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+					f = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 					if (f!=null) {
-						Object id = flowElement.eGet(f);
+						Object id = object.eGet(f);
 						if (id!=null && !id.toString().isEmpty()) {
-							String className = flowElement.eClass().getName();
+							String className = object.eClass().getName();
 							String idString = id.toString();
 							if (!idString.contains(className)) {
-								text = ModelUtil.toDisplayName(className) + " '" + id + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+								text = ModelUtil.toCanonicalString(className) + " '" + id + "'"; //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							else
 								text = idString;
@@ -99,14 +99,14 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 							break;
 					}
 					if (container instanceof Activity || container instanceof Process) {
-						text = ModelUtil.getDisplayName(container) + "/" + text; //$NON-NLS-1$
+						text = ExtendedPropertiesProvider.getTextValue(container) + "/" + text; //$NON-NLS-1$
 					}
 					container = container.eContainer();
 				}
 
 				if (text!=null) {
 					if (flowElement instanceof ItemAwareElement) {
-						String type = ModelUtil.getDisplayName(((ItemAwareElement)flowElement).getItemSubjectRef());
+						String type = ExtendedPropertiesProvider.getTextValue(((ItemAwareElement)flowElement).getItemSubjectRef());
 						if (type!=null)
 							text += " (" + type + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 					}
@@ -120,14 +120,14 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 		setObjectDescriptor(new ObjectDescriptor<T>(adapterFactory, object) {
 
 			@Override
-			public void setDisplayName(String text) {
-				fd.setDisplayName(text);
+			public void setTextValue(String text) {
+				fd.setTextValue(text);
 				ModelUtil.setID(object);
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
-				return fd.getDisplayName(context);
+			public String getTextValue() {
+				return fd.getTextValue();
 			}
 		});
 	}

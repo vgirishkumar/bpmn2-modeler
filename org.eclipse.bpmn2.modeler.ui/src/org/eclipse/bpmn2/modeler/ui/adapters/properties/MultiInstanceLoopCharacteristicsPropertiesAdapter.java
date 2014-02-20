@@ -96,15 +96,14 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 		public LoopCharacteristicsDataIoFeatureDescriptor(AdapterFactory adapterFactory, MultiInstanceLoopCharacteristics object, EStructuralFeature feature) {
 			super(adapterFactory, object, feature);
 		}
-		
-		public EObject createFeature(Resource resource, Object context, EClass eclass) {
-			MultiInstanceLoopCharacteristics loopCharacteristics = adopt(context);
-			
-			EObject value = super.createFeature(resource, context, eclass);
+
+		@Override
+		public EObject createFeature(Resource resource, EClass eclass) {
+			EObject value = super.createFeature(resource, eclass);
 			// if the new object is the collection reference, we need to attach it to the
 			// activity's InputOutputSpecification.
 			if (feature==LOOP_DATA_INPUT_REF || feature==LOOP_DATA_OUTPUT_REF) {
-				Activity container = (Activity)ModelUtil.getContainer(loopCharacteristics);
+				Activity container = (Activity)ModelUtil.getContainer(object);
 				EStructuralFeature f = container.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 				if (f!=null) {
 					InputOutputSpecification ioSpecification = (InputOutputSpecification)container.eGet(f);
@@ -121,11 +120,10 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 		}
 		
 		@Override
-		public Hashtable<String, Object> getChoiceOfValues(Object context) {
+		public Hashtable<String, Object> getChoiceOfValues() {
 			Hashtable<String, Object> choices = new Hashtable<String, Object>();
-			MultiInstanceLoopCharacteristics loopCharacteristics = adopt(context);
 			
-			Activity container = (Activity)ModelUtil.getContainer(loopCharacteristics);
+			Activity container = (Activity)ModelUtil.getContainer(object);
 			List values = new ArrayList<EObject>();
 			if (feature == LOOP_DATA_INPUT_REF || feature == LOOP_DATA_OUTPUT_REF) {
 //				if (container instanceof Task)
@@ -145,7 +143,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 				if (container instanceof SubProcess) {
 					// Collect all DataObjects from Process and SubProcess ancestors
 					// DataObjects are FlowElements, so we will have to weed those out from other FlowElements.
-					List<EObject> flowElements = ModelUtil.collectAncestorObjects(loopCharacteristics, "flowElements", new Class[] {Process.class, SubProcess.class}); //$NON-NLS-1$
+					List<EObject> flowElements = ModelUtil.collectAncestorObjects(object, "flowElements", new Class[] {Process.class, SubProcess.class}); //$NON-NLS-1$
 					for (EObject fe : flowElements) {
 						if (fe instanceof DataObjectReference) {
 							fe = ((DataObjectReference)fe).getDataObjectRef();
@@ -175,7 +173,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 				}
 			}
 			super.setChoiceOfValues(choices);
-			return super.getChoiceOfValues(context);
+			return super.getChoiceOfValues();
 		}
 	}
 }

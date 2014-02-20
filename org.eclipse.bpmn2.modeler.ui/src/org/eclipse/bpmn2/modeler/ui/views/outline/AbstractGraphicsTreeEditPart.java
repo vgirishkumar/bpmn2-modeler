@@ -13,7 +13,7 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.ui.property.PropertyLabelProvider;
 import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -125,7 +125,7 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 		if (o!=null) {
 			text = labelProvider.getText(o);
 			if (text==null) {
-				text = ModelUtil.getDisplayName(o);
+				text = ExtendedPropertiesProvider.getTextValue(o);
 				if (text==null || text.isEmpty()) {
 					EStructuralFeature f = o.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
 					if (f!=null)

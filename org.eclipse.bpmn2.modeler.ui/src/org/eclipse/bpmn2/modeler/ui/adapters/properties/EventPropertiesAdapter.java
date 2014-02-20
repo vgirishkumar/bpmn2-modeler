@@ -40,9 +40,8 @@ public class EventPropertiesAdapter<T extends Event> extends ExtendedPropertiesA
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(adapterFactory,object,feature) {
 				@Override
-				public EObject createFeature(Resource resource, Object context, EClass eclass) {
-					T event = adopt(context);
-					return PropertyPropertiesAdapter.createProperty(event.getProperties());
+				public EObject createFeature(Resource resource, EClass eclass) {
+					return PropertyPropertiesAdapter.createProperty(object.getProperties());
 				}
 			}
 		);

@@ -49,17 +49,15 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 			new FeatureDescriptor<LinkEventDefinition>(adapterFactory,object,ref) {
 
 			@Override
-			public String getDisplayName(Object context) {
-				final LinkEventDefinition led = adopt(context);
-				String name = led.getName();
+			public String getTextValue() {
+				String name = object.getName();
 				if (name==null || name.isEmpty())
-					name = led.getId();
+					name = object.getId();
 				return name;
 			}
 
 			@Override
-			public Hashtable<String, Object> getChoiceOfValues(Object context) {
-				LinkEventDefinition object = adopt(context);
+			public Hashtable<String, Object> getChoiceOfValues() {
 				// add all ItemDefinitions
 				Hashtable<String,Object> choices = new Hashtable<String,Object>();
 				String s;
@@ -67,7 +65,7 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 				List<LinkEventDefinition> links = (List)ModelUtil.getAllReachableObjects(defs, Bpmn2Package.eINSTANCE.getLinkEventDefinition());
 				for (LinkEventDefinition link : links) {
 					if (link!=object) {
-						s = getDisplayName(link);
+						s = getTextValue();
 						choices.put(s,link);
 					}
 				}

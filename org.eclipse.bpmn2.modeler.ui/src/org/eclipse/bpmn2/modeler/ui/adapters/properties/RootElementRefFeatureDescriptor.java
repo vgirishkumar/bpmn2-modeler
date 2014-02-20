@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -51,9 +52,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 	}
 	
 	@Override
-	public EObject createFeature(Resource resource, Object context, EClass eClass) {
-		final T object = adopt(context);
-
+	public EObject createFeature(Resource resource, EClass eClass) {
 		if (resource==null && object.eResource()!=null)
 			resource = object.eResource();
 		
@@ -75,9 +74,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 	}
 	
 	@Override
-	public Hashtable<String, Object> getChoiceOfValues(Object context) {
-		final T object = adopt(context);
-				
+	public Hashtable<String, Object> getChoiceOfValues() {
 		Hashtable<String,Object> choices = new Hashtable<String,Object>();
 		Object value = object.eGet(feature);
 		if (value instanceof EList) {
@@ -85,7 +82,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 			while (iter.hasNext()) {
 				value = iter.next();
 				if (value instanceof RootElement)
-					choices.put(ModelUtil.getDisplayName(value), value);
+					choices.put(ModelUtil.getTextValue(value), value);
 			}
 		}
 		else if (value instanceof EObject) {
@@ -97,7 +94,7 @@ public class RootElementRefFeatureDescriptor<T extends BaseElement> extends Feat
 		if (definitions!=null) {
 			for (RootElement re : definitions.getRootElements()) {
 				if (re.eClass() == feature.getEType()) {
-					choices.put(ModelUtil.getDisplayName(re), re);
+					choices.put(ExtendedPropertiesProvider.getTextValue(re), re);
 				}
 			}
 		}

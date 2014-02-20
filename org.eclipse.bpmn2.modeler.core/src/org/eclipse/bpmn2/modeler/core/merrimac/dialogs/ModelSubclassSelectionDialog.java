@@ -121,13 +121,13 @@ public class ModelSubclassSelectionDialog extends ListDialog {
 	
 				@Override
 				public String getText(Object element) {
-					return ModelUtil.toDisplayName( ((EClass)element).getName() );
+					return ModelUtil.toCanonicalString( ((EClass)element).getName() );
 				}
 				
 			});
 			setTitle(NLS.bind(
 				Messages.ModelSubclassSelectionDialog_Title,
-				ModelUtil.toDisplayName(listItemClass.getName()))
+				ModelUtil.toCanonicalString(listItemClass.getName()))
 			);
 			setAddCancelButton(true);
 			setHelpAvailable(false);

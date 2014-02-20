@@ -31,6 +31,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -777,7 +778,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			return flow.getMessageRef().getName();
 		} else {
 			String messageName = flow.getMessageRef().getName();
-			String itemDefinitionName = ModelUtil.getDisplayName(flow.getMessageRef().getItemRef());
+			String itemDefinitionName = ExtendedPropertiesProvider.getTextValue(flow.getMessageRef().getItemRef());
 			String text = itemDefinitionName;
 			if (messageName!=null && !messageName.isEmpty())
 				text += "/" + messageName; //$NON-NLS-1$
@@ -793,7 +794,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				return mesg.getId();
 			return mesg.getName();
 		} else {
-			String type = "(" + ModelUtil.getDisplayName(mesg.getItemRef()) +")"; //$NON-NLS-1$ //$NON-NLS-2$
+			String type = "(" + ExtendedPropertiesProvider.getTextValue(mesg.getItemRef()) +")"; //$NON-NLS-1$ //$NON-NLS-2$
 			if (mesg.getName()==null)
 				return type; 
 			return mesg.getName() + type;

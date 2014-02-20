@@ -13,8 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -63,12 +63,12 @@ public class ObjectEditingDialog extends AbstractObjectEditingDialog {
 	public int open() {
 		title = null;
 		if (object!=null)
-			title = NLS.bind(Messages.ObjectEditingDialog_Edit, ModelUtil.getLabel(object));
+			title = NLS.bind(Messages.ObjectEditingDialog_Edit, ExtendedPropertiesProvider.getLabel(object));
 		create();
 		if (cancel)
 			return Window.CANCEL;
 		if (title==null)
-			title = NLS.bind(Messages.ObjectEditingDialog_Create, ModelUtil.getLabel(object));
+			title = NLS.bind(Messages.ObjectEditingDialog_Create, ExtendedPropertiesProvider.getLabel(object));
 		return super.open();
 	}
 }

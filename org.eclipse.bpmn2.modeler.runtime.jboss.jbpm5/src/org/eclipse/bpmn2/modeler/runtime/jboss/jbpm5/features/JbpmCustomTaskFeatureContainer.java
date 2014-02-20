@@ -26,11 +26,13 @@ import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.customeditor.SampleCustomEditor;
@@ -115,7 +117,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			// make sure the ioSpecification has both a default InputSet and OutputSet
 			InputOutputSpecification ioSpecification = task.getIoSpecification();
 			if (ioSpecification!=null) {
-				Resource resource = ModelUtil.getResource(context.getTargetContainer());
+				Resource resource = ResourceProvider.getResource(context.getTargetContainer());
 				if (ioSpecification.getInputSets().size()==0) {
 					InputSet is = Bpmn2ModelerFactory.create(resource, InputSet.class);
 					ioSpecification.getInputSets().add(is);
@@ -177,7 +179,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		if (object==null)
 			return null;
 		
-		List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
+		List<EStructuralFeature> features = ModelDecorator.getAnyAttributes(object);
 		for (EStructuralFeature f : features) {
 			if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 				Object attrValue = object.eGet(f);
@@ -244,7 +246,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 					Object o = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pes[0]);
 					if (o instanceof Task) {
 						Task task = (Task)o;
-						List<EStructuralFeature> features = ModelUtil.getAnyAttributes(task);
+						List<EStructuralFeature> features = ModelDecorator.getAnyAttributes(task);
 						for (EStructuralFeature f : features) {
 							if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 								// make sure the Work Item Definition exists
@@ -275,7 +277,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			PictogramElement pe = ((ICustomContext) context).getPictogramElements()[0];
 			final Task task = (Task)Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 			String taskName = ""; //$NON-NLS-1$
-			List<EStructuralFeature> features = ModelUtil.getAnyAttributes(task);
+			List<EStructuralFeature> features = ModelDecorator.getAnyAttributes(task);
 			for (EStructuralFeature f : features) {
 				if ("taskName".equals(f.getName())) { //$NON-NLS-1$
 					taskName = (String)task.eGet(f);

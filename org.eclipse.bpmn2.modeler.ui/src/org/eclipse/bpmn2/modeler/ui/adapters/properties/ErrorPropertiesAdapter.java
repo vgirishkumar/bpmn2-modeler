@@ -37,17 +37,16 @@ public class ErrorPropertiesAdapter extends RootElementPropertiesAdapter<Error> 
 		
     	setObjectDescriptor(new RootElementObjectDescriptor<Error>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				final Error error = adopt(context);
+			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$
-				if (error.getName()!=null) {
-					text += error.getName();
+				if (object.getName()!=null) {
+					text += object.getName();
 				}
-				else if (error.getErrorCode()!=null) {
-					text += Messages.ErrorPropertiesAdapter_Error_Code + error.getErrorCode();
+				else if (object.getErrorCode()!=null) {
+					text += Messages.ErrorPropertiesAdapter_Error_Code + object.getErrorCode();
 				}
 				if (text.isEmpty())
-					text = Messages.ErrorPropertiesAdapter_ID + error.getId();
+					text = Messages.ErrorPropertiesAdapter_ID + object.getId();
 				return text;
 			}
     	});

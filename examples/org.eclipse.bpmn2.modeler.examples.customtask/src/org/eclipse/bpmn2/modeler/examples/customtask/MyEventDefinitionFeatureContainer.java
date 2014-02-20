@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgor
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
@@ -64,7 +64,7 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 		//
 		// Note that the object inspection can be arbitrarily complex and may include several
 		// object features. This simple case just demonstrates what needs to happen here.
-		EStructuralFeature f = ModelUtil.getAnyAttribute(object, "type");
+		EStructuralFeature f = ModelDecorator.getAnyAttribute(object, "type");
 		if (f!=null) {
 			Object id = object.eGet(f);
 			if (TYPE_VALUE.equals(id))

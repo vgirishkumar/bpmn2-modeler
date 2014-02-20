@@ -15,9 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -29,8 +27,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -49,11 +45,11 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
     	feature = Bpmn2Package.eINSTANCE.getCallableElement_Name();
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<Process>(adapterFactory,object,feature) {
+    		
 	    		@Override
-	    		public void setValue(Object context, final Object value) {
+				protected void internalSet(Process process, EStructuralFeature feature, Object value, int index) {
 	    			// changing the process name also changes its BPMNDiagram name
 	    			// which is used as the tab label in the multipage editor
-	    			final Process process = adopt(context);
 	    			BPMNDiagram bpmnDiagram = null;
 	    			Definitions defs = ModelUtil.getDefinitions(process);
 	    			if (defs!=null) {
@@ -65,22 +61,9 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
 	    				}
 	    			}
 
-	    			TransactionalEditingDomain editingDomain = getEditingDomain(process);
-	    			if (editingDomain == null) {
-		    			process.setName((String)value);
-	    				if (bpmnDiagram!=null)
-	    					bpmnDiagram.setName((String)value);
-	    			} else {
-	    				final BPMNDiagram d = bpmnDiagram;
-	    				editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-	    					@Override
-	    					protected void doExecute() {
-	    		    			process.setName((String)value);
-	    	    				if (d!=null)
-	    	    					d.setName((String)value);
-	    					}
-	    				});
-	    			}
+	    			process.setName((String)value);
+    				if (bpmnDiagram!=null)
+    					bpmnDiagram.setName((String)value);
 	    		}
     		}
     	);
@@ -100,9 +83,8 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<Process>(adapterFactory,object,feature) {
 				@Override
-				public EObject createFeature(Resource resource, Object context, EClass eclass) {
-					Process process = adopt(context);
-					return PropertyPropertiesAdapter.createProperty(process.getProperties());
+				public EObject createFeature(Resource resource, EClass eclass) {
+					return PropertyPropertiesAdapter.createProperty(object.getProperties());
 				}
 			}
 		);

@@ -42,9 +42,8 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(adapterFactory,object,feature) {
 				@Override
-				public EObject createFeature(Resource resource, Object context, EClass eclass) {
-					T activity = adopt(context);
-					return PropertyPropertiesAdapter.createProperty(activity.getProperties());
+				public EObject createFeature(Resource resource, EClass eclass) {
+					return PropertyPropertiesAdapter.createProperty(object.getProperties());
 				}
 			}
 		);

@@ -41,7 +41,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			
 			public String toString() {
 				Object o = BusinessObjectUtil.getFirstBaseElement(shape);
-				return ModelUtil.getDisplayName(o);
+				return ModelUtil.getTextValue(o);
 			}
 		}
 		
@@ -57,7 +57,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			
 			public String toString() {
 				Object o = BusinessObjectUtil.getFirstBaseElement(connection);
-				return ModelUtil.getDisplayName(o);
+				return ModelUtil.getTextValue(o);
 			}
 		}
 		

@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -68,7 +69,7 @@ public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conver
 	public Conversation createBusinessObject(ICreateContext context) {
 		Conversation bo = null;
 		try {
-			Resource resource = ModelUtil.getResource(getDiagram());
+			Resource resource = ResourceProvider.getResource(getDiagram());
 			bo = Bpmn2ModelerFactory.create(Conversation.class);
 			ModelHandler mh = ModelHandler.getInstance(getDiagram());
 			bo.setName(Messages.CreateConversationFeature_Name);

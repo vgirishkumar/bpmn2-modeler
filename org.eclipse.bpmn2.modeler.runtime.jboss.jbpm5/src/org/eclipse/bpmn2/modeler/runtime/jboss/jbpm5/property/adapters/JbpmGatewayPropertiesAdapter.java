@@ -33,9 +33,8 @@ public class JbpmGatewayPropertiesAdapter extends
     	setFeatureDescriptor(ref, new FeatureDescriptor<Gateway>(adapterFactory,object,ref) {
 
     		@Override
-    		public Hashtable<String, Object> getChoiceOfValues(Object context) {
-    			EObject object = adopt(context);
-    			Hashtable<String, Object> choices = super.getChoiceOfValues(context);
+    		public Hashtable<String, Object> getChoiceOfValues() {
+    			Hashtable<String, Object> choices = super.getChoiceOfValues();
     			choices.remove("Unspecified"); //$NON-NLS-1$
     			choices.remove("Mixed"); //$NON-NLS-1$
     			return choices;

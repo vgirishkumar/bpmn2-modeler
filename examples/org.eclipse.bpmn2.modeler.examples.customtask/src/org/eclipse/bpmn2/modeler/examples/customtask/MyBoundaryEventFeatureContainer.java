@@ -11,7 +11,7 @@
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -33,7 +33,7 @@ public class MyBoundaryEventFeatureContainer extends CustomShapeFeatureContainer
 		//
 		// Note that the object inspection can be arbitrarily complex and may include several
 		// object features. This simple case just demonstrates what needs to happen here.
-		EStructuralFeature f = ModelUtil.getAnyAttribute(object, "type");
+		EStructuralFeature f = ModelDecorator.getAnyAttribute(object, "type");
 		if (f!=null) {
 			Object id = object.eGet(f);
 			if (TYPE_VALUE.equals(id))

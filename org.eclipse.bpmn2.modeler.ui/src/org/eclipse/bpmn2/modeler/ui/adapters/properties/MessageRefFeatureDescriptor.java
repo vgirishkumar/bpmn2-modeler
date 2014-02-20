@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.SendTask;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -39,9 +39,8 @@ public class MessageRefFeatureDescriptor<T extends BaseElement> extends RootElem
 	}
 	
 	@Override
-	public Hashtable<String, Object> getChoiceOfValues(Object context) {
-		Hashtable<String, Object> choices = super.getChoiceOfValues(context);
-		final T object = adopt(context);
+	public Hashtable<String, Object> getChoiceOfValues() {
+		Hashtable<String, Object> choices = super.getChoiceOfValues();
 		Operation operation = null;
 		EStructuralFeature f = object.eClass().getEStructuralFeature("operationRef"); //$NON-NLS-1$
 		if (f!=null && object.eGet(f)!=null) {
@@ -49,16 +48,16 @@ public class MessageRefFeatureDescriptor<T extends BaseElement> extends RootElem
 		}
 		
 		if (operation==null) {
-			choices = super.getChoiceOfValues(context);
+			choices = super.getChoiceOfValues();
 		}
 		else {
 			choices = new Hashtable<String,Object>();
 			Message message = operation.getOutMessageRef();
 			if (message!=null)
-				choices.put(ModelUtil.getDisplayName(message), message);
+				choices.put(ExtendedPropertiesProvider.getTextValue(message), message);
 			message = operation.getInMessageRef();
 			if (message!=null)
-				choices.put(ModelUtil.getDisplayName(message), message);
+				choices.put(ExtendedPropertiesProvider.getTextValue(message), message);
 		}
 		return choices;
 	}

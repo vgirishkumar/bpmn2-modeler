@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -52,21 +53,10 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 
     	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
 
-    		public void setValue(Object context, final Object value) {
+    		@Override
+    		protected void internalSet(SendTask sendTask, EStructuralFeature feature, Object value, int index) {
     			if (value instanceof Message || value==null) {
-	    			final SendTask object = adopt(context);
-	    			final Message message = (Message)value; 
-					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
-					if (editingDomain == null) {
-						setMessageRef(object, message);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-								setMessageRef(object, message);
-							}
-						});
-					}
+					setMessageRef(sendTask, (Message)value);
     			}
     		}
     		
@@ -79,21 +69,10 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 
 		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
     		
-    		public void setValue(Object context, final Object value) {
+    		@Override
+    		protected void internalSet(SendTask sendTask, EStructuralFeature feature, Object value, int index) {
     			if (value instanceof Operation || value==null) {
-	    			final SendTask object = adopt(context);
-	    			final Operation operation = (Operation)value; 
-					final TransactionalEditingDomain editingDomain = getEditingDomain(object);
-					if (editingDomain == null) {
-						setOperationRef(object, operation);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-								setOperationRef(object, operation);
-							}
-						});
-					}
+					setOperationRef(sendTask, (Operation)value);
     			}
     		}
    		

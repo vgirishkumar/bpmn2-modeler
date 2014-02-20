@@ -13,7 +13,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -127,11 +127,11 @@ public class RefListEditingDialog extends AbstractObjectEditingDialog {
 		java.util.List<EObject> targets = (java.util.List<EObject>) object.eGet(feature);
 		for (EObject value : targets) {
 			String key = "" + targetList.getItemCount(); //$NON-NLS-1$
-			targetList.add( ModelUtil.getDisplayName(value) );
+			targetList.add( ExtendedPropertiesProvider.getTextValue(value) );
 			targetList.setData(key, value);
 		}
 
-		Hashtable<String, Object> sources = ModelUtil.getChoiceOfValues(object, feature);
+		Hashtable<String, Object> sources = ExtendedPropertiesProvider.getChoiceOfValues(object, feature);
 		for (Entry<String, Object> entry : sources.entrySet()) {
 			if (!targets.contains(entry.getValue())) {
 				String key = "" + sourceList.getItemCount(); //$NON-NLS-1$

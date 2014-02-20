@@ -52,14 +52,13 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
     	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(adapterFactory, object, feature) {
     		
 			@Override
-			public EObject createFeature(Resource resource, Object context, EClass eclass) {
-				final InputOutputSpecification ioSpecification = adopt(context);
-				List<InputSet> inputSets = ioSpecification.getInputSets();
+			public EObject createFeature(Resource resource, EClass eclass) {
+				List<InputSet> inputSets = object.getInputSets();
 				if (inputSets.size()==0) {
 					inputSets.add(Bpmn2ModelerFactory.create(InputSet.class));
 				}
 				InputSet inputSet = inputSets.get(0);
-				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, ioSpecification.getDataInputs());
+				DataInput dataInput = DataInputPropertiesAdapter.createDataInput(resource, object.getDataInputs());
 				inputSet.getDataInputRefs().add(dataInput);
 
 				return dataInput;
@@ -70,14 +69,13 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
     	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(adapterFactory, object, feature) {
    		
 			@Override
-			public EObject createFeature(Resource resource, Object context, EClass eclass) {
-				final InputOutputSpecification ioSpecification = adopt(context);
-				List<OutputSet> outputSets = ioSpecification.getOutputSets();
+			public EObject createFeature(Resource resource, EClass eclass) {
+				List<OutputSet> outputSets = object.getOutputSets();
 				if (outputSets.size()==0) {
 					outputSets.add(Bpmn2ModelerFactory.create(OutputSet.class));
 				}
 				OutputSet outputSet = outputSets.get(0);
-				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, ioSpecification.getDataOutputs());
+				DataOutput dataOutput = DataOutputPropertiesAdapter.createDataOutput(resource, object.getDataOutputs());
 				outputSet.getDataOutputRefs().add(dataOutput);
 
 				return dataOutput;

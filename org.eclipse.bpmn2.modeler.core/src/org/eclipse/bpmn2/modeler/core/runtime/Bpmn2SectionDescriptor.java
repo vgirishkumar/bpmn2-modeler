@@ -43,7 +43,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		protected String filterClassName;
 		protected PropertySectionFilter filter;
 		
-		public Bpmn2SectionDescriptor(Bpmn2TabDescriptor td, IConfigurationElement e) {
+		public Bpmn2SectionDescriptor(PropertyTabDescriptor td, IConfigurationElement e) {
 			tab = td.getId();
 			id = tab + ".section"; //$NON-NLS-1$
 
@@ -76,7 +76,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 							clazz = null;
 						}
 						if (clazz==null) {
-							for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+							for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 								try {
 									clazz = rt.getRuntimeExtension().getClass().getClassLoader().loadClass(t);
 									break;
@@ -98,7 +98,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			td.getSectionDescriptors().add(this);
 		}
 		
-		public Bpmn2SectionDescriptor(Bpmn2TabDescriptor td, Bpmn2SectionDescriptor that) {
+		public Bpmn2SectionDescriptor(PropertyTabDescriptor td, Bpmn2SectionDescriptor that) {
 			tab = td.getId();
 			id = tab + ".section" + hashCode(); //$NON-NLS-1$
 			this.sectionClass = that.sectionClass;
@@ -154,7 +154,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				if (rt!=null) {
 					int selected = 0;
 					int count = 0;
-					for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
+					for (CustomTaskDescriptor tc : rt.getCustomTaskDescriptors()) {
 						for (String s : tc.getPropertyTabs()) {
 							if (tab.equals(s)) {
 								if (tc.getFeatureContainer().getId(businessObject)!=null)

@@ -86,7 +86,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 
 	@Override
 	public Boolean getValue() {
-		Object v = object.eGet(feature);
+		Object v = getBusinessObjectDelegate().getValue(object, feature);
 		if (v instanceof Boolean)
 			return (Boolean)v;
 		if (v instanceof String) {
@@ -110,7 +110,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		super.notifyChanged(notification);
 		if ( notification.getEventType() == -1 ||
 				(object == notification.getNotifier() && feature == notification.getFeature())) {
-			Object value = object.eGet(feature);
+			Object value = getBusinessObjectDelegate().getValue(object, feature);
 			if (value==null) {
 				value = Boolean.FALSE;
 			}

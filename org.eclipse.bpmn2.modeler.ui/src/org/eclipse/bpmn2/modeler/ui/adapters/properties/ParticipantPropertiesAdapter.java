@@ -119,13 +119,12 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
     	setFeatureDescriptor(ref, new FeatureDescriptor<Participant>(adapterFactory,object,ref) {
 
 			@Override
-			public String getLabel(Object context) {
+			public String getLabel() {
 				return Messages.ParticipantPropertiesAdapter_Multiplicity;
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
-				 Participant object = adopt(context);
+			public String getTextValue() {
 				 ParticipantMultiplicity pm = object.getParticipantMultiplicity();
 				 if (pm!=null) {
 					 return pm.getMinimum() + ".." + pm.getMaximum(); //$NON-NLS-1$

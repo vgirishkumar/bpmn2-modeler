@@ -195,7 +195,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	@Override
 	public String getCreateDescription() {
 		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
-				ModelUtil.toDisplayName( getBusinessObjectClass().getName()));
+				ModelUtil.toCanonicalString( getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)

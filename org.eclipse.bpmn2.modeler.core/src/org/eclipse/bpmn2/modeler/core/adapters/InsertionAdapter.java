@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
@@ -25,11 +24,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
-import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 
 /**
  * This adapter will insert an EObject into its container feature when the EObject's
@@ -38,7 +35,7 @@ import org.eclipse.emf.transaction.util.TransactionUtil;
  * Thus, an empty EObject is available for use by the UI for rendering only, without
  * creating an EMF transaction, and hence, a useless entry on the undo stack.
  */
-public class InsertionAdapter extends EContentAdapter {
+public class InsertionAdapter extends EContentAdapter implements IResourceProvider {
 	
 	protected Resource resource;
 	protected EObject object;
@@ -71,14 +68,6 @@ public class InsertionAdapter extends EContentAdapter {
 	
 	private InsertionAdapter(EObject object, String featureName, EObject value) {
 		this(object, object.eClass().getEStructuralFeature(featureName), value);
-	}
-	
-	public static EObject add(Resource resource, EObject object, EStructuralFeature feature, EObject value, EStructuralFeature extensionFeature, Object extensionValue) {
-		if (object!=null) {
-			value.eAdapters().add(
-					new InsertionAdapter(resource, object, feature, value, extensionFeature, extensionValue));
-		}
-		return value;
 	}
 
 	public static EObject add(EObject object, EStructuralFeature feature, EObject value) {
@@ -153,16 +142,19 @@ public class InsertionAdapter extends EContentAdapter {
 		
 		// remove this adapter from the value - this adapter is a one-shot deal!
 		value.eAdapters().remove(this);
+
 		try {
 			Object o = object.eGet(feature);
 		}
 		catch (Exception e1) {
 			try {
-				Object o = value.eGet(feature);
-				// this is the inverse add of object into value
-				o = value;
-				value = object;
-				object = (EObject)o;
+				if (value.eClass().getEStructuralFeature(feature.getName())!=null) {
+					Object o = value.eGet(feature);
+					// this is the inverse add of object into value
+					o = value;
+					value = object;
+					object = (EObject)o;
+				}
 			}
 			catch (Exception e2) {
 			}
@@ -173,80 +165,24 @@ public class InsertionAdapter extends EContentAdapter {
 		// set the value in the object
 		boolean valueChanged = false;
 		final EList<EObject> list = feature.isMany() ? (EList<EObject>)object.eGet(feature) : null;
-		if (list==null)
-			valueChanged = object.eGet(feature)!=value;
+		if (list==null) {
+			try {
+				valueChanged = object.eGet(feature)!=value;
+			}
+			catch (Exception e) {
+				// feature does not exist, it's a dynamic feature
+				valueChanged = true;
+			}
+		}
 		else
 			valueChanged = !list.contains(value) || value instanceof ExtensionAttributeValue;
 		
 		if (valueChanged) {
-			TransactionalEditingDomain domain = getEditingDomain();
-			if (domain==null) {
-				if (list==null)
-					object.eSet(feature, value);
-				else
-					list.add(value);
-				// assign the value's ID if it has one:
-				// because of changes made by cascading InsertionAdapters,
-				// the object could now be contained in a resource and hence
-				// the setID() will need to be executed on the command stack.
-				domain = getEditingDomain();
-				if (domain==null) {
-					ModelUtil.setID(value);
-				}
-				else {
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							ModelUtil.setID(value);
-						}
-					});
-				}
-			}
-			else {
-				domain.getCommandStack().execute(new RecordingCommand(domain) {
-					@Override
-					protected void doExecute() {
-						if (value instanceof ExtensionAttributeValue) {
-							if (list.size()==0)
-								list.add(value);
-							else
-								value = list.get(0);
-							FeatureMap map = ((ExtensionAttributeValue)value).getValue();
-							map.add(extensionFeature, extensionValue);
-						}
-						else {
-							ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-							if (adapter!=null) {
-								adapter.getFeatureDescriptor(feature).setValue(value);
-							}
-							else {
-								if (list==null)
-									object.eSet(feature, value);
-								else
-									list.add(value);
-							}
-							// assign the value's ID if it has one
-							ModelUtil.setID(value);
-						}
-					}
-				});
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+			if (adapter!=null) {
+				adapter.getFeatureDescriptor(feature).setValue(value);
 			}
 		}
-	}
-	
-	private TransactionalEditingDomain getEditingDomain() {
-		// If a transaction is already active, we want to run this
-		// inside that transaction instead of creating a new one.
-		if (resource==null) {
-			resource = getResource(object);
-			if (resource==null)
-				return null;
-		}
-		TransactionalEditingDomainImpl domain = (TransactionalEditingDomainImpl)
-				TransactionUtil.getEditingDomain(resource);
-		if (domain.getActiveTransaction()!=null && domain.getActiveTransaction().isActive())
-			return null;
-		return domain;
 	}
 	
 	public static void executeIfNeeded(EObject value) {
@@ -262,6 +198,7 @@ public class InsertionAdapter extends EContentAdapter {
 			adapter.execute();
 	}
 	
+	@Override
 	public Resource getResource() {
 		if (resource==null) {
 			Resource res = object.eResource();
@@ -274,6 +211,11 @@ public class InsertionAdapter extends EContentAdapter {
 		return resource;
 	}
 	
+	@Override
+	public void setResource(Resource resource) {
+		this.resource = resource;
+	}
+
 	public static Resource getResource(EObject object) {
 		InsertionAdapter adapter = AdapterUtil.adapt(object, InsertionAdapter.class);
 		if (adapter!=null) {
@@ -294,5 +236,13 @@ public class InsertionAdapter extends EContentAdapter {
 	
 	public EObject getValue() {
 		return value;
+	}
+
+	@Override
+	public EditingDomain getEditingDomain() {
+		getResource();
+		if (resource!=null)
+			return AdapterFactoryEditingDomain.getEditingDomainFor(resource);
+		return null;
 	}
 }

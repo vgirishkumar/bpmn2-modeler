@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.ColumnTableProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
@@ -87,10 +88,10 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		if (feature!=null) {
 			if (feature.eContainer() instanceof EClass) {
 				EClass eclass = this.listComposite.getListItemClass();
-				text = ModelUtil.getLabel(eclass, feature);
+				text = ExtendedPropertiesProvider.getLabel(eclass, feature);
 			}
 			else
-				text = ModelUtil.toDisplayName(feature.getName());
+				text = ModelUtil.toCanonicalString(feature.getName());
 		}
 		return text;
 	}
@@ -109,7 +110,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 
 	public String getText(Object element) {
 		if (element instanceof EObject) {
-			return ModelUtil.getDisplayName((EObject)element,feature);
+			return ExtendedPropertiesProvider.getTextValue((EObject)element,feature);
 		}
 		return element.toString();
 	}
@@ -153,7 +154,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			else if (ec instanceof EEnum) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
-			else if (ModelUtil.isMultiChoice(feature.eContainer(), feature)) {
+			else if (ExtendedPropertiesProvider.isMultiChoice(feature.eContainer(), feature)) {
 				ce = new CustomComboBoxCellEditor(parent, feature);
 			}
 			else if (ec instanceof EDataType) {
@@ -202,7 +203,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			value = ((CustomComboBoxCellEditor)ce).getChoice(value);
 		}
 		
-		boolean result = ModelUtil.setValue(getEditingDomain(), object, feature, value);
+		boolean result = ExtendedPropertiesProvider.setValue(object, feature, value);
 //		if (result==false || getDiagramEditor().getDiagnostics()!=null) {
 //			// revert the change and display error errorList message.
 //			ErrorUtils.showErrorMessage(getDiagramEditor().getDiagnostics().getMessage());
@@ -315,8 +316,8 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			// NOTE: This list should be rebuilt every time before we activate this
 			// cell editor since the choices may have changed.
 			List<String> items = new ArrayList<String>();
-			choices = ModelUtil.getChoiceOfValues(object, feature);
-			if (ModelUtil.canSetNull(object,feature))
+			choices = ExtendedPropertiesProvider.getChoiceOfValues(object, feature);
+			if (ExtendedPropertiesProvider.canSetNull(object,feature))
 				items.add(""); //$NON-NLS-1$
 			items.addAll(choices.keySet());
 			Collections.sort(items);

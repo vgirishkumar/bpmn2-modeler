@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
@@ -26,7 +27,6 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
@@ -191,7 +191,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			Shape textShape = peService.createShape(containerShape, false);
 			String name = "";
 			if (businessObject.getCategoryValueRef()!=null)
-				name = ModelUtil.getDisplayName(businessObject.getCategoryValueRef());
+				name = ExtendedPropertiesProvider.getTextValue(businessObject.getCategoryValueRef());
 			MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
 			StyleUtil.applyStyle(text, businessObject);
 			IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize("My", text.getFont());

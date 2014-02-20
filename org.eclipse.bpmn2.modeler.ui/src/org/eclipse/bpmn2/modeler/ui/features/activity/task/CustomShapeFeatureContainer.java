@@ -17,7 +17,7 @@ import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
@@ -52,7 +52,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	}
 
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
-		EClass eClass = (EClass) ModelUtil.getEClassifierFromString(
+		EClass eClass = (EClass) ModelDecorator.findEClassifier(
 				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
 		return ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
 	}

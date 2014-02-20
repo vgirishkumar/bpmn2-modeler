@@ -39,16 +39,15 @@ public class ScriptTaskPropertiesAdapter extends TaskPropertiesAdapter<ScriptTas
 			new FeatureDescriptor<ScriptTask>(adapterFactory,object,ref) {
     		
 	    		@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
 
 				@Override
-	    		public String getDisplayName(Object context) {
-	    			ScriptTask task = adopt(context);
-					if (task.getScript()==null)
+	    		public String getTextValue() {
+					if (object.getScript()==null)
 						return ""; //$NON-NLS-1$
-					return task.getScript();
+					return object.getScript();
 	    		}
     	});
     	
@@ -57,11 +56,10 @@ public class ScriptTaskPropertiesAdapter extends TaskPropertiesAdapter<ScriptTas
 			new FeatureDescriptor<ScriptTask>(adapterFactory,object,ref) {
     		
 	    		@Override
-	    		public String getDisplayName(Object context) {
-	    			ScriptTask task = adopt(context);
-					if (task.getScriptFormat()==null)
+	    		public String getTextValue() {
+					if (object.getScriptFormat()==null)
 						return ""; // TODO: is there a default mime-type? //$NON-NLS-1$
-					return task.getScriptFormat();
+					return object.getScriptFormat();
 	    		}
     	});
 	}

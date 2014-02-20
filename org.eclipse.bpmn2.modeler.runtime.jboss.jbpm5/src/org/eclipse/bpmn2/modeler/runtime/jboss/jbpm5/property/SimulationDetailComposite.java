@@ -22,12 +22,12 @@ import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
@@ -120,7 +120,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 
 	@Override
 	public void createBindings(EObject be) {
-		setTitle( ModelUtil.getLabel(be.eClass())+Messages.SimulationDetailComposite_Title);
+		setTitle( ExtendedPropertiesProvider.getLabel(be.eClass())+Messages.SimulationDetailComposite_Title);
 		if (be instanceof BPMNDiagram)
 		{
 			BPSimDataType pad = JbpmModelUtil.getBPSimData(be);

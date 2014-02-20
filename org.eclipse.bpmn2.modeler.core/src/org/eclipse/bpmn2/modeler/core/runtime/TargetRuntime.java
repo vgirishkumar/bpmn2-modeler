@@ -12,41 +12,40 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.AbstractPropertyChangeListenerProvider;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Value;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 
-public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
+public class TargetRuntime extends AbstractPropertyChangeListenerProvider implements IRuntimeExtensionDescriptor {
+
+	public static final String EXTENSION_NAME = "runtime"; //$NON-NLS-1$
 
 	// extension point ID for Target Runtimes
 	public static final String RUNTIME_EXTENSION_ID = "org.eclipse.bpmn2.modeler.runtime"; //$NON-NLS-1$
@@ -55,73 +54,268 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	public static final String BPMN2_MARKER_ID = "org.eclipse.bpmn2.modeler.core.problemMarker"; //$NON-NLS-1$
 	
 	// our cached registry of target runtimes contributed by other plugins
-	protected static TargetRuntime targetRuntimes[];
-	protected static TargetRuntime currentRuntime;
+	private static List<TargetRuntime> targetRuntimes;
+	// the Target Runtime for the currently active BPMN2 Editor
+	private static TargetRuntime currentRuntime;
 	
-	protected String name;
-	protected String[] versions;
-	protected String id;
-	protected String description;
+	// the Target Runtime properties
+	private String id;
+	private String name;
+	private String[] versions;
+	private String description;
 	private IBpmn2RuntimeExtension runtimeExtension;
-	protected ModelDescriptor modelDescriptor;
-	protected ArrayList<Bpmn2TabDescriptor> tabDescriptors;
-	protected ArrayList<CustomTaskDescriptor> customTasks;
-	protected ArrayList<ModelExtensionDescriptor> modelExtensions;
-	protected ArrayList<ModelEnablementDescriptor> modelEnablements;
-	protected ModelEnablementDescriptor defaultModelEnablements;
-	protected ArrayList<PropertyExtensionDescriptor> propertyExtensions;
-	protected ArrayList<FeatureContainerDescriptor> featureContainers;
-	protected ArrayList<ToolPaletteDescriptor> toolPalettes;
-	protected HashMap<Class, ShapeStyle> shapeStyles;
-	protected Bpmn2Resource bpmnResource;
-	protected String problemMarkerId;
+	private String problemMarkerId;
+	
+	// the lists of Extension Descriptors defined in the extension plugin's plugin.xml
+	protected List<ModelDescriptor> modelDescriptors;
+	protected List<PropertyTabDescriptor> propertyTabDescriptors;
+	protected List<CustomTaskDescriptor> customTaskDescriptors;
+	protected List<ModelExtensionDescriptor> modelExtensionDescriptors;
+	protected List<ModelEnablementDescriptor> modelEnablementDescriptors;
+	protected ModelEnablementDescriptor defaultModelEnablementDescriptors;
+	protected List<PropertyExtensionDescriptor> propertyExtensionDescriptors;
+	protected List<FeatureContainerDescriptor> featureContainerDescriptors;
+	protected List<ToolPaletteDescriptor> toolPaletteDescriptors;
+	protected List<ShapeStyle> shapeStyles;
 
-	public TargetRuntime(String id, String name, String versions, String description) {
-		this.id = id;
-		this.name = name;
-		if (versions!=null)
-			this.versions = versions.split("[, ]"); //$NON-NLS-1$
-		this.description = description;
+	// all of the extension descriptor classes in the order in which they need to be processed
+	static Class extensionDescriptorClasses[] = {
+		TargetRuntime.class,
+		ModelDescriptor.class,
+		PropertyTabDescriptor.class,
+		ModelExtensionDescriptor.class,
+		CustomTaskDescriptor.class,
+		ModelEnablementDescriptor.class,
+		ToolPaletteDescriptor.class,
+		PropertyExtensionDescriptor.class,
+		FeatureContainerDescriptor.class,
+		ShapeStyle.class,
+	};
+
+	/**
+	 * Target Runtime Construction with a ConfigurationElement.
+	 * This initializes all of our Target Runtime properties (name, ID, implementation class, etc.)
+	 * 
+	 * @param e - an IConfigurationElement defined in a plugin.xml
+	 */
+	public TargetRuntime(IConfigurationElement e) {
+		id = e.getAttribute("id"); //$NON-NLS-1$
+		name = e.getAttribute("name"); //$NON-NLS-1$
+		String s = e.getAttribute("versions"); //$NON-NLS-1$
+		if (s!=null) {
+			versions = s.split("[, ]"); //$NON-NLS-1$
+		}
+		description = e.getAttribute("description"); //$NON-NLS-1$
+		try {
+			setRuntimeExtension((IBpmn2RuntimeExtension) e.createExecutableExtension("class"));
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		} //$NON-NLS-1$
+
+		// add validation problem marker IDs
+		IContributor contributor = e.getDeclaringExtension().getContributor();
+		IConfigurationElement[] markers = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				"org.eclipse.core.resources.markers"); //$NON-NLS-1$
+		for (IConfigurationElement m : markers) {
+			if (m.getDeclaringExtension().getContributor() == contributor) {
+				problemMarkerId = m.getDeclaringExtension().getUniqueIdentifier();
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#getExtensionName()
+	 */
+	@Override
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#setRuntime(org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime)
+	 */
+	@Override
+	public void setRuntime(TargetRuntime targetRuntime) {
+		targetRuntimes.add(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#getRuntime()
+	 */
+	@Override
+	public TargetRuntime getRuntime() {
+		return this;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#getConfigFile()
+	 */
+	@Override
+	public IFile getConfigFile() {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#setConfigFile(org.eclipse.core.resources.IFile)
+	 */
+	@Override
+	public void setConfigFile(IFile configFile) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor#dispose()
+	 */
+	@Override
+	public void dispose() {
 	}
 	
+	/*
+	 * Target Runtime property accessors
+	 */
+	
+	/**
+	 * Returns the Target Runtime's unique ID string.
+	 * 
+	 * @return
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * Returns the Target Runtime's name for use in UI components
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Returns the Target Runtime's version number strings for use in UI components
+	 * 
+	 * @return
+	 */
+	public String[] getVersions() {
+		return versions;
+	}
+	
+	/**
+	 * Returns the Target Runtime's descriptive text for use in UI components
+	 * 
+	 * @return
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Returns the extension plugin class that implements the Target Runtime behavior
+	 * defined by the IBpmn2RuntimeExtension interface.
+	 * 
+	 * @return
+	 */
+	public IBpmn2RuntimeExtension getRuntimeExtension() {
+		return runtimeExtension;
+	}
+
+	/**
+	 * Sets the extension plugin's IBpmn2RuntimeExtension implementation class.
+	 * 
+	 * @param runtimeExtension
+	 */
+	public void setRuntimeExtension(IBpmn2RuntimeExtension runtimeExtension) {
+		this.runtimeExtension = runtimeExtension;
+	}
+
+	/**
+	 * Returns the Target Runtime's Model Descriptor which defines the EMF extension model.
+	 * 
+	 * @return
+	 */
+	public ModelDescriptor getModelDescriptor() {
+		return getModelDescriptors().get(0);
+	}
+	
+	public void setModelDescriptor(ModelDescriptor md) {
+		getModelDescriptors().clear();
+		getModelDescriptors().add(md);
+	}
+
+	public String getProblemMarkerId() {
+		if (problemMarkerId==null)
+			return BPMN2_MARKER_ID;
+		return problemMarkerId;
+	}
+
+	/*
+	 * Helper methods for access to global Target Runtime data
+	 */
+	
+	/**
+	 * Fetch the TargetRuntime for the given ID string
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static TargetRuntime getRuntime(String id) {
-		if (getAllRuntimes() == null) {
+		if (targetRuntimes == null) {
 			return null;
 		}
 		
-		for (TargetRuntime rt : getAllRuntimes()) {
+		for (TargetRuntime rt : targetRuntimes) {
 			if (rt.id.equals(id))
 				return rt;
 		}
 		return null;
 	}
 	
-	public static TargetRuntime getCurrentRuntime() {
-		return currentRuntime;
-	}
-	
+	/**
+	 * Set the current TargetRuntime.
+	 * This is called by a BPMN2 Editor when it becomes the active editor.
+	 * 
+	 * @param rt
+	 */
 	public static void setCurrentRuntime(TargetRuntime rt) {
 		currentRuntime = rt;
 	}
 	
+	/**
+	 * Return the current TargetRuntime.
+	 * This can be used by any UI component that belongs to the currently active BPMN2 Editor
+	 * 
+	 * @return
+	 */
+	public static TargetRuntime getCurrentRuntime() {
+		if (currentRuntime==null)
+			return getDefaultRuntime();
+		return currentRuntime;
+	}
+	
+	/**
+	 * Returns the "None" TargetRuntime definition.
+	 * 
+	 * @return
+	 */
 	public static TargetRuntime getDefaultRuntime() {
 		return getRuntime(DEFAULT_RUNTIME_ID);
 	}
 	
 	/**
+	 * Returns the first TargetRuntime which is not the "None", or "default" runtime.
+	 * If there are no other TargetRuntime extension plugins loaded, this returns the default runtime.
 	 * 
-	 * @return the first runtime which is non default, if there are more than on runtime or if there is only the default runtime
-	 * return the DEFAULT_RUNTIME_ID
+	 * @return
 	 */
 	public static String getFirstNonDefaultId(){
 		String runtimeId = null;
 		int nonDefaultRuntimeCount = 0;
 		
-		if (TargetRuntime.getAllRuntimes() == null) {
+		if (TargetRuntime.createTargetRuntimes() == null) {
 			return TargetRuntime.DEFAULT_RUNTIME_ID;
 		}
 		
-		for (TargetRuntime rt :TargetRuntime.getAllRuntimes()) {
+		for (TargetRuntime rt :TargetRuntime.createTargetRuntimes()) {
 			if (!rt.getId().equals(TargetRuntime.DEFAULT_RUNTIME_ID)){
 				nonDefaultRuntimeCount++;
 				runtimeId = rt.getId();
@@ -135,371 +329,77 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		}
 	}
 	
-	public void setResourceSet(ResourceSet resourceSet) {
+	public void registerExtensionResourceFactory(ResourceSet resourceSet) {
 		resourceSet.getResourceFactoryRegistry().getContentTypeToFactoryMap().put(
-				Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID, modelDescriptor.getResourceFactory());
+				Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID, getModelDescriptor().getResourceFactory());
 	}
 	
-	public static TargetRuntime[] getAllRuntimes() {
+	public static List<TargetRuntime> createTargetRuntimes() {
 		if (targetRuntimes==null) {
 			// load runtimes contributions from other plugins
-			ArrayList<TargetRuntime> rtList = new ArrayList<TargetRuntime>();
+			targetRuntimes = new ArrayList<TargetRuntime>();
 			
-			IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
-					RUNTIME_EXTENSION_ID);
+			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(RUNTIME_EXTENSION_ID);
+			
+			loadExtensions(null, elements, null);
 
-			try {
-				// first create all the Target Runtimes because other
-				// extension elements refer to these by runtimeId
-				for (IConfigurationElement e : config) {
-					if (e.getName().equals("runtime")) { //$NON-NLS-1$
-						String id = e.getAttribute("id"); //$NON-NLS-1$
-						String name = e.getAttribute("name"); //$NON-NLS-1$
-						String versions = e.getAttribute("versions"); //$NON-NLS-1$
-						String description = e.getAttribute("description"); //$NON-NLS-1$
-						TargetRuntime rt = new TargetRuntime(id,name,versions,description);
-						
-						rt.setRuntimeExtension((IBpmn2RuntimeExtension) e.createExecutableExtension("class")); //$NON-NLS-1$
-					
-						rtList.add(rt);
-
-						// add validation problem marker IDs
-						IContributor contributor = e.getDeclaringExtension().getContributor();
-						IConfigurationElement[] markers = Platform.getExtensionRegistry().getConfigurationElementsFor(
-								"org.eclipse.core.resources.markers"); //$NON-NLS-1$
-						for (IConfigurationElement m : markers) {
-							if (m.getDeclaringExtension().getContributor() == contributor) {
-								rt.setProblemMarkerId(m.getDeclaringExtension().getUniqueIdentifier());
-							}
-						}
-					}
-				}
+			// All done parsing configuration elements
+			// now go back and fix up some things...
+			for (TargetRuntime rt : targetRuntimes) {
 				
-				targetRuntimes = rtList.toArray(new TargetRuntime[rtList.size()]);
-				
-				// process model first
-				for (IConfigurationElement e : config) {
-					if (!e.getName().equals("runtime")) { //$NON-NLS-1$
-						currentRuntime = getRuntime(e);
-						
-						if (e.getName().equals("model")) { //$NON-NLS-1$
-							ModelDescriptor md = new ModelDescriptor();
-							if (e.getAttribute("uri")!=null) { //$NON-NLS-1$
-								String uri = e.getAttribute("uri"); //$NON-NLS-1$
-								md.setEPackage(EPackage.Registry.INSTANCE.getEPackage(uri));
-								md.setEFactory(md.getEPackage().getEFactoryInstance());
-							}
-							if (e.getAttribute("resourceFactory")!=null) //$NON-NLS-1$
-								md.setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory")); //$NON-NLS-1$
-							currentRuntime.setModelDescriptor(md);
-						}
-					}
+				if (rt.getModelDescriptor()==null) {
+					rt.setModelDescriptor( getDefaultRuntime().getModelDescriptor() ); 
 				}
-				
-				// need to process the Default Runtime first (defined in o.e.b.m.ui) because
-				// other plugins can refer to this.
-				for (IConfigurationElement e : config) {
-					if (!e.getName().equals("runtime")) { //$NON-NLS-1$
-						currentRuntime = getRuntime(e);
-						if (currentRuntime.getId().equals(TargetRuntime.DEFAULT_RUNTIME_ID)) {
-							if (e.getName().equals("propertyTab")) { //$NON-NLS-1$
-								Bpmn2TabDescriptor td = new Bpmn2TabDescriptor(e);
-								Bpmn2SectionDescriptor sd = new Bpmn2SectionDescriptor(td,e);
-								currentRuntime.getTabs().add(td);
-							}
-							if (e.getName().equals("modelEnablement")) { //$NON-NLS-1$
-								ModelEnablementDescriptor me;
-								String type = e.getAttribute("type"); //$NON-NLS-1$
-								String profile = e.getAttribute("profile"); //$NON-NLS-1$
-								String ref = e.getAttribute("ref"); //$NON-NLS-1$
-								currentRuntime.addModelEnablements(me = new ModelEnablementDescriptor(currentRuntime));
-								me.setDiagramType(Bpmn2DiagramType.fromString(type));
-								me.setProfile(profile);
-								if (ref!=null) {
-									String a[] = ref.split(":"); //$NON-NLS-1$
-									TargetRuntime rt = TargetRuntime.getRuntime(a[0]);
-									type = a[1];
-									profile = a[2];
-									me.initializeFromTargetRuntime(rt, Bpmn2DiagramType.fromString(type), profile);
-								}
-								
-								for (IConfigurationElement c : e.getChildren()) {
-									String object = c.getAttribute("object"); //$NON-NLS-1$
-									String feature = c.getAttribute("feature"); //$NON-NLS-1$
-									if (c.getName().equals("enable")) { //$NON-NLS-1$
-										me.setEnabled(object, feature, true);
-									} else if (c.getName().equals("disable")) { //$NON-NLS-1$
-										me.setEnabled(object, feature, false);
-									}
-								}
-
-							}
-						}
-					}
+				for (ToolPaletteDescriptor tp : rt.getToolPaletteDescriptors()) {
+					tp.sortCategories();
 				}
-				
-				// process propertyTab, propertyExtension, customTask, modelExtension and modelEnablement next
-				for (IConfigurationElement e : config) {
-					if (!e.getName().equals("runtime")) { //$NON-NLS-1$
-						currentRuntime = getRuntime(e);
-						
-						if (e.getName().equals("propertyTab")) { //$NON-NLS-1$
-							if (currentRuntime.getId().equals(TargetRuntime.DEFAULT_RUNTIME_ID)) {
-								// already done
-								continue;
-							}
-							Bpmn2TabDescriptor td = new Bpmn2TabDescriptor(e);
-							Bpmn2SectionDescriptor sd = new Bpmn2SectionDescriptor(td,e);
-							currentRuntime.getTabs().add(td);
-						}
-						else if (e.getName().equals("customTask")) { //$NON-NLS-1$
-							String id = e.getAttribute("id"); //$NON-NLS-1$
-							String name = e.getAttribute("name"); //$NON-NLS-1$
-							CustomTaskDescriptor ct = new CustomTaskDescriptor(id,name);
-							ct.type = e.getAttribute("type"); //$NON-NLS-1$
-							ct.description = e.getAttribute("description"); //$NON-NLS-1$
-							ct.category = e.getAttribute("category"); //$NON-NLS-1$
-							ct.icon = e.getAttribute("icon"); //$NON-NLS-1$
-							String tabs = e.getAttribute("propertyTabs"); //$NON-NLS-1$
-							if (tabs!=null) {
-								ct.propertyTabs = tabs.split(" "); //$NON-NLS-1$
-							}
-							ct.featureContainer = (ICustomElementFeatureContainer) e.createExecutableExtension("featureContainer"); //$NON-NLS-1$
-							ct.featureContainer.setCustomTaskDescriptor(ct);
-							ct.featureContainer.setId(id);
-							ct.setPermanent(true);
-							getModelExtensionProperties(ct,e);
-							currentRuntime.addCustomTask(ct);
-						}
-						else if (e.getName().equals("propertyExtension")) { //$NON-NLS-1$
-							String id = e.getAttribute("id"); //$NON-NLS-1$
-							PropertyExtensionDescriptor pe = new PropertyExtensionDescriptor(currentRuntime, e);
-							pe.type = e.getAttribute("type"); //$NON-NLS-1$
-							pe.adapterClassName = e.getAttribute("class"); //$NON-NLS-1$
-							currentRuntime.addPropertyExtension(pe);
-						}
-						else if (e.getName().equals("featureContainer")) { //$NON-NLS-1$
-							String id = e.getAttribute("id"); //$NON-NLS-1$
-							FeatureContainerDescriptor fc = new FeatureContainerDescriptor(currentRuntime);
-							fc.type = e.getAttribute("type"); //$NON-NLS-1$
-							fc.containerClassName = e.getAttribute("class"); //$NON-NLS-1$
-							currentRuntime.addFeatureContainer(fc);
-						}
-						else if (e.getName().equals("modelExtension")) { //$NON-NLS-1$
-							String id = e.getAttribute("id"); //$NON-NLS-1$
-							String name = e.getAttribute("name"); //$NON-NLS-1$
-							ModelExtensionDescriptor me = new ModelExtensionDescriptor(id,name);
-							me.type = e.getAttribute("type"); //$NON-NLS-1$
-							me.description = e.getAttribute("description"); //$NON-NLS-1$
-							getModelExtensionProperties(me,e);
-							currentRuntime.addModelExtension(me);
-						}
-						else if (e.getName().equals("modelEnablement")) { //$NON-NLS-1$
-							if (currentRuntime.getId().equals(TargetRuntime.DEFAULT_RUNTIME_ID)) {
-								// already done
-								continue;
-							}
-							ModelEnablementDescriptor me;
-							String type = e.getAttribute("type"); //$NON-NLS-1$
-							String profile = e.getAttribute("profile"); //$NON-NLS-1$
-							String ref = e.getAttribute("ref"); //$NON-NLS-1$
-							currentRuntime.addModelEnablements(me = new ModelEnablementDescriptor(currentRuntime));
-							me.setDiagramType(Bpmn2DiagramType.fromString(type));
-							me.setProfile(profile);
-							if (ref!=null) {
-								String a[] = ref.split(":"); //$NON-NLS-1$
-								TargetRuntime rt = TargetRuntime.getRuntime(a[0]);
-								type = a[1];
-								profile = a[2];
-								me.initializeFromTargetRuntime(rt, Bpmn2DiagramType.fromString(type), profile);
-							}
-							
-							for (IConfigurationElement c : e.getChildren()) {
-								String object = c.getAttribute("object"); //$NON-NLS-1$
-								String feature = c.getAttribute("feature"); //$NON-NLS-1$
-								if (c.getName().equals("enable")) { //$NON-NLS-1$
-									me.setEnabled(object, feature, true);
-								} else if (c.getName().equals("disable")) { //$NON-NLS-1$
-									me.setEnabled(object, feature, false);
-								}
-							}
-
-						}
-						else if (e.getName().equals("style")) { //$NON-NLS-1$
-							String object = e.getAttribute("object"); //$NON-NLS-1$
-							String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
-							String background = e.getAttribute("background"); //$NON-NLS-1$
-							String textColor = e.getAttribute("textColor"); //$NON-NLS-1$
-							String font = e.getAttribute("font"); //$NON-NLS-1$
-							EClass eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(object);
-							ShapeStyle ss = new ShapeStyle(foreground, background, textColor, font);
-							currentRuntime.getShapeStyles().put(eclass.getInstanceClass(), ss);
-						}
-						else if (e.getName().equals("toolPalette")) { //$NON-NLS-1$
-							ToolPaletteDescriptor toolPalette = null;
-							String id = e.getAttribute("id"); //$NON-NLS-1$
-							for (ToolPaletteDescriptor tp : currentRuntime.getToolPalettes()) {
-								if (tp.id.equals(id)) {
-									toolPalette = tp;
-									break;
-								}
-							}
-							if (toolPalette==null) {
-								toolPalette = new ToolPaletteDescriptor();
-								currentRuntime.addToolPalette(toolPalette);
-							}
-							toolPalette.create(e);
-						}
-					}
-				}
-
-
-				// All done parsing configuration elements
-				// now go back and fix up some things...
-				for (TargetRuntime rt : targetRuntimes) {
-					
-					if (rt.modelDescriptor==null) {
-						rt.modelDescriptor = getDefaultRuntime().getModelDescriptor(); 
-					}
-					for (ToolPaletteDescriptor tp : rt.getToolPalettes()) {
-						tp.sortCategories();
-					}
-					
-					// add customTask and modelExtension features to modelEnablements
-//					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
-//						for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-//							for (Property p : med.getProperties()) {
-//								me.setEnabled(med.getType(), p.name, true);
-//								EClassifier eClass = ModelUtil.getEClassifierFromString(med.getEPackage(), med.getType());
-//								ModelUtil.createDynamicAttribute(med.getEPackage(),
-//										eClass, p.name, p.type);
-//							}
-//						}
-						
-//						for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
-//							// the tool palette checks for enablement of this custom task ID
-//							me.setEnabled(ct.getId(), true);
-//							for (Property p : ct.getProperties()) {
-//								me.setEnabled(ct.getType(), p.name, true);
-//							}
-//						}
-					
-					// DEBUG:
-//					for (ModelEnablementDescriptor me : rt.getModelEnablements()) {
-//						System.out.println("Runtime: '"+rt.getName()+
-//								"'\nEnablement type: '"+me.getType()+
-//								"' Profile: '"+me.getProfile()+
-//								"'\nNumber of enabled model elements: "+me.getAllEnabled().size());
-//						List<String> classes = new ArrayList<String>(me.getAllEnabled().size());
-//						classes.addAll(me.getAllEnabled());
-//						Collections.sort(classes);
-//						for (String c : classes) {
-//							System.out.println(c);
-//							List<String> features = new ArrayList<String>(me.getAllEnabled(c).size());
-//							features.addAll(me.getAllEnabled(c));
-//							Collections.sort(features);
-//							for (String f : features) {
-//								System.out.println("  "+f);
-//							}
-//						}
-//						System.out.println("");
-//					}
-//					System.out.println("");
-					
-				}
-				
-			} catch (Exception ex) {
-				Activator.logError(ex);
 			}
-			
-			currentRuntime = getDefaultRuntime();
 			
 			CustomTaskImageProvider.registerAvailableImages();
 		}
 		return targetRuntimes;
 	}
 	
-	private static Object getModelExtensionProperties(ModelExtensionDescriptor ct, IConfigurationElement e) {
-		
-		String elem = e.getName();
-		if ("value".equals(elem)) { //$NON-NLS-1$
-			String id = e.getAttribute("id"); //$NON-NLS-1$
-			Value val = new Value(id);
-			for (IConfigurationElement c : e.getChildren()) {
-				Object propValue = getModelExtensionProperties(null, c);
-				val.getValues().add(propValue);
-			}
-			return val;
+	static TargetRuntime getRuntime(IConfigurationElement e) {
+		TargetRuntime rt = getRuntime( getRuntimeId(e) );
+		if (rt==null) {
+			if (currentRuntime!=null)
+				rt = currentRuntime;
+			else
+				rt = getDefaultRuntime();
 		}
-		else if ("property".equals(elem)) { //$NON-NLS-1$
-			String name = e.getAttribute("name"); //$NON-NLS-1$
-			String value = e.getAttribute("value"); //$NON-NLS-1$
-			String ref = e.getAttribute("ref"); //$NON-NLS-1$
-			String type = e.getAttribute("type"); //$NON-NLS-1$
-			String description = e.getAttribute("description"); //$NON-NLS-1$
-			Property prop = new Property(name,description);
-			prop.type = type;
-			if (value!=null)
-				prop.getValues().add(value);
-			else if (ref!=null) {
-				prop.ref = ref;
-			}
-			else if(e.getChildren().length > 0){
-				Object o = getModelExtensionProperties(null, e.getChildren()[0]);
-				if (o instanceof Value)
-					prop.getValues().addAll(((Value)o).getValues());
-			}
-			return prop;
-		}
-		else {
-			for (IConfigurationElement c : e.getChildren()) {
-				Object o = getModelExtensionProperties(null, c);
-				if (o instanceof Property && ct!=null)
-					ct.getProperties().add((Property)o);
-			}
-		}
-		return null;
-	}
-
-	private static TargetRuntime getRuntime(IConfigurationElement e) {
-		String runtimeId = e.getAttribute("runtimeId"); //$NON-NLS-1$
-		TargetRuntime rt = getRuntime(runtimeId);
-		if (rt==null)
-			return currentRuntime;
 		return rt;
 	}
 	
-	public ModelDescriptor getModelDescriptor() {
-		return modelDescriptor;
-	}
-	
-	public void setModelDescriptor(ModelDescriptor md) {
-		md.setRuntime(this);
-		this.modelDescriptor = md;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getId() {
+	static String getRuntimeId(IConfigurationElement e) {
+		String id = null;
+		if (EXTENSION_NAME.equals(e.getName()))
+			id = e.getAttribute("id"); //$NON-NLS-1$
+		else {
+			id = e.getAttribute("runtimeId"); //$NON-NLS-1$
+			// this extension does not define a runtimeId, so get it from the containing
+			// plugin.xml's <runtime> definition
+			if (id==null) {
+				for (IConfigurationElement ep : e.getDeclaringExtension().getConfigurationElements()) {
+					if (EXTENSION_NAME.equals(ep.getName())) {
+						id = ep.getAttribute("id"); //$NON-NLS-1$
+						break;
+					}
+				}
+			}
+		}
 		return id;
 	}
-	
-	public String getDescription() {
-		return description;
+
+	public List<TargetRuntime> getTargetRuntimes() {
+		return createTargetRuntimes();
 	}
-	
-	public ArrayList<CustomTaskDescriptor> getCustomTasks()
-	{
-		if (customTasks==null) {
-			customTasks = new ArrayList<CustomTaskDescriptor>();
-		}
-		return customTasks;
-	}
-	
+
+	/*
+	 * Custom Task convenience methods
+	 */
 	public CustomTaskDescriptor getCustomTask( String id ) {
-		Iterator<CustomTaskDescriptor> ctIter = customTasks.iterator();
+		Iterator<CustomTaskDescriptor> ctIter = customTaskDescriptors.iterator();
 		while (ctIter.hasNext()) {
 			CustomTaskDescriptor ctd = ctIter.next();
 			if (ctd.getId().equalsIgnoreCase(id)) 
@@ -509,7 +409,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	}
 
 	public boolean customTaskExists ( String id ) {
-		Iterator<CustomTaskDescriptor> ctIter = customTasks.iterator();
+		Iterator<CustomTaskDescriptor> ctIter = customTaskDescriptors.iterator();
 		while (ctIter.hasNext()) {
 			CustomTaskDescriptor ctd = ctIter.next();
 			if (ctd.getId().equalsIgnoreCase(id)) 
@@ -519,38 +419,26 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	}
 	
 	public void addCustomTask(CustomTaskDescriptor ct) {
-		ct.setRuntime(this);
-		getCustomTasks().add(ct);
+		getCustomTaskDescriptors().add(ct);
+		ct.targetRuntime = this;
 	}
 	
-	public ArrayList<ModelExtensionDescriptor> getModelExtensions()
-	{
-		if (modelExtensions==null) {
-			modelExtensions = new ArrayList<ModelExtensionDescriptor>();
-		}
-		return modelExtensions;
-	}
-	
+	/*
+	 * Model Extension convenience methods
+	 */
 	public void addModelExtension(ModelExtensionDescriptor me) {
-		me.setRuntime(this);
-		getModelExtensions().add(me);
+		getModelExtensionDescriptors().add(me);
 	}
 	
-	public ArrayList<PropertyExtensionDescriptor> getPropertyExtensions()
-	{
-		if (propertyExtensions==null) {
-			propertyExtensions = new ArrayList<PropertyExtensionDescriptor>();
-		}
-		return propertyExtensions;
-	}
-	
+	/*
+	 * Property Extension convenience methods
+	 */
 	public void addPropertyExtension(PropertyExtensionDescriptor me) {
-		me.setRuntime(this);
-		getPropertyExtensions().add(me);
+		getPropertyExtensionDescriptors().add(me);
 	}
 
 	public PropertyExtensionDescriptor getPropertyExtension(Class clazz) {
-		for (PropertyExtensionDescriptor ped : getPropertyExtensions()) {
+		for (PropertyExtensionDescriptor ped : getPropertyExtensionDescriptors()) {
 			String className = clazz.getName();
 			if (className.equals(ped.type))
 				return ped;
@@ -566,21 +454,15 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return null;
 	}
 	
-	public ArrayList<FeatureContainerDescriptor> getFeatureContainers()
-	{
-		if (featureContainers==null) {
-			featureContainers = new ArrayList<FeatureContainerDescriptor>();
-		}
-		return featureContainers;
-	}
-	
+	/*
+	 * Feature Container Extension convenience methods
+	 */
 	public void addFeatureContainer(FeatureContainerDescriptor me) {
-		me.setRuntime(this);
-		getFeatureContainers().add(me);
+		getFeatureContainerDescriptors().add(me);
 	}
 
 	public FeatureContainerDescriptor getFeatureContainer(EClass clazz) {
-		for (FeatureContainerDescriptor fcd : getFeatureContainers()) {
+		for (FeatureContainerDescriptor fcd : getFeatureContainerDescriptors()) {
 			String className = clazz.getInstanceClassName();
 			if (className.equals(fcd.type))
 				return fcd;
@@ -596,18 +478,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return null;
 	}
 	
-	public ArrayList<ModelEnablementDescriptor> getModelEnablements()
-	{
-		if (modelEnablements==null) {
-			modelEnablements = new ArrayList<ModelEnablementDescriptor>();
-		}
-		return modelEnablements;
-	}
-	
-	/**
-	 * @param object
-	 * @return
-	 * @deprecated
+	/*
+	 * Model Enablement Extension convenience methods
 	 */
 	public ModelEnablementDescriptor getModelEnablements(EObject object)
 	{
@@ -620,16 +492,16 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		if (diagramEditor!=null) {
 			rt = (TargetRuntime) diagramEditor.getAdapter(TargetRuntime.class);
 		}
-		ArrayList<ModelEnablementDescriptor> meds = rt.getModelEnablements();
+		List<ModelEnablementDescriptor> meds = rt.getModelEnablementDescriptors();
 		if (meds.size()>0)
 			return meds.get(0);
 		return null;
 	}
 	
-	public ArrayList<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)
+	public List<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)
 	{
-		ArrayList<ModelEnablementDescriptor> list = new ArrayList<ModelEnablementDescriptor>();
-		for (ModelEnablementDescriptor me : getModelEnablements()) {
+		List<ModelEnablementDescriptor> list = new ArrayList<ModelEnablementDescriptor>();
+		for (ModelEnablementDescriptor me : getModelEnablementDescriptors()) {
 			if (diagramType == Bpmn2DiagramType.NONE && me.getDiagramType()==null) {
 				list.add(me);
 			}
@@ -645,7 +517,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		if (profile!=null && profile.isEmpty())
 			profile = null;
 		
-		for (ModelEnablementDescriptor me : getModelEnablements()) {
+		for (ModelEnablementDescriptor me : getModelEnablementDescriptors()) {
 			if (diagramType == Bpmn2DiagramType.NONE && me.getDiagramType()==null) {
 				if (profile==null || profile.equalsIgnoreCase(me.getProfile()))
 					return me;
@@ -660,27 +532,18 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			return getDefaultRuntime().getModelEnablements(diagramType, profile);
 		}
 		
-		if (defaultModelEnablements==null)
-			defaultModelEnablements = new ModelEnablementDescriptor(getDefaultRuntime());
-		return defaultModelEnablements;
+		if (defaultModelEnablementDescriptors==null)
+			defaultModelEnablementDescriptors = new ModelEnablementDescriptor(getDefaultRuntime());
+		return defaultModelEnablementDescriptors;
 	}
 	
 	public void addModelEnablements(ModelEnablementDescriptor me) {
-		me.setRuntime(this);
-		getModelEnablements().add(me);
+		getModelEnablementDescriptors().add(me);
 	}
 	
-	
-	//////////////////////
-
-	public ArrayList<ToolPaletteDescriptor> getToolPalettes()
-	{
-		if (toolPalettes==null) {
-			toolPalettes = new ArrayList<ToolPaletteDescriptor>();
-		}
-		return toolPalettes;
-	}
-	
+	/*
+	 * Tool Palette Extension convenience methods
+	 */
 	public ToolPaletteDescriptor getToolPalette(EObject object)
 	{
 		DiagramEditor diagramEditor = ModelUtil.getEditor(object);
@@ -690,7 +553,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)
 	{
 		ToolPaletteDescriptor defaultToolPalette = null;
-		for (ToolPaletteDescriptor tp : getToolPalettes()) {
+		for (ToolPaletteDescriptor tp : getToolPaletteDescriptors()) {
 			String s = diagramType.name();
 			if (diagramType == Bpmn2DiagramType.NONE && tp.getType()==null) {
 				if (profile==null)
@@ -723,35 +586,20 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	}
 	
 	public void addToolPalette(ToolPaletteDescriptor tp) {
-		tp.setRuntime(this);
-		getToolPalettes().add(tp);
-	}
-	/////////////////////
-	
-	
-	public Map<Class, ShapeStyle> getShapeStyles() {
-		if (shapeStyles==null) {
-			shapeStyles = new HashMap<Class, ShapeStyle>();
-		}
-		return shapeStyles;
-	}
-	
-	public ShapeStyle getShapeStyle(Class c) {
-		ShapeStyle ss = getShapeStyles().get(c);
-		if (ss==null) {
-			ss = new ShapeStyle(ss);
-		}
-		return ss;
+		getToolPaletteDescriptors().add(tp);
 	}
 
-	private void addAfterTab(ArrayList<Bpmn2TabDescriptor> list, Bpmn2TabDescriptor tab) {
+	/*
+	 * Property Tab Extension convenience methods
+	 */
+	private void addAfterTab(ArrayList<PropertyTabDescriptor> list, PropertyTabDescriptor tab) {
 		
-		getAllRuntimes();
+		createTargetRuntimes();
 		String afterTab = tab.getAfterTab();
 		if (afterTab!=null && !afterTab.isEmpty() && !afterTab.equals("top")) { //$NON-NLS-1$
 			String id = tab.getId();
 			for (TargetRuntime rt : targetRuntimes) {
-				for (Bpmn2TabDescriptor td : rt.getTabs()) {
+				for (PropertyTabDescriptor td : rt.getPropertyTabDescriptors()) {
 					if (tab!=td) {
 						if (td.getId().equals(afterTab) || td.isReplacementForTab(afterTab)) {
 							addAfterTab(list,td);
@@ -765,92 +613,37 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			}
 		}
 	}
-	
-	private ArrayList<Bpmn2TabDescriptor> getTabs() {
-		if (tabDescriptors==null)
-			tabDescriptors = new ArrayList<Bpmn2TabDescriptor>();
-		return tabDescriptors;
+
+	public void addPropertyTabDescriptor(PropertyTabDescriptor td) {
+		getPropertyTabDescriptors().add(td);
 	}
 
-	public static Bpmn2TabDescriptor findTabDescriptor(String id) {
-		for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-			Bpmn2TabDescriptor tab = rt.getTabDescriptor(id);
+	public static PropertyTabDescriptor findPropertyTabDescriptor(String id) {
+		for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+			PropertyTabDescriptor tab = rt.getPropertyTabDescriptor(id);
 			if (tab!=null)
 				return tab;
 		}
 		return null;
 	}
 	
-	public Bpmn2TabDescriptor getTabDescriptor(String id) {
-		for (Bpmn2TabDescriptor tab : getTabs()) {
+	public PropertyTabDescriptor getPropertyTabDescriptor(String id) {
+		for (PropertyTabDescriptor tab : getPropertyTabDescriptors()) {
 			if (tab.getId().equals(id))
 				return tab;
 		}
 		return null;
 	}
 	
-	/**
-	 * @return
-	 */
-	public ArrayList<Bpmn2TabDescriptor> getTabDescriptors() {
-		ArrayList<Bpmn2TabDescriptor> list = new ArrayList<Bpmn2TabDescriptor>();
-		for (Bpmn2TabDescriptor tab : getTabs()) {
+	public List<PropertyTabDescriptor> buildPropertyTabDescriptors() {
+		ArrayList<PropertyTabDescriptor> list = new ArrayList<PropertyTabDescriptor>();
+		for (PropertyTabDescriptor tab : getPropertyTabDescriptors()) {
 			addAfterTab(list, tab);
 			if (!list.contains(tab))
 				list.add(tab);
 		}
 		
 		return list;
-	}
-	
-	public IBpmn2RuntimeExtension getRuntimeExtension() {
-		return runtimeExtension;
-	}
-
-	public void setRuntimeExtension(IBpmn2RuntimeExtension runtimeExtension) {
-		this.runtimeExtension = runtimeExtension;
-	}
-	
-	public void setResource(Bpmn2Resource bpmnResource) {
-		this.bpmnResource = bpmnResource;
-		
-		TreeIterator<EObject> iter = bpmnResource.getAllContents();
-		while (iter.hasNext()) {
-			EObject object = iter.next();
-			String className = object.eClass().getName();
-			// attach ModelExtensionDescriptor.Property adapters to all <modelExtension>
-			// objects defined in the target runtime's plugin.xml
-			for (ModelExtensionDescriptor med : getModelExtensions()) {
-	    		if (className.equals(med.getType())) {
-					med.adaptObject(object);
-	    			break;
-	    		}
-			}
-			// do the same thing for all <customTask> elements, but only if the object
-			// is identified by the CustomTaskFeatureContainer as a genuine "custom task"
-			for (CustomTaskDescriptor ctd : getCustomTasks()) {
-	    		if (className.equals(ctd.getType())) {
-	    			if (ctd.getFeatureContainer().getId(object)!=null) {
-	    				ctd.adaptObject(object);
-	    				break;
-	    			}
-	    		}
-			}
-		}
-	}
-	
-	public Bpmn2Resource getResource() {
-		return bpmnResource;
-	}
-	
-	protected void setProblemMarkerId(String id) {
-		problemMarkerId = id;
-	}
-
-	public String getProblemMarkerId() {
-		if (problemMarkerId==null)
-			return BPMN2_MARKER_ID;
-		return problemMarkerId;
 	}
 
 	@Override
@@ -863,5 +656,215 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			return ((String)arg0).equals(id);
 		}
 		return super.equals(arg0);
+	}
+
+	/*
+	 * Runtime Extension Descriptor handling
+	 */
+	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) {
+
+		TargetRuntime oldCurrentRuntime = currentRuntime;
+		currentRuntime = targetRuntime;
+		try {
+			ConfigurationElementSorter.sort(elements);
+
+			unloadExtensions(file);
+			
+			for (IConfigurationElement e : elements) {
+				currentRuntime = getRuntime(e);
+				createRuntimeExtensionDescriptor(currentRuntime,e,file);
+			}
+		}
+		catch (Exception e) {
+			Activator.logError(e);
+		}
+		finally {
+			currentRuntime = oldCurrentRuntime;
+		}
+	}
+
+	public static void unloadExtensions(IFile file) {
+		if (file != null) {
+			List<IRuntimeExtensionDescriptor> disposed = new ArrayList<IRuntimeExtensionDescriptor>();
+
+			for (TargetRuntime rt : targetRuntimes) {
+				for (Class c : extensionDescriptorClasses) {
+					String name = getExtensionNameForClass(c);
+					for (IRuntimeExtensionDescriptor d : rt.getRuntimeExtensionDescriptors(name)) {
+						if (file.equals(d.getConfigFile())) {
+							disposed.add(d);
+						}
+					}
+				}
+			}
+			for (IRuntimeExtensionDescriptor d : disposed) {
+				d.dispose();
+			}
+		}
+
+	}
+
+	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) {
+		IRuntimeExtensionDescriptor d = null;
+		try {
+			Class c = getClassForExtensionName(e.getName());
+			Constructor ctor = c.getConstructor(IConfigurationElement.class);
+			d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
+			d.setRuntime(rt);
+			d.setConfigFile(file);
+		}
+		catch (Exception ex) {
+			Activator.logError(ex);
+		}
+		return d;
+	}
+	
+	public List<IRuntimeExtensionDescriptor> getRuntimeExtensionDescriptors(String name) {
+		List<IRuntimeExtensionDescriptor> result = new ArrayList<IRuntimeExtensionDescriptor>();
+		try {
+			Class c = getClassForExtensionName(name);
+			Method m = TargetRuntime.class.getMethod("get"+c.getSimpleName()+"s");
+			result = (List<IRuntimeExtensionDescriptor>) m.invoke(this);
+		}
+		catch (Exception ex) {
+			Activator.logError(ex);
+		}
+		return result;
+	}
+	
+	public static Class getClassForExtensionName(String name) {
+		try {
+			Class clazz = null;
+			for (int i=0; i<extensionDescriptorClasses.length; ++i) {
+				Class c = extensionDescriptorClasses[i];
+				Field field = c.getField("EXTENSION_NAME");
+				String n = (String) field.get(null);
+				if (name.equals(n)) {
+					return c;
+				}
+			}
+		}
+		catch (Exception ex) {
+			Activator.logError(ex);
+		}
+		return null;
+	}
+	
+	public static String getExtensionNameForClass(Class clazz) {
+		try {
+			Field field = clazz.getField("EXTENSION_NAME");
+			return (String) field.get(null);
+		}
+		catch (Exception ex) {
+			Activator.logError(ex);
+		}
+		return null;
+	}
+	
+	/*
+	 * List Accessors for all Runtime Extension Descriptors
+	 */
+	public List<CustomTaskDescriptor> getCustomTaskDescriptors()
+	{
+		if (customTaskDescriptors==null) {
+			customTaskDescriptors = new ArrayList<CustomTaskDescriptor>();
+		}
+		return customTaskDescriptors;
+	}
+	
+	public List<ModelExtensionDescriptor> getModelExtensionDescriptors()
+	{
+		if (modelExtensionDescriptors==null) {
+			modelExtensionDescriptors = new ArrayList<ModelExtensionDescriptor>();
+		}
+		return modelExtensionDescriptors;
+	}
+	
+	public List<PropertyExtensionDescriptor> getPropertyExtensionDescriptors()
+	{
+		if (propertyExtensionDescriptors==null) {
+			propertyExtensionDescriptors = new ArrayList<PropertyExtensionDescriptor>();
+		}
+		return propertyExtensionDescriptors;
+	}
+	
+	public List<FeatureContainerDescriptor> getFeatureContainerDescriptors()
+	{
+		if (featureContainerDescriptors==null) {
+			featureContainerDescriptors = new ArrayList<FeatureContainerDescriptor>();
+		}
+		return featureContainerDescriptors;
+	}
+	
+	public List<ModelEnablementDescriptor> getModelEnablementDescriptors()
+	{
+		if (modelEnablementDescriptors==null) {
+			modelEnablementDescriptors = new ArrayList<ModelEnablementDescriptor>();
+		}
+		return modelEnablementDescriptors;
+	}
+
+	public List<ToolPaletteDescriptor> getToolPaletteDescriptors()
+	{
+		if (toolPaletteDescriptors==null) {
+			toolPaletteDescriptors = new ArrayList<ToolPaletteDescriptor>();
+		}
+		return toolPaletteDescriptors;
+	}
+	
+	public List<ShapeStyle> getShapeStyles() {
+		if (shapeStyles==null) {
+			shapeStyles = new ArrayList<ShapeStyle>();
+		}
+		return shapeStyles;
+	}
+	
+	public List<PropertyTabDescriptor> getPropertyTabDescriptors() {
+		if (propertyTabDescriptors==null)
+			propertyTabDescriptors = new ArrayList<PropertyTabDescriptor>();
+		return propertyTabDescriptors;
+	}
+	
+	public List<ModelDescriptor> getModelDescriptors() {
+		if (modelDescriptors==null)
+			modelDescriptors = new ArrayList<ModelDescriptor>();
+		return modelDescriptors;
+	}
+
+	public static class ConfigurationElementSorter {
+		public static void sort(IConfigurationElement[] elements) {
+			Arrays.sort(elements, new Comparator<IConfigurationElement>() {
+				@Override
+				public int compare(IConfigurationElement e0, IConfigurationElement e1) {
+					return rank(e1) - rank(e0);
+				}
+				
+				int rank(IConfigurationElement e) {
+					int rank = 0;
+					try {
+						String name = e.getName();
+						Class clazz = null;
+						for (int i=0; i<extensionDescriptorClasses.length; ++i) {
+							Class c = extensionDescriptorClasses[i];
+							Field field = c.getField("EXTENSION_NAME");
+							String n = (String) field.get(null);
+							if (name.equals(n)) {
+								rank = extensionDescriptorClasses.length - i;
+								clazz = c;
+								break;
+							}
+						}
+						rank *= 2;
+						String id = getRuntimeId(e);
+						if (DEFAULT_RUNTIME_ID.equals(id))
+							rank += 1;
+					}
+					catch (Exception ex) {
+						Activator.logError(ex);
+					}
+					return rank;
+				}
+			});
+		}
 	}
 }

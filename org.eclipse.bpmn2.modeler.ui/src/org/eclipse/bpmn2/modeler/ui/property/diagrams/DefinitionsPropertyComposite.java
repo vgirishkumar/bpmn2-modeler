@@ -11,14 +11,19 @@
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.EndPoint;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.impl.DefinitionsImpl;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
@@ -36,8 +41,10 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.NamespacesEditingDialog;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.common.util.EList;
@@ -45,7 +52,10 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.util.EcoreEMap;
+import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -88,7 +98,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 						"relationships", //$NON-NLS-1$
 						"rootElements#PartnerEntity", //$NON-NLS-1$
 						"rootElements#PartnerRole", //$NON-NLS-1$
-//						"rootElements#EndPoint", //$NON-NLS-1$
+						"rootElements#EndPoint", //$NON-NLS-1$
 						"rootElements#Resource", //$NON-NLS-1$
 						"rootElements#DataStore", //$NON-NLS-1$
 						"rootElements#Message", //$NON-NLS-1$
@@ -222,7 +232,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 									});
 									return true;
 								}
-								text.setText(ModelUtil.getDisplayName(object, feature));
+								text.setText(ExtendedPropertiesProvider.getTextValue(object, feature));
 								return false;
 							}
 						};
@@ -453,19 +463,19 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			editor.createControl(composite,label);
 			
 			feature = Bpmn2Package.eINSTANCE.getImport_Namespace();
-			label = ModelUtil.getLabel(be, feature);
+			label = ExtendedPropertiesProvider.getLabel(be, feature);
 			editor = new TextObjectEditor(this,be, feature);
 			editor.createControl(composite,label);
 			editor.setEditable(false);
 
 			feature = Bpmn2Package.eINSTANCE.getImport_Location();
-			label = ModelUtil.getLabel(be, feature);
+			label = ExtendedPropertiesProvider.getLabel(be, feature);
 			editor = new TextObjectEditor(this,be, feature);
 			editor.createControl(composite,label);
 			editor.setEditable(false);
 
 			feature = Bpmn2Package.eINSTANCE.getImport_ImportType();
-			label = ModelUtil.getLabel(be, feature);
+			label = ExtendedPropertiesProvider.getLabel(be, feature);
 			editor = new TextObjectEditor(this,be, feature);
 			editor.createControl(composite,label);
 			editor.setEditable(false);
@@ -489,6 +499,48 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 		@Override
 		public EClass getListItemClass(EObject object, EStructuralFeature feature) {
 			return Bpmn2Package.eINSTANCE.getEndPoint();
+		}
+
+		@Override
+		protected EObject addListItem(EObject object, EStructuralFeature feature) {
+			EndPoint ep = (EndPoint) Bpmn2Factory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getEndPoint());
+			((Definitions)object).getRootElements().add(ep);
+			ModelUtil.setID(ep);
+			return ep;
+		}
+
+		@Override
+		public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+			
+			for (EndPoint ep : ModelUtil.getAllRootElements(ModelUtil.getDefinitions(businessObject), EndPoint.class)) {
+				System.out.println("----------------");
+				System.out.println("AnyAttribute values for "+ep.getId());
+				for (EStructuralFeature f : ModelDecorator.getAnyAttributes(ep)) {
+					Object v = ep.eGet(f);
+					System.out.println("    "+ep.eClass().getName()+"."+f.getName()+"="+v);
+				}
+				
+				System.out.println("Extension values for "+ep.getId());
+				for (ExtensionAttributeValue eav : ModelDecorator.getExtensionAttributeValues(ep)) {
+					FeatureMap map = eav.getValue();
+					if (map!=null) {
+						Iterator<Entry> iter = map.iterator();
+						while (iter.hasNext()) {
+							Entry e = iter.next();
+							Object value = e.getValue();
+							if (value instanceof EObject) {
+								EObject o = (EObject)value;
+								for (EStructuralFeature f : o.eClass().getEStructuralFeatures()) {
+									Object v = o.eGet(f);
+									System.out.println("    "+o.eClass().getName()+"."+f.getName()+"="+v);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return super.createDetailComposite(eClass, parent, style);
 		}
 		
 //		protected int createColumnProvider(EObject object, EStructuralFeature feature) {
@@ -573,18 +625,5 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 //			
 //			return composite;
 //		}
-
-		@Override
-		protected EObject addListItem(EObject object, EStructuralFeature feature) {
-			EObject ep = super.addListItem(object, feature);
-//			TargetRuntime rt = getTargetRuntime();
-//			for (ModelExtensionDescriptor md : rt.getModelExtensions()) {
-//				if ("EndPoint".equals(md.getType())) {
-//					md.populateObject(ep, true);
-//				}
-//			}
-
-			return ep;
-		}
 	}
 }

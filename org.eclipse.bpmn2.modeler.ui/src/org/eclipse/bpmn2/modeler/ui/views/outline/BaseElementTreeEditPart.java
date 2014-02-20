@@ -15,7 +15,7 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 
 public class BaseElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 
@@ -45,14 +45,14 @@ public class BaseElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 			DataOutputAssociation doa = (DataOutputAssociation) getModel();
 			if (doa.getSourceRef().size()>0 && doa.getSourceRef().get(0) instanceof DataOutput) {
 				DataOutput d = (DataOutput) doa.getSourceRef().get(0);
-				return ModelUtil.getDisplayName(d);
+				return ExtendedPropertiesProvider.getTextValue(d);
 			}
 		}
 		if (getModel() instanceof DataInputAssociation) {
 			DataInputAssociation doa = (DataInputAssociation) getModel();
 			if (doa.getTargetRef() instanceof DataInput) {
 				DataInput d = (DataInput) doa.getTargetRef();
-				return ModelUtil.getDisplayName(d);
+				return ExtendedPropertiesProvider.getTextValue(d);
 			}
 		}
 		

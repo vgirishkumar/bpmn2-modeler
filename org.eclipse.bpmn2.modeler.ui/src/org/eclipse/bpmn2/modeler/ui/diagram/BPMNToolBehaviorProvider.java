@@ -225,7 +225,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 				// if there are no tools defined for this category, check if it will be
 				// used for only Custom Tasks. If so, create the category anyway.
 				if (compartmentEntry==null) {
-					for (CustomTaskDescriptor tc : targetRuntime.getCustomTasks()) {
+					for (CustomTaskDescriptor tc : targetRuntime.getCustomTaskDescriptors()) {
 						if (category.getName().equals(tc.getCategory())) {
 							compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
 							compartmentEntry.setInitiallyOpen(false);
@@ -254,9 +254,9 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		String fromPalette = category.getFromPalette();
 		String id = category.getId();
 		if (fromPalette!=null && id!=null) {
-			for (TargetRuntime otherRt : TargetRuntime.getAllRuntimes()) {
+			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
 				if (otherRt!=rt) {
-					for (ToolPaletteDescriptor tp : otherRt.getToolPalettes()) {
+					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
 								if (id.equals(c.getId())) {
@@ -275,9 +275,9 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		String fromPalette = tool.getFromPalette();
 		String id = tool.getId();
 		if (fromPalette!=null && id!=null) {
-			for (TargetRuntime otherRt : TargetRuntime.getAllRuntimes()) {
+			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
 				if (otherRt!=rt) {
-					for (ToolPaletteDescriptor tp : otherRt.getToolPalettes()) {
+					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
 								for (ToolDescriptor t : c.getTools()) {
@@ -518,7 +518,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 				categories.put(e.getLabel(), (PaletteCompartmentEntry) e);
 			}
 			
-			for (CustomTaskDescriptor tc : rt.getCustomTasks()) {
+			for (CustomTaskDescriptor tc : rt.getCustomTaskDescriptors()) {
 				CustomElementFeatureContainer container = (CustomElementFeatureContainer)tc.getFeatureContainer();
 				if (!container.isAvailable(featureProvider))
 					continue;

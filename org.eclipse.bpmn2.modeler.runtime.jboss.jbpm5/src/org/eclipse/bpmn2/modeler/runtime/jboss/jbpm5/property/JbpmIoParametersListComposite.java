@@ -20,9 +20,9 @@ import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
+import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParameterNameColumn;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
@@ -80,7 +80,7 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 		else if (activity instanceof ReceiveTask) {
 			enabled = ((ReceiveTask)activity).getOperationRef()==null && ((ReceiveTask)activity).getMessageRef()==null;
 		}
-		else if (CustomTaskDescriptor.getDescriptor(activity) != null) {
+		else if (BaseRuntimeExtensionDescriptor.getDescriptor(activity, CustomTaskDescriptor.class) != null) {
 			enabled = false;
 		}
 
@@ -100,12 +100,12 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 					
 					Object elements[] = super.getElements(inputElement);
 					List<Property> props = null;
-					ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(activity);
-					if (adapter!=null && !(adapter.getDescriptor() instanceof CustomTaskDescriptor)) {
+					ModelExtensionDescriptor med = BaseRuntimeExtensionDescriptor.getDescriptor(activity, ModelExtensionDescriptor.class);
+					if (med!=null) {
 						if (JbpmIoParametersListComposite.this.isInput)
-							props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+							props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 						else
-							props = adapter.getProperties("ioSpecification/dataOutputs/name"); //$NON-NLS-1$
+							props = med.getProperties("ioSpecification/dataOutputs/name"); //$NON-NLS-1$
 					
 						List<Object> filtered = new ArrayList<Object>();
 						for (Object e : elements) {

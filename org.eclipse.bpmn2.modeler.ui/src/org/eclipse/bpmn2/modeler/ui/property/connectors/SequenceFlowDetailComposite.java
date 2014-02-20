@@ -16,11 +16,11 @@ import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -123,7 +123,7 @@ public class SequenceFlowDetailComposite extends AbstractDetailComposite {
 					String objectName = flowNode.getName();
 					if (objectName!=null && objectName.isEmpty())
 						objectName = null;
-					String typeName = ModelUtil.getLabel(flowNode);
+					String typeName = ExtendedPropertiesProvider.getLabel(flowNode);
 					if (allowDefault(sequenceFlow)) {
 						setDefaultFlowCheckbox = getToolkit().createButton(this, "", SWT.CHECK); //$NON-NLS-1$
 						data = new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1);

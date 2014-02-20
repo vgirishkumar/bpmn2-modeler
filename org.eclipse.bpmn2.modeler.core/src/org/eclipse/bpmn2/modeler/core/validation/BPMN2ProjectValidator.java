@@ -86,7 +86,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		}
 
     	Bpmn2ModelerResourceSetImpl rs = new Bpmn2ModelerResourceSetImpl();
-		getTargetRuntime().setResourceSet(rs);
+		getTargetRuntime().registerExtensionResourceFactory(rs);
 		URI modelUri = URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true);
 		rs.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
     	Map<Object,Object> options = new HashMap<Object,Object>();

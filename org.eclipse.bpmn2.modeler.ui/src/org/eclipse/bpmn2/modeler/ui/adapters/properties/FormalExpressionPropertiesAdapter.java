@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -49,43 +50,29 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 			new FeatureDescriptor<FormalExpression>(adapterFactory,object,body) {
     		
     			@Override
-    			
-    			public void setValue(Object context, final Object value) {
-    				final FormalExpression formalExpression = adopt(context);
-    				final String body = value==null ? null : value.toString();
+    	   		protected void internalSet(FormalExpression formalExpression, EStructuralFeature feature, Object value, int index) {
+    				String body = value==null ? null : value.toString();
     				InsertionAdapter.executeIfNeeded(formalExpression);
-    				TransactionalEditingDomain editingDomain = getEditingDomain(formalExpression);
-					if (editingDomain == null) {
-	    				formalExpression.setBody(body);
-					} else {
-						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
-							@Override
-							protected void doExecute() {
-			    				formalExpression.setBody(body);
-							}
-						});
-					}
+    				formalExpression.setBody(body);
     			}
     			
 	    		@Override
-	    		public String getDisplayName(Object context) {
-					FormalExpression expression = adopt(context);
-					String body = ModelUtil.getExpressionBody(expression);
+	    		public String getTextValue() {
+					String body = ModelUtil.getExpressionBody(object);
 					if (body==null)
 						return ""; //$NON-NLS-1$
 					return body;
 	    		}
 	    		
 				@Override
-				public String getLabel(Object context) {
-					FormalExpression expression = adopt(context);
-					if (expression.eContainer() instanceof SequenceFlow)
+				public String getLabel() {
+					if (object.eContainer() instanceof SequenceFlow)
 						return Messages.FormalExpressionPropertiesAdapter_Constraint;
 					return Messages.FormalExpressionPropertiesAdapter_Script;
 				}
 
 				@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					// formal expression body is always a multiline text field
 					return true;
 				}
@@ -97,13 +84,14 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 		setProperty(language, UI_CAN_SET_NULL, Boolean.TRUE);
     	setFeatureDescriptor(language,
     		new FeatureDescriptor<FormalExpression>(adapterFactory,object,language) {
+    		
 				@Override
-				public String getLabel(Object context) {
+				public String getLabel() {
 					return Messages.FormalExpressionPropertiesAdapter_Script_Language;
 				}
 	
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
+				public Hashtable<String, Object> getChoiceOfValues() {
 					if (choiceOfValues==null) {
 						choiceOfValues = new Hashtable<String, Object>();
 						TargetRuntime rt = TargetRuntime.getCurrentRuntime();
@@ -124,8 +112,8 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 
 		setObjectDescriptor(new ObjectDescriptor<FormalExpression>(adapterFactory, object) {
 			@Override
-			public String getDisplayName(Object context) {
-				return getFeatureDescriptor(body).getDisplayName(context);
+			public String getTextValue() {
+				return getFeatureDescriptor(body).getTextValue();
 			}
 		});
 	}

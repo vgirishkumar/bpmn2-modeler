@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
@@ -97,7 +97,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	@SuppressWarnings("unchecked")
 	private <T extends EObject> T getOrCreateEntryExitScript(final Activity be, final Class<T> clazz) {
 		T result = null;
-		List<T> scriptList = ModelUtil.getAllExtensionAttributeValues(be, clazz);
+		List<T> scriptList = ModelDecorator.getAllExtensionAttributeValues(be, clazz);
 		if (scriptList.size()>0)
 			result = scriptList.get(0);
 		else {
@@ -113,7 +113,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 				f = DroolsPackage.eINSTANCE.getDocumentRoot_OnEntryScript();
 			else
 				f = DroolsPackage.eINSTANCE.getDocumentRoot_OnExitScript();
-			ModelUtil.addExtensionAttributeValue(be, f, script, true);
+			ModelDecorator.addExtensionAttributeValue(be, f, script, true);
 			result = script;
 		}
 		return result;

@@ -13,7 +13,7 @@ package org.eclipse.bpmn2.modeler.core.di;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -92,7 +92,7 @@ public class DiagramElementTree
 		String text = Messages.DiagramElementTree_Unknown_Element;
 		if (element instanceof DiagramElementTreeNode) {
 			BaseElement be = ((DiagramElementTreeNode)element).getBaseElement();
-			text = be.eClass().getName() + ": " + ModelUtil.getDisplayName(be); //$NON-NLS-1$
+			text = be.eClass().getName() + ": " + ExtendedPropertiesProvider.getTextValue(be); //$NON-NLS-1$
 		}
 		return text;
 	}

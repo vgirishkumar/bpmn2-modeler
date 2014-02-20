@@ -24,8 +24,8 @@ import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.CellEditor;
@@ -46,7 +46,7 @@ public class IoParameterMappingColumn extends TableColumn {
 		if (headerText!=null)
 			return headerText;
 		
-		return ModelUtil.getLabel(
+		return ExtendedPropertiesProvider.getLabel(
 				Bpmn2Package.eINSTANCE.getDataAssociation(),
 				feature.getName().startsWith("dataInput") ? //$NON-NLS-1$
 					Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef() :
@@ -62,16 +62,16 @@ public class IoParameterMappingColumn extends TableColumn {
 		if (da!=null) {
 			ItemAwareElement target = getTargetElement(da);
 			if (target!=null)
-				text = ModelUtil.getDisplayName(target);
+				text = ExtendedPropertiesProvider.getTextValue(target);
 			else {
 				if (da.getTransformation()!=null) {
-					text = Messages.IoParameterMappingColumn_Transform_Prefix + ModelUtil.getDisplayName(da.getTransformation());
+					text = Messages.IoParameterMappingColumn_Transform_Prefix + ExtendedPropertiesProvider.getTextValue(da.getTransformation());
 				}
 				if (!da.getAssignment().isEmpty()) {
 					String text2 = null;
 					for ( Assignment assign : da.getAssignment()) {
 						FormalExpression expr  = getTargetExpression(da, assign);
-						String body = ModelUtil.getDisplayName(expr);
+						String body = ExtendedPropertiesProvider.getTextValue(expr);
 						if (text2==null)
 							text2 = "\"" + body + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 						else

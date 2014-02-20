@@ -16,8 +16,8 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -62,7 +62,7 @@ public abstract class MultivalueObjectEditor extends ObjectEditor {
 	 * @return
 	 */
 	protected Hashtable<String,Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
-		Hashtable<String,Object> choices = ModelUtil.getChoiceOfValues(object, feature);
+		Hashtable<String,Object> choices = ExtendedPropertiesProvider.getChoiceOfValues(object, feature);
 		if (featureEType!=null) {
 			Hashtable<String,Object> filteredChoices = new Hashtable<String,Object>();
 			for (Entry<String, Object> entry : choices.entrySet()) {

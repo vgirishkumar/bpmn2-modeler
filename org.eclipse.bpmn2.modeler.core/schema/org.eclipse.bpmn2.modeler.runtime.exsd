@@ -117,7 +117,7 @@
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements for which this ResourceFactory will be used.
@@ -263,7 +263,7 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements in which this Custom Task is defined.
@@ -416,7 +416,7 @@ rootFeature/childFeature_1/childFeature_2#0
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements in which this Model Extension is defined.
@@ -450,6 +450,13 @@ rootFeature/childFeature_1/childFeature_2#0
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="uri" type="string">
+            <annotation>
+               <documentation>
+                  The namespace URI of a model EPackage. If the EPackage does not exist it will be created dynamically.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -459,7 +466,7 @@ rootFeature/childFeature_1/childFeature_2#0
             <element ref="enable" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="disable" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements in which this Model Enablement is defined.
@@ -574,7 +581,7 @@ If &quot;object&quot; has the value &quot;default&quot;, then this refers to a d
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements for which this propertyExtension will be used.
@@ -606,7 +613,7 @@ If &quot;object&quot; has the value &quot;default&quot;, then this refers to a d
 
    <element name="featureContainer">
       <complexType>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements for which this featureContainer will be used.
@@ -679,6 +686,13 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined runtime elements for which this propertyTab will be used.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -694,7 +708,7 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="runtimeId" type="string" use="required">
+         <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined runtime elements for which this propertyTab will be used.

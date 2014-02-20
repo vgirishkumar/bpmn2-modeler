@@ -45,9 +45,9 @@ public class JbpmServiceTaskPropertiesAdapter extends ServiceTaskPropertiesAdapt
 			new FeatureDescriptor<ServiceTask>(adapterFactory,object,feature) {
 
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
+				public Hashtable<String, Object> getChoiceOfValues() {
 					if (choiceOfValues==null) {
-						choiceOfValues = super.getChoiceOfValues(context);
+						choiceOfValues = super.getChoiceOfValues();
 						choiceOfValues.put("SwitchYard Service", "##SwitchYard"); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					return choiceOfValues;

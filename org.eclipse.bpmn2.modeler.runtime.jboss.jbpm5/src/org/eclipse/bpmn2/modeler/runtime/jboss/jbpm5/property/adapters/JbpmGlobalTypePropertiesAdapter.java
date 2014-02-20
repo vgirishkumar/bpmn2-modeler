@@ -23,8 +23,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -42,10 +40,12 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
     	EStructuralFeature feature = DroolsPackage.eINSTANCE.getGlobalType_Identifier();
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
+    		
 				@Override
-				public String getLabel(Object context) {
+				public String getLabel() {
 					return Messages.JbpmGlobalTypePropertiesAdapter_Name;
 				}
+				
     		});	
 
     	feature = DroolsPackage.eINSTANCE.getGlobalType_Type();
@@ -54,32 +54,24 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
     	
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<GlobalType>(adapterFactory,object,feature) {
-				@Override
-				public String getLabel(Object context) {
+
+    		@Override
+				public String getLabel() {
 					return Messages.JbpmGlobalTypePropertiesAdapter_Data_Type_Label;
 				}
 				
 				@Override
-				public void setValue(Object context, final Object value) {
-					final GlobalType global = adopt(context);
-
-					TransactionalEditingDomain domain = getEditingDomain(object);
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							global.setType(JbpmModelUtil.getDataType(value));
-						}
-					});
+				protected void internalSet(GlobalType global, EStructuralFeature feature, Object value, int index) {
+					global.setType(JbpmModelUtil.getDataType(value));
 				}
 				
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final GlobalType global = adopt(context);
-					return JbpmModelUtil.collectAllDataTypes(global);
+				public Hashtable<String, Object> getChoiceOfValues() {
+					return JbpmModelUtil.collectAllDataTypes(object);
 				}
 				
 				@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
 			}
@@ -89,13 +81,12 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 		setObjectDescriptor(new ObjectDescriptor<GlobalType>(adapterFactory, object) {
 
 			@Override
-			public String getLabel(Object context) {
+			public String getLabel() {
 				return Messages.JbpmGlobalTypePropertiesAdapter_Label;
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
-				GlobalType object = adopt(context);
+			public String getTextValue() {
 				return object.getIdentifier();
 			}
 		});

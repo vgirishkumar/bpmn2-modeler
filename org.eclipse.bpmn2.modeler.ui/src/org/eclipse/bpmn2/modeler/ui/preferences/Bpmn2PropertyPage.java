@@ -87,7 +87,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 		
 		TargetRuntime rt = preferences.getRuntime();
 		int i = 0;
-		for (TargetRuntime r : TargetRuntime.getAllRuntimes()) {
+		for (TargetRuntime r : TargetRuntime.createTargetRuntimes()) {
 			cboRuntimes.add(r.getName());
 			cboRuntimes.setData(r.getName(), r);
 			if (r == rt)
@@ -115,7 +115,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 
 	private void updateData() throws BackingStoreException {
 		int i = cboRuntimes.getSelectionIndex();
-		TargetRuntime rt = TargetRuntime.getAllRuntimes()[i];
+		TargetRuntime rt = TargetRuntime.createTargetRuntimes().get(i);
 		preferences.setRuntime(rt);
 		preferences.setCheckProjectNature(btnCheckProjectNature.getSelection());
 		

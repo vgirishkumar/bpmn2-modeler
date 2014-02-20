@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
@@ -94,7 +95,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 							String name = base + suffix;
 							for (;;) {
 								boolean found = false;
-								for (Object g : ModelUtil.getAllExtensionAttributeValues(object, GlobalType.class)) {
+								for (Object g : ModelDecorator.getAllExtensionAttributeValues(object, GlobalType.class)) {
 									if (name.equals(((GlobalType)g).getIdentifier()) ) {
 										found = true;
 										break;
@@ -117,7 +118,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 					globalsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_Global());
 					globalsTable.setTitle(
 							NLS.bind(Messages.JbpmDataItemsDetailComposite_Title
-									,ModelUtil.getLongDisplayName(process)));
+									,ModelUtil.toCanonicalString(process)));
 				}
 			}
 		}

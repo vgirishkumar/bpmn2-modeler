@@ -219,7 +219,6 @@ public class AdapterRegistry {
 		}
 		
 		Object adapter = null;		
-		
 		if (target instanceof EObject) {
 			
 			EObject eObj = (EObject) target;

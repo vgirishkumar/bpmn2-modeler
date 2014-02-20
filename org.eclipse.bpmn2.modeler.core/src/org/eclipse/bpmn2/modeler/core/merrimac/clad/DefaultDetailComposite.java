@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.impl.Bpmn2PackageImpl;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -85,7 +86,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 					documentation = docList.get(0);
 				}
 				EStructuralFeature f = PACKAGE.getDocumentation_Text();
-				ModelUtil.setMultiLine(documentation, f, true);
+				ExtendedPropertiesProvider.setMultiLineText(documentation, f, true);
 				TextObjectEditor documentationEditor = new TextObjectEditor(this,documentation,f);
 				documentationEditor.createControl(getAttributesParent(),Messages.DefaultDetailComposite_Documentation);
 				return null;
@@ -156,7 +157,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 									NLS.bind(
 										Messages.DefaultDetailComposite_List_Title,
 										getPropertiesProvider().getLabel((EObject)o,feature),
-										ModelUtil.getLongDisplayName((EObject)o)
+										ModelUtil.toCanonicalString((EObject)o)
 									)
 								);
 							}

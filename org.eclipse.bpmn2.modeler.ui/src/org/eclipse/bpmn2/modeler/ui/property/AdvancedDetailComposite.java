@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -233,7 +234,7 @@ public class AdvancedDetailComposite extends AbstractDetailComposite {
 
 			detailsDetailComposite.setBusinessObject(obj);
 
-			String name = ModelUtil.getDisplayName(obj);
+			String name = ExtendedPropertiesProvider.getTextValue(obj);
 			detailsSection.setText(name+Messages.AdvancedDetailComposite_Details_Title);
 			detailsSection.setVisible(true);
 
@@ -270,7 +271,7 @@ public class AdvancedDetailComposite extends AbstractDetailComposite {
 			treeViewer.setInput(be);
 		
 		hookPropertySheetPageMenu();
-		treeSection.setText(ModelUtil.getDisplayName(be));
+		treeSection.setText(ExtendedPropertiesProvider.getTextValue(be));
 
 		detailsSection.setVisible(true);
 	}

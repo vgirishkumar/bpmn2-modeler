@@ -13,16 +13,20 @@
 
 package org.eclipse.bpmn2.modeler.core.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
+import org.eclipse.bpmn2.modeler.core.adapters.INamespaceMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -184,6 +188,51 @@ public class NamespaceUtil {
 					}
 				});
 				return ns;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param eObject
+	 * @return the namespace map for the given object.
+	 */
+	
+	@SuppressWarnings("unchecked")
+	static public INamespaceMap<String, String> getNamespaceMap(EObject eObject) {
+	
+		if (eObject == null) {
+			throw new NullPointerException(
+					"eObject cannot be null in getNamespaceMap()"); //$NON-NLS-1$
+		}
+	
+		INamespaceMap<String, String> nsMap = null;
+		// Bug 120110 - this eObject may not have a namespace map, but its
+		// ancestors might, so keep searching until we find one or until
+		// we run out of ancestors.
+		while (nsMap==null && eObject!=null) {
+			nsMap = AdapterRegistry.INSTANCE.adapt(
+				eObject, INamespaceMap.class);
+			if (nsMap==null)
+				eObject = eObject.eContainer();
+		}
+		
+		if (nsMap == null) {
+			throw new IllegalStateException(
+					"INamespaceMap cannot be attached to an eObject"); //$NON-NLS-1$
+		}
+	
+		return nsMap;
+	}
+
+	public static String getNamespacePrefix(EObject eObject, String namespace) {
+	
+		for (EObject context = eObject; context != null; context = context
+				.eContainer()) {
+			List<String> pfxList = getNamespaceMap(context).getReverse(
+					namespace);
+			if (pfxList.size() > 0) {
+				return pfxList.get(0);
 			}
 		}
 		return null;

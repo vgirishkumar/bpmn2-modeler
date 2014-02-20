@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -50,8 +51,7 @@ public class CallChoreographyPropertiesAdapter extends ExtendedPropertiesAdapter
     		new RootElementRefFeatureDescriptor<CallChoreography>(adapterFactory,object,ref) {
 				
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final CallChoreography activity = adopt(context);
+				public Hashtable<String, Object> getChoiceOfValues() {
 					Hashtable<String, Object> choices = new Hashtable<String,Object>();
 					String label;
 					Definitions defs = ModelUtil.getDefinitions(object);
@@ -59,7 +59,7 @@ public class CallChoreographyPropertiesAdapter extends ExtendedPropertiesAdapter
 					// first add all local Choreographies
 					List<Choreography> localChoreographies = ModelUtil.getAllRootElements(defs, Choreography.class);
 					for (Choreography elem : localChoreographies) {
-						label = ModelUtil.getDisplayName(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+						label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + elem.getId() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 						choices.put(label, elem);
 					}
 					
@@ -74,7 +74,7 @@ public class CallChoreographyPropertiesAdapter extends ExtendedPropertiesAdapter
 								Definitions importDefs = ((DocumentRoot)object).getDefinitions();
 								for (RootElement elem : importDefs.getRootElements()) {
 									if (elem instanceof Choreography) {
-										label = ModelUtil.getDisplayName(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+										label = ExtendedPropertiesProvider.getTextValue(elem) + " (" + imp.getLocation() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 										choices.put(label, elem);
 									}
 								}
@@ -83,7 +83,7 @@ public class CallChoreographyPropertiesAdapter extends ExtendedPropertiesAdapter
 					}
 	
 					// remove the Call Choreography's owning Choreography (can't make recursive calls?)
-					EObject parent = activity.eContainer();
+					EObject parent = object.eContainer();
 					while (parent!=null && !(parent instanceof RootElement)) {
 						parent = parent.eContainer();
 					}

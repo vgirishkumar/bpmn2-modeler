@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -182,7 +182,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 					--pageIndex;
 				addPage(pageIndex, designEditor, BPMN2MultiPageEditor.this.getEditorInput());
 				defaultTabHeight = tabFolder.getTabHeight();
-				setPageText(pageIndex,ModelUtil.getDisplayName( designEditor.getBpmnDiagram() ));
+				setPageText(pageIndex,ExtendedPropertiesProvider.getTextValue( designEditor.getBpmnDiagram() ));
 
 				defaultTabHeight = tabFolder.getTabHeight();
 
@@ -213,7 +213,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 					CTabItem oldItem = tabFolder.getItem(pageIndex-1);
 					CTabItem newItem = tabFolder.getItem(pageIndex);
 					newItem.setControl( oldItem.getControl() );
-					setPageText(pageIndex,ModelUtil.getDisplayName(bpmnDiagram));
+					setPageText(pageIndex,ExtendedPropertiesProvider.getTextValue(bpmnDiagram));
 		
 					setActivePage(pageIndex);
 					updateTabs();

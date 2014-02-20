@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ToolProfilesPreferencesHelper;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -43,7 +44,9 @@ import org.eclipse.graphiti.features.IFeature;
  * @author Bob Brodt
  *
  */
-public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
+public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "modelEnablement";
 
 	// Model Types that are enabled
 	private ModelEnablements modelEnablements;
@@ -53,13 +56,40 @@ public class ModelEnablementDescriptor extends BaseRuntimeDescriptor {
 	private String profile;
 
 	
-	// require a TargetRuntime!
-	private ModelEnablementDescriptor() {
+	public ModelEnablementDescriptor(IConfigurationElement e) {
+		TargetRuntime rt = TargetRuntime.getRuntime(e);
+		modelEnablements = new ModelEnablements(rt, null, null);
+		String type = e.getAttribute("type"); //$NON-NLS-1$
+		String profile = e.getAttribute("profile"); //$NON-NLS-1$
+		String ref = e.getAttribute("ref"); //$NON-NLS-1$
+		setDiagramType(Bpmn2DiagramType.fromString(type));
+		setProfile(profile);
+		if (ref!=null) {
+			String a[] = ref.split(":"); //$NON-NLS-1$
+			rt = TargetRuntime.getRuntime(a[0]);
+			type = a[1];
+			profile = a[2];
+			initializeFromTargetRuntime(rt, Bpmn2DiagramType.fromString(type), profile);
+		}
+		
+		for (IConfigurationElement c : e.getChildren()) {
+			String object = c.getAttribute("object"); //$NON-NLS-1$
+			String feature = c.getAttribute("feature"); //$NON-NLS-1$
+			if (c.getName().equals("enable")) { //$NON-NLS-1$
+				setEnabled(object, feature, true);
+			} else if (c.getName().equals("disable")) { //$NON-NLS-1$
+				setEnabled(object, feature, false);
+			}
+		}
+
 	}
 	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
 	public ModelEnablementDescriptor(TargetRuntime rt) {
 		super(rt);
-		modelEnablements = new ModelEnablements(rt, null, null);
 //		modelEnablements.setEnabledAll(true);
 	}
 

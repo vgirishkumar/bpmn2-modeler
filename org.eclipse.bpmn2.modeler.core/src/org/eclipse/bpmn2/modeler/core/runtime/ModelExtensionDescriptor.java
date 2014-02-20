@@ -14,38 +14,38 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.di.BpmnDiPackage;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl.SimpleFeatureMapEntry;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.osgi.util.NLS;
 
 /**
- * @author Bob Brodt
  *
  */
-public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
+@SuppressWarnings("rawtypes")
+public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
+
+	public final static String EXTENSION_NAME = "modelExtension";
 
 	// Container class for property values
 	public static class Value {
@@ -78,21 +78,32 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 	
 	// name/value pairs constructed from Custom Task extension point
-	public static class Property {
+	public static class Property extends SimpleTreeIterator<Property> {
+		public Property parent;
 		public String name;
 		public String description;
 		public List<Object>values;
 		public String ref;
 		public String type;
+		boolean isMany;
 		
 		public Property() {
 			this.name = "unknown"; //$NON-NLS-1$
 		}
 		
-		public Property(String name, String description) {
+		public Property(Property parent, String name, String description) {
 			super();
+			this.parent = parent;
 			this.name = name;
 			this.description = description;
+		}
+		
+		public void setType(String t) {
+			if (t!=null && t.contains("*")) {
+				isMany = true;
+				t = t.replaceAll("\\*", "");
+			}
+			type = t;
 		}
 		
 		public List<Object> getValues() {
@@ -119,38 +130,115 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 			}
 			return null;
 		}
-	}
-	
-	public class ModelExtensionAdapter extends AdapterImpl {
 
-		ModelExtensionDescriptor descriptor;
-		
-		public ModelExtensionAdapter(ModelExtensionDescriptor descriptor) {
-			super();
-			this.descriptor = descriptor;
+		protected List<Property> getChildren() {
+			List<Property> children = new ArrayList<Property>();
+			if (values!=null) {
+				for (Object child : values) {
+					if (child instanceof Property)
+						children.add((Property)child);
+				}
+			}
+			return children;
 		}
-		
-		public Property getProperty(String name) {
-			return descriptor.getProperty(name);
-		}
-		
-		public List<Property> getProperties(String path) {
-			return descriptor.getProperties(path);
-		}
-		
-		public ModelExtensionDescriptor getDescriptor() {
-			return descriptor;
+
+		@Override
+		public Iterator<Property> iterator() {
+			return new TreeIterator(getChildren());
 		}
 	}
 	
+	private class Initializer {
+		public ExtendedPropertiesAdapter adapter;
+		public EStructuralFeature feature;
+		public Object value;
+
+		public Initializer(ExtendedPropertiesAdapter adapter, EStructuralFeature feature, Object value) {
+			this.adapter = adapter;
+			this.feature = feature;
+			this.value = value;
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	private class InitializerList extends ArrayList<Initializer> {
+		public void add(ExtendedPropertiesAdapter adapter, EStructuralFeature feature, Object value) {
+			super.add( new Initializer(adapter, feature, value) );
+		}
+		
+		public void execute() {
+			for (Initializer item : this) {
+				// Skip initialization of Enums
+				if (item.feature.getEType() instanceof EEnum)
+					continue;
+				item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
+			}
+			clear();
+		}
+		
+		/**
+		 * Run all initializers up to and including the ones for the given object but not beyond.
+		 * @param object
+		 */
+		public void execute(EObject object) {
+			int last = -1;
+			for (int i=size()-1; i>=0; --i) {
+				Initializer item = get(i);
+				if (item.adapter.getTarget() == object) {
+					last = i;
+					break;
+				}
+			}
+			
+			while (last>=0) {
+				Initializer item = get(0);
+				remove(0);
+				
+				// Skip initialization of Enums
+				if (item.feature.getEType() instanceof EEnum)
+					continue;
+				item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
+				--last;
+			}
+		}
+	}
+
 	protected String id;
 	protected String name;
+	protected String uri;
 	protected String type;
 	protected String description;
 	protected List<Property> properties = new ArrayList<Property>();
-	protected Resource containingResource;
-	protected EObject modelObject;
+	protected ModelDecorator modelDecorator;
+	// these are shared instance variables because this ModelExtensionDescriptor is shared
+	// among all instances of the BPMN2Editor. We need to take care to clear these values
+	// once populateObject() is complete. An alternative would have been to pass these things
+	// on the call stack down several stack frames which is costly.
+	private Resource containingResource;
+	private EObject modelObject;
+	private InitializerList initializers = new InitializerList();
 
+	public ModelExtensionDescriptor(IConfigurationElement e) {
+		id = e.getAttribute("id"); //$NON-NLS-1$
+		name = e.getAttribute("name"); //$NON-NLS-1$
+		uri = e.getAttribute("uri"); //$NON-NLS-1$
+		type = e.getAttribute("type"); //$NON-NLS-1$
+		description = e.getAttribute("description"); //$NON-NLS-1$
+		getModelExtensionProperties(null, this, e);
+	}
+
+	public void dispose() {
+		super.dispose();
+		if (modelDecorator!=null) {
+			modelDecorator.dispose();
+		}
+	}
+	
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
+	@Deprecated
 	public ModelExtensionDescriptor(String id, String name) {
 		this.id = id;
 		this.name = name;
@@ -175,43 +263,46 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	public List<Property> getProperties() {
 		return properties;
 	}
-
 	
-	/**
-	 * Creates a custom Task object from a definition in the currently selected
-	 * Target Runtime plugin's "modelExtension" extension point.
-	 * 
-	 * @param container - the EObject which will eventually contain the new Task.
-	 *                    No changes are made to this object, it is only used to
-	 *                    locate the EMF Resource which will eventually contain
-	 *                    the new Task object.
-	 * @return an initialized Task object
-	 */
-	public EObject createObject(EObject container) {
-		if (container!=null)
-			containingResource = container.eResource();
-		modelObject = createObject(getType());
-		populateObject(modelObject, true);
-		return modelObject;
-	}
-	
-	/**
-	 * Create and initialize an object of the given EClass name.
-	 * The runtime's EPackage is searched first for the given ECLass; if not
-	 * found, the Bpmn2Package is searched.
-	 * 
-	 * @param className
-	 * @return an initialized EObject or null if the EClass name was not found
-	 */
-	private EObject createObject(String className) {
-		// look in the extension model package for the class name first
-		EClass eClass = (EClass) getEPackage().getEClassifier(className);
-		if (eClass==null) {
-			// if not found, look in BPMN2 package
-			eClass = (EClass) Bpmn2Package.eINSTANCE.getEClassifier(className);
+	protected Object getModelExtensionProperties(Property parent, ModelExtensionDescriptor ct, IConfigurationElement e) {
+		
+		String elem = e.getName();
+		if ("value".equals(elem)) { //$NON-NLS-1$
+			String id = e.getAttribute("id"); //$NON-NLS-1$
+			Value val = new Value(id);
+			for (IConfigurationElement c : e.getChildren()) {
+				Object propValue = getModelExtensionProperties(parent, null, c);
+				val.getValues().add(propValue);
+			}
+			return val;
 		}
-		if (eClass!=null)
-			return createObject(eClass);
+		else if ("property".equals(elem)) { //$NON-NLS-1$
+			String name = e.getAttribute("name"); //$NON-NLS-1$
+			String value = e.getAttribute("value"); //$NON-NLS-1$
+			String ref = e.getAttribute("ref"); //$NON-NLS-1$
+			String type = e.getAttribute("type"); //$NON-NLS-1$
+			String description = e.getAttribute("description"); //$NON-NLS-1$
+			Property prop = new Property(parent, name,description);
+			prop.setType(type);
+			if (value!=null)
+				prop.getValues().add(value);
+			else if (ref!=null) {
+				prop.ref = ref;
+			}
+			else if(e.getChildren().length > 0){
+				Object o = getModelExtensionProperties(prop, null, e.getChildren()[0]);
+				if (o instanceof Value)
+					prop.getValues().addAll(((Value)o).getValues());
+			}
+			return prop;
+		}
+		else {
+			for (IConfigurationElement c : e.getChildren()) {
+				Object o = getModelExtensionProperties(parent, null, c);
+				if (o instanceof Property && ct!=null)
+					ct.getProperties().add((Property)o);
+			}
+		}
 		return null;
 	}
 
@@ -222,95 +313,83 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param eClass - type of object to create
 	 * @return an initialized EObject
 	 */
-	private EObject createObject(EClass eClass) {
-		EObject eObject = null;
-		EPackage pkg = eClass.getEPackage();
-		if (pkg==Bpmn2Package.eINSTANCE) {
-			eObject = Bpmn2ModelerFactory.create(containingResource, eClass);
-		}
-		else {
-			eObject = pkg.getEFactoryInstance().create(eClass);
-		}
-		
-		// if the object has an "id", assign it now.
-		String id = ModelUtil.setID(eObject,containingResource);
-		// also set a default name
-		EStructuralFeature feature = eObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-		if (feature!=null) {
-			if (id!=null)
-				eObject.eSet(feature, ModelUtil.toDisplayName(id));
-			else
-				eObject.eSet(feature, NLS.bind(Messages.ModelExtensionDescriptor_Create,
-					ModelUtil.toDisplayName(eObject.eClass().getName())));
-		}
-
-		return eObject;
+	public EObject createObject(EClass eClass) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
+		adapter.setResource(containingResource);
+		return adapter.getObjectDescriptor().createObject(eClass);
 	}
 	
-	/**
-	 * Search the Target Runtime's EPackage for a structural feature with the specified name.
-	 * If the feature is not found in the runtime package, search the Bpmn2Package.
-	 * 
-	 * @param type - the feature type, either EAttribute or EReference
-	 * @param name - name of the feature
-	 * @return an EStructuralFeature or null if not found
-	 */
-	private EStructuralFeature getFeature(Class type, String name) {
-		EStructuralFeature feature = getFeature(getEPackage(), type, name);
-		if (feature==null) {
-			// try the bpmn2 package
-			feature = getFeature(Bpmn2Package.eINSTANCE, type, name);
-		}
-		return feature;
-	}
-	
-	/**
-	 * Search the given EPackage for a structural feature with the specified name.
-	 * 
-	 * @param pkg - the EPackage to search
-	 * @param type - the feature type, either EAttribute or EReference
-	 * @param name - name of the feature
-	 * @return an EStructuralFeature or null if not found
-	 */
-	private EStructuralFeature getFeature(EPackage pkg, Class type, String name) {
-		TreeIterator<EObject> it = pkg.eAllContents();
-		while (it.hasNext()) {
-			EObject o = it.next();
-			if (type.isInstance(o)) {
-				EStructuralFeature fName = o.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-				if (fName!=null && o.eGet(fName)!=null && o.eGet(fName).equals(name)) {
-					return (EStructuralFeature)o;
-				}
+	public ModelDecorator getModelDecorator() {
+		if (modelDecorator==null) {
+			String name = null;
+			String nsPrefix = null;
+			String nsURI = null;
+			// get our EPackage defined in the <model> extension point (if there is one)
+			EPackage pkg = getEPackage();
+			if (uri==null && pkg == Bpmn2Package.eINSTANCE) {
+				// can't decorate the BPMN2 package, so make up an extension URI
+				// using the Target Runtime's targetNamespace
+				nsURI = getRuntime().
+						getRuntimeExtension().
+						getTargetNamespace(Bpmn2DiagramType.NONE) + "/ext";
+			}
+			else if (uri!=null) {
+				// This <modelExtension> extension point element defines an EPackage URI.
+				// If it's the same as the <model> URI, then use the EPackage defined in <model>
+				if (pkg==null || !uri.equals(pkg.getNsURI()))
+					nsURI = uri;
+			}
+			
+			if (nsURI!=null) {
+				name = URI.createURI(nsURI).lastSegment();
+				nsPrefix = name;
+				modelDecorator = new ModelDecorator(name, nsPrefix, nsURI);
+			}
+			else {
+				modelDecorator = new ModelDecorator(pkg);
 			}
 		}
-		return null;
+		return modelDecorator;
 	}
 	
-	/**
-	 * Populate the given EObject with a list of values which must be Property objects.
-	 * 
-	 * @param object - the object to initialize
-	 * @param values - list of Property values
-	 */
-	public void populateObjectFromValues(EObject object, List<Object> values, boolean all) {
-		
-		for (Object value : values) {
-			if (value instanceof Property)
-				populateObject(object,(Property)value, all);
+	public EObject populateObject(EObject object, Resource resource, boolean initialize) {
+		try {
+			containingResource = resource;
+			modelObject = object;
+			if (containingResource==null)
+				containingResource = ResourceProvider.getResource(object);
+			getModelDecorator(); 
+			populateObject(modelObject, initialize);
 		}
-	}
-	
-	public EObject populateObject(EObject object, Resource resource, boolean all) {
-		containingResource = resource;
-		modelObject = object;
-		populateObject(modelObject, all);
-		return modelObject;
+		finally {
+			containingResource = null;
+			object = modelObject;
+			modelObject = null;
+		}
+		return object;
 	}
 
-	public void populateObject(EObject object, boolean all) {
-		modelObject = object;
-		populateObject(object, getProperties(), all);
-		adaptObject(object);
+	// FIXME: this is called in CreateCustomShapeFeature and CreateCustomConnectionFeature
+	// this should not be necessary because it's already done in the Bpmn2Modeler factory,
+	// but check to make sure. Try to decouple!
+	public void populateObject(EObject object, boolean initialize) {
+		try {
+			modelObject = object;
+			initializers.clear();
+			
+			populateObject(object, getProperties());
+			adaptObject(object);
+			if (initialize) {
+				initializers.execute();
+			}
+		}
+		catch (Exception e) {
+			Activator.logError(e);
+		}
+		finally {
+			initializers.clear();
+			modelObject = null;
+		}
 	}
 	
 	/**
@@ -319,23 +398,11 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object - the object to initialize
 	 * @param values - list of Property objects
 	 */
-	public void populateObject(EObject object, List<Property> properties, boolean all) {
+	private void populateObject(EObject object, List<Property> properties) {
 		
 		for (Property prop : properties) {
-			populateObject(object,prop, all);
+			populateObject(object, prop);
 		}
-	}
-	
-	/**
-	 * Set the value of the structural feature. If the feature is a list,
-	 * the value is added to the list.
-	 * 
-	 * @param object
-	 * @param feature
-	 * @param value
-	 */
-	private void setValue(EObject object, EStructuralFeature feature, Object value, boolean force, Property property) {
-		this.setValueFromString(object, feature, value, force);
 	}
 	
 	/**
@@ -354,21 +421,27 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		return object.eGet(feature);
 	}
 	
-	public EStructuralFeature getFeature(EClass eclass, Property property) {
-		EStructuralFeature feature = eclass.getEStructuralFeature(property.name);
-
-		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
-
+	// FIXME: this is called in ToolProfilesPreferencesHelper. Check if there's a way to decouple.
+	public EStructuralFeature getFeature(EObject object, Property property) {
+		EClass eClass = object.eClass();
+		EStructuralFeature feature = eClass.getEStructuralFeature(property.name);
+		
 		if (feature==null) {
-			EPackage pkg = getEPackage();
+			Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
+	
 			// if the Property has a "ref" or if its value is a Property
 			// then this must be an EReference
-			if (property.ref!=null || firstValue instanceof Property) {
-				feature = ModelUtil.createDynamicReference(pkg, eclass, property.name, property.type);
+			if (property.ref!=null) {
+				feature = modelDecorator.createEReference(property.name, property.type, eClass.getName(), false, property.isMany);
 			}
-			else
-				feature = ModelUtil.createDynamicAttribute(pkg, eclass, property.name, property.type);
+			else if (firstValue instanceof Property) {
+				feature = modelDecorator.createEReference(property.name, property.type, eClass.getName(), true, property.isMany);
+			}
+			else {
+				feature = modelDecorator.createEAttribute(property.name, property.type, eClass.getName(), property.getFirstStringValue());
+			}
 		}
+		
 		return feature;
 	}
 
@@ -379,81 +452,64 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	 * @param object
 	 * @param property
 	 */
-	public EStructuralFeature populateObject(EObject object, Property property, boolean all) {
+	private EStructuralFeature populateObject(EObject object, Property property) {
 
 		EObject childObject = null;
 		EStructuralFeature childFeature = null;
-		EStructuralFeature feature = object.eClass().getEStructuralFeature(property.name);
-
+		EStructuralFeature feature = getFeature(object, property);
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
 
-		if (feature==null) {
-			EPackage pkg = getEPackage();
-			// if the Property has a "ref" or if its value is a Property
-			// then this must be an EReference
-			if (property.ref!=null || firstValue instanceof Property) {
-				feature = ModelUtil.createDynamicReference(pkg, object, property.name, property.type);
-			}
-			else
-				feature = ModelUtil.createDynamicAttribute(pkg, object, property.name, property.type);
-		}
-		
 		if (feature instanceof EAttribute) {
-			if ( all && feature.getEType().getInstanceClass() == FeatureMap.Entry.class ) {
-				// special handling for FeatureMaps
-				for (Object value : property.getValues()) {
-					if (value instanceof Property) {
-						Property p = (Property)value;
-						childFeature = getFeature(p.name);
-						if (childFeature instanceof EAttribute) {
-							childObject = createObject(((EReference) childFeature));
-							setValue(childObject, childFeature, firstValue, true, property);
-						}
-						else if (childFeature instanceof EReference) {
-							childObject = createObject(((EReference) childFeature).getEReferenceType());
-							FeatureMap.Entry entry = new SimpleFeatureMapEntry((EStructuralFeature.Internal)childFeature, childObject);
-							setValue(object, feature, entry, true, property);
-							populateObjectFromValues(childObject,p.getValues(), true);
-						}
-					}
-				}
-			}
-			else
-				setValue(object, feature, firstValue, all, property);
+			adaptFeature(object, feature, firstValue);
 		}
 		else if (feature instanceof EReference) {
-			if (all) {
-				EReference ref = (EReference)feature;
-				if (property.ref!=null) {
-					// navigate down the newly created custom task to find the object reference
-					childObject = modelObject;
-					String[] segments = property.ref.split("/"); //$NON-NLS-1$
-					for (String s : segments) {
-						// is the feature an Elist?
-						int index = s.indexOf('#');
-						if (index>0) {
-							index = Integer.parseInt(s.substring(index+1));
-							s = s.split("#")[0]; //$NON-NLS-1$
-						}
-						childFeature = childObject.eClass().getEStructuralFeature(s);
-						childObject = (EObject)getValue(childObject, childFeature, index);
+			EReference ref = (EReference)feature;
+			if (property.ref!=null) {
+				// navigate down the newly created custom task to find the object reference
+				childObject = modelObject;
+				String[] segments = property.ref.split("/"); //$NON-NLS-1$
+				for (String s : segments) {
+					// is the feature an Elist?
+					int index = s.indexOf('#');
+					if (index>0) {
+						index = Integer.parseInt(s.substring(index+1));
+						s = s.split("#")[0]; //$NON-NLS-1$
 					}
-					setValue(object, feature, childObject, true, property);
+					// run all of the initializers that apply to the current child object
+					// so that references can be resolved
+					initializers.execute(childObject);
+					childFeature = childObject.eClass().getEStructuralFeature(s);
+					childObject = (EObject)getValue(childObject, childFeature, index);
 				}
-				else if (firstValue instanceof Property)
-				{
-                    EClassifier reftype = property.type == null || property.type.length() == 0 ? null : ModelUtil
-                            .getEClassifierFromString(getEPackage(), property.type);
-                    if (reftype == null || !(reftype instanceof EClass)) {
-                        reftype = ref.getEReferenceType();
-                    }
-                    childObject = createObject((EClass) reftype);
-                    setValue(object, feature, childObject, true, property);
-                    populateObjectFromValues(childObject, property.getValues(), all);
-				}
+				adaptFeature(object, feature, childObject);
+			}
+			else if (firstValue instanceof Property)
+			{
+                EClassifier reftype = property.type == null || property.type.length() == 0 ? null : ModelDecorator
+                        .findEClassifier(getEPackage(), property.type);
+                if (reftype == null || !(reftype instanceof EClass)) {
+                    reftype = ref.getEReferenceType();
+                }
+                childObject = createObject((EClass) reftype);
+                adaptFeature(object, feature, childObject);
+                populateObjectFromValues(childObject, property.getValues());
 			}
 		}
 		return feature;
+	}
+	
+	/**
+	 * Populate the given EObject with a list of values which must be Property objects.
+	 * 
+	 * @param object - the object to initialize
+	 * @param values - list of Property values
+	 */
+	private void populateObjectFromValues(EObject object, List<Object> values) {
+		
+		for (Object value : values) {
+			if (value instanceof Property)
+				populateObject(object,(Property)value);
+		}
 	}
 
 	/**
@@ -530,28 +586,90 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	public void setProperties(List<Property> properties) {
 		this.properties = properties;
 	}
-	
-	public static ModelExtensionAdapter getModelExtensionAdapter(EObject object) {
-		for (Adapter a : object.eAdapters()) {
-			if (a instanceof ModelExtensionAdapter) {
-				return (ModelExtensionAdapter)a;
-			}
+
+	public ExtendedPropertiesAdapter adaptObject(EObject object) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null) {
+			adapter.setProperty(this.getClass().getName(), this);
+			if (description!=null)
+				adapter.setProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION, description);
 		}
-		return null;
+		return adapter;
+	}
+	
+	private void adaptFeature(EObject object, EStructuralFeature feature, Object value) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null) {
+			// if this is a dynamic feature, delegate access to the feature to the Model Decorator
+			if (ModelDecorator.getEPackageForFeature(feature)!=null) {
+				getModelDecorator().adaptFeature(adapter, object, feature);
+			}
+			
+			if (!(feature.getEType() instanceof EEnum)) // skip enum initialization
+				initializers.add(adapter,feature,value);
+		}
 	}
 
-	public void adaptObject(EObject object) {
-		addModelExtensionAdapter(object);
-		if (description!=null && !description.isEmpty()) {
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-			if (adapter!=null) {
-				adapter.setProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION, description);
+	public boolean isDefined(String className, String featureName) {
+		if (className.equals(getType())) {
+			if (featureName!=null) {
+				for (Property p : getProperties()) {
+					if (featureName.equals(p.name))
+						return true;
+				}
+			}
+			return true;
+		}
+		EClass eClass = getEClass(className);
+		if (eClass!=null) {
+			for (EClass st : eClass.getEAllSuperTypes()) {
+				if (isDefined(st.getName(), featureName))
+					return true;
 			}
 		}
+		
+		// check types defined within the Properties tree
+		for (Property property : getProperties()) {
+			if (className.equals(property.type)) {
+				if (featureName!=null && property.values!=null) {
+					for (Object p : property.values) {
+						if (p instanceof Property) {
+							if (featureName.equals(((Property)p).name))
+								return true;
+						}
+					}
+				}
+				return true;
+			}
+
+			Iterator<Property> iter = property.iterator();
+			while (iter.hasNext()) {
+				Property p = iter.next();
+				if (className.equals(p.type)) {
+					if (featureName!=null && p.values!=null) {
+						for (Object child : p.values) {
+							if (child instanceof Property) {
+								if (((Property)child).name.equals(featureName))
+									return true;
+							}
+						}
+					}
+				}
+			}
+		}
+				
+		return false;
 	}
-	
-	private void addModelExtensionAdapter(EObject object) {
-		if (!object.eAdapters().contains(this))
-			object.eAdapters().add( new ModelExtensionAdapter(this) );
+
+	private EClass getEClass(String className) {
+		// try the runtime package first
+		EClass eClass = (EClass)targetRuntime.getModelDescriptor().getEPackage().getEClassifier(className);
+		// then all BPMN2 packages
+		if (eClass==null)
+			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(className);
+		if (eClass==null)
+			eClass = (EClass)BpmnDiPackage.eINSTANCE.getEClassifier(className);
+		return eClass;
 	}
+
 }

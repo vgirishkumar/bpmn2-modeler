@@ -115,7 +115,7 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
 			
 						@Override
 						public String getText(Object element) {
-							return ModelUtil.toDisplayName( ((Interface)element).getName() );
+							return ModelUtil.toCanonicalString( ((Interface)element).getName() );
 						}
 						
 					});

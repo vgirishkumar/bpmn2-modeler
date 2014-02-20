@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
@@ -77,7 +78,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@Override
 	public String getCreateDescription() {
-		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toDisplayName(getBusinessObjectClass().getName()));
+		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toCanonicalString(getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)
@@ -117,7 +118,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		if (id!=null) {
 	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
+	    	ctd.populateObject(businessObject, ResourceProvider.getResource(businessObject), true);
 		}
 	}
 

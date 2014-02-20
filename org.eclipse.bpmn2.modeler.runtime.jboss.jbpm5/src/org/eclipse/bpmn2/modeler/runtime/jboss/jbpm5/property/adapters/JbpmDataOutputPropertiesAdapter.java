@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataOutputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -35,27 +36,18 @@ public class JbpmDataOutputPropertiesAdapter extends DataOutputPropertiesAdapter
     	setFeatureDescriptor(feature,
 			new ItemDefinitionRefFeatureDescriptor<DataOutput>(adapterFactory,object,feature) {
 				
-				@Override
-				public void setValue(Object context, final Object value) {
-					final DataOutput dataInput = adopt(context);
-
-					TransactionalEditingDomain domain = getEditingDomain(object);
-					domain.getCommandStack().execute(new RecordingCommand(domain) {
-						@Override
-						protected void doExecute() {
-							dataInput.setItemSubjectRef(JbpmModelUtil.getDataType(dataInput, value));
-						}
-					});
+	    		@Override
+	    		protected void internalSet(DataOutput dataInput, EStructuralFeature feature, Object value, int index) {
+					dataInput.setItemSubjectRef(JbpmModelUtil.getDataType(dataInput, value));
 				}
 				
 				@Override
-				public Hashtable<String, Object> getChoiceOfValues(Object context) {
-					final DataOutput property = adopt(context);
-					return JbpmModelUtil.collectAllDataTypes(property);
+				public Hashtable<String, Object> getChoiceOfValues() {
+					return JbpmModelUtil.collectAllDataTypes(object);
 				}
 				
 				@Override
-				public boolean isMultiLine(Object context) {
+				public boolean isMultiLine() {
 					return true;
 				}
 			}

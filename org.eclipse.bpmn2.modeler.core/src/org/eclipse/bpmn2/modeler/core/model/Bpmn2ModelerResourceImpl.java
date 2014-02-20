@@ -29,7 +29,9 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
+import org.eclipse.bpmn2.EndPoint;
 import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.ItemDefinition;
@@ -43,6 +45,8 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -51,6 +55,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator.ModelDecoratorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -69,6 +75,7 @@ import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
@@ -76,6 +83,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -95,6 +103,7 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
@@ -201,6 +210,23 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		qnameMap.add(BpmnDiPackage.eINSTANCE.getBPMNLabel_LabelStyle());
 	}
 
+	public class OnlyNamedContainmentTypeInfo extends OnlyContainmentTypeInfo {
+		
+	    public boolean shouldSaveType(EClass objectType, EClassifier featureType, EStructuralFeature feature) {
+	    	String name = ExtendedMetaData.INSTANCE.getName(objectType);
+	    	if (name==null || name.isEmpty())
+	    		return false;
+	        return super.shouldSaveType(objectType, featureType, feature);
+	    }
+
+	    public boolean shouldSaveType(EClass objectType, EClass featureType, EStructuralFeature feature) {
+	    	String name = ExtendedMetaData.INSTANCE.getName(objectType);
+	    	if (name==null || name.isEmpty())
+	    		return false;
+	    	return super.shouldSaveType(objectType, featureType, feature);
+	    }
+	}
+	
 	/**
 	 * Creates an instance of the resource.
 	 * 
@@ -223,7 +249,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         ExtendedMetaData extendedMetadata = new XmlExtendedMetadata();
         this.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
-        this.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION, new OnlyContainmentTypeInfo());
+        this.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION, new OnlyNamedContainmentTypeInfo());
         this.getDefaultSaveOptions().put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
         this.getDefaultLoadOptions().put(XMLResource.OPTION_USE_LEXICAL_HANDLER, Boolean.TRUE);
         this.getDefaultSaveOptions().put(XMLResource.OPTION_ELEMENT_HANDLER, new ElementHandlerImpl(true));
@@ -400,15 +426,57 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		}
 
 		@Override
-		protected void createObject(EObject peekObject, EStructuralFeature feature) {
-			super.createObject(peekObject, feature);
-			EObject newObject = objects.peekEObject();
-			if (newObject!=null && newObject!=peekObject) {
-				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(newObject);
-				if (adapter!=null) {
-					adapter.setProperty(ExtendedPropertiesAdapter.LINE_NUMBER, getLineNumber());
+		protected EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement) {
+			String nsURI = helper.getURI(prefix);
+			EPackage pkg = ModelDecorator.getEPackage(nsURI);
+			if (pkg!=null) {
+				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
+				EStructuralFeature feature = mda.getEStructuralFeature(object, name);
+				if (feature!=null)
+					return feature;
+			}
+			return super.getFeature(object, prefix, name, isElement);
+		}
+
+		@Override
+		protected EObject createObjectFromFeatureType(EObject peekObject, EStructuralFeature feature) {
+			int lineNumber = getLineNumber();
+			EObject newObject = null;
+			EPackage pkg = ModelDecorator.getEPackageForFeature(feature);
+			if (pkg!=null) {
+				EClassifier eType = feature.getEType();
+				newObject = pkg.getEFactoryInstance().create((EClass)eType);
+				
+				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
+				feature = mda.getEStructuralFeature(peekObject, feature);
+				
+				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(peekObject);
+				epa.getFeatureDescriptor(feature).setValue(newObject);
+				processObject(newObject);
+				handleObjectAttribs(newObject);
+			}
+			else
+				newObject = super.createObjectFromFeatureType(peekObject, feature);
+			
+			if (newObject!=null) {
+				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(newObject);
+				if (epa!=null) {
+					epa.setProperty(ExtendedPropertiesAdapter.LINE_NUMBER, lineNumber);
 				}
 			}
+
+			return newObject;
+		}
+		
+		@Override
+		protected void setFeatureValue(EObject object, EStructuralFeature feature, Object value, int position) {
+			EPackage pkg = ModelDecorator.getEPackageForFeature(feature);
+			if (pkg!=null) {
+				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(object);
+				epa.getFeatureDescriptor(feature).setValue(value, position);
+			}
+			else
+				super.setFeatureValue(object, feature, value, position);
 		}
 
 		@Override
@@ -568,6 +636,12 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         public void startElement(String uri, String localName, String name) {
 			super.startElement(uri, localName, name);
 		    EObject peekObject = objects.peekEObject();
+//		    if (peekObject instanceof Definitions) {
+//		    	// create all model extensions for this target runtime so that all
+//		    	// extension attributes and elements are available during loading.
+//		    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+//		    	rt.createModelExtensions(peekObject.eResource());
+//		    }
             if (peekObject!=null && peekObject.eClass() == Bpmn2Package.eINSTANCE.getExpression()) {
             	// If the element is an Expression (not a FormalExpression) then use the CDATA
             	// as the body of a Formal Expression (because Expression does not have a body)
@@ -785,6 +859,11 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 				}
 			}
+			
+			// FIXME: how do we prevent serialization of extensionValues if the contained elements have only default values?
+			if (o instanceof ExtensionAttributeValue) {
+			}
+			
             return super.shouldSaveFeature(o, f);
         }
 		
@@ -1197,7 +1276,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		public Bpmn2ModelerXmlHelper(Bpmn2ResourceImpl resource) {
 			super(resource);
-		}		
+		}
 		
 		@Override
 		public Object getValue(EObject eObject, EStructuralFeature eStructuralFeature) {
@@ -1311,8 +1390,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			return s;
 		}
 		
-		public void setValue(EObject object, EStructuralFeature feature,
-				Object value, int position) {
+		public void setValue(EObject object, EStructuralFeature feature, Object value, int position) {
 			// fix some kind of bug which causes duplicate entries in objects that have
 			// mutual reference lists.
 			if (	object!=null
@@ -1330,64 +1408,64 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 			
-			// check if we need to change the attribute's data type:
-			if (feature instanceof EAttribute) {
-				// and only if the attribute's data type is "Object"
-				EClassifier t = feature.getEType();
-				if (t!=null && t.getInstanceClass() == Object.class) {
-					// search for the attribute in the target runtime's Custom Task and
-					// Model Extension definitions by name
-					List<Property>properties = new ArrayList<Property>();
-					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-					String className = object.eClass().getName();
-					String featureName = feature.getName();
-					for (CustomTaskDescriptor ctd : rt.getCustomTasks()) {
-						if (className.equals(ctd.getType())) {
-							properties.addAll(ctd.getProperties());
-						}
-					}
-					for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-						if (className.equals(med.getType())) {
-							properties.addAll(med.getProperties());
-						}
-					}
-					for (Property p : properties) {
-						if (p.name.equals(featureName)) {
-							String type = p.type;
-							if (type==null)
-								type = "EString"; //$NON-NLS-1$
-							EClassifier eClassifier = ModelUtil.getEClassifierFromString(
-									rt.getModelDescriptor().getEPackage(),type);
-							if (eClassifier instanceof EDataType) {
-								feature.setEType(eClassifier);
-							}
-							break;
-						}
-					}
-				}
-			}
+//			// check if we need to change the attribute's data type:
+//			if (feature instanceof EAttribute) {
+//				// and only if the attribute's data type is "Object"
+//				EClassifier t = feature.getEType();
+//				if (t!=null && t.getInstanceClass() == Object.class) {
+//					// search for the attribute in the target runtime's Custom Task and
+//					// Model Extension definitions by name
+//					List<Property>properties = new ArrayList<Property>();
+//					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+//					String className = object.eClass().getName();
+//					String featureName = feature.getName();
+//					for (CustomTaskDescriptor ctd : rt.getCustomTasks()) {
+//						if (className.equals(ctd.getType())) {
+//							properties.addAll(ctd.getProperties());
+//						}
+//					}
+//					for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+//						if (className.equals(med.getType())) {
+//							properties.addAll(med.getProperties());
+//						}
+//					}
+//					for (Property p : properties) {
+//						if (p.name.equals(featureName)) {
+//							String type = p.type;
+//							if (type==null)
+//								type = "EString"; //$NON-NLS-1$
+//							EClassifier eClassifier = ModelDecorator.findEClassifier(
+//									rt.getModelDescriptor().getEPackage(),type);
+//							if (eClassifier instanceof EDataType) {
+//								feature.setEType(eClassifier);
+//							}
+//							break;
+//						}
+//					}
+//				}
+//			}
 			
 			super.setValue(object, feature, value, position);
 		}
 
     	@Override
-		public EStructuralFeature getFeature(EClass eClass, String namespaceURI, String name, boolean isElement) {
+		public EStructuralFeature getFeature(EClass eClass, String nsURI, String name, boolean isElement) {
     		// This fixes https://bugs.eclipse.org/bugs/show_bug.cgi?id=378296
     		// I'm still not convinced that getFeature() shouldn't simply return the feature
     		// from the given EClass instead of searching the EPackage of the Resource being
     		// loaded (if the EClass has a feature with that name of course).
-    		EStructuralFeature result = null;
+    		EStructuralFeature feature = null;
     		EPackage pkg = eClass.getEPackage();
 			if (pkg != Bpmn2Package.eINSTANCE &&
 					pkg != BpmnDiPackage.eINSTANCE &&
 					pkg != DcPackage.eINSTANCE &&
 					pkg != DiPackage.eINSTANCE &&
 					pkg != TargetRuntime.getCurrentRuntime().getModelDescriptor().getEPackage()) {
-				result = eClass.getEStructuralFeature(name);
+				feature = eClass.getEStructuralFeature(name);
 			}
-			if (result==null)
-				result = super.getFeature(eClass, namespaceURI, name, isElement);
-			return result;
+			if (feature==null)
+				feature = super.getFeature(eClass, nsURI, name, isElement);
+			return feature;
 		}
 	}
 }

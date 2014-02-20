@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -34,7 +35,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.RefListEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -208,7 +208,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 
 			public void create(String featureName) {
 				this.feature = object.eClass().getEStructuralFeature(featureName);
-				String label = ModelUtil.getLabel(object,feature);
+				String label = ExtendedPropertiesProvider.getLabel(object,feature);
 				label = label.replace(" Ref", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				super.createControl(parent, label, style | SWT.MULTI);
 			}
@@ -237,7 +237,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 				String text = null;
 				List<EObject> list = (List<EObject>)object.eGet(feature);
 				for (EObject item : list) {
-					String name = ModelUtil.getDisplayName(item);
+					String name = ExtendedPropertiesProvider.getTextValue(item);
 					if (text==null)
 						text = name;
 					else

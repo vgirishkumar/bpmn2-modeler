@@ -83,6 +83,7 @@ import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
+import org.eclipse.bpmn2.modeler.core.builder.BPMN2Builder;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -218,6 +219,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
@@ -241,7 +243,7 @@ import org.eclipse.wst.sse.ui.StructuredTextEditor;
 public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListener, IGotoMarker {
 	
 	static {
-		TargetRuntime.getAllRuntimes();
+		TargetRuntime.createTargetRuntimes();
 		PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class);
 		PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class);
 		PropertiesCompositeFactory.register(EObject.class, DefaultDialogComposite.class);
@@ -385,7 +387,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-			
+		if (input instanceof IFileEditorInput) {
+			BPMN2Builder.INSTANCE.loadExtensions( ((IFileEditorInput)input).getFile().getProject() );
+		}
 		setActiveEditor(this);
 		currentInput = input;
 		
@@ -465,7 +469,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 		// Tell the TargetRuntime about the ResourceSet. This allows the TargetRuntime to provide its
 		// own ResourceFactory if needed.
-		targetRuntime.setResourceSet(resourceSet);
+		targetRuntime.registerExtensionResourceFactory(resourceSet);
 		
 		// Now create the BPMN2 model resource, or reuse the one from the already open editor.
 		if (otherEditor==null) {
@@ -513,9 +517,6 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			commandStack.saveIsDone();
 			commandStack.flush();
 		}
-
-		// tell our TargetRuntime about this resource
-		getTargetRuntime().setResource(bpmnResource);
 		
 		// Load error markers
 		loadMarkers();
@@ -644,7 +645,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			 // generic property sheets and other default behavior.
 			targetRuntime = getPreferences().getRuntime();
 			if (targetRuntime == TargetRuntime.getDefaultRuntime()) {
-				for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+				for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 					if (rt.getRuntimeExtension().isContentForRuntime(input)) {
 						targetRuntime = rt;
 						break;

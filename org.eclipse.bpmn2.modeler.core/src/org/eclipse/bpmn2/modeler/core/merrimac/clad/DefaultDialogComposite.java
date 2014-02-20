@@ -15,19 +15,22 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2TabDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.PropertyTabDescriptor;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IWorkbenchPart;
@@ -75,7 +78,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 				folder.setBackground(parent.getBackground());
 	
 				for (ITabDescriptor td : tabDescriptors) {
-					if (td instanceof Bpmn2TabDescriptor && !((Bpmn2TabDescriptor)td).isPopup()) {
+					if (td instanceof PropertyTabDescriptor && !((PropertyTabDescriptor)td).isPopup()) {
 						// exclude this tab if not intended for popup dialog
 						continue;
 					}
@@ -137,6 +140,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
 		control.setLayoutData(data);
+		layout(true);
 	}
 	
 	protected ITabDescriptor[] getTabDescriptors() {
@@ -157,7 +161,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		int detailsCount = 0;
 		ITabDescriptor[] tabDescriptors = getTabDescriptors();
 		for (ITabDescriptor td : tabDescriptors) {
-			if (td instanceof Bpmn2TabDescriptor && !((Bpmn2TabDescriptor)td).isPopup()) {
+			if (td instanceof PropertyTabDescriptor && !((PropertyTabDescriptor)td).isPopup()) {
 				// exclude this tab if not intended for popup dialog
 				continue;
 			}

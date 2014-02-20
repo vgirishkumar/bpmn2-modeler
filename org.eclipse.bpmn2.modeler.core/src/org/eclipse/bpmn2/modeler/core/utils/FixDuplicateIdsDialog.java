@@ -165,8 +165,8 @@ public class FixDuplicateIdsDialog extends ListSelectionDialog {
 			EObject o2 = tuple.getSecond();
 			return NLS.bind(
 				Messages.FixDuplicateIdsDialog_Duplicate_ID,
-				ModelUtil.getLongDisplayName(o1),
-				ModelUtil.getLongDisplayName(o2)
+				ModelUtil.toCanonicalString(o1),
+				ModelUtil.toCanonicalString(o2)
 			);
 		}
 		

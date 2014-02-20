@@ -13,7 +13,15 @@
 
 package org.eclipse.bpmn2.modeler.core.preferences;
 
+import java.util.List;
+
+import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
@@ -28,11 +36,15 @@ import org.eclipse.swt.graphics.RGB;
  * @author Bob Brodt
  *
  */
-public class ShapeStyle {
+public class ShapeStyle implements IRuntimeExtensionDescriptor {
 
+	public final static String EXTENSION_NAME = "style";
+	
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-"; //$NON-NLS-1$
 	public static enum RoutingStyle { ManualBendpoint, AutomaticBendpoint, Manhattan};
+	String object;
+	EClass eclass;
 	IColorConstant shapeBackground;
 	IColorConstant shapePrimarySelectedColor;
 	IColorConstant shapeSecondarySelectedColor;
@@ -42,6 +54,8 @@ public class ShapeStyle {
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
 	boolean defaultSize;
 	boolean dirty;
+	protected TargetRuntime targetRuntime;
+	protected IFile configFile;
 
 	public ShapeStyle() {
 		setDefaultColors(DEFAULT_COLOR);
@@ -52,7 +66,17 @@ public class ShapeStyle {
 		this(encode(other));
 	}
 
-	public ShapeStyle(String foreground, String background, String textColor, String font) {
+	public ShapeStyle(IConfigurationElement e) {
+		object = e.getAttribute("object"); //$NON-NLS-1$
+		eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(object);
+		String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
+		String background = e.getAttribute("background"); //$NON-NLS-1$
+		String textColor = e.getAttribute("textColor"); //$NON-NLS-1$
+		String font = e.getAttribute("font"); //$NON-NLS-1$
+		this.initialize(foreground, background, textColor, font);
+	}
+
+	public void initialize(String foreground, String background, String textColor, String font) {
 		// only background color is required to set up default color scheme
 		shapeBackground = stringToColor(background);
 		setDefaultColors(shapeBackground);
@@ -96,6 +120,43 @@ public class ShapeStyle {
 		}
 		else
 			routingStyle = RoutingStyle.ManualBendpoint;
+	}
+
+	@Override
+	public void dispose() {
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.remove(this);
+	}
+	
+	@Override
+	public String getExtensionName() {
+		return EXTENSION_NAME;
+	}
+
+	@Override
+	public void setRuntime(TargetRuntime targetRuntime) {
+		this.targetRuntime = targetRuntime;
+		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
+		list.add(this);
+	}
+
+	@Override
+	public TargetRuntime getRuntime() {
+		return targetRuntime;
+	}
+
+	@Override
+	public IFile getConfigFile() {
+		return configFile;
+	}
+
+	@Override
+	public void setConfigFile(IFile configFile) {
+		this.configFile = configFile;
+	}
+
+	public EClass getEClass() {
+		return eclass;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {

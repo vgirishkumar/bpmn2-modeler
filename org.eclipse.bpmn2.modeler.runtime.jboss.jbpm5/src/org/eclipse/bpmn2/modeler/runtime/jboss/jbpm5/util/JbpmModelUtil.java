@@ -30,9 +30,12 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeFactory;
@@ -189,7 +192,7 @@ public class JbpmModelUtil {
 		}
 		
 		final String className = type.getFullyQualifiedName('.');
-		List<ImportType> allImports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
+		List<ImportType> allImports = ModelDecorator.getAllExtensionAttributeValues(process, ImportType.class);
 		for (ImportType it : allImports) {
 			if (className.equals(it.getName())) {
 				if (recursive) {
@@ -216,7 +219,7 @@ public class JbpmModelUtil {
 				ImportHandler importer = new ImportHandler();
 				importer.setCreateVariables(createVariables);
 				
-				ModelUtil.addExtensionAttributeValue(fProcess,
+				ModelDecorator.addExtensionAttributeValue(fProcess,
 						DroolsPackage.eINSTANCE.getDocumentRoot_ImportType(), newImport);
 				
 				if (recursive) {
@@ -355,7 +358,7 @@ public class JbpmModelUtil {
 			stringValue = ((ImportType)value).getName();
 		}
 		else if (value instanceof ItemDefinition) {
-			stringValue = ModelUtil.getDisplayName((ItemDefinition)value);
+			stringValue = ExtendedPropertiesProvider.getTextValue((ItemDefinition)value);
 		}
 		return stringValue;
 	}
@@ -394,7 +397,7 @@ public class JbpmModelUtil {
 	public static ItemDefinition findOrCreateItemDefinition(EObject context, String structureRef) {
 		ItemDefinition itemDef = null;
 		Definitions definitions = ModelUtil.getDefinitions(context);
-		Resource resource = ModelUtil.getResource(context);
+		Resource resource = ResourceProvider.getResource(context);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
 			String s = ModelUtil.getStringWrapperValue(id.getStructureRef());
@@ -417,7 +420,7 @@ public class JbpmModelUtil {
 	public static BPSimDataType getBPSimData(EObject object) {
 		BPSimDataType processAnalysisData = null;
 		Relationship rel = null;
-		Resource resource = ModelUtil.getResource(object);
+		Resource resource = ResourceProvider.getResource(object);
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {
@@ -432,7 +435,7 @@ public class JbpmModelUtil {
 			rel = relationships.get(0);
 		}
 		
-		for (ExtensionAttributeValue v : ModelUtil.getExtensionAttributeValues(rel)) {
+		for (ExtensionAttributeValue v : ModelDecorator.getExtensionAttributeValues(rel)) {
 			for (org.eclipse.emf.ecore.util.FeatureMap.Entry entry : v.getValue()) {
 				if (entry.getValue() instanceof BPSimDataType) {
 					processAnalysisData = (BPSimDataType)entry.getValue();
@@ -442,7 +445,7 @@ public class JbpmModelUtil {
 		}
 		if (processAnalysisData==null) {
 			processAnalysisData = BpsimFactory.eINSTANCE.createBPSimDataType();
-			ModelUtil.addExtensionAttributeValue(rel, BpsimPackage.eINSTANCE.getDocumentRoot_BPSimData(), processAnalysisData);
+			ModelDecorator.addExtensionAttributeValue(rel, BpsimPackage.eINSTANCE.getDocumentRoot_BPSimData(), processAnalysisData);
 		}
 		
 		if (processAnalysisData.getScenario().size()==0) {

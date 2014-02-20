@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.IConstants;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -86,7 +87,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	@Override
 	protected Control createControl(Composite composite, String label, int style) {
 		if (label==null)
-			label = ModelUtil.getLabel(object,feature);
+			label = ExtendedPropertiesProvider.getLabel(object,feature);
 		createLabel(composite, label);
 
 		boolean canEdit = canEdit();

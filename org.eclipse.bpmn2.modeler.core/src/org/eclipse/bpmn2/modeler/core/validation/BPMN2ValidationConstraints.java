@@ -68,6 +68,7 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -150,9 +151,9 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		// change error message slightly for connections
 		String message;
 		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Connection, ModelUtil.getLabel(object), ModelUtil.getLabel(object, feature));
+			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Connection, ExtendedPropertiesProvider.getLabel(object), ExtendedPropertiesProvider.getLabel(object, feature));
 		else
-			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Feature, ModelUtil.getLabel(object), ModelUtil.getLabel(object, feature));
+			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Feature, ExtendedPropertiesProvider.getLabel(object), ExtendedPropertiesProvider.getLabel(object, feature));
 		IStatus status = ctx.createFailureStatus(message);
 		ctx.addResult(object);
 		return status;
@@ -696,7 +697,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					if (id == itemDefinition)
 						continue;
 					
-					if (ModelUtil.compare(id, itemDefinition,true)) {
+					if (ExtendedPropertiesProvider.compare(id, itemDefinition,true)) {
 						Object structureRef = itemDefinition.getStructureRef();
 						if (structureRef==null ||
 								(ModelUtil.isStringWrapper(structureRef) &&
@@ -708,7 +709,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 								new Object[] {
 									id.getItemKind(),
 									(id.isIsCollection() ? "[]" : ""), //$NON-NLS-1$ //$NON-NLS-2$
-									ModelUtil.getDisplayName(id)
+									ExtendedPropertiesProvider.getTextValue(id)
 								}
 							)
 						);

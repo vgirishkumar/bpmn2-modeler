@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -52,13 +53,12 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
     	setFeatureDescriptor(ref, new FeatureDescriptor<Interface>(adapterFactory, object, ref) {
 
 			@Override
-			public EObject createFeature(Resource resource, Object context, EClass eclass) {
-				Interface intf = adopt(context);
+			public EObject createFeature(Resource resource, EClass eclass) {
 				Operation operation = Bpmn2ModelerFactory.create(Operation.class);
 				ModelUtil.setID(operation, resource);
-				operation.setName( ModelUtil.toDisplayName(operation.getId()) );
+				operation.setName( ModelUtil.toCanonicalString(operation.getId()) );
 //				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
-				intf.getOperations().add(operation);
+				object.getOperations().add(operation);
 				return operation;
 			}
     		
@@ -75,8 +75,8 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 			owner.setObjectDescriptor(new ObjectDescriptor<T>(adapterFactory, object) {
 				@Override
-				public String getDisplayName(Object context) {
-					return owner.getFeatureDescriptor(feature).getDisplayName(context);
+				public String getTextValue() {
+					return owner.getFeatureDescriptor(feature).getTextValue();
 				}
 
 				@Override
@@ -97,9 +97,8 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 		}
 
 		@Override
-		public String getDisplayName(Object context) {
-			final T object = adopt(context);
-			Resource resource = ModelUtil.getResource(object);
+		public String getTextValue() {
+			Resource resource = ResourceProvider.getResource(object);
 			String text = null;
 			EObject value = (EObject)object.eGet(feature);
 			if (value!=null) {
@@ -121,7 +120,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 						text += name;
 				}
 				if (text==null)
-					return ModelUtil.getDisplayName(object.eGet(feature));
+					return ModelUtil.getTextValue(object.eGet(feature));
 				return text;
 			}
 			text = ModelUtil.getName(object);
@@ -131,30 +130,26 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 		}
 		
 		@Override
-		public EObject createFeature(Resource resource, Object context, EClass eClass) {
-			final T object = adopt(context);
-
+		public EObject createFeature(Resource resource, EClass eClass) {
 			EObject impl = ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 			object.eSet(feature,impl);
 			return impl;
 		}
 
 		@Override
-		public Object getValue(Object context) {
-			final T object = adopt(context);
+		public Object getValue() {
 			Object value = object.eGet(feature);
 			if (value!=null) {
 				if (ModelUtil.isStringWrapper(value))
 					return value;
-				return getDisplayName(context);
+				return getTextValue();
 			}
 			return ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 		}
 
 		@Override
-		public void setValue(Object context, Object value) {
-			T object = adopt(context);
-			Resource resource = ModelUtil.getResource(object);
+		protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
+			Resource resource = ResourceProvider.getResource(object);
 			
 			if (value instanceof PortType) {
 				PortType portType = (PortType)value;
@@ -172,7 +167,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			else if (!ModelUtil.isStringWrapper(value)) {
 				return;
 			}
-			super.setValue(object,value);
+			super.internalSet(object, feature, value, index);
 		}
 	}
 

@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -41,7 +42,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 		final FeatureDescriptor<DataInput> fd = new FeatureDescriptor<DataInput>(adapterFactory,object, f) {
 
 			@Override
-			public void setDisplayName(String text) {
+			public void setTextValue(String text) {
 				int i = text.lastIndexOf("/"); //$NON-NLS-1$
 				if (i>=0)
 					text = text.substring(i+1);
@@ -59,7 +60,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 				if (text!=null) {
 					if (dataInput.isIsCollection())
 						text += "[]"; //$NON-NLS-1$
-					String type = ModelUtil.getDisplayName(dataInput.getItemSubjectRef());
+					String type = ExtendedPropertiesProvider.getTextValue(dataInput.getItemSubjectRef());
 					if (type!=null)
 						text += " (" + type + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 				}
@@ -72,14 +73,14 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 		setObjectDescriptor(new ObjectDescriptor<DataInput>(adapterFactory, object) {
 
 			@Override
-			public void setDisplayName(String text) {
-				fd.setDisplayName(text);
+			public void setTextValue(String text) {
+				fd.setTextValue(text);
 				ModelUtil.setID(object);
 			}
 
 			@Override
-			public String getDisplayName(Object context) {
-				return fd.getChoiceString(context);
+			public String getTextValue() {
+				return fd.getChoiceString(object);
 			}
 		});
 	}

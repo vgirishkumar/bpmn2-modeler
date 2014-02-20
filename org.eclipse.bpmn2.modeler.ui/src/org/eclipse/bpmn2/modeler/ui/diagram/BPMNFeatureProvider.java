@@ -285,7 +285,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		// and replace the ones in our list of FeatureContainers
 		BPMN2Editor editor = BPMN2Editor.getActiveEditor(); //(BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
-		for (FeatureContainerDescriptor fcd : rt.getFeatureContainers()) {
+		for (FeatureContainerDescriptor fcd : rt.getFeatureContainerDescriptors()) {
 			IFeatureContainer container = fcd.getFeatureContainer();
 			if (container instanceof IConnectionFeatureContainer) {
 				ICreateConnectionFeature createConnectionFeature = ((IConnectionFeatureContainer)container)
@@ -426,7 +426,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 		if (id!=null) {
 			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 			TargetRuntime rt = editor.getTargetRuntime();
-			for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
+			for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
 				if (id.equals(ct.getId())) {
 					ICustomElementFeatureContainer container = (ICustomElementFeatureContainer)ct.getFeatureContainer();
 					return container.getAddFeature(this);
@@ -568,7 +568,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider {
 
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
-		for (CustomTaskDescriptor ct : rt.getCustomTasks()) {
+		for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
 			ICustomElementFeatureContainer ctf = ct.getFeatureContainer();
 			if (ctf!=null) {
 				ICustomFeature[] cfa = ctf.getCustomFeatures(this);
