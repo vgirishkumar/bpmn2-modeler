@@ -42,7 +42,7 @@ public class ThrowEventPropertiesAdapter extends EventPropertiesAdapter<ThrowEve
 		EStructuralFeature feature;
 		
 		feature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputs();
-    	setFeatureDescriptor(feature, new FeatureDescriptor<ThrowEvent>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new FeatureDescriptor<ThrowEvent>(object, feature) {
     		
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {

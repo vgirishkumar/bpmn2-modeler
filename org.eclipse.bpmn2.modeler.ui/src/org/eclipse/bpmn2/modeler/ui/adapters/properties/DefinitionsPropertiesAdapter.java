@@ -35,7 +35,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 	public DefinitionsPropertiesAdapter(AdapterFactory adapterFactory, Definitions object) {
 		super(adapterFactory, object);
     	
-		setObjectDescriptor(new ObjectDescriptor<Definitions>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
 			@Override
 			public Definitions createObject(Resource resource, Object context) {
 				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);

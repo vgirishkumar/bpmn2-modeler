@@ -21,7 +21,7 @@ public class EventDefinitionPropertiesAdapter<T extends EventDefinition> extends
 	public EventDefinitionPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
 		
-		setObjectDescriptor(new ObjectDescriptor<T>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<T>(object) {
 			@Override
 			public T createObject(Resource resource, Object context) {
 				T rootElement = super.createObject(resource, context);

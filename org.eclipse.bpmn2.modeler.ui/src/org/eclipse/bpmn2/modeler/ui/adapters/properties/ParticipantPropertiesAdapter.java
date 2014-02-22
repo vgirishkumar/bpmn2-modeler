@@ -59,7 +59,7 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 
     	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Participant>(adapterFactory,object,ref));
 
-		setObjectDescriptor(new ObjectDescriptor<Participant>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<Participant>(object) {
 			
 			@Override
 			public Participant createObject(Resource resource, Object context) {
@@ -116,7 +116,7 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.TRUE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.FALSE);
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Participant>(adapterFactory,object,ref) {
+    	setFeatureDescriptor(ref, new FeatureDescriptor<Participant>(object,ref) {
 
 			@Override
 			public String getLabel() {

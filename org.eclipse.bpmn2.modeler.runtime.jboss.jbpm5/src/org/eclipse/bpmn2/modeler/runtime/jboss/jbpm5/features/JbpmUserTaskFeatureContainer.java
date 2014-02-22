@@ -27,6 +27,7 @@ import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
@@ -65,6 +66,8 @@ public class JbpmUserTaskFeatureContainer extends UserTaskFeatureContainer {
 				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
 				ElementParameters ep = JbpmModelUtil.getElementParameters(be);
 				getFeatureProvider().link(pe, ep);
+				ColorChangeAdapter adapter = new ColorChangeAdapter();
+				adapter.adapt((ContainerShape)pe);
 				return pe;
 			}
 			

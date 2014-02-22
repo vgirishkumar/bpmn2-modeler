@@ -12,34 +12,47 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 
+/**
+ * Target Runtime Extension Descriptor class for EMF extension model definitions to be used with the BPMN2 editor.
+ * Instances of this class correspond to <model> extension elements in the extension's plugin.xml
+ * See the description of the "model" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ */
 public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 	
 	public final static String EXTENSION_NAME = "model";
 
+	protected String uri;
 	protected EPackage ePackage;
 	protected EFactory eFactory;
 	protected ResourceFactoryImpl resourceFactory;
 	
 	public ModelDescriptor(IConfigurationElement e) {
-		targetRuntime = TargetRuntime.getRuntime(e);
-		if (e.getAttribute("uri")!=null) { //$NON-NLS-1$
-			String uri = e.getAttribute("uri"); //$NON-NLS-1$
-			setEPackage(EPackage.Registry.INSTANCE.getEPackage(uri));
+		super(e);
+		// must have at least a namespace URI to associate with this Model Descriptor
+		uri = e.getAttribute("uri"); //$NON-NLS-1$
+		try {
+			// Find the EPackage for this URI if it exists.
+			EPackage pkg = EPackage.Registry.INSTANCE.getEPackage(uri);
+			setEPackage(pkg);
 			setEFactory(getEPackage().getEFactoryInstance());
-		}
-		if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
-			try {
+			if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
 				setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory"));
-			} catch (CoreException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+		}
+		catch (Exception e1) {
+			// The plugin does not define its own EPackage, but we still need one
+			// to be able to create model objects.
+			ModelDescriptor defaultModelDescriptor = TargetRuntime.getDefaultRuntime().getModelDescriptor();
+			setEPackage(defaultModelDescriptor.getEPackage());
+			setEFactory(defaultModelDescriptor.getEFactory());
+			setResourceFactory(defaultModelDescriptor.getResourceFactory());
 		}
 	}
 	

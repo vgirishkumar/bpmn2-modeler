@@ -57,7 +57,7 @@ public class OutputSetPropertiesAdapter extends ExtendedPropertiesAdapter<Output
 	protected class DataOutputFeatureDescriptor extends FeatureDescriptor<OutputSet> {
 
 		public DataOutputFeatureDescriptor(AdapterFactory adapterFactory, OutputSet object, EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(object, feature);
 		}
 		
 		@Override
@@ -108,7 +108,7 @@ public class OutputSetPropertiesAdapter extends ExtendedPropertiesAdapter<Output
 	protected class InputSetFeatureDescriptor extends FeatureDescriptor<OutputSet> {
 
 		public InputSetFeatureDescriptor(AdapterFactory adapterFactory, OutputSet object, EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(object, feature);
 		}
 		
 		

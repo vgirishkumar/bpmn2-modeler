@@ -106,7 +106,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 	public class SourceTargetFeatureDescriptor extends FeatureDescriptor<DataAssociation> {
 
 		public SourceTargetFeatureDescriptor(AdapterFactory adapterFactory, DataAssociation object, EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(object, feature);
 		}
 		
 		@Override

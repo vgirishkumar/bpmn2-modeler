@@ -232,9 +232,9 @@ public class ModelDecorator {
 	
 	public ModelDecorator(EPackage pkg) {
 		Assert.isTrue( isValid(pkg) );
-		String name = pkg.getName()+" Extensions";
-		String nsPrefix = pkg.getNsPrefix()+"_x";
-		String nsURI = pkg.getNsURI()+"/extensions";
+		String name = pkg.getName()+" Dynamic Extensions";
+		String nsPrefix = pkg.getNsPrefix();
+		String nsURI = pkg.getNsURI();
 		getResourceSet();
 		ePackage = (EPackage) resourceSet.getPackageRegistry().get(nsURI);
 		if (ePackage==null) {
@@ -333,11 +333,14 @@ public class ModelDecorator {
 	}
 	
 	private String getType(String type) {
+		if (type==null)
+			return "EString";
 		String a[] = type.split(":");
 		return a[0];
 	}
 	
 	public EClassifier getEClassifier(String type) {
+		type = getType(type);
 		EClassifier eClassifier = ePackage.getEClassifier(type);
 		if (eClassifier != null) {
 			return eClassifier;
@@ -537,6 +540,8 @@ public class ModelDecorator {
 
 		eAttribute = theCoreFactory.createEAttribute();
 		eAttribute.setName(name);
+		eAttribute.setChangeable(true);
+		eAttribute.setUnsettable(true);
 		eAttribute.setEType(eClassifier);
 		
 		eClass.getEStructuralFeatures().add(eAttribute);
@@ -667,9 +672,15 @@ public class ModelDecorator {
 			eClassifier = ePackage.getEClassifier(type);
 			if (eClassifier!=null)
 				return eClassifier;
+			eClassifier = findEClassifierInDocumentRoot(ePackage,type);
+			if (eClassifier!=null)
+				return eClassifier;
 		}
-		for (EPackage p : getRelatedEPackages()) {
-			eClassifier = p.getEClassifier(type);
+		for (EPackage pkg : getRelatedEPackages()) {
+			eClassifier = pkg.getEClassifier(type);
+			if (eClassifier!=null)
+				return eClassifier;
+			eClassifier = findEClassifierInDocumentRoot(pkg,type);
 			if (eClassifier!=null)
 				return eClassifier;
 		}
@@ -687,6 +698,9 @@ public class ModelDecorator {
 			eClassifier = pkg.getEClassifier(type);
 			if (eClassifier!=null)
 				return eClassifier;
+			eClassifier = findEClassifierInDocumentRoot(pkg,type);
+			if (eClassifier!=null)
+				return eClassifier;
 		}
 		
 		eClassifier = EcorePackage.eINSTANCE.getEClassifier(type);
@@ -696,8 +710,14 @@ public class ModelDecorator {
 		eClassifier = Bpmn2Package.eINSTANCE.getEClassifier(type);
 		if (eClassifier!=null)
 			return eClassifier;
+		eClassifier = findEClassifierInDocumentRoot(Bpmn2Package.eINSTANCE,type);
+		if (eClassifier!=null)
+			return eClassifier;
 		
 		eClassifier = BpmnDiPackage.eINSTANCE.getEClassifier(type);
+		if (eClassifier!=null)
+			return eClassifier;
+		eClassifier = findEClassifierInDocumentRoot(BpmnDiPackage.eINSTANCE,type);
 		if (eClassifier!=null)
 			return eClassifier;
 		
@@ -712,6 +732,20 @@ public class ModelDecorator {
 		return null;
 	}
 
+	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String type) {
+		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
+		if (docRoot==null) {
+			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
+		}
+		if (docRoot!=null) {
+			EStructuralFeature feature = docRoot.getEStructuralFeature(type);
+			if (feature!=null) {
+				return feature.getEType();
+			}
+		}
+		return null;
+	}
+	
 	public static EStructuralFeature getAnyAttribute(EObject object, String name) {
 		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
@@ -1029,7 +1063,7 @@ public class ModelDecorator {
 
 		public AnyTypeFeatureDescriptor(ExtendedPropertiesAdapter adapter,
 				EObject object, EStructuralFeature feature) {
-			super(adapter.getAdapterFactory(), object, feature);
+			super(object, feature);
 		}
 		
 		private boolean hasStructuralFeatureFeature(EObject object, EStructuralFeature feature) {

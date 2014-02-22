@@ -40,7 +40,7 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
 
     	final EStructuralFeature textFeature = Bpmn2Package.eINSTANCE.getDocumentation_Text();
     	setFeatureDescriptor(textFeature,
-			new FeatureDescriptor<Documentation>(adapterFactory,object,textFeature) {
+			new FeatureDescriptor<Documentation>(object,textFeature) {
     		
     			@Override
     	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {

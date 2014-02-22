@@ -30,7 +30,7 @@ public class JbpmGatewayPropertiesAdapter extends
     	EStructuralFeature ref;
     	
     	ref = Bpmn2Package.eINSTANCE.getGateway_GatewayDirection();
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Gateway>(adapterFactory,object,ref) {
+    	setFeatureDescriptor(ref, new FeatureDescriptor<Gateway>(object,ref) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

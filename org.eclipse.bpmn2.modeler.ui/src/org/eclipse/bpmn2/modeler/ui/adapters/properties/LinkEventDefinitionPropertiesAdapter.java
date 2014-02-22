@@ -46,7 +46,7 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getLinkEventDefinition_Target();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<LinkEventDefinition>(adapterFactory,object,ref) {
+			new FeatureDescriptor<LinkEventDefinition>(object,ref) {
 
 			@Override
 			public String getTextValue() {

@@ -53,7 +53,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
     	
     	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<T>(adapterFactory,object,feature) {
+			new FeatureDescriptor<T>(object,feature) {
     		
 				@Override
 				protected void internalSet(ItemAwareElement element, EStructuralFeature feature, Object value, int index) {

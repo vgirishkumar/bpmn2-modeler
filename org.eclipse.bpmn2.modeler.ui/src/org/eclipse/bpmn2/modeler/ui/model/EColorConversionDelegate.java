@@ -10,8 +10,10 @@
  *
  * @author Bob Brodt
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core;
+package org.eclipse.bpmn2.modeler.ui.model;
 
+import org.eclipse.bpmn2.modeler.core.EditControlProvider;
+import org.eclipse.bpmn2.modeler.core.EditControlProvider.EditControl;
 import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.graphics.RGB;

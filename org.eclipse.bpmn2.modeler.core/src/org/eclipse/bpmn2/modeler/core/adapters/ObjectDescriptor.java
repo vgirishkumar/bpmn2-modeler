@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
@@ -41,10 +42,24 @@ public class ObjectDescriptor<T extends EObject> {
 	protected T object;
 	protected String label;
 	protected String name;
-	protected AdapterFactory adapterFactory;
-	
-	public ObjectDescriptor(AdapterFactory adapterFactory, T object) {
+	protected ExtendedPropertiesAdapter owner;
+
+	public ObjectDescriptor(ExtendedPropertiesAdapter owner, T object) {
+		this.owner = owner;
 		this.object = object;
+	}
+
+	public ObjectDescriptor(T object) {
+		this.owner = owner;
+		this.object = object;
+	}
+	
+	public ExtendedPropertiesAdapter getOwner() {
+		return owner;
+	}
+
+	public void setOwner(ExtendedPropertiesAdapter owner) {
+		this.owner = owner;
 	}
 	
 	public void setObject(T object) {
@@ -185,18 +200,7 @@ public class ObjectDescriptor<T extends EObject> {
 				}
 				if (result == null) {
 					// finally, check our adapter factory
-					if (adapterFactory instanceof IEditingDomainProvider) {
-						result = ((IEditingDomainProvider) adapterFactory).getEditingDomain();
-					}
-					if (result == null) {
-						if (adapterFactory instanceof ComposeableAdapterFactory) {
-							AdapterFactory rootAdapterFactory = ((ComposeableAdapterFactory) adapterFactory)
-									.getRootAdapterFactory();
-							if (rootAdapterFactory instanceof IEditingDomainProvider) {
-								result = ((IEditingDomainProvider) rootAdapterFactory).getEditingDomain();
-							}
-						}
-					}
+					result = owner.getEditingDomain();
 				}
 			}
 		}
@@ -211,12 +215,7 @@ public class ObjectDescriptor<T extends EObject> {
 	}
 	
 	public Resource getResource() {
-		return getAdapter().getResource();
-	}
-	
-	protected ExtendedPropertiesAdapter getAdapter() {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-		return adapter;
+		return owner.getResource();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -240,7 +239,10 @@ public class ObjectDescriptor<T extends EObject> {
 		// set the Resource into the Factory's adapter temporarily for use during
 		// object construction and initialization (@see ModelExtensionDescriptor)
 		EFactory factory = eClass.getEPackage().getEFactoryInstance();
-		IResourceProvider adapter = ResourceProvider.adapt(factory, resource);
+		ResourceProvider adapter = ResourceProvider.adapt(factory, resource);
+		Object value = owner.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+		if (value!=null)
+			adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
 		T newObject = null;
 		synchronized(factory) {
 			try {
@@ -250,6 +252,7 @@ public class ObjectDescriptor<T extends EObject> {
 				// the factory is shared among editor instances,
 				// so make sure this is cleared when we're done
 				adapter.setResource(null);
+				adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
 			}
 		}
 		

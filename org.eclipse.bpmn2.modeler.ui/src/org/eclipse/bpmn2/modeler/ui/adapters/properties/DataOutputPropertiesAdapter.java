@@ -39,7 +39,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 	public DataOutputPropertiesAdapter(AdapterFactory adapterFactory, DataOutput object) {
 		super(adapterFactory, object);
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getDataOutput_Name();
-		final FeatureDescriptor<DataOutput> fd = new FeatureDescriptor<DataOutput>(adapterFactory,object, f) {
+		final FeatureDescriptor<DataOutput> fd = new FeatureDescriptor<DataOutput>(object,f) {
 
 			@Override
 			public void setTextValue(String text) {
@@ -70,7 +70,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 		};
 		setFeatureDescriptor(f, fd);
 		
-		setObjectDescriptor(new ObjectDescriptor<DataOutput>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<DataOutput>(object) {
 
 			@Override
 			public void setTextValue(String text) {

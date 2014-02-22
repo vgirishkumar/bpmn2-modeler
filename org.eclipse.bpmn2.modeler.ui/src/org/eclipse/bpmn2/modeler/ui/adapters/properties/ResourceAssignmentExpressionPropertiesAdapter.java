@@ -39,7 +39,7 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getResourceAssignmentExpression_Expression();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<ResourceAssignmentExpression>(adapterFactory,object,ref) {
+			new FeatureDescriptor<ResourceAssignmentExpression>(object,ref) {
 
 				@Override
 				public String getTextValue() {
@@ -67,7 +67,7 @@ public class ResourceAssignmentExpressionPropertiesAdapter extends ExtendedPrope
 				}
     		}
     	);
-    	setObjectDescriptor(new ObjectDescriptor<ResourceAssignmentExpression>(adapterFactory, object) {
+    	setObjectDescriptor(new ObjectDescriptor<ResourceAssignmentExpression>(object) {
 			@Override
 			public String getTextValue() {
 				return getFeatureDescriptor(ref).getTextValue();

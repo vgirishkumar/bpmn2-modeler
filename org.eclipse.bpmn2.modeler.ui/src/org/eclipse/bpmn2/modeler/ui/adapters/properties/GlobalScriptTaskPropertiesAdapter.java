@@ -36,7 +36,7 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getGlobalScriptTask_Script();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<GlobalScriptTask>(adapterFactory,object,ref) {
+			new FeatureDescriptor<GlobalScriptTask>(object,ref) {
     		
 	    		@Override
 				public boolean isMultiLine() {
@@ -53,7 +53,7 @@ public class GlobalScriptTaskPropertiesAdapter extends ExtendedPropertiesAdapter
     	
     	ref = Bpmn2Package.eINSTANCE.getGlobalScriptTask_ScriptLanguage();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<GlobalScriptTask>(adapterFactory,object,ref) {
+			new FeatureDescriptor<GlobalScriptTask>(object,ref) {
     		
 	    		@Override
 	    		public String getTextValue() {

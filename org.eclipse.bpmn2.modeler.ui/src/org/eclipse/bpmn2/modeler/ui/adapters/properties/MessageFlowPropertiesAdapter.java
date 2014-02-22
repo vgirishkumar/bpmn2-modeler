@@ -76,7 +76,7 @@ public class MessageFlowPropertiesAdapter extends ExtendedPropertiesAdapter<Mess
     		
     	});
 
-    	setObjectDescriptor(new ObjectDescriptor<MessageFlow>(adapterFactory, object) {
+    	setObjectDescriptor(new ObjectDescriptor<MessageFlow>(object) {
 			@Override
 			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$

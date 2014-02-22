@@ -50,7 +50,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
     	setFeatureDescriptor(ref, new ImplementationRefFeatureDescriptor<Interface>(this, adapterFactory, object, ref));
     	
     	ref = Bpmn2Package.eINSTANCE.getInterface_Operations();
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Interface>(adapterFactory, object, ref) {
+    	setFeatureDescriptor(ref, new FeatureDescriptor<Interface>(object, ref) {
 
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
@@ -69,11 +69,11 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 		public ImplementationRefFeatureDescriptor(final ExtendedPropertiesAdapter<T> owner,
 				AdapterFactory adapterFactory, final T object, final EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(object, feature);
 
 	    	owner.setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.FALSE);
 
-			owner.setObjectDescriptor(new ObjectDescriptor<T>(adapterFactory, object) {
+			owner.setObjectDescriptor(new ObjectDescriptor<T>(object) {
 				@Override
 				public String getTextValue() {
 					return owner.getFeatureDescriptor(feature).getTextValue();

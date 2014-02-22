@@ -36,7 +36,7 @@ public class ScriptTaskPropertiesAdapter extends TaskPropertiesAdapter<ScriptTas
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getScriptTask_Script();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<ScriptTask>(adapterFactory,object,ref) {
+			new FeatureDescriptor<ScriptTask>(object,ref) {
     		
 	    		@Override
 				public boolean isMultiLine() {
@@ -53,7 +53,7 @@ public class ScriptTaskPropertiesAdapter extends TaskPropertiesAdapter<ScriptTas
     	
     	ref = Bpmn2Package.eINSTANCE.getScriptTask_ScriptFormat();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<ScriptTask>(adapterFactory,object,ref) {
+			new FeatureDescriptor<ScriptTask>(object,ref) {
     		
 	    		@Override
 	    		public String getTextValue() {

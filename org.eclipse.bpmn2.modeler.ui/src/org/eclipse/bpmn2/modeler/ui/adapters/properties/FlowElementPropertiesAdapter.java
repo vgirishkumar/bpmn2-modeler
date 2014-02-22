@@ -43,7 +43,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 	public FlowElementPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getFlowElement_Name();
-		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(adapterFactory,object, f) {
+		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(object,f) {
 
 			@Override
 			public void setTextValue(String text) {
@@ -117,7 +117,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 		};
 		setFeatureDescriptor(f, fd);
 		
-		setObjectDescriptor(new ObjectDescriptor<T>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<T>(object) {
 
 			@Override
 			public void setTextValue(String text) {

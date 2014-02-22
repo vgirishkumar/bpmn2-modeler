@@ -13,10 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.preferences;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.modeler.core.runtime.IRuntimeExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.core.resources.IFile;
@@ -33,10 +31,11 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 
 /**
- * @author Bob Brodt
- *
+ * Target Runtime Extension Descriptor class that defines color and font settings for graphical elements.
+ * Instances of this class correspond to <style> extension elements in the extension's plugin.xml
+ * See the description of the "style" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
-public class ShapeStyle implements IRuntimeExtensionDescriptor {
+public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 	public final static String EXTENSION_NAME = "style";
 	
@@ -62,11 +61,8 @@ public class ShapeStyle implements IRuntimeExtensionDescriptor {
 		textFont = stringToFont(DEFAULT_FONT_STRING);
 	}
 
-	public ShapeStyle(ShapeStyle other) {
-		this(encode(other));
-	}
-
 	public ShapeStyle(IConfigurationElement e) {
+		super(e);
 		object = e.getAttribute("object"); //$NON-NLS-1$
 		eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(object);
 		String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
@@ -76,6 +72,10 @@ public class ShapeStyle implements IRuntimeExtensionDescriptor {
 		this.initialize(foreground, background, textColor, font);
 	}
 
+	public ShapeStyle(ShapeStyle other) {
+		this(encode(other));
+	}
+	
 	public void initialize(String foreground, String background, String textColor, String font) {
 		// only background color is required to set up default color scheme
 		shapeBackground = stringToColor(background);
@@ -92,7 +92,7 @@ public class ShapeStyle implements IRuntimeExtensionDescriptor {
 		defaultSize = false;
 	}
 	
-	protected ShapeStyle(String s) {
+	private ShapeStyle(String s) {
 		String[] a = s.trim().split(";"); //$NON-NLS-1$
 		if (a.length>0)
 			shapeBackground = stringToColor(a[0]);
@@ -121,38 +121,10 @@ public class ShapeStyle implements IRuntimeExtensionDescriptor {
 		else
 			routingStyle = RoutingStyle.ManualBendpoint;
 	}
-
-	@Override
-	public void dispose() {
-		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
-		list.remove(this);
-	}
 	
 	@Override
 	public String getExtensionName() {
 		return EXTENSION_NAME;
-	}
-
-	@Override
-	public void setRuntime(TargetRuntime targetRuntime) {
-		this.targetRuntime = targetRuntime;
-		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
-		list.add(this);
-	}
-
-	@Override
-	public TargetRuntime getRuntime() {
-		return targetRuntime;
-	}
-
-	@Override
-	public IFile getConfigFile() {
-		return configFile;
-	}
-
-	@Override
-	public void setConfigFile(IFile configFile) {
-		this.configFile = configFile;
 	}
 
 	public EClass getEClass() {
@@ -388,5 +360,25 @@ public class ShapeStyle implements IRuntimeExtensionDescriptor {
 				compare(s1.textFont, s2.textFont) ||
 				compare(s1.textColor, s2.textColor) ||
 				(s1.defaultSize != s2.defaultSize);
+	}
+	
+	public static IColorConstant lighter(IColorConstant c) {
+		int r = c.getRed() + 8;
+		int g = c.getGreen() + 8;
+		int b = c.getBlue() + 8;
+		if (r>255) r = 255;
+		if (g>255) g = 255;
+		if (b>255) b = 255;
+		return new ColorConstant(r, g, b);
+	}
+	
+	public static IColorConstant darker(IColorConstant c) {
+		int r = c.getRed() - 8;
+		int g = c.getGreen() - 8;
+		int b = c.getBlue() - 8;
+		if (r<0) r = 0;
+		if (g<0) g = 0;
+		if (b<0) b = 0;
+		return new ColorConstant(r, g, b);
 	}
 }

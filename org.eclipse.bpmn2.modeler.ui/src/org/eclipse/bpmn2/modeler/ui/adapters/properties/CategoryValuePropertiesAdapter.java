@@ -44,7 +44,7 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
 		setProperty(Bpmn2Package.eINSTANCE.getCategoryValue_CategorizedFlowElements(), UI_CAN_EDIT, Boolean.FALSE);
 		
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<CategoryValue>(adapterFactory,object,ref) {
+			new FeatureDescriptor<CategoryValue>(object,ref) {
 				@Override
 				public String getTextValue() {
 					return CategoryValuePropertiesAdapter.getDisplayName(object);
@@ -69,7 +69,7 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
     	
     	);
     	
-		setObjectDescriptor(new ObjectDescriptor<CategoryValue>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<CategoryValue>(object) {
 			@Override
 			public String getTextValue() {
 				return CategoryValuePropertiesAdapter.getDisplayName(object);

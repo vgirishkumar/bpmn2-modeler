@@ -60,7 +60,7 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
        	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(adapterFactory,object,ref));
        	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
-    	setObjectDescriptor( new ObjectDescriptor<Operation>(adapterFactory, object) {
+    	setObjectDescriptor( new ObjectDescriptor<Operation>(object) {
 
 			@Override
 			public Operation createObject(Resource resource, Object context) {

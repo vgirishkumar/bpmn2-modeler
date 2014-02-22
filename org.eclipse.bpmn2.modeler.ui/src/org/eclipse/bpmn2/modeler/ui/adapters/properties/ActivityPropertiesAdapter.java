@@ -40,7 +40,7 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getActivity_Properties();
 		setFeatureDescriptor(feature,
-			new FeatureDescriptor<T>(adapterFactory,object,feature) {
+			new FeatureDescriptor<T>(object,feature) {
 				@Override
 				public EObject createFeature(Resource resource, EClass eclass) {
 					return PropertyPropertiesAdapter.createProperty(object.getProperties());

@@ -53,7 +53,7 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 	@Override
 	public EObject createObject(EClass eClass) {
 		String type = eClass.getName();
-		for (ModelExtensionDescriptor d : getTargetRuntime().getModelExtensionDescriptors()) {
+		for (ModelExtensionDescriptor d : getTargetRuntime().getAllModelExtensionDescriptors()) {
 			EClass ec = d.getModelDecorator().getEClass(type);
 			if (ec!=null) {
 				EObject object = d.createObject(eClass);
@@ -73,7 +73,7 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 		EClass eClass = (EClass) feature.getEType();
 		String type = eClass.getName();
 		EObject value = null;
-		for (ModelExtensionDescriptor d : getTargetRuntime().getModelExtensionDescriptors()) {
+		for (ModelExtensionDescriptor d : getTargetRuntime().getAllModelExtensionDescriptors()) {
 			EClass ec = d.getModelDecorator().getEClass(type);
 			if (ec!=null) {
 				value = d.createObject(eClass);

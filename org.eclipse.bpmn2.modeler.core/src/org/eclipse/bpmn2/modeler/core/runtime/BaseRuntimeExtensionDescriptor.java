@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -26,10 +26,31 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 
+/**
+ * The abstract base class for Target Runtime Extension Descriptor classes.
+ * This class provides methods for adding and removing instances of its subclasses to the
+ * correct list in the TargetRuntime instance - this is done with java reflection in setRuntime()
+ * and dispose() respectively.
+ * 
+ * All subclasses MUST conform as follows:
+ * 
+ * - define a static String field named EXTENSION_NAME which must be the same as the
+ * - implement the method getExtensionName() which MUST return EXTENSION_NAME (unfortunately
+ *   java does not allow class fields to be overridden the same as methods) 
+ *   org.eclipse.bpmn2.modeler.runtime extension point element that it supports.
+ * - define a public constructor that accepts and IConfigurationElement (this comes from
+ *   the extension plugin's configuration, i.e. plugin.xml)
+ * - optionally override setRuntime() to perform additional class initialization
+ * - optionally override dispose() to perform additional cleanup
+ * 
+ * Extension Descriptor classes 
+ */
 public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensionDescriptor {
 
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
+	protected final IConfigurationElement configurationElement;
+	protected String id;
 
 	public static <T extends BaseRuntimeExtensionDescriptor> T getDescriptor(EObject object, Class type) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
@@ -40,6 +61,16 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 	}
 	
 	public BaseRuntimeExtensionDescriptor() {
+		configurationElement = null;
+	}
+	
+	public BaseRuntimeExtensionDescriptor(IConfigurationElement e) {
+		configurationElement = e;
+		id = e.getAttribute("id"); //$NON-NLS-1$
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public void dispose() {
@@ -49,6 +80,7 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 
 	public BaseRuntimeExtensionDescriptor(TargetRuntime rt) {
 		targetRuntime = rt;
+		configurationElement = rt.configurationElement;
 	}
 	
 	public IFile getConfigFile() {

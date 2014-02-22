@@ -167,43 +167,6 @@
             type="org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition"
             class="org.eclipse.bpmn2.modeler.examples.customtask.MyEventDefinitionPropertiesAdapter">
       </propertyExtension>
-
-      <modelEnablement
-        	    runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
-    	        type="Process"
-	            profile="Default Process"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
-				
-			<!-- copy the enablements from Default Target Runtime -->
-			<!-- and then add our extension features -->
-			<enable object="Task" feature="taskConfig"/>
-			<enable object="TaskConfig"/>
-			<enable object="Parameter"/>
-			
-			<enable object="BoundaryEvent" feature="isEnabled"/>
-			<enable object="MyEventDefinition" feature="value"/>
-			<enable object="TemporalDependency" feature="name"/>
-			<enable object="TemporalDependency" feature="lagTime"/>
-			
-      </modelEnablement>
-
-      <modelEnablement
-        	    runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
-    	        type="Collaboration"
-	            profile="Default Collaboration"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
-				
-			<!-- copy the enablements from Default Target Runtime -->
-			<!-- and then add our extension features -->
-			<enable object="Task" feature="taskConfig"/>
-			<enable object="TaskConfig"/>
-			<enable object="Parameter"/>
-			
-			<enable object="BoundaryEvent" feature="isEnabled"/>
-			<enable object="MyEventDefinition" feature="value"/>
-			<enable object="TemporalDependency"/>
-			
-      </modelEnablement>
    </extension>
 
 </plugin>

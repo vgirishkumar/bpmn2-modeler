@@ -20,8 +20,9 @@ import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 /**
- * @author Bob Brodt
- *
+ * Target Runtime Extension Descriptor class for Graphiti FeatureContainer overrides.
+ * Instances of this class correspond to <featureContainer> extension elements in the extension's plugin.xml
+ * See the description of the "featureContainer" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class FeatureContainerDescriptor extends BaseRuntimeExtensionDescriptor {
 
@@ -34,6 +35,7 @@ public class FeatureContainerDescriptor extends BaseRuntimeExtensionDescriptor {
 	 * @param rt
 	 */
 	public FeatureContainerDescriptor(IConfigurationElement e) {
+		super(e);
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		containerClassName = e.getAttribute("class"); //$NON-NLS-1$
 	}

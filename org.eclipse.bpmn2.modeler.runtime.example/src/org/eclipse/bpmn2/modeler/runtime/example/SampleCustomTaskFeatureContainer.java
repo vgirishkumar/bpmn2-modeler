@@ -16,15 +16,16 @@ package org.eclipse.bpmn2.modeler.runtime.example;
 import java.util.List;
 
 import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.runtime.example.SampleModel.SampleModelPackage;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.CreateTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.TextAnnotationFeatureContainer;
@@ -182,18 +183,17 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 						
 						PictogramElement pe = context.getPictogramElement();
 						String propertyValue = Graphiti.getPeService().getPropertyValue(pe, "evaluate.property");
-
 						if (propertyValue==null || propertyValue.isEmpty())
 							propertyValue = "false";
 						
-						Boolean attributeValue;
+						Boolean attributeValue = false;
 						TextAnnotation ta = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
-						EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
+						ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(ta);
+						EStructuralFeature f = adapter.getFeature("evaluate");
 						if (f!=null) {
-							attributeValue = (Boolean)ta.eGet(f);
-						}
-						else {
-							attributeValue = Boolean.FALSE;
+							attributeValue = (Boolean)adapter.getFeatureDescriptor(f).getValue();
+							if (attributeValue==null)
+								attributeValue = false;
 						}
 						if (Boolean.parseBoolean(propertyValue) != attributeValue)
 							return Reason.createTrueReason("evalute property changed");
@@ -237,17 +237,12 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 			private void setFillColor(ContainerShape containerShape) {
 				TextAnnotation ta = BusinessObjectUtil.getFirstElementOfType(containerShape, TextAnnotation.class);
 				if (ta!=null) {
-					EStructuralFeature f = ModelUtil.getAnyAttribute(ta, "evaluate");
-					if (f==null) {
-						f = ModelUtil.createDynamicAttribute(SampleModelPackage.eINSTANCE, ta, "evaluate", "EBoolean");
-						ta.eSet(f, Boolean.FALSE);
-					}
-					Boolean attributeValue;
-					attributeValue = (Boolean)ta.eGet(f);
-					String propertyValue;
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(ta);
+					Boolean attributeValue = (Boolean)adapter.getFeatureDescriptor("evaluate").getValue();
 					Shape shape = containerShape.getChildren().get(0);
 					ShapeStyle ss = new ShapeStyle();
-					if (attributeValue == true) {
+					String propertyValue;
+					if (Boolean.TRUE.equals(attributeValue)) {
 						propertyValue = Boolean.TRUE.toString();
 						ss.setDefaultColors(IColorConstant.LIGHT_GREEN);
 					}

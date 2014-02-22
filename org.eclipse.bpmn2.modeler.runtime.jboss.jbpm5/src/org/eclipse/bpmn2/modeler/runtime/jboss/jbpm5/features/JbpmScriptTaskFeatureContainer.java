@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.ScriptTaskFeatureCont
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class JbpmScriptTaskFeatureContainer extends ScriptTaskFeatureContainer {
@@ -32,6 +33,8 @@ public class JbpmScriptTaskFeatureContainer extends ScriptTaskFeatureContainer {
 				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
 				ElementParameters ep = JbpmModelUtil.getElementParameters(be);
 				getFeatureProvider().link(pe, ep);
+				ColorChangeAdapter adapter = new ColorChangeAdapter();
+				adapter.adapt((ContainerShape)pe);
 				return pe;
 			}
 			

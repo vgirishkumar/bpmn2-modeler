@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc.
+ * All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.preferences;
 
 import java.util.ArrayList;
@@ -409,16 +419,9 @@ public class ModelEnablements {
 	}
 	
 	private boolean isEnabled(TargetRuntime targetRuntime, String className, String featureName) {
-		for (ModelExtensionDescriptor md : targetRuntime.getModelExtensionDescriptors()) {
+		for (ModelExtensionDescriptor md : targetRuntime.getAllModelExtensionDescriptors()) {
 			if (md.isDefined(className, featureName)) {
-				this.setEnabled(className, featureName, true);
-				return true;
-			}
-		}
-		
-		for (ModelExtensionDescriptor md : targetRuntime.getCustomTaskDescriptors()) {
-			if (md.isDefined(className, featureName)) {
-				this.setEnabled(className, featureName, true);
+				setEnabled(className, featureName, true);
 				return true;
 			}
 		}

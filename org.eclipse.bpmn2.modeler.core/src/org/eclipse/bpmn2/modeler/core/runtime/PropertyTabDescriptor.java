@@ -22,6 +22,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.tabbed.AbstractTabDescriptor;
 import org.eclipse.ui.views.properties.tabbed.TabContents;
 
+/**
+ * Target Runtime Extension Descriptor class for Property Tabs.
+ * Instances of this class correspond to <propertyTab> extension elements in the extension's plugin.xml
+ * See the description of the "property" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ * 
+ * Unfortunately, this class must extend from AbstractTabDescriptor, so it is not a BaseRuntimeExtensionDescriptor
+ * like all of the other extension descriptor classes.
+ */
 public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRuntimeExtensionDescriptor {
 
 	public final static String EXTENSION_NAME = "propertyTab";
@@ -35,9 +43,11 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 	protected Image image = null;
 	protected boolean popup = true;
 	protected TargetRuntime targetRuntime;
+	protected final IConfigurationElement configurationElement;
 	protected IFile configFile;
 
 	public PropertyTabDescriptor(IConfigurationElement e) {
+		configurationElement = e;
 		id = e.getAttribute("id"); //$NON-NLS-1$
 		category = e.getAttribute("category"); //$NON-NLS-1$
 		if (category==null || category.isEmpty())
@@ -54,12 +64,13 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 		Bpmn2SectionDescriptor sd = new Bpmn2SectionDescriptor(this,e);
 	}
 
-	public PropertyTabDescriptor(String id, String category, String label) {
-		this.id = id;
-		if (category==null || category.isEmpty() )
-			category = "BPMN2"; //$NON-NLS-1$
-		this.category = category;
-		this.label = label;
+	private PropertyTabDescriptor(PropertyTabDescriptor other) {
+		this.configurationElement = other.configurationElement;
+		this.id = other.id;
+		if (other.category==null || other.category.isEmpty() )
+			other.category = "BPMN2"; //$NON-NLS-1$
+		this.category = other.category;
+		this.label = other.label;
 	}
 
 	public void dispose() {
@@ -155,7 +166,7 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 
 	@Override
 	public Object clone() {
-		PropertyTabDescriptor td = new PropertyTabDescriptor(id, category, label);
+		PropertyTabDescriptor td = new PropertyTabDescriptor(this);
 		td.afterTab = this.afterTab;
 		td.replaceTab = this.replaceTab;
 		if (image!=null)
@@ -169,7 +180,7 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 	}
 
 	public PropertyTabDescriptor copy() {
-		PropertyTabDescriptor td = new PropertyTabDescriptor(id, category, label);
+		PropertyTabDescriptor td = new PropertyTabDescriptor(this);
 		td.id += td.hashCode();
 		td.afterTab = this.afterTab;
 		td.replaceTab = this.replaceTab;

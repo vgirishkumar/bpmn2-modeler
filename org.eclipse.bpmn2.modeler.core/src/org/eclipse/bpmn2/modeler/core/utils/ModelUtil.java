@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -1074,4 +1075,26 @@ public class ModelUtil {
 		}
 		return null;
 	}
+
+	// FIXME: update Switchyard to use new API 
+	@Deprecated
+	public static List<EStructuralFeature> getAnyAttributes(EObject object) {
+		return ModelDecorator.getAnyAttributes(object);
+	}
+
+	@Deprecated
+	public static String getDisplayName(EObject object) {
+		return getTextValue(object);
+	}
+
+	@Deprecated
+	public static String toDisplayName(String name) {
+		return toCanonicalString(name);
+	}
+
+	@Deprecated
+	public static Resource getResource(EObject object) {
+		return ResourceProvider.getResource(object);
+	}
+	
 }

@@ -17,6 +17,11 @@ import java.util.Stack;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 
+/**
+ * Target Runtime Extension Descriptor class for Graphical Tool Palette definitions.
+ * Instances of this class correspond to <toolPalette> extension elements in the extension's plugin.xml
+ * See the description of the "toolPalette" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ */
 public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	public final static String EXTENSION_NAME = "toolPalette";
@@ -336,7 +341,6 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 	
-	String id; // unique ID
 	String type; // the diagram type for which this toolPalette is to be used
 	String profile; // the model enablement profile for which this toolPalette is to be used
 	// the list of categories in the toolPalette
@@ -348,7 +352,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 	}
 	
 	public ToolPaletteDescriptor(IConfigurationElement e) {
-		id = e.getAttribute("id"); //$NON-NLS-1$
+		super(e);
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		profile = e.getAttribute("profile"); //$NON-NLS-1$
 		for (IConfigurationElement c : e.getChildren()) {

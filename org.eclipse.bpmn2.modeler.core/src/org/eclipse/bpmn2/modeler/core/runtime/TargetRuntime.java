@@ -18,32 +18,32 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.bpmn2.modeler.core.AbstractPropertyChangeListenerProvider;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 
-public class TargetRuntime extends AbstractPropertyChangeListenerProvider implements IRuntimeExtensionDescriptor {
+/**
+ * Target Runtime Extension Descriptor class for Target Runtime definition.
+ * Instances of this class correspond to <runtime> extension elements in the extension's plugin.xml
+ * See the description of the "runtime" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ */
+public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRuntimeExtensionDescriptor {
 
 	public static final String EXTENSION_NAME = "runtime"; //$NON-NLS-1$
 
@@ -59,7 +59,6 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 	private static TargetRuntime currentRuntime;
 	
 	// the Target Runtime properties
-	private String id;
 	private String name;
 	private String[] versions;
 	private String description;
@@ -77,6 +76,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 	protected List<FeatureContainerDescriptor> featureContainerDescriptors;
 	protected List<ToolPaletteDescriptor> toolPaletteDescriptors;
 	protected List<ShapeStyle> shapeStyles;
+	protected List<DataTypeDescriptor> dataTypeDescriptors;
 
 	// all of the extension descriptor classes in the order in which they need to be processed
 	static Class extensionDescriptorClasses[] = {
@@ -90,6 +90,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 		PropertyExtensionDescriptor.class,
 		FeatureContainerDescriptor.class,
 		ShapeStyle.class,
+		DataTypeDescriptor.class,
 	};
 
 	/**
@@ -99,7 +100,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 	 * @param e - an IConfigurationElement defined in a plugin.xml
 	 */
 	public TargetRuntime(IConfigurationElement e) {
-		id = e.getAttribute("id"); //$NON-NLS-1$
+		super(e);
 		name = e.getAttribute("name"); //$NON-NLS-1$
 		String s = e.getAttribute("versions"); //$NON-NLS-1$
 		if (s!=null) {
@@ -234,6 +235,8 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 	 * @return
 	 */
 	public ModelDescriptor getModelDescriptor() {
+		if (getModelDescriptors().size()==0)
+			return null;
 		return getModelDescriptors().get(0);
 	}
 	
@@ -707,6 +710,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) {
 		IRuntimeExtensionDescriptor d = null;
 		try {
+//			System.out.println("create extension descriptor "+e.getName() + " id="+e.getAttribute("id")+" rt="+e.getAttribute("runtimeId"));
 			Class c = getClassForExtensionName(e.getName());
 			Constructor ctor = c.getConstructor(IConfigurationElement.class);
 			d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
@@ -780,6 +784,14 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 		return modelExtensionDescriptors;
 	}
 	
+	public List<ModelExtensionDescriptor> getAllModelExtensionDescriptors()
+	{
+		List<ModelExtensionDescriptor> list = new ArrayList<ModelExtensionDescriptor>();
+		list.addAll(getCustomTaskDescriptors());
+		list.addAll(getModelExtensionDescriptors());
+		return list;
+	}
+
 	public List<PropertyExtensionDescriptor> getPropertyExtensionDescriptors()
 	{
 		if (propertyExtensionDescriptors==null) {
@@ -831,6 +843,12 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider implem
 		return modelDescriptors;
 	}
 
+	public List<DataTypeDescriptor> getDataTypeDescriptors() {
+		if (dataTypeDescriptors==null)
+			dataTypeDescriptors = new ArrayList<DataTypeDescriptor>();
+		return dataTypeDescriptors;
+	}
+	
 	public static class ConfigurationElementSorter {
 		public static void sort(IConfigurationElement[] elements) {
 			Arrays.sort(elements, new Comparator<IConfigurationElement>() {

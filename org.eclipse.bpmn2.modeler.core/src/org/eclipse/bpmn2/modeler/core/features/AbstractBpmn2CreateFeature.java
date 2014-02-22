@@ -92,6 +92,9 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		Resource resource = container.eResource();
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
+		Object value = context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+		if (value!=null)
+			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
 		T businessObject = (T)adapter.getObjectDescriptor().createObject(resource,eclass);
 		putBusinessObject(context, businessObject);
 		changesDone = true;

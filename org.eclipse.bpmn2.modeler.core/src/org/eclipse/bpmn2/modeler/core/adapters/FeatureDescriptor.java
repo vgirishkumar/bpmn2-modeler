@@ -24,7 +24,6 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -49,8 +48,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	protected int multiline = 0; // -1 = false, +1 = true, 0 = unset
 	protected Hashtable<String, Object> choiceOfValues; // for static lists
 	
-	public FeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(adapterFactory, object);
+	public FeatureDescriptor(T object, EStructuralFeature feature) {
+		super(object);
 		this.feature = feature;
 	}
 	
@@ -398,6 +397,11 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			return thisValue.equals(obj);
 		
 		return false;
+	}
+
+	public Hashtable<String, Object> getChoiceOfValues(Object context) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

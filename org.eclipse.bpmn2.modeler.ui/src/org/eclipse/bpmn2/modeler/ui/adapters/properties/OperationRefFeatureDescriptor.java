@@ -37,7 +37,7 @@ public class OperationRefFeatureDescriptor<T extends BaseElement> extends Featur
 	 * @param feature
 	 */
 	public OperationRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(adapterFactory, object, feature);
+		super(object, feature);
 	}
 	
 	@Override

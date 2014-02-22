@@ -1,4 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc.
+ * All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.adapters;
+
+import java.util.Hashtable;
 
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.runtime.Assert;
@@ -14,9 +26,10 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 public class ResourceProvider extends AdapterImpl implements IResourceProvider {
 
 	Resource resource;
+	Hashtable<String, Object> properties = new Hashtable<String, Object>();
 	
-	public static IResourceProvider adapt(EObject object, Resource resource) {
-		IResourceProvider adapter = getAdapter(object);
+	public static ResourceProvider adapt(EObject object, Resource resource) {
+		ResourceProvider adapter = getAdapter(object);
 		if (adapter!=null)
 			adapter.setResource(resource);
 		else {
@@ -26,10 +39,10 @@ public class ResourceProvider extends AdapterImpl implements IResourceProvider {
 		return adapter;
 	}
 	
-	public static IResourceProvider getAdapter(EObject object) {
+	public static ResourceProvider getAdapter(EObject object) {
 		for (Adapter a : object.eAdapters()) {
-			if (a instanceof IResourceProvider) {
-				return (IResourceProvider)a;
+			if (a instanceof ResourceProvider) {
+				return (ResourceProvider)a;
 			}
 		}
 		return null;
@@ -61,6 +74,17 @@ public class ResourceProvider extends AdapterImpl implements IResourceProvider {
 		this.resource = resource;
 	}
 
+	public void putProperty(String key, Object value) {
+		if (value==null)
+			properties.remove(key);
+		else
+			properties.put(key, value);
+	}
+	
+	public Object getProperty(String key) {
+		return properties.get(key);
+	}
+	
 	/**
 	 * Given an EObject always returns the BPMN2 Resource that is associated with that object.
 	 * This may involve searching for all Resources in the ResourceSet that the EObject belongs to.

@@ -39,7 +39,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 	public DataInputPropertiesAdapter(AdapterFactory adapterFactory, DataInput object) {
 		super(adapterFactory, object);
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getDataInput_Name();
-		final FeatureDescriptor<DataInput> fd = new FeatureDescriptor<DataInput>(adapterFactory,object, f) {
+		final FeatureDescriptor<DataInput> fd = new FeatureDescriptor<DataInput>(object,f) {
 
 			@Override
 			public void setTextValue(String text) {
@@ -70,7 +70,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 		};
 		setFeatureDescriptor(f, fd);
 		
-		setObjectDescriptor(new ObjectDescriptor<DataInput>(adapterFactory, object) {
+		setObjectDescriptor(new ObjectDescriptor<DataInput>(object) {
 
 			@Override
 			public void setTextValue(String text) {

@@ -49,7 +49,7 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 	 * @param feature
 	 */
 	public ItemDefinitionRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(adapterFactory, object, feature);
+		super(object, feature);
 		// I found a couple of instances where this class was used for references that were NOT
 		// RootElements - just check to make sure here...
 		Assert.isTrue( RootElement.class.isAssignableFrom(feature.getEType().getInstanceClass()) );

@@ -13,36 +13,22 @@
 
 package org.eclipse.bpmn2.modeler.core.runtime;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.di.BpmnDiPackage;
-import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.preferences.ToolProfilesPreferencesHelper;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeature;
 
 /**
- * @author Bob Brodt
- *
+ * Target Runtime Extension Descriptor class for model enablements. This class controls the visibility of
+ * an object and its features in the UI Property Sheets and dialogs. Any object or object feature that is
+ * not explicitly "enabled" will not be visible in the UI.
+ * 
+ * Instances of this class correspond to <modelEnablement> extension elements in the extension's plugin.xml
+ * See the description of the "modelEnablement" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
@@ -57,6 +43,7 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	
 	public ModelEnablementDescriptor(IConfigurationElement e) {
+		super(e);
 		TargetRuntime rt = TargetRuntime.getRuntime(e);
 		modelEnablements = new ModelEnablements(rt, null, null);
 		String type = e.getAttribute("type"); //$NON-NLS-1$

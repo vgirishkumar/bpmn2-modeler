@@ -61,7 +61,7 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 	public class RootElementObjectDescriptor<T extends RootElement> extends ObjectDescriptor<T> {
 
 		public RootElementObjectDescriptor(AdapterFactory adapterFactory,T object) {
-			super(adapterFactory, object);
+			super(object);
 		}
 		
 		@Override

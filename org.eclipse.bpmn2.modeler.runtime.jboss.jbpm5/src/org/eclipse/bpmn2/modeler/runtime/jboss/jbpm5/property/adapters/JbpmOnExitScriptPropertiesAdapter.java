@@ -35,7 +35,7 @@ public class JbpmOnExitScriptPropertiesAdapter extends ExtendedPropertiesAdapter
 
     	EStructuralFeature ref = DroolsPackage.eINSTANCE.getOnExitScriptType_Script();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<OnExitScriptType>(adapterFactory,object,ref) {
+			new FeatureDescriptor<OnExitScriptType>(object,ref) {
     		
 	    		@Override
 				public boolean isMultiLine() {

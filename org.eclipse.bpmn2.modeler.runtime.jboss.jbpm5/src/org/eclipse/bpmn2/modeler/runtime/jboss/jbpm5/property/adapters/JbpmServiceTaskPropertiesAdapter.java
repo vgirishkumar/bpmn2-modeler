@@ -42,7 +42,7 @@ public class JbpmServiceTaskPropertiesAdapter extends ServiceTaskPropertiesAdapt
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<ServiceTask>(adapterFactory,object,feature) {
+			new FeatureDescriptor<ServiceTask>(object,feature) {
 
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {

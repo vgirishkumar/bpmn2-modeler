@@ -41,6 +41,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.domain.IEditingDomainProvider;
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
@@ -160,8 +162,9 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		return adapterFactory;
 	}
 	
-	public void setObjectDescriptor(ObjectDescriptor<T> pd) {
-		setProperty(OBJECT_DESCRIPTOR,pd);
+	public void setObjectDescriptor(ObjectDescriptor<T> od) {
+		setProperty(OBJECT_DESCRIPTOR,od);
+		od.setOwner(this);
 	}
 
 	private static EObject getFeatureClass(EObject object, EStructuralFeature feature) {
@@ -177,12 +180,11 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 
 	@SuppressWarnings("unchecked")
 	public ObjectDescriptor<T> getObjectDescriptor() {
-		ObjectDescriptor<T> pd = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
-		if (pd==null) {
-			pd = new ObjectDescriptor<T>(adapterFactory, (T)getTarget());
-			setProperty(OBJECT_DESCRIPTOR,pd);
+		ObjectDescriptor<T> od = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
+		if (od==null) {
+			setObjectDescriptor(od = new ObjectDescriptor<T>(this, (T)getTarget()));
 		}
-		return pd;
+		return od;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -193,21 +195,27 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 
 	@SuppressWarnings("unchecked")
 	public FeatureDescriptor<T> getFeatureDescriptor(EStructuralFeature feature) {
-		FeatureDescriptor<T> pd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
-		if (pd==null) {
-			pd = new FeatureDescriptor<T>(adapterFactory, (T)getTarget(), feature);
-			setProperty(feature,OBJECT_DESCRIPTOR,pd);
+		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
+		if (fd==null) {
+			setFeatureDescriptor(feature, fd = new FeatureDescriptor<T>((T)getTarget(), feature));
 		}
-		return pd;
+		return fd;
 	}
-
-	public void setFeatureDescriptor(EStructuralFeature feature, FeatureDescriptor<T> pd) {
+	
+	@SuppressWarnings("unchecked")
+	public FeatureDescriptor<T> getFeatureDescriptor(String featureName) {
+		EStructuralFeature feature = getFeature(featureName);
+		return getFeatureDescriptor(feature);
+	}
+	
+	public void setFeatureDescriptor(EStructuralFeature feature, FeatureDescriptor<T> fd) {
 		Hashtable<String,Object> props = featureProperties.get(feature);
 		if (props==null) {
 			props = new Hashtable<String,Object>();
 			featureProperties.put(feature,props);
 		}
-		props.put(OBJECT_DESCRIPTOR, pd);
+		fd.setOwner(this);
+		props.put(OBJECT_DESCRIPTOR, fd);
 	}
 
 	public EStructuralFeature getFeature(String name) {
@@ -437,5 +445,26 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		if (resource==null)
 			return super.getResource();
 		return resource;
+	}
+	
+
+	public TransactionalEditingDomain getEditingDomain(Object context) {
+		EditingDomain result = null;
+		if (adapterFactory instanceof IEditingDomainProvider) {
+			result = ((IEditingDomainProvider) adapterFactory).getEditingDomain();
+		}
+		if (result == null) {
+			if (adapterFactory instanceof ComposeableAdapterFactory) {
+				AdapterFactory rootAdapterFactory = ((ComposeableAdapterFactory) adapterFactory)
+						.getRootAdapterFactory();
+				if (rootAdapterFactory instanceof IEditingDomainProvider) {
+					result = ((IEditingDomainProvider) rootAdapterFactory).getEditingDomain();
+				}
+			}
+		}
+		// it's gotta be a Transactional Editing Domain or nothing!
+		if (result instanceof TransactionalEditingDomain)
+			return (TransactionalEditingDomain)result;
+		return null;
 	}
 }

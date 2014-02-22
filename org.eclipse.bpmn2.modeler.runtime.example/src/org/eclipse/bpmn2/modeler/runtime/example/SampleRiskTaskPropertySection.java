@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -59,7 +59,7 @@ public class SampleRiskTaskPropertySection extends DefaultPropertySection {
 		if (super.appliesTo(part, selection)) {
 			EObject eObj = this.getBusinessObjectForSelection(selection);
 			if (eObj instanceof TextAnnotation) {
-				EStructuralFeature f = ModelUtil.getAnyAttribute(eObj, "cost");
+				EStructuralFeature f = ModelDecorator.getAnyAttribute(eObj, "cost");
 				return f!=null;
 			}
 		}
@@ -86,8 +86,8 @@ public class SampleRiskTaskPropertySection extends DefaultPropertySection {
 			// update the TextAnnotation "text" attribute to reflect some changes in
 			// our extension attributes; "name" and "cost" in this case.
 			final TextAnnotation ta = (TextAnnotation)getBusinessObject();
-			final EStructuralFeature nameAttribute = ModelUtil.getAnyAttribute(ta, "name");
-			final EStructuralFeature costAttribute = ModelUtil.getAnyAttribute(ta, "cost");
+			final EStructuralFeature nameAttribute = ModelDecorator.getAnyAttribute(ta, "name");
+			final EStructuralFeature costAttribute = ModelDecorator.getAnyAttribute(ta, "cost");
 			final TransactionalEditingDomain editingDomain = getDiagramEditor().getEditingDomain();			
 			for (Notification n : event.getNotifications()) {
 				int et = n.getEventType();

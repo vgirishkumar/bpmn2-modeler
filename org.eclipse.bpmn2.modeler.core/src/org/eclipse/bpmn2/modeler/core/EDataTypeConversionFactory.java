@@ -30,10 +30,10 @@ public class EDataTypeConversionFactory implements Factory {
 	// Clients may register their own types and conversion delegates.
 	private static Hashtable<String, Class<? extends ConversionDelegate>> registry =
 			new Hashtable<String, Class<? extends ConversionDelegate>>();
-	
-	static {
-		registerConversionDelegate("EColor", EColorConversionDelegate.class);
-	}
+//	
+//	static {
+//		registerConversionDelegate("EColor", EColorConversionDelegate.class);
+//	}
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate.Factory#createConversionDelegate(org.eclipse.emf.ecore.EDataType)

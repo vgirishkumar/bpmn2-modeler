@@ -24,9 +24,10 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -40,44 +41,21 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /**
- *
+ * Target Runtime Extension Descriptor class for BPMN2 model extension attributes and elements.
+ * Instances of this class correspond to <modelExtension> extension elements in the extension's plugin.xml
+ * See the description of the "modelExtension" element in the org.eclipse.bpmn2.modeler.runtime extension point schema. 
  */
 @SuppressWarnings("rawtypes")
 public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	public final static String EXTENSION_NAME = "modelExtension";
-
-	// Container class for property values
-	public static class Value {
-		
-		static int ID = 0;
-		String id;
-		public List<Object>values;
-		
-		public Value() {
-			setDefaultId();
-		}
-		
-		public Value(String id) {
-			if (id==null || id.isEmpty())
-				setDefaultId();
-			else
-				this.id = id;
-		}
-		
-		public List<Object> getValues() {
-			if (values==null) {
-				values = new ArrayList<Object>();
-			}
-			return values;
-		}
-		
-		private void setDefaultId() {
-			id = "V-" + ID++; //$NON-NLS-1$
-		}
-	}
 	
-	// name/value pairs constructed from Custom Task extension point
+	/**
+	 * Container class for name/value pairs.
+	 * Instances of this class correspond to <property> extension elements in the extension's plugin.xml
+	 * See the description of the "property" element in the org.eclipse.bpmn2.modeler.runtime
+	 * extension point schema. 
+	 */
 	public static class Property extends SimpleTreeIterator<Property> {
 		public Property parent;
 		public String name;
@@ -147,7 +125,50 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			return new TreeIterator(getChildren());
 		}
 	}
-	
+
+	/**
+	 * Container class for property values.
+	 * Instances of this class correspond to <value> extension elements in the extension's plugin.xml
+	 * See the description of the "value" element in the org.eclipse.bpmn2.modeler.runtime
+	 * extension point schema. 
+	 */
+	public static class Value {
+		
+		static int ID = 0;
+		String id;
+		public List<Object>values;
+		
+		public Value() {
+			setDefaultId();
+		}
+		
+		public Value(String id) {
+			if (id==null || id.isEmpty())
+				setDefaultId();
+			else
+				this.id = id;
+		}
+		
+		public List<Object> getValues() {
+			if (values==null) {
+				values = new ArrayList<Object>();
+			}
+			return values;
+		}
+		
+		private void setDefaultId() {
+			id = "V-" + ID++; //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * Container class for object initialization info.
+	 * Object initialization must be performed after and object has been fully
+	 * populated with extension attributes and elements by populateObject().
+	 * This is necessary because the AnyType object expects the referenced EClass
+	 * to be fully constructed when eSet(), eGet() or eIsSet() are invoked on the
+	 * EClass features.
+	 */
 	private class Initializer {
 		public ExtendedPropertiesAdapter adapter;
 		public EStructuralFeature feature;
@@ -160,6 +181,12 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 	
+	/**
+	 * List of Initializers. The list may be partially executed to ensure that
+	 * backward references to objects by a Property.ref exist.
+	 * See the description of the "property.ref" attribute in the org.eclipse.bpmn2.modeler.runtime
+	 * extension point schema. 
+	 */
 	@SuppressWarnings("serial")
 	private class InitializerList extends ArrayList<Initializer> {
 		public void add(ExtendedPropertiesAdapter adapter, EStructuralFeature feature, Object value) {
@@ -202,8 +229,33 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			}
 		}
 	}
+	
+	/**
+	 * This adapter has been deprecated. Use BaseRuntimeExtensionDescriptor#getDescriptor(EObject,Class) instead
+	 * @deprecated
+	 */
+	public class ModelExtensionAdapter extends AdapterImpl {
 
-	protected String id;
+		ModelExtensionDescriptor descriptor;
+		
+		public ModelExtensionAdapter(ModelExtensionDescriptor descriptor) {
+			super();
+			this.descriptor = descriptor;
+		}
+		
+		public Property getProperty(String name) {
+			return descriptor.getProperty(name);
+		}
+		
+		public List<Property> getProperties(String path) {
+			return descriptor.getProperties(path);
+		}
+		
+		public ModelExtensionDescriptor getDescriptor() {
+			return descriptor;
+		}
+	}
+
 	protected String name;
 	protected String uri;
 	protected String type;
@@ -219,7 +271,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	private InitializerList initializers = new InitializerList();
 
 	public ModelExtensionDescriptor(IConfigurationElement e) {
-		id = e.getAttribute("id"); //$NON-NLS-1$
+		super(e);
 		name = e.getAttribute("name"); //$NON-NLS-1$
 		uri = e.getAttribute("uri"); //$NON-NLS-1$
 		type = e.getAttribute("type"); //$NON-NLS-1$
@@ -244,10 +296,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		this.name = name;
 	}
 	
-	public String getId() {
-		return id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -315,8 +363,12 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	 */
 	public EObject createObject(EClass eClass) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eClass);
-		adapter.setResource(containingResource);
-		return adapter.getObjectDescriptor().createObject(eClass);
+		if (adapter!=null) {
+			adapter.setResource(containingResource);
+			return adapter.getObjectDescriptor().createObject(eClass);
+		}
+		EPackage pkg = eClass.getEPackage();
+		return pkg.getEFactoryInstance().create(eClass);
 	}
 	
 	public ModelDecorator getModelDecorator() {
@@ -485,8 +537,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			}
 			else if (firstValue instanceof Property)
 			{
-                EClassifier reftype = property.type == null || property.type.length() == 0 ? null : ModelDecorator
-                        .findEClassifier(getEPackage(), property.type);
+                EClassifier reftype = null;
+                if (property.type == null || property.type.length() == 0) {
+                	reftype = getModelDecorator().findEClassifier(property.name);
+                }
+                else {
+                	reftype = getModelDecorator().findEClassifier(property.type);
+                }
                 if (reftype == null || !(reftype instanceof EClass)) {
                     reftype = ref.getEReferenceType();
                 }
@@ -588,6 +645,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public ExtendedPropertiesAdapter adaptObject(EObject object) {
+		addModelExtensionAdapter(object);
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
 			adapter.setProperty(this.getClass().getName(), this);
@@ -597,6 +655,20 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return adapter;
 	}
 	
+	private void addModelExtensionAdapter(EObject object) {
+		if (!object.eAdapters().contains(this))
+			object.eAdapters().add( new ModelExtensionAdapter(this) );
+	}
+
+	public static ModelExtensionAdapter getModelExtensionAdapter(EObject object) {
+		for (Adapter a : object.eAdapters()) {
+			if (a instanceof ModelExtensionAdapter) {
+				return (ModelExtensionAdapter)a;
+			}
+		}
+		return null;
+	}
+
 	private void adaptFeature(EObject object, EStructuralFeature feature, Object value) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
@@ -663,7 +735,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	private EClass getEClass(String className) {
 		// try the runtime package first
-		EClass eClass = (EClass)targetRuntime.getModelDescriptor().getEPackage().getEClassifier(className);
+		EClass eClass = getModelDecorator().getEClass(className);
+		
 		// then all BPMN2 packages
 		if (eClass==null)
 			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(className);

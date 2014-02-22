@@ -24,8 +24,10 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * @author Bob Brodt
- *
+ * Target Runtime Extension Descriptor class for providing extended property adapters for BPMN2 model objects and features.
+ * See the ExtendedPropertiesAdapter class for implementation details of an extended property adapter.
+ * Instances of this class correspond to <propertyExtension> extension elements in the extension's plugin.xml
+ * See the description of the "propertyExtension" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	
@@ -33,13 +35,12 @@ public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor 
 
     protected String type;
     protected String adapterClassName;
-	private final IConfigurationElement element;
 
 	/**
 	 * @param rt
 	 */
 	public PropertyExtensionDescriptor(IConfigurationElement e) {
-		this.element = e;
+		super(e);
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		adapterClassName = e.getAttribute("class"); //$NON-NLS-1$
 	}
@@ -54,7 +55,7 @@ public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor 
 	        return null;
 	    }
 		try {
-			return Platform.getBundle(element.getContributor().getName()).loadClass(type);
+			return Platform.getBundle(configurationElement.getContributor().getName()).loadClass(type);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -68,7 +69,7 @@ public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor 
         }
 		try {
 			Constructor ctor = null;
-			Class adapterClass = Platform.getBundle(element.getContributor().getName()).loadClass(adapterClassName);
+			Class adapterClass = Platform.getBundle(configurationElement.getContributor().getName()).loadClass(adapterClassName);
 			EClass eclass = null;
 			if (object instanceof EClass) {
 				eclass = (EClass)object;

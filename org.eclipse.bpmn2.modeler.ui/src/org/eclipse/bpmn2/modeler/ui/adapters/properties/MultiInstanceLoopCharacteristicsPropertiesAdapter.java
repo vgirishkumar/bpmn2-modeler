@@ -94,7 +94,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 		 * @param feature
 		 */
 		public LoopCharacteristicsDataIoFeatureDescriptor(AdapterFactory adapterFactory, MultiInstanceLoopCharacteristics object, EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(object, feature);
 		}
 
 		@Override

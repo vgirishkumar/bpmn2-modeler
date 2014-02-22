@@ -42,7 +42,7 @@ public class CatchEventPropertiesAdapter extends EventPropertiesAdapter<CatchEve
 		EStructuralFeature feature;
 
     	feature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputs();
-    	setFeatureDescriptor(feature, new FeatureDescriptor<CatchEvent>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new FeatureDescriptor<CatchEvent>(object, feature) {
    		
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {

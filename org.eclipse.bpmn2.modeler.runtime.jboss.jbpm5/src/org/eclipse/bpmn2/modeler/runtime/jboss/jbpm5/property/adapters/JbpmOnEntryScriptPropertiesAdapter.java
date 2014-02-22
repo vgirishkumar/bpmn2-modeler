@@ -35,7 +35,7 @@ public class JbpmOnEntryScriptPropertiesAdapter extends ExtendedPropertiesAdapte
 
     	EStructuralFeature ref = DroolsPackage.eINSTANCE.getOnEntryScriptType_Script();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<OnEntryScriptType>(adapterFactory,object,ref) {
+			new FeatureDescriptor<OnEntryScriptType>(object,ref) {
     		
 	    		@Override
 				public boolean isMultiLine() {
