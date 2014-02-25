@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;

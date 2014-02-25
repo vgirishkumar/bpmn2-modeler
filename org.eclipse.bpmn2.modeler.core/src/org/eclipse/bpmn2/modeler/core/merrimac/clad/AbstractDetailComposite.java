@@ -32,8 +32,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
@@ -256,7 +256,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 	
 	/**
-	 * Convenience method to check if a feature is an EList
+	 * Convenience method to check if a feature is a containment EList
 	 * @param object
 	 * @param feature
 	 * @return
@@ -407,7 +407,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
-		if (isModelObjectEnabled(object.eClass(), attribute) || "anyAttribute".equals(attribute.getName())) { //$NON-NLS-1$
+		if (isModelObjectEnabled(object.eClass(), attribute)) {
 
 			if (parent==null)
 				parent = getAttributesParent();

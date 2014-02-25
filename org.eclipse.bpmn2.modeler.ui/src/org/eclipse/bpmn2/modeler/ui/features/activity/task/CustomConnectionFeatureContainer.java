@@ -130,7 +130,7 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		@Override
 		public BaseElement createBusinessObject(ICreateConnectionContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
-			customTaskDescriptor.populateObject(businessObject, false);
+			customTaskDescriptor.populateObject(businessObject, true);
 			return businessObject;
 		}
 

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -424,6 +425,15 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	public void addCustomTask(CustomTaskDescriptor ct) {
 		getCustomTaskDescriptors().add(ct);
 		ct.targetRuntime = this;
+	}
+	
+	public String getCustomTaskId(EObject object) {
+		for (CustomTaskDescriptor ctd : getCustomTaskDescriptors()) {
+			String id = ctd.getFeatureContainer().getId(object);
+			if (ctd.getId().equals(id))
+				return id;
+		}
+		return null;
 	}
 	
 	/*

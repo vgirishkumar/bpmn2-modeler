@@ -11,15 +11,14 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.impl.TaskImpl;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
@@ -93,8 +92,8 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		boolean b1 =  o instanceof TaskImpl;
-		boolean b2 = o.getClass().isAssignableFrom(TaskImpl.class);
+		boolean b1 =  o instanceof BaseElement;
+		boolean b2 = o.getClass().isAssignableFrom(BaseElement.class);
 		return b1 || b2;
 	}
 	
@@ -147,9 +146,9 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 			((IAddContext)context).getNewObject() instanceof EObject ) {
 			EObject object = (EObject) ((IAddContext)context).getNewObject();
 			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
-				id = ct.getFeatureContainer().getId(object);
-				if (id!=null) {
+			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
+				id = ctd.getFeatureContainer().getId(object);
+				if (ctd.getId().equals(id)) {
 					context.putProperty(CUSTOM_ELEMENT_ID, id);
 					return (String)id;
 				}

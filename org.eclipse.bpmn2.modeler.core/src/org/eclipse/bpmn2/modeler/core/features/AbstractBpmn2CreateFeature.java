@@ -92,9 +92,10 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		Resource resource = container.eResource();
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
-		Object value = context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-		if (value!=null)
-			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
+		String id = (String)context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+		if (id!=null) {
+			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
+		}
 		T businessObject = (T)adapter.getObjectDescriptor().createObject(resource,eclass);
 		putBusinessObject(context, businessObject);
 		changesDone = true;
@@ -117,12 +118,14 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	public void putBusinessObject(ICreateContext context, T businessObject) {
 		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
-		String id = (String)context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-		if (id!=null) {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-	    	ctd.populateObject(businessObject, ResourceProvider.getResource(businessObject), true);
-		}
+		
+		// TODO: is this no longer needed? populateObject() is now called in the Bpmn2ModelerFactory
+//		String id = (String)context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+//		if (id!=null) {
+//	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+//	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
+//	    	ctd.populateObject(businessObject, ResourceProvider.getResource(businessObject), true);
+//		}
 	}
 
 	/* (non-Javadoc)

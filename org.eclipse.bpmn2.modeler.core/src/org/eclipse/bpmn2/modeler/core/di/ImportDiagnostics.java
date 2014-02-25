@@ -140,10 +140,12 @@ public class ImportDiagnostics implements IStructuredContentProvider, ILabelProv
 		String name = ""; //$NON-NLS-1$
 		String customTaskId = ""; //$NON-NLS-1$
 		if (runtime!=null) {
-			for (CustomTaskDescriptor tc : runtime.getCustomTaskDescriptors()) {
-				customTaskId = tc.getFeatureContainer().getId(element);
-				if (customTaskId==null)
-					customTaskId = ""; //$NON-NLS-1$
+			for (CustomTaskDescriptor ctd : runtime.getCustomTaskDescriptors()) {
+				String cid = ctd.getFeatureContainer().getId(element);
+				if (ctd.getId().equals(cid)) {
+					customTaskId = cid;
+					break;
+				}
 			}
 		}
 		

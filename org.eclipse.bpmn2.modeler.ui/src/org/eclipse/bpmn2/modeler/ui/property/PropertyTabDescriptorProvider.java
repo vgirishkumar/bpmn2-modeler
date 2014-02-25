@@ -148,8 +148,11 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 			// This is important because the TabbedPropertySheetPage uses these IDs to
 			// look up the Sections.
 			String rtid = td.getRuntimeId();
-			if (rtid==null || rt.getId().equals(rtid))
-				replaced.add(td.copy()); 
+			if (rtid==null || rtid.equals(TargetRuntime.DEFAULT_RUNTIME_ID) || rt.getId().equals(rtid)) {
+				// what's left is just the Tab Descriptors defined by the current Target Runtime
+				// and the ones from the Default ("None") runtime.
+				replaced.add(td.copy());
+			}
 		}
 		
 		// save this in the cache.

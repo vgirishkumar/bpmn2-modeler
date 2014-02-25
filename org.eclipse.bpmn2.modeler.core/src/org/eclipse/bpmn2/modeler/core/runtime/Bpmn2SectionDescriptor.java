@@ -154,10 +154,11 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				if (rt!=null) {
 					int selected = 0;
 					int count = 0;
-					for (CustomTaskDescriptor tc : rt.getCustomTaskDescriptors()) {
-						for (String s : tc.getPropertyTabs()) {
+					for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
+						for (String s : ctd.getPropertyTabs()) {
 							if (tab.equals(s)) {
-								if (tc.getFeatureContainer().getId(businessObject)!=null)
+								String id = ctd.getFeatureContainer().getId(businessObject);
+								if (ctd.getId().equals(id))
 									++selected;
 								++count;
 							}

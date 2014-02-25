@@ -783,6 +783,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				e.printStackTrace();
 			}
 		}
+		else {
+			me.setEnabledAll(true);
+		}
 		return me;
 	}
 	

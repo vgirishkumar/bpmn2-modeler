@@ -189,8 +189,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 
 	@SuppressWarnings("unchecked")
 	public boolean hasFeatureDescriptor(EStructuralFeature feature) {
-		FeatureDescriptor<T> pd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
-		return pd!=null;
+		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
+		return fd!=null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -218,6 +218,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		props.put(OBJECT_DESCRIPTOR, fd);
 	}
 
+	/**
+	 * Lookup method for the given feature name.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public EStructuralFeature getFeature(String name) {
 		EObject object = getObjectDescriptor().object;
 		if (object instanceof ExtensionAttributeValue) {

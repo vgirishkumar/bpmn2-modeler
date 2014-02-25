@@ -84,7 +84,7 @@ public class PropertyLabelProvider extends LabelProvider {
 			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
 				if (ctd.getFeatureContainer()!=null) {
 					String id = ctd.getFeatureContainer().getId(object);
-					if (id!=null) {
+					if (ctd.getId().equals(id)) {
 						return ctd;
 					}
 				}

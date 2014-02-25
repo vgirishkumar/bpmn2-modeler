@@ -11,7 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.core.utils;
+package org.eclipse.bpmn2.modeler.core.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +27,14 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.utils.Messages;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
-import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
@@ -49,15 +44,14 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
+import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
-import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
@@ -68,7 +62,6 @@ import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
 import org.eclipse.emf.ecore.xml.type.AnyType;
-import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -78,158 +71,38 @@ import org.eclipse.osgi.util.NLS;
 /**
  * This class wraps an EPackage and provides methods for dynamic EMF.
  */
+/**
+ *
+ */
 public class ModelDecorator {
 	final static EcoreFactory theCoreFactory = EcoreFactory.eINSTANCE;
+	public final static String DECORATOR_URI = "http://org.eclipse.bpmn2.modeler.core.decorator";
+
 	protected EPackage ePackage;
 	protected static ResourceSet resourceSet;
 	protected List<EPackage> relatedEPackages;
-
-	static class MyObjectFactory extends EFactoryImpl {
-		public ModelDecorator modelDecorator;
-		
-		public MyObjectFactory(ModelDecorator modelDecorator) {
-			this.modelDecorator = modelDecorator;
-		}
-		
-		@Override
-		public EObject create(EClass eClass) {
-			EObject object;
-			if (eClass == EcorePackage.eINSTANCE.getEObject())
-				object = XMLTypeFactory.eINSTANCE.createAnyType();
-			else
-				object = super.create(eClass);
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
-			return object;
-		}
-		
-		protected EObject basicCreate(EClass eClass) {
-			return eClass.getInstanceClassName() == "java.util.Map$Entry" ?
-					new DynamicEObjectImpl.BasicEMapEntry<String, String>(eClass) :
-					XMLTypeFactory.eINSTANCE.createAnyType();
-		}
-	}
 	
-	static class MyAdaptorFactory extends AdapterFactoryImpl {
-
-		public static MyAdaptorFactory INSTANCE = new MyAdaptorFactory();
-		
-		@Override
-		public boolean isFactoryForType(Object type) {
-			return type == AnyType.class;
-		}
-
-		@Override
-		public Adapter adaptNew(Notifier object, Object type) {
-			Adapter adapter = null;
-			if (type == ExtendedPropertiesAdapter.class) {
-				if (object instanceof EClass) {
-					object = ExtendedPropertiesAdapter.getDummyObject((EClass)object);
-				}
-				adapter = new AnyTypeExtendedPropertiesAdapter(this, (AnyType)object);
-			}
-			return adapter;
-		}
-	}
-	
-	static class AnyTypeExtendedPropertiesAdapter extends ExtendedPropertiesAdapter<AnyType> {
-
-		ModelDecorator modelDecorator;
-
-		public AnyTypeExtendedPropertiesAdapter(AdapterFactory adapterFactory, AnyType object) {
-			super(adapterFactory, object);
-		}
-
-		public ModelDecorator getModelDecorator(EStructuralFeature feature) {
-
-			if (modelDecorator==null) {
-				String nsURI = ExtendedMetaData.INSTANCE.getNamespace(feature);
-				EPackage pkg = ModelDecorator.getEPackage(nsURI);
-				if (pkg!=null) {
-					ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
-					modelDecorator = mda.getModelDecorator();
-				}
-			}
-			return modelDecorator;
-		}
-		
-		@Override
-		public EStructuralFeature getFeature(String name) {
-			AnyType object = (AnyType) getTarget();
-			EStructuralFeature feature = object.eClass().getEStructuralFeature(name);
-			adaptFeature(feature);
-			return feature;
-		}
-
-		@Override
-		public FeatureDescriptor<AnyType> getFeatureDescriptor(EStructuralFeature feature) {
-			adaptFeature(feature);
-			return super.getFeatureDescriptor(feature);
-		}
-		
-		private void adaptFeature(EStructuralFeature feature) {
-			if (modelDecorator==null) {
-				AnyType object = (AnyType) getTarget();
-				if (getModelDecorator(feature) != null) {
-					modelDecorator.adaptFeature(this, object, feature);
-				}
-			}
-		}
-	}
-	
-	public class ModelDecoratorAdapter extends AdapterImpl {
-		ModelDecorator modelDecorator;
-		
-		public ModelDecoratorAdapter(ModelDecorator modelDecorator) {
-			this.modelDecorator = modelDecorator;
-		}
-		
-		public ModelDecorator getModelDecorator() {
-			return modelDecorator;
-		}
-
-		public EClass getEClass(EObject object) {
-			if (object instanceof EClass)
-				return modelDecorator.getEClass(((EClass)object).getName());
-			// FIXME: The ExtensionAttributeValues container is used to attach EXTENSION ELEMENTS (not attributes)
-			// to a BaseElement object (i.e. EXTENSION ELEMENTS are contained by an ExtensionAttributeValue
-			// object owned by the BaseElement, not the BaseElement itself). We need to resolve this ownership
-			// issue in a central place.
-			if (object instanceof ExtensionAttributeValue && object.eContainer()!=null) {
-				object = object.eContainer();
-			}
-			return modelDecorator.getEClass(object.eClass().getName());
-		}
-		
-		public EStructuralFeature getEStructuralFeature(EObject object, EStructuralFeature feature) {
-			EClass eClass = getEClass(object);
-			if (eClass!=null) {
-				feature = eClass.getEStructuralFeature(feature.getName());
-				if (feature!=null) {
-					adaptFeature(null, object, feature);
-					return feature;
-				}
-			}
-			return null;
-		}
-		
-		public EStructuralFeature getEStructuralFeature(EObject object, String name) {
-			EClass eClass = getEClass(object);
-			if (eClass!=null) {
-				EStructuralFeature feature = eClass.getEStructuralFeature(name);
-				if (feature!=null) {
-					adaptFeature(null, object, feature);
-					return feature;
-				}
-			}
-			return null;
-		}
-	}
-	
+	/*
+	 * Register the AdapterFactory for AnyType objects.
+	 * @see AnyTypeAdaptorFactory
+	 */
 	static {
 		EClass e = XMLTypePackage.eINSTANCE.getAnyType();
-		AdapterRegistry.INSTANCE.registerFactory(e.getInstanceClass(), MyAdaptorFactory.INSTANCE);
+		AdapterRegistry.INSTANCE.registerFactory(e.getInstanceClass(), AnyTypeAdaptorFactory.INSTANCE);
 	}
 	
+	/**
+	 * Construct a new EPackage for extension classes and features, and add the given
+	 * EPackage to our list of related packages. The new EPackage will have the same
+	 * namespace URI and prefix, but will be contained in a private ResourceSet,
+	 * so there's no danger of contaminating the original EPackage.
+	 * 
+	 * This allows extension plugins to define their own EMF models the traditional
+	 * way (by generating Java implementations classes from an ecore file) but still
+	 * supports dynamic extensions to those models.
+	 * 
+	 * @param pkg
+	 */
 	public ModelDecorator(EPackage pkg) {
 		Assert.isTrue( isValid(pkg) );
 		String name = pkg.getName()+" Dynamic Extensions";
@@ -244,6 +117,14 @@ public class ModelDecorator {
 		addRelatedEPackage(pkg);
 	}
 	
+	/**
+	 * Construct a new EPackage for extension classes and features that will be
+	 * defined dynamically.
+	 * 
+	 * @param name
+	 * @param nsPrefix
+	 * @param nsURI
+	 */
 	public ModelDecorator(String name, String nsPrefix, String nsURI) {
 		ePackage = (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
 		if (ePackage==null) {
@@ -252,49 +133,93 @@ public class ModelDecorator {
 		initPackage();
 	}
 	
+	/**
+	 * Dispose of our dynamic EPackage and all of its contained classes and features.
+	 */
 	public void dispose() {
 		if (resourceSet!=null) {
-			resourceSet.getPackageRegistry().clear();
-			if (ePackage!=null)
+			if (ePackage!=null) {
+				resourceSet.getPackageRegistry().remove(ePackage.getNsURI());
 				EcoreUtil.delete(ePackage);
+			}
 		}
 	}
 	
+	/**
+	 * Construct a private ResourceSet that will contain our dynamic EPackage.
+	 * 
+	 * @return
+	 */
 	private static ResourceSet getResourceSet() {
 		if (resourceSet==null)
 			resourceSet = new ResourceSetImpl();
 		return resourceSet;
 	}
 	
+	/**
+	 * Initialize our dynamic EPackage:
+	 * - set our object factory to create adapted AnyType objects
+	 * - add a ModelDecorator adapter to the EPackage so that clients can find us
+	 * - add our DataTypeConversion factory for user-defined EDataTypes
+	 */
 	private void initPackage() {
-		ePackage.setEFactoryInstance(new MyObjectFactory(this));
-		ModelDecoratorAdapter adapter = new ModelDecoratorAdapter(this);
-		ePackage.eAdapters().add(adapter);
+		ePackage.setEFactoryInstance(new AnyTypeObjectFactory(this));
+		ModelDecoratorAdapter.adapt(this);
 		List<String> delegates = new ArrayList<String>();
 		delegates.add(EDataTypeConversionFactory.DATATYPE_CONVERSION_FACTORY_URI);
 		EcoreUtil.setConversionDelegates(ePackage, delegates);
 	}
 	
+	/**
+	 * Return our dynamic EPackage.
+	 * 
+	 * @return
+	 */
 	public EPackage getEPackage() {
 		Assert.isNotNull(ePackage);
 		return ePackage;
 	}
 	
+	/**
+	 * Return the dynamic EPackage for the given namespace URI.
+	 * 
+	 * @param nsURI
+	 * @return the dynamic EPackage or null if not found.
+	 */
 	public static EPackage getEPackage(String nsURI) {
 		EPackage pkg = (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
 		return pkg;
 	}
 	
+	/**
+	 * Look up the dynamic EPackage from the given feature by using that feature's namespace.
+	 * 
+	 * @param feature
+	 * @return the dynamic EPackage that contains the given feature or null if the feature
+	 * is not defined.
+	 */
 	public static EPackage getEPackageForFeature(EStructuralFeature feature) {
 		String nsURI = ExtendedMetaData.INSTANCE.getNamespace(feature);
 		return (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
 	}
 	
+	/**
+	 * Add the given EPackage to the list of related packages.
+	 * See the ModelDecorator(EPackage) constructor
+	 * 
+	 * @param pkg
+	 */
 	public void addRelatedEPackage(EPackage pkg) {
 		if (pkg!=ePackage && !getRelatedEPackages().contains(pkg))
 			getRelatedEPackages().add(pkg);
 	}
 	
+	/**
+	 * Return the list of related EPackages.
+	 * See the ModelDecorator(EPackage) constructor
+	 * 
+	 * @return a list of EPackage objects. The list may be empty.
+	 */
 	public List<EPackage> getRelatedEPackages() {
 		if (relatedEPackages==null) {
 			relatedEPackages = new ArrayList<EPackage>();
@@ -302,6 +227,14 @@ public class ModelDecorator {
 		return relatedEPackages;
 	}
 	
+	/**
+	 * Create our dynamic EPackage and add it to our private ResourceSet.
+	 * 
+	 * @param name
+	 * @param nsPrefix
+	 * @param nsURI
+	 * @return the newly created dynamic EPackage
+	 */
 	private EPackage createEPackage(String name, String nsPrefix, String nsURI) {
 		ePackage = theCoreFactory.createEPackage();
 		ePackage.setName(name);
@@ -315,6 +248,17 @@ public class ModelDecorator {
 		return ePackage;
 	}
 	
+	/**
+	 * Parse a type string to return the list of supertypes. The type string is in
+	 * the form
+	 * 
+	 *    "classname:supertype1,supertype2,..."
+	 *  
+	 * this method returns the list of strings containing "supertype1", "supertype2", etc.
+	 * 
+	 * @param type
+	 * @return a list of strings or an empty list of no supertypes found.
+	 */
 	private List<String> getSuperTypes(String type) {
 		List<String> supertypes = new ArrayList<String>();
 		if (type.contains(":")) {
@@ -332,13 +276,31 @@ public class ModelDecorator {
 		return supertypes;
 	}
 	
+	/**
+	 * Parse a type string to return the subclass name. The type string is in
+	 * the form
+	 * 
+	 *    "classname:supertype1,supertype2,..."
+	 *  
+	 * this method returns the "classname" portion.
+	 * 
+	 * @param type
+	 * @return a string containing only the type name
+	 */
 	private String getType(String type) {
 		if (type==null)
-			return "EString";
+			return null;
 		String a[] = type.split(":");
 		return a[0];
 	}
 	
+	/**
+	 * Search for the EClassifier whose name is the type string.
+	 * 
+	 * @param type - a type name string that may contain additional supertype names.
+	 * @see getType(String)
+	 * @return the EClassifier or null if not found.
+	 */
 	public EClassifier getEClassifier(String type) {
 		type = getType(type);
 		EClassifier eClassifier = ePackage.getEClassifier(type);
@@ -346,7 +308,7 @@ public class ModelDecorator {
 			return eClassifier;
 		}
 		for (EPackage p : getRelatedEPackages()) {
-			eClassifier = p.getEClassifier(type);
+			eClassifier = p.getEClassifier(getType(type));
 			if (eClassifier != null) {
 				return eClassifier;
 			}
@@ -355,6 +317,15 @@ public class ModelDecorator {
 		return null;
 	}
 	
+	/**
+	 * Create a dynamic EClassifier from a type string. This will create a new
+	 * EEnum if the supertype is an EEnum, or a new EDataType if the supertype
+	 * is an EDataType. If no supertype is given, an EClass is created instead.
+	 * 
+	 * @param type - a type name string that may contain additional supertype names.
+	 * @see getType(String)
+	 * @return the EClassifier.
+	 */
 	public EClassifier createEClassifier(String type) {
 		EClassifier eClassifier = getEClassifier(type);
 		if (eClassifier!=null)
@@ -370,7 +341,7 @@ public class ModelDecorator {
 		}
 		
 		if (eDataType==null) {
-			if (EDataTypeConversionFactory.isFactoryFor(type))
+			if (EDataTypeConversionFactory.isFactoryFor(getType(type)))
 				return createEDataType(type);
 			return createEClass(type);
 		}
@@ -383,13 +354,16 @@ public class ModelDecorator {
 		eClassifier.setName(getType(type));
 		ePackage.getEClassifiers().add(eClassifier);
 
-		// make this class look like a DocumentRoot so that it can be added
-		// to the containing object's "anyType" feature.
-		ExtendedMetaData.INSTANCE.setName(eClassifier, "");
-
 		return eClassifier;
 	}
 	
+	/**
+	 * Create a dynamic EEnum literal value for an EEnum type name.
+	 * 
+	 * @param name - name of the enum literal
+	 * @param owningtype - the EEnum type name that owns the newly created literal.
+	 * @return a new EEnum literal.
+	 */
 	public EEnumLiteral createEEnumLiteral(String name, String owningtype) {
 
 		EClassifier eClassifier = getEClassifier(owningtype);
@@ -402,6 +376,13 @@ public class ModelDecorator {
 		return createEEnumLiteral(name, (EEnum)eClassifier);
 	}
 	
+	/**
+	 * Create a dynamic EEnum literal value for an EEnum type.
+	 * 
+	 * @param name - name of the enum literal
+	 * @param eEnum - the EEnum type that owns the newly created literal.
+	 * @return a new EEnum literal
+	 */
 	public EEnumLiteral createEEnumLiteral(String name, EEnum eEnum) {
 		
 		EEnumLiteral literal = theCoreFactory.createEEnumLiteral();
@@ -413,6 +394,12 @@ public class ModelDecorator {
 		return literal;
 	}
 	
+	/**
+	 * Search for the EDataType whose name is the type string.
+	 * 
+	 * @param type - name of an EDataType
+	 * @return the EDatatype or null if not found
+	 */
 	public EDataType getEDataType(String type) {
 		EClassifier eClassifier = getEClassifier(type);
 		if (eClassifier instanceof EDataType) {
@@ -422,6 +409,12 @@ public class ModelDecorator {
 		return null;
 	}
 	
+	/**
+	 * Create a dynamic EDataType from a type string.
+	 * 
+	 * @param type - name of the EDataType to create.
+	 * @return a new EDataType.
+	 */
 	public EDataType createEDataType(String type) {
 		type = getType(type);
 		EDataType eDataType = getEDataType(type);
@@ -448,6 +441,12 @@ public class ModelDecorator {
 		return eDataType;
 	}
 
+	/**
+	 * Search for the EClass whose name is the type string.
+	 * 
+	 * @param type - name of an EClass
+	 * @return the EClass or null if not found
+	 */
 	public EClass getEClass(String type) {
 		EClassifier eClassifier = getEClassifier(type);
 		if (eClassifier instanceof EClass) {
@@ -457,6 +456,13 @@ public class ModelDecorator {
 		return null;
 	}
 	
+	/**
+	 * Create a dynamic EClass from a type string.
+	 * 
+	 * @param type - a type name string that may contain additional supertype names.
+	 * @see getType(String)
+	 * @return the EClass.
+	 */
 	public EClass createEClass(String type) {
 		EClass eClass = getEClass(type);
 		if (eClass!=null)
@@ -472,6 +478,7 @@ public class ModelDecorator {
 			if (eClassifier instanceof EClass)
 				eClass.getESuperTypes().add((EClass) eClassifier);
 		}
+		
 		// make this class look like a DocumentRoot so that it can be added
 		// to the containing object's "anyType" feature.
 		ExtendedMetaData.INSTANCE.setName(eClass, "");
@@ -480,6 +487,14 @@ public class ModelDecorator {
 		return eClass;
 	}
 	
+	/**
+	 * Search for an EAttribute with the given name in the specified EClass.
+	 * 
+	 * @param name - name of the attribute to search for.
+	 * @param type - the data type of the attribute.
+	 * @param owningtype - name of the EClass that contains the attribute.
+	 * @return the EAttribute or null if not found.
+	 */
 	public EAttribute getEAttribute(String name, String type, String owningtype) {
 		if (type==null)
 			type = "EString";
@@ -511,6 +526,16 @@ public class ModelDecorator {
 		return null;
 	}
 	
+	/**
+	 * Create a dynamic EAttribute of a given type, and add it the specified EClass.
+	 * If the specified EClass does not exist, it will be created.
+	 * 
+	 * @param name - name of the dynamic attribute.
+	 * @param type - type of the attribute.
+	 * @param owningtype - the name of the EClass that owns this attribute. 
+	 * @param defaultValue - initial default value for the attribute.
+	 * @return a new EAttribute
+	 */
 	public EAttribute createEAttribute(String name, String type, String owningtype, String defaultValue) {
 		if (type==null)
 			type = "EString";
@@ -570,7 +595,17 @@ public class ModelDecorator {
 
 		return eAttribute;
 	}
-
+	
+	/**
+	 * Search for an EReference with the given name in the specified EClass.
+	 * 
+	 * @param name - name of the reference to search for.
+	 * @param type - the data type of the reference.
+	 * @param owningtype - name of the EClass that contains the reference.
+	 * @param containment - if true, the EReference is a containment feature; if false, it is a reference.
+	 * @param many - if true, the EReference is a list; if false, it is a single value.
+	 * @return the EReference or null if not found.
+	 */
 	public EReference getEReference(String name, String type, String owningtype, boolean containment, boolean many) {
 		EClass eClass = getEClass(owningtype);
 		if (eClass != null) {
@@ -602,7 +637,18 @@ public class ModelDecorator {
 		Assert.isTrue(eClass==null);
 		return null;
 	}
-
+	
+	/**
+	 * Create a new EReference with the given name in the specified EClass.
+	 * If the specified EClass does not exist, it will be created.
+	 * 
+	 * @param name - name of the reference to create.
+	 * @param type - the data type of the reference.
+	 * @param owningtype - name of the EClass that contains the reference.
+	 * @param containment - if true, the EReference is a containment feature; if false, it is a reference.
+	 * @param many - if true, the EReference is a list; if false, it is a single value.
+	 * @return a new EReference.
+	 */
 	public EReference createEReference(String name, String type, String owningtype, boolean containment, boolean many) {
 		EReference eReference = getEReference(name,type,owningtype,containment,many);
 		if (eReference!=null)
@@ -644,7 +690,61 @@ public class ModelDecorator {
 
 		return eReference;
 	}
+	
+	/**
+	 * Set an EAnnotation that represents a human readable label for the given named model element.
+	 *  
+	 * @param element - the named element to be decorated
+	 * @param label - the label string
+	 */
+	public static void setLabel(EModelElement element, String label) {
+		// FIXME: we can only decorate dynamic EClass objects.
+		// Figure out how to do this for EClasses that are defined in other models.
+		if (element instanceof EReference) {
+			EReference ref = (EReference) element;
+			EClassifier ec = ref.getEType();
+			if (isValid(ec.getEPackage()))
+				element = ec;
+		}
+		EAnnotation ea = element.getEAnnotation(DECORATOR_URI);
+		if (label!=null && !label.isEmpty()) {
+			if (ea==null) {
+				ea = theCoreFactory.createEAnnotation();
+				ea.setEModelElement(element);
+				ea.setSource(DECORATOR_URI);
+			}
+			ea.getDetails().put("label", label);
+		}
+		else {
+			if (ea!=null) {
+				element.getEAnnotations().remove(ea);
+				EcoreUtil.delete(ea);
+			}
+		}
+	}
+	
+	/**
+	 * Return the label string for the given named model element.
+	 * 
+	 * @param element - the named element.
+	 * @return a text string or null if not set.
+	 */
+	public static String getLabel(EModelElement element) {
+		EAnnotation ea = element.getEAnnotation(DECORATOR_URI);
+		if (ea!=null) {
+			String label = ea.getDetails().get("label");
+			return label;
+		}
+		return null;
+	}
 
+	/**
+	 * Check if the given EClassifier is owned by this ModelDecorator.
+	 * The requested element can be either in our dynamic EPackage or in a related package.
+	 * 
+	 * @param eClassifier - the requested element.
+	 * @return true if the EClassifier is managed by us, false if not.
+	 */
 	public boolean isValid(EClassifier eClassifier) {
 		EPackage p = eClassifier==null ? null : eClassifier.getEPackage();
 		return eClassifier!=null &&
@@ -660,13 +760,23 @@ public class ModelDecorator {
 				pkg != DiPackage.eINSTANCE;
 	}
 	
+	/**
+	 * Search for an EClassifier with the given name. The search order is as follows:
+	 * 1. our own dynamic EPackage
+	 * 2. any related packages
+	 * 3. the EcorePackage
+	 * 4. the BPMN2 packages, including BPMNDI, DI and DC
+	 * 
+	 * @param type - name of the EClassifier to search for.
+	 * @return - an EClassifier if found or null if not found.
+	 */
 	public EClassifier findEClassifier(String type) {
 		// parse out just the class type, excluding super types
+		if (type==null)
+			return null;
+			
 		type = getType(type);
 		EClassifier eClassifier = null;
-		if (type==null) {
-			return EcorePackage.eINSTANCE.getEObject();
-		}
 		
 		if (ePackage!=null) {
 			eClassifier = ePackage.getEClassifier(type);
@@ -688,12 +798,22 @@ public class ModelDecorator {
 		return findEClassifier(null,type);
 	}
 
+	/**
+	 * Search for an EClassifier with the given name. The search order is as follows:
+	 * 1. the specified EPackage, if not null
+	 * 2. the EcorePackage
+	 * 3. the BPMN2 packages, including BPMNDI, DI and DC
+	 * 
+	 * @param pkg - an optional EPackage to search.
+	 * @param type - name of the EClassifier to search for.
+	 * @return - an EClassifier if found or null if not found.
+	 */
 	public static EClassifier findEClassifier(EPackage pkg, String type) {
-		EClassifier eClassifier = null;
 		if (type==null) {
-			return EcorePackage.eINSTANCE.getEObject();
+			return null;
 		}
 		
+		EClassifier eClassifier = null;
 		if (pkg!=null) {
 			eClassifier = pkg.getEClassifier(type);
 			if (eClassifier!=null)
@@ -732,22 +852,51 @@ public class ModelDecorator {
 		return null;
 	}
 
+	/**
+	 * Search for an EClassifier with the given name as an element in the DocumentRoot of
+	 * the given EPackage.
+	 * 
+	 * @param pkg - the EPackage to search.
+	 * @param type - name of the EClassifier to search for.
+	 * @return - an EClassifier if found or null if not found.
+	 */
 	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String type) {
-		EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
-		if (docRoot==null) {
-			docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
-		}
-		if (docRoot!=null) {
-			EStructuralFeature feature = docRoot.getEStructuralFeature(type);
-			if (feature!=null) {
-				return feature.getEType();
+		try {
+			EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
+			if (docRoot==null) {
+				docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
 			}
+			if (docRoot!=null) {
+				EStructuralFeature feature = docRoot.getEStructuralFeature(type);
+				if (feature!=null) {
+					return feature.getEType();
+				}
+			}
+		}
+		catch (Exception e) {
 		}
 		return null;
 	}
 	
+	private static EStructuralFeature getAnyAttributeFeature(EObject object) {
+		EClass eclass = null;
+		if (object instanceof EClass)
+			eclass = (EClass)object;
+		else
+			eclass = object.eClass();
+		EStructuralFeature anyAttribute = eclass.getEStructuralFeature("anyAttribute");
+		return anyAttribute;
+	}
+	
+	/**
+	 * Return the feature with the given name in the specified object's "anyAttribute" feature map.
+	 * 
+	 * @param object - the EObject to search.
+	 * @param name - name of the feature to search for.
+	 * @return an EStructuralFeature if found or null if not found.
+	 */
 	public static EStructuralFeature getAnyAttribute(EObject object, String name) {
-		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
+		EStructuralFeature anyAttribute = getAnyAttributeFeature(object);
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
 			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
 			for (Entry entry : map) {
@@ -759,9 +908,15 @@ public class ModelDecorator {
 		return null;
 	}
 
+	/**
+	 * Return all of the features in the specified object's "anyAttribute" feature map.
+	 * 
+	 * @param object - the EObject to search.
+	 * @return a list of EStructuralFeatures if found or an empty list if not found.
+	 */
 	public static List<EStructuralFeature> getAnyAttributes(EObject object) {
 		List<EStructuralFeature> list = new ArrayList<EStructuralFeature>();
-		EStructuralFeature anyAttribute = ((EObject)object).eClass().getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
+		EStructuralFeature anyAttribute = getAnyAttributeFeature(object);
 		if (anyAttribute!=null && object.eGet(anyAttribute) instanceof BasicFeatureMap) {
 			BasicFeatureMap map = (BasicFeatureMap)object.eGet(anyAttribute);
 			for (Entry entry : map) {
@@ -772,23 +927,29 @@ public class ModelDecorator {
 		return list;
 	}
 	
-	// FIXME: this can't be static because the EPackage for the new feature may not be
-	// created and initialize properly by ExtendedMetadata.demandFeature().
-	// Access to anyAttribute MUST go through the ModelExtensionDescriptor's
-	// modelDecorator so that we can properly find, and optionally create and initialize
-	// the EPackage that contains the extensions
+	/**
+	 * Create a new attribute in the specified object's "anyAttribute" feature map.
+	 * The attribute will be assigned the given namespace, name, type and initial value.
+	 * 
+	 * @param object - the EObject to be decorated.
+	 * @param namespace - namespace of the new attribute.
+	 * @param name - name of the new extension attribute.
+	 * @param type - data type of the attribute.
+	 * @param value - initial value of the attribute.
+	 * @return a new EAttribute
+	 */
 	@SuppressWarnings("unchecked")
-	public EStructuralFeature addAnyAttribute(EObject childObject, String namespace, String name, String type, Object value) {
+	public EStructuralFeature addAnyAttribute(EObject object, String namespace, String name, String type, Object value) {
 		EStructuralFeature attr = null;
-		EClass eclass = null;
-		if (childObject instanceof EClass) {
-			eclass = (EClass)childObject;
-			childObject = ExtendedPropertiesAdapter.getDummyObject(eclass);
+		EClass eclass;
+		if (object instanceof EClass) {
+			eclass = (EClass)object;
+			object = ExtendedPropertiesAdapter.getDummyObject(eclass);
 		}
 		else
-			eclass = childObject.eClass();
-		EStructuralFeature anyAttribute = eclass.getEStructuralFeature(Bpmn2Package.BASE_ELEMENT__ANY_ATTRIBUTE);
-		List<BasicFeatureMap.Entry> anyMap = (List<BasicFeatureMap.Entry>)childObject.eGet(anyAttribute);
+			eclass = object.eClass();
+		EStructuralFeature anyAttribute = getAnyAttributeFeature(object);
+		List<BasicFeatureMap.Entry> anyMap = (List<BasicFeatureMap.Entry>)object.eGet(anyAttribute);
 		if (anyMap==null)
 			return null;
 		for (BasicFeatureMap.Entry fe : anyMap) {
@@ -808,9 +969,6 @@ public class ModelDecorator {
 		EDataType eDataType = (EDataType)ModelDecorator.findEClassifier(pkg, type);//(EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
 		if (eDataType!=null) {
 			if (attr==null) {
-				// FIXME: demandFeature() will create a new EPackage if none exists for the given namespace
-				// This is where its EFactory needs to be set since it's null after demandFeature() creates
-				// the EPackage.
 				attr = createEAttribute(name, type, eclass.getName(), null);
 				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
 			}
@@ -821,7 +979,7 @@ public class ModelDecorator {
 						NLS.bind(
 							Messages.ModelUtil_Illegal_Value,
 							new Object[] {
-								childObject.eClass().getName(),
+								object.eClass().getName(),
 								attr.getName(),
 								attr.getEType().getName(),
 								value.toString()
@@ -841,25 +999,54 @@ public class ModelDecorator {
 		return attr;
 	}
 
+	/**
+	 * Create a new attribute in the specified object's "anyAttribute" feature map.
+	 * The attribute will be assigned the namespace from our dynamic EPackage.
+	 * 
+	 * @param object - the EObject to be decorated. This SHOULD be a BaseElement.
+	 * @param name - name of the new extension attribute.
+	 * @param type - data type of the attribute.
+	 * @param value - initial value of the attribute.
+	 * @return a new EAttribute
+	 */
 	public EStructuralFeature addAnyAttribute(EObject object, String name, String type, Object value) {
 		EPackage pkg = object.eClass().getEPackage();
 		String nsURI = pkg.getNsURI();
 		return addAnyAttribute(object, nsURI, name, type, value);
 	}
 
+	/**
+	 * Create a new extension element in the specified BaseElement's extension values container.
+	 * 
+	 * @param object - the EObject to be decorated. This SHOULD be a BaseElement.
+	 * @param feature - name of the new extension element.
+	 * @param value - value assigned to the new element.
+	 */
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value) {
 		addExtensionAttributeValue(object, feature, value, -1, false);
 	}
 
+	/**
+	 * Create a new extension element in the specified BaseElement's extension values container.
+	 * 
+	 * @param object - the EObject to be decorated. This SHOULD be a BaseElement.
+	 * @param feature - name of the new extension element.
+	 * @param value - value assigned to the new element.
+	 * @param delay - if true, use an InsertionAdapter to set the feature value, otherwise set it immediately.
+	 */
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, boolean delay) {
 		addExtensionAttributeValue(object, feature, value, -1, delay);
 	}
 
-	// FIXME: this can't be static because the EPackage for the new feature may not be
-	// created and initialized properly by ExtendedMetadata.demandFeature().
-	// Access to anyAttribute MUST go through the ModelExtensionDescriptor's
-	// modelDecorator so that we can properly find, and optionally create and initialize
-	// the EPackage that contains the extensions
+	/**
+	 * Create a new extension element in the specified BaseElement's extension values container.
+	 * 
+	 * @param object - the EObject to be decorated. This SHOULD be a BaseElement.
+	 * @param feature - name of the new extension element.
+	 * @param value - value assigned to the new element.
+	 * @param index - if the element is a list, the list index for the value.
+	 * @param delay - if true, use an InsertionAdapter to set the feature value, otherwise set it immediately.
+	 */
 	@SuppressWarnings("unchecked")
 	public static void addExtensionAttributeValue(EObject object, EStructuralFeature feature, Object value, int index, boolean delay) {
 		if (object instanceof ExtensionAttributeValue)
@@ -905,6 +1092,12 @@ public class ModelDecorator {
 		}
 	}
 
+	/**
+	 * Return a list of all extension elements in the BaseElement's extension values container.
+	 * 
+	 * @param be - the EObject to search. This SHOULD be a BaseElement.
+	 * @return a list of all extension elements or an empty list if none found.
+	 */
 	public static List<ExtensionAttributeValue> getExtensionAttributeValues(EObject be) {
 		if (be instanceof Participant) {
 			final Participant participant = (Participant) be;
@@ -946,6 +1139,14 @@ public class ModelDecorator {
 		return new ArrayList<ExtensionAttributeValue>();
 	}
 
+	/**
+	 * Return a list of all extension elements in the BaseElement's extension values container
+	 * that have the specified java type.
+	 * 
+	 * @param be - the EObject to search. This SHOULD be a BaseElement.
+	 * @param clazz - the type of elements to search for.
+	 * @return a list of all extension elements or an empty list if none found.
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> List<T> getAllExtensionAttributeValues(EObject object, Class<T> clazz) {
 		List<T> results = new ArrayList<T>();
@@ -965,7 +1166,14 @@ public class ModelDecorator {
 		return results;
 	}
 
-	public static List getAllExtensionAttributeValues(EObject object, EStructuralFeature feature) {
+	/**
+	 * Return a list of Objects that are the values of all extension elements specified by the given feature.
+	 * 
+	 * @param object - the EObject to be searched. This SHOULD be a BaseElement.
+	 * @param feature - the EStructuralFeature to search for.
+	 * @return a list of Object values for the extension elements.
+	 */
+	public static List<Object> getAllExtensionAttributeValues(EObject object, EStructuralFeature feature) {
 		List<Object> results = new ArrayList<Object>();
 		
 		if (object!=null) {
@@ -984,6 +1192,13 @@ public class ModelDecorator {
 		return results;
 	}
 
+	/**
+	 * Search the given object for an extension element by name.
+	 * 
+	 * @param object - the EObject to be searched. This SHOULD be a BaseElement.
+	 * @param name - name of the feature to search for.
+	 * @return an EStructuralFeature if found, or null if not found.
+	 */
 	@SuppressWarnings("unchecked")
 	public static EStructuralFeature getExtensionAttribute(EObject object, String name) {
 		if (object!=null) {
@@ -1001,6 +1216,15 @@ public class ModelDecorator {
 		return null;
 	}
 
+	/**
+	 * Look up a dynamic feature associated with the given EObject by name.
+	 * 
+	 * @param object - the EObject to check.
+	 * @param prefix - a namespace prefix passed in by the XMLHandler - not used here.
+	 * @param name - name of the dynamic feature.
+	 * @param isElement - true if the feature is an element, false if attribute.
+	 * @return an EStructuralFeature if the feature was found, or null if not found.
+	 */
 	public EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement) {
 		// search for the object's type in our own package
 		EClass eClass = getEClass(object.eClass().getName());
@@ -1032,11 +1256,16 @@ public class ModelDecorator {
 
 		return null;
 	}
-	
-	//
-	// ExpandedPropertiesAdapter overrides for feature mutators
-	//
 
+	/**
+	 * Replace the default implementation of FeatureDescriptor in the given ExtendedPropertiesAdapter
+	 * with an AnyTypeFeatureDescriptor. This FD knows how to access and update dynamic features.
+	 *  
+	 * @param adapter - the ExtendedPropertiesAdapter attached to the given EObject
+	 * @param object - the adapted EObject
+	 * @param feature - a dynamic feature associated with the EObject.
+	 * @return true if a new FD was added, false if not.
+	 */
 	@SuppressWarnings("rawtypes")
 	public boolean adaptFeature(ExtendedPropertiesAdapter adapter, EObject object, EStructuralFeature feature) {
 		boolean added = true;
@@ -1054,114 +1283,9 @@ public class ModelDecorator {
 		}
 		
 		if (added) {
-			adapter.setFeatureDescriptor(feature, new AnyTypeFeatureDescriptor(adapter, object, feature));
+			adapter.setFeatureDescriptor(feature, new AnyTypeFeatureDescriptor(this, adapter, object, feature));
 		}
 		return added;
-	}
-	
-	class AnyTypeFeatureDescriptor extends FeatureDescriptor {
-
-		public AnyTypeFeatureDescriptor(ExtendedPropertiesAdapter adapter,
-				EObject object, EStructuralFeature feature) {
-			super(object, feature);
-		}
-		
-		private boolean hasStructuralFeatureFeature(EObject object, EStructuralFeature feature) {
-			String name = feature.getName();
-			if (object instanceof EClass)
-				return ((EClass)object).getEStructuralFeature(name) != null;
-			return object.eClass().getEStructuralFeature(name) != null;
-		}
-		
-		private boolean isAnyAttribute(EObject object, EStructuralFeature feature) {
-			if (hasStructuralFeatureFeature(object,feature))
-				return false;
-			String name = feature.getName();
-			feature = getAnyAttribute(object, name);
-			if (feature!=null)
-				return true;
-			return false;
-		}
-
-		private boolean isExtensionAttribute(EObject object, EStructuralFeature feature) {
-			if (hasStructuralFeatureFeature(object,feature))
-				return false;
-			String name = feature.getName();
-			feature = getExtensionAttribute(object, name);
-			if (feature!=null)
-				return true;
-			return false;
-		}
-
-		@Override
-		public Object getValue(int index) {
-			if (hasStructuralFeatureFeature(object,feature)) {
-				return super.getValue(index);
-			}
-			if (isAnyAttribute(object,feature)) {
-				Object value = null;
-				try {
-					value = object.eGet(feature);
-				}
-				catch (Exception e1) {
-					object = getPrototype(object.eClass());
-					if (object!=null) {
-						try {
-							value = object.eGet(feature);
-						}
-						catch (Exception e2) {
-							return null;
-						}
-					}
-				}
-				return value;
-			}
-			if (isExtensionAttribute(object,feature)) {
-				List result = getAllExtensionAttributeValues(object, feature);
-				if (result.size()==0) {
-					return null;
-				}
-				if (index>=0)
-					return result.get(index);
-				return result.get(0);
-			}
-			return null;
-		}
-
-		private EObject getPrototype(EClass eClass) {
-			return null;
-		}
-		
-		@Override
-		protected void internalSet(EObject object, EStructuralFeature feature, Object value, int index) {
-			if (hasStructuralFeatureFeature(object,feature) || feature.isMany()) {
-				object.eGet(feature);
-				super.internalSet(object,feature,value,index);
-			}
-			else {
-				// the feature does not exist in this object, so we either need to
-				// create an "anyAttribute" entry or, if the object is an ExtensionAttributeValue,
-				// create an entry in its "value" feature map.
-				String name = feature.getName();
-				if (feature instanceof EAttribute) {
-					EStructuralFeature f = ModelDecorator.getAnyAttribute(object, name);
-					if (f!=null) {
-						object.eSet(f, value);
-					}
-					else {
-						String namespace = ExtendedMetaData.INSTANCE.getNamespace(feature);
-						String type = feature.getEType().getName();
-						addAnyAttribute(object, namespace, name, type, value);
-					}
-				}
-				else {
-					// FIXME: access to ExtensionAttributeValues MUST go through the ModelExtensionDescriptor's
-					// modelDecorator so that we can properly find, and optionally create and initialize
-					// the EPackage that contains the extensions
-					addExtensionAttributeValue(object, feature, value, index, false);
-				}
-			}
-		}
 	}
 
 }

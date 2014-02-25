@@ -20,9 +20,9 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider.IconSize;
@@ -83,7 +83,10 @@ import org.eclipse.graphiti.util.IColorConstant;
  * @author Bob Brodt
  */
 public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContainer {
-	
+
+	public final static String MITIGATION_ID = "org.eclipse.bpmn2.modeler.runtime.example.mitigation";
+	public final static String RISK_ID = "org.eclipse.bpmn2.modeler.runtime.example.risk";
+
 	@Override
 	protected IShapeFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		return new TextAnnotationFeatureContainer() {
@@ -266,15 +269,12 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 	 * managing this object's lifecycle, typically by examining extension attributes, as shown in this example.
 	 */
 	public String getId(EObject object) {
-		if (object==null)
-			return null;
-		List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
-		for (EStructuralFeature f : features) {
-			if ("elementId".equals(f.getName())) {
-				Object attrValue = object.eGet(f);
-				if ("org.eclipse.bpmn2.modeler.runtime.example.risk".equals(attrValue) ||
-						"org.eclipse.bpmn2.modeler.runtime.example.mitigation".equals(attrValue))
-					return attrValue.toString();
+		if (object instanceof TextAnnotation) {
+			if (ModelDecorator.getAnyAttribute(object, "benefit")!=null) {
+				return MITIGATION_ID; 
+			}
+			if (ModelDecorator.getAnyAttribute(object, "cost")!=null) {
+				return RISK_ID; 
 			}
 		}
 		return null;

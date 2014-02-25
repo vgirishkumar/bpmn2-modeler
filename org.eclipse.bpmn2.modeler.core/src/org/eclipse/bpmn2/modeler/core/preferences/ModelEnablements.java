@@ -379,6 +379,11 @@ public class ModelEnablements {
 		
 		if (classes.containsKey(className)) { // && isOverride()) {
 			if (featureName!=null && !featureName.isEmpty()) {
+				// the "anyAttribute" FeatureMap should always be enabled,
+				// although the features contained in the map may not be
+				if ("anyAttribute".equals(featureName))
+					return true;
+				
 				HashSet<String> features = classes.get(className);
 				if (features.contains(featureName))
 					return true;

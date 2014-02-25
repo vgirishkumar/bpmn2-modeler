@@ -64,10 +64,10 @@ public class DefaultListComposite extends AbstractListComposite {
 		if (!(list instanceof EObjectContainmentEList)) {
 			// this is not a containment list so we can't add it
 			// because we don't know where the new object belongs
-			
+			String name = object.eClass().getName() + "." +feature.getName();
 			MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 				NLS.bind(Messages.DefaultListComposite_Error_Internal_Error_Message_No_List,
-					listItemClass.getName())
+					name)
 			);
 			return null;
 		}

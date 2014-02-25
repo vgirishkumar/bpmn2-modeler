@@ -22,7 +22,7 @@ import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -33,6 +33,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -59,6 +60,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	public static class Property extends SimpleTreeIterator<Property> {
 		public Property parent;
 		public String name;
+		public String label;
 		public String description;
 		public List<Object>values;
 		public String ref;
@@ -73,6 +75,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			super();
 			this.parent = parent;
 			this.name = name;
+			this.label = label;
 			this.description = description;
 		}
 		
@@ -189,6 +192,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	 */
 	@SuppressWarnings("serial")
 	private class InitializerList extends ArrayList<Initializer> {
+		public boolean initialize;
+		
 		public void add(ExtendedPropertiesAdapter adapter, EStructuralFeature feature, Object value) {
 			super.add( new Initializer(adapter, feature, value) );
 		}
@@ -198,7 +203,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 				// Skip initialization of Enums
 				if (item.feature.getEType() instanceof EEnum)
 					continue;
-				item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
+				if (initialize)
+					item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
 			}
 			clear();
 		}
@@ -224,7 +230,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 				// Skip initialization of Enums
 				if (item.feature.getEType() instanceof EEnum)
 					continue;
-				item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
+				if (initialize)
+					item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
 				--last;
 			}
 		}
@@ -281,9 +288,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	public void dispose() {
 		super.dispose();
-		if (modelDecorator!=null) {
-			modelDecorator.dispose();
-		}
+		getModelDecorator().dispose();
 	}
 	
 	public String getExtensionName() {
@@ -326,11 +331,13 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 		else if ("property".equals(elem)) { //$NON-NLS-1$
 			String name = e.getAttribute("name"); //$NON-NLS-1$
+			String label = e.getAttribute("label"); //$NON-NLS-1$
 			String value = e.getAttribute("value"); //$NON-NLS-1$
 			String ref = e.getAttribute("ref"); //$NON-NLS-1$
 			String type = e.getAttribute("type"); //$NON-NLS-1$
 			String description = e.getAttribute("description"); //$NON-NLS-1$
-			Property prop = new Property(parent, name,description);
+			Property prop = new Property(parent, name, description);
+			prop.label = label;
 			prop.setType(type);
 			if (value!=null)
 				prop.getValues().add(value);
@@ -416,7 +423,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		finally {
 			containingResource = null;
 			object = modelObject;
-			modelObject = null;
+//			modelObject = null;
 		}
 		return object;
 	}
@@ -428,6 +435,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		try {
 			modelObject = object;
 			initializers.clear();
+			initializers.initialize = true;
 			
 			populateObject(object, getProperties());
 			adaptObject(object);
@@ -440,7 +448,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 		finally {
 			initializers.clear();
-			modelObject = null;
+//			modelObject = null;
 		}
 	}
 	
@@ -478,21 +486,41 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		EClass eClass = object.eClass();
 		EStructuralFeature feature = eClass.getEStructuralFeature(property.name);
 		
-		if (feature==null) {
-			Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
-	
-			// if the Property has a "ref" or if its value is a Property
-			// then this must be an EReference
-			if (property.ref!=null) {
-				feature = modelDecorator.createEReference(property.name, property.type, eClass.getName(), false, property.isMany);
-			}
-			else if (firstValue instanceof Property) {
-				feature = modelDecorator.createEReference(property.name, property.type, eClass.getName(), true, property.isMany);
-			}
-			else {
-				feature = modelDecorator.createEAttribute(property.name, property.type, eClass.getName(), property.getFirstStringValue());
-			}
+		boolean isAttribute = true;
+		EClassifier eClassifier = modelDecorator.findEClassifier(property.type);
+		if (eClassifier!=null) {
+			if (!(eClassifier instanceof EDataType || eClassifier instanceof EEnum))
+				isAttribute = false;
 		}
+		if (!property.getValues().isEmpty()) {
+			if (property.getValues().get(0) instanceof Property)
+				isAttribute = false;
+		}
+		if (property.ref!=null) {
+			isAttribute = false;
+		}
+		boolean isMany = property.isMany;
+		boolean isContainment = (property.ref!=null) ? false : true;
+
+		if (isAttribute) {
+			if (feature==null)
+				feature = modelDecorator.createEAttribute(
+					property.name,
+					property.type,
+					eClass.getName(),
+					property.getFirstStringValue());
+		}
+		else {
+			if (feature==null)
+				feature = modelDecorator.createEReference(
+					property.name,
+					property.type,
+					eClass.getName(),
+					isContainment,
+					isMany);
+		}
+
+		ModelDecorator.setLabel(feature, property.label);
 		
 		return feature;
 	}
@@ -548,6 +576,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
                     reftype = ref.getEReferenceType();
                 }
                 childObject = createObject((EClass) reftype);
+                if (property.label!=null) {
+                	ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(childObject);
+                	adapter.getObjectDescriptor().setLabel(property.label);
+                }
                 adaptFeature(object, feature, childObject);
                 populateObjectFromValues(childObject, property.getValues());
 			}
@@ -682,21 +714,35 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 
+	private int recursionCounter;
 	public boolean isDefined(String className, String featureName) {
+		if (++recursionCounter>100) {
+			Activator.logError(new Exception("Possible infinite recursion in "+this.getClass().getName()+"#isDefined()"));
+			--recursionCounter;
+			return false;
+		}
+		
 		if (className.equals(getType())) {
 			if (featureName!=null) {
 				for (Property p : getProperties()) {
-					if (featureName.equals(p.name))
+					if (featureName.equals(p.name)) {
+						--recursionCounter;
 						return true;
+					}
 				}
 			}
+			--recursionCounter;
 			return true;
 		}
 		EClass eClass = getEClass(className);
 		if (eClass!=null) {
 			for (EClass st : eClass.getEAllSuperTypes()) {
-				if (isDefined(st.getName(), featureName))
+				if (st.getName().equals(className))
+					continue;
+				if (isDefined(st.getName(), featureName)) {
+					--recursionCounter;
 					return true;
+				}
 			}
 		}
 		
@@ -706,11 +752,14 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 				if (featureName!=null && property.values!=null) {
 					for (Object p : property.values) {
 						if (p instanceof Property) {
-							if (featureName.equals(((Property)p).name))
+							if (featureName.equals(((Property)p).name)) {
+								--recursionCounter;
 								return true;
+							}
 						}
 					}
 				}
+				--recursionCounter;
 				return true;
 			}
 
@@ -721,15 +770,18 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 					if (featureName!=null && p.values!=null) {
 						for (Object child : p.values) {
 							if (child instanceof Property) {
-								if (((Property)child).name.equals(featureName))
+								if (((Property)child).name.equals(featureName)) {
+									--recursionCounter;
 									return true;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-				
+
+		--recursionCounter;
 		return false;
 	}
 

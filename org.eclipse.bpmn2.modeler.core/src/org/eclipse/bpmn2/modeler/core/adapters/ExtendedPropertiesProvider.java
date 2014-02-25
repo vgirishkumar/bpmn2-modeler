@@ -255,8 +255,8 @@ public class ExtendedPropertiesProvider {
 	}
 	
 	public static boolean isList(EObject object, EStructuralFeature feature) {
-		if (feature!=null) {
-			return feature.isMany();
+		if (feature instanceof EReference) {
+			return feature.isMany() && ((EReference)feature).isContainment();
 		}
 		return false;
 	}

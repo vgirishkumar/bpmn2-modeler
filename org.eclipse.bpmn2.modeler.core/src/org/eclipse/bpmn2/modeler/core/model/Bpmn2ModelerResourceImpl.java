@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
@@ -48,6 +49,8 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -55,8 +58,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator.ModelDecoratorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -93,6 +94,7 @@ import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
@@ -408,6 +410,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		Bpmn2Preferences prefs = null;
 		ImportUtil importHandler = new ImportUtil();
+		String targetNamespace = null;
 
 		public Bpmn2ModelerXmlHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 			super(xmiResource, helper, options);
@@ -427,15 +430,23 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		protected EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement) {
-			String nsURI = helper.getURI(prefix);
+			EStructuralFeature feature = null;
+			String nsURI = (prefix==null ? targetNamespace : helper.getURI(prefix));
 			EPackage pkg = ModelDecorator.getEPackage(nsURI);
 			if (pkg!=null) {
 				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
-				EStructuralFeature feature = mda.getEStructuralFeature(object, name);
-				if (feature!=null)
+				feature = mda.getEStructuralFeature(object, name);
+				if (feature!=null) {
+//					System.out.println("found feature "+object.eClass().getName()+"."+name+" in pkg "+pkg.getName());
 					return feature;
+				}
 			}
-			return super.getFeature(object, prefix, name, isElement);
+			feature = super.getFeature(object, prefix, name, isElement);
+//			if (feature!=null)
+//				System.out.println("found feature "+object.eClass().getName()+"."+name);
+//			else
+//				System.out.println("feature "+prefix+":"+name+" not found!!!");
+			return feature;
 		}
 
 		@Override
@@ -449,14 +460,42 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				
 				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
 				feature = mda.getEStructuralFeature(peekObject, feature);
-				
-				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(peekObject);
-				epa.getFeatureDescriptor(feature).setValue(newObject);
-				processObject(newObject);
-				handleObjectAttribs(newObject);
+				if (feature!=null) {
+					ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(peekObject);
+					epa.getFeatureDescriptor(feature).setValue(newObject);
+					processObject(newObject);
+					handleObjectAttribs(newObject);
+				}
 			}
-			else
+			else {
 				newObject = super.createObjectFromFeatureType(peekObject, feature);
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				String id = rt.getCustomTaskId(newObject);
+				if (id!=null) {
+					// if this is a CustomElement we need to discard this object and construct it
+					// properly such that all extension attributes and elements are created and
+					// initialized.
+					EFactory factory = newObject.eClass().getEPackage().getEFactoryInstance();
+					ResourceProvider adapter = ResourceProvider.adapt(factory, xmlResource);
+					try {
+						// remove all traces of the old object
+						objects.pop();
+						mixedTargets.pop();
+						types.pop();
+						EcoreUtil.delete(newObject);
+						// set up the BPMN2 object factory to construct this CustomElement
+						adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
+						newObject = super.createObjectFromFeatureType(peekObject, feature);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					finally {
+						adapter.setResource(null);
+						adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
+					}
+				}
+			}
 			
 			if (newObject!=null) {
 				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(newObject);
@@ -544,6 +583,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					itemDef.setImport(imp);
 				}
 			}
+            else if (obj instanceof Definitions) {
+            	targetNamespace = ((Definitions)obj).getTargetNamespace();
+            }
+
 		}
 
 		/**
@@ -559,7 +602,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		protected void setValueFromId(EObject object, EReference eReference, String ids) {
 
 			Object value = null;
-
 			// Handle QNames and arbitrary strings in BPMN2 element references
 			if ( qnameMap.contains(eReference) ) {
 				// This reference might be a QName (according to the BPMN2 spec!)
@@ -570,33 +612,41 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					String prefix = ids.substring(0,i);
 					String localname = ids.substring(i+1);
 					String namespace = helper.getNamespaceURI(prefix);
-					Import imp = importHandler.findImportForNamespace(helper.getResource(), namespace);
-					if (imp!=null) {
-						value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
+					if (namespace!=null && namespace.equals(targetNamespace)) {
+						// namespace for prefix is the same as targetNamespace
+						// so remove the prefix to avoid confusing the XMLHandler
+						ids = localname;
 					}
-				}
-				
-				if (value==null) {
-					// not a QName or can't find EObject: create a string wrapper EObject for this thing
-					value = ModelUtil.createStringWrapper(ids);
-				}
-				
-				if (value!=null && eReference.getEType().isInstance(value)) {
-					try {
-						if (eReference.isMany()) {
-							((EList)object.eGet(eReference)).add(value);
+					else {
+						// this thing is in another namespace, possibly in an external document
+						Import imp = importHandler.findImportForNamespace(helper.getResource(), namespace);
+						if (imp!=null) {
+							value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
 						}
-						else {
-							object.eSet(eReference, value);
+						if (value==null) {
+							// we can't find the object in any of our imports,
+							// so create a string wrapper EObject for this thing
+							value = ModelUtil.createStringWrapper(ids);
 						}
-						return;
-					} catch (Exception e) {
-						String msg = NLS.bind(
-							Messages.Bpmn2ModelerResourceImpl_Invalid_Reference,
-							new Object[] {object, eReference, value});
-						IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
-								msg, e);
-						Activator.getDefault().logStatus(s);
+						
+						if (value!=null && eReference.getEType().isInstance(value)) {
+							try {
+								if (eReference.isMany()) {
+									((EList)object.eGet(eReference)).add(value);
+								}
+								else {
+									object.eSet(eReference, value);
+								}
+								return;
+							} catch (Exception e) {
+								String msg = NLS.bind(
+									Messages.Bpmn2ModelerResourceImpl_Invalid_Reference,
+									new Object[] {object, eReference, value});
+								IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
+										msg, e);
+								Activator.getDefault().logStatus(s);
+							}
+						}
 					}
 				}
 			}
@@ -652,7 +702,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
         public void endElement(String uri, String localName, String name) {
             EObject peekObject = objects.peek();
-            if (peekObject!=null && peekObject.eClass() == Bpmn2Package.eINSTANCE.getExpression()) {
+            if (peekObject instanceof Expression) {
             	// if the element is an Expression, replace it with a FormalExpression and set
             	// its body using the CDATA of the Expression element.
    				FormalExpression fe = Bpmn2Factory.eINSTANCE.createFormalExpression();
@@ -1159,11 +1209,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					else
 						newFeatureList[oldIndex] = featureList[oldIndex];
 				}
-				
-//				System.out.println("Reordered features for "+cls.getName());
-//				for (int newIndex=0; newIndex<newFeatureList.length; ++newIndex) {
-//					System.out.println("  "+newIndex+": "+newFeatureList[newIndex].getName()+" was "+featureList[newIndex].getName());
-//				}
 				return newFeatureList;
 			}
 		}

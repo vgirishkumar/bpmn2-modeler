@@ -290,7 +290,7 @@
         point="org.eclipse.emf.ecore.conversion_delegate">
      <factory
            class="org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory"
-           uri="org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory">
+           uri="http://org.eclipse.bpmn2.modeler.EDataTypeConversionFactory">
      </factory>
   </extension>
 </plugin>

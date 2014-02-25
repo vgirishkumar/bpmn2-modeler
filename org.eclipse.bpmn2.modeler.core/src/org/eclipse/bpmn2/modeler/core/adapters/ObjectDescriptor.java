@@ -14,10 +14,10 @@
 package org.eclipse.bpmn2.modeler.core.adapters;
 
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -26,40 +26,44 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.core.runtime.Assert;
 
 /**
- * @author Bob Brodt
- *
+ * Item property provider for a specific object. Clients may replace the default implementation
+ * by defining their own ExtendPropertiesAdapter and setting their own ObjectDescriptors for
+ * objects that need special handling.
+ * 
+ * See also the <propertyExtension> element of the org.eclipse.bpmn2.modeler.runtime extension point.
  */
 public class ObjectDescriptor<T extends EObject> {
 
 	protected T object;
 	protected String label;
-	protected String name;
-	protected ExtendedPropertiesAdapter owner;
+	protected String textValue;
+	protected ExtendedPropertiesAdapter<T> owner;
 
-	public ObjectDescriptor(ExtendedPropertiesAdapter owner, T object) {
+	public ObjectDescriptor(ExtendedPropertiesAdapter<T> owner, T object) {
 		this.owner = owner;
 		this.object = object;
 	}
 
 	public ObjectDescriptor(T object) {
-		this.owner = owner;
 		this.object = object;
 	}
 	
-	public ExtendedPropertiesAdapter getOwner() {
+	public ExtendedPropertiesAdapter<T> getOwner() {
 		return owner;
 	}
 
-	public void setOwner(ExtendedPropertiesAdapter owner) {
+	public void setOwner(ExtendedPropertiesAdapter<T> owner) {
 		this.owner = owner;
+	}
+	
+	public T getObject() {
+		return object;
 	}
 	
 	public void setObject(T object) {
@@ -71,21 +75,21 @@ public class ObjectDescriptor<T extends EObject> {
 	}
 	
 	public String getLabel() {
-		EClass eclass = (object instanceof EClass) ?
-				(EClass)object :
-				object.eClass();
 		if (label==null) {
+			EClass eclass = (object instanceof EClass) ?
+					(EClass)object :
+					object.eClass();
 			label = ModelUtil.toCanonicalString(eclass.getName());
 		}
 		return label;
 	}
 	
 	public void setTextValue(String name) {
-		this.name = name;
+		this.textValue = name;
 	}
 	
 	public String getTextValue() {
-		if (name==null) {
+		if (textValue==null) {
 			// derive text from feature's value: default behavior is
 			// to use the "name" attribute if there is one;
 			// if not, use the "id" attribute;
@@ -94,6 +98,9 @@ public class ObjectDescriptor<T extends EObject> {
 			Object value = null;
 			EStructuralFeature f = null;
 			f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+			if (f==null) {
+				f = ModelDecorator.getAnyAttribute(object, "name");
+			}
 			if (f!=null) {
 				value = object.eGet(f);
 				if (value==null || value.toString().isEmpty())
@@ -111,7 +118,7 @@ public class ObjectDescriptor<T extends EObject> {
 				value = NLS.bind(Messages.ObjectDescriptor_Unnamed, text);
 			return (String)value;
 		}
-		return name;
+		return textValue;
 	}
 
 	protected IItemPropertyDescriptor getPropertyDescriptor(EStructuralFeature feature) {
@@ -144,7 +151,6 @@ public class ObjectDescriptor<T extends EObject> {
 		return newObject;
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean equals(Object otherObject) {
 		EObject thisObject = this.object;
 		if (otherObject instanceof EObject) {

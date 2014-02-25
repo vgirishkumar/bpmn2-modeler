@@ -291,6 +291,8 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 
 		private void updateConnectionIfNeeded(DataAssociation association, ItemAwareElement value) {
 			DiagramEditor diagramEditor = ModelUtil.getDiagramEditor(association);
+			if (diagramEditor==null)
+				return;
 			Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
 			IFeatureProvider fp = diagramEditor.getDiagramTypeProvider().getFeatureProvider();
 			Shape owner = null;

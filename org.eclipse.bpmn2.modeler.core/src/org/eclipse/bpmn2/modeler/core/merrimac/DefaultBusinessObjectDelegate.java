@@ -20,10 +20,10 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
@@ -53,7 +53,7 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 	@Override
 	public EObject createObject(EClass eClass) {
 		String type = eClass.getName();
-		for (ModelExtensionDescriptor d : getTargetRuntime().getAllModelExtensionDescriptors()) {
+		for (ModelExtensionDescriptor d : getTargetRuntime().getModelExtensionDescriptors()) {
 			EClass ec = d.getModelDecorator().getEClass(type);
 			if (ec!=null) {
 				EObject object = d.createObject(eClass);
@@ -73,7 +73,7 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 		EClass eClass = (EClass) feature.getEType();
 		String type = eClass.getName();
 		EObject value = null;
-		for (ModelExtensionDescriptor d : getTargetRuntime().getAllModelExtensionDescriptors()) {
+		for (ModelExtensionDescriptor d : getTargetRuntime().getModelExtensionDescriptors()) {
 			EClass ec = d.getModelDecorator().getEClass(type);
 			if (ec!=null) {
 				value = d.createObject(eClass);

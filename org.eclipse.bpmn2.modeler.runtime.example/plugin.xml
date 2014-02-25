@@ -118,6 +118,13 @@
 			<property name="timeToComplete" value="1d" type="EString"/>
 		</modelExtension>
 		
+		<modelEnablement
+				runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+				type="Process"
+				profile="Default Process"
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
+		</modelEnablement>
+		
 		<style object="TextAnnotation" foreground="7F7F00" background="FFFF80" textColor="7F7F00" font="arial,10,-,-"/>
 		
 	</extension>

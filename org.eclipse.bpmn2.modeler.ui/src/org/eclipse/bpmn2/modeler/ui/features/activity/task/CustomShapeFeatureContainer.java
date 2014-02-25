@@ -15,9 +15,9 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.core.utils.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
@@ -75,8 +75,6 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	}
 	
 	/**
-	 * @author bbrodt
-	 *
 	 * Base class for Custom Shape Feature construction. Custom Shapes contributed to
 	 * the editor MUST subclass this!
 	 * 
@@ -129,7 +127,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		@Override
 		public BaseElement createBusinessObject(ICreateContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
-			customTaskDescriptor.populateObject(businessObject, false);
+			customTaskDescriptor.populateObject(businessObject, true);
 			return businessObject;
 		}
 

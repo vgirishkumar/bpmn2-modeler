@@ -693,29 +693,24 @@
 			<enable object="AdHocSubProcess" feature="isForCompensation"/>
 			<enable object="AdHocSubProcess" feature="name"/>
 			<enable object="AdHocSubProcess" feature="properties"/>
-			<enable object="Assignment" feature="anyAttribute"/>
 			<enable object="Assignment" feature="extensionValues"/>
 			<enable object="Assignment" feature="from"/>
 			<enable object="Assignment" feature="to"/>
-			<enable object="Association" feature="anyAttribute"/>
 			<enable object="Association" feature="associationDirection"/>
 			<enable object="Association" feature="documentation"/>
 			<enable object="Association" feature="extensionDefinitions"/>
 			<enable object="Association" feature="extensionValues"/>
 			<enable object="Association" feature="id"/>
-			<enable object="BaseElement" feature="anyAttribute"/>
 			<enable object="BaseElement" feature="extensionValues"/>
 			<enable object="BPSimDataType"/>
 			<enable object="BoundaryEvent" feature="attachedToRef"/>
 			<enable object="BoundaryEvent" feature="cancelActivity"/>
 			<enable object="BoundaryEvent" feature="eventDefinitions"/>
 			<enable object="BoundaryEvent" feature="name"/>
-			<enable object="BusinessRuleTask" feature="anyAttribute"/>
 			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
 			<enable object="CancelEventDefinition"/>
-			<enable object="CallActivity" feature="anyAttribute"/>
 			<enable object="CallActivity" feature="calledElementRef"/>
 			<enable object="CallActivity" feature="dataInputAssociations"/>
 			<enable object="CallActivity" feature="dataOutputAssociations"/>
@@ -729,43 +724,36 @@
 			<enable object="CompensateEventDefinition" feature="activityRef"/>
 			<enable object="ConditionalEventDefinition" feature="condition"/>
 			<enable object="DataAssociation"/>
-			<enable object="DataInput" feature="anyAttribute"/>
 			<enable object="DataInput" feature="documentation"/>
 			<enable object="DataInput" feature="extensionDefinitions"/>
 			<enable object="DataInput" feature="extensionValues"/>
 			<enable object="DataInput" feature="id"/>
 			<enable object="DataInput" feature="itemSubjectRef"/>
 			<enable object="DataInput" feature="name"/>
-			<enable object="DataInputAssociation" feature="anyAttribute"/>
 			<enable object="DataInputAssociation" feature="assignment"/>
 			<enable object="DataInputAssociation" feature="extensionValues"/>
 			<enable object="DataInputAssociation" feature="sourceRef"/>
 			<enable object="DataInputAssociation" feature="targetRef"/>
 			<enable object="DataObject" feature="id"/>
 			<enable object="DataObject" feature="itemSubjectRef"/>
-			<enable object="DataOutput" feature="anyAttribute"/>
 			<enable object="DataOutput" feature="documentation"/>
 			<enable object="DataOutput" feature="extensionDefinitions"/>
 			<enable object="DataOutput" feature="extensionValues"/>
 			<enable object="DataOutput" feature="id"/>
 			<enable object="DataOutput" feature="itemSubjectRef"/>
 			<enable object="DataOutput" feature="name"/>
-			<enable object="DataOutputAssociation" feature="anyAttribute"/>
 			<enable object="DataOutputAssociation" feature="assignment"/>
 			<enable object="DataOutputAssociation" feature="extensionValues"/>
 			<enable object="DataOutputAssociation" feature="sourceRef"/>
 			<enable object="DataOutputAssociation" feature="targetRef"/>
-			<enable object="DataState" feature="anyAttribute"/>
 			<enable object="DataState" feature="extensionValues"/>
 			<enable object="DataState" feature="name"/>
-			<enable object="Definitions" feature="anyAttribute"/>
 			<enable object="Definitions" feature="diagrams"/>
 			<enable object="Definitions" feature="exporter"/>
 			<enable object="Definitions" feature="exporterVersion"/>
 			<enable object="Definitions" feature="extensionValues"/>
 			<enable object="Definitions" feature="extensions"/>
 			<enable object="Definitions" feature="rootElements"/>
-			<enable object="Documentation" feature="anyAttribute"/>
 			<enable object="Documentation" feature="extensionValues"/>
 			<enable object="Documentation" feature="text"/>
 			<enable object="Documentation" feature="textFormat"/>
@@ -773,12 +761,10 @@
 			<enable object="EndEvent" feature="dataInputs"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
 			<enable object="EndEvent" feature="name"/>
-			<enable object="Error" feature="anyAttribute"/>
 			<enable object="Error" feature="errorCode"/>
 			<enable object="Error" feature="extensionValues"/>
 			<enable object="Error" feature="name"/>
 			<enable object="Error" feature="structureRef"/>
-			<enable object="ErrorEventDefinition" feature="anyAttribute"/>
 			<enable object="ErrorEventDefinition" feature="errorRef"/>
 			<enable object="ErrorEventDefinition" feature="extensionValues"/>
 			<enable object="Escalation" feature="escalationCode"/>
@@ -789,7 +775,6 @@
 			<enable object="EventBasedGateway" feature="gatewayDirection"/>
 			<enable object="EventBasedGateway" feature="instantiate"/>
 			<enable object="EventBasedGateway" feature="name"/>
-			<enable object="EventDefinition" feature="anyAttribute"/>
 			<enable object="EventDefinition" feature="documentation"/>
 			<enable object="EventDefinition" feature="extensionDefinitions"/>
 			<enable object="EventDefinition" feature="extensionValues"/>
@@ -797,12 +782,10 @@
 			<enable object="ExclusiveGateway" feature="default"/>
 			<enable object="ExclusiveGateway" feature="gatewayDirection"/>
 			<enable object="ExclusiveGateway" feature="name"/>
-			<enable object="Expression" feature="anyAttribute"/>
 			<enable object="Expression" feature="extensionValues"/>
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
 			<enable object="GlobalType"/>
-			<enable object="Group" feature="anyAttribute"/>
 			<enable object="Group" feature="documentation"/>
 			<enable object="Group" feature="extensionDefinitions"/>
 			<enable object="Group" feature="extensionValues"/>
@@ -811,14 +794,12 @@
 			<enable object="InclusiveGateway" feature="default"/>
 			<enable object="InclusiveGateway" feature="gatewayDirection"/>
 			<enable object="InclusiveGateway" feature="name"/>
-			<enable object="InputOutputSpecification" feature="anyAttribute"/>
 			<enable object="InputOutputSpecification" feature="dataInputs"/>
 			<enable object="InputOutputSpecification" feature="dataOutputs"/>
 			<enable object="InputOutputSpecification" feature="documentation"/>
 			<enable object="InputOutputSpecification" feature="extensionDefinitions"/>
 			<enable object="InputOutputSpecification" feature="extensionValues"/>
 			<enable object="InputOutputSpecification" feature="id"/>
-			<enable object="Interface" feature="anyAttribute"/>
 			<enable object="Interface" feature="documentation"/>
 			<enable object="Interface" feature="extensionDefinitions"/>
 			<enable object="Interface" feature="extensionValues"/>
@@ -833,20 +814,17 @@
 			<enable object="IntermediateThrowEvent" feature="eventDefinitions"/>
 			<enable object="IntermediateThrowEvent" feature="inputSet"/>
 			<enable object="IntermediateThrowEvent" feature="name"/>
-			<enable object="ItemAwareElement" feature="anyAttribute"/>
 			<enable object="ItemAwareElement" feature="documentation"/>
 			<enable object="ItemAwareElement" feature="extensionDefinitions"/>
 			<enable object="ItemAwareElement" feature="extensionValues"/>
 			<enable object="ItemAwareElement" feature="id"/>
 			<enable object="ItemAwareElement" feature="itemSubjectRef"/>
-			<enable object="ItemDefinition" feature="anyAttribute"/>
 			<enable object="ItemDefinition" feature="id"/>
 			<enable object="ItemDefinition" feature="structureRef"/>
 			<enable object="Lane" feature="flowNodeRefs"/>
 			<enable object="Lane" feature="id"/>
 			<enable object="Lane" feature="name"/>
 			<enable object="LaneSet" feature="name"/>
-			<enable object="ManualTask" feature="anyAttribute"/>
 			<enable object="ManualTask" feature="dataInputAssociations"/>
 			<enable object="ManualTask" feature="dataOutputAssociations"/>
 			<enable object="ManualTask" feature="extensionValues"/>
@@ -860,7 +838,6 @@
 			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataInputRef"/>
 			<enable object="OnEntryScriptType"/>
 			<enable object="OnExitScriptType"/>
-			<enable object="Operation" feature="anyAttribute"/>
 			<enable object="Operation" feature="documentation"/>
 			<enable object="Operation" feature="extensionDefinitions"/>
 			<enable object="Operation" feature="extensionValues"/>
@@ -872,7 +849,6 @@
 			<enable object="ParallelGateway" feature="gatewayDirection"/>
 			<enable object="ParallelGateway" feature="name"/>
 			<enable object="Process" feature="adHoc"/>
-			<enable object="Process" feature="anyAttribute"/>
 			<enable object="Process" feature="flowElements"/>
 			<enable object="Process" feature="id"/>
 			<enable object="Process" feature="isExecutable"/>
@@ -891,7 +867,6 @@
 			<enable object="ReceiveTask" feature="messageRef"/>
 			<enable object="ReceiveTask" feature="name"/>
 			<enable object="ReceiveTask" feature="operationRef"/>
-			<enable object="RootElement" feature="anyAttribute"/>
 			<enable object="RootElement" feature="extensionValues"/>
 			<enable object="ScriptTask" feature="isForCompensation"/>
 			<enable object="ScriptTask" feature="name"/>
@@ -909,7 +884,6 @@
 			<enable object="SequenceFlow" feature="priority"/>
 			<enable object="SequenceFlow" feature="sourceRef"/>
 			<enable object="SequenceFlow" feature="targetRef"/>
-			<enable object="ServiceTask" feature="anyAttribute"/>
 			<enable object="ServiceTask" feature="dataInputAssociations"/>
 			<enable object="ServiceTask" feature="dataOutputAssociations"/>
 			<enable object="ServiceTask" feature="ioSpecification"/>
@@ -927,14 +901,12 @@
 			<enable object="SubProcess" feature="loopCharacteristics"/>
 			<enable object="SubProcess" feature="name"/>
 			<enable object="SubProcess" feature="properties"/>
-			<enable object="Task" feature="anyAttribute"/>
 			<enable object="Task" feature="dataInputAssociations"/>
 			<enable object="Task" feature="dataOutputAssociations"/>
 			<enable object="Task" feature="extensionValues"/>
 			<enable object="Task" feature="ioSpecification"/>
 			<enable object="Task" feature="isForCompensation"/>
 			<enable object="Task" feature="name"/>
-			<enable object="TextAnnotation" feature="anyAttribute"/>
 			<enable object="TextAnnotation" feature="documentation"/>
 			<enable object="TextAnnotation" feature="extensionDefinitions"/>
 			<enable object="TextAnnotation" feature="extensionValues"/>
@@ -945,7 +917,6 @@
 			<enable object="ThrowEvent" feature="dataInputAssociation"/>
 			<enable object="TimerEventDefinition" feature="timeCycle"/>
 			<enable object="TimerEventDefinition" feature="timeDuration"/>
-			<enable object="UserTask" feature="anyAttribute"/>
 			<enable object="UserTask" feature="dataInputAssociations"/>
 			<enable object="UserTask" feature="dataOutputAssociations"/>
 			<enable object="UserTask" feature="extensionValues"/>
@@ -1011,10 +982,8 @@
 				runtimeId="org.jboss.runtime.jbpm5"
 				type="Process"
 				profile="RuleFlow">
-			<enable object="BusinessRuleTask" feature="anyAttribute"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
-			<enable object="CallActivity" feature="anyAttribute"/>
 			<enable object="CallActivity" feature="calledElementRef"/>
 			<enable object="CallActivity" feature="dataInputAssociations"/>
 			<enable object="CallActivity" feature="dataOutputAssociations"/>
@@ -1035,7 +1004,6 @@
 			<enable object="FormalExpression" feature="body"/>
 			<enable object="FormalExpression" feature="language"/>
 			<enable object="GlobalType"/>
-			<enable object="InputOutputSpecification" feature="anyAttribute"/>
 			<enable object="InputOutputSpecification" feature="dataInputs"/>
 			<enable object="InputOutputSpecification" feature="dataOutputs"/>
 			<enable object="InputOutputSpecification" feature="documentation"/>
@@ -1052,14 +1020,12 @@
 			<enable object="ParallelGateway" feature="id"/>
 			<enable object="ParallelGateway" feature="name"/>
 			<enable object="ParallelGateway" feature="outgoing"/>
-			<enable object="Process" feature="anyAttribute"/>
 			<enable object="Process" feature="flowElements"/>
 			<enable object="Process" feature="id"/>
 			<enable object="Process" feature="name"/>
 			<enable object="Process" feature="packageName"/>
 			<enable object="Process" feature="properties"/>
 			<enable object="Process" feature="version"/>
-			<enable object="Property" feature="anyAttribute"/>
 			<enable object="Property" feature="documentation"/>
 			<enable object="Property" feature="extensionDefinitions"/>
 			<enable object="Property" feature="extensionValues"/>
@@ -1069,7 +1035,6 @@
 			<enable object="ScriptTask" feature="name"/>
 			<enable object="ScriptTask" feature="script"/>
 			<enable object="ScriptTask" feature="scriptFormat"/>
-			<enable object="SequenceFlow" feature="anyAttribute"/>
 			<enable object="SequenceFlow" feature="auditing"/>
 			<enable object="SequenceFlow" feature="categoryValueRef"/>
 			<enable object="SequenceFlow" feature="conditionExpression"/>

@@ -335,7 +335,7 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
    <element name="property">
       <annotation>
          <documentation>
-            Describes some property of the Custom Task. This may be either
+            Describes a model object feature. If the feature already exists in an EMF model,  then this extension element can be used to initialize the feature&apos;s value when a new instance of the object is created. If the feature does not exist, it is created using dynamic EMF and added to a new EClass. The feature augments the model object type specified by the &quot;type&quot; attribute contained in this property definition.
          </documentation>
       </annotation>
       <complexType>
@@ -353,6 +353,13 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
             <annotation>
                <documentation>
                   Default value for the property.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string">
+            <annotation>
+               <documentation>
+                  An optional label to use for UI display of this property
                </documentation>
             </annotation>
          </attribute>

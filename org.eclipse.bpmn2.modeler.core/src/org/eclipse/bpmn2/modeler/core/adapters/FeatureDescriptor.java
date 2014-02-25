@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -39,8 +40,11 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
- * @author Bob Brodt
- *
+ * Item property provider for a specific feature of an object. Clients may replace the default implementation
+ * by defining their own ExtendPropertiesAdapter and setting their own FeatureDescriptors for features that
+ * need special handling.
+ * 
+ * See also the <propertyExtension> element of the org.eclipse.bpmn2.modeler.runtime extension point.
  */
 public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 
@@ -48,17 +52,36 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	protected int multiline = 0; // -1 = false, +1 = true, 0 = unset
 	protected Hashtable<String, Object> choiceOfValues; // for static lists
 	
+	/**
+	 * Construct a new FeatureDescriptor for the given feature of the given object.
+	 * 
+	 * @param object - an EObject subclass
+	 * @param feature - this must be a defined EStructuralFeature of the above EObject.
+	 */
 	public FeatureDescriptor(T object, EStructuralFeature feature) {
 		super(object);
 		this.feature = feature;
 	}
-	
-	public EStructuralFeature getFeature() {
-		return feature;
+
+	/**
+	 * This has been deprecated, as we don't use the AdapterFactory any more.
+	 * 
+	 * @param adapterFactory
+	 * @param object
+	 * @param feature
+	 */
+	@Deprecated
+	public FeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
+		this(object,feature);
 	}
 	
-	public void setLabel(String label) {
-		this.label = label;
+	/**
+	 * Returns the feature whose properties are managed by this class.
+	 * 
+	 * @return an EStructuralFeature
+	 */
+	public EStructuralFeature getFeature() {
+		return feature;
 	}
 	
 	public String getLabel() {
@@ -69,7 +92,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			else {
 				// If the referenced type is an EObject, we'll get an "E Class" label
 				// so use the feature name instead.
-				if (feature instanceof EReference && (getEType().getInstanceClass()!=EObject.class))
+				if (feature instanceof EReference && (getEType().getInstanceClass()==EObject.class))
 					label = ExtendedPropertiesProvider.getLabel(getEType());
 				else
 					label = ModelUtil.toCanonicalString(feature.getName());
@@ -79,13 +102,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 	
 	@Override
-	public void setTextValue(String text) {
-		this.name = text;
-	}
-	
-	@Override
 	public String getTextValue() {
-		if (name==null) {
+		if (textValue==null) {
 			String t = null;
 			// derive text from feature's value: default behavior is
 			// to use the "name" attribute if there is one;
@@ -119,7 +137,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			}
 			return t == null ? "" /*ModelUtil.getLabel(object)*/ : t; //$NON-NLS-1$
 		}
-		return name == null ? "" : name; //$NON-NLS-1$
+		return textValue == null ? "" : textValue; //$NON-NLS-1$
 	}
 
 	public void setChoiceOfValues(Hashtable<String, Object> choiceOfValues) {
@@ -399,9 +417,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return false;
 	}
 
+	@Deprecated
 	public Hashtable<String, Object> getChoiceOfValues(Object context) {
-		// TODO Auto-generated method stub
-		return null;
+		return getChoiceOfValues();
 	}
 
 }

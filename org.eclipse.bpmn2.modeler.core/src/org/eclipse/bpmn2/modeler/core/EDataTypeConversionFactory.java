@@ -24,7 +24,7 @@ public class EDataTypeConversionFactory implements Factory {
 	
 	// The URI for our EDataType conversion factory. This must be the same as the "uri" specified in
 	// the "org.eclipse.emf.ecore.conversion_delegate" extension point in our plugin.xml
-	public final static String DATATYPE_CONVERSION_FACTORY_URI = "org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory";
+	public final static String DATATYPE_CONVERSION_FACTORY_URI = "http://org.eclipse.bpmn2.modeler.EDataTypeConversionFactory";
 
 	// Registry that maps a data type name to a conversion delegate.
 	// Clients may register their own types and conversion delegates.
