@@ -469,13 +469,13 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 			if (feature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;
 				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
-					cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+					cf.getDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
 			else if (feature instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
 				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
-						cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+						cf.getCreateName(), cf.getDescription(), cf.getCreateImageId(),
 						cf.getCreateLargeImageId());
 				connectionCreationToolEntry.addCreateConnectionFeature(cf);
 				compartmentEntry.addToolEntry(connectionCreationToolEntry);
@@ -493,13 +493,13 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 			if (targetFeature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;
 				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
-					cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+					cf.getDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
 			else if (targetFeature instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
 				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
-						cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+						cf.getCreateName(), cf.getDescription(), cf.getCreateImageId(),
 						cf.getCreateLargeImageId());
 				connectionCreationToolEntry.addCreateConnectionFeature(cf);
 				compartmentEntry.addToolEntry(connectionCreationToolEntry);
@@ -518,31 +518,31 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 				categories.put(e.getLabel(), (PaletteCompartmentEntry) e);
 			}
 			
-			for (CustomTaskDescriptor tc : rt.getCustomTaskDescriptors()) {
-				CustomElementFeatureContainer container = (CustomElementFeatureContainer)tc.getFeatureContainer();
+			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
+				CustomElementFeatureContainer container = (CustomElementFeatureContainer)ctd.getFeatureContainer();
 				if (!container.isAvailable(featureProvider))
 					continue;
 
 				IToolEntry toolEntry = null;
-				String id = tc.getId();
+				String id = ctd.getId();
 				container.setId(id);
 				featureProvider.addFeatureContainer(id, container);
 				if (container instanceof CustomShapeFeatureContainer) {
 					ICreateFeature cf = ((CustomShapeFeatureContainer)container).getCreateFeature(featureProvider);
-					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(tc.getName(),
-							cf.getCreateDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+					ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(ctd.getName(),
+							ctd.getDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 					toolEntry = objectCreationToolEntry;
 				}
 				else if (container instanceof CustomConnectionFeatureContainer) {
 					ICreateConnectionFeature cf = ((CustomConnectionFeatureContainer)container).getCreateConnectionFeature(featureProvider);
 					ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
-							cf.getCreateName(), cf.getCreateDescription(), cf.getCreateImageId(),
+							cf.getCreateName(), ctd.getDescription(), cf.getCreateImageId(),
 							cf.getCreateLargeImageId());
 					connectionCreationToolEntry.addCreateConnectionFeature(cf);
 					toolEntry = connectionCreationToolEntry;
 				}
 				
-				String category = tc.getCategory();
+				String category = ctd.getCategory();
 				if (category==null || category.isEmpty())
 					category = Messages.BPMNToolBehaviorProvider_Custom_Tasks_Drawer_Label;
 				

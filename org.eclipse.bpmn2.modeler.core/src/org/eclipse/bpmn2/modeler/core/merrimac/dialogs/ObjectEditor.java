@@ -59,7 +59,6 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	private Label label;
 	protected ControlDecoration decoration;
 	protected int style;
-	protected Class messages;
 	protected boolean isWidgetUpdating = false;
 	private IBusinessObjectDelegate boDelegate;
 
@@ -68,7 +67,6 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		this.object = object;
 		this.feature = feature;
 		this.style = SWT.NONE;
-    	messages = JavaReflectionUtil.findClass(parent, "Messages"); //$NON-NLS-1$
 	}
 	
 	/**
@@ -109,9 +107,16 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		Object result = null;
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null && feature!=null) {
-			result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
+			result = adapter.getProperty(feature, property);
 		}
 		return result;
+	}
+
+	protected void setExtendedProperty(String property, Object value) {
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null && feature!=null) {
+			adapter.setProperty(feature, property, value);
+		}
 	}
 	
 	public EStructuralFeature getFeature() {
@@ -178,31 +183,13 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	 * @return
 	 */
 	protected String getToolTipText() {
-		String fieldName;
-		Field field;
-		String text = ""; //$NON-NLS-1$
-    	if (messages!=null) {
-    		try {
-    			// fetch the description for this EClass and feature
-	    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-//				text += "\n" + fieldName + "\n";
-	    		field = messages.getField(fieldName);
-	    		text += (String)field.get(null);
-    		}
-    		catch (Exception e) {
-	    		try {
-	    			// if a description is not found for this EClass, try "Any"
-		    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-//	    			text += "\n" + fieldName + "\n";
-		    		field = messages.getField(fieldName);
-		    		text += (String)field.get(null);
-	    		}
-	    		catch (Exception e2) {
-	    		}
-    		}
-    		if (text==null || text.isEmpty())
-    			text = NLS.bind(Messages.ObjectEditor_No_Description, label.getText());
-    	}
+		String text = (String) getExtendedProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
+		if (text==null || text.isEmpty())
+			text = ExtendedPropertiesAdapter.getDescription(parent, object, feature);
+   		if (text==null || text.isEmpty())
+   			text = NLS.bind(Messages.ObjectEditor_No_Description, label.getText());
+
+   		setExtendedProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION, text);
     	return text;
 	}
 	

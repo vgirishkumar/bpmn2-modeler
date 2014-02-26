@@ -163,6 +163,11 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 					public String getCreateLargeImageId() {
 						return SampleImageProvider.getImageId(customTaskDescriptor, IconSize.LARGE);
 					}
+					
+					@Override
+					public String getCreateDescription() {
+						return "Create "+customTaskDescriptor.getName();
+					}
 				};
 			}
 

@@ -37,6 +37,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.osgi.util.NLS;
 
 public class CustomConnectionFeatureContainer extends CustomElementFeatureContainer implements IConnectionFeatureContainer {
 	
@@ -83,7 +84,8 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		}
 
 		public CreateCustomConnectionFeature(IFeatureProvider fp) {
-			this(fp, customTaskDescriptor.getName(), customTaskDescriptor.getDescription());
+			this(fp, customTaskDescriptor.getName(),
+					NLS.bind(Messages.CustomElementFeatureContainer_Create, customTaskDescriptor.getName()));
 		}
 		
 		@Override
@@ -171,6 +173,11 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 					return id;
 			}
 			return createFeatureDelegate.getCreateLargeImageId();
+		}
+		
+		@Override
+		public String getCreateDescription() {
+			return createFeatureDelegate.getCreateDescription();
 		}
 
 		@Override

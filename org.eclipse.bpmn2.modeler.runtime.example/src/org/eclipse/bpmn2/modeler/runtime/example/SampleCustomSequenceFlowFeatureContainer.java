@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomConnectionFeatureContainer;
@@ -56,6 +57,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
  */
 public class SampleCustomSequenceFlowFeatureContainer extends CustomConnectionFeatureContainer {
 	
+	public final static String MITIGATION_FLOW_ID = "org.eclipse.bpmn2.modeler.runtime.example.flow";
 	@Override
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		return new SequenceFlowFeatureContainer()
@@ -101,6 +103,11 @@ public class SampleCustomSequenceFlowFeatureContainer extends CustomConnectionFe
 					public String getCreateLargeImageId() {
 						return SampleImageProvider.getImageId(customTaskDescriptor, IconSize.LARGE);
 					}
+					
+					@Override
+					public String getCreateDescription() {
+						return "Create "+customTaskDescriptor.getName();
+					}
 				};
 			}
 		};
@@ -117,13 +124,8 @@ public class SampleCustomSequenceFlowFeatureContainer extends CustomConnectionFe
 	public String getId(EObject object) {
 		if (object==null)
 			return null;
-		List<EStructuralFeature> features = ModelUtil.getAnyAttributes(object);
-		for (EStructuralFeature f : features) {
-			if ("elementId".equals(f.getName())) {
-				Object attrValue = object.eGet(f);
-				if ("org.eclipse.bpmn2.modeler.runtime.example.flow".equals(attrValue))
-					return attrValue.toString();
-			}
+		if (ModelDecorator.getAnyAttribute(object, "priority")!=null) {
+			return MITIGATION_FLOW_ID;
 		}
 		return null;
 	}

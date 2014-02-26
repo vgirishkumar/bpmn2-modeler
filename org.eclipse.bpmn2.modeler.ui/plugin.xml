@@ -156,6 +156,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.DescriptionPropertySection"
+			image="icons/20/Thumbnail.png"
 			popup="true"
 			label="%propertyTab.label">
 		</propertyTab>
@@ -708,7 +709,10 @@
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 			
 			<category id="org.bpmn2.modeler.toolpalette.process.patterns" name="%category.name">
-				<tool name="%tool.name" id="org.bpmn2.modeler.tool.arbitrary.cycles" description="%tool.description">
+				<tool name="SubProcess with Task">
+					<object type="SubProcess+Task,Task-ExclusiveGateway"/>
+				</tool>
+				<tool name="%tool.name" id="org.bpmn2.modeler.tool.arbitrary.cycles" description="%arbitrary.cycles.description">
 					<object type="Task[$name='Task A']" id="arbitrary.cycles.taskA" optional="true"/>
 					<object type="Task[$name='Task B',x=200]" id="arbitrary.cycles.taskB"/>
 					<object type="Task[$name='Task C',x=200,y=100]" id="arbitrary.cycles.taskC"/>

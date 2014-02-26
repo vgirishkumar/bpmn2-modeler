@@ -42,6 +42,7 @@ import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.osgi.util.NLS;
 
 public class CustomShapeFeatureContainer extends CustomElementFeatureContainer implements IShapeFeatureContainer {
 	
@@ -100,7 +101,8 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		}
 
 		public CreateCustomShapeFeature(IFeatureProvider fp) {
-			this(fp, customTaskDescriptor.getName(), customTaskDescriptor.getDescription());
+			this(fp, customTaskDescriptor.getName(),
+					NLS.bind(Messages.CustomElementFeatureContainer_Create, customTaskDescriptor.getName()));
 		}
 
 		@Override
@@ -168,6 +170,11 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 					return id;
 			}
 			return createFeatureDelegate.getCreateLargeImageId();
+		}
+		
+		@Override
+		public String getCreateDescription() {
+			return createFeatureDelegate.getCreateDescription();
 		}
 	}
 

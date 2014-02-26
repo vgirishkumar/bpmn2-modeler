@@ -53,7 +53,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
-			return customTaskDescriptor.getDescription();
+			return customTaskDescriptor.getName();
 		return Messages.CustomElementFeatureContainer_Description;
 	}
 

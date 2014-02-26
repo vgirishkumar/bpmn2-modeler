@@ -150,6 +150,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 			for (int i=0; i<chars.length; ++i) {
 				char c = chars[i];
 				if (c=='+') {
+					toolPartStack.push(parentToolPart);
 					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
 						if (parentToolPart==null) {
@@ -164,7 +165,6 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 					}
 					else if (parentToolPart==null)
 						parentToolPart = toolPart;
-					toolPartStack.push(parentToolPart);
 					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c=='-') {

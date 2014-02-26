@@ -122,11 +122,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter!=null) {
-				// if this is a Custom Task, use the description provided by the <customTask> extension
-				if (BaseRuntimeExtensionDescriptor.getDescriptor(object, ModelExtensionDescriptor.class) != null)
-					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION);
-				if (description==null)
-					description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
+				description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
 			}
 			return description;
 		}

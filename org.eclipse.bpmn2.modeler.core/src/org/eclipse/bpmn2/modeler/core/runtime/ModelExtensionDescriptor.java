@@ -75,7 +75,6 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			super();
 			this.parent = parent;
 			this.name = name;
-			this.label = label;
 			this.description = description;
 		}
 		
@@ -540,7 +539,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
 
 		if (feature instanceof EAttribute) {
-			adaptFeature(object, feature, firstValue);
+			adaptFeature(object, feature, firstValue, property);
 		}
 		else if (feature instanceof EReference) {
 			EReference ref = (EReference)feature;
@@ -561,7 +560,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 					childFeature = childObject.eClass().getEStructuralFeature(s);
 					childObject = (EObject)getValue(childObject, childFeature, index);
 				}
-				adaptFeature(object, feature, childObject);
+				adaptFeature(object, feature, childObject, property);
 			}
 			else if (firstValue instanceof Property)
 			{
@@ -580,7 +579,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
                 	ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(childObject);
                 	adapter.getObjectDescriptor().setLabel(property.label);
                 }
-                adaptFeature(object, feature, childObject);
+                adaptFeature(object, feature, childObject, property);
                 populateObjectFromValues(childObject, property.getValues());
 			}
 		}
@@ -682,7 +681,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		if (adapter!=null) {
 			adapter.setProperty(this.getClass().getName(), this);
 			if (description!=null)
-				adapter.setProperty(ExtendedPropertiesAdapter.CUSTOM_DESCRIPTION, description);
+				adapter.setProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION, description);
 		}
 		return adapter;
 	}
@@ -701,13 +700,15 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return null;
 	}
 
-	private void adaptFeature(EObject object, EStructuralFeature feature, Object value) {
+	private void adaptFeature(EObject object, EStructuralFeature feature, Object value, Property property) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
 			// if this is a dynamic feature, delegate access to the feature to the Model Decorator
 			if (ModelDecorator.getEPackageForFeature(feature)!=null) {
 				getModelDecorator().adaptFeature(adapter, object, feature);
 			}
+			if (property.description!=null)
+				adapter.setProperty(feature, ExtendedPropertiesAdapter.LONG_DESCRIPTION, property.description);
 			
 			if (!(feature.getEType() instanceof EEnum)) // skip enum initialization
 				initializers.add(adapter,feature,value);

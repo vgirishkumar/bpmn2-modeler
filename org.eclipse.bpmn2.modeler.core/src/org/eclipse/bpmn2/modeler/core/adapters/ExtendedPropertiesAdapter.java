@@ -28,6 +28,8 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
@@ -53,7 +55,6 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 
 	// common property keys
 	public final static String LONG_DESCRIPTION = "long.description"; //$NON-NLS-1$
-	public final static String CUSTOM_DESCRIPTION = "custom.description"; //$NON-NLS-1$
 	public final static String UI_CAN_EDIT = "ui.can.edit"; //$NON-NLS-1$
 	// Any adapter that uses this must override setValue() which understands
 	// how to convert a String to the required type.
@@ -133,7 +134,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 				if (feature!=null)
 					adapter.getFeatureDescriptor(feature).setObject(eObject);
 				
-				adapter.initializeDescription();
+				// load the description for this object from Messages
+				String description = getDescription(adapter.adapterFactory, eObject);
+				if (description!=null && !description.isEmpty())
+					adapter.setProperty(LONG_DESCRIPTION, description);
 			}
 		}
 		return adapter;
@@ -333,9 +337,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		}
 		return false;
 	}
-	
-	protected String initializeDescription() {
-		EObject object = (EObject)target;
+
+	public static String getDescription(Object searchObject, EObject object) {
 		String name = ""; //$NON-NLS-1$
 		String description = ""; //$NON-NLS-1$
 		if (object instanceof BPMNDiagram) {
@@ -355,7 +358,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 			}
 		}
 		else if (object instanceof Participant) {
-			Participant participant = (Participant) target;
+			Participant participant = (Participant) object;
 			EObject container = participant.eContainer();
 			if (container instanceof Choreography) {
 				for (FlowElement fe : ((Choreography)container).getFlowElements()) {
@@ -372,18 +375,18 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		if (name.isEmpty()) {
 			name = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		// Set the model element's long description from the Messages class.
+		// Get the model object's long description from the Messages class.
 		// The field in Messages that contains the description will have the
-		// form: "UI_<BPMN2ElementName>_long_description".
+		// form: "UI_<objectName>_long_description".
 		// The Messages class must be contained somewhere in the package hierarchy
-		// that contains the adapter factory class; by default, this will be the
-		// BPMN2 modeler UI plug-in hierarchy, starting with org.eclipse.bpmn2.modeler.ui.adapters
+		// that contains the searchObject's class.
     	try {
-        	String fieldName = "UI_" + name + "_long_description"; //$NON-NLS-1$ //$NON-NLS-2$
-        	Class messages = JavaReflectionUtil.findClass(adapterFactory, "Messages"); //$NON-NLS-1$
-			Field field = messages.getField(fieldName);
-			description = (String)field.get(null);
-			setProperty(LONG_DESCRIPTION, description);
+    		if (description==null || description.isEmpty()) {
+	        	String fieldName = "UI_" + name + "_long_description"; //$NON-NLS-1$ //$NON-NLS-2$
+	        	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
+				Field field = messages.getField(fieldName);
+				description = (String)field.get(null);
+    		}
 		} catch (Exception e) {
 			// no biggie
 		}
@@ -391,6 +394,38 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
     	return description;
 	}
 
+	public static String getDescription(Object searchObject, EObject object, EStructuralFeature feature) {
+		String fieldName;
+		Field field;
+		String description = ""; //$NON-NLS-1$
+		
+		// Get the model feature's long description from the Messages class.
+		// The field in Messages that contains the description will have the
+		// form: "UI_<objectName>_<featureName>_description".
+		// If that entry is not found, try looking for something in the form:
+		// "UI_Any_<featureName>_description".
+		// The Messages class must be contained somewhere in the package hierarchy
+		// that contains the searchObject's class.
+    	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
+		try {
+			// fetch the description for this EClass and feature
+    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    		field = messages.getField(fieldName);
+    		description += (String)field.get(null);
+		}
+		catch (Exception e) {
+    		try {
+    			// if a description is not found for this EClass, try "Any"
+	    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
+	    		field = messages.getField(fieldName);
+	    		description += (String)field.get(null);
+    		}
+    		catch (Exception e2) {
+    		}
+		}
+		return description;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static boolean compare(EObject thisObject, EObject otherObject, boolean similar) {
 		for (EStructuralFeature f : thisObject.eClass().getEAllStructuralFeatures()) {

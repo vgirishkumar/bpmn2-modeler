@@ -17,6 +17,7 @@ public class Messages extends NLS {
 	public static String BusinessRuleTaskFeatureContainer_Description;
 	public static String BusinessRuleTaskFeatureContainer_Name;
 	public static String CustomConnectionFeatureContainer_Description;
+	public static String CustomElementFeatureContainer_Create;
 	public static String CustomElementFeatureContainer_Description;
 	public static String CustomShapeFeatureContainer_Description;
 	public static String ManualTaskFeatureContainer_Description;

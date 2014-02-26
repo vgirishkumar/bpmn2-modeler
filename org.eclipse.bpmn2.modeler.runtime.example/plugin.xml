@@ -65,11 +65,10 @@
 			icon="risk.png"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
 			type="TextAnnotation">
-			<property name="elementId" value="org.eclipse.bpmn2.modeler.runtime.example.risk" type="EString"/>
 			<property name="name" value="Risk Task" type="EString"/>
 			<property name="text" value="Risk Task" type="EString"/>
-			<property name="evaluate" value="true" type="EBoolean"/>
-			<property name="cost" value="0" type="EInt"/>
+			<property name="evaluate" value="true" type="EBoolean" description="Include this activity in Risk Calculations"/>
+			<property name="cost" value="0" type="EInt" description="Potential cost of this Risk"/>
 		</customTask>
 
 		<customTask
@@ -81,11 +80,10 @@
 			icon="mitigation.png"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
 			type="TextAnnotation">
-			<property name="elementId" value="org.eclipse.bpmn2.modeler.runtime.example.mitigation" type="EString"/>
 			<property name="text" value="Mitigation Task" type="EString"/>
 			<property name="name" value="Mitigation Task" type="EString"/>
-			<property name="evaluate" value="true" type="EBoolean"/>
-			<property name="benefit" value="0" type="EInt"/>
+			<property name="evaluate" value="true" type="EBoolean" description="Include this activity in Risk Calculations"/>
+			<property name="benefit" value="0" type="EInt" description="Potential benefit provided by this Mitigation activity"/>
 		</customTask>
 
 		<customTask
@@ -99,7 +97,6 @@
 			type="SequenceFlow">
 			<property name="name" value="Mitigate" type="EString"/>
 			<property name="priority" value="1" type="EInt"/>
-			<property name="elementId" value="org.eclipse.bpmn2.modeler.runtime.example.flow" type="EString"/>
 		</customTask>
 
 		<modelExtension
