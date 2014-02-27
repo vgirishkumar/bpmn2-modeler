@@ -709,9 +709,6 @@
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 			
 			<category id="org.bpmn2.modeler.toolpalette.process.patterns" name="%category.name">
-				<tool name="SubProcess with Task">
-					<object type="SubProcess+Task,Task-ExclusiveGateway"/>
-				</tool>
 				<tool name="%tool.name" id="org.bpmn2.modeler.tool.arbitrary.cycles" description="%arbitrary.cycles.description">
 					<object type="Task[$name='Task A']" id="arbitrary.cycles.taskA" optional="true"/>
 					<object type="Task[$name='Task B',x=200]" id="arbitrary.cycles.taskB"/>

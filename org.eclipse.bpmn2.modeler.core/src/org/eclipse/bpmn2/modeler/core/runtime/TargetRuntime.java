@@ -566,7 +566,11 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)
 	{
 		ToolPaletteDescriptor defaultToolPalette = null;
-		for (ToolPaletteDescriptor tp : getToolPaletteDescriptors()) {
+		// search from the end of the ToolPaletteDescriptors list so that we'll find the
+		// most recently defined ToolPalette, which may be in a .bpmn2config file
+		List<ToolPaletteDescriptor> allToolPalettes = getToolPaletteDescriptors();
+		for (int i=allToolPalettes.size()-1; i>=0; --i) {
+			ToolPaletteDescriptor tp = allToolPalettes.get(i);
 			String s = diagramType.name();
 			if (diagramType == Bpmn2DiagramType.NONE && tp.getType()==null) {
 				if (profile==null)
