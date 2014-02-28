@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.util.Bpmn2ResourceFactoryImpl;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -396,20 +397,9 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			}
 		}
 		catch (final Exception e) {
-			Display.getDefault().syncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					String msg = e.getMessage();
-					if (e instanceof InvocationTargetException) {
-						msg = ((InvocationTargetException) e).getTargetException().getMessage();
-					}
-					MessageDialog.openError(Display.getDefault().getActiveShell(),
-						Messages.Bpmn2ModelerResourceSetImpl_Loading_Error,
-						NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error_Message,resource.getURI(),msg));
-				}
-				
-			});
+			String msg = NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error_Message,resource.getURI());
+			ErrorDialog dlg = new ErrorDialog(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error, msg, e);
+			dlg.show();
 		}
 		finally {
 			monitor.done();

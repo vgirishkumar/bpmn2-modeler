@@ -149,6 +149,10 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 			// look up the Sections.
 			String rtid = td.getRuntimeId();
 			if (rtid==null || rtid.equals(TargetRuntime.DEFAULT_RUNTIME_ID) || rt.getId().equals(rtid)) {
+				if (td.getConfigFile()!=null && !rt.getId().equals(rtid))
+					// don't include Default Runtime tabs that were defined in a config file
+					// if this isn't the Default Runtime.
+					continue;
 				// what's left is just the Tab Descriptors defined by the current Target Runtime
 				// and the ones from the Default ("None") runtime.
 				replaced.add(td.copy());

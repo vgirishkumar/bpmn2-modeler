@@ -136,7 +136,8 @@ public class ModelDecorator {
 		if (resourceSet!=null) {
 			if (ePackage!=null) {
 				ModelDecoratorAdapter mda = ModelDecoratorAdapter.getAdapter(ePackage);
-				mda.dispose();
+				if (mda!=null)
+					mda.dispose();
 				resourceSet.getPackageRegistry().remove(ePackage.getNsURI());
 				EcoreUtil.delete(ePackage);
 			}
@@ -662,7 +663,7 @@ public class ModelDecorator {
 		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
 		if (feature instanceof EReference) {
 			if (type!=null)
-				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
+				Assert.isTrue(type.equals(((EReference) feature).getEType().getName()) );
 			Assert.isTrue(containment == ((EReference) feature).isContainment());
 			Assert.isTrue(many == ((EReference) feature).isMany());
 			return (EReference) feature;

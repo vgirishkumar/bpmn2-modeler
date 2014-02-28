@@ -450,8 +450,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		protected EObject createObjectFromFeatureType(EObject peekObject, EStructuralFeature feature) {
-if (feature.getName().equals("import"))
-	System.out.println();
 			int lineNumber = getLineNumber();
 			EObject newObject = null;
 			String nsURI = ExtendedMetaData.INSTANCE.getNamespace(feature);
@@ -464,9 +462,13 @@ if (feature.getName().equals("import"))
 //				feature = mda.getEStructuralFeature(peekObject, feature);
 				if (feature!=null) {
 					ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(peekObject);
-					epa.getFeatureDescriptor(feature).setValue(newObject);
-					processObject(newObject);
-					handleObjectAttribs(newObject);
+					if (epa!=null) {
+						epa.getFeatureDescriptor(feature).setValue(newObject);
+						processObject(newObject);
+						handleObjectAttribs(newObject);
+					}
+					else
+						System.out.println("oops!");
 				}
 			}
 			else {

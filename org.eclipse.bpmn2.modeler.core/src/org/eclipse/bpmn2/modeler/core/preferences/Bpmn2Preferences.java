@@ -293,6 +293,23 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return pref;
 	}
 	
+	public static List<Bpmn2Preferences> getInstances(TargetRuntime rt) {
+		Assert.isNotNull(rt);
+		String id = rt.getId();
+		List<Bpmn2Preferences> prefs = new ArrayList<Bpmn2Preferences>();
+		if (globalInstance!=null && globalInstance.targetRuntime.getId().equals(id))
+			prefs.add(globalInstance);
+		if (projectInstances!=null) {
+			for (Entry<IProject, Bpmn2Preferences> entry : projectInstances.entrySet()) {
+				Bpmn2Preferences pref = entry.getValue();
+				if (pref.targetRuntime.getId().equals(id))
+					prefs.add(pref);
+			}
+			
+		}
+		return prefs;
+	}
+	
 	public void useProjectPreferences() {
 		Assert.isNotNull(projectPreferences);
 		useProjectPreferences = true;

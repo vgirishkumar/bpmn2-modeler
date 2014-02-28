@@ -453,7 +453,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
 		if (hasStructuralFeatureFeature(object,feature) || isList()) {
-			if (isList()) {
+			if (feature.isMany()) {
 				// NB: setting a List item to null into a List will clear the List!
 				if (value==null)
 					((List)object.eGet(feature)).clear();

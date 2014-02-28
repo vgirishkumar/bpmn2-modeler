@@ -617,7 +617,7 @@ Note the use of the special notation&quot;DeviceType:EEnum&quot; to create the &
 The value of this attribute string must be the referenced Target Runtime ID, a Diagram Type and a Tool Profile name defined in the referenced runtime, all separated by a colon (:), for example:
 
 &lt;pre&gt;
-	ref=&quot;org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process&quot;
+ ref=&quot;org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process&quot;
 &lt;/pre&gt;
                </documentation>
             </annotation>
@@ -1093,7 +1093,7 @@ Multiple objects can be constructed in the same container by separating them wit
  &lt;object type=&quot;SubProcess+Task,IntermediateCatchEvent[x=200],Task[x=400]&quot;/&gt;
 &lt;/pre&gt;
 
-Note that the Push operator &apos;+&apos; will cause subsequent objects to be created inside the SubProcess. The Pop or &apos;-&apos; operator can be used to restore the target to the previous container (in this case the diagram) like so:
+The Push operator &apos;+&apos; can be used to create additional objects inside the SubProcess. The Pop or &apos;-&apos; operator can be used to restore the target to the previous container (in this case the diagram) like so:
 
 &lt;pre&gt;
  &lt;object type=&quot;SubProcess+Task,IntermediateCatchEvent[x=200],Task[x=400]-ExclusiveGateway[x=600]&quot;/&gt;
@@ -1101,7 +1101,15 @@ Note that the Push operator &apos;+&apos; will cause subsequent objects to be cr
  
 This is interpreted as follows: create a SubProcess in the Diagram, then within that SubProcess create a Task, an IntermediateCatchEvent and another Task, then pop back to the Diagram and create an ExclusiveGateway. The Push/Pop operators can be nested as deeply as required.
 
-Finally, creating connections between objects is done by referencing a previous &lt;b&gt;object&lt;/b&gt; definition by its id:
+Creating connections between objects can be done in two ways, the first method uses the previous two objects as source and target:
+
+&lt;pre&gt;
+			&lt;tool name=&quot;SubProcess Split&quot; description=&quot;SubProcess containing two Tasks, and connected to an ExclusiveGateway&quot;&gt;
+				&lt;object type=&quot;SubProcess+Task,Task,SequenceFlow-ExclusiveGateway[x=300],SequenceFlow&quot;/&gt;
+			&lt;/tool&gt;
+&lt;/pre&gt;
+
+The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by their IDs:
 
 &lt;pre&gt;
  &lt;tool name=&quot;Two Tasks&quot; description=&quot;Two Tasks connected by a SequenceFlow&quot;&gt;

@@ -23,7 +23,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.XMLConfigElement;
+import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
+import org.eclipse.bpmn2.presentation.Bpmn2EditorPlugin;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -37,6 +39,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -196,7 +200,8 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 				TargetRuntime.loadExtensions(rt, element.getChildren(), file);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			ErrorDialog dlg = new ErrorDialog("Error in Configuration File", e);
+			dlg.show();
 		}
 	}
 

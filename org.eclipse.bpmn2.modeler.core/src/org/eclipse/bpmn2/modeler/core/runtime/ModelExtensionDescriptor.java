@@ -736,6 +736,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		EClass eClass = getEClass(className);
 		if (eClass!=null) {
 			for (EClass st : eClass.getEAllSuperTypes()) {
+				// TODO: this should fix any infinite recursions but keeping the counter just in case.
 				if (st.getName().equals(className))
 					continue;
 				if (isDefined(st.getName(), featureName)) {

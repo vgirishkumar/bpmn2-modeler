@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,9 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
+import org.eclipse.bpmn2.modeler.core.model.Messages;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IFile;
@@ -37,6 +40,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -345,7 +350,13 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			
 			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(RUNTIME_EXTENSION_ID);
 			
-			loadExtensions(null, elements, null);
+			try {
+				loadExtensions(null, elements, null);
+			}
+			catch (Exception e) {
+				ErrorDialog dlg = new ErrorDialog("Error in Configuration File", e);
+				dlg.show();
+			}
 
 			// All done parsing configuration elements
 			// now go back and fix up some things...
@@ -678,7 +689,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	/*
 	 * Runtime Extension Descriptor handling
 	 */
-	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) {
+	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) throws Exception {
 
 		TargetRuntime oldCurrentRuntime = currentRuntime;
 		currentRuntime = targetRuntime;
@@ -691,9 +702,6 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 				currentRuntime = getRuntime(e);
 				createRuntimeExtensionDescriptor(currentRuntime,e,file);
 			}
-		}
-		catch (Exception e) {
-			Activator.logError(e);
 		}
 		finally {
 			currentRuntime = oldCurrentRuntime;
@@ -721,19 +729,13 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 
 	}
 
-	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) {
+	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		IRuntimeExtensionDescriptor d = null;
-		try {
-//			System.out.println("create extension descriptor "+e.getName() + " id="+e.getAttribute("id")+" rt="+e.getAttribute("runtimeId"));
-			Class c = getClassForExtensionName(e.getName());
-			Constructor ctor = c.getConstructor(IConfigurationElement.class);
-			d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
-			d.setRuntime(rt);
-			d.setConfigFile(file);
-		}
-		catch (Exception ex) {
-			Activator.logError(ex);
-		}
+		Class c = getClassForExtensionName(e.getName());
+		Constructor ctor = c.getConstructor(IConfigurationElement.class);
+		d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
+		d.setRuntime(rt);
+		d.setConfigFile(file);
 		return d;
 	}
 	

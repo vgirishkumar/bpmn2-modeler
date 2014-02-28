@@ -14,8 +14,10 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -76,6 +78,11 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 	public void dispose() {
 		List<IRuntimeExtensionDescriptor> list = targetRuntime.getRuntimeExtensionDescriptors(getExtensionName());
 		list.remove(this);
+		// notify any open editors that property tabs have changed
+		PropertyChangeEvent event = new PropertyChangeEvent(this, Bpmn2Preferences.PREF_SHOW_ADVANCED_PROPERTIES, null, new Object());
+		for (Bpmn2Preferences p : Bpmn2Preferences.getInstances(targetRuntime)) {
+			p.propertyChange(event);
+		}
 	}
 	
 	public String getExtensionName() {
@@ -173,6 +180,7 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 			td.image = new Image(Display.getDefault(), this.image, SWT.IMAGE_COPY);
 		td.indented = this.indented;
 		td.targetRuntime = this.targetRuntime;
+		td.configFile = this.configFile;
 //		for (Bpmn2SectionDescriptor sd : (List<Bpmn2SectionDescriptor>)getSectionDescriptors()) {
 //			clone.getSectionDescriptors().add( new Bpmn2SectionDescriptor(sd) );
 //		}
@@ -190,6 +198,7 @@ public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRun
 		td.targetRuntime = this.targetRuntime;
 		td.popup = this.popup;
 		td.image = this.image;
+		td.configFile = this.configFile;
 		for (Bpmn2SectionDescriptor sd : (List<Bpmn2SectionDescriptor>)getSectionDescriptors()) {
 			td.getSectionDescriptors().add(new Bpmn2SectionDescriptor(td, sd));
 		}
