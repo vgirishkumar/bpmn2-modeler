@@ -22,8 +22,11 @@ import java.util.List;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecoratorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -35,6 +38,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -61,6 +65,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	public FeatureDescriptor(T object, EStructuralFeature feature) {
 		super(object);
 		this.feature = feature;
+		Assert.isNotNull(object);
+		Assert.isNotNull(feature);
 	}
 
 	/**
@@ -85,6 +91,10 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 	
 	public String getLabel() {
+		String s = ModelDecorator.getLabel(feature);
+		if (s!=null) {
+			return s;
+		}
 		if (label==null) {
 			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(feature);
 			if (propertyDescriptor != null)
@@ -238,6 +248,13 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		}
 		return multiline == 1;
 	}
+	
+	public boolean isList() {
+		return
+				feature.isMany() &&
+				feature instanceof EReference &&
+				((EReference)feature).isContainment();
+	}
 
 	// TODO: does the API need the ability to override this? If not, get rid of it.
 	public EClassifier getEType() {
@@ -279,14 +296,34 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 
 	public Object getValue(int index) {
-		if (index>=0 && feature.isMany()) {
-			return ((List)object.eGet(feature)).get(index);
+		if (hasStructuralFeatureFeature(object, feature)) {
+			if (index >= 0 && isList()) {
+				return ((List) object.eGet(feature)).get(index);
+			}
+			return object.eGet(feature);
 		}
-		return object.eGet(feature);
+		if (isAnyAttribute(object, feature)) {
+			Object value = null;
+			try {
+				value = object.eGet(feature);
+			} catch (Exception e1) {
+			}
+			return value;
+		}
+		if (isExtensionAttribute(object, feature)) {
+			List result = ModelDecorator.getAllExtensionAttributeValues(object, feature);
+			if (result.size() == 0) {
+				return null;
+			}
+			if (index >= 0)
+				return result.get(index);
+			return result.get(0);
+		}
+		return null;
 	}
 
 	public List<Object> getValueList() {
-		if (feature.isMany() && feature instanceof EReference && ((EReference)feature).isContainment()) {
+		if (isList()) {
 			return ((List)object.eGet(feature));
 		}
 		return Collections.EMPTY_LIST;
@@ -350,19 +387,110 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return true;
 	}
 	
+	/**
+	 * Check if the given feature in the specified object is NOT a dynamic feature.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @return
+	 */
+	private boolean hasStructuralFeatureFeature(EObject object, EStructuralFeature feature) {
+		String name = feature.getName();
+		if (object instanceof EClass)
+			return ((EClass)object).getEStructuralFeature(name) != null;
+		return object.eClass().getEStructuralFeature(name) != null;
+	}
+	
+	/**
+	 * Check if the given feature in the specified object is a dynamic attribute.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @return
+	 */
+	private boolean isAnyAttribute(EObject object, EStructuralFeature feature) {
+		if (hasStructuralFeatureFeature(object,feature))
+			return false;
+		String name = feature.getName();
+		feature = ModelDecorator.getAnyAttribute(object, name);
+		if (feature!=null)
+			return true;
+		return false;
+	}
+
+	/**
+	 * Check if the given feature in the specified object is a dynamic element.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @return
+	 */
+	private boolean isExtensionAttribute(EObject object, EStructuralFeature feature) {
+		if (hasStructuralFeatureFeature(object,feature))
+			return false;
+		String name = feature.getName();
+		feature = ModelDecorator.getExtensionAttribute(object, name);
+		if (feature!=null)
+			return true;
+		return false;
+	}
+
+	private ModelDecorator getModelDecorator() {
+		ModelDecorator modelDecorator = ModelDecoratorAdapter.getModelDecorator(feature.getEContainingClass().getEPackage());
+		return modelDecorator;
+	}
+	
+	/**
+	 * Set the value of our feature. If the feature is a dynamic feature, the value
+	 * is set in either the "anyAttribute" feature map if it is an attribute,
+	 * or in the BaseElement's extension values container.
+	 * 
+	 * @param object
+	 * @param feature
+	 * @param value
+	 * @param index
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
-		if (feature.isMany()) {
-			// NB: setting a List item to null into a List will clear the List!
-			if (value==null)
-				((List)object.eGet(feature)).clear();
-			else if (index<0)
-				((List)object.eGet(feature)).add(value);
+		if (hasStructuralFeatureFeature(object,feature) || isList()) {
+			if (isList()) {
+				// NB: setting a List item to null into a List will clear the List!
+				if (value==null)
+					((List)object.eGet(feature)).clear();
+				else if (index<0)
+					((List)object.eGet(feature)).add(value);
+				else
+					((List)object.eGet(feature)).set(index,value);
+			}
 			else
-				((List)object.eGet(feature)).set(index,value);
+				object.eSet(feature, value);
 		}
-		else
-			object.eSet(feature, value);
+		else {
+			// the feature does not exist in this object, so we either need to
+			// create an "anyAttribute" entry or, if the object is an ExtensionAttributeValue,
+			// create an entry in its "value" feature map.
+			String name = feature.getName();
+			if (feature instanceof EAttribute) {
+				EStructuralFeature f = ModelDecorator.getAnyAttribute(object, name);
+				if (f!=null) {
+					object.eSet(f, value);
+				}
+				else {
+					String namespace = ExtendedMetaData.INSTANCE.getNamespace(feature);
+					String type = feature.getEType().getName();
+					ModelDecorator modelDecorator = getModelDecorator();
+					if (modelDecorator==null)
+						modelDecorator = getModelDecorator();
+					modelDecorator.addAnyAttribute(object, namespace, name, type, value);
+				}
+			}
+			else {
+				// FIXME: access to ExtensionAttributeValues MUST go through the ModelExtensionDescriptor's
+				// modelDecorator so that we can properly find, and optionally create and initialize
+				// the EPackage that contains the extensions
+				ModelDecorator.addExtensionAttributeValue(object, feature, value, index, false);
+			}
+		}
 	}
 	
 	protected void internalPostSet(Object value) {

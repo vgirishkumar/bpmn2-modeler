@@ -18,7 +18,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.xml.type.AnyType;
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * Adapter Factory class that adapts AnyType objects using our special ExtendedPropertiesAdapter.
@@ -30,7 +30,7 @@ class AnyTypeAdaptorFactory extends AdapterFactoryImpl {
 	
 	@Override
 	public boolean isFactoryForType(Object type) {
-		return type == AnyType.class;
+		return type == ExtendedPropertiesAdapter.class;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ class AnyTypeAdaptorFactory extends AdapterFactoryImpl {
 			if (object instanceof EClass) {
 				object = ExtendedPropertiesAdapter.getDummyObject((EClass)object);
 			}
-			adapter = new AnyTypeExtendedPropertiesAdapter(this, (AnyType)object);
+			adapter = new ExtendedPropertiesAdapter(this, (EObject)object);
 		}
 		return adapter;
 	}

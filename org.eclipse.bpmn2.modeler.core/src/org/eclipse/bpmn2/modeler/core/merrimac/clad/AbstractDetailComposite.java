@@ -627,10 +627,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					}
 					// add the extension attributes and elements
 					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(o);
-					List<EStructuralFeature> features = adapter.getFeatures();
-					for (EStructuralFeature f : features) {
-						if (!list.contains(f.getName()))
-							list.add(f.getName());
+					if (adapter!=null) {
+						List<EStructuralFeature> features = adapter.getFeatures();
+						for (EStructuralFeature f : features) {
+							if (!list.contains(f.getName()))
+								list.add(f.getName());
+						}
 					}
 					String a[] = new String[list.size()];
 					list.toArray(a);

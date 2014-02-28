@@ -69,6 +69,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice"; //$NON-NLS-1$
 	// the ObjectDescriptor object
 	public static final String OBJECT_DESCRIPTOR = "object.descriptor"; //$NON-NLS-1$
+	// the FeatureDescriptor object
+	public static final String FEATURE_DESCRIPTOR = "feature.descriptor"; //$NON-NLS-1$
 	// the EMF Resource that the object will eventually (or already does?) belong to
 	public static final String RESOURCE = "resource"; //$NON-NLS-1$
 	// Line number in XML document where this object is defined
@@ -102,6 +104,8 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static ExtendedPropertiesAdapter adapt(Object object, EStructuralFeature feature) {
 		ExtendedPropertiesAdapter adapter = null;
+		if (object instanceof ExtensionAttributeValue)
+			object = ((ExtensionAttributeValue) object).eContainer();
 		if (object instanceof EObject) {
 			// If the EObject already has one of these adapters, find the "best" one for
 			// the given feature. The "best" means the adapter will have defined a FeatureDescriptor
@@ -193,13 +197,13 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 
 	@SuppressWarnings("unchecked")
 	public boolean hasFeatureDescriptor(EStructuralFeature feature) {
-		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
+		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,FEATURE_DESCRIPTOR);
 		return fd!=null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public FeatureDescriptor<T> getFeatureDescriptor(EStructuralFeature feature) {
-		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,OBJECT_DESCRIPTOR);
+		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,FEATURE_DESCRIPTOR);
 		if (fd==null) {
 			setFeatureDescriptor(feature, fd = new FeatureDescriptor<T>((T)getTarget(), feature));
 		}
@@ -219,7 +223,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 			featureProperties.put(feature,props);
 		}
 		fd.setOwner(this);
-		props.put(OBJECT_DESCRIPTOR, fd);
+		props.put(FEATURE_DESCRIPTOR, fd);
 	}
 
 	/**
@@ -372,15 +376,15 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 				}
 			}
 		}
-		if (name.isEmpty()) {
-			name = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		}
 		// Get the model object's long description from the Messages class.
 		// The field in Messages that contains the description will have the
 		// form: "UI_<objectName>_long_description".
 		// The Messages class must be contained somewhere in the package hierarchy
 		// that contains the searchObject's class.
     	try {
+    		if (name.isEmpty()) {
+    			name = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    		}
     		if (description==null || description.isEmpty()) {
 	        	String fieldName = "UI_" + name + "_long_description"; //$NON-NLS-1$ //$NON-NLS-2$
 	        	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
@@ -476,9 +480,9 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	public Resource getResource() {
 		Resource resource = (Resource) getProperty(RESOURCE);
 		if (resource==null) {
-			ObjectDescriptor<T> pd = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
-			if (pd!=null) {
-				IResourceProvider rp = AdapterRegistry.INSTANCE.adapt(pd.object.eContainer(), IResourceProvider.class);
+			ObjectDescriptor<T> od = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
+			if (od!=null) {
+				IResourceProvider rp = AdapterRegistry.INSTANCE.adapt(od.object.eContainer(), IResourceProvider.class);
 				if (rp!=null && rp!=this)
 					resource = rp.getResource();
 			}

@@ -10,47 +10,29 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractAddEventDefinitionFeature;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer.AddEventDefinitionFeature;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
-import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.mm.MmPackage;
-import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Image;
-import org.eclipse.graphiti.mm.algorithms.Polygon;
-import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
 public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContainer {
 
-	private final static String TYPE_VALUE = "MyEventDefinition";
+	// this value must match what's in the plugin.xml
 	private final static String CUSTOM_TASK_ID = "org.eclipse.bpmn2.modeler.examples.customtask.eventDefinition1";
 
 	public MyEventDefinitionFeatureContainer() {
@@ -59,17 +41,9 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 	@Override
 	public String getId(EObject object) {
 		// This is where we inspect the object to determine what its custom task ID should be.
-		// In this case, the "type" attribute will have a value of "MyTask".
-		// If found, return the TEMPORAL_DEPENDENCY_ID string.
-		//
-		// Note that the object inspection can be arbitrarily complex and may include several
-		// object features. This simple case just demonstrates what needs to happen here.
-		EStructuralFeature f = ModelDecorator.getAnyAttribute(object, "type");
-		if (f!=null) {
-			Object id = object.eGet(f);
-			if (TYPE_VALUE.equals(id))
-				return CUSTOM_TASK_ID;
-		}
+		// In this case, the object will be a MyEventDefinition instance.
+		if (object instanceof MyEventDefinition)
+			return CUSTOM_TASK_ID;
 			
 		return null;
 	}

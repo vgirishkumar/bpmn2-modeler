@@ -11,7 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.runtime.example;
+package org.eclipse.bpmn2.modeler.examples.runtime;
 
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -28,9 +28,9 @@ import org.eclipse.ui.IEditorInput;
 
 public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	
-	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.runtime.example";
+	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.examples.runtime";
 	
-	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.runtime.example";
+	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.examples.runtime";
 	private static final String[] typeLanguages = new String[] {
 		"http://www.w3.org/2001/XMLSchema", "XML Schema",
 		"http://www.java.com/javaTypes", "Java",
@@ -51,7 +51,7 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize()
-	 * @see org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider#registerAvailableImages()
+	 * @see org.eclipse.bpmn2.modeler.examples.runtime.SampleImageProvider#registerAvailableImages()
 	 */
 	@Override
 	public void initialize(DiagramEditor editor) {

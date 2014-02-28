@@ -432,10 +432,9 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		protected EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement) {
 			EStructuralFeature feature = null;
 			String nsURI = (prefix==null ? targetNamespace : helper.getURI(prefix));
-			EPackage pkg = ModelDecorator.getEPackage(nsURI);
-			if (pkg!=null) {
-				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
-				feature = mda.getEStructuralFeature(object, name);
+			ModelDecorator md = ModelDecorator.getModelDecorator(nsURI);
+			if (md!=null) {
+				feature = md.getEStructuralFeature(object, name);
 				if (feature!=null) {
 //					System.out.println("found feature "+object.eClass().getName()+"."+name+" in pkg "+pkg.getName());
 					return feature;
@@ -451,15 +450,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		protected EObject createObjectFromFeatureType(EObject peekObject, EStructuralFeature feature) {
+if (feature.getName().equals("import"))
+	System.out.println();
 			int lineNumber = getLineNumber();
 			EObject newObject = null;
-			EPackage pkg = ModelDecorator.getEPackageForFeature(feature);
+			String nsURI = ExtendedMetaData.INSTANCE.getNamespace(feature);
+			EPackage pkg = ModelDecorator.getEPackage(nsURI);
 			if (pkg!=null) {
 				EClassifier eType = feature.getEType();
 				newObject = pkg.getEFactoryInstance().create((EClass)eType);
 				
-				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
-				feature = mda.getEStructuralFeature(peekObject, feature);
+//				ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
+//				feature = mda.getEStructuralFeature(peekObject, feature);
 				if (feature!=null) {
 					ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(peekObject);
 					epa.getFeatureDescriptor(feature).setValue(newObject);
@@ -490,10 +492,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					catch (Exception e) {
 						e.printStackTrace();
 					}
-					finally {
-						adapter.setResource(null);
-						adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
-					}
 				}
 			}
 			
@@ -509,13 +507,19 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		
 		@Override
 		protected void setFeatureValue(EObject object, EStructuralFeature feature, Object value, int position) {
-			EPackage pkg = ModelDecorator.getEPackageForFeature(feature);
-			if (pkg!=null) {
-				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(object);
-				epa.getFeatureDescriptor(feature).setValue(value, position);
+			ModelDecorator md = ModelDecorator.getModelDecorator(feature);
+			if (md!=null) {
+				EStructuralFeature f = md.getEStructuralFeature(object, feature.getName());
+				if (f!=null) {
+					ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(object);
+					epa.getFeatureDescriptor(f).setValue(value, position);
+					return;
+				}
+				
+//				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(object);
+//				epa.getFeatureDescriptor(feature).setValue(value, position);
 			}
-			else
-				super.setFeatureValue(object, feature, value, position);
+			super.setFeatureValue(object, feature, value, position);
 		}
 
 		@Override
@@ -623,30 +627,31 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						if (imp!=null) {
 							value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
 						}
-						if (value==null) {
-							// we can't find the object in any of our imports,
-							// so create a string wrapper EObject for this thing
-							value = ModelUtil.createStringWrapper(ids);
+					}
+				}
+
+				if (value==null) {
+					// we can't find the object in any of our imports,
+					// so create a string wrapper EObject for this thing
+					value = ModelUtil.createStringWrapper(ids);
+				}
+				
+				if (value!=null && eReference.getEType().isInstance(value)) {
+					try {
+						if (eReference.isMany()) {
+							((EList)object.eGet(eReference)).add(value);
 						}
-						
-						if (value!=null && eReference.getEType().isInstance(value)) {
-							try {
-								if (eReference.isMany()) {
-									((EList)object.eGet(eReference)).add(value);
-								}
-								else {
-									object.eSet(eReference, value);
-								}
-								return;
-							} catch (Exception e) {
-								String msg = NLS.bind(
-									Messages.Bpmn2ModelerResourceImpl_Invalid_Reference,
-									new Object[] {object, eReference, value});
-								IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
-										msg, e);
-								Activator.getDefault().logStatus(s);
-							}
+						else {
+							object.eSet(eReference, value);
 						}
+						return;
+					} catch (Exception e) {
+						String msg = NLS.bind(
+							Messages.Bpmn2ModelerResourceImpl_Invalid_Reference,
+							new Object[] {object, eReference, value});
+						IStatus s = new Status(Status.ERROR, Activator.PLUGIN_ID,
+								msg, e);
+						Activator.getDefault().logStatus(s);
 					}
 				}
 			}

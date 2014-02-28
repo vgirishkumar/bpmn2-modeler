@@ -11,7 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.runtime.example;
+package org.eclipse.bpmn2.modeler.examples.runtime;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
-import org.eclipse.bpmn2.modeler.runtime.example.SampleImageProvider.IconSize;
+import org.eclipse.bpmn2.modeler.examples.runtime.SampleImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.CreateTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.TextAnnotationFeatureContainer;
@@ -84,8 +84,8 @@ import org.eclipse.graphiti.util.IColorConstant;
  */
 public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContainer {
 
-	public final static String MITIGATION_ID = "org.eclipse.bpmn2.modeler.runtime.example.mitigation";
-	public final static String RISK_ID = "org.eclipse.bpmn2.modeler.runtime.example.risk";
+	public final static String MITIGATION_ID = "org.eclipse.bpmn2.modeler.examples.runtime.mitigation";
+	public final static String RISK_ID = "org.eclipse.bpmn2.modeler.examples.runtime.risk";
 
 	@Override
 	protected IShapeFeatureContainer createFeatureContainer(IFeatureProvider fp) {

@@ -8,7 +8,7 @@
  * Contributors:
  * 	Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.runtime.example;
+package org.eclipse.bpmn2.modeler.examples.runtime;
 
 import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;

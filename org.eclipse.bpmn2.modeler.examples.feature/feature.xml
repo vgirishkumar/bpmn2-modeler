@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.bpmn2.modeler.examples.feature"
       label="BPMN2 Modeler - Example Runtime Extensions Feature"
-      version="1.0.2.qualifier"
+      version="1.1.0.qualifier"
       provider-name="Eclipse.org">
 
    <copyright url="http://www.example.com/copyright">
@@ -25,7 +25,7 @@ Red Hat, Inc. - initial API and implementation
    </requires>
 
    <plugin
-         id="org.eclipse.bpmn2.modeler.runtime.example"
+         id="org.eclipse.bpmn2.modeler.examples.runtime"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -63,6 +63,8 @@ public class EDataTypeConversionFactory implements Factory {
 	}
 	
 	public static boolean isFactoryFor(String type) {
-		return registry.get(type) != null;
+		if (type!=null)
+			return registry.get(type) != null;
+		return false;
 	}
 }

@@ -38,10 +38,15 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 	@Override
 	public EObject create(EClass eClass) {
 		EObject object;
-		if (eClass == EcorePackage.eINSTANCE.getEObject())
+		if (eClass == EcorePackage.eINSTANCE.getEObject()) {
 			object = XMLTypeFactory.eINSTANCE.createAnyType();
-		else
+		}
+		else if (getEPackage() != eClass.getEPackage()) {
+			object = eClass.getEPackage().getEFactoryInstance().create(eClass);
+		}
+		else {
 			object = super.create(eClass);
+		}
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		return object;
 	}

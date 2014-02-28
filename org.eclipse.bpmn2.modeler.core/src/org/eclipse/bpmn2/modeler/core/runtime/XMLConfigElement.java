@@ -221,7 +221,6 @@ public class XMLConfigElement implements IConfigurationElement {
 			return false;
 		}
 
-		@Override
 		public IPluginDescriptor getDeclaringPluginDescriptor() throws InvalidRegistryObjectException {
 			// TODO Auto-generated method stub
 			return null;

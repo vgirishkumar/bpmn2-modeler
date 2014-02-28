@@ -29,7 +29,7 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class CustomTemporalDependencyFeatureContainer extends CustomConnectionFeatureContainer {
 
-	public static String TEMPORAL_DEPENDENCY_ID = "org.eclipse.bpmn2.modeler.examples.timebpmn.temporalDependency";
+	public static String TEMPORAL_DEPENDENCY_ID = "org.eclipse.bpmn2.modeler.examples.customtask.temporalDependency";
 	
 	public CustomTemporalDependencyFeatureContainer() {
 		setId(TEMPORAL_DEPENDENCY_ID);

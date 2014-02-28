@@ -11,7 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.runtime.example;
+package org.eclipse.bpmn2.modeler.examples.runtime;
 
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;

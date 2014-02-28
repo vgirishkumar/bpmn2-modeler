@@ -2,29 +2,21 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-	<extension point="org.eclipse.emf.ecore.generated_package">
-		<package
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleModel.SampleModelPackage"
-			genModel="model/SampleModel.genmodel"
-			uri="http://org.eclipse.bpmn2.modeler.runtime.example">
-		</package>
-	</extension>
-
 	<extension
 		point="org.eclipse.bpmn2.modeler.runtime">
 		
 		<runtime name="Sample Business Process Engine" versions="1.0"
-			id="org.eclipse.bpmn2.modeler.runtime.example"
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleRuntimeExtension"
+			id="org.eclipse.bpmn2.modeler.examples.runtime"
+			class="org.eclipse.bpmn2.modeler.examples.runtime.SampleRuntimeExtension"
 			description="BPMN2 Modeler customizations for a sample runtime engine">
 		</runtime>
 
-		<model runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
-			uri="http://org.eclipse.bpmn2.modeler.runtime.example">
+		<model runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
+			uri="http://org.eclipse.bpmn2.modeler.examples.runtime">
 		</model>
 
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.runtime.example.association.tab"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.association.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.assocation.tab"
 			class="default"
 			features="affectsTaskExecution"
@@ -33,23 +25,23 @@
 		</propertyTab>
 		
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.runtime.example.risk.tab"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.risk.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.textAnnotation.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleRiskTaskPropertySection"
+			class="org.eclipse.bpmn2.modeler.examples.runtime.SampleRiskTaskPropertySection"
 			type="org.eclipse.bpmn2.TextAnnotation"
 			label="Risk Task">
 		</propertyTab>
 		
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.runtime.example.mitigation.tab"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.mitigation.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.textAnnotation.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.example.SampleMitigationTaskPropertySection"
+			class="org.eclipse.bpmn2.modeler.examples.runtime.SampleMitigationTaskPropertySection"
 			type="org.eclipse.bpmn2.TextAnnotation"
 			label="Mitigation Task">
 		</propertyTab>
 		
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.runtime.example.flow.tab"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.flow.tab"
 			class="default"
 			features="priority"
 			type="org.eclipse.bpmn2.SequenceFlow"
@@ -58,12 +50,12 @@
 
 		<customTask
 			description="This task represents a risk that can occur in the connected Elements."
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.risk"
+			featureContainer="org.eclipse.bpmn2.modeler.examples.runtime.SampleCustomTaskFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.risk"
 			name="Risk Task"
 			category="Risk &amp; Mitigation"
 			icon="risk.png"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
 			type="TextAnnotation">
 			<property name="name" value="Risk Task" type="EString"/>
 			<property name="text" value="Risk Task" type="EString"/>
@@ -73,12 +65,12 @@
 
 		<customTask
 			description="This task attempts to minimize the impact of risk."
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.mitigation"
+			featureContainer="org.eclipse.bpmn2.modeler.examples.runtime.SampleCustomTaskFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.mitigation"
 			name="Mitigation Task"
 			category="Risk &amp; Mitigation"
 			icon="mitigation.png"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
 			type="TextAnnotation">
 			<property name="text" value="Mitigation Task" type="EString"/>
 			<property name="name" value="Mitigation Task" type="EString"/>
@@ -88,35 +80,35 @@
 
 		<customTask
 			description="Associates a Risk or Mitigation with a Task."
-			featureContainer="org.eclipse.bpmn2.modeler.runtime.example.SampleCustomSequenceFlowFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.runtime.example.flow"
+			featureContainer="org.eclipse.bpmn2.modeler.examples.runtime.SampleCustomSequenceFlowFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.flow"
 			name="Mitigation Flow"
 			category="Risk &amp; Mitigation"
 			icon="flow.png"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example.flow"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.runtime.flow"
 			type="SequenceFlow">
 			<property name="name" value="Mitigate" type="EString"/>
 			<property name="priority" value="1" type="EInt"/>
 		</customTask>
 
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.Association"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.modelExtension.Association"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
 			name="Association Extensions"
 			type="Association">
 			<property name="affectsTaskExecution" value="false" type="EBoolean"/>
 		</modelExtension>
 		
 		<modelExtension
-			id="org.eclipse.bpmn2.modeler.runtime.example.modelExtension.ManualTask"
-			runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+			id="org.eclipse.bpmn2.modeler.examples.runtime.modelExtension.ManualTask"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
 			name="Manual Task Extensions"
 			type="ManualTask">
 			<property name="timeToComplete" value="1d" type="EString"/>
 		</modelExtension>
 		
 		<modelEnablement
-				runtimeId="org.eclipse.bpmn2.modeler.runtime.example"
+				runtimeId="org.eclipse.bpmn2.modeler.examples.runtime"
 				type="Process"
 				profile="Default Process"
 				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
@@ -128,9 +120,9 @@
    <extension
          point="org.eclipse.bpmn2.modeler.ui">
       <toolProvider
-            class="org.eclipse.bpmn2.modeler.runtime.example.SampleToolProvider"
-            id="org.eclipse.bpmn2.modeler.runtime.example.toolProvider1"
-            runtimeId="org.eclipse.bpmn2.modeler.runtime.example">
+            class="org.eclipse.bpmn2.modeler.examples.runtime.SampleToolProvider"
+            id="org.eclipse.bpmn2.modeler.examples.runtime.toolProvider1"
+            runtimeId="org.eclipse.bpmn2.modeler.examples.runtime">
       </toolProvider>
    </extension>
 

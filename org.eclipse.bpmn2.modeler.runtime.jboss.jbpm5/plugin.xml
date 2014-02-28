@@ -481,7 +481,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			name="%modelExtension.name.0"
 			type="SequenceFlow">
-			<property name="priority" value="1" type="EInt"/>
+			<property name="priority" value="1"/>
 			<property name="name" value=""/>
 		</modelExtension>
 		

@@ -8,7 +8,7 @@
 
 	<groupId>org.eclipse.bpmn2.modeler</groupId>
 	<artifactId>org.eclipse.bpmn2.modeler.parent</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>BPMN2 Modeler Parent</name>
@@ -284,7 +284,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+<!--
 			<plugin>
 				<groupId>org.eclipse.cbi.maven.plugins</groupId>
 				<artifactId>eclipse-jarsigner-plugin</artifactId>
@@ -298,7 +298,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+-->
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-pack200b-plugin</artifactId>

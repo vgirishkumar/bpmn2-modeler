@@ -891,6 +891,7 @@ public class DIImport {
 			return connection;
 		} else {
 			diagnostics.add(IStatus.WARNING, bpmnElement,Messages.DIImport_No_Create_Feature);
+			featureProvider.getAddFeature(context);
 		}
 		return null;
 	}

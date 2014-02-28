@@ -75,6 +75,10 @@ public class ObjectDescriptor<T extends EObject> {
 	}
 	
 	public String getLabel() {
+		String s = ModelDecorator.getLabel(object.eClass());
+		if (s!=null) {
+			return s;
+		}
 		if (label==null) {
 			EClass eclass = (object instanceof EClass) ?
 					(EClass)object :
@@ -251,15 +255,7 @@ public class ObjectDescriptor<T extends EObject> {
 			adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
 		T newObject = null;
 		synchronized(factory) {
-			try {
-				newObject = (T) factory.create(eClass);
-			}
-			finally {
-				// the factory is shared among editor instances,
-				// so make sure this is cleared when we're done
-				adapter.setResource(null);
-				adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
-			}
+			newObject = (T) factory.create(eClass);
 		}
 		
 		// if the object has an "id", assign it now.
@@ -276,7 +272,8 @@ public class ObjectDescriptor<T extends EObject> {
 		}
 		
 		adapter = ExtendedPropertiesAdapter.adapt(newObject);
-		adapter.setResource(resource);
+		if (adapter!=null)
+			adapter.setResource(resource);
 		
 		return newObject;
 	}

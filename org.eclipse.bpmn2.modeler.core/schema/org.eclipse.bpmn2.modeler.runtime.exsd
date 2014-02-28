@@ -1177,7 +1177,7 @@ Finally, creating connections between objects is done by referencing a previous 
  &lt;extension point=&quot;org.eclipse.bpmn2.modeler.runtime&quot;&gt;
   &lt;!-- the runtime definition --&gt;
   &lt;runtime name=&quot;Sample Business Process Engine&quot; versions=&quot;1.0&quot;
-   id=&quot;org.eclipse.bpmn2.modeler.runtime.example&quot; class=&quot;org.eclipse.bpmn2.modeler.runtime.example.SampleRuntimeExtension&quot;
+   id=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot; class=&quot;org.eclipse.bpmn2.modeler.examples.runtime.SampleRuntimeExtension&quot;
    description=&quot;BPMN2 Modeler customizations for a sample runtime engine&quot;&gt;
   &lt;/runtime&gt;
 
@@ -1187,8 +1187,8 @@ Finally, creating connections between objects is done by referencing a previous 
    We could have provided a namespace URI in each of those elements, but it&apos;s 
    more convenient to do so here.
   --&gt;
-  &lt;model runtimeId=&quot;org.eclipse.bpmn2.modeler.runtime.example&quot;
-   uri=&quot;http://org.eclipse.bpmn2.modeler.runtime.example&quot;&gt;
+  &lt;model runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot;
+   uri=&quot;http://org.eclipse.bpmn2.modeler.examples.runtime&quot;&gt;
   &lt;/model&gt;
 
   &lt;!-- This &lt;customTask&gt; item extends the BPMN2 TextAnnotation element by adding 
@@ -1199,10 +1199,10 @@ Finally, creating connections between objects is done by referencing a previous 
   --&gt;
   &lt;customTask
    description=&quot;This task represents a risk that can occur in the connected Elements.&quot;
-   featureContainer=&quot;org.eclipse.bpmn2.modeler.runtime.example.SampleCustomTaskFeatureContainer&quot;
-   id=&quot;org.eclipse.bpmn2.modeler.runtime.example.risk&quot; name=&quot;Risk Task&quot;
+   featureContainer=&quot;org.eclipse.bpmn2.modeler.examples.runtime.SampleCustomTaskFeatureContainer&quot;
+   id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.risk&quot; name=&quot;Risk Task&quot;
    category=&quot;Risk &amp;amp; Mitigation&quot; icon=&quot;risk.png&quot;
-   runtimeId=&quot;org.eclipse.bpmn2.modeler.runtime.example&quot; type=&quot;TextAnnotation&quot;&gt;
+   runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot; type=&quot;TextAnnotation&quot;&gt;
    &lt;property name=&quot;name&quot; value=&quot;Risk Task&quot; type=&quot;EString&quot; /&gt;
    &lt;property name=&quot;text&quot; value=&quot;Risk Task&quot; type=&quot;EString&quot; /&gt;
    &lt;property name=&quot;evaluate&quot; value=&quot;true&quot; type=&quot;EBoolean&quot; /&gt;
@@ -1216,7 +1216,7 @@ Finally, creating connections between objects is done by referencing a previous 
    and an Integer. Note that a specialized &lt;propertyTab&gt; is needed to display/edit 
    these extensions (see below).
   --&gt;
-  &lt;modelExtension id=&quot;org.eclipse.bpmn2.modeler.runtime.example.activity&quot;
+  &lt;modelExtension id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.activity&quot;
    uri=&quot;http://org.eclipse.bpmn2/default&quot; name=&quot;Activity Extension&quot;
    type=&quot;Activity&quot;&gt;
    &lt;property name=&quot;isDevice&quot; type=&quot;EBoolean&quot; value=&quot;true&quot;
@@ -1244,7 +1244,7 @@ Finally, creating connections between objects is done by referencing a previous 
    and elements, although we could have supplied our own Java class to handle 
    these extensions.
   --&gt;
-  &lt;propertyTab id=&quot;org.eclipse.bpmn2.modeler.runtime.example.activity.tab&quot;
+  &lt;propertyTab id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.activity.tab&quot;
    afterTab=&quot;org.eclipse.bpmn2.modeler.description.tab&quot; class=&quot;default&quot;
    features=&quot;isDevice device carrier identifier&quot; type=&quot;org.eclipse.bpmn2.Activity&quot;
    label=&quot;Activity Extensions&quot;&gt;

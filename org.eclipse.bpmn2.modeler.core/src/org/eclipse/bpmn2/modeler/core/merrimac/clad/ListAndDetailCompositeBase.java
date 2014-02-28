@@ -211,7 +211,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 
 	protected boolean isModelObjectEnabled(String className, String featureName) {
-		return getModelEnablements().isEnabled(className, featureName);
+		return true; //getModelEnablements().isEnabled(className, featureName);
 	}
 
 	protected boolean isModelObjectEnabled(EClass eclass, EStructuralFeature feature) {

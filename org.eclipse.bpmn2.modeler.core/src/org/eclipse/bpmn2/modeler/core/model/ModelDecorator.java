@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -27,6 +28,7 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
+import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
@@ -82,15 +84,6 @@ public class ModelDecorator {
 	protected static ResourceSet resourceSet;
 	protected List<EPackage> relatedEPackages;
 	
-	/*
-	 * Register the AdapterFactory for AnyType objects.
-	 * @see AnyTypeAdaptorFactory
-	 */
-	static {
-		EClass e = XMLTypePackage.eINSTANCE.getAnyType();
-		AdapterRegistry.INSTANCE.registerFactory(e.getInstanceClass(), AnyTypeAdaptorFactory.INSTANCE);
-	}
-	
 	/**
 	 * Construct a new EPackage for extension classes and features, and add the given
 	 * EPackage to our list of related packages. The new EPackage will have the same
@@ -108,13 +101,16 @@ public class ModelDecorator {
 		String name = pkg.getName()+" Dynamic Extensions";
 		String nsPrefix = pkg.getNsPrefix();
 		String nsURI = pkg.getNsURI();
+
+		addRelatedEPackage(pkg);
+		AdapterRegistry.INSTANCE.registerFactory(pkg, AnyTypeAdaptorFactory.INSTANCE);
+		
 		getResourceSet();
 		ePackage = (EPackage) resourceSet.getPackageRegistry().get(nsURI);
 		if (ePackage==null) {
 			ePackage = createEPackage(name,nsPrefix,nsURI);
 			initPackage();
 		}
-		addRelatedEPackage(pkg);
 	}
 	
 	/**
@@ -139,6 +135,8 @@ public class ModelDecorator {
 	public void dispose() {
 		if (resourceSet!=null) {
 			if (ePackage!=null) {
+				ModelDecoratorAdapter mda = ModelDecoratorAdapter.getAdapter(ePackage);
+				mda.dispose();
 				resourceSet.getPackageRegistry().remove(ePackage.getNsURI());
 				EcoreUtil.delete(ePackage);
 			}
@@ -168,6 +166,7 @@ public class ModelDecorator {
 		List<String> delegates = new ArrayList<String>();
 		delegates.add(EDataTypeConversionFactory.DATATYPE_CONVERSION_FACTORY_URI);
 		EcoreUtil.setConversionDelegates(ePackage, delegates);
+		AdapterRegistry.INSTANCE.registerFactory(ePackage, AnyTypeAdaptorFactory.INSTANCE);
 	}
 	
 	/**
@@ -188,19 +187,41 @@ public class ModelDecorator {
 	 */
 	public static EPackage getEPackage(String nsURI) {
 		EPackage pkg = (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
-		return pkg;
+		if (pkg!=null)
+			return pkg;
+		
+		// check all related packages in all ModelDecorators in our ResourceSet
+		for (Map.Entry<String, Object> entry : getResourceSet().getPackageRegistry().entrySet()) {
+			ModelDecorator md = ModelDecoratorAdapter.getModelDecorator((EPackage) entry.getValue());
+			for (EPackage p : md.getRelatedEPackages()) {
+				if (p.getNsURI().equals(nsURI))
+					return p;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static ModelDecorator getModelDecorator(String nsURI) {
+		EPackage pkg = getEPackage(nsURI);
+		if (pkg!=null) {
+			ModelDecoratorAdapter mda = AdapterUtil.adapt(pkg, ModelDecoratorAdapter.class);
+			if (mda!=null)
+				return mda.getModelDecorator();
+		}
+		return null;
 	}
 	
 	/**
-	 * Look up the dynamic EPackage from the given feature by using that feature's namespace.
+	 * Look up the ModelDecorator from the given feature by using that feature's namespace.
 	 * 
 	 * @param feature
-	 * @return the dynamic EPackage that contains the given feature or null if the feature
+	 * @return the ModelDecorator that contains the given feature or null if the feature
 	 * is not defined.
 	 */
-	public static EPackage getEPackageForFeature(EStructuralFeature feature) {
+	public static ModelDecorator getModelDecorator(EStructuralFeature feature) {
 		String nsURI = ExtendedMetaData.INSTANCE.getNamespace(feature);
-		return (EPackage) getResourceSet().getPackageRegistry().get(nsURI);
+		return getModelDecorator(nsURI);
 	}
 	
 	/**
@@ -261,7 +282,7 @@ public class ModelDecorator {
 	 */
 	private List<String> getSuperTypes(String type) {
 		List<String> supertypes = new ArrayList<String>();
-		if (type.contains(":")) {
+		if (type!=null && type.contains(":")) {
 			String a[] = type.split(":");
 			if (a.length>1) {
 				a = a[1].split(",");
@@ -288,10 +309,10 @@ public class ModelDecorator {
 	 * @return a string containing only the type name
 	 */
 	private String getType(String type) {
-		if (type==null)
-			return null;
-		String a[] = type.split(":");
-		return a[0];
+		if (type!=null && type.contains(":")) {
+			return type.split(":")[0];
+		}
+		return type;
 	}
 	
 	/**
@@ -486,6 +507,32 @@ public class ModelDecorator {
 
 		return eClass;
 	}
+
+	public EStructuralFeature getEStructuralFeature(EObject object, String name) {
+		// first check the object's EClass for the feature name
+		EClass eClass = object.eClass();
+		if (eClass!=null) {
+			EStructuralFeature feature = eClass.getEStructuralFeature(name);
+			if (feature!=null)
+				return feature;
+		}
+		// if not found, search our dynamic EPackages for a class with the same name
+		// and look for the feature name in there
+		if (object instanceof ExtensionAttributeValue) {
+			object = object.eContainer();
+		}
+		String type = object.eClass().getName();
+		eClass = getEClass(type);
+		if (eClass!=null) {
+			for (EStructuralFeature feature : eClass.getEAllStructuralFeatures()) {
+				if (name.equals(feature.getName()))
+					return feature;
+				if (name.equals(ExtendedMetaData.INSTANCE.getName(feature)))
+					return feature;
+			}
+		}
+		return findEStructuralFeatureInDocumentRoot(name);
+	}
 	
 	/**
 	 * Search for an EAttribute with the given name in the specified EClass.
@@ -496,16 +543,21 @@ public class ModelDecorator {
 	 * @return the EAttribute or null if not found.
 	 */
 	public EAttribute getEAttribute(String name, String type, String owningtype) {
-		if (type==null)
-			type = "EString";
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
+		if (feature instanceof EAttribute) {
+			if (type!=null)
+				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
+			return (EAttribute) feature;
+		}
 		
 		EClass eClass = getEClass(owningtype);
 		if (eClass!=null) {
 			// the EClass already exists in our EPackage: check if the named feature was already created
-			EStructuralFeature feature = eClass.getEStructuralFeature(name);
+			feature = eClass.getEStructuralFeature(name);
 			if (feature instanceof EAttribute) {
-				EClassifier eClassifier = findEClassifier(type);
-				Assert.isTrue(eClassifier == feature.getEType());
+				if (type!=null) {
+					Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
+				}
 				return (EAttribute) feature;
 			}
 			Assert.isTrue(feature==null);
@@ -516,7 +568,7 @@ public class ModelDecorator {
 			EClassifier ec = findEClassifier(owningtype);
 			if ( !isValid(ec) && ec instanceof EClass ) {
 				// the EClass does not belong to us, but if the feature exists in that EClass, use it.
-				EStructuralFeature feature = ((EClass)ec).getEStructuralFeature(name);
+				feature = ((EClass)ec).getEStructuralFeature(name);
 				if (feature instanceof EAttribute) {
 					return (EAttribute) feature;
 				}
@@ -537,12 +589,12 @@ public class ModelDecorator {
 	 * @return a new EAttribute
 	 */
 	public EAttribute createEAttribute(String name, String type, String owningtype, String defaultValue) {
-		if (type==null)
-			type = "EString";
-		
 		EAttribute eAttribute = getEAttribute(name,type,owningtype);
 		if (eAttribute!=null)
 			return eAttribute;
+
+		if (type==null)
+			type = "EString";
 
 		// if the class type does not exist, create it in this package
 		EClassifier eClassifier = findEClassifier(type);
@@ -607,10 +659,18 @@ public class ModelDecorator {
 	 * @return the EReference or null if not found.
 	 */
 	public EReference getEReference(String name, String type, String owningtype, boolean containment, boolean many) {
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
+		if (feature instanceof EReference) {
+			if (type!=null)
+				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
+			Assert.isTrue(containment == ((EReference) feature).isContainment());
+			Assert.isTrue(many == ((EReference) feature).isMany());
+			return (EReference) feature;
+		}
 		EClass eClass = getEClass(owningtype);
 		if (eClass != null) {
 			// the EClass already exists in our EPackage: check if the named feature was already created
-			EStructuralFeature feature = eClass.getEStructuralFeature(name);
+			feature = eClass.getEStructuralFeature(name);
 			if (feature instanceof EReference) {
 				EClassifier eClassifier = findEClassifier(type);
 				Assert.isTrue(eClassifier == feature.getEType());
@@ -628,7 +688,7 @@ public class ModelDecorator {
 			EClassifier ec = findEClassifier(owningtype);
 			if ( !isValid(ec) && ec instanceof EClass ) {
 				// the EClass does not belong to us, but if the feature exists in that EClass, use it.
-				EStructuralFeature feature = ((EClass)ec).getEStructuralFeature(name);
+				feature = ((EClass)ec).getEStructuralFeature(name);
 				if (feature instanceof EReference) {
 					return (EReference) feature;
 				}
@@ -797,6 +857,30 @@ public class ModelDecorator {
 		
 		return findEClassifier(null,type);
 	}
+	
+	public EStructuralFeature findEStructuralFeatureInDocumentRoot(String name) {
+		if (name==null)
+			return null;
+			
+		EStructuralFeature feature = null;
+		
+		if (ePackage!=null) {
+			feature = findEStructuralFeatureInDocumentRoot(ePackage,name);
+			if (feature!=null)
+				return feature;
+		}
+		for (EPackage pkg : getRelatedEPackages()) {
+			feature = findEStructuralFeatureInDocumentRoot(pkg,name);
+			if (feature!=null)
+				return feature;
+		}
+		
+		feature = findEStructuralFeatureInDocumentRoot(Bpmn2Package.eINSTANCE, name);
+		if (feature!=null)
+			return feature;
+		
+		return null;
+	}
 
 	/**
 	 * Search for an EClassifier with the given name. The search order is as follows:
@@ -857,19 +941,30 @@ public class ModelDecorator {
 	 * the given EPackage.
 	 * 
 	 * @param pkg - the EPackage to search.
-	 * @param type - name of the EClassifier to search for.
+	 * @param name - name of the EClassifier to search for.
 	 * @return - an EClassifier if found or null if not found.
 	 */
-	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String type) {
+	private static EClassifier findEClassifierInDocumentRoot(EPackage pkg, String name) {
+		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(pkg, name);
+		if (feature!=null)
+			return feature.getEType();
+		return null;
+	}
+	
+	private static EStructuralFeature findEStructuralFeatureInDocumentRoot(EPackage pkg, String name) {
 		try {
 			EClass docRoot = (EClass)pkg.getEClassifier("DocumentRoot"); //$NON-NLS-1$
 			if (docRoot==null) {
 				docRoot = ExtendedMetaData.INSTANCE.getDocumentRoot(pkg);
 			}
 			if (docRoot!=null) {
-				EStructuralFeature feature = docRoot.getEStructuralFeature(type);
-				if (feature!=null) {
-					return feature.getEType();
+				for (EStructuralFeature feature : docRoot.getEAllStructuralFeatures()) {
+					if (feature.getEContainingClass().getEPackage()==pkg) {
+						if (name.equals(feature.getName()))
+							return feature;
+						if (name.equals(ExtendedMetaData.INSTANCE.getName(feature)))
+							return feature;
+					}
 				}
 			}
 		}
@@ -1266,26 +1361,26 @@ public class ModelDecorator {
 	 * @param feature - a dynamic feature associated with the EObject.
 	 * @return true if a new FD was added, false if not.
 	 */
-	@SuppressWarnings("rawtypes")
-	public boolean adaptFeature(ExtendedPropertiesAdapter adapter, EObject object, EStructuralFeature feature) {
-		boolean added = true;
-		// FIXME: see discussion about resolving ownership of EXTENSION ELEMENTS, above
-		if (object instanceof ExtensionAttributeValue)
-			object = object.eContainer();
-
-		if (adapter==null)
-			adapter = ExtendedPropertiesAdapter.adapt(object);
-		
-		if (adapter.hasFeatureDescriptor(feature)) {
-			FeatureDescriptor fd = adapter.getFeatureDescriptor(feature);
-			if (fd instanceof AnyTypeFeatureDescriptor)
-				added = false;
-		}
-		
-		if (added) {
-			adapter.setFeatureDescriptor(feature, new AnyTypeFeatureDescriptor(this, adapter, object, feature));
-		}
-		return added;
-	}
+//	@SuppressWarnings("rawtypes")
+//	public ExtendedPropertiesAdapter adaptFeature(ExtendedPropertiesAdapter adapter, EObject object, EStructuralFeature feature) {
+//		boolean add = true;
+//		// FIXME: see discussion about resolving ownership of EXTENSION ELEMENTS, above
+//		if (object instanceof ExtensionAttributeValue)
+//			object = object.eContainer();
+//
+//		if (adapter==null)
+//			adapter = ExtendedPropertiesAdapter.adapt(object);
+//		
+//		if (adapter.hasFeatureDescriptor(feature)) {
+//			FeatureDescriptor fd = adapter.getFeatureDescriptor(feature);
+//			if (fd instanceof AnyTypeFeatureDescriptor)
+//				add = false;
+//		}
+//		
+//		if (add) {
+//			adapter.setFeatureDescriptor(feature, new AnyTypeFeatureDescriptor(this, adapter, object, feature));
+//		}
+//		return adapter;
+//	}
 
 }

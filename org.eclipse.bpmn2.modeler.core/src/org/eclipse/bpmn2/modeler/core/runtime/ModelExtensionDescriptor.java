@@ -704,9 +704,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
 			// if this is a dynamic feature, delegate access to the feature to the Model Decorator
-			if (ModelDecorator.getEPackageForFeature(feature)!=null) {
-				getModelDecorator().adaptFeature(adapter, object, feature);
-			}
+			adapter.getFeatureDescriptor(feature);
 			if (property.description!=null)
 				adapter.setProperty(feature, ExtendedPropertiesAdapter.LONG_DESCRIPTION, property.description);
 			
