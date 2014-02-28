@@ -11,7 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.examples.runtime;
+package org.eclipse.bpmn2.modeler.examples.dynamic;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.examples.runtime.SampleImageProvider.IconSize;
+import org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.flow.SequenceFlowFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
@@ -57,7 +57,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
  */
 public class SampleCustomSequenceFlowFeatureContainer extends CustomConnectionFeatureContainer {
 	
-	public final static String MITIGATION_FLOW_ID = "org.eclipse.bpmn2.modeler.examples.runtime.flow";
+	public final static String MITIGATION_FLOW_ID = "org.eclipse.bpmn2.modeler.examples.dynamic.flow";
 	@Override
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		return new SequenceFlowFeatureContainer()

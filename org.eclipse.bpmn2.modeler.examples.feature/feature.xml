@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.bpmn2.modeler.examples.feature"
-      label="BPMN2 Modeler - Example Runtime Extensions Feature"
+      label="BPMN2 Modeler - Examples"
       version="1.1.0.qualifier"
       provider-name="Eclipse.org">
 
@@ -25,7 +25,21 @@ Red Hat, Inc. - initial API and implementation
    </requires>
 
    <plugin
-         id="org.eclipse.bpmn2.modeler.examples.runtime"
+         id="org.eclipse.bpmn2.modeler.examples.customtask"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.bpmn2.modeler.examples.dynamic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.bpmn2.modeler.examples.modelreader"
          download-size="0"
          install-size="0"
          version="0.0.0"

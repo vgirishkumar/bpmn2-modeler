@@ -8,7 +8,7 @@
  * Contributors:
  * 	Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.examples.runtime;
+package org.eclipse.bpmn2.modeler.examples.dynamic;
 
 import java.net.URL;
 

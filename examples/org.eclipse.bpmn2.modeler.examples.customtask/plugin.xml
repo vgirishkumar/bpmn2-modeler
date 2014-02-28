@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
+<?eclipse version="3.4"?>
 <plugin>
 
 	<extension point="org.eclipse.emf.ecore.generated_package">
@@ -10,11 +10,10 @@
 	</extension>
 
 	<extension point="org.eclipse.bpmn2.modeler.runtime">
-		<runtime
-			class="org.eclipse.bpmn2.modeler.examples.customtask.MyRuntimeExtension"
-			description="BPMN2 Modeler Runtime Extension - Custom Task Example"
+		<runtime name="Sample Runtime - with EMF model"
 			id="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
-			name="Custom Task Example Runtime Extension">
+			class="org.eclipse.bpmn2.modeler.examples.customtask.MyRuntimeExtension"
+			description="BPMN2 Modeler Sample Runtime using EMF model extensions">
 		</runtime>
 
 		<model

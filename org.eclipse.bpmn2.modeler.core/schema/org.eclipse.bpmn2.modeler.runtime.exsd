@@ -1185,7 +1185,7 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
  &lt;extension point=&quot;org.eclipse.bpmn2.modeler.runtime&quot;&gt;
   &lt;!-- the runtime definition --&gt;
   &lt;runtime name=&quot;Sample Business Process Engine&quot; versions=&quot;1.0&quot;
-   id=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot; class=&quot;org.eclipse.bpmn2.modeler.examples.runtime.SampleRuntimeExtension&quot;
+   id=&quot;org.eclipse.bpmn2.modeler.examples.dynamic&quot; class=&quot;org.eclipse.bpmn2.modeler.examples.dynamic.SampleRuntimeExtension&quot;
    description=&quot;BPMN2 Modeler customizations for a sample runtime engine&quot;&gt;
   &lt;/runtime&gt;
 
@@ -1195,8 +1195,8 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
    We could have provided a namespace URI in each of those elements, but it&apos;s 
    more convenient to do so here.
   --&gt;
-  &lt;model runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot;
-   uri=&quot;http://org.eclipse.bpmn2.modeler.examples.runtime&quot;&gt;
+  &lt;model runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.dynamic&quot;
+   uri=&quot;http://org.eclipse.bpmn2.modeler.examples.dynamic&quot;&gt;
   &lt;/model&gt;
 
   &lt;!-- This &lt;customTask&gt; item extends the BPMN2 TextAnnotation element by adding 
@@ -1207,10 +1207,10 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
   --&gt;
   &lt;customTask
    description=&quot;This task represents a risk that can occur in the connected Elements.&quot;
-   featureContainer=&quot;org.eclipse.bpmn2.modeler.examples.runtime.SampleCustomTaskFeatureContainer&quot;
-   id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.risk&quot; name=&quot;Risk Task&quot;
+   featureContainer=&quot;org.eclipse.bpmn2.modeler.examples.dynamic.SampleCustomTaskFeatureContainer&quot;
+   id=&quot;org.eclipse.bpmn2.modeler.examples.dynamic.risk&quot; name=&quot;Risk Task&quot;
    category=&quot;Risk &amp;amp; Mitigation&quot; icon=&quot;risk.png&quot;
-   runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.runtime&quot; type=&quot;TextAnnotation&quot;&gt;
+   runtimeId=&quot;org.eclipse.bpmn2.modeler.examples.dynamic&quot; type=&quot;TextAnnotation&quot;&gt;
    &lt;property name=&quot;name&quot; value=&quot;Risk Task&quot; type=&quot;EString&quot; /&gt;
    &lt;property name=&quot;text&quot; value=&quot;Risk Task&quot; type=&quot;EString&quot; /&gt;
    &lt;property name=&quot;evaluate&quot; value=&quot;true&quot; type=&quot;EBoolean&quot; /&gt;
@@ -1224,7 +1224,7 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
    and an Integer. Note that a specialized &lt;propertyTab&gt; is needed to display/edit 
    these extensions (see below).
   --&gt;
-  &lt;modelExtension id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.activity&quot;
+  &lt;modelExtension id=&quot;org.eclipse.bpmn2.modeler.examples.dynamic.activity&quot;
    uri=&quot;http://org.eclipse.bpmn2/default&quot; name=&quot;Activity Extension&quot;
    type=&quot;Activity&quot;&gt;
    &lt;property name=&quot;isDevice&quot; type=&quot;EBoolean&quot; value=&quot;true&quot;
@@ -1252,7 +1252,7 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
    and elements, although we could have supplied our own Java class to handle 
    these extensions.
   --&gt;
-  &lt;propertyTab id=&quot;org.eclipse.bpmn2.modeler.examples.runtime.activity.tab&quot;
+  &lt;propertyTab id=&quot;org.eclipse.bpmn2.modeler.examples.dynamic.activity.tab&quot;
    afterTab=&quot;org.eclipse.bpmn2.modeler.description.tab&quot; class=&quot;default&quot;
    features=&quot;isDevice device carrier identifier&quot; type=&quot;org.eclipse.bpmn2.Activity&quot;
    label=&quot;Activity Extensions&quot;&gt;

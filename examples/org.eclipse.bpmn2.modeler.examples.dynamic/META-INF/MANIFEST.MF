@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
-Bundle-SymbolicName: org.eclipse.bpmn2.modeler.examples.runtime;singleton:=true
+Bundle-SymbolicName: org.eclipse.bpmn2.modeler.examples.dynamic;singleton:=true
 Bundle-Version: 1.1.0.qualifier
-Bundle-Activator: org.eclipse.bpmn2.modeler.examples.runtime.Activator
+Bundle-Activator: org.eclipse.bpmn2.modeler.examples.dynamic.Activator
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.core.runtime,
