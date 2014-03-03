@@ -106,18 +106,6 @@
 		</profile>
 	</profiles>
 
-	<modules>
-		<module>org.eclipse.bpmn2.modeler.core</module>
-		<module>org.eclipse.bpmn2.modeler.help</module>
-		<module>org.eclipse.bpmn2.modeler.ui</module>
-		<module>org.eclipse.bpmn2.modeler.feature</module>
-		<module>org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5</module>
-		<module>org.eclipse.bpmn2.modeler.runtime.jboss.feature</module>
-		<module>org.eclipse.bpmn2.modeler.wsil</module>
-		<module>org.eclipse.bpmn2.modeler.wsil.feature</module>
-		<module>org.eclipse.bpmn2.modeler.updatesite.feature</module>
-	</modules>
-
 	<repositories>
 		<repository>
 			<id>eclipse-platform</id>
