@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.Messages;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;

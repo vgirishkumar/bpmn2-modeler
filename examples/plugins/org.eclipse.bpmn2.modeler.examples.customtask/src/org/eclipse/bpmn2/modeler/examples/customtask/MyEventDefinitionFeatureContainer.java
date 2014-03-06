@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
@@ -17,7 +18,6 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgor
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;

@@ -81,7 +81,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 		}
 	}
 
-	public class CreateStartEventFeature extends AbstractCreateEventFeature<StartEvent> {
+	public static class CreateStartEventFeature extends AbstractCreateEventFeature<StartEvent> {
 
 		public CreateStartEventFeature(IFeatureProvider fp) {
 			super(fp, Messages.StartEventFeatureContainer_1, Messages.StartEventFeatureContainer_2+Messages.StartEventFeatureContainer_3);

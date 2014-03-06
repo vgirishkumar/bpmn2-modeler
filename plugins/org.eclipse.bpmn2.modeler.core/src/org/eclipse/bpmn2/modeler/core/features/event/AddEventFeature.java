@@ -17,6 +17,8 @@ import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -86,11 +88,13 @@ public class AddEventFeature<T extends Event>
 
 		splitConnection(context, containerShape);
 		
-		updatePictogramElement(containerShape);
-		layoutPictogramElement(containerShape);
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
 		
-		this.prepareAddContext(context, containerShape, width, height);
-		this.getFeatureProvider().getAddFeature(context).add(context);
+		// prepare the AddContext to create a Label
+		prepareAddContext(context, containerShape, width, height);
+		IFeatureContainer fc = new LabelFeatureContainer();
+		fc.getAddFeature(getFeatureProvider()).add(context);
 		
 		return containerShape;
 	}

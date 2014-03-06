@@ -16,11 +16,11 @@ package org.eclipse.bpmn2.modeler.examples.dynamic;
 import java.util.List;
 
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.flow.SequenceFlowFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;

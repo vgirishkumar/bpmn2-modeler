@@ -24,7 +24,9 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -219,8 +221,9 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			layoutPictogramElement(containerShape);
 			
 			// change the AddContext and prepare it to add a label below the figure
-			this.prepareAddContext(context, containerShape, width, height);
-			this.getFeatureProvider().getAddFeature(context).add(context);
+			prepareAddContext(context, containerShape, width, height);
+			IFeatureContainer fc = new LabelFeatureContainer();
+			fc.getAddFeature(getFeatureProvider()).add(context);
 			
 			return containerShape;
 		}

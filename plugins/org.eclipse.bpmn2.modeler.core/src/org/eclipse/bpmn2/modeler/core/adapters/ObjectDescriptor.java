@@ -13,7 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;

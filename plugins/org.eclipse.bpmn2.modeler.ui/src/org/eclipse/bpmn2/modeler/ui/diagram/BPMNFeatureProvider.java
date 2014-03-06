@@ -72,14 +72,18 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultCopyBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultRemoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.IBpmn2FeatureProvider;
 import org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.AddBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.RemoveBendpointFeature;
@@ -95,9 +99,6 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.CallActivityFea
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.TransactionFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomConnectionFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ManualTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ReceiveTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.task.ScriptTaskFeatureContainer;
@@ -193,7 +194,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
  * @author imeikas
  * 
  */
-public class BPMNFeatureProvider extends DefaultFeatureProvider {
+public class BPMNFeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
 
 	private Hashtable<Class,IFeatureContainer> containers;
 	private Hashtable<String,ICustomElementFeatureContainer> customTaskContainers;

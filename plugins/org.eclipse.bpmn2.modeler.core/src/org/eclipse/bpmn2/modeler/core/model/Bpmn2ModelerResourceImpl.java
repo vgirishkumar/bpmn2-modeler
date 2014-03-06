@@ -50,7 +50,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -528,7 +528,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		protected void handleObjectAttribs(EObject obj) {
 			super.handleObjectAttribs(obj);
 			if (attribs != null) {
-				InternalEObject internalEObject = (InternalEObject) obj;
 				for (int i = 0, size = attribs.getLength(); i < size; ++i) {
 					String name = attribs.getQName(i);
 					if (name.equals(XMLResource.XML_NS)) {

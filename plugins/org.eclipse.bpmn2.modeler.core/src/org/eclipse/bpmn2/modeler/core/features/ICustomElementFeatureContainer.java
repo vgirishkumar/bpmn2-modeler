@@ -10,9 +10,8 @@
  *
  * @author Bob Brodt
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.activity.task;
+package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;

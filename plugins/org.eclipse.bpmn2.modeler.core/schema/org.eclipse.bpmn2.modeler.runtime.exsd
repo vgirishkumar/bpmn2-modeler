@@ -3,10 +3,119 @@
 <schema targetNamespace="org.eclipse.bpmn2.modeler.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.bpmn2.modeler.core" id="org.eclipse.bpmn2.modeler.runtime" name="Runtime Specialization"/>
+         <meta.schema plugin="org.eclipse.bpmn2.modeler.core" id="org.eclipse.bpmn2.modeler.runtime" name="BPMN2 Modeler Runtime Specialization"/>
       </appinfo>
       <documentation>
-         Provides customization of the BPMN2 Modeler for third-party runtimes.
+         &lt;p&gt;This extension point is used to customize and extend the BPMN2 Modeler UI as well as the BPMN2 model itself. The following aspects of the editor can be customized; note that some extension points may affect more than one of these aspects:
+&lt;/p&gt;
+&lt;ul&gt;
+ &lt;li&gt;
+ &lt;b&gt;Tabbed Property Sheets&lt;/b&gt;
+  &lt;ul&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.propertyTab&quot;&gt;propertyTab&lt;/a&gt; is used to define additional Property Sheet tabs, or replacements for existing default tabs provided by the editor. A Java class may be provided by the extension plug-in to control the behavior of these tabs.
+   &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.modelEnablement&quot;&gt;modelEnablement&lt;/a&gt; controls which BPMN2 model elements and attributes are visible in Property Sheets and dialogs.
+   &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.propertyExtension&quot;&gt;propertyExtension&lt;/a&gt; allows the extension plug-in to define the visual presentation of BPMN2 model attributes and elements by overriding the BPMN2 Modeler core functionality. This extension point may also be used to override the default BPMN2 model object creation behavior. A Java class that implements this behavior must be provided by the extension plug-in.
+   &lt;/li&gt;
+  &lt;/ul&gt;
+ &lt;/li&gt;
+ &lt;li&gt;
+&lt;b&gt;Graphical Editing Tool Palette&lt;/b&gt;
+  &lt;ul&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.toolPalette&quot;&gt;toolPalette&lt;/a&gt; is used to define custom Tool Palettes, Tool Drawers and Creation Tools. A simple composition language allows the creation of arbitrarily complex elements and workflow fragments.
+    &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.modelEnablement&quot;&gt;modelEnablement&lt;/a&gt; controls which BPMN2 model elements are available in Tool Palettes.
+   &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.customTask&quot;&gt;customTask&lt;/a&gt; is used to define extended BPMN2 model elements that can be made available as Creation Tools in the Tool Palette. A Java class that manages the custom element lifecycle may also be provided by the extension plug-in.
+   &lt;/li&gt;
+  &lt;/ul&gt;
+ &lt;/li&gt;
+ &lt;li&gt;
+&lt;b&gt;Visual presentation of graphical elements&lt;/b&gt;
+  &lt;ul&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.featureContainer&quot;&gt;featureContainer&lt;/a&gt; allows the extension plug-in to override the creation and drawing behavior of BPMN2 elements on the editing canvas. A Java class that implements the override behavior must be provided by the extension plug-in.
+    &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.style&quot;&gt;style&lt;/a&gt; is used to define colors, line styles and label fonts of graphical elements on the editing canvas.
+   &lt;/li&gt;
+  &lt;/ul&gt;
+ &lt;/li&gt;
+ &lt;li&gt;
+&lt;b&gt;BPMN2 model&lt;/b&gt;
+  &lt;ul&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.model&quot;&gt;model&lt;/a&gt; is used by an extension plug-in to define a model that augments the BPMN2 model elements. This may be either a traditional EMF model defined by an .ecore file and generated Java implementation classes, or simply a namespace URI for dynamically creating elements and attributes.
+    &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.modelExtension&quot;&gt;modelExtension&lt;/a&gt; is used to dynamically extend BPMN2 elements. The extension elements and attributes must provide their own namespace URI (i.e. they may not use the BPMN2 model namespace &quot;http://www.omg.org/spec/BPMN/20100524/MODEL&quot;) The extension point may also be used to populate existing BPMN2 attributes and elements with non-default values during object creation.
+   &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.customTask&quot;&gt;customTask&lt;/a&gt; is similar to &lt;b&gt;modelExtension&lt;/b&gt; except that these objects appear on the Tool Palette.
+   &lt;/li&gt;
+   &lt;li&gt;
+&lt;a href=&quot;#e.dataType&quot;&gt;dataType&lt;/a&gt; may be used by an extension plug-in to define its own EMF data types and conversion delegates. These data types can then be used in model extension attributes.
+   &lt;/li&gt;
+  &lt;/ul&gt;
+ &lt;/li&gt;
+&lt;/ul&gt;
+
+All of these extension elements may also be defined within a Workspace Project instead of, or in addition to, an extension plug-in. When the editor starts up, all XML files contained in the project folder named &quot;.bpmn2config&quot; are loaded. These configuration files override default behavior provided by the editor core or other contributing plug-ins defining the Target Runtime for which the Project is configured.
+
+As an example, suppose that you have installed the BPMN2 Modeler from eclipse.org along with a third-party vendor supplied extension plug-in for the &quot;Foo Target Runtime&quot; with the ID &lt;code&gt;org.foo.runtime&lt;/code&gt;. Also, the &quot;Foo Target Runtime&quot; defines the target namespace &quot;http://org.foo&quot; for BPMN2 extensions.
+
+After configuring your Workspace Project to use the &quot;Foo Target Runtime&quot; (see the discussion about setting Project Preferences in the User&apos;s Guide), it is possible to customize the editor behavior using the following configuration file placed in the Project&apos;s &quot;.bpmn2config&quot; folder:
+
+&lt;pre&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ &lt;runtime id=&quot;org.foo.runtime&quot;&gt;
+  &lt;modelExtension
+   id=&quot;org.foo.runtime.my.endpoint.extension&quot;
+   uri=&quot;http://org.foo/extensions&quot;
+   name=&quot;My Webservice EndPoint Extension&quot;
+   type=&quot;EndPoint&quot;&gt;
+   &lt;property name=&quot;serviceAddress&quot; type=&quot;ServiceAddress&quot;&gt;
+    &lt;value&gt;
+     &lt;property name=&quot;port&quot; type=&quot;EString&quot; /&gt;
+     &lt;property name=&quot;binding&quot; type=&quot;BindingType:EEnum&quot; value=&quot;SOAP HTTP&quot; /&gt;
+    &lt;/value&gt;
+   &lt;/property&gt;
+  &lt;/modelExtension&gt;
+ &lt;/runtime&gt;
+&lt;/pre&gt;
+
+This will decorate the BPMN2 &lt;code&gt;EndPoint&lt;/code&gt; model element with an extension element named &quot;serviceAddress&quot;; that element will have two attributes named &quot;port&quot; and &quot;binding&quot;. The resulting EndPoint definition XML might look like this in a bpmn2 file:
+
+&lt;pre&gt;
+  &lt;bpmn2:endPoint id=&quot;EndPoint_1&quot;&gt;
+    &lt;bpmn2:extensionElements&gt;
+      &lt;extensions:serviceAddress extensions:port=&quot;RequestPortType&quot; extensions:binding=&quot;HTTP&quot;/&gt;
+    &lt;/bpmn2:extensionElements&gt;
+  &lt;/bpmn2:endPoint&gt;
+&lt;/pre&gt;
+
+There are a couple of issues to consider, however, when using configuration files to extend model elemnts:
+
+&lt;ul&gt;
+&lt;li&gt;
+Existing process files may no longer be readable if model extension definitions are removed from configuration files; these extension elements may have to be removed from process files &quot;by hand&quot; using a text or XML editor.
+&lt;/li&gt;
+&lt;li&gt;
+The BPMN2 editor may have to be closed and reopened for some of these configuration file changes to take effect.
+&lt;/li&gt;
+&lt;li&gt;
+Your configuration files will have to be distributed along with your bpmn2 process files if you are collaborating on a process definition.
+&lt;/li&gt;
+&lt;/ul&gt;
+
+A final note: these configuration files are intended to be used primarily by plug-in developers to test out various BPMN2 Modeler extension points, rather than in a production environment where process file integrity is crucial.
       </documentation>
    </annotation>
 
@@ -60,7 +169,7 @@
    <element name="runtime">
       <annotation>
          <documentation>
-            This extension point allows the BPMN2 Modeler graphical editor to be customized for a specific execution engine, referred to as a &quot;Target Runtime&quot; in this documentation.
+            This element defines a namespace for a specific execution engine, referred to as a &quot;Target Runtime&quot; in this documentation.
          </documentation>
       </annotation>
       <complexType>
@@ -103,7 +212,7 @@ This feature is not currently implemented, but is planned for a future version.
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class that implements IBpmn2RuntimeExtension for the Target Runtime. This class provides hooks for plug-in lifecycle events and Runtime-specific target namespace, data type and expression language URIs.
+                  The class that implements the &lt;code&gt;org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension&lt;/code&gt; interface for the Target Runtime. This class provides hooks for plug-in lifecycle events, bpmn2 file content type definition, and Runtime-specific target namespace, data type and expression language URIs.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension"/>
@@ -116,7 +225,7 @@ This feature is not currently implemented, but is planned for a future version.
    <element name="model">
       <annotation>
          <documentation>
-            Specifies an extension model URI that will be used by the Target Runtime plug-in. The &lt;b&gt;model&lt;/b&gt; extension may refer to an actual Java implementation, generated the traditional way from an EMF ecore file, or it may just define a namespace URI which will be used to create dynamic classes and features from &lt;b&gt;modelExtension&lt;/b&gt; and &lt;b&gt;customClass&lt;/b&gt; extension definitions.
+            This element specifies an extension model URI that will be used by the Target Runtime plug-in. The &lt;b&gt;model&lt;/b&gt; extension may refer to an actual Java implementation, generated the traditional way from an EMF ecore file, or it may just define a namespace URI which will be used to create dynamic classes and features from &lt;b&gt;modelExtension&lt;/b&gt; and &lt;b&gt;customClass&lt;/b&gt; definitions.
          </documentation>
       </annotation>
       <complexType>
@@ -137,7 +246,7 @@ This feature is not currently implemented, but is planned for a future version.
          <attribute name="resourceFactory" type="string">
             <annotation>
                <documentation>
-                  The fully qualified EMF Resource Factory class name for the extension model. This must subclass org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl. The Resource Factory provides Target Runtime-specific hooks for model serialization, proxy resolution, object customization, etc.
+                  The fully qualified EMF Resource Factory class name for the extension model. This must subclass &lt;code&gt;org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl&lt;/code&gt;. The Resource Factory provides Target Runtime-specific hooks for model serialization, proxy resolution, object customization, etc.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl:"/>
@@ -220,13 +329,20 @@ This feature is not yet implemented.
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class that implements the property section. This must extend AbstractBpmn2PropertySection and should provide a customized &quot;section root&quot; class which renders the desired BPMN2 element attributes. The section root must extend AbstractDetailComposite or one of the subclasses from the BPMN2 Modeler.
+                  The class that implements the property section. This must extend AbstractBpmn2PropertySection and should provide a customized &quot;section root&quot; class which renders the desired BPMN2 element attributes. The section root must extend &lt;code&gt;org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection&lt;/code&gt; or one of the subclasses from the BPMN2 Modeler.
 
-This may also be set to the string &quot;default&quot; to indicate that the DefaultDetailSection will be used. The list of BPMN2 element attributes that will be rendered is then specified with the &quot;features&quot; attribute.
+This may also be set to the string &quot;default&quot; to indicate that the &lt;code&gt;DefaultDetailComposite&lt;/code&gt; implementation will be used. The list of BPMN2 element attributes that will be rendered is then specified with the &lt;b&gt;features&lt;/b&gt; attribute.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="features" type="string">
+            <annotation>
+               <documentation>
+                  A space separated list of model object features to be rendered by the default property tab. This is only used if the &lt;b&gt;class&lt;/b&gt; attribute is set to &quot;default&quot;.
+               </documentation>
             </annotation>
          </attribute>
          <attribute name="type" type="string">
@@ -234,7 +350,9 @@ This may also be set to the string &quot;default&quot; to indicate that the Defa
                <documentation>
                   A space-delimited list of BPMN2 element classes or interfaces that will enable the display of this property sheet tab. These must be fully qualified class names. For example:
 
+&lt;pre&gt;
  type=&quot;org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process&quot;
+ &lt;/pre&gt;
  
 will activate the property tab whenever the editor canvas is selected, or when a Process element is selected.
                </documentation>
@@ -247,10 +365,64 @@ will activate the property tab whenever the editor canvas is selected, or when a
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="features" type="string">
+      </complexType>
+   </element>
+
+   <element name="modelExtension">
+      <annotation>
+         <documentation>
+            Defines extension attributes and elements to the BPMN2 model. Any BPMN2 class that derives from &quot;BaseElement&quot; may be extended. The extension features and classes are defined by &lt;b&gt;property&lt;/b&gt; elements contained in this &lt;b&gt;modelExtension&lt;/b&gt;.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="property"/>
+         </choice>
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  A space separated list of model object features to be rendered by the default property tab. This is only used if the &quot;class&quot; attribute is set to &quot;default&quot;.
+                  Unique ID for this &lt;b&gt;modelExtension&lt;/b&gt;.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;modelExtension&lt;/b&gt; definition will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Descriptive text label that will be displayed in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Long description that will be displayed in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of a BPMN2 model type on which this &lt;b&gt;modelExtension&lt;/b&gt; is based. This must be the name of a class that is derived from the BPMN2 &quot;BaseElement&quot; class.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="uri" type="string">
+            <annotation>
+               <documentation>
+                  The namespace URI of a model EPackage. If the EPackage does not exist it will be created dynamically. This namespace URI will be included in the BPMN2 file when it is saved.
                </documentation>
             </annotation>
          </attribute>
@@ -311,10 +483,10 @@ will activate the property tab whenever the editor canvas is selected, or when a
          <attribute name="featureContainer" type="string" use="required">
             <annotation>
                <documentation>
-                  The Graphiti Feature Container that provides create, add and update functionality in the editor for this &lt;b&gt;customTask&lt;/b&gt;.
+                  The Graphiti Feature Container that provides create, add and update functionality in the editor for this &lt;b&gt;customTask&lt;/b&gt;. This class must implement the &lt;code&gt;org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer&lt;/code&gt; interface.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer:"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -342,7 +514,7 @@ will activate the property tab whenever the editor canvas is selected, or when a
          <attribute name="uri" type="string">
             <annotation>
                <documentation>
-                  The namespace URI of a model EPackage. If the EPackage does not exist it will be created dynamically. Any &lt;b&gt;property&lt;/b&gt; elements defined within this &lt;b&gt;customTask&lt;/b&gt; will be used to extend the BPMN2 model type defined by the &quot;type&quot; attribute.
+                  The namespace URI of a model EPackage. If the EPackage does not exist it will be created dynamically. Any &lt;b&gt;property&lt;/b&gt; elements defined within this &lt;b&gt;customTask&lt;/b&gt; will be used to extend the BPMN2 model type defined by the &lt;b&gt;type&lt;/b&gt; attribute.
                </documentation>
             </annotation>
          </attribute>
@@ -352,7 +524,7 @@ will activate the property tab whenever the editor canvas is selected, or when a
    <element name="property">
       <annotation>
          <documentation>
-            Describes an extension to a model feature. If the feature already exists in an EMF model,  then this &lt;b&gt;property&lt;/b&gt; element can be used to initialize the feature&apos;s value when a new instance of the object is created. If the feature does not exist, it is created using dynamic EMF and extends the existing type.
+            Describes an extension to a BPMN2 model feature. If the feature already exists in an EMF model,  then this &lt;b&gt;property&lt;/b&gt; element can be used to initialize the feature&apos;s value when a new instance of the object is created. If the feature does not exist, it is created using dynamic EMF and extends the existing type, but in a different namespace.
          </documentation>
       </annotation>
       <complexType>
@@ -369,7 +541,7 @@ will activate the property tab whenever the editor canvas is selected, or when a
          <attribute name="value" type="string">
             <annotation>
                <documentation>
-                  String representation of the default value for this feature. Type conversion is done based on the &quot;type&quot; attribute.
+                  String representation of the default value for this feature. Type conversion is done based on the &lt;b&gt;type&lt;/b&gt; attribute.
                </documentation>
             </annotation>
          </attribute>
@@ -448,7 +620,7 @@ This is interpreted as follows:
 &lt;li&gt;etc.&lt;/li&gt;
 &lt;/ul&gt;
 
- If special data type conversion is required, a converter can be contributed with the &lt;b&gt;dataType&lt;/b&gt; element. The &quot;type&quot; attribute is optional and will default to &quot;EString&quot;.
+ If special data type conversion is required, a converter can be contributed with the &lt;b&gt;dataType&lt;/b&gt; element. This attribute is optional and will default to &quot;EString&quot;.
                </documentation>
             </annotation>
          </attribute>
@@ -483,7 +655,7 @@ This is interpreted as follows:
 &lt;li&gt;create the EEnum literal values &quot;Phone&quot;, &quot;Tablet&quot;, &quot;Computer&quot; and &quot;Banana&quot;. These will be the only valid values for the DeviceType EEnum&lt;/li&gt;
 &lt;li&gt;create a DeviceType feature in the Device class called &quot;type&quot;&lt;/li&gt;
 &lt;li&gt;create a dynamic EClass structure called &quot;DeviceIdentifier&quot;&lt;/li&gt;
-&lt;li&gt;create two features in DeviceIdentifier called &quot;carrier&quot; (a string&quot; and &quot;identifier&quot; (an integer) and initialize them with an empty string and 0, respectively&lt;/li&gt;
+&lt;li&gt;create two features in DeviceIdentifier called &quot;carrier&quot; (a string) and &quot;identifier&quot; (an integer) and initialize them with an empty string and 0, respectively&lt;/li&gt;
 &lt;li&gt;create a DeviceIdentifier feature in the Device class called &quot;deviceID&quot;&lt;/li&gt;
 &lt;/ol&gt;
 
@@ -504,71 +676,10 @@ Note the use of the special notation&quot;DeviceType:EEnum&quot; to create the &
       </complexType>
    </element>
 
-   <element name="modelExtension">
-      <annotation>
-         <documentation>
-            Defines extension attributes and elements to the BPMN2 model. Any BPMN2 class that derives from &quot;BaseElement&quot; may be extended. The extension features and classes are defined by &lt;b&gt;property&lt;/b&gt; elements contained in this &lt;b&gt;modelExtension&lt;/b&gt;.
-         </documentation>
-      </annotation>
-      <complexType>
-         <choice minOccurs="1" maxOccurs="unbounded">
-            <element ref="property"/>
-         </choice>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Unique ID for this &lt;b&gt;modelExtension&lt;/b&gt;.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="runtimeId" type="string">
-            <annotation>
-               <documentation>
-                  Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;modelExtension&lt;/b&gt; definition will be used.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string">
-            <annotation>
-               <documentation>
-                  Descriptive text label that will be displayed in the UI.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="description" type="string">
-            <annotation>
-               <documentation>
-                  Long description that will be displayed in the UI.
-               </documentation>
-               <appinfo>
-                  <meta.attribute translatable="true"/>
-               </appinfo>
-            </annotation>
-         </attribute>
-         <attribute name="type" type="string" use="required">
-            <annotation>
-               <documentation>
-                  Name of a BPMN2 model type on which this &lt;b&gt;modelExtension&lt;/b&gt; is based. This must be the name of a class that is derived from the BPMN2 &quot;BaseElement&quot; class.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="uri" type="string">
-            <annotation>
-               <documentation>
-                  The namespace URI of a model EPackage. If the EPackage does not exist it will be created dynamically. This namespace URI will be included in the BPMN2 file when it is saved.
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
    <element name="modelEnablement">
       <annotation>
          <documentation>
-            Defines which model classes and features are visible in the editor Tool Palette and Property Sheets. This allows the editor to be tailored to a subset of BPMN2 language elements supported by a particular BPMN2 execution engine.
+            This element is used to select which model classes and features are visible in the editor Tool Palette and Property Sheets. This allows the editor to be tailored to a subset of BPMN2 language elements supported by a particular BPMN2 execution engine.
          </documentation>
       </annotation>
       <complexType>
@@ -605,7 +716,7 @@ Note the use of the special notation&quot;DeviceType:EEnum&quot; to create the &
          <attribute name="profile" type="string" use="required">
             <annotation>
                <documentation>
-                  Required Tool Profile name that can be used to define different BPMN 2 language subsets (enablements) within each Diagram Type.
+                  Required Tool Profile name that can be used to define different BPMN 2 language subsets (enablements) within each Diagram Type. See the &lt;b&gt;toolPalette&lt;/b&gt; element for more information about Tool Profiles.
                </documentation>
             </annotation>
          </attribute>
@@ -635,7 +746,7 @@ The value of this attribute string must be the referenced Target Runtime ID, a D
          <attribute name="object" type="string" use="required">
             <annotation>
                <documentation>
-                  Name of the BPMN2 model element to enable. All references made by this element to other BPMN2 elements are enabled also (note: if needed, the referenced element types can subsequently be disabled).
+                  Name of the BPMN2 model element to enable. All references made by this element to other BPMN2 elements are enabled also (note: if necessary, the referenced element types can subsequently be disabled).
 
 The special object name &quot;all&quot; is used to refer to all BPMN2 elements.
 
@@ -646,9 +757,9 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
          <attribute name="feature" type="string">
             <annotation>
                <documentation>
-                  The name of a structural feature defined by the BPMN2 element named in &quot;object&quot;.
+                  The name of a structural feature defined by the BPMN2 element named in &lt;b&gt;object&lt;/b&gt;.
 
-If &quot;object&quot; has the value &quot;default&quot;, then this refers to a diagram type in the &lt;b&gt;modelEnablement&lt;/b&gt; section.
+If &lt;b&gt;object&lt;/b&gt; has the value &quot;default&quot;, then this refers to a diagram type in the &lt;b&gt;modelEnablement&lt;/b&gt; section.
                </documentation>
             </annotation>
          </attribute>
@@ -665,7 +776,7 @@ If &quot;object&quot; has the value &quot;default&quot;, then this refers to a d
          <attribute name="object" type="string" use="required">
             <annotation>
                <documentation>
-                  Name of the BPMN2 element to disable. All references made by this element to other BPMN2 elements are also disabled (note: if needed, the referenced element types can subsequently be re-enabled).
+                  Name of the BPMN2 element to disable. All references made by this element to other BPMN2 elements are also disabled (note: if necessary, the referenced element types can subsequently be re-enabled).
 
 The special object name &quot;all&quot; is used to refer to all BPMN2 elements.
 
@@ -676,9 +787,9 @@ The value &quot;default&quot; is used by contributing plugins to refer to enable
          <attribute name="feature" type="string">
             <annotation>
                <documentation>
-                  The name of a structural feature defined by the BPMN2 element named in &quot;object&quot;.
+                  The name of a structural feature defined by the BPMN2 element named in &lt;b&gt;object&lt;/b&gt;.
 
-If &quot;object&quot; has the value &quot;default&quot;, then this refers to a diagram type in the &lt;b&gt;modelEnablement&lt;/b&gt; section.
+If &lt;b&gt;object&lt;/b&gt; has the value &quot;default&quot;, then this refers to a diagram type in the &lt;b&gt;modelEnablement&lt;/b&gt; section.
                </documentation>
             </annotation>
          </attribute>
@@ -711,20 +822,20 @@ Property Extensions are typically used to define custom labels for objects and f
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class that implements the property extension adapter. This must be a subclass of org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter.
+                  The class that implements the property extension adapter inteface &lt;code&gt;org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter&lt;/code&gt;.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.graphiti.ui.platform.GFPropertySection:"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter:"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
-                  The BPMN2 model type to which this &lt;b&gt;propertyExtension&lt;/b&gt; applies. This must be a fully qualified class name, e.g. &quot;org.eclipse.bpmn2.SequenceFlow&quot;.
+                  The model type to which this &lt;b&gt;propertyExtension&lt;/b&gt; applies. This must be a fully qualified class name, e.g. &lt;code&gt;org.eclipse.bpmn2.SequenceFlow&lt;/code&gt;. Note that this may also refer to an extension model class if the Target Runtime defines a Java implementation for an extension model.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.emf.ecore.EObject"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -748,20 +859,20 @@ Property Extensions are typically used to define custom labels for objects and f
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  The class that implements the Graphiti Feature Container class. The class must implement the BPMN2 Feature Container interface.
+                  The class that implements the Graphiti Feature Container class. The class must implement the &lt;code&gt;org.eclipse.bpmn2.modeler.core.features.IFeatureContainer&lt;/code&gt; interface.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.modeler.core.features.FeatureContainer"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.modeler.core.features.IFeatureContainer"/>
                </appinfo>
             </annotation>
          </attribute>
          <attribute name="type" type="string" use="required">
             <annotation>
                <documentation>
-                  The BPMN2 model element to which this &lt;b&gt;featureContainer&lt;/b&gt; applies. This must be a fully qualified class name, e.g. &quot;org.eclipse.bpmn2.SequenceFlow&quot;.
+                  The BPMN2 model element to which this &lt;b&gt;featureContainer&lt;/b&gt; applies. This must be a fully qualified class name, e.g. &lt;code&gt;org.eclipse.bpmn2.SequenceFlow&lt;/code&gt;
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.BaseElement"/>
                </appinfo>
             </annotation>
          </attribute>
@@ -778,7 +889,7 @@ Property Extensions are typically used to define custom labels for objects and f
          <attribute name="object" type="string" use="required">
             <annotation>
                <documentation>
-                  Name of the BPMN2 element to which this style applies.
+                  Name of the model element to which this style applies.
                </documentation>
             </annotation>
          </attribute>
@@ -786,6 +897,8 @@ Property Extensions are typically used to define custom labels for objects and f
             <annotation>
                <documentation>
                   The foreground color of the graphical element. For shapes, this is the border and text color; for connections, this is the line color.
+
+Colors are a string of six hexadecimal digits representing the red, green and blue color components respectively. For example 00FF00 represents the fully saturated color green.
                </documentation>
             </annotation>
          </attribute>
@@ -799,7 +912,28 @@ Property Extensions are typically used to define custom labels for objects and f
          <attribute name="font" type="string">
             <annotation>
                <documentation>
-                  The font style and size for text labels.
+                  The font style and size for text labels. Fonts are encoded as:
+
+&lt;pre&gt;
+ fontFamilyName,pointSize,italic,bold
+&lt;/pre&gt;
+
+where:
+
+&lt;ul&gt;
+&lt;li&gt;
+fontFamilyName = the system name of a font for example &quot;arial&quot; or &quot;times&quot;
+&lt;/li&gt;
+&lt;li&gt;
+pointSize = the size of the font
+&lt;/li&gt;
+&lt;li&gt;
+italic = the letter &quot;I&quot; if italic font should be used, or a dash (&quot;-&quot;) if roman
+&lt;/li&gt;
+&lt;li&gt;
+bold = the letter &quot;B&quot; if a bold font should be used, or a dash (&quot;-&quot;) if normal
+&lt;/li&gt;
+&lt;/ul&gt;
                </documentation>
             </annotation>
          </attribute>
@@ -823,7 +957,7 @@ Property Extensions are typically used to define custom labels for objects and f
    <element name="toolPalette">
       <annotation>
          <documentation>
-            Defines a custom Tool Palette for the BPMN2 editor.
+            Defines a custom Tool Palette for the BPMN2 editor. Tool Palettes are associated with a diagram type and a tool profile name combination. An extension plug-in may define any number of tool profiles and hence, Tool Palettes.
          </documentation>
       </annotation>
       <complexType>
@@ -932,7 +1066,7 @@ Property Extensions are typically used to define custom labels for objects and f
          <attribute name="fromPalette" type="string">
             <annotation>
                <documentation>
-                  This can be used to reference another &lt;b&gt;toolPalette&lt;/b&gt; by its id. The &lt;b&gt;toolPalette&lt;/b&gt; definition may be in any contributing plug-in. The &quot;id&quot; attribute in this &lt;b&gt;category&lt;/b&gt; must reference a &lt;b&gt;category&lt;/b&gt; in the &quot;fromPalette&quot; Tool Palette definition.
+                  This can be used to reference another &lt;b&gt;toolPalette&lt;/b&gt; by its id. The &lt;b&gt;toolPalette&lt;/b&gt; definition may be in any contributing plug-in. If used, then the &lt;b&gt;id&lt;/b&gt; attribute in this &lt;b&gt;category&lt;/b&gt; must reference a &lt;b&gt;category&lt;/b&gt; in the &lt;b&gt;fromPalette&lt;/b&gt; Tool Palette definition.
                </documentation>
             </annotation>
          </attribute>
@@ -958,7 +1092,7 @@ or it may contain compound object definitions:
  &lt;/tool&gt;
 &lt;/pre&gt;
 
-See the &lt;b&gt;object&lt;/b&gt; extension for more information.
+See the &lt;a href=&quot;#e.object&quot;&gt;object&lt;/a&gt; extension element for more information.
          </documentation>
       </annotation>
       <complexType>
@@ -1028,7 +1162,8 @@ See the &lt;b&gt;object&lt;/b&gt; extension for more information.
                <documentation>
                   Object type definition. This consists of a sequence of BPMN2 element types with optional configuration parameters. The BNF is as follows:
 
-&lt;div style=&quot;white-space: pre-wrap;&quot;&gt;
+&lt;div style=&quot;white-space: pre-wrap&quot;&gt;
+&lt;code&gt;
 type = TypeList
 TypeDefList = TypeDef | TypeDefList &apos;,&apos; TypeDef | PushDef | PushDef PopDef
 PushDef = TypeDefList &apos;+&apos; TypeDefList
@@ -1041,16 +1176,17 @@ Param = &apos;$&apos; FEATURE | VAR
 TYPE = any BPMN2 element type, for example &quot;Task&quot;, &quot;StartEvent&quot;, &quot;SequenceFlow&quot;, etc.
 FEATURE = the name of a simple data type feature in the BPMN2 element specified by TYPE, for example &quot;name&quot;, &quot;implementation&quot;, etc.
 VAR = a predefined variable used in the construction of the object. This may be one of the following:
- x = x-coordinate where the graphical object will be placed, relative to the mouse cursor position
- y = y-coordinate where the graphical object will be placed, relative to the mouse cursor position
- width = the width of the graphical object
- height = the height o the graphical object
- source = the ID of another &lt;b&gt;object&lt;/b&gt; definition that will be used as the source of a connection
- target = the ID of another &lt;b&gt;object&lt;/b&gt; definition that will be used as the target of a connection
+    x = x-coordinate where the graphical object will be placed, relative to the mouse cursor position
+    y = y-coordinate where the graphical object will be placed, relative to the mouse cursor position
+    width = the width of the graphical object
+    height = the height o the graphical object
+    source = the ID of another &lt;b&gt;object&lt;/b&gt; definition that will be used as the source of a connection
+    target = the ID of another &lt;b&gt;object&lt;/b&gt; definition that will be used as the target of a connection
+&lt;/code&gt;
 &lt;/div&gt;
 
 &lt;p/&gt;
-In its simplest form, a &quot;type&quot; is simply the name of a BPMN2 element type, for example:
+In its simplest form, a &lt;b&gt;type&lt;/b&gt; is simply the name of a BPMN2 element type, for example:
 &lt;pre&gt;
  &lt;object type=&quot;Task&quot;/&gt;
 &lt;/pre&gt;
@@ -1061,7 +1197,7 @@ To assign an initial value to the Task name:
  &lt;object type=&quot;Task[$name=&apos;This is a new Task&apos;]&quot;/&gt;
 &lt;/pre&gt;
 
-To set the size and location of the Task (relative to the mouse cursor):
+To set the initial size and location of the Task (relative to the mouse cursor):
 
 &lt;pre&gt;
  &lt;object type=&quot;Task[x=100,y=100,width=200,height=150]&quot;/&gt;
@@ -1071,11 +1207,12 @@ Multiple objects can be created by separating them with a comma:
 
 &lt;pre&gt;
  &lt;object type=&quot;Task,IntermediateCatchEvent[x=200],Task[x=400]&quot;/&gt;
- &lt;/pre&gt;
+&lt;/pre&gt;
  
 Note that this requires the specification of some location offset to prevent all objects being created at the same location.
-
-The &apos;+&apos; or Push operator can be used within a &quot;type&quot; definition to create objects within objects, for example this:
+&lt;br/&gt;
+&lt;br/&gt;
+The &apos;+&apos; or Push operator can be used within a &lt;b&gt;type&lt;/b&gt; definition to create objects within objects, for example this:
 
 &lt;pre&gt;
  &lt;object type=&quot;SubProcess+Task&quot;/&gt;
@@ -1093,7 +1230,7 @@ Multiple objects can be constructed in the same container by separating them wit
  &lt;object type=&quot;SubProcess+Task,IntermediateCatchEvent[x=200],Task[x=400]&quot;/&gt;
 &lt;/pre&gt;
 
-The Push operator &apos;+&apos; can be used to create additional objects inside the SubProcess. The Pop or &apos;-&apos; operator can be used to restore the target to the previous container (in this case the diagram) like so:
+The Push operator &apos;+&apos; can be used to create additional objects inside the SubProcess. The Pop or &apos;-&apos; operator can be used to restore the target container of subsequent objects (in this case the diagram) like so:
 
 &lt;pre&gt;
  &lt;object type=&quot;SubProcess+Task,IntermediateCatchEvent[x=200],Task[x=400]-ExclusiveGateway[x=600]&quot;/&gt;
@@ -1104,12 +1241,12 @@ This is interpreted as follows: create a SubProcess in the Diagram, then within 
 Creating connections between objects can be done in two ways, the first method uses the previous two objects as source and target:
 
 &lt;pre&gt;
-			&lt;tool name=&quot;SubProcess Split&quot; description=&quot;SubProcess containing two Tasks, and connected to an ExclusiveGateway&quot;&gt;
-				&lt;object type=&quot;SubProcess+Task,Task,SequenceFlow-ExclusiveGateway[x=300],SequenceFlow&quot;/&gt;
-			&lt;/tool&gt;
+   &lt;tool name=&quot;SubProcess Split&quot; description=&quot;SubProcess containing two Tasks, and connected to an ExclusiveGateway&quot;&gt;
+    &lt;object type=&quot;SubProcess+Task,Task,SequenceFlow-ExclusiveGateway[x=300],SequenceFlow&quot;/&gt;
+   &lt;/tool&gt;
 &lt;/pre&gt;
 
-The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by their IDs:
+The second method references previous &lt;b&gt;object&lt;/b&gt; definitions by their IDs:
 
 &lt;pre&gt;
  &lt;tool name=&quot;Two Tasks&quot; description=&quot;Two Tasks connected by a SequenceFlow&quot;&gt;
@@ -1155,7 +1292,7 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  A class that handles the conversion of the data type to and from String types. This must subclass org.eclipse.emf.ecore.EDataType$Internal$ConversionDelegate
+                  A class that handles the conversion of the data type to and from String types. This class must implement &lt;code&gt;org.eclipse.emf.ecore.EDataType$Internal$ConversionDelegate&lt;/code&gt;.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.emf.ecore.EDataType$Internal$ConversionDelegate"/>
@@ -1170,7 +1307,7 @@ The second method references previouss &lt;b&gt;object&lt;/b&gt; definitions by 
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         Version 0.1.0
+         1.1.0
       </documentation>
    </annotation>
 

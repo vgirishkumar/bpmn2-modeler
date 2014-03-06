@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.data.Properties;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -50,6 +51,12 @@ public class UpdateDataObjectFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
+		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		if (value instanceof EObject) {
+			// if the UpdateContext has a "businessObject" property, then this update is needed
+			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+			return Reason.createTrueReason("Initial update");
+		}
 		IPeService peService = Graphiti.getPeService();
 		ContainerShape container = (ContainerShape) context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(container);

@@ -18,7 +18,9 @@ import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -46,6 +48,12 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 
+		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		if (value instanceof EObject) {
+			// if the UpdateContext has a "businessObject" property, then this update is needed
+			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+			return Reason.createTrueReason("Initial update");
+		}
 		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 				ChoreographyActivity.class);
 

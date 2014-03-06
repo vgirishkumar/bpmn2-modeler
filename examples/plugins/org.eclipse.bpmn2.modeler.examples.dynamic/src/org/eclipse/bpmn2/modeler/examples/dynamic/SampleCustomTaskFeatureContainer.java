@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
@@ -26,7 +27,6 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider.IconSize;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.CreateTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.TextAnnotationFeatureContainer;
 import org.eclipse.emf.ecore.EObject;

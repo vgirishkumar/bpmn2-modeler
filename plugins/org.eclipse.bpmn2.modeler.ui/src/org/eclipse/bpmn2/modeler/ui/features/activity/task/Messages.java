@@ -16,10 +16,6 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.features.activity.task.messages"; //$NON-NLS-1$
 	public static String BusinessRuleTaskFeatureContainer_Description;
 	public static String BusinessRuleTaskFeatureContainer_Name;
-	public static String CustomConnectionFeatureContainer_Description;
-	public static String CustomElementFeatureContainer_Create;
-	public static String CustomElementFeatureContainer_Description;
-	public static String CustomShapeFeatureContainer_Description;
 	public static String ManualTaskFeatureContainer_Description;
 	public static String ManualTaskFeatureContainer_Name;
 	public static String ReceiveTaskFeatureContainer_Description;

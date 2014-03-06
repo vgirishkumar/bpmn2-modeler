@@ -1352,36 +1352,4 @@ public class ModelDecorator {
 
 		return null;
 	}
-
-	/**
-	 * Replace the default implementation of FeatureDescriptor in the given ExtendedPropertiesAdapter
-	 * with an AnyTypeFeatureDescriptor. This FD knows how to access and update dynamic features.
-	 *  
-	 * @param adapter - the ExtendedPropertiesAdapter attached to the given EObject
-	 * @param object - the adapted EObject
-	 * @param feature - a dynamic feature associated with the EObject.
-	 * @return true if a new FD was added, false if not.
-	 */
-//	@SuppressWarnings("rawtypes")
-//	public ExtendedPropertiesAdapter adaptFeature(ExtendedPropertiesAdapter adapter, EObject object, EStructuralFeature feature) {
-//		boolean add = true;
-//		// FIXME: see discussion about resolving ownership of EXTENSION ELEMENTS, above
-//		if (object instanceof ExtensionAttributeValue)
-//			object = object.eContainer();
-//
-//		if (adapter==null)
-//			adapter = ExtendedPropertiesAdapter.adapt(object);
-//		
-//		if (adapter.hasFeatureDescriptor(feature)) {
-//			FeatureDescriptor fd = adapter.getFeatureDescriptor(feature);
-//			if (fd instanceof AnyTypeFeatureDescriptor)
-//				add = false;
-//		}
-//		
-//		if (add) {
-//			adapter.setFeatureDescriptor(feature, new AnyTypeFeatureDescriptor(this, adapter, object, feature));
-//		}
-//		return adapter;
-//	}
-
 }

@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.features.gateway;
 
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -20,6 +21,7 @@ import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.event.AppendEventFeature;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
@@ -32,6 +34,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
+import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -127,6 +130,12 @@ public abstract class AbstractGatewayFeatureContainer extends BaseElementFeature
 
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
+			Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+			if (value instanceof EObject) {
+				// if the UpdateContext has a "businessObject" property, then this update is needed
+				// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+				return Reason.createTrueReason("Initial update");
+			}
 			IFeatureProvider featureProvider = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
 
 			Shape gatewayShape = (Shape) context.getPictogramElement();

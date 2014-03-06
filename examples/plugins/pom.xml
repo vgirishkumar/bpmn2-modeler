@@ -6,24 +6,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<parent>
-		<groupId>org.eclipse.bpmn2.modeler.examples</groupId>
-		<artifactId>org.eclipse.bpmn2.modeler.examples.parent</artifactId>
+		<groupId>org.eclipse.bpmn2.modeler.examples.plugins</groupId>
+		<artifactId>org.eclipse.bpmn2.modeler.examples.plugins.parent</artifactId>
 		<version>1.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.eclipse.bpmn2.modeler.examples.plugins</groupId>
-	<artifactId>org.eclipse.bpmn2.modeler.examples.plugins.parent</artifactId>
-	<name>BPMN2 Modeler Examples: Plugins Parent</name>
-	<description>BPMN2 Modeler Example Plug-ins</description>
+	<artifactId>org.eclipse.bpmn2.modeler.examples.datatype</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-
-	<modules>
-		<module>org.eclipse.bpmn2.modeler.examples.customtask</module>
-		<module>org.eclipse.bpmn2.modeler.examples.dynamic</module>
-		<module>org.eclipse.bpmn2.modeler.examples.modelreader</module>
-	</modules>
+	<packaging>eclipse-plugin</packaging>
+	<name>BPMN2 Modeler Example Plug-in: DataType Extension</name>
+	<description>BPMN2 Modeler Runtime Example Plug-in demonstrating custom DataTypes</description>
 </project>

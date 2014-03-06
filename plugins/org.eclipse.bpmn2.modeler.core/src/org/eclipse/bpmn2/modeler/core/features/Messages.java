@@ -24,6 +24,10 @@ public class Messages extends NLS {
 	public static String BPMNDiagramFeatureContainer_Reroute_All_Name;
 	public static String ShowPropertiesFeature_Name;
 	public static String ShowPropertiesFeature_Title;
+	public static String CustomShapeFeatureContainer_Description;
+	public static String CustomConnectionFeatureContainer_Description;
+	public static String CustomElementFeatureContainer_Description;
+	public static String CustomElementFeatureContainer_Create;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

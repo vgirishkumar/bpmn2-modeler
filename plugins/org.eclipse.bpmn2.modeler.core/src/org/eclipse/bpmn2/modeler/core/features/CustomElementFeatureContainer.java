@@ -8,18 +8,15 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.features.activity.task;
+package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider;
+import org.eclipse.bpmn2.modeler.core.features.Messages;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -46,7 +43,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	protected String id;
 	protected CustomTaskDescriptor customTaskDescriptor;
 	protected IFeatureContainer featureContainerDelegate = null;
-	protected BPMNFeatureProvider fp;
+	protected IBpmn2FeatureProvider fp;
 	
 	public CustomElementFeatureContainer() {
 	}
@@ -60,7 +57,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		EClass eClass = (EClass) ModelDecorator.findEClassifier(
 				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
-		return ((BPMNFeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
+		return ((IBpmn2FeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
 	}
 	
 	protected IFeatureContainer getFeatureContainer(IFeatureProvider fp) {

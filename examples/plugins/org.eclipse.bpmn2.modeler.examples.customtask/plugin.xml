@@ -138,6 +138,18 @@
 			type="org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition"
 			class="org.eclipse.bpmn2.modeler.examples.customtask.MyEventDefinitionPropertiesAdapter">
 		</propertyExtension>
+
+
+		<customTask
+			category="My Tools"
+			description="Message Start Event"
+			featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MessageStartEventFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.examples.customtask.messageStartEvent"
+			name="Message Event"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.timebpmn.runtime"
+			type="StartEvent">
+		</customTask>
+
 	</extension>
 
 </plugin>

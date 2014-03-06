@@ -15,6 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.data;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -96,10 +98,13 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
-		layoutPictogramElement(containerShape);
-		updatePictogramElement(containerShape);
-		this.prepareAddContext(context, containerShape, width, height);
-		this.getFeatureProvider().getAddFeature(context).add(context);
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
+
+		// prepare the AddContext to create a Label
+		prepareAddContext(context, containerShape, width, height);
+		IFeatureContainer fc = new LabelFeatureContainer();
+		fc.getAddFeature(getFeatureProvider()).add(context);
 		
 		return containerShape;
 	}

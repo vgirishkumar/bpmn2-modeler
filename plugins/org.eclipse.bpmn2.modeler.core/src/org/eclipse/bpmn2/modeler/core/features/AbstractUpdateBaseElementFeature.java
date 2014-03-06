@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -33,6 +34,12 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractUpdateFea
 
 	@Override
 	public IReason updateNeeded(final IUpdateContext context) {
+		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		if (value instanceof EObject) {
+			// if the UpdateContext has a "businessObject" property, then this update is needed
+			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+			return Reason.createTrueReason("Initial update");
+		}
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
 			String shapeValue = FeatureSupport.getShapeValue(context);

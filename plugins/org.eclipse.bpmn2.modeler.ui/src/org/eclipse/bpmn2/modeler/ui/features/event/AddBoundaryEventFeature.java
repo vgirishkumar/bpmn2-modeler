@@ -18,7 +18,9 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
@@ -116,10 +118,13 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<Boun
 		anchor.setReferencedGraphicsAlgorithm(ellipse);
 		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
-		this.prepareAddContext(context, containerShape, width, height);
-//		this.getFeatureProvider().getAddFeature(context).add(context);
+		// prepare the AddContext to create a Label
+		prepareAddContext(context, containerShape, width, height);
+//		IFeatureContainer fc = new LabelFeatureContainer();
+//		fc.getAddFeature(getFeatureProvider()).add(context);
 		
-		updatePictogramElement(containerShape);
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
 		
 		return containerShape;
 	}

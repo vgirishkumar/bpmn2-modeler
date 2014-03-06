@@ -103,8 +103,8 @@ public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Partic
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
-		updatePictogramElement(containerShape);
-		layoutPictogramElement(containerShape);
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
 		return containerShape;
 	}
 
