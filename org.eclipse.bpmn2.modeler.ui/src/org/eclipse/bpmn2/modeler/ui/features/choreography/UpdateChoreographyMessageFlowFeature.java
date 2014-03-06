@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.util.Bpmn2OppositeReferenceAdapter;
@@ -59,6 +60,12 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateFeature 
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
+		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		if (value instanceof EObject) {
+			// if the UpdateContext has a "businessObject" property, then this update is needed
+			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+			return Reason.createTrueReason("Initial update");
+		}
 		PictogramElement pe = context.getPictogramElement();
 		if (isLinkedMessage(pe)) {
 			Message message = BusinessObjectUtil.getFirstElementOfType(pe, Message.class);

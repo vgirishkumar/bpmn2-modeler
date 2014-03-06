@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
@@ -240,6 +241,11 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
+			if (context.getProperty(ContextConstants.BUSINESS_OBJECT) instanceof EObject) {
+				// if the UpdateContext has a "businessObject" property, then this update is needed
+				// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+				return Reason.createTrueReason("Initial update");
+			}
 			IPeService peService = Graphiti.getPeService();
 			PictogramElement element = context.getPictogramElement();
 			String property = peService.getPropertyValue(element, CALL_ACTIVITY_REF_PROPERTY);
