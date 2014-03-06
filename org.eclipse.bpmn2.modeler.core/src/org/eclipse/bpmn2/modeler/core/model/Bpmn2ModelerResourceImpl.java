@@ -382,6 +382,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		Bpmn2Preferences prefs = null;
 		ImportUtil importHandler = new ImportUtil();
+		String targetNamespace = null;
 
 		public Bpmn2ModelerXmlHandler(XMLResource xmiResource, XMLHelper helper, Map<?, ?> options) {
 			super(xmiResource, helper, options);
@@ -476,6 +477,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					itemDef.setImport(imp);
 				}
 			}
+            else if (obj instanceof Definitions) {
+            	targetNamespace = ((Definitions)obj).getTargetNamespace();
+            }
+
 		}
 
 		/**
@@ -502,9 +507,17 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					String prefix = ids.substring(0,i);
 					String localname = ids.substring(i+1);
 					String namespace = helper.getNamespaceURI(prefix);
-					Import imp = importHandler.findImportForNamespace(helper.getResource(), namespace);
-					if (imp!=null) {
-						value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
+					if (namespace!=null && namespace.equals(targetNamespace)) {
+						// namespace for prefix is the same as targetNamespace
+						// so remove the prefix to avoid confusing the XMLHandler
+						ids = localname;
+					}
+					else {
+						// this thing is in another namespace, possibly in an external document
+						Import imp = importHandler.findImportForNamespace(helper.getResource(), namespace);
+						if (imp!=null) {
+							value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
+						}
 					}
 				}
 				

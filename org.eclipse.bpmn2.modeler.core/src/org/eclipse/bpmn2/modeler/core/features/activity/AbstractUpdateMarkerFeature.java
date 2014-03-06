@@ -16,7 +16,9 @@ import java.util.Iterator;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -42,6 +44,12 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 
 	@Override
     public IReason updateNeeded(IUpdateContext context) {
+		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		if (value instanceof EObject) {
+			// if the UpdateContext has a "businessObject" property, then this update is needed
+			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
+			return Reason.createTrueReason("Initial update");
+		}
 		IPeService peService = Graphiti.getPeService();
 		PictogramElement element = context.getPictogramElement();
 		String property = peService.getPropertyValue(element, getPropertyKey());
@@ -50,7 +58,7 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		}
 		T activity = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());
 		boolean changed = isPropertyChanged(activity, property);
-		return changed ? Reason.createTrueReason() : Reason.createFalseReason();
+		return changed ? Reason.createTrueReason("Marker changed") : Reason.createFalseReason();
     }
 
 	@Override

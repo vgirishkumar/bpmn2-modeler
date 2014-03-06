@@ -45,12 +45,15 @@ import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
+import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -332,5 +335,39 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
+	}
+	
+	/**
+	 * Update the given PictogramElement. A Graphiti UpdateContext is constructed by copying
+	 * the properties from the given AddContext.
+	 * 
+	 * @param addContext - the Graphiti AddContext that was used to add the PE to the Diagram
+	 * @param pe - the PictogramElement
+	 * @return a reason code indicating whether or not an update is needed.
+	 */
+	protected IReason updatePictogramElement(IAddContext addContext, PictogramElement pe) {
+		UpdateContext updateContext = new UpdateContext(pe);
+		for (Object key : addContext.getPropertyKeys()) {
+			Object value = addContext.getProperty(key);
+			updateContext.putProperty(key, value);
+		}
+		return getFeatureProvider().updateIfPossible(updateContext);
+	}
+
+	/**
+	 * Layout the given PictogramElement. A Graphiti LayoutContext is constructed by copying
+	 * the properties from the given AddContext.
+	 * 
+	 * @param addContext - the Graphiti AddContext that was used to add the PE to the Diagram
+	 * @param pe - the PictogramElement
+	 * @return a reason code indicating whether or not a layout is needed.
+	 */
+	protected IReason layoutPictogramElement(IAddContext addContext, PictogramElement pe) {
+		LayoutContext layoutContext = new LayoutContext(pe);
+		for (Object key : addContext.getPropertyKeys()) {
+			Object value = addContext.getProperty(key);
+			layoutContext.putProperty(key, value);
+		}
+		return getFeatureProvider().layoutIfPossible(layoutContext);
 	}
 }

@@ -15,6 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.gateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -83,8 +85,9 @@ public class AddGatewayFeature<T extends Gateway>
 		layoutPictogramElement(containerShape);
 		
 		// Use context for labeling! 
-		this.prepareAddContext(context, containerShape, width, height);
-		this.getFeatureProvider().getAddFeature(context).add(context);
+		prepareAddContext(context, containerShape, width, height);
+		IFeatureContainer fc = new LabelFeatureContainer();
+		fc.getAddFeature(getFeatureProvider()).add(context);
 		
 		return containerShape;
 	}

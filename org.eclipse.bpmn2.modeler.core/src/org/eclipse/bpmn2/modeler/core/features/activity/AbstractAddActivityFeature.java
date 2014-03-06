@@ -133,8 +133,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		}
 
 		splitConnection(context, containerShape);
-		updatePictogramElement(containerShape);
-		layoutPictogramElement(containerShape);
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
 		
 		return containerShape;
 	}

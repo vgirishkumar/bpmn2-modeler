@@ -1742,26 +1742,18 @@ public class ModelUtil {
 		List<Tuple<EObject,EObject>> list = new ArrayList<Tuple<EObject,EObject>>();
 		Definitions definitions = ModelUtil.getDefinitions(resource);
 		TreeIterator<EObject> iter1 = definitions.eAllContents();
-		HashSet<EObject> map = new HashSet<EObject>();
+		Hashtable<String, EObject> map = new Hashtable<String, EObject>();
 		while (iter1.hasNext()) {
 			EObject o1 = iter1.next();
 			EStructuralFeature id1Feature = o1.eClass().getEIDAttribute();
-			if (id1Feature!=null && !map.contains(o1)) {
-				TreeIterator<EObject> iter2 = definitions.eAllContents();
-				map.add(o1);
+			if (id1Feature!=null) {
 				String id1 = (String)o1.eGet(id1Feature);
-				
-				while (iter2.hasNext()) {
-					EObject o2 = iter2.next();
-					EStructuralFeature id2Feature = o2.eClass().getEIDAttribute();
-					if (id2Feature!=null && o1!=o2 && !map.contains(o2)) {
-						String id2 = (String)o2.eGet(id2Feature);
-						if (id1!=null && !id1.isEmpty() && id2!=null && !id2.isEmpty()) {
-							if (id1.equals(id2)) {
-								list.add( new Tuple<EObject,EObject>(o1,o2) );
-							}
-						}
+				if (id1!=null) {
+					EObject o2 = map.get(id1);
+					if (o2!=null) {
+						list.add( new Tuple<EObject,EObject>(o1,o2) );
 					}
+					map.put(id1, o1);
 				}
 			}
 		}
