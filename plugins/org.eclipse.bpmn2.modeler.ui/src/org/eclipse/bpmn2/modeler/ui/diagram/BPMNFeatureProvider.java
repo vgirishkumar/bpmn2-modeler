@@ -69,6 +69,8 @@ import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
@@ -160,6 +162,7 @@ import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveBendpointFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IPasteFeature;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveBendpointFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
@@ -183,6 +186,7 @@ import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
@@ -680,5 +684,82 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider implements IBpmn
 		if (defaultPasteFeature.canPaste(context))
 			return defaultPasteFeature;
 		return null;
+	}
+
+	@Override
+	public IReason canUpdate(IUpdateContext context) {
+		IReason reason = super.canUpdate(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_UPDATE, this, context, context.getPictogramElement());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
+	}
+
+	@Override
+	public IReason canLayout(ILayoutContext context) {
+		IReason reason = super.canLayout(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_LAYOUT, this, context, context.getPictogramElement());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
+	}
+
+	@Override
+	public IReason updateIfPossible(IUpdateContext context) {
+		IReason reason = super.updateIfPossible(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE, this, context, context.getPictogramElement());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
+	}
+
+	@Override
+	public IReason layoutIfPossible(ILayoutContext context) {
+		// TODO Auto-generated method stub
+		IReason reason = super.layoutIfPossible(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, this, context, context.getPictogramElement());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
+	}
+
+	@Override
+	public IReason updateNeeded(IUpdateContext context) {
+		IReason reason = super.updateNeeded(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED, this, context, context.getPictogramElement());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
+	}
+
+	@Override
+	public PictogramElement addIfPossible(IAddContext context) {
+		PictogramElement pe = super.addIfPossible(context);
+		if (pe!=null) {
+			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
+		}
+		return pe;
+	}
+
+	@Override
+	public IReason canAdd(IAddContext context) {
+		IReason reason = super.canAdd(context);
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_ADD, this, context, context.getNewObject());
+		event.doit = reason.toBoolean();
+		TargetRuntime.getCurrentRuntime().notify(event);
+		if (event.doit != reason.toBoolean())
+			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
+		return reason;
 	}
 }

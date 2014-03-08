@@ -13,9 +13,13 @@
 
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
+import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -72,7 +76,7 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 			IDiagramContainerUI dc = diagramBehavior.getDiagramContainer();
 			if (dc instanceof BPMN2Editor) {
 				BPMN2Editor editor = (BPMN2Editor) dc;
-				BPMN2Editor openEditor = BPMN2Editor.findOpenEditor(editor, editor.getCurrentInput());
+				BPMN2Editor openEditor = BPMN2Editor.findOpenEditor(editor, editor.getEditorInput());
 				if (openEditor!=null) {
 					BPMN2EditorUpdateBehavior updateBehavior = (BPMN2EditorUpdateBehavior) openEditor.getDiagramBehavior().getUpdateBehavior();
 					editingDomain = updateBehavior.editingDomain;
@@ -92,7 +96,7 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 		IDiagramContainerUI dc = diagramBehavior.getDiagramContainer();
 		if (dc instanceof BPMN2Editor) {
 			BPMN2Editor editor = (BPMN2Editor) dc;
-			BPMN2Editor openEditor = BPMN2Editor.findOpenEditor(editor, editor.getCurrentInput());
+			BPMN2Editor openEditor = BPMN2Editor.findOpenEditor(editor, editor.getEditorInput());
 			if (openEditor==null)
 				super.dispose();
 		}
@@ -151,4 +155,19 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 			return bpmnEditor.handleResourceMoved(resource, newURI);
 		}
 
-	}}
+	}
+
+	@Override
+	public void historyNotification(OperationHistoryEvent event) {
+		super.historyNotification(event);
+		
+		switch (event.getEventType()) {
+		case OperationHistoryEvent.REDONE:
+			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
+			break;
+		case OperationHistoryEvent.UNDONE:
+			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
+			break;
+		}
+	}
+}

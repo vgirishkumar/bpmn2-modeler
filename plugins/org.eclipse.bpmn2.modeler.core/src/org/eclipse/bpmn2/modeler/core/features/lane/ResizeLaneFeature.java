@@ -13,9 +13,12 @@
 package org.eclipse.bpmn2.modeler.core.features.lane;
 
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.ResizeParticipantFeature;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EObject;
@@ -38,39 +41,41 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 
 	@Override
 	public boolean canResizeShape(IResizeShapeContext context) {
+		boolean doit = false;
 		boolean isLane = FeatureSupport.isLane(context.getPictogramElement());
-		if (!isLane) {
-			return false;
+		if (isLane) {
+			boolean isParentLane = FeatureSupport.isLane(((ContainerShape) context
+					.getPictogramElement()).getContainer());
+			if (!isParentLane) {
+				doit = true;
+			}
+			else {
+				if (context.getHeight() == -1 && context.getWidth() == -1) {
+					doit = true;
+				}
+				else {
+					GraphicsAlgorithm ga = ((ContainerShape) context.getPictogramElement())
+							.getGraphicsAlgorithm();
+			
+					int i = compare(ga.getHeight(), ga.getWidth(), context.getHeight(),
+							context.getWidth());
+			
+					Lane lane = (Lane) BusinessObjectUtil.getFirstElementOfType(
+							context.getPictogramElement(), Lane.class);
+			
+					if (i < 0 && lane.getFlowNodeRefs().size() == 0) {
+						doit = true;
+					}
+					else if (i > 0) {
+						doit = true;
+					}
+				}
+			}
+			
+			if (doit && !super.canResizeShape(context))
+				doit = false;
 		}
-
-		boolean isParentLane = FeatureSupport.isLane(((ContainerShape) context
-				.getPictogramElement()).getContainer());
-		if (!isParentLane) {
-			return true;
-		}
-
-		if (context.getHeight() == -1 && context.getWidth() == -1) {
-			return true;
-		}
-
-		GraphicsAlgorithm ga = ((ContainerShape) context.getPictogramElement())
-				.getGraphicsAlgorithm();
-
-		int i = compare(ga.getHeight(), ga.getWidth(), context.getHeight(),
-				context.getWidth());
-
-		Lane lane = (Lane) BusinessObjectUtil.getFirstElementOfType(
-				context.getPictogramElement(), Lane.class);
-
-		if (i < 0 && lane.getFlowNodeRefs().size() == 0) {
-			return true;
-		}
-
-		if (i > 0) {
-			return true;
-		}
-
-		return true;
+		return doit;
 	}
 
 	private int compare(int heightBefore, int widthBefore, int heightAfter,
@@ -244,6 +249,11 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
 		ContainerShape laneShape = (ContainerShape) context.getShape();
+		
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
+				getFeatureProvider(), context, laneShape));
+
 		GraphicsAlgorithm laneGa = laneShape.getGraphicsAlgorithm();
 		int preX = laneGa.getX();
 		int preY = laneGa.getY();
@@ -274,6 +284,9 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 		if (rootContainer!=laneShape) {
 			DIUtils.updateDIShape(rootContainer);
 		}
+		
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_RESIZE,
+				getFeatureProvider(), context, laneShape));
 	}
 
 	private ContainerShape getLowestLane(ContainerShape root, boolean fetchFirst) {

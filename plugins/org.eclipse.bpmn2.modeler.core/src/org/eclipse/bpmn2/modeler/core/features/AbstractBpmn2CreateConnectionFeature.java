@@ -21,6 +21,8 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
@@ -248,6 +250,9 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
 		}
+		
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED,
+				getFeatureProvider(), context, businessObject));
 	}
 
 	/* (non-Javadoc)

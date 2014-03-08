@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
@@ -88,6 +89,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	static Class extensionDescriptorClasses[] = {
 		TargetRuntime.class,
 		ModelDescriptor.class,
+		DataTypeDescriptor.class,
 		PropertyTabDescriptor.class,
 		ModelExtensionDescriptor.class,
 		CustomTaskDescriptor.class,
@@ -96,7 +98,6 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		PropertyExtensionDescriptor.class,
 		FeatureContainerDescriptor.class,
 		ShapeStyle.class,
-		DataTypeDescriptor.class,
 	};
 
 	/**
@@ -174,6 +175,20 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	 */
 	@Override
 	public void dispose() {
+	}
+	
+	/**
+	 * Load and initialize all RuntimeExtension classes for all Target Runtimes
+	 * that have the same ID as ours.
+	 * 
+	 * @param editor - the DiagramEditor initializing us.
+	 */
+	public void notify(LifecycleEvent event) {
+		for (TargetRuntime rt : targetRuntimes) {
+			if (rt.getId().equals(this.id)) {
+				rt.getRuntimeExtension().notify(event);
+			}
+		}
 	}
 	
 	/*
@@ -689,7 +704,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	/*
 	 * Runtime Extension Descriptor handling
 	 */
-	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) throws Exception {
+	public static void loadExtensions(TargetRuntime targetRuntime, IConfigurationElement[] elements, IFile file) throws TargetRuntimeConfigurationException {
 
 		TargetRuntime oldCurrentRuntime = currentRuntime;
 		currentRuntime = targetRuntime;
@@ -729,13 +744,18 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 
 	}
 
-	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static IRuntimeExtensionDescriptor createRuntimeExtensionDescriptor(TargetRuntime rt, IConfigurationElement e, IFile file) throws TargetRuntimeConfigurationException {
 		IRuntimeExtensionDescriptor d = null;
-		Class c = getClassForExtensionName(e.getName());
-		Constructor ctor = c.getConstructor(IConfigurationElement.class);
-		d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
-		d.setRuntime(rt);
-		d.setConfigFile(file);
+		try {
+			Class c = getClassForExtensionName(e.getName());
+			Constructor ctor = c.getConstructor(IConfigurationElement.class);
+			d = (IRuntimeExtensionDescriptor)ctor.newInstance(e);
+			d.setRuntime(rt);
+			d.setConfigFile(file);
+		}
+		catch (Exception ex) {
+			throw new TargetRuntimeConfigurationException(rt, ex);
+		}
 		return d;
 	}
 	
@@ -747,7 +767,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			result = (List<IRuntimeExtensionDescriptor>) m.invoke(this);
 		}
 		catch (Exception ex) {
-			Activator.logError(ex);
+			throw new TargetRuntimeConfigurationException(this, ex);
 		}
 		return result;
 	}
@@ -765,7 +785,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			}
 		}
 		catch (Exception ex) {
-			Activator.logError(ex);
+			throw new TargetRuntimeConfigurationException(null, ex);
 		}
 		return null;
 	}
@@ -776,9 +796,8 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			return (String) field.get(null);
 		}
 		catch (Exception ex) {
-			Activator.logError(ex);
+			throw new TargetRuntimeConfigurationException(null, ex);
 		}
-		return null;
 	}
 	
 	/*
@@ -894,7 +913,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 							rank += 1;
 					}
 					catch (Exception ex) {
-						Activator.logError(ex);
+						throw new TargetRuntimeConfigurationException(null, ex);
 					}
 					return rank;
 				}

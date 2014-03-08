@@ -1292,10 +1292,10 @@ The second method references previous &lt;b&gt;object&lt;/b&gt; definitions by t
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  A class that handles the conversion of the data type to and from String types. This class must implement &lt;code&gt;org.eclipse.emf.ecore.EDataType$Internal$ConversionDelegate&lt;/code&gt;.
+                  A class that handles the conversion of the data type to and from String types. This class must extend &lt;code&gt;org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate&lt;/code&gt;.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.emf.ecore.EDataType$Internal$ConversionDelegate"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate:"/>
                </appinfo>
             </annotation>
          </attribute>

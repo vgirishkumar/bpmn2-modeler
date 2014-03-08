@@ -14,6 +14,8 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
@@ -118,13 +120,8 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	public void putBusinessObject(ICreateContext context, T businessObject) {
 		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
 		
-		// TODO: is this no longer needed? populateObject() is now called in the Bpmn2ModelerFactory
-//		String id = (String)context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-//		if (id!=null) {
-//	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-//	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-//	    	ctd.populateObject(businessObject, ResourceProvider.getResource(businessObject), true);
-//		}
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED,
+				getFeatureProvider(), context, businessObject));
 	}
 
 	/* (non-Javadoc)

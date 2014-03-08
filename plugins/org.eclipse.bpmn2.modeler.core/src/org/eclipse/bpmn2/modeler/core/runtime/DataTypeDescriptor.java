@@ -14,7 +14,7 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.lang.reflect.Constructor;
 
-import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate;
 import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
@@ -45,9 +45,14 @@ public class DataTypeDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	@Override
 	public void setRuntime(TargetRuntime targetRuntime) {
-		super.setRuntime(targetRuntime);
-		ConversionDelegate delegate = getConversionDelegate();
-		EDataTypeConversionFactory.registerConversionDelegate(name, delegate.getClass());
+		try {
+			super.setRuntime(targetRuntime);
+			ConversionDelegate delegate;
+			delegate = getConversionDelegate();
+			EDataTypeConversionFactory.registerConversionDelegate(name, delegate.getClass());
+		} catch (Exception e) {
+			throw new TargetRuntimeConfigurationException(targetRuntime,e);
+		}
 	}
 
 	@Override
@@ -59,17 +64,23 @@ public class DataTypeDescriptor extends BaseRuntimeExtensionDescriptor {
 		return name;
 	}
 	
-	public ConversionDelegate getConversionDelegate() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ConversionDelegate getConversionDelegate() throws TargetRuntimeConfigurationException {
 		try {
 			ClassLoader cl = this.getRuntime().getRuntimeExtension().getClass().getClassLoader();
 			Constructor ctor = null;
 			Class adapterClass = Class.forName(delegateClassName, true, cl);
 			ctor = adapterClass.getConstructor();
 			return (ConversionDelegate)ctor.newInstance();
-		} catch (Exception e) {
-			Activator.logError(e);
 		}
-		return null;
+		catch (Exception ex1) {
+			try {
+				Object object = configurationElement.createExecutableExtension("class");
+				return (DefaultConversionDelegate) object;
+			} catch (Exception ex2) {
+				throw new TargetRuntimeConfigurationException(targetRuntime,ex2);
+			}
+		}
 	}
 
 }

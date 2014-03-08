@@ -237,7 +237,7 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 
 		@Override
 		public void startDocument() throws SAXException {
-			root = new XMLConfigElement(null);
+			root = new XMLConfigElement(file.getProject());
 			stack.push(root);
 		}
 

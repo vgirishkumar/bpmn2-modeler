@@ -13,7 +13,6 @@
 package org.eclipse.bpmn2.modeler.core;
 
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
 
 /**
@@ -62,12 +61,11 @@ public interface IBpmn2RuntimeExtension {
 	 * name used in the UI.
 	 */
 	public String[] getExpressionLanguages();
-	
+
 	/**
-	 * This method is invoked by the BPMN2 Diagram editor during startup, immediately after a 
-	 * bpmn2 resource has been loaded, and just before the graphical elements have been realized.
-	 *  
-	 * @param editor
+	 * Used to notify the Target Runtime of BPMN2 editor lifecycle events.
+	 * @see LifecycleEvent
+	 * @param event - an event object.
 	 */
-	public void initialize(DiagramEditor editor);
+	public void notify(LifecycleEvent event);
 }

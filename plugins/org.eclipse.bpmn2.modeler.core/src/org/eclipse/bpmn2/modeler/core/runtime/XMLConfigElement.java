@@ -10,47 +10,87 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.runtime;
 
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.JavaRuntime;
 
 public class XMLConfigElement implements IConfigurationElement {
 
-	protected XMLConfigElement parent = null;
+	protected Object parent = null;
 	protected String name = null;
 	protected String value = null;
 	protected boolean valid = true;
 	protected Hashtable<String, String> attributes = new Hashtable<String, String>();
 	protected List<XMLConfigElement> children = new ArrayList<XMLConfigElement>();
 	
-	public XMLConfigElement(XMLConfigElement parent) {
-		this.parent = parent;
-		if (parent!=null) {
-			parent.children.add(this);
-		}
+	public XMLConfigElement(Object parent) {
+		this(parent,"");
 	}
 	
-	public XMLConfigElement(XMLConfigElement parent, String name) {
+	public XMLConfigElement(Object parent, String name) {
 		this.parent = parent;
-		if (parent!=null) {
-			parent.children.add(this);
+		if (parent instanceof XMLConfigElement) {
+			((XMLConfigElement)parent).children.add(this);
 		}
 		this.name = name;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked", "resource" })
 	@Override
 	public Object createExecutableExtension(String propertyName) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String className = attributes.get(propertyName);
+			IProject project = getProject();
+			IJavaProject javaProject = JavaCore.create(project);
+			String[] classPathEntries = JavaRuntime.computeDefaultRuntimeClassPath(javaProject);
+			List<URL> urlList = new ArrayList<URL>();
+			for (int i = 0; i < classPathEntries.length; i++) {
+				String entry = classPathEntries[i];
+				IPath path = new Path(entry);
+				URL url = path.toFile().toURI().toURL();
+				urlList.add(url);
+			}
+			ClassLoader parentClassLoader = javaProject.getClass().getClassLoader();
+			URL[] urls = (URL[]) urlList.toArray(new URL[urlList.size()]);
+			URLClassLoader classLoader = new URLClassLoader(urls, parentClassLoader);
+			ClassLoader cl = classLoader.getParent();
+			Class clazz = classLoader.loadClass(className);
+			return clazz.getConstructor().newInstance();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, ex.getMessage()));
+		}
 	}
 
+	private IProject getProject() {
+		if (parent instanceof IProject)
+			return (IProject) parent;
+		if (parent instanceof XMLConfigElement)
+			return ((XMLConfigElement)parent).getProject();
+		return null;
+	}
+	
 	public void setAttribute(String name, String value) {
 		attributes.put(name, value);
 	}
@@ -93,8 +133,8 @@ public class XMLConfigElement implements IConfigurationElement {
 	@Override
 	public IExtension getDeclaringExtension() throws InvalidRegistryObjectException {
 		XMLConfigElement root = this;
-		while (root.getParent()!=null)
-			root = root.parent;
+		while (root.getParent() instanceof XMLConfigElement)
+			root = (XMLConfigElement) root.getParent();
 		return new XMLExtension(root);
 	}
 

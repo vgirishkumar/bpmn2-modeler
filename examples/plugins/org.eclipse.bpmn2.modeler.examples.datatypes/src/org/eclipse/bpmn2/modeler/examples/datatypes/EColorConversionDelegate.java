@@ -10,11 +10,9 @@
  *
  * @author Bob Brodt
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.model;
+package org.eclipse.bpmn2.modeler.examples.datatypes;
 
-import org.eclipse.bpmn2.modeler.core.EditControlProvider;
-import org.eclipse.bpmn2.modeler.core.EditControlProvider.EditControl;
-import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
+import org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.RowLayout;
@@ -27,11 +25,8 @@ import org.eclipse.swt.widgets.Composite;
  * The class is registered with our EDataTypeConversionFactory with the name of a data type;
  * in this example the data type name is "EColor" in keeping with the EMF naming convention
  * for primitive data types (e.g. "EString", "EBoolean", etc.)
- * 
- * TODO: currently the registration of this class is hard-coded as static text in the
- * EDataTypeConversionFactory class - this should be moved somewhere...more reasonable.
  */
-public class EColorConversionDelegate implements ConversionDelegate, EditControlProvider {
+public class EColorConversionDelegate extends DefaultConversionDelegate {
 
 	private enum RGBComponent { RED, GREEN, BLUE };
 	

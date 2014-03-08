@@ -161,7 +161,7 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
 		if (notification.getNotifier()==businessObject && notification.getNewValue()==null) {
-			// It's possible that the user did an UNDO which removed the On Entry/Exit Scripts,
+			// It's possible that the user did an COMMAND_UNDO which removed the On Entry/Exit Scripts,
 			// do we need to reset the business object for the On Entry/Exit Script editors?
 			if (onEntryScriptEditor!=null && onExitScriptEditor!=null) {
 				Object oldValue = notification.getOldValue();

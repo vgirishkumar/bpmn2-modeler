@@ -39,7 +39,9 @@ import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -164,102 +166,101 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 		return null;
 	}
 	
-	/** 
-	 * Initialize in this case finds all the *.wid/*.conf files in the project
-	 * and creates CustomTaskDescriptors for each task included
-	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize(DiagramEditor)
-	 */
-	public void initialize(DiagramEditor editor) {
-		if (!initialized) {
-			// Register all of our Property Tab Detail overrides here. 
-	        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
-	        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
-	        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
-	        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
-	        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
-	        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
-	        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
-	        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
-	        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
-	        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
-	        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
-	        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
-	        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
-	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
-			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
-			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
-	        initialized = true;
-		}
-		
-		ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
-		if (sel instanceof IStructuredSelection) {
-			Object o = ((IStructuredSelection)sel).getFirstElement();
-			// TODO: if selection came from a Guvnor Repository view, this will be a
-			// org.guvnor.tools.views.model.TreeObject - figure out how to add this dependency.
-			// In this case we may want to explicitly make the editor read-only
-		}
-
-		IProject project = Bpmn2Preferences.getActiveProject();
-		if (project != null) {
-			getWorkItemDefinitions();
-			workItemDefinitions.clear();
-			try {
-				final WIDResourceVisitor visitor = new WIDResourceVisitor();
-				project.accept(visitor, IResource.DEPTH_INFINITE, false);
-				if (visitor.getWIDFiles().size() > 0) {
-					Iterator<IFile> fileIter = visitor.getWIDFiles().iterator();
-					while (fileIter.hasNext()) {
-						IFile file = fileIter.next();
-						HashMap<String, WorkItemDefinition> widMap = 
-								new LinkedHashMap<String, WorkItemDefinition>();
-						WIDHandler.evaluateWorkDefinitions(widMap, file);
-						workItemDefinitions.addAll(widMap.values());
-					}
-				}
-				if (!workItemDefinitions.isEmpty()) {
-					List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
-					for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors()) {
-						if (!d.isPermanent())
-							removed.add(d);
-					}
-					TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors().removeAll(removed);
-				
-					java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
-					while(widIterator.hasNext()) {
-						final WorkItemDefinition wid = widIterator.next();
-						final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
-						if (ctd != null) {
-							if (TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId())) {
-								Display.getDefault().asyncExec( new Runnable() {
-									@Override
-									public void run() {
-										MessageDialog.openError(Display.getDefault().getActiveShell(),
-												Messages.JBPM5RuntimeExtension_Duplicate_Task_Title,
-												Messages.JBPM5RuntimeExtension_Duplicate_Task_Message+
-												ctd.getId()+
-												"' was already defined.\n"+ //$NON-NLS-1$
-												"The new Custom Task defined in the file: "+ //$NON-NLS-1$
-												wid.getDefinitionFile().getFullPath().toString()+"\n"+ //$NON-NLS-1$
-												"will be ignored."); //$NON-NLS-1$
-									}
-								});
-							}
-							else
-								TargetRuntime.getCurrentRuntime().addCustomTask(ctd);
+	@Override
+	public void notify(LifecycleEvent event) {
+		if (event.eventType == EventType.EDITOR_INITIALIZED) {
+			if (!initialized) {
+				// Register all of our Property Tab Detail overrides here. 
+		        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
+		        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
+		        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
+		        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
+		        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
+		        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
+		        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
+		        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
+		        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
+		        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
+		        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
+		        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
+		        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
+		        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
+		        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
+		        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
+		        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
+				PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
+				PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
+		        initialized = true;
+			}
+			
+			DiagramEditor editor = (DiagramEditor) event.target;
+			ISelection sel = editor.getEditorSite().getWorkbenchWindow().getSelectionService().getSelection();
+			if (sel instanceof IStructuredSelection) {
+				Object o = ((IStructuredSelection)sel).getFirstElement();
+				// TODO: if selection came from a Guvnor Repository view, this will be a
+				// org.guvnor.tools.views.model.TreeObject - figure out how to add this dependency.
+				// In this case we may want to explicitly make the editor read-only
+			}
+	
+			IProject project = Bpmn2Preferences.getActiveProject();
+			if (project != null) {
+				getWorkItemDefinitions();
+				workItemDefinitions.clear();
+				try {
+					final WIDResourceVisitor visitor = new WIDResourceVisitor();
+					project.accept(visitor, IResource.DEPTH_INFINITE, false);
+					if (visitor.getWIDFiles().size() > 0) {
+						Iterator<IFile> fileIter = visitor.getWIDFiles().iterator();
+						while (fileIter.hasNext()) {
+							IFile file = fileIter.next();
+							HashMap<String, WorkItemDefinition> widMap = 
+									new LinkedHashMap<String, WorkItemDefinition>();
+							WIDHandler.evaluateWorkDefinitions(widMap, file);
+							workItemDefinitions.addAll(widMap.values());
 						}
 					}
+					if (!workItemDefinitions.isEmpty()) {
+						List<CustomTaskDescriptor> removed = new ArrayList<CustomTaskDescriptor>();
+						for (CustomTaskDescriptor d : TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors()) {
+							if (!d.isPermanent())
+								removed.add(d);
+						}
+						TargetRuntime.getCurrentRuntime().getCustomTaskDescriptors().removeAll(removed);
+					
+						java.util.Iterator<WorkItemDefinition> widIterator = workItemDefinitions.iterator();
+						while(widIterator.hasNext()) {
+							final WorkItemDefinition wid = widIterator.next();
+							final CustomTaskDescriptor ctd = convertWIDtoCT(wid);
+							if (ctd != null) {
+								if (TargetRuntime.getCurrentRuntime().customTaskExists(ctd.getId())) {
+									Display.getDefault().asyncExec( new Runnable() {
+										@Override
+										public void run() {
+											MessageDialog.openError(Display.getDefault().getActiveShell(),
+													Messages.JBPM5RuntimeExtension_Duplicate_Task_Title,
+													Messages.JBPM5RuntimeExtension_Duplicate_Task_Message+
+													ctd.getId()+
+													"' was already defined.\n"+ //$NON-NLS-1$
+													"The new Custom Task defined in the file: "+ //$NON-NLS-1$
+													wid.getDefinitionFile().getFullPath().toString()+"\n"+ //$NON-NLS-1$
+													"will be ignored."); //$NON-NLS-1$
+										}
+									});
+								}
+								else
+									TargetRuntime.getCurrentRuntime().addCustomTask(ctd);
+							}
+						}
+					}
+				} catch (CoreException e) {
+					e.printStackTrace();
+				} catch (WIDException e) {
+					e.printStackTrace();
 				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			} catch (WIDException e) {
-				e.printStackTrace();
 			}
+			
+			editor.getEditingDomain().addResourceSetListener(this);
 		}
-		
-		editor.getEditingDomain().addResourceSetListener(this);
 	}
 	
 	/*

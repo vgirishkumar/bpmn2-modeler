@@ -429,8 +429,7 @@ public class DIImport {
 				context.putProperty(IMPORT_PROPERTY, true);
 				// determine the container into which to place the new Lane
 				handleLane(lane, context, null);
-				IAddFeature addFeature = featureProvider.getAddFeature(context);
-				ContainerShape newContainer = (ContainerShape)addFeature.add(context);
+				ContainerShape newContainer = (ContainerShape)featureProvider.addIfPossible(context);
 				newContainer.getGraphicsAlgorithm().setTransparency(0.5);
 				Graphiti.getPeService().sendToBack(newContainer);
 				
@@ -541,8 +540,8 @@ public class DIImport {
 			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
 		}
 
-		if (canAdd(addFeature,context)) {
-			PictogramElement newContainer = addFeature.add(context);
+		PictogramElement newContainer = featureProvider.addIfPossible(context);
+		if (newContainer!=null) {
 			featureProvider.link(newContainer, new Object[] { bpmnElement, shape });
 			if (bpmnElement instanceof Participant) {
 				// If the Participant ("Pool") references a Process, add it to our list of elements;
@@ -583,10 +582,7 @@ public class DIImport {
 				context.setTargetContainer((ContainerShape) newContainer);
 				context.setNewObject(obj);
 
-				IAddFeature addFeature = featureProvider.getAddFeature(context);
-				if (canAdd(addFeature,context)) {
-					addFeature.add(context);
-				}
+				featureProvider.addIfPossible(context);
 			}
 		}
 	}
@@ -870,7 +866,7 @@ public class DIImport {
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
 		if (canAdd(addFeature,context)) {
 			context.putProperty(IMPORT_PROPERTY, true);
-			Connection connection = (Connection) addFeature.add(context);
+			Connection connection = (Connection) featureProvider.addIfPossible(context);
 			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
 						AnchorUtil.pointToString(sourceAnchor.getLocation()));
@@ -891,7 +887,6 @@ public class DIImport {
 			return connection;
 		} else {
 			diagnostics.add(IStatus.WARNING, bpmnElement,Messages.DIImport_No_Create_Feature);
-			featureProvider.getAddFeature(context);
 		}
 		return null;
 	}

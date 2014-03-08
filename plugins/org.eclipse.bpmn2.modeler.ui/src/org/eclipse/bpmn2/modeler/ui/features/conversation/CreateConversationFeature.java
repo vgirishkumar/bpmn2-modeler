@@ -69,7 +69,6 @@ public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conver
 	public Conversation createBusinessObject(ICreateContext context) {
 		Conversation bo = null;
 		try {
-			Resource resource = ResourceProvider.getResource(getDiagram());
 			bo = Bpmn2ModelerFactory.create(Conversation.class);
 			ModelHandler mh = ModelHandler.getInstance(getDiagram());
 			bo.setName(Messages.CreateConversationFeature_Name);

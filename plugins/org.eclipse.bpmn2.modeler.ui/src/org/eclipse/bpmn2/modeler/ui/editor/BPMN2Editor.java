@@ -79,7 +79,9 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
@@ -365,7 +367,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		return activeEditor;
 	}
 	
-	public IEditorInput getCurrentInput() {
+	public IEditorInput getEditorInput() {
 		return currentInput;
 	}
 	
@@ -463,6 +465,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		
 		// Determine which Target Runtime to use for this input and initialize the ResourceSet
 		TargetRuntime targetRuntime = getTargetRuntime(input);
+		getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_STARTUP,this));
+		
 		ResourceSet resourceSet = getEditingDomain().getResourceSet();
 		resourceSet.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
 		resourceSet.eAdapters().add(editorAdapter = new DiagramEditorAdapter(this));
@@ -495,7 +499,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		// custom tasks should be added to the current target runtime's custom tasks list
 		// where they will be picked up by the toolpalette refresh.
 		setActiveEditor(this);	// set the Bpmn2Preferences.activeProject just before RT extension is initialized
-		getTargetRuntime().getRuntimeExtension().initialize(this);
+		getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_INITIALIZED,this));
 
 		if (otherEditor==null) {
 			// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
@@ -893,6 +897,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void dispose() {
+		getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_SHUTDOWN,this));
+
 		// clear ID mapping tables if no more instances of editor are active
 		int instances = 0;
 		IWorkbenchPage[] pages = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages();

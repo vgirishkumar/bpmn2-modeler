@@ -40,7 +40,10 @@ public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 				h += shape.getBounds().getHeight();
 			}
 
-			return context.getHeight() > 0 ? context.getHeight() > h : true;
+			boolean doit = context.getHeight() > 0 ? context.getHeight() > h : true;
+			if (doit && !super.canResizeShape(context))
+				doit = false;
+			return doit;
 		} catch (Exception e) {
 			Activator.logError(e);
 			return true;

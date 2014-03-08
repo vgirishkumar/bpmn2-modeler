@@ -123,7 +123,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	// ========================= standard behavior ===========================
 
 	/**
-	 * Is used to register several global action handlers (UNDO, REDO, COPY,
+	 * Is used to register several global action handlers (COMMAND_UNDO, COMMAND_REDO, COPY,
 	 * PASTE, ...) on initialization of this outline page. This activates for
 	 * example the undo-action in the central Eclipse-Menu.
 	 * 

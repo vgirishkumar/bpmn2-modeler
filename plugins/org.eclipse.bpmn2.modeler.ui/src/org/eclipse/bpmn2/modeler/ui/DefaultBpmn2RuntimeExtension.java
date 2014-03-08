@@ -18,6 +18,7 @@ import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.QName;
 import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XNIException;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -41,11 +42,17 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	public DefaultBpmn2RuntimeExtension() {
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#isContentForRuntime(org.eclipse.ui.IEditorInput)
+	 */
 	@Override
 	public boolean isContentForRuntime(IEditorInput input) {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTargetNamespace(org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType)
+	 */
 	@Override
 	public String getTargetNamespace(Bpmn2DiagramType diagramType){
 		String type = ""; //$NON-NLS-1$
@@ -66,20 +73,28 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 		return targetNamespace + type;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTypeLanguages()
+	 */
 	@Override
 	public String[] getTypeLanguages() {
 		return typeLanguages;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getExpressionLanguages()
+	 */
 	@Override
 	public String[] getExpressionLanguages() {
 		return expressionLanguages;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#notify(org.eclipse.bpmn2.modeler.core.LifecycleEvent)
+	 */
 	@Override
-	public void initialize(DiagramEditor editor) {
+	public void notify(LifecycleEvent event) {
 	}
-
 
 	/**
 	 * A simple XML parser that checks if the root element of an xml document contains any

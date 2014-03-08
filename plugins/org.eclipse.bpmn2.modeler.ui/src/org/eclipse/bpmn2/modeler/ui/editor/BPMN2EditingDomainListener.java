@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -36,6 +39,8 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	@Override
 	public void transactionStarting(TransactionalEditingDomainEvent event) {
 		diagnostics = null;
+		super.transactionStarting(event);
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_STARTING, event.getTransaction()));
 	}
 	
 	/**
@@ -44,8 +49,15 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	@Override
 	public void transactionClosed(TransactionalEditingDomainEvent event) {
 		super.transactionClosed(event);
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_CLOSED, event.getTransaction()));
 	}
 	
+	@Override
+	public void transactionInterrupted(TransactionalEditingDomainEvent event) {
+		super.transactionInterrupted(event);
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_INTERRUPTED, event.getTransaction()));
+	}
+
 	@Override
 	public void handleException(Exception e) {
 		String source = null;

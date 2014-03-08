@@ -13,7 +13,9 @@
 
 package org.eclipse.bpmn2.modeler.examples.dynamic;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.ecore.EObject;
@@ -49,15 +51,6 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 		return targetNamespace;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#initialize()
-	 * @see org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider#registerAvailableImages()
-	 */
-	@Override
-	public void initialize(DiagramEditor editor) {
-		SampleImageProvider.registerAvailableImages();
-	}
-
 	@Override
 	public String[] getTypeLanguages() {
 		return typeLanguages;
@@ -78,5 +71,14 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 		// (by, e.g. looking at the targetNamespace or some other feature) then this
 		// method must return FALSE.
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#notify(org.eclipse.bpmn2.modeler.core.LifecycleEvent)
+	 */
+	@Override
+	public void notify(LifecycleEvent event) {
+		if (event.eventType == EventType.EDITOR_INITIALIZED)
+			SampleImageProvider.registerAvailableImages();
 	}
 }

@@ -42,10 +42,10 @@ public class ErrorDialog {
 			String msg = t.getMessage();
 			if (msg==null)
 				msg = t.toString();
-			message += msg;
+			this.message += msg;
 			t = t.getCause();
 			if (t!=null) {
-				message += "\nCaused by ";
+				this.message += "\nCaused by ";
 			}
 		}
 	}

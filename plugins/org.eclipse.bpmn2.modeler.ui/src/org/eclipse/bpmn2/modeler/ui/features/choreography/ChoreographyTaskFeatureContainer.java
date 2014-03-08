@@ -122,7 +122,7 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 							BPMNShape bs = BusinessObjectUtil.getFirstElementOfType(cs, BPMNShape.class);
 							Graphiti.getPeService().deletePictogramElement(cs);
 							if (bs!=null)
-								deleteBusinessObject(bs);
+								super.deleteBusinessObject(bs);
 						}
 					}
 				}

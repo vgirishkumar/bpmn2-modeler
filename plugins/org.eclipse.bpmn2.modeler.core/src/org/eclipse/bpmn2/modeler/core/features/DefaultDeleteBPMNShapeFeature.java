@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -45,7 +48,10 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		// don't delete the Diagram!
 		if (context.getPictogramElement() instanceof Diagram)
 			return false;
-		return true;
+		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_DELETE,
+				getFeatureProvider(), context, context.getPictogramElement());
+		TargetRuntime.getCurrentRuntime().notify(event);
+		return event.doit;
 	}
 	
 	@Override
@@ -64,37 +70,51 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			deletePeEnvironment(pe);
 			Graphiti.getPeService().deletePictogramElement(pe);
 		}
+
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_DELETED, bo));
+
 		super.deleteBusinessObject(bo);
 	}
 	
 	protected void deletePeEnvironment(PictogramElement pictogramElement){
 		if (pictogramElement instanceof ContainerShape) {
-			ContainerShape cShape = (ContainerShape) pictogramElement;
-			EList<Anchor> anchors = cShape.getAnchors();
+			ContainerShape containerShape = (ContainerShape) pictogramElement;
+			EList<Anchor> anchors = containerShape.getAnchors();
 			for (Anchor anchor : anchors) {
 				deleteConnections(getFeatureProvider(), anchor.getIncomingConnections());
 				deleteConnections(getFeatureProvider(), anchor.getOutgoingConnections());
 			}
-			deleteContainer(getFeatureProvider(), cShape);
+			deleteContainer(getFeatureProvider(), containerShape);
 		}
 	}
 	
-	protected void deleteContainer(IFeatureProvider fp, ContainerShape cShape) {
-		Object[] children = cShape.getChildren().toArray();
+	protected void deleteContainer(IFeatureProvider fp, ContainerShape containerShape) {
+		Object[] children = containerShape.getChildren().toArray();
 		for (Object shape : children) {
 			if (shape instanceof ContainerShape) {
 				DeleteContext context = new DeleteContext((PictogramElement) shape);
+
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, shape));
+
 				fp.getDeleteFeature(context).delete(context);
 			}
 		}
+
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape));
 	}
 
 	protected void deleteConnections(IFeatureProvider fp, EList<Connection> connections) {
-		List<Connection> con = new ArrayList<Connection>();
-		con.addAll(connections);
-		for (Connection connection : con) {
-			IDeleteContext conDelete = new DeleteContext(connection);
-			fp.getDeleteFeature(conDelete).delete(conDelete);
+		List<Connection> allConnections = new ArrayList<Connection>();
+		allConnections.addAll(connections);
+		for (Connection connection : allConnections) {
+			IDeleteContext context = new DeleteContext(connection);
+
+			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, connection));
+
+			fp.getDeleteFeature(context).delete(context);
 		}
 	}
 	

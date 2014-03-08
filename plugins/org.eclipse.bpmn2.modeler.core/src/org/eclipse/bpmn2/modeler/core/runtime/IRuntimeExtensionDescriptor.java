@@ -18,7 +18,7 @@ import org.eclipse.core.resources.IFile;
 public interface IRuntimeExtensionDescriptor {
 
 	String getExtensionName();
-	void setRuntime(TargetRuntime targetRuntime);
+	void setRuntime(TargetRuntime targetRuntime) throws TargetRuntimeConfigurationException;
 	TargetRuntime getRuntime();
 	IFile getConfigFile();
 	void setConfigFile(IFile configFile);

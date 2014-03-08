@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 import org.eclipse.bpmn2.modeler.core.EditControlProvider;
 import org.eclipse.bpmn2.modeler.core.EditControlProvider.EditControl;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
@@ -63,6 +64,13 @@ public class DelegatingObjectEditor extends ObjectEditor {
 	@Override
 	public Object getValue() {
 		return control.getValue();
+	}
+	
+	@Override
+	public void notifyChanged(Notification notification) {
+		super.notifyChanged(notification);
+		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		control.setValue(value);
 	}
 
 }
