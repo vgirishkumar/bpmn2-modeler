@@ -12,6 +12,9 @@ package org.eclipse.bpmn2.modeler.core;
 
 import org.eclipse.osgi.util.NLS;
 
+/**
+ * Contains externalized String constants.
+ */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.messages"; //$NON-NLS-1$
 	public static String ModelHandler_20;

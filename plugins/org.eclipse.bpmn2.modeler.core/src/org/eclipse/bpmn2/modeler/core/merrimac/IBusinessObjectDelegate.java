@@ -55,7 +55,7 @@ public interface IBusinessObjectDelegate {
 	public boolean isList(EObject object, EStructuralFeature feature);
 	public boolean isAttribute(EObject object, EStructuralFeature feature);
 	public boolean isReference(EObject object, EStructuralFeature feature);
-	boolean isContainedFeature(EObject object, EStructuralFeature feature);
+	boolean isContainmentFeature(EObject object, EStructuralFeature feature);
 	public boolean isMultiLineText(EObject object, EStructuralFeature feature);
 	public boolean canEdit(EObject object, EStructuralFeature feature);
 	public boolean canCreateNew(EObject object, EStructuralFeature feature);

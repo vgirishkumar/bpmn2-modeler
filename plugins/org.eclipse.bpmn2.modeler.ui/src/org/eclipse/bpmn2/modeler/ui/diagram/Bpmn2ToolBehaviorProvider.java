@@ -44,7 +44,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
@@ -71,7 +70,6 @@ import org.eclipse.graphiti.features.IFeatureCheckerHolder;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
-import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -82,7 +80,6 @@ import org.eclipse.graphiti.features.context.impl.MoveBendpointContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -113,11 +110,11 @@ import org.eclipse.graphiti.util.LocationInfo;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
-public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
+public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
 	protected BPMN2Editor editor;
 	protected TargetRuntime targetRuntime;
-	protected BPMNFeatureProvider featureProvider;
+	protected Bpmn2FeatureProvider featureProvider;
 	protected ModelEnablements modelEnablements;
 	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	protected List<IPaletteCompartmentEntry> palette;
@@ -163,7 +160,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		}
 	}
 	
-	public BPMNToolBehaviorProvider(IDiagramTypeProvider diagramTypeProvider) {
+	public Bpmn2ToolBehaviorProvider(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);
 	}
 
@@ -190,7 +187,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 		targetRuntime = editor.getTargetRuntime();
 		modelEnablements = editor.getModelEnablements();
-		featureProvider = (BPMNFeatureProvider)getFeatureProvider();
+		featureProvider = (Bpmn2FeatureProvider)getFeatureProvider();
 
 		palette = new ArrayList<IPaletteCompartmentEntry>();
 		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor.getBpmnDiagram());
@@ -388,7 +385,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	private void createEventsCompartments(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label, null);
 
-		createEntries(FeatureMap.EVENTS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.EVENTS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -398,7 +395,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Other_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
-		createEntries(FeatureMap.OTHER, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.OTHER, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -408,7 +405,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
-		createEntries(FeatureMap.DATA, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.DATA, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -418,7 +415,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label, null);
 		compartmentEntry.setInitiallyOpen(false);
 
-		createEntries(FeatureMap.EVENT_DEFINITIONS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.EVENT_DEFINITIONS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -427,7 +424,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	private void createGatewaysCompartments(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label, null);
 
-		createEntries(FeatureMap.GATEWAYS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.GATEWAYS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -436,7 +433,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	private void createTasksCompartments(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Tasks_Drawer_Label, null);
 
-		createEntries(FeatureMap.TASKS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.TASKS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -445,7 +442,7 @@ public class BPMNToolBehaviorProvider extends DefaultToolBehaviorProvider implem
 	private void createConnectors(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label, null);
 
-		createEntries(FeatureMap.CONNECTORS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.CONNECTORS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);

@@ -76,6 +76,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultCopyBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
@@ -85,7 +86,6 @@ import org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.AddBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.MoveBendpointFeature;
 import org.eclipse.bpmn2.modeler.core.features.bendpoint.RemoveBendpointFeature;
@@ -189,7 +189,6 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.ILinkService;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 
 /**
@@ -198,7 +197,8 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
  * @author imeikas
  * 
  */
-public class BPMNFeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
+@SuppressWarnings("rawtypes")
+public class Bpmn2FeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
 
 	private Hashtable<Class,IFeatureContainer> containers;
 	private Hashtable<String,ICustomElementFeatureContainer> customTaskContainers;
@@ -208,7 +208,7 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider implements IBpmn
 	private DefaultCopyBPMNElementFeature defaultCopyFeature = new DefaultCopyBPMNElementFeature(this);
 	private DefaultPasteBPMNElementFeature defaultPasteFeature = new DefaultPasteBPMNElementFeature(this);
 	
-	public BPMNFeatureProvider(IDiagramTypeProvider dtp) {
+	public Bpmn2FeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
 		updateFeatureLists();
 	}
@@ -568,7 +568,6 @@ public class BPMNFeatureProvider extends DefaultFeatureProvider implements IBpmn
 
 	@Override
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
-		ILinkService ls = Graphiti.getLinkService();
 		List<ICustomFeature> list = new ArrayList<ICustomFeature>();
 
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;

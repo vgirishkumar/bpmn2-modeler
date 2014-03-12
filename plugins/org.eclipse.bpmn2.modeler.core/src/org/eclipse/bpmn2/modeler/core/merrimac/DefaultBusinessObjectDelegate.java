@@ -208,8 +208,8 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 	}
 
 	@Override
-	public boolean isContainedFeature(EObject object, EStructuralFeature feature) {
-		return ExtendedPropertiesProvider.isContainedFeature(object,feature);
+	public boolean isContainmentFeature(EObject object, EStructuralFeature feature) {
+		return ExtendedPropertiesProvider.isContainmentFeature(object,feature);
 	}
 
 	@Override

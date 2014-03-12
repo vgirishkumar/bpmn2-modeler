@@ -28,12 +28,17 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
- * A wrapper class for the ExtendedPropertiesAdapter methods.
- * Most methods provide reasonable defaults for EObjects that can not be adapted for ExtendedPropertiesAdapter
+ * A convenience wrapper class for <b>most</b> of the ExtendedPropertiesAdapter methods.
+ * <p>
+ * Most methods provide reasonable defaults for EObjects that can <b>not</b> be adapted
+ * for {@code ExtendedPropertiesAdapter}
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ExtendedPropertiesProvider {
 
+	/**
+	 * See {@link ObjectDescriptor#getLabel()}
+	 */
 	public static String getLabel(EObject object) {
 		String label = "";
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
@@ -44,12 +49,18 @@ public class ExtendedPropertiesProvider {
 		return label;
 	}
 
+	/**
+	 * See {@link ObjectDescriptor#setLabel(String)}
+	 */
 	public static void setLabel(EObject object, String label) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null)
 			adapter.getObjectDescriptor().setLabel(label);
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getLabel()}
+	 */
 	public static String getLabel(EObject object, EStructuralFeature feature) {
 		String label = ""; //$NON-NLS-1$
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
@@ -61,12 +72,18 @@ public class ExtendedPropertiesProvider {
 		return label;
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#setLabel()}
+	 */
 	public static void setLabel(EObject object, EStructuralFeature feature, String label) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter != null)
 			adapter.getFeatureDescriptor(feature).setLabel(label);
 	}
 
+	/**
+	 * See {@link ObjectDescriptor#getTextValue()}
+	 */
 	public static String getTextValue(EObject object) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null) {
@@ -78,6 +95,9 @@ public class ExtendedPropertiesProvider {
 		return ModelUtil.toCanonicalString(object);
 	}
 
+	/**
+	 * See {@link ObjectDescriptor#setTextValue(String)}
+	 */
 	public static boolean setTextValue(EObject object, String value) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
@@ -87,6 +107,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getTextValue()}
+	 */
 	public static String getTextValue(EObject object, EStructuralFeature feature) {
 		if (feature == null)
 			return getTextValue(object);
@@ -102,30 +125,48 @@ public class ExtendedPropertiesProvider {
 		return "";
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getValue()}
+	 */
 	public static Object getValue(final EObject object, final EStructuralFeature feature) {
 		return getValue(object, feature, -1);
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getValueList()}
+	 */
 	public static List<Object> getValueList(EObject object, EStructuralFeature feature) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		return adapter.getFeatureDescriptor(feature).getValueList();
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getValue(int)}
+	 */
 	public static Object getValue(final EObject object, final EStructuralFeature feature, int index) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		Object value = adapter == null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue(index);
 		return value;
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#setValue(Object)}
+	 */
 	public static boolean setValue(EObject object, EStructuralFeature feature, Object value) {
 		return setValue(object, feature, value, -1);
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#setValue(Object,int)}
+	 */
 	public static boolean setValue(EObject object, EStructuralFeature feature, Object value, int index) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		return adapter.getFeatureDescriptor(feature).setValue(value, index);
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#isMultiLine()}
+	 */
 	public static boolean isMultiLineText(EObject object, EStructuralFeature feature) {
 		if (feature == null)
 			return false;
@@ -136,6 +177,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#setMultiLine(boolean)}
+	 */
 	public static boolean setMultiLineText(EObject object, EStructuralFeature feature, boolean multiLine) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter != null) {
@@ -145,6 +189,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link FeatureDescriptor#getChoiceOfValues()}
+	 */
 	public static Hashtable<String, Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
 		if (feature == null)
 			return null;
@@ -164,6 +211,9 @@ public class ExtendedPropertiesProvider {
 		return null;
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE}
+	 */
 	public static boolean isMultiChoice(EObject object, EStructuralFeature feature) {
 		if (feature == null) {
 			return false;
@@ -187,6 +237,9 @@ public class ExtendedPropertiesProvider {
 		return getChoiceOfValues(object, feature) != null;
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter.UI_CAN_EDIT}
+	 */
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
@@ -209,6 +262,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW}
+	 */
 	public static boolean canCreateNew(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
@@ -229,6 +285,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter.UI_CAN_EDIT_INLINE}
+	 */
 	public static boolean canEditInline(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
@@ -241,6 +300,9 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter.UI_CAN_SET_NULL}
+	 */
 	public static boolean canSetNull(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
@@ -254,6 +316,13 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 	
+	/**
+	 * Check if the given object feature is a containment list.
+	 * 
+	 * @param object the EObject
+	 * @param feature the object's feature
+	 * @return true if the feature is a reference, and is a containment list.
+	 */
 	public static boolean isList(EObject object, EStructuralFeature feature) {
 		if (feature instanceof EReference) {
 			return feature.isMany() && ((EReference)feature).isContainment();
@@ -261,7 +330,14 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 
-	public static boolean isContainedFeature(EObject object, EStructuralFeature feature) {
+	/**
+	 * Check if the given object feature is a containment feature.
+	 * 
+	 * @param object the EObject
+	 * @param feature the object's feature
+	 * @return true if the feature is a reference, and is a containment feature.
+	 */
+	public static boolean isContainmentFeature(EObject object, EStructuralFeature feature) {
 		if (feature instanceof EReference) {
 			if (((EReference)feature).isContainment()) {
 				if (feature.getEType() instanceof EClass)
@@ -271,18 +347,39 @@ public class ExtendedPropertiesProvider {
 		return false;
 	}
 	
+	/**
+	 * Check if the given object feature is an attribute.
+	 * 
+	 * @param object the EObject
+	 * @param feature the object's feature
+	 * @return true if the feature is an attribute.
+	 */
 	public static boolean isAttribute(EObject object, EStructuralFeature feature) {
 		if (feature instanceof EAttribute)
 			return true;
 		return false;
 	}
 
+	/**
+	 * Check if the given object feature is a reference.
+	 * 
+	 * @param object the EObject
+	 * @param feature the object's feature
+	 * @return true if the feature is a reference.
+	 */
 	public static boolean isReference(EObject object, EStructuralFeature feature) {
 		if (feature instanceof EReference)
 			return true;
 		return false;
 	}
 	
+	/**
+	 * Get the given object feature's type.
+	 * 
+	 * @param object the EObject
+	 * @param feature the object's feature
+	 * @return the feature's type.
+	 */
 	public static EClassifier getEType(EObject object, EStructuralFeature feature) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
@@ -291,6 +388,9 @@ public class ExtendedPropertiesProvider {
 		return feature.getEType();
 	}
 
+	/**
+	 * See {@link ExtendedPropertiesAdapter#compare(EObject, EObject, boolean)}
+	 */
 	public static boolean compare(EObject object1, EObject object2, boolean similar) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object1);
 		if (adapter!=null) {

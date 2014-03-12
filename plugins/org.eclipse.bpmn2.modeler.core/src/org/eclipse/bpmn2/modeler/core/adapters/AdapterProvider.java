@@ -16,16 +16,16 @@ import org.eclipse.emf.common.notify.Adapter;
 
 /**
  * The primary motivation for this class is to delegate the decision
- * of whether an adapter is  stateless or statefull. 
- * 
+ * of whether an adapter is stateless or statefull. 
+ * <p>
  * In the case of a stateless adapter, the singleton instance is
  * always returned.
- * 
+ * <p>
  * The factory classes simply call
  * <pre> 
  *   adapter.getAdatper ( Class )
  * </pre>
- * 
+ * <p>
  * An adapter is considered stateful if it implements IStatefullAdapter
  *
  * @author Michal Chmielewski (michal.chmielewski@oracle.com)

@@ -41,7 +41,7 @@ public class GatewayConstraint extends AbstractModelConstraint {
 					if (sf.getExtensionValues() != null && sf.getExtensionValues().size() > 0) {
 						boolean foundProbability = false;
 						for (ExtensionAttributeValue extattrval : sf.getExtensionValues()) {
-							FeatureMap extensionElements = extattrval.getValue();
+							Bpmn2FeatureMap extensionElements = extattrval.getValue();
 							@SuppressWarnings("unchecked")
 							List<MetadataType> metadataTypeExtensions = (List<MetadataType>) extensionElements.get(
 									DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, true);

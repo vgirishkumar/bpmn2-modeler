@@ -79,7 +79,7 @@ public class UserTaskConstraint extends AbstractModelConstraint {
 				if (ut.getExtensionValues() != null && ut.getExtensionValues().size() > 0) {
 					boolean foundStaffAvailability = false;
 					for (ExtensionAttributeValue extattrval : ut.getExtensionValues()) {
-						FeatureMap extensionElements = extattrval.getValue();
+						Bpmn2FeatureMap extensionElements = extattrval.getValue();
 						if (extensionElements!=null) {
 							@SuppressWarnings("unchecked")
 							List<MetadataType> metadataTypeExtensions = (List<MetadataType>) extensionElements.get(

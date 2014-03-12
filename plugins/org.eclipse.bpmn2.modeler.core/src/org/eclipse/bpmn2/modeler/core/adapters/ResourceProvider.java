@@ -13,7 +13,6 @@ package org.eclipse.bpmn2.modeler.core.adapters;
 import java.util.Hashtable;
 
 import org.eclipse.bpmn2.util.Bpmn2Resource;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EObject;
@@ -74,7 +73,7 @@ public class ResourceProvider extends AdapterImpl implements IResourceProvider {
 		this.resource = resource;
 	}
 
-	public void putProperty(String key, Object value) {
+	public void setProperty(String key, Object value) {
 		if (value==null)
 			properties.remove(key);
 		else

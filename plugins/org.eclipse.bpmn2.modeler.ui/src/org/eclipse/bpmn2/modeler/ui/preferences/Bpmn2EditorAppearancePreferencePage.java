@@ -22,8 +22,8 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
-import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.Messages;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.jface.preference.ColorSelector;
@@ -100,12 +100,12 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	@Override
 	public void init(IWorkbench workbench) {
 		allElements = new ArrayList<Class>();
-		allElements.addAll(FeatureMap.CONNECTORS);
-		allElements.addAll(FeatureMap.EVENTS);
-		allElements.addAll(FeatureMap.GATEWAYS);
-		allElements.addAll(FeatureMap.TASKS);
-		allElements.addAll(FeatureMap.DATA);
-		allElements.addAll(FeatureMap.OTHER);
+		allElements.addAll(Bpmn2FeatureMap.CONNECTORS);
+		allElements.addAll(Bpmn2FeatureMap.EVENTS);
+		allElements.addAll(Bpmn2FeatureMap.GATEWAYS);
+		allElements.addAll(Bpmn2FeatureMap.TASKS);
+		allElements.addAll(Bpmn2FeatureMap.DATA);
+		allElements.addAll(Bpmn2FeatureMap.OTHER);
 		Collections.sort(allElements, new Comparator<Class>() {
 
 			@Override
@@ -251,17 +251,17 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				ShapeStyle ss = preferences.getShapeStyle(c);
 				allShapeStyles.put(c, ss);
 				
-				if (FeatureMap.CONNECTORS.contains(c))
+				if (Bpmn2FeatureMap.CONNECTORS.contains(c))
 					connectorShapeStyles.put(c, ss);
-				if (FeatureMap.EVENTS.contains(c))
+				if (Bpmn2FeatureMap.EVENTS.contains(c))
 					eventShapeStyles.put(c, ss);
-				if (FeatureMap.GATEWAYS.contains(c))
+				if (Bpmn2FeatureMap.GATEWAYS.contains(c))
 					gatewayShapeStyles.put(c, ss);
-				if (FeatureMap.TASKS.contains(c))
+				if (Bpmn2FeatureMap.TASKS.contains(c))
 					taskShapeStyles.put(c, ss);
-				if (FeatureMap.DATA.contains(c))
+				if (Bpmn2FeatureMap.DATA.contains(c))
 					dataShapeStyles.put(c, ss);
-				if (FeatureMap.OTHER.contains(c))
+				if (Bpmn2FeatureMap.OTHER.contains(c))
 					otherShapeStyles.put(c, ss);
 				
 				if (Activator.getDefault().isDebugging()) {
@@ -296,7 +296,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			textColor.setSelectedColor(ss.getTextColor());
 
 			boolean isShape = true;
-			if (FeatureMap.CONNECTORS.contains(c)) {
+			if (Bpmn2FeatureMap.CONNECTORS.contains(c)) {
 				isShape = false;
 			}
 			shapeBackground.setVisible(isShape);

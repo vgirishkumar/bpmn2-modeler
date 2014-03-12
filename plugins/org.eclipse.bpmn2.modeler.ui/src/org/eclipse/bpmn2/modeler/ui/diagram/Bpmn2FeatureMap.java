@@ -10,7 +10,7 @@
  *
  * @author Innar Made
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui;
+package org.eclipse.bpmn2.modeler.ui.diagram;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +32,6 @@ import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
-import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.EndEvent;
@@ -68,7 +67,8 @@ import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.UserTask;
 
-public class FeatureMap {
+@SuppressWarnings("rawtypes")
+public class Bpmn2FeatureMap {
 	public static final List<Class> CONNECTORS;
 	public static final List<Class> EVENT_DEFINITIONS;
 	public static final List<Class> EVENTS;

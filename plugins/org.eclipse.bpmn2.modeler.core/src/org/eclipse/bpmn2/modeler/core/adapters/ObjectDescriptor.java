@@ -32,11 +32,12 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * Item property provider for a specific object. Clients may replace the default implementation
- * by defining their own ExtendPropertiesAdapter and setting their own ObjectDescriptors for
- * objects that need special handling.
+ * Item property provider for a specific object. Clients may replace the default
+ * implementation by defining their own ExtendPropertiesAdapter and setting
+ * their own ObjectDescriptors for objects that need special handling.
  * 
- * See also the <propertyExtension> element of the org.eclipse.bpmn2.modeler.runtime extension point.
+ * See also the <pre><propertyExtension></pre> element of the
+ * {@code org.eclipse.bpmn2.modeler.runtime} extension point.
  */
 public class ObjectDescriptor<T extends EObject> {
 
@@ -252,7 +253,7 @@ public class ObjectDescriptor<T extends EObject> {
 		ResourceProvider adapter = ResourceProvider.adapt(factory, resource);
 		Object value = owner.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
 		if (value!=null)
-			adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
+			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
 		T newObject = null;
 		synchronized(factory) {
 			newObject = (T) factory.create(eClass);

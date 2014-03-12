@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.bpmn2.modeler.sdk"
       label="SDK Feature"
-      version="1.0.0.qualifier"
+      version="1.1.0.qualifier"
       provider-name="Eclipse SOA">
 
    <description url="http://www.example.com/description">
@@ -17,7 +17,32 @@
       [Enter License Description here.]
    </license>
 
-	<includes id="org.eclipse.bpmn2.modeler" version="0.0.0"/>
-	<includes id="org.eclipse.bpmn2.modeler.source" version="0.0.0"/>
+   <plugin
+         id="org.eclipse.bpmn2.modeler.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.bpmn2.modeler.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.bpmn2.modeler.core.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.bpmn2.modeler.ui.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

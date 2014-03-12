@@ -107,7 +107,7 @@
                   The class that implements the Graphiti Tool Behavior Provider, i.e. extends the org.eclipse.bpmn2.ui.BPMN2ToolBehaviorProvider class.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider:"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider:"/>
                </appinfo>
             </annotation>
          </attribute>

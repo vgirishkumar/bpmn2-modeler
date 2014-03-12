@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core;
+package org.eclipse.bpmn2.modeler.core.model;
 
 import java.io.IOException;
 import java.util.HashMap;

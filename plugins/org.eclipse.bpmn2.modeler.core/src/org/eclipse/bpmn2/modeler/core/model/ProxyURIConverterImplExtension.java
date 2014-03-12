@@ -10,13 +10,13 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core;
+package org.eclipse.bpmn2.modeler.core.model;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 

@@ -22,12 +22,17 @@ public class EDataTypeConversionFactory implements Factory {
 
 	public static EDataTypeConversionFactory INSTANCE = new EDataTypeConversionFactory();
 	
-	// The URI for our EDataType conversion factory. This must be the same as the "uri" specified in
-	// the "org.eclipse.emf.ecore.conversion_delegate" extension point in our plugin.xml
+	/**
+	 * The URI for our EDataType conversion factory. This must be the same as the "uri" specified in
+	 * the {@code org.eclipse.emf.ecore.conversion_delegate} extension point in the implementation's plugin.xml.
+	 */
 	public final static String DATATYPE_CONVERSION_FACTORY_URI = "http://org.eclipse.bpmn2.modeler.EDataTypeConversionFactory";
 
-	// Registry that maps a data type name to a conversion delegate.
-	// Clients may register their own types and conversion delegates.
+	/**
+	 *  A registry that maps a data type name to a conversion delegate.
+	 *  Clients may register their own types and conversion delegates
+	 *  with {@code EDataTypeConversionFactory#registerConversionDelegate(String,Class)}.
+	 */
 	private static Hashtable<String, Class<? extends ConversionDelegate>> registry =
 			new Hashtable<String, Class<? extends ConversionDelegate>>();
 	
@@ -44,21 +49,37 @@ public class EDataTypeConversionFactory implements Factory {
 			try {
 				return (DefaultConversionDelegate) clazz.getConstructor().newInstance();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * Register a Data Type Conversion Delegate class.
+	 * 
+	 * @param type  the data type name.
+	 * @param delegate  the Conversion Delegate class.
+	 */
 	public static void registerConversionDelegate(String type, Class<? extends ConversionDelegate> delegate) {
 		registry.put(type,delegate);
 	}
 
+	/**
+	 * Remove a Data Type Conversion Delegate from the registry.
+	 * 
+	 * @param type  the data type name.
+	 */
 	public static void unregisterConversionDelegate(String type) {
 		registry.remove(type);
 	}
 	
+	/**
+	 * Check if the given data type has been registered.
+	 * 
+	 * @param type  the data type name.
+	 * @return true if a Conversion Delegate has been registered for the given data type name.
+	 */
 	public static boolean isFactoryFor(String type) {
 		if (type!=null)
 			return registry.get(type) != null;

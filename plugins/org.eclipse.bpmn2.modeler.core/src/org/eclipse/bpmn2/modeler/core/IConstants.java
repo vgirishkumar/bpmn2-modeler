@@ -10,9 +10,11 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core;
 
+/**
+ * This interface defines some constants used for locating image files in the BPMN2 Modeler core plug-in.
+ */
 public interface IConstants {
 	public final String ICON_PATH = "icons/"; //$NON-NLS-1$
-
 	public final String ICON_ADD_20 = "20/add.png"; //$NON-NLS-1$
 	public final String ICON_CLOSE_20 = "20/close.png"; //$NON-NLS-1$
 	public final String ICON_DELETE_20 = "20/delete.png"; //$NON-NLS-1$

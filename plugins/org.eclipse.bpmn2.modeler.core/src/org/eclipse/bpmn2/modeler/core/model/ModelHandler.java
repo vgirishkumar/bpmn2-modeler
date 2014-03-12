@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core;
+package org.eclipse.bpmn2.modeler.core.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,9 +54,9 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.Messages;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;

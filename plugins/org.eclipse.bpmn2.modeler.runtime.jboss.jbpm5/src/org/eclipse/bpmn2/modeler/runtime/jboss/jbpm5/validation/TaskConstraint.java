@@ -38,7 +38,7 @@ public class TaskConstraint extends AbstractModelConstraint {
 				boolean foundRange = false;
 				boolean foundStandardDeviation = false;
 				for (ExtensionAttributeValue extattrval : ta.getExtensionValues()) {
-					FeatureMap extensionElements = extattrval.getValue();
+					Bpmn2FeatureMap extensionElements = extattrval.getValue();
 					if (extensionElements == null) {
 					    continue;
 					}

@@ -29,13 +29,13 @@ import org.eclipse.graphiti.notification.DefaultNotificationService;
 import org.eclipse.graphiti.notification.INotificationService;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
-public class MainBPMNDiagramTypeProvider extends AbstractDiagramTypeProvider {
+public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 	private IToolBehaviorProvider[] toolBehaviorProviders;
 	private INotificationService notificationService;
 
-	public MainBPMNDiagramTypeProvider() {
+	public Bpmn2DiagramTypeProvider() {
 		super();
-		setFeatureProvider(new BPMNFeatureProvider(this));
+		setFeatureProvider(new Bpmn2FeatureProvider(this));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class MainBPMNDiagramTypeProvider extends AbstractDiagramTypeProvider {
 			TargetRuntime rt = editor.getTargetRuntime();
 			IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
 					Activator.UI_EXTENSION_ID);
-			BPMNToolBehaviorProvider provider = null;
+			Bpmn2ToolBehaviorProvider provider = null;
 			try {
 				for (IConfigurationElement e : config) {
 					if (e.getName().equals("toolProvider")) { //$NON-NLS-1$
@@ -57,7 +57,7 @@ public class MainBPMNDiagramTypeProvider extends AbstractDiagramTypeProvider {
 							Constructor ctor = null;
 							Class providerClass = Class.forName(className, true, cl);
 							ctor = providerClass.getConstructor(IDiagramTypeProvider.class);
-							provider = (BPMNToolBehaviorProvider)ctor.newInstance(this);
+							provider = (Bpmn2ToolBehaviorProvider)ctor.newInstance(this);
 							break;
 						}
 					}
@@ -68,7 +68,7 @@ public class MainBPMNDiagramTypeProvider extends AbstractDiagramTypeProvider {
 			}
 			
 			if (provider==null)
-				provider = new BPMNToolBehaviorProvider(this);
+				provider = new Bpmn2ToolBehaviorProvider(this);
 			toolBehaviorProviders = new IToolBehaviorProvider[] { provider };
 		}
 		return toolBehaviorProviders;

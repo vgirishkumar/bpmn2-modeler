@@ -80,19 +80,19 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
-import org.eclipse.bpmn2.modeler.core.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.ModelHandlerLocator;
-import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.builder.BPMN2Builder;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
+import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
+import org.eclipse.bpmn2.modeler.core.model.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -110,7 +110,7 @@ import org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationStatusLoader;
 import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.bpmn2.modeler.ui.property.PropertyTabDescriptorProvider;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
@@ -190,7 +190,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.gef.EditPart;
@@ -238,9 +237,6 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabDescriptorProvider;
 import org.eclipse.wst.sse.ui.StructuredTextEditor;
 
-/**
- * 
- */
 @SuppressWarnings("restriction")
 public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListener, IGotoMarker {
 	
@@ -670,8 +666,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			// force a reload of this
 			modelEnablements = null;
 			pr.updatePaletteEntries();
-			BPMNToolBehaviorProvider toolBehaviorProvider = 
-					(BPMNToolBehaviorProvider)getDiagramTypeProvider().
+			Bpmn2ToolBehaviorProvider toolBehaviorProvider = 
+					(Bpmn2ToolBehaviorProvider)getDiagramTypeProvider().
 					getCurrentToolBehaviorProvider();
 			toolBehaviorProvider.createPaletteProfilesGroup(this, pr);
 		}

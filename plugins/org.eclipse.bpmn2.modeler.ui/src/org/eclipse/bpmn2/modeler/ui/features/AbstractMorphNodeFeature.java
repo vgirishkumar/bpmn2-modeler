@@ -31,7 +31,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -180,7 +180,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 	
 	protected ICreateFeature selectNewShape(ICustomContext context) {
 		DiagramEditor editor = (DiagramEditor)getDiagramEditor();
-		BPMNToolBehaviorProvider toolProvider = getToolProvider();
+		Bpmn2ToolBehaviorProvider toolProvider = getToolProvider();
 		List<IToolEntry> tools = getTools(context);
 		ICreateFeature feature = null;
 		
@@ -370,12 +370,12 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		return children;
 	}
 
-	protected BPMNToolBehaviorProvider getToolProvider() {
+	protected Bpmn2ToolBehaviorProvider getToolProvider() {
 		IToolBehaviorProvider[] toolProviders = getFeatureProvider().getDiagramTypeProvider().getAvailableToolBehaviorProviders();
-		BPMNToolBehaviorProvider toolProvider = null;
+		Bpmn2ToolBehaviorProvider toolProvider = null;
 		for (IToolBehaviorProvider tp : toolProviders) {
-			if (tp instanceof BPMNToolBehaviorProvider) {
-				return (BPMNToolBehaviorProvider)tp;
+			if (tp instanceof Bpmn2ToolBehaviorProvider) {
+				return (Bpmn2ToolBehaviorProvider)tp;
 			}
 		}
 		return null;
@@ -383,7 +383,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 	
 	protected List<IToolEntry> getTools(ICustomContext context) {
 		List<IToolEntry> tools = new ArrayList<IToolEntry>();
-		BPMNToolBehaviorProvider toolProvider = getToolProvider();
+		Bpmn2ToolBehaviorProvider toolProvider = getToolProvider();
 
 		if (toolProvider!=null) {
 			List<EClass> availableTypes = getAvailableTypes(context);

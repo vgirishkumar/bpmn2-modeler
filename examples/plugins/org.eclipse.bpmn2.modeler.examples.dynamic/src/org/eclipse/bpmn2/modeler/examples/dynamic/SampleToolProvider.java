@@ -10,11 +10,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.examples.dynamic;
 
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 
-public class SampleToolProvider extends BPMNToolBehaviorProvider {
+public class SampleToolProvider extends Bpmn2ToolBehaviorProvider {
 
 	public SampleToolProvider(IDiagramTypeProvider diagramTypeProvider) {
 		super(diagramTypeProvider);

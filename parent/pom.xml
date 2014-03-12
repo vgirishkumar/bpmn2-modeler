@@ -270,7 +270,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+<!--
 			<plugin>
 				<groupId>org.eclipse.cbi.maven.plugins</groupId>
 				<artifactId>eclipse-jarsigner-plugin</artifactId>
@@ -284,7 +284,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+-->
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-pack200b-plugin</artifactId>
@@ -316,6 +316,18 @@
 					<defaultP2Metadata>false</defaultP2Metadata>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>plugin-source</id>
+						<goals>
+							<goal>plugin-source</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -327,22 +339,6 @@
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
-				</plugin>
-				<plugin>
-					<!-- TODO remove workaround when https://issues.sonatype.org/browse/TYCHO-473 
-						is fixed -->
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>maven-osgi-source-plugin</artifactId>
-					<version>${tycho-version}</version>
-					<executions>
-						<execution>
-							<id>attach-source</id>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>plugin-source</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -391,6 +387,14 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-source-plugin</artifactId>
+					<version>${tycho-version}</version>
+					<configuration>
+						<strictSrcIncludes>false</strictSrcIncludes>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

@@ -15,18 +15,17 @@ package org.eclipse.bpmn2.modeler.core.adapters;
 
 
 /**
- * @author Bob Brodt
- *
+ * Provides convenience methods for adapting model objects.
  */
 public class AdapterUtil {
 
 	/**
-	 * @param <T>
-	 * @param target
-	 * @param clazz
-	 * @return the adapted interface or object
+	 * Get or create an adapter of the given type for the model object.
+	 * 
+	 * @param target  the model object to be adapted.
+	 * @param clazz  type of the adapter.
+	 * @return the adapted interface or object.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Object> T adapt ( Object target,  Class<T> clazz) {	
 		return AdapterRegistry.INSTANCE.adapt(target, clazz);
 	}
@@ -35,6 +34,7 @@ public class AdapterUtil {
 	 * This method tries the registered adapter factories one by one, returning
 	 * the first non-null result it gets.  If none of the factories can adapt
 	 * the result, it returns null.
+	 * 
 	 * @param target target object 
 	 * @param type type of the adapter to find
 	 * @return the adapter for the target.
@@ -47,19 +47,19 @@ public class AdapterUtil {
 	/**
 	 * Create an adapter for the given target of the given type. 
 	 * In addition, pass a context object to the adapter(s) of the target. 
-	 * 
+	 * <p>
 	 * The idea is that some adapters can be stateful and depend not only 
 	 * on the objects that they wrap, button also on some other context that is needed
 	 * to completely and correctly implement the interface for which the adaptor is
 	 * needed.
-	 * 
+	 * <p>
 	 * Adapters that are stateless, should ignore any notifications sent to them.
-	 *  
-	 * @param target the target object
-	 * @param type the type it wants to adapt to
-	 * @param context the context object
 	 * 
-	 * @return the adapter
+	 * @param target the target object.
+	 * @param type the type it wants to adapt to.
+	 * @param context the context object.
+	 * 
+	 * @return the adapter.
 	 */
 	public static Object adapt (Object target, Object type, Object context) {		
 		return AdapterRegistry.INSTANCE.adapt(target, type,context);

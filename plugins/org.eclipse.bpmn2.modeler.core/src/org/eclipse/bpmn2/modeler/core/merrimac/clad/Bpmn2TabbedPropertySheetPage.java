@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  *******************************************************************************/
-package org.eclipse.bpmn2.modeler.core;
+package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;

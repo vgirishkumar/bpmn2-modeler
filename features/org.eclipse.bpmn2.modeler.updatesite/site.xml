@@ -15,6 +15,9 @@
    <feature url="org.eclipse.bpmn2.modeler.wsil_1.1.0.qualifier" id="org.eclipse.bpmn2.modeler.wsil" version="1.1.0.qualifier">
       <category name="Eclipse BPMN2 Modeler"/>
    </feature>
+   <feature url="features/org.eclipse.bpmn2.modeler.sdk_1.1.0.qualifier.jar" id="org.eclipse.bpmn2.modeler.sdk" version="1.1.0.qualifier">
+      <category name="Eclipse BPMN2 Modeler"/>
+   </feature>
    <category-def name="Eclipse BPMN2 Modeler" label="Eclipse BPMN2 Modeler">
       <description>
          Eclipse BPMN2 Modeler

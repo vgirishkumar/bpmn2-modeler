@@ -467,8 +467,6 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						processObject(newObject);
 						handleObjectAttribs(newObject);
 					}
-					else
-						System.out.println("oops!");
 				}
 			}
 			else {
@@ -488,7 +486,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						types.pop();
 						EcoreUtil.delete(newObject);
 						// set up the BPMN2 object factory to construct this CustomElement
-						adapter.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
+						adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
 						newObject = super.createObjectFromFeatureType(peekObject, feature);
 					}
 					catch (Exception e) {

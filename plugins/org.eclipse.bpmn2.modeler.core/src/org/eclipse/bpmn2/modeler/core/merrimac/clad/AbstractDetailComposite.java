@@ -497,7 +497,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			String displayName = getPropertiesProvider().getLabel(object, reference);
 
 			ObjectEditor editor = null;
-			if (getBusinessObjectDelegate().isContainedFeature(object, reference)) {
+			if (getBusinessObjectDelegate().isContainmentFeature(object, reference)) {
 				EClass eClass = (EClass) reference.getEType();
 				// FIXME: how do we deal with lists of these things?
 				Object v = getBusinessObjectDelegate().getValue(object,reference);

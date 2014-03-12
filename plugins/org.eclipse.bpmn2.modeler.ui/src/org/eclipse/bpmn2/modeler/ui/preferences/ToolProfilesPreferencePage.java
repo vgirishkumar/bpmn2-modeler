@@ -30,8 +30,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.bpmn2.modeler.ui.FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -807,37 +807,37 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Connectors_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.CONNECTORS) {
+			for (Class c : Bpmn2FeatureMap.CONNECTORS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Tasks_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.TASKS) {
+			for (Class c : Bpmn2FeatureMap.TASKS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Gateways_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.GATEWAYS) {
+			for (Class c : Bpmn2FeatureMap.GATEWAYS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Events_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.EVENTS) {
+			for (Class c : Bpmn2FeatureMap.EVENTS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_EventDefinitions_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.EVENT_DEFINITIONS) {
+			for (Class c : Bpmn2FeatureMap.EVENT_DEFINITIONS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_DataItems_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.DATA) {
+			for (Class c : Bpmn2FeatureMap.DATA) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Other_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : FeatureMap.OTHER) {
+			for (Class c : Bpmn2FeatureMap.OTHER) {
 				loadCategory(cd,c);
 			}
 		}

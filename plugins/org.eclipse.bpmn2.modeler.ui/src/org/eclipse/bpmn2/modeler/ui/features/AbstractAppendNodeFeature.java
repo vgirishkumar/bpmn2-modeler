@@ -35,7 +35,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.bpmn2.modeler.ui.diagram.BPMNToolBehaviorProvider;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -192,7 +192,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 	}
 	
 	protected ICreateFeature selectNewShape() {
-		BPMNToolBehaviorProvider toolProvider = getToolProvider();
+		Bpmn2ToolBehaviorProvider toolProvider = getToolProvider();
 		List<IToolEntry> tools = getTools();
 		ICreateFeature feature = null;
 		
@@ -421,11 +421,11 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 		return connection;
 	}
 
-	protected BPMNToolBehaviorProvider getToolProvider() {
+	protected Bpmn2ToolBehaviorProvider getToolProvider() {
 		IToolBehaviorProvider[] toolProviders = getFeatureProvider().getDiagramTypeProvider().getAvailableToolBehaviorProviders();
 		for (IToolBehaviorProvider tp : toolProviders) {
-			if (tp instanceof BPMNToolBehaviorProvider) {
-				return (BPMNToolBehaviorProvider)tp;
+			if (tp instanceof Bpmn2ToolBehaviorProvider) {
+				return (Bpmn2ToolBehaviorProvider)tp;
 			}
 		}
 		return null;
@@ -433,7 +433,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 	
 	protected List<IToolEntry> getTools() {
 		List<IToolEntry> tools = new ArrayList<IToolEntry>();
-		BPMNToolBehaviorProvider toolProvider = getToolProvider();
+		Bpmn2ToolBehaviorProvider toolProvider = getToolProvider();
 
 		if (toolProvider!=null) {
 			List<EClass> availableTypes = getAvailableTypes();

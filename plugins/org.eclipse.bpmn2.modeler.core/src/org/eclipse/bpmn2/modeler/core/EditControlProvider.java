@@ -20,53 +20,119 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 
 /**
- * A simple interface that defines a provider for an EditControl.
- * An EditControl is an SWT Composite that can be embedded in a Viewer or Dialog,
- * just like any other Composite.
- * 
- * EditControl must implement setValue() and getValue() methods which are used to
- * initialize the EditControl's widget with data, and fetch data from the widget.
- * 
- * Listeners are used to notify the client when the widget's data has changed, therefore
- * the implementation must add "this" as a widget Selection Listener in the createControl()
- * method.
+ * The interface that defines a provider for an EditControl.
+ * <p>
+ * An EditControl is an SWT Composite that can be embedded in a Viewer or
+ * Dialog, just like any other Composite.
+ * <p>
+ * EditControl must implement setValue() and getValue() methods which are used
+ * to initialize the EditControl's widget with data, and fetch data from the
+ * widget.
+ * <p>
+ * Listeners are used to notify the client when the widget's data has changed,
+ * therefore the implementation must add "this" as a widget Selection Listener
+ * in the createControl() method.
  */
 public interface EditControlProvider {
-	
+
+	/**
+	 * An wrapper class for SWT widgets.
+	 * <p>
+	 * Clients must extend this class and provide appropriate editing widgets.
+	 */
 	public abstract class EditControl extends Composite implements SelectionListener {
-	    protected List<SelectionListener> listeners;
+		protected List<SelectionListener> listeners;
+
 		public EditControl(Composite parent, int style) {
 			super(parent, style);
 		}
+
+		/**
+		 * The implementation must return the value of the object being edited,
+		 * performing data type conversion if necessary.
+		 * 
+		 * @return the value of the object being edited, in the correct data
+		 *         type.
+		 */
 		public abstract Object getValue();
+
+		/**
+		 * The implementation must convert the given object value to a form that
+		 * can be represented by the SWT editing widget.
+		 * 
+		 * @param value
+		 *            the object value
+		 * @return true if the value is valid, false if not.
+		 */
 		public abstract boolean setValue(Object value);
-	    
-	    public void addSelectionListener(SelectionListener listener) {
-	    	if (listeners==null)
-	    		listeners = new ArrayList<SelectionListener>();
-	    	listeners.add(listener);
-	    }
-	    
-	    public void removeSelectionListener(SelectionListener listener) {
-	    	if (listeners==null)
-	    		return;
-	    	listeners.remove(listener);
-	    	if (listeners.size()==0)
-	    		listeners = null;
-	    }
-	    
+
+		/**
+		 * The implementation must add this EditControl as a selection listener.
+		 * This will notify the parent when the value changes in the editing
+		 * widget.
+		 * 
+		 * @param listener
+		 *            should be this EditControl, or some proxy.
+		 */
+		public void addSelectionListener(SelectionListener listener) {
+			if (listeners == null)
+				listeners = new ArrayList<SelectionListener>();
+			listeners.add(listener);
+		}
+
+		/**
+		 * Remove the selection listener previously added.
+		 * 
+		 * @param listener
+		 *            a listener previously added by
+		 *            {@code EditControl#addSelectionListener(SelectionListener)}
+		 */
+		public void removeSelectionListener(SelectionListener listener) {
+			if (listeners == null)
+				return;
+			listeners.remove(listener);
+			if (listeners.size() == 0)
+				listeners = null;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse
+		 * .swt.events.SelectionEvent)
+		 */
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			if (listeners!=null) {
+			if (listeners != null) {
 				for (SelectionListener listener : listeners)
 					listener.widgetSelected(e);
 			}
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org
+		 * .eclipse.swt.events.SelectionEvent)
+		 */
 		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 		}
 	}
-	
+
+	/**
+	 * The implementation must create the editing widget(s) in the given parent
+	 * container and apply the given style bits if appropriate.
+	 * 
+	 * @param parent
+	 *            the parent Composite container widget.
+	 * @param style
+	 *            style bits for the editing widget.
+	 * @return the editing widget control. If more than one widget is required
+	 *         for editing the data object, the one returned should be the same
+	 *         widget that was registered as the selection listener.
+	 */
 	public EditControl createControl(Composite parent, int style);
 }
