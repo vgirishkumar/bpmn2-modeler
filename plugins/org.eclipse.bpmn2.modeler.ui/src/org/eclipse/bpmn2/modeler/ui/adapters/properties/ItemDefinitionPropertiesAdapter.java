@@ -22,7 +22,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -116,7 +116,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			}
 			
 			@Override
-			public ItemDefinition createObject(Resource resource, Object context) {
+			public ItemDefinition createObject(Resource resource, EClass eclass) {
 				ItemDefinition itemDefinition = ItemDefinitionPropertiesAdapter.createItemDefinition(resource);
 				return itemDefinition;
 			}
@@ -174,7 +174,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	}
 	
 	public static String getStructureName(ItemDefinition itemDefinition) {
-		Resource resource = ResourceProvider.getResource(itemDefinition);
+		Resource resource = ObjectPropertyProvider.getResource(itemDefinition);
 		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();

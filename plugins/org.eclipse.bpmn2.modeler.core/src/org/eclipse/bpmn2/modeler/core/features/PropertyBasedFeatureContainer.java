@@ -21,8 +21,15 @@ import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.services.Graphiti;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class PropertyBasedFeatureContainer.
+ */
 public abstract class PropertyBasedFeatureContainer implements IShapeFeatureContainer, IConnectionFeatureContainer {
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getApplyObject(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public Object getApplyObject(IContext context) {
 		if (context instanceof IPictogramElementContext) {
@@ -31,6 +38,9 @@ public abstract class PropertyBasedFeatureContainer implements IShapeFeatureCont
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#canApplyTo(java.lang.Object)
+	 */
 	@Override
 	public boolean canApplyTo(Object o) {
 		if (!(o instanceof PropertyContainer)) {
@@ -43,20 +53,40 @@ public abstract class PropertyBasedFeatureContainer implements IShapeFeatureCont
 		return canApplyToProperty(property);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#isAvailable(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public boolean isAvailable(IFeatureProvider fp) {
 		return true;
 	}
 
+	/**
+	 * Gets the property key.
+	 *
+	 * @return the property key
+	 */
 	protected abstract String getPropertyKey();
 
+	/**
+	 * Can apply to property.
+	 *
+	 * @param value the value
+	 * @return true, if successful
+	 */
 	protected abstract boolean canApplyToProperty(String value);
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getRemoveFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
 		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getCustomFeatures(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return null;

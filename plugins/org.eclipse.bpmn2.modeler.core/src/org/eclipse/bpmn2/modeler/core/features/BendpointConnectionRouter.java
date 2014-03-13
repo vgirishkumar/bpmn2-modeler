@@ -25,7 +25,6 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
@@ -36,21 +35,36 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  */
 public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
+	/** The Constant margin. */
 	protected static final int margin = 10;
 	// The Connection passed in to route(), cast as a FreeFormConnection for convenience
+	/** The ffc. */
 	protected FreeFormConnection ffc;
 	// The moved or added bendpoint (if any)
+	/** The moved bendpoint. */
 	protected Point movedBendpoint;
+	
+	/** The removed bendpoint. */
 	protected Point removedBendpoint;
 	// The list of old connection cuts (including the end cuts) for determining if a route has changed
+	/** The old points. */
 	protected List<Point> oldPoints;
 	// flag to disable automatic collision avoidance and optimization
+	/** The manual. */
 	protected boolean manual = true;
 	
+	/**
+	 * Instantiates a new bendpoint connection router.
+	 *
+	 * @param fp the fp
+	 */
 	public BendpointConnectionRouter(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
 	@Override
 	public boolean route(Connection connection) {
 		super.route(connection);
@@ -71,18 +85,26 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return changed;
 	}
 	
+	/**
+	 * Sets the manual routing.
+	 *
+	 * @param manual the new manual routing
+	 */
 	public void setManualRouting(boolean manual) {
 		this.manual = manual;
 	}
 	
+	/**
+	 * Checks if is manual routing.
+	 *
+	 * @return true, if is manual routing
+	 */
 	public boolean isManualRouting() {
 		return manual;
 	}
 	
 	/**
-	 * Initialize the newPoints list and set the new start and end anchors
-	 * 
-	 * @param ffc - the FreeFormConnection
+	 * Initialize the newPoints list and set the new start and end anchors.
 	 */
 	@Override
 	protected void initialize() {
@@ -105,6 +127,11 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		oldPoints.add(GraphicsUtil.createPoint(ffc.getEnd()));
 	}
 	
+	/**
+	 * Calculate route.
+	 *
+	 * @return the connection route
+	 */
 	protected ConnectionRoute calculateRoute() {
 		if (isSelfConnection()) {
 			return calculateSelfConnectionRoute();
@@ -182,8 +209,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * Route connections whose source and target are the same. This only reroutes the
 	 * connection if there are currently no bendpoints in the connection - we don't
 	 * want to reroute a connection that may have already been manually rerouted.
-	 * 
-	 * @param connection - the connection to be routed
+	 *
 	 * @return true if the router has done any work
 	 */
 	protected ConnectionRoute calculateSelfConnectionRoute() {
@@ -245,7 +271,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	/**
 	 * Compare the connection's original start/end locations and all of its bendpoints
 	 * with the newly calculated cuts.
-	 * 
+	 *
+	 * @param route the route
 	 * @return true if the connection is different from the newly calculated cuts
 	 */
 	protected boolean isRouteChanged(ConnectionRoute route) {
@@ -266,12 +293,20 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
 	/**
 	 * Set the connection's new start/end point anchors and the newly calculated bendpoints.
+	 *
+	 * @param route the route
 	 */
 	protected void applyRoute(ConnectionRoute route) {
 		route.apply(ffc, sourceAnchor, targetAnchor);
 		DIUtils.updateDIEdge(ffc);
 	}
 
+	/**
+	 * Gets the detour points.
+	 *
+	 * @param shape the shape
+	 * @return the detour points
+	 */
 	protected DetourPoints getDetourPoints(ContainerShape shape) {
 		DetourPoints detour = new DetourPoints(shape, margin);
 //		if (allShapes==null)
@@ -304,18 +339,43 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		setInterestingBendpoint(connection, "moved.", index); //$NON-NLS-1$
 	}
 
+	/**
+	 * Sets the added bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param index the index
+	 */
 	public static void setAddedBendpoint(Connection connection, int index) {
 		setInterestingBendpoint(connection, "added.", index); //$NON-NLS-1$
 	}
 
+	/**
+	 * Sets the removed bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param index the index
+	 */
 	public static void setRemovedBendpoint(Connection connection, int index) {
 		setInterestingBendpoint(connection, "removed.", index); //$NON-NLS-1$
 	}
 
+	/**
+	 * Sets the fixed bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param index the index
+	 */
 	public static void setFixedBendpoint(Connection connection, int index) {
 		setInterestingBendpoint(connection, "fixed."+index+".", index); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
+	/**
+	 * Sets the interesting bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param type the type
+	 * @param index the index
+	 */
 	protected static void setInterestingBendpoint(Connection connection, String type, int index) {
 		if (connection instanceof FreeFormConnection) {
 			int size = ((FreeFormConnection)connection).getBendpoints().size();
@@ -340,18 +400,44 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return getInterestingBendpoint(connection, "moved."); //$NON-NLS-1$
 	}
 	
+	/**
+	 * Gets the added bendpoint.
+	 *
+	 * @param connection the connection
+	 * @return the added bendpoint
+	 */
 	public static Point getAddedBendpoint(Connection connection) {
 		return getInterestingBendpoint(connection, "added."); //$NON-NLS-1$
 	}
 	
+	/**
+	 * Gets the removed bendpoint.
+	 *
+	 * @param connection the connection
+	 * @return the removed bendpoint
+	 */
 	public static Point getRemovedBendpoint(Connection connection) {
 		return getInterestingBendpoint(connection, "removed."); //$NON-NLS-1$
 	}
 	
+	/**
+	 * Gets the fixed bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param index the index
+	 * @return the fixed bendpoint
+	 */
 	public static Point getFixedBendpoint(Connection connection, int index) {
 		return getInterestingBendpoint(connection, "fixed."+index+"."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	/**
+	 * Gets the interesting bendpoint.
+	 *
+	 * @param connection the connection
+	 * @param type the type
+	 * @return the interesting bendpoint
+	 */
 	protected static Point getInterestingBendpoint(Connection connection, String type) {
 		try {
 			int index = AbstractConnectionRouter.getRoutingInfoInt(connection, type+ROUTING_INFO_BENDPOINT);

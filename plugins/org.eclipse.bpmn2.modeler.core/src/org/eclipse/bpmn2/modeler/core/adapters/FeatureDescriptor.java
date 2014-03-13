@@ -52,8 +52,11 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
  */
 public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 
+	/** The feature for this ObjectDescriptor */
 	protected EStructuralFeature feature;
+	/** Flag that determines if a Text feature should be rendered as a mulitline text widget */
 	protected int multiline = 0; // -1 = false, +1 = true, 0 = unset
+	/** Default list of values if this feature is a multi-valued object */
 	protected Hashtable<String, Object> choiceOfValues; // for static lists
 	
 	/**
@@ -82,7 +85,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 	
 	/**
-	 * Returns the feature whose properties are managed by this class.
+	 * Gets the feature whose properties are managed by this class.
 	 * 
 	 * @return an EStructuralFeature
 	 */
@@ -90,6 +93,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return feature;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor#getLabel()
+	 */
 	public String getLabel() {
 		String s = ModelDecorator.getLabel(feature);
 		if (s!=null) {
@@ -111,6 +117,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return label;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor#getTextValue()
+	 */
 	@Override
 	public String getTextValue() {
 		if (textValue==null) {
@@ -150,13 +159,25 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return textValue == null ? "" : textValue; //$NON-NLS-1$
 	}
 
+	/**
+	 * Set the list of valid values for this feature. This assumes the feature is
+	 * multi-valued.
+	 * 
+	 * @param choiceOfValues a list of text/value pairs. The text string is displayed by
+	 * the UI in a selection list (Combo box) and the value is the actual feature value
+	 * that corresponds to that string. 
+	 */
 	public void setChoiceOfValues(Hashtable<String, Object> choiceOfValues) {
 		this.choiceOfValues = choiceOfValues;
 	}
 
 	/**
 	 * Convenience method to set choice of values from an object list.
-	 * @param values
+	 * See also {@link getChoiceOfValues()}
+	 * 
+	 * @param values  a list of text/value pairs. The text string is displayed by
+	 * the UI in a selection list (Combo box) and the value is the actual feature value
+	 * that corresponds to that string.
 	 */
 	public void setChoiceOfValues(Collection values) {
 		if (values!=null) {
@@ -181,7 +202,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	 * The implementation is responsible for interpreting this value by overriding the
 	 * setValue() method, and must update the object feature accordingly.
 	 * 
-	 * @return
+	 * @return the list of text/value pairs.
 	 */
 	public Hashtable<String, Object> getChoiceOfValues() {
 		if (choiceOfValues==null) {
@@ -224,7 +245,14 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return choiceOfValues;
 	}
 	
-	// copied from PropertyUtil in UI plugin
+	/**
+	 * Gets the text representation of the given object. This uses
+	 * {@code ObjectDescriptor#getTextValue()} if the value is an EObject and
+	 * can be adapted to an {@link ExtendedPropertiesAdapter}.
+	 * 
+	 * @param value the value
+	 * @return text representation of the value
+	 */
 	public String getChoiceString(Object value) {
 		if (value instanceof EObject) {
 			EObject eObject = (EObject)value;
@@ -236,10 +264,21 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return value.toString();
 	}
 
+	/**
+	 * Sets the MultiLine attribute.
+	 * 
+	 * @param multiline
+	 */
 	public void setMultiLine(boolean multiline) {
 		this.multiline = multiline ? 1 : -1;
 	}
 	
+	/**
+	 * Gets the MultiLine attribute.
+	 * 
+	 * @return true if the feature should be rendered in a MultiLine text widget,
+	 * false if a single line text widget should be used.
+	 */
 	public boolean isMultiLine() {
 		if (multiline==0) {
 			IItemPropertyDescriptor propertyDescriptor = getPropertyDescriptor(feature);
@@ -249,6 +288,11 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return multiline == 1;
 	}
 	
+	/**
+	 * Check if the feature is a containment list.
+	 * 
+	 * @return true if the feature is a containment list, false if not.
+	 */
 	public boolean isList() {
 		return
 				feature.isMany() &&
@@ -256,11 +300,25 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				((EReference)feature).isContainment();
 	}
 
-	// TODO: does the API need the ability to override this? If not, get rid of it.
+	/**
+	 * Gets the feature's type (an EClassifier)
+	 * 
+	 * @return the feature type
+	 */
 	public EClassifier getEType() {
 		return feature.getEType();
 	}
 
+	/**
+	 * Create a new instance of the feature and set it in the object managed by
+	 * this FeatureDesciptor.
+	 * 
+	 * @param resource the EMF Resource in which to create the new object.
+	 * @param eclass an optional type for the new object in case the feature
+	 *            type is abstract. Note that this must be a subtype of the
+	 *            feature type as returned by {@code getEType()}.
+	 * @return the new object.
+	 */
 	public EObject createFeature(Resource resource, EClass eclass) {
 		EObject newFeature = null;
 		if (eclass==null)
@@ -291,10 +349,21 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	// must be able to handle the object type returned by getValue(), although
 	// setValue() may also know how to convert from other types, e.g. String,
 	// Integer, etc.
+	/**
+	 * Gets the value of the object's feature.
+	 * 
+	 * @return value of the object's feature.
+	 */
 	public Object getValue() {
 		return getValue(-1);
 	}
 
+	/**
+	 * Gets the value of the object's feature at the given list index.
+	 * 
+	 * @param index the list index. If less than 0 returns the first list item.
+	 * @return value of the object's feature.
+	 */
 	public Object getValue(int index) {
 		if (hasStructuralFeatureFeature(object, feature)) {
 			if (index >= 0 && isList()) {
@@ -322,6 +391,12 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return null;
 	}
 
+	/**
+	 * Gets the List represented by the feature. Note that the feature must be a
+	 * list and therefore {@code isList()} must be true.
+	 * 
+	 * @return a List of values or an empty list.
+	 */
 	public List<Object> getValueList() {
 		if (isList()) {
 			return ((List)object.eGet(feature));
@@ -329,10 +404,24 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return Collections.EMPTY_LIST;
 	}
 	
+	/**
+	 * Sets the value for the object's feature.
+	 * 
+	 * @param value the value
+	 * @return true if the value is valid, false if not or if the value could not be set.
+	 */
 	public boolean setValue(Object value) {
 		return setValue(value, -1);
 	}
 
+	
+	/**
+	 * Sets the value for the object's feature at the given list index.
+	 * 
+	 * @param value the value
+	 * @param index the list index. If less than 0 sets the first list item.
+	 * @return true if the value is valid, false if not or if the value could not be set.
+	 */
 	public boolean setValue(Object value, final int index) {
 		try {
 			InsertionAdapter.executeIfNeeded(object);
@@ -388,11 +477,12 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 	
 	/**
-	 * Check if the given feature in the specified object is NOT a dynamic feature.
+	 * Check if the given feature in the specified object is a dynamic feature.
 	 * 
 	 * @param object
 	 * @param feature
-	 * @return
+	 * @return true if the feature is <b>not</b> a dynamic feature, i.e. it is defined in the
+	 * containing object's EClass feature list.
 	 */
 	private boolean hasStructuralFeatureFeature(EObject object, EStructuralFeature feature) {
 		String name = feature.getName();
@@ -406,7 +496,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	 * 
 	 * @param object
 	 * @param feature
-	 * @return
+	 * @return true if the feature is an attribute, and has been defined as an extension
+	 * by the Target Runtime plug-in. See also {@code ModelExtensionDescriptor}.
 	 */
 	private boolean isAnyAttribute(EObject object, EStructuralFeature feature) {
 		if (hasStructuralFeatureFeature(object,feature))
@@ -423,7 +514,8 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	 * 
 	 * @param object
 	 * @param feature
-	 * @return
+	 * @return true if the feature is an element, and has been defined as an extension
+	 * by the Target Runtime plug-in. See also {@code ModelExtensionDescriptor}.
 	 */
 	private boolean isExtensionAttribute(EObject object, EStructuralFeature feature) {
 		if (hasStructuralFeatureFeature(object,feature))
@@ -441,14 +533,18 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	}
 	
 	/**
-	 * Set the value of our feature. If the feature is a dynamic feature, the value
-	 * is set in either the "anyAttribute" feature map if it is an attribute,
-	 * or in the BaseElement's extension values container.
+	 * Set the value of the feature managed by this FeatureDescriptor. If the
+	 * feature is a dynamic feature, the value is set in either the
+	 * "anyAttribute" feature map if it is an attribute, or in the
+	 * {@code BaseElementImpl.extensionValues} container.
 	 * 
-	 * @param object
-	 * @param feature
-	 * @param value
-	 * @param index
+	 * This method may be overridden and will be wrapped in an EMF Transaction by
+	 * {@link setValue(Object,int)) if necessary.
+	 * 
+	 * @param object the object
+	 * @param feature the feature. This must be an extension defined by the Target Runtime.
+	 * @param value the value to set for the object feature
+	 * @param index the list index if the feature is a list. If this is less than 0, set the first list item.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
@@ -493,6 +589,16 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		}
 	}
 	
+	/**
+	 * Performs additional initialization of the new feature value if necessary.
+	 * 
+	 * The default implementation initializes the ID of the new feature value, if it has one.
+	 * 
+	 * This method may be overridden and will be wrapped in an EMF Transaction by
+	 * {@link setValue(Object,int)) if necessary.
+	 * 
+	 * @param value the feature value that was set.
+	 */
 	protected void internalPostSet(Object value) {
 		if (value instanceof EObject) {
 			ModelUtil.setID((EObject)value);
@@ -507,10 +613,16 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		}
 	}
 
+	/**
+	 * Unsets the feature by setting it to its default value.
+	 */
 	public void unset() {
 		setValue(feature.getDefaultValue());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		Object thisValue = object.eGet(feature);
@@ -528,6 +640,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor#similar(java.lang.Object)
+	 */
 	@Override
 	public boolean similar(Object obj) {
 		Object thisValue = object.eGet(feature);
@@ -545,6 +660,12 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 		return false;
 	}
 
+	/**
+	 * This method has been deprecated. Use {@code getChoiceOfValues()} instead.
+	 * 
+	 * @param context
+	 * @return
+	 */
 	@Deprecated
 	public Hashtable<String, Object> getChoiceOfValues(Object context) {
 		return getChoiceOfValues();

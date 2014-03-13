@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
@@ -233,7 +233,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	protected <T extends EObject> T createModelObject(Class clazz) {
 		T object = null;
 		object = getBusinessObjectDelegate().createObject(clazz);
-		ModelUtil.setID(object, ResourceProvider.getResource(businessObject));
+		ModelUtil.setID(object, ObjectPropertyProvider.getResource(businessObject));
 		return object;
 	}
 	
@@ -259,12 +259,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		if (diagramEditor==null)
 			diagramEditor = ModelUtil.getEditor(object);
 		addDomainListener();
-		try {
-			modelHandler = ModelHandlerLocator.getModelHandler(
-					getDiagramEditor().getDiagramTypeProvider().getDiagram().eResource());
-		} catch (IOException e1) {
-			Activator.logError(e1);
-		}
+		modelHandler = ModelHandler.getInstance(getDiagramEditor().getDiagramTypeProvider().getDiagram());
 		removeChangeListener(businessObject);
 		businessObject = object;
 		addChangeListener(businessObject);

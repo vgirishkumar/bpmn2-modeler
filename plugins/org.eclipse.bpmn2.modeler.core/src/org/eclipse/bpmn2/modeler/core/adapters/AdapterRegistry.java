@@ -352,7 +352,7 @@ public class AdapterRegistry {
 	
 	/**
 	 * @param factory
-	 * @param class1
+	 * @param clazz
 	 */
 	public void registerAdapterFactory(IAdapterFactory factory,	Class<?> clazz) {
 		fAdapterManager.registerAdapters(factory, clazz);		

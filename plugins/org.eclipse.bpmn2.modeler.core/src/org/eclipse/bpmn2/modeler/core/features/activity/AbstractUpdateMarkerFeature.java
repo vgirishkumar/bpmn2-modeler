@@ -30,18 +30,35 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractUpdateMarkerFeature.
+ *
+ * @param <T> the generic type
+ */
 public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractUpdateFeature {
 
+	/**
+	 * Instantiates a new abstract update marker feature.
+	 *
+	 * @param fp the fp
+	 */
 	public AbstractUpdateMarkerFeature(IFeatureProvider fp) {
 	    super(fp);
     }
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
     public boolean canUpdate(IUpdateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		return bo != null && bo instanceof Activity && context.getPictogramElement() instanceof ContainerShape;
     }
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
     public IReason updateNeeded(IUpdateContext context) {
 		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
@@ -61,6 +78,9 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		return changed ? Reason.createTrueReason("Marker changed") : Reason.createFalseReason();
     }
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
     public boolean update(IUpdateContext context) {
 		IPeService peService = Graphiti.getPeService();
@@ -72,11 +92,35 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		return true;
     }
 	
+	/**
+	 * Gets the property key.
+	 *
+	 * @return the property key
+	 */
 	protected abstract String getPropertyKey();
 	
+	/**
+	 * Checks if is property changed.
+	 *
+	 * @param element the element
+	 * @param propertyValue the property value
+	 * @return true, if is property changed
+	 */
 	protected abstract boolean isPropertyChanged(T element, String propertyValue);
 
+	/**
+	 * Do update.
+	 *
+	 * @param element the element
+	 * @param markerContainer the marker container
+	 */
 	protected abstract void doUpdate(T element, ContainerShape markerContainer);
 	
+	/**
+	 * Convert property to string.
+	 *
+	 * @param element the element
+	 * @return the string
+	 */
 	protected abstract String convertPropertyToString(T element);
 }

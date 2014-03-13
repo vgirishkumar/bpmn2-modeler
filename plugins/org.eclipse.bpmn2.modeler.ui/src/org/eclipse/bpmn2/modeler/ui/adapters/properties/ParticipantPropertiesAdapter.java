@@ -36,6 +36,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -62,8 +63,8 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		setObjectDescriptor(new ObjectDescriptor<Participant>(object) {
 			
 			@Override
-			public Participant createObject(Resource resource, Object context) {
-				Participant participant = super.createObject(resource, context);
+			public Participant createObject(Resource resource, EClass eclass) {
+				Participant participant = super.createObject(resource, eclass);
 				
 				Definitions definitions = null;
 				if (resource!=null)

@@ -53,11 +53,17 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * This is the Create Feature base class for all BPMN2 model elements which are considered "connections"
- * e.g. Sequence Flows, Associations, Message Flows and Conversation Links
+ * This is the Graphiti CreateFeature base class for all BPMN2 model elements which are
+ * considered "connections" e.g. {@link org.eclipse.bpmn2.SequenceFlow}, {@link org.eclipse.bpmn2.Association},
+ * {@link org.eclipse.bpmn2.MessageFlow} and {@link org.eclipse.bpmn2.ConversationLink}
  * 
- * The Type Parameter "CONNECTION" is the BPMN2 element class, "SOURCE" is the BPMN2 class of the source object of
- * the connection, "TARGET" is the BPMN2 class of the connection target object.
+ * The Type Parameter "CONNECTION" is the BPMN2 element class, "SOURCE" is the
+ * BPMN2 class of the source object of the connection, "TARGET" is the BPMN2
+ * class of the connection target object.
+ *
+ * @param <CONNECTION> the generic type for the BPMN2 connection
+ * @param <SOURCE> the generic type for the BPMN2 source element
+ * @param <TARGET> the generic type for the BPMN2 target element
  */
 public abstract class AbstractBpmn2CreateConnectionFeature<
 			CONNECTION extends BaseElement,
@@ -66,15 +72,16 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		extends AbstractCreateConnectionFeature
 		implements IBpmn2CreateFeature<CONNECTION, ICreateConnectionContext> {
 
+	/** The changes done. */
 	protected boolean changesDone = true;
 
 	/**
-	 * Default constructor for this Create Feature
-	 * 
+	 * Default constructor for this Create Feature.
+	 *
 	 * @param fp - the BPMN2 Modeler Feature Provider
-	 *             @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
 	 * @param name - name of the type of object being created
 	 * @param description - description of the object being created
+	 * @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
 	 */
 	public AbstractBpmn2CreateConnectionFeature(IFeatureProvider fp,
 			String name, String description) {
@@ -125,6 +132,17 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		return getSourceBo(context) != null;
 	}
 
+	/**
+	 * Check if the connection is allowed.
+	 * Only one connection of each type is allowed between the same source and target objects.
+	 * Also enforce User Preference if only one incoming or outgoing connection is allowed. 
+	 *
+	 * @param sourceContainer the source container
+	 * @param targetContainer the target container
+	 * @param connectionClass the connection class
+	 * @param reconnectType the reconnect type
+	 * @return true, if the connection is allowed
+	 */
 	public static boolean canCreateConnection(AnchorContainer sourceContainer, AnchorContainer targetContainer, EClass connectionClass, String reconnectType) {
 		if (sourceContainer!=null && targetContainer!=null) {
 			// Make sure only one connection of each type is created for the same
@@ -276,6 +294,13 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		}
 	}
 	
+	/**
+	 * Creates and prepares a new AddConnectionContext from a CreateConnectionContext.
+	 *
+	 * @param context the CreateConnectionContext
+	 * @param newObject the new object, must be a BPMN2 connection object (see class description)
+	 * @return a new AddConnectionContext
+	 */
 	protected AddConnectionContext createAddConnectionContext(ICreateConnectionContext context, Object newObject) {
 		AddConnectionContext newContext = new AddConnectionContext(context.getSourceAnchor(), context.getTargetAnchor());
 		newContext.setNewObject(newObject);
@@ -304,6 +329,12 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		return false;
 	}
 	
+	/**
+	 * Checks if is model object enabled.
+	 *
+	 * @param o the o
+	 * @return true, if is model object enabled
+	 */
 	protected boolean isModelObjectEnabled(EObject o) {
 		ModelEnablements me = getModelEnablements();
 		if (me!=null) {
@@ -313,11 +344,19 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+	 */
 	@Override
 	public boolean hasDoneChanges() {
 		return changesDone;
 	}
 	
+	/**
+	 * Gets the model enablements.
+	 *
+	 * @return the model enablements
+	 */
 	protected ModelEnablements getModelEnablements() {
 		DiagramEditor editor = (DiagramEditor) getDiagramEditor();
 		return (ModelEnablements) editor.getAdapter(ModelEnablements.class);
@@ -352,9 +391,21 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	}
 
 	/**
-	 * Implementation classes must override these to provide the BPMN2 object source and target classes that are valid for this connection.
+	 * Gets the source object type.
+	 * Implementation classes must override this method to provide the BPMN2
+	 * object source and target classes that are valid for this connection.
+	 *
+	 * @return the source class
 	 */
 	protected abstract Class<SOURCE> getSourceClass();
+	
+	/**
+	 * Gets the target object type.
+	 * Implementation classes must override this method to provide the BPMN2
+	 * object source and target classes that are valid for this connection.
+	 *
+	 * @return the target class
+	 */
 	protected abstract Class<TARGET> getTargetClass();
 
 }

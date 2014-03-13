@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +36,23 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MoveFlowNodeFeature.
+ */
 public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 
 	private final List<Algorithm> algorithms;
 	private AlgorithmContainer algorithmContainer;
+	
+	/** The context. */
 	protected IMoveShapeContext context;
 	
+	/**
+	 * Instantiates a new move flow node feature.
+	 *
+	 * @param fp the fp
+	 */
 	public MoveFlowNodeFeature(IFeatureProvider fp) {
 		super(fp);
 		algorithms = new ArrayList<MoveFlowNodeFeature.Algorithm>();
@@ -54,39 +64,46 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		algorithms.add(new ToFlowElementsContainerAlgorithm());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature#canMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	public boolean canMoveShape(IMoveShapeContext context) {
 		if (!(getBusinessObjectForPictogramElement(context.getShape()) instanceof FlowNode)) {
 			return false;
 		}
 
-		try {
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-
-			algorithmContainer = getAlgorithmContainer(context);
-
-			if (algorithmContainer.isEmpty()) {
-				return onMoveAlgorithmNotFound(context);
-			}
-
-			return algorithmContainer.isMoveAllowed(getSourceBo(context, handler), getTargetBo(context, handler));
-		} catch (IOException e) {
-			Activator.logError(e);
+		algorithmContainer = getAlgorithmContainer(context);
+		if (algorithmContainer.isEmpty()) {
+			return onMoveAlgorithmNotFound(context);
 		}
 
-		return false;
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
+		return algorithmContainer.isMoveAllowed(getSourceBo(context, mh), getTargetBo(context, mh));
 	}
 
+	/**
+	 * On move algorithm not found.
+	 *
+	 * @param context the context
+	 * @return true, if successful
+	 */
 	protected boolean onMoveAlgorithmNotFound(IMoveShapeContext context) {
 		return super.canMoveShape(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature#moveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	public void moveShape(IMoveShapeContext context) {
 		this.context = context;
 		super.moveShape(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature#postMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
 		try {
@@ -104,15 +121,15 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		super.postMoveShape(context);
 	}
 
-	private Object getSourceBo(IMoveShapeContext context, ModelHandler handler) {
+	private Object getSourceBo(IMoveShapeContext context, ModelHandler modelHandler) {
 		if (context.getSourceContainer().equals(getDiagram()))
-			return handler.getFlowElementContainer(context.getSourceContainer());
+			return modelHandler.getFlowElementContainer(context.getSourceContainer());
 		return getBusinessObjectForPictogramElement(context.getSourceContainer());
 	}
 
-	private Object getTargetBo(IMoveShapeContext context, ModelHandler handler) {
+	private Object getTargetBo(IMoveShapeContext context, ModelHandler modelHandler) {
 		if (context.getTargetContainer().equals(getDiagram()))
-			return handler.getFlowElementContainer(context.getTargetContainer());
+			return modelHandler.getFlowElementContainer(context.getTargetContainer());
 		return getBusinessObjectForPictogramElement(context.getTargetContainer());
 	}
 
@@ -126,19 +143,46 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		return bo != null && bo instanceof Lane;
 	}
 
+	/**
+	 * The Class AlgorithmContainer.
+	 */
 	class AlgorithmContainer {
+		
+		/** The from algorithm. */
 		public Algorithm fromAlgorithm;
+		
+		/** The to algorithm. */
 		public Algorithm toAlgorithm;
 
+		/**
+		 * Instantiates a new algorithm container.
+		 *
+		 * @param fromAlgorithm the from algorithm
+		 * @param toAlgorithm the to algorithm
+		 */
 		public AlgorithmContainer(Algorithm fromAlgorithm, Algorithm toAlgorithm) {
 			this.fromAlgorithm = fromAlgorithm;
 			this.toAlgorithm = toAlgorithm;
 		}
 
+		/**
+		 * Checks if is move allowed.
+		 *
+		 * @param source the source
+		 * @param target the target
+		 * @return true, if is move allowed
+		 */
 		boolean isMoveAllowed(Object source, Object target) {
 			return fromAlgorithm.isMoveAllowed(source, target) && toAlgorithm.isMoveAllowed(source, target);
 		}
 
+		/**
+		 * Move.
+		 *
+		 * @param node the node
+		 * @param source the source
+		 * @param target the target
+		 */
 		void move(FlowNode node, Object source, Object target) {
 			fromAlgorithm.move(node, source, target);
 			toAlgorithm.move(node, source, target);
@@ -172,10 +216,21 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			}
 		}
 
+		/**
+		 * Checks if is empty.
+		 *
+		 * @return true, if is empty
+		 */
 		boolean isEmpty() {
 			return fromAlgorithm == null || toAlgorithm == null;
 		}
 		
+		/**
+		 * Checks if is connection valid.
+		 *
+		 * @param flow the flow
+		 * @return true, if is connection valid
+		 */
 		boolean isConnectionValid(BaseElement flow) {
 			EStructuralFeature sourceRef = flow.eClass().getEStructuralFeature("sourceRef");
 			EStructuralFeature targetRef = flow.eClass().getEStructuralFeature("targetRef");
@@ -225,51 +280,98 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		return new AlgorithmContainer(fromAlgorithm, toAlgorithm);
 	}
 
+	/**
+	 * The Interface Algorithm.
+	 */
 	interface Algorithm {
 
+		/** The type from. */
 		int TYPE_FROM = 0;
 
+		/** The type to. */
 		int TYPE_TO = 1;
 
+		/**
+		 * Gets the type.
+		 *
+		 * @return the type
+		 */
 		int getType();
 
+		/**
+		 * Can apply to.
+		 *
+		 * @param context the context
+		 * @return true, if successful
+		 */
 		boolean canApplyTo(IMoveShapeContext context);
 
+		/**
+		 * Checks if is move allowed.
+		 *
+		 * @param source the source
+		 * @param target the target
+		 * @return true, if is move allowed
+		 */
 		boolean isMoveAllowed(Object source, Object target);
 
+		/**
+		 * Move.
+		 *
+		 * @param node the node
+		 * @param source the source
+		 * @param target the target
+		 */
 		void move(FlowNode node, Object source, Object target);
 	}
 
+	/**
+	 * The Class DefaultAlgorithm.
+	 */
 	abstract class DefaultAlgorithm implements Algorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#isMoveAllowed(java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public boolean isMoveAllowed(Object source, Object target) {
 			return true;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#move(org.eclipse.bpmn2.FlowNode, java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
-			try {
-				ModelHandler handler = ModelHandler.getInstance(getDiagram());
-				handler.moveFlowNode(node, source, target);
-			} catch (IOException e) {
-				Activator.logError(e);
-			}
+			ModelHandler mh = ModelHandler.getInstance(getDiagram());
+			mh.moveFlowNode(node, source, target);
 		}
 	}
 
+	/**
+	 * The Class FromLaneAlgorithm.
+	 */
 	class FromLaneAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_FROM;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			return isSourceLane(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#move(org.eclipse.bpmn2.FlowNode, java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
 			Lane lane = (Lane) source;
@@ -278,24 +380,39 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		}
 	}
 
+	/**
+	 * The Class ToLaneAlgorithm.
+	 */
 	class ToLaneAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_TO;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			return FeatureSupport.isTargetLane(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#isMoveAllowed(java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public boolean isMoveAllowed(Object source, Object target) {
 			Lane lane = (Lane) target;
 			return lane.getChildLaneSet() == null || lane.getChildLaneSet().getLanes().isEmpty();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#move(org.eclipse.bpmn2.FlowNode, java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
 			Lane lane = (Lane) target;
@@ -305,36 +422,60 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		}
 	}
 
+	/**
+	 * The Class FromParticipantAlgorithm.
+	 */
 	class FromParticipantAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_FROM;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			return isSourceParticipant(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#move(org.eclipse.bpmn2.FlowNode, java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
 			// DO NOTHING HERE
 		}
 	}
 
+	/**
+	 * The Class ToParticipantAlgorithm.
+	 */
 	class ToParticipantAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_TO;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			return context.getTargetContainer().equals(getDiagram()) || FeatureSupport.isTargetParticipant(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#isMoveAllowed(java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public boolean isMoveAllowed(Object source, Object target) {
 			try {
@@ -380,31 +521,52 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 //		}
 	}
 
+	/**
+	 * The Class FromFlowElementsContainerAlgorithm.
+	 */
 	class FromFlowElementsContainerAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_FROM;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			Object bo = getBusinessObjectForPictogramElement(context.getSourceContainer());
 			return bo != null && bo instanceof FlowElementsContainer;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.DefaultAlgorithm#move(org.eclipse.bpmn2.FlowNode, java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
 		}
 	}
 
+	/**
+	 * The Class ToFlowElementsContainerAlgorithm.
+	 */
 	class ToFlowElementsContainerAlgorithm extends DefaultAlgorithm {
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#getType()
+		 */
 		@Override
 		public int getType() {
 			return TYPE_TO;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature.Algorithm#canApplyTo(org.eclipse.graphiti.features.context.IMoveShapeContext)
+		 */
 		@Override
 		public boolean canApplyTo(IMoveShapeContext context) {
 			Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());

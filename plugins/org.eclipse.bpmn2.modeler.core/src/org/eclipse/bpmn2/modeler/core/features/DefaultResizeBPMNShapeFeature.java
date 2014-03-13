@@ -26,12 +26,24 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultResizeBPMNShapeFeature.
+ */
 public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 
+	/**
+	 * Instantiates a new default resize bpmn shape feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultResizeBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature#canResizeShape(org.eclipse.graphiti.features.context.IResizeShapeContext)
+	 */
 	@Override
 	public boolean canResizeShape(IResizeShapeContext context) {
 		boolean doit = super.canResizeShape(context);
@@ -42,6 +54,9 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		return event.doit;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature#resizeShape(org.eclipse.graphiti.features.context.IResizeShapeContext)
+	 */
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
 		Shape shape = null;

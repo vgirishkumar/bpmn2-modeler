@@ -22,7 +22,7 @@ import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
@@ -119,51 +119,58 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 
 	@Override
     public EObject create(EClass eClass) {
-    	EObject object = super.create(eClass);
-    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-    	if (rt!=null) {
-    		Resource resource = null;
-    		String customElementId = null;
-    		ResourceProvider adapter = ResourceProvider.getAdapter(this);
-    		if (adapter!=null) {
-    			resource = adapter.getResource();
-    			customElementId = (String)adapter.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-    			adapter.setResource(null);
-    			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
-    		}
-    		
-			String className = eClass.getName();
-    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
-    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
-    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
-				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
-    			object = rt.getModelDescriptor().getEFactory().create(clazz);
-			}
-    		
-    		// first look for Model Extension Descriptors for this specific object type
-    		if (customElementId!=null) {
-    			CustomTaskDescriptor ctd = rt.getCustomTask(customElementId);
-    			if (ctd!=null)
-    				ctd.populateObject(object, resource, enableModelExtensions);
-    		}
-    		else {
-	    		List<ModelExtensionDescriptor> list = rt.getModelExtensionDescriptors();
-		    	for (ModelExtensionDescriptor med : list) {
-		    		if (className.equals(med.getType())) {
-		    			med.populateObject(object, resource, enableModelExtensions);
-		    		}
-		    	}
-		    	// then check if there are any MEDs for any supertypes of this object type
-		    	for (ModelExtensionDescriptor med : list) {
-		    		for (EClass st : eClass.getEAllSuperTypes()) {
-			    		if (st.getName().equals(med.getType())) {
+    	
+		EObject object = super.create(eClass);
+
+    	ObjectPropertyProvider adapter = ObjectPropertyProvider.getAdapter(this);
+		try {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+	    	if (rt!=null) {
+	    		Resource resource = null;
+	    		String customElementId = null;
+	    		if (adapter!=null) {
+	    			resource = adapter.getResource();
+	    			customElementId = (String)adapter.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+	    		}
+	    		
+				String className = eClass.getName();
+	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
+	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
+	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
+					EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
+	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
+				}
+	    		
+	    		// first look for Model Extension Descriptors for this specific object type
+	    		if (customElementId!=null) {
+	    			CustomTaskDescriptor ctd = rt.getCustomTask(customElementId);
+	    			if (ctd!=null)
+	    				ctd.populateObject(object, resource, enableModelExtensions);
+	    		}
+	    		else {
+		    		List<ModelExtensionDescriptor> list = rt.getModelExtensionDescriptors();
+			    	for (ModelExtensionDescriptor med : list) {
+			    		if (className.equals(med.getType())) {
 			    			med.populateObject(object, resource, enableModelExtensions);
 			    		}
-		    		}
-		    	}
-    		}
-    	}
-
+			    	}
+			    	// then check if there are any MEDs for any supertypes of this object type
+			    	for (ModelExtensionDescriptor med : list) {
+			    		for (EClass st : eClass.getEAllSuperTypes()) {
+				    		if (st.getName().equals(med.getType())) {
+				    			med.populateObject(object, resource, enableModelExtensions);
+				    		}
+			    		}
+			    	}
+	    		}
+	    	}
+		}
+		finally {
+			if (adapter!=null) {
+    			adapter.setResource(null);
+    			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
+			}
+		}
     	return object;
     }
 

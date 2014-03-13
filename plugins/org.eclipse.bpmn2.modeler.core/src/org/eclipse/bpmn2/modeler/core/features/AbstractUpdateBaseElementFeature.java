@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -26,12 +27,24 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+/**
+ * This is the Graphiti UpdateFeature class for all BPMN2 model elements that
+ * subclass {@link BaseElement}.
+ */
 public abstract class AbstractUpdateBaseElementFeature extends AbstractUpdateFeature {
 
+	/**
+	 * Instantiates a new UpdateFeature.
+	 *
+	 * @param fp the Feature Provider
+	 */
 	public AbstractUpdateBaseElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
 	public IReason updateNeeded(final IUpdateContext context) {
 		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
@@ -69,10 +82,11 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractUpdateFea
 		return Reason.createFalseReason();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
 	public boolean update(IUpdateContext context) {
-		// TODO here it should get an updated picture from the element controller
-
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
 			ContainerShape cs = (ContainerShape) pe;

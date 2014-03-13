@@ -27,50 +27,115 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ConnectionRoute.
+ */
 public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<ConnectionRoute> {
+		
+		/**
+		 * The Class Collision.
+		 */
 		class Collision {
+			
+			/** The shape. */
 			Shape shape;
+			
+			/** The start. */
 			Point start;
+			
+			/** The end. */
 			Point end;
 			
+			/**
+			 * Instantiates a new collision.
+			 *
+			 * @param shape the shape
+			 * @param start the start
+			 * @param end the end
+			 */
 			public Collision(Shape shape, Point start, Point end) {
 				this.shape = shape;
 				this.start = start;
 				this.end = end;
 			}
 			
+			/* (non-Javadoc)
+			 * @see java.lang.Object#toString()
+			 */
 			public String toString() {
 				Object o = BusinessObjectUtil.getFirstBaseElement(shape);
 				return ModelUtil.getTextValue(o);
 			}
 		}
 		
+		/**
+		 * The Class Crossing.
+		 */
 		class Crossing {
+			
+			/** The connection. */
 			Connection connection;
+			
+			/** The start. */
 			Point start;
+			
+			/** The end. */
 			Point end;
+			
+			/**
+			 * Instantiates a new crossing.
+			 *
+			 * @param connection the connection
+			 * @param start the start
+			 * @param end the end
+			 */
 			public Crossing(Connection connection, Point start, Point end) {
 				this.connection = connection;
 				this.start = start;
 				this.end = end;
 			}
 			
+			/* (non-Javadoc)
+			 * @see java.lang.Object#toString()
+			 */
 			public String toString() {
 				Object o = BusinessObjectUtil.getFirstBaseElement(connection);
 				return ModelUtil.getTextValue(o);
 			}
 		}
 		
+		/** The router. */
 		DefaultConnectionRouter router;
+		
+		/** The id. */
 		int id;
 		private List<Point> points = new ArrayList<Point>();
+		
+		/** The collisions. */
 		List<Collision> collisions = new ArrayList<Collision>();
+		
+		/** The crossings. */
 		List<Crossing> crossings = new ArrayList<Crossing>();
+		
+		/** The source. */
 		Shape source;
+		
+		/** The target. */
 		Shape target;
+		
+		/** The valid. */
 		boolean valid = true;
 		private int rank = 0;
 		
+		/**
+		 * Instantiates a new connection route.
+		 *
+		 * @param router the router
+		 * @param id the id
+		 * @param source the source
+		 * @param target the target
+		 */
 		public ConnectionRoute(DefaultConnectionRouter router, int id, Shape source, Shape target) {
 			this.router = router;
 			this.id = id;
@@ -78,10 +143,22 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			this.target = target;
 		}
 
+		/**
+		 * Apply.
+		 *
+		 * @param ffc the ffc
+		 */
 		public void apply(FreeFormConnection ffc) {
 			apply(ffc,null,null);
 		}
 		
+		/**
+		 * Apply.
+		 *
+		 * @param ffc the ffc
+		 * @param sourceAnchor the source anchor
+		 * @param targetAnchor the target anchor
+		 */
 		public void apply(FreeFormConnection ffc, Anchor sourceAnchor, Anchor targetAnchor) {
 			
 			// set connection's source and target anchors if they are Boundary Anchors
@@ -107,6 +184,9 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			}
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
 		public String toString() {
 			String text;
 			if (isValid()) {
@@ -140,6 +220,12 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return text;
 		}
 		
+		/**
+		 * Adds the.
+		 *
+		 * @param newPoint the new point
+		 * @return true, if successful
+		 */
 		public boolean add(Point newPoint) {
 			for (Point p : getPoints()) {
 				if (GraphicsUtil.pointsEqual(newPoint, p)) {
@@ -151,32 +237,70 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return true;
 		}
 		
+		/**
+		 * Gets the.
+		 *
+		 * @param index the index
+		 * @return the point
+		 */
 		public Point get(int index) {
 			return getPoints().get(index);
 		}
 		
+		/**
+		 * Size.
+		 *
+		 * @return the int
+		 */
 		public int size() {
 			return getPoints().size();
 		}
 		
+		/**
+		 * Adds the collision.
+		 *
+		 * @param shape the shape
+		 * @param start the start
+		 * @param end the end
+		 */
 		public void addCollision(Shape shape, Point start, Point end) {
 			collisions.add( new Collision(shape, start, end) );
 		}
 		
+		/**
+		 * Adds the crossing.
+		 *
+		 * @param connection the connection
+		 * @param start the start
+		 * @param end the end
+		 */
 		public void addCrossing(Connection connection, Point start, Point end) {
 			crossings.add( new Crossing(connection, start, end) );
 		}
 		
+		/**
+		 * Sets the valid.
+		 */
 		public void setValid() {
 			valid = true;
 		}
 		
+		/**
+		 * Checks if is valid.
+		 *
+		 * @return true, if is valid
+		 */
 		public boolean isValid() {
 			if (valid)
 				return getLength() < Integer.MAX_VALUE;
 			return false;
 		}
 		
+		/**
+		 * Gets the length.
+		 *
+		 * @return the length
+		 */
 		public int getLength() {
 			int length = 0;
 			if (getPoints().size()>1) {
@@ -197,11 +321,17 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return length;
 		}
 
+		/* (non-Javadoc)
+		 * @see java.lang.Comparable#compareTo(java.lang.Object)
+		 */
 		@Override
 		public int compareTo(ConnectionRoute arg0) {
 			return compare(this,arg0);
 		}
 
+		/* (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
 		@Override
 		public int compare(ConnectionRoute o1, ConnectionRoute o2) {
 			int i = 0;
@@ -360,6 +490,11 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return changed;
 		}
 		
+		/**
+		 * Optimize.
+		 *
+		 * @return true, if successful
+		 */
 		public boolean optimize() {
 			boolean changed = removeUnusedPoints();
 			if (removeUnusedSegments()) {
@@ -370,18 +505,38 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			return changed;
 		}
 
+		/**
+		 * Gets the rank.
+		 *
+		 * @return the rank
+		 */
 		public int getRank() {
 			return rank;
 		}
 
+		/**
+		 * Sets the rank.
+		 *
+		 * @param rank the new rank
+		 */
 		public void setRank(int rank) {
 			this.rank = rank;
 		}
 
+		/**
+		 * Gets the points.
+		 *
+		 * @return the points
+		 */
 		public List<Point> getPoints() {
 			return points;
 		}
 
+		/**
+		 * Sets the points.
+		 *
+		 * @param points the new points
+		 */
 		public void setPoints(List<Point> points) {
 			this.points = points;
 		}

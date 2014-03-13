@@ -26,7 +26,7 @@ import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -117,7 +117,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			// make sure the ioSpecification has both a default InputSet and OutputSet
 			InputOutputSpecification ioSpecification = task.getIoSpecification();
 			if (ioSpecification!=null) {
-				Resource resource = ResourceProvider.getResource(context.getTargetContainer());
+				Resource resource = ObjectPropertyProvider.getResource(context.getTargetContainer());
 				if (ioSpecification.getInputSets().size()==0) {
 					InputSet is = Bpmn2ModelerFactory.create(resource, InputSet.class);
 					ioSpecification.getInputSets().add(is);

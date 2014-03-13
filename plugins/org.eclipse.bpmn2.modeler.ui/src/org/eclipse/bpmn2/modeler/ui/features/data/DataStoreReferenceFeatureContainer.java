@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.data.MoveDataFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
@@ -33,7 +31,6 @@ import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
-import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -43,7 +40,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -57,11 +53,8 @@ import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
@@ -259,61 +252,56 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			// which is the target of the ICreateContext. In addition, if the new DataStoreReference refers
 			// to a new DataStore, one is created and added to Definitions.
 			changesDone = true;
-			DataStoreReference bo = null;
-			try {
-				ModelHandler mh = ModelHandler.getInstance(getDiagram());
-				bo = Bpmn2ModelerFactory.create(DataStoreReference.class);
+			ModelHandler mh = ModelHandler.getInstance(getDiagram());
 
-				DataStore dataStore = Bpmn2ModelerFactory.create(DataStore.class);
-				String oldName = dataStore.getName();
-				dataStore.setName(Messages.DataStoreReferenceFeatureContainer_New);
-				dataStore.setId(null);
+			DataStoreReference dataStoreRef = Bpmn2ModelerFactory.create(DataStoreReference.class);
+			DataStore dataStore = Bpmn2ModelerFactory.create(DataStore.class);
+			String oldName = dataStore.getName();
+			dataStore.setName(Messages.DataStoreReferenceFeatureContainer_New);
+			dataStore.setId(null);
 
-				List<DataStore> dataStoreList = new ArrayList<DataStore>();
-				dataStoreList.add(dataStore);
-				TreeIterator<EObject> iter = mh.getDefinitions().eAllContents();
-				while (iter.hasNext()) {
-					EObject obj = iter.next();
-					if (obj instanceof DataStore)
-						dataStoreList.add((DataStore) obj);
-				}
-
-				DataStore result = dataStore;
-				if (dataStoreList.size() > 1) {
-					PopupMenu popupMenu = new PopupMenu(dataStoreList, labelProvider);
-					changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
-					if (changesDone) {
-						result = (DataStore) popupMenu.getResult();
-					}
-					else {
-						EcoreUtil.delete(dataStore);
-						EcoreUtil.delete(bo);
-						bo = null;
-					}
-				}
-				if (changesDone) {
-					if (result == dataStore) { // the new one
-						mh.addRootElement(dataStore);
-						ModelUtil.setID(dataStore);
-						dataStore.setName(oldName);
-						bo.setName(dataStore.getName());
-					} else
-						bo.setName(
-							NLS.bind(
-								Messages.DataStoreReferenceFeatureContainer_Default_Name,
-								result.getName()
-							)
-						);
-	
-					bo.setDataStoreRef(result);
-					ModelUtil.setID(bo, mh.getResource());
-					putBusinessObject(context, bo);
-				}
-				
-			} catch (IOException e) {
-				Activator.showErrorWithLogging(e);
+			List<DataStore> dataStoreList = new ArrayList<DataStore>();
+			dataStoreList.add(dataStore);
+			TreeIterator<EObject> iter = mh.getDefinitions().eAllContents();
+			while (iter.hasNext()) {
+				EObject obj = iter.next();
+				if (obj instanceof DataStore)
+					dataStoreList.add((DataStore) obj);
 			}
-			return bo;
+
+			DataStore result = dataStore;
+			if (dataStoreList.size() > 1) {
+				PopupMenu popupMenu = new PopupMenu(dataStoreList, labelProvider);
+				changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (changesDone) {
+					result = (DataStore) popupMenu.getResult();
+				}
+				else {
+					EcoreUtil.delete(dataStore);
+					EcoreUtil.delete(dataStoreRef);
+					dataStoreRef = null;
+				}
+			}
+			if (changesDone) {
+				if (result == dataStore) { // the new one
+					mh.addRootElement(dataStore);
+					ModelUtil.setID(dataStore);
+					dataStore.setName(oldName);
+					dataStoreRef.setName(dataStore.getName());
+				} else
+					dataStoreRef.setName(
+						NLS.bind(
+							Messages.DataStoreReferenceFeatureContainer_Default_Name,
+							result.getName()
+						)
+					);
+
+				dataStoreRef.setDataStoreRef(result);
+				ModelUtil.setID(dataStoreRef, mh.getResource());
+				putBusinessObject(context, dataStoreRef);
+			}
+				
+			return dataStoreRef;
 		}
 	}
 

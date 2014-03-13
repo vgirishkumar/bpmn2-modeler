@@ -835,6 +835,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public Object getAdapter(Class required) {
+		if (required==DiagramEditor.class) {
+			return this;
+		}
 		if (required==ITabDescriptorProvider.class) {
 			if (tabDescriptorProvider==null) {
 				IWorkbenchPage page = getEditorSite().getPage();
@@ -920,8 +923,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				}
 			}
 		}
-		if (modelHandler!=null)
+		if (modelHandler!=null) {
 			ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
+			modelHandler.dispose();
+		}
 		getPreferences().removePreferenceChangeListener(this);
 		
 		// get rid of cached Property Tab Descriptors

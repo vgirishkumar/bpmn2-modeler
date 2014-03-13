@@ -17,12 +17,10 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -41,24 +39,28 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * This is the Create Feature base class for all BPMN2 model elements which are considered "shapes"
- * e.g. Activities, Data Objects, Gateways, Events, etc.
+ * This is the Graphiti CreateFeature base class for all BPMN2 model elements which are considered "shapes"
+ * e.g. {@link org.eclipse.bpmn2.Activity}, {@link org.eclipse.bpmn2.DataObject}, {@link org.eclipse.bpmn2.Gateway},
+ * {@link org.eclipse.bpmn2.Event}, etc.
  * 
  * The Type Parameter "T" is the BPMN2 element class.
+ *
+ * @param <T> the generic type of the BPMN2 element 
  */
 public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		extends AbstractCreateFeature
 		implements IBpmn2CreateFeature<T, ICreateContext> {
 
+	/** The changes done. */
 	protected boolean changesDone = true;
 
 	/**
-	 * Default constructor for this Create Feature
-	 * 
-	 * @param fp - the BPMN2 Modeler Feature Provider
-	 *             @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
-	 * @param name - name of the type of object being created
-	 * @param description - description of the object being created
+	 * Default constructor for this Create Feature.
+	 *
+	 * @param fp the BPMN2 Modeler Feature Provider
+	 *            {@link org.eclipse.bpmn2.modeler.ui.diagram.BPMN2FeatureProvider}
+	 * @param name the name of the type of object being created
+	 * @param description a verbose description of the object being created
 	 */
 	public AbstractBpmn2CreateFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
@@ -145,6 +147,13 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		}
 	}
 
+	/**
+	 * Creates and prepares a new AddContext from a CreateContext.
+	 *
+	 * @param context the original CreateContext
+	 * @param newObject the new object, a BPMN2 model object.
+	 * @return the new AddContext
+	 */
 	protected AddContext createAddContext(ICreateContext context, Object newObject) {
 		AddContext newContext = new AddContext(context, newObject);
 		
@@ -172,18 +181,32 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		return false;
 	}
 	
-	protected boolean isModelObjectEnabled(EObject o) {
+	/**
+	 * Checks if model object is enabled.
+	 *
+	 * @param object the object
+	 * @return true, if model object is enabled
+	 */
+	protected boolean isModelObjectEnabled(EObject object) {
 		ModelEnablements me = getModelEnablements();
 		if (me!=null)
-			return me.isEnabled(o.eClass());
+			return me.isEnabled(object.eClass());
 		return false;
 	}
 	
+	/**
+	 * Gets the model enablements.
+	 *
+	 * @return the model enablements
+	 */
 	protected ModelEnablements getModelEnablements() {
 		DiagramEditor editor = (DiagramEditor) getDiagramEditor();
 		return (ModelEnablements) editor.getAdapter(ModelEnablements.class);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+	 */
 	@Override
 	public boolean hasDoneChanges() {
 		return changesDone;

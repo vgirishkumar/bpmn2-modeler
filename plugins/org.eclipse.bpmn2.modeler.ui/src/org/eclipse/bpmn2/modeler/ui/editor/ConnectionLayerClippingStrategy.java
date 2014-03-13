@@ -58,53 +58,59 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 	
 	@Override
 	public Rectangle[] getClip(IFigure childFigure) {
-		for (Object value : graphicalViewer.getEditPartRegistry().values()) {
-			GraphicalEditPart part = (GraphicalEditPart)value;
-			if (part.getFigure() == childFigure) {
-				Object model = part.getModel();
-				if (model instanceof Connection) {
-					Connection connection = (Connection)model;
-					AnchorContainer source = connection.getStart().getParent();
-					AnchorContainer target = connection.getEnd().getParent();
-					if (source.eContainer() != target.eContainer()) {
-						// don't clip the connection if source and target are not in the same container
-						return new Rectangle[] {childFigure.getBounds()};
-					}
-					BaseElement businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
-					if (businessObject instanceof MessageFlow) {
-						ContainerShape messageShape = MessageFlowFeatureContainer.findMessageShape(connection);
-						if (messageShape!=null) {
-							Rectangle inner = getClip(messageShape)[0];
-							Rectangle outer = childFigure.getBounds();
-							return getClip(outer,inner);
+		try {
+			for (Object value : graphicalViewer.getEditPartRegistry().values()) {
+				GraphicalEditPart part = (GraphicalEditPart)value;
+				if (part.getFigure() == childFigure) {
+					Object model = part.getModel();
+					if (model instanceof Connection) {
+						Connection connection = (Connection)model;
+						AnchorContainer source = connection.getStart().getParent();
+						AnchorContainer target = connection.getEnd().getParent();
+						if (source.eContainer() != target.eContainer()) {
+							// don't clip the connection if source and target are not in the same container
+							return new Rectangle[] {childFigure.getBounds()};
 						}
-					}
-					else if (businessObject!=null) {
-						EObject container = businessObject.eContainer();
-						if (container instanceof SubProcess) {
-							// don't clip if contents of SubProcess have been moved to a different
-							// BPMNDiagram ("pushed down")
-							BPMNEdge bpmnEdge = BusinessObjectUtil.getFirstElementOfType(connection, BPMNEdge.class);
-							if (bpmnEdge!=null) {
-								for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, container)) {
-									if (pe instanceof ContainerShape) {
-										BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class);
-										if (bpmnShape!=null) {
-											if (bpmnShape.eContainer()!=bpmnEdge.eContainer())
-												continue;
+						BaseElement businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
+						if (businessObject instanceof MessageFlow) {
+							ContainerShape messageShape = MessageFlowFeatureContainer.findMessageShape(connection);
+							if (messageShape!=null) {
+								Rectangle inner = getClip(messageShape)[0];
+								Rectangle outer = childFigure.getBounds();
+								return getClip(outer,inner);
+							}
+						}
+						else if (businessObject!=null) {
+							EObject container = businessObject.eContainer();
+							if (container instanceof SubProcess) {
+								// don't clip if contents of SubProcess have been moved to a different
+								// BPMNDiagram ("pushed down")
+								BPMNEdge bpmnEdge = BusinessObjectUtil.getFirstElementOfType(connection, BPMNEdge.class);
+								if (bpmnEdge!=null) {
+									for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, container)) {
+										if (pe instanceof ContainerShape) {
+											BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class);
+											if (bpmnShape!=null) {
+												if (bpmnShape.eContainer()!=bpmnEdge.eContainer())
+													continue;
+											}
+											// don't clip connection if the source or target is this SubProcess
+											EObject sourceBo = BusinessObjectUtil.getFirstBaseElement(source);
+											EObject targetBo = BusinessObjectUtil.getFirstBaseElement(target);
+											if (sourceBo!=container && targetBo!=container)
+												return getClip((ContainerShape)pe);
 										}
-										// don't clip connection if the source or target is this SubProcess
-										EObject sourceBo = BusinessObjectUtil.getFirstBaseElement(source);
-										EObject targetBo = BusinessObjectUtil.getFirstBaseElement(target);
-										if (sourceBo!=container && targetBo!=container)
-											return getClip((ContainerShape)pe);
 									}
-								}
-							}								
+								}								
+							}
 						}
 					}
 				}
 			}
+		}
+		catch (Exception ex) {
+			// Ignore exceptions: this could happen if a source or target shape of a connection has already been removed
+			// before the connection has been removed. It all depends on the order in which they were created.
 		}
 		return new Rectangle[] {childFigure.getBounds()};
 	}

@@ -45,16 +45,37 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
+/**
+ * This is a Graphiti CreateFeature child component of {@link CompoundCreateFeature}.
+ *
+ * @param <CONTEXT> a subclass of a Graphiti {@link IContext}.
+ */
 public class CompoundCreateFeaturePart<CONTEXT> {
 	
+	/** The Graphiti CreateFeature. */
 	IFeature feature;
+	
+	/** The CreateFeature children. */
 	List<CompoundCreateFeaturePart<CONTEXT>> children = new ArrayList<CompoundCreateFeaturePart<CONTEXT>>();
+	
+	/** The list of properties parsed from the Tool Palette tool definition. */
 	Hashtable<String, String> properties = null;
 	
+	/**
+	 * Instantiates a new compound create feature part.
+	 *
+	 * @param feature the feature
+	 */
 	public CompoundCreateFeaturePart(IFeature feature) {
 		this.feature = feature;
 	}
 	
+	/**
+	 * Check if all children can be executed.
+	 *
+	 * @param context the Graphiti Context
+	 * @return true, if all children can create their component parts
+	 */
 	public boolean canCreate(IContext context) {
 		if (feature instanceof ICreateFeature && context instanceof ICreateContext) {
 			if (!((ICreateFeature)feature).canCreate((ICreateContext)context))
@@ -67,6 +88,12 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return true;
 	}
 
+	/**
+	 * Creates the parent object.
+	 *
+	 * @param context the context
+	 * @return the list
+	 */
 	public List<Object> create(IContext context) {
 		// Create the parent element.
 		// For ICreateContext this will result in a BaseElement and a ContainerShape;
@@ -115,6 +142,14 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return businessObjects;
 	}
 
+	/**
+	 * Creates the.
+	 *
+	 * @param context the context
+	 * @param targetContainer the target container
+	 * @param pictogramElements the pictogram elements
+	 * @param businessObjects the business objects
+	 */
 	public void create(IContext context, ContainerShape targetContainer, List<PictogramElement> pictogramElements, List<Object> businessObjects) {
 		IContext childContext = null;
 		String value;
@@ -294,6 +329,12 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 
 	}
 	
+	/**
+	 * Checks if this CreateFeature is available.
+	 *
+	 * @param context the context
+	 * @return true, if is available
+	 */
 	public boolean isAvailable(IContext context) {
 		if (feature!=null && !feature.isAvailable(context))
 			return false;
@@ -304,12 +345,23 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return true;
 	}
 	
+	/**
+	 * Adds the child.
+	 *
+	 * @param feature the feature
+	 * @return the compound create feature part
+	 */
 	public CompoundCreateFeaturePart<CONTEXT> addChild(IFeature feature) {
 		CompoundCreateFeaturePart<CONTEXT> node = new CompoundCreateFeaturePart<CONTEXT>(feature);
 		children.add(node);
 		return node;
 	}
 
+	/**
+	 * Gets the business object class.
+	 *
+	 * @return the business object class
+	 */
 	public EClass getBusinessObjectClass() {
 		EClass eClass = null;
 		if (feature instanceof AbstractBpmn2CreateFeature) {
@@ -330,6 +382,11 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return eClass;
 	}
 
+	/**
+	 * Gets the creates the name.
+	 *
+	 * @return the creates the name
+	 */
 	public String getCreateName() {
 		String createName = null;
 		if (feature!=null)
@@ -341,28 +398,60 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		}
 		return createName;
 	}
+	
+	/**
+	 * Gets the feature.
+	 *
+	 * @return the feature
+	 */
 	public IFeature getFeature() {
 		return feature;
 	}
 
+	/**
+	 * Sets the feature.
+	 *
+	 * @param feature the new feature
+	 */
 	public void setFeature(IFeature feature) {
 		this.feature = feature;
 	}
 
+	/**
+	 * Gets the children.
+	 *
+	 * @return the children
+	 */
 	public List<CompoundCreateFeaturePart<CONTEXT>> getChildren() {
 		return children;
 	}
 
+	/**
+	 * Sets the properties.
+	 *
+	 * @param properties the properties
+	 */
 	public void setProperties(Hashtable<String, String> properties) {
 		getProperties().putAll(properties);
 	}
 	
+	/**
+	 * Gets the properties.
+	 *
+	 * @return the properties
+	 */
 	public Hashtable<String, String> getProperties() {
 		if (properties==null)
 			properties = new Hashtable<String, String>();
 		return properties;
 	}
 	
+	/**
+	 * Gets the property.
+	 *
+	 * @param name the name
+	 * @return the property
+	 */
 	public String getProperty(String name) {
 		if (properties==null)
 			return null;

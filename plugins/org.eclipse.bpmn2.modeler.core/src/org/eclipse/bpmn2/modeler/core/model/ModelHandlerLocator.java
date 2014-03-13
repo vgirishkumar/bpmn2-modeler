@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.model;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
@@ -27,7 +26,7 @@ public class ModelHandlerLocator {
 	private static HashMap<URI, ModelHandler> map = new HashMap<URI, ModelHandler>();
 	private static HashMap<URI, ModelHandler> diagramMap = new HashMap<URI, ModelHandler>();
 
-	public static ModelHandler getModelHandler(Resource eResource) throws IOException {
+	public static ModelHandler getModelHandler(Resource eResource) {
 		if (eResource==null)
 			return null;
 		URI uri = eResource.getURI().trimFragment();
@@ -35,7 +34,7 @@ public class ModelHandlerLocator {
 		return getModelHandler(uri);
 	}
 
-	public static ModelHandler getModelHandler(URI path) throws IOException {
+	public static ModelHandler getModelHandler(URI path) {
 		path = path.trimFragment();
 		ModelHandler modelHandler = map.get(path);
 		if (modelHandler == null) {
@@ -97,4 +96,12 @@ public class ModelHandlerLocator {
 		return handler;
 	}
 
+	/**
+	 * Remove the Model Handler instance from our cache.
+	 * 
+	 * @param modelHandler the Model Handler to be removed
+	 */
+	public static void dispose(ModelHandler modelHandler) {
+		remove(modelHandler.getResource().getURI());
+	}
 }

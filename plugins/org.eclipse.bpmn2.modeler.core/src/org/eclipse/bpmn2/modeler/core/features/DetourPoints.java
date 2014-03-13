@@ -20,28 +20,65 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+// TODO: Auto-generated Javadoc
 /**
  * Calculates detour cuts for a given shape. These cuts surround the shape at each of the corners
  * of the shape's bounding rectangle, but "just outside" the shape.
  */
 public class DetourPoints {
+	
+	/** The left margin. */
 	public int leftMargin = 10;
+	
+	/** The right margin. */
 	public int rightMargin = 10;
+	
+	/** The top margin. */
 	public int topMargin = 10;
+	
+	/** The bottom margin. */
 	public int bottomMargin = 10;
+	
+	/** The top left. */
 	public Point topLeft;
+	
+	/** The top right. */
 	public Point topRight;
+	
+	/** The bottom left. */
 	public Point bottomLeft;
+	
+	/** The bottom right. */
 	public Point bottomRight;
 	
+	/**
+	 * Instantiates a new detour points.
+	 *
+	 * @param shape the shape
+	 */
 	public DetourPoints(ContainerShape shape) {
 		calculate(shape);
 	}
 	
+	/**
+	 * Instantiates a new detour points.
+	 *
+	 * @param shape the shape
+	 * @param margin the margin
+	 */
 	public DetourPoints(ContainerShape shape, int margin) {
 		this(shape,margin,margin,margin,margin);
 	}
 	
+	/**
+	 * Instantiates a new detour points.
+	 *
+	 * @param shape the shape
+	 * @param leftMargin the left margin
+	 * @param rightMargin the right margin
+	 * @param topMargin the top margin
+	 * @param bottomMargin the bottom margin
+	 */
 	public DetourPoints(ContainerShape shape, int leftMargin, int rightMargin, int topMargin, int bottomMargin) {
 		this.leftMargin = leftMargin;
 		this.rightMargin = rightMargin;
@@ -50,6 +87,11 @@ public class DetourPoints {
 		calculate(shape);
 	}
 	
+	/**
+	 * Calculate.
+	 *
+	 * @param shape the shape
+	 */
 	protected void calculate(Shape shape) {
 		ILocation loc = BendpointConnectionRouter.peService.getLocationRelativeToDiagram(shape);
 		IDimension size = GraphicsUtil.calculateSize(shape);
@@ -59,6 +101,12 @@ public class DetourPoints {
 		bottomRight = GraphicsUtil.createPoint(loc.getX() + size.getWidth() + leftMargin, loc.getY() + size.getHeight() + bottomMargin);
 	}
 
+	/**
+	 * Gets the nearest.
+	 *
+	 * @param p the p
+	 * @return the nearest
+	 */
 	public Point getNearest(Point p) {
 		Point nearest = topLeft;
 		int dmin = (int)GraphicsUtil.getLength(p, topLeft);
@@ -85,6 +133,12 @@ public class DetourPoints {
 		return nearest; 
 	}
 	
+	/**
+	 * Gets the diagonal.
+	 *
+	 * @param p the p
+	 * @return the diagonal
+	 */
 	protected Point getDiagonal(Point p) {
 		if (p==topLeft)
 			return bottomRight;
@@ -97,6 +151,12 @@ public class DetourPoints {
 		return null;
 	}
 
+	/**
+	 * Gets the horz opposite.
+	 *
+	 * @param p the p
+	 * @return the horz opposite
+	 */
 	protected Point getHorzOpposite(Point p) {
 		if (p==topLeft)
 			return topRight;
@@ -109,6 +169,12 @@ public class DetourPoints {
 		return null;
 	}
 
+	/**
+	 * Gets the vert opposite.
+	 *
+	 * @param p the p
+	 * @return the vert opposite
+	 */
 	protected Point getVertOpposite(Point p) {
 		if (p==topLeft)
 			return bottomLeft;
@@ -121,14 +187,32 @@ public class DetourPoints {
 		return null;
 	}
 	
+	/**
+	 * Checks if is top.
+	 *
+	 * @param p the p
+	 * @return true, if is top
+	 */
 	protected boolean isTop(Point p) {
 		return p==topLeft || p==topRight;
 	}
 	
+	/**
+	 * Checks if is left.
+	 *
+	 * @param p the p
+	 * @return true, if is left
+	 */
 	protected boolean isLeft(Point p) {
 		return p==topLeft || p==bottomLeft;
 	}
 	
+	/**
+	 * Gets the sector.
+	 *
+	 * @param p the p
+	 * @return the sector
+	 */
 	protected int getSector(Point p) {
 		int px = p.getX();
 		int py = p.getY();
@@ -164,6 +248,13 @@ public class DetourPoints {
 		throw new IllegalArgumentException("Logic error in getSector()"); //$NON-NLS-1$
 	}
 	
+	/**
+	 * Calculate detour.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @return the list
+	 */
 	public List<Point> calculateDetour(Point p1, Point p2) {
 		List<Point> detour = new ArrayList<Point>();
 		
@@ -345,6 +436,12 @@ public class DetourPoints {
 		return detour;
 	}
 	
+	/**
+	 * Intersects.
+	 *
+	 * @param d2 the d2
+	 * @return true, if successful
+	 */
 	public boolean intersects(DetourPoints d2) {
 		return GraphicsUtil.intersects(
 				this.topLeft.getX(), this.topLeft.getY(), this.topRight.getX() - this.topLeft.getX(), this.bottomLeft.getY() - this.topLeft.getY(),
@@ -352,6 +449,12 @@ public class DetourPoints {
 		);
 	}
 	
+	/**
+	 * Contains.
+	 *
+	 * @param d2 the d2
+	 * @return true, if successful
+	 */
 	public boolean contains(DetourPoints d2) {
 		return	this.topLeft.getX()<=d2.topLeft.getX() &&
 				this.topRight.getX()>=d2.topRight.getX() &&
@@ -359,6 +462,11 @@ public class DetourPoints {
 				this.bottomLeft.getY()>=d2.bottomLeft.getY(); 
 	}
 	
+	/**
+	 * Merge.
+	 *
+	 * @param d2 the d2
+	 */
 	public void merge(DetourPoints d2) {
 		this.topLeft.setX( Math.min(this.topLeft.getX(), d2.topLeft.getX()) );
 		this.topLeft.setY( Math.min(this.topLeft.getY(), d2.topLeft.getY()) );

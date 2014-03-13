@@ -17,16 +17,41 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface ICustomElementFeatureContainer.
+ */
 public interface ICustomElementFeatureContainer extends IFeatureContainer {
 
+	/** The Constant CUSTOM_ELEMENT_ID. */
 	public final static String CUSTOM_ELEMENT_ID = "custom.element.id"; //$NON-NLS-1$
 
+	/**
+	 * Gets the description.
+	 *
+	 * @return the description
+	 */
 	public String getDescription();
 	
+	/**
+	 * Sets the id.
+	 *
+	 * @param id the new id
+	 */
 	public abstract void setId(String id);
 
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
 	public abstract String getId();
 
+	/**
+	 * Sets the custom task descriptor.
+	 *
+	 * @param customTaskDescriptor the new custom task descriptor
+	 */
 	public abstract void setCustomTaskDescriptor(CustomTaskDescriptor customTaskDescriptor);
 
 	/**
@@ -38,5 +63,8 @@ public interface ICustomElementFeatureContainer extends IFeatureContainer {
 	 */
 	public abstract String getId(EObject object);
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getCustomFeatures(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	public abstract ICustomFeature[] getCustomFeatures(IFeatureProvider fp);
 }

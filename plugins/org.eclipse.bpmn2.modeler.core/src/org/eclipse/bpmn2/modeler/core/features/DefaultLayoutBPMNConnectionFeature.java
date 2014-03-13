@@ -22,6 +22,7 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
+// TODO: Auto-generated Javadoc
 /**
  * Layout Feature class for Connections. This simply invokes one of the Connection Routers
  * depending on the user preferences for each type of connection: SequenceFlow, MessageFlow,
@@ -29,12 +30,21 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
  */
 public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 
+	/** The has done changes. */
 	boolean hasDoneChanges = false;
 	
+	/**
+	 * Instantiates a new default layout bpmn connection feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultLayoutBPMNConnectionFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ILayout#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean canLayout(ILayoutContext context) {
 		// Check if automatic routing has been disabled by the user.
@@ -44,11 +54,17 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 		return prefs.getEnableConnectionRouting();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+	 */
 	@Override
 	public boolean hasDoneChanges() {
 		return hasDoneChanges;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ILayout#layout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean layout(ILayoutContext context) {
 		if (canLayout(context)) {

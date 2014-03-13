@@ -40,20 +40,33 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CustomShapeFeatureContainer.
+ */
 public class CustomShapeFeatureContainer extends CustomElementFeatureContainer implements IShapeFeatureContainer {
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDescription()
+	 */
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
 			return customTaskDescriptor.getDescription();
 		return Messages.CustomShapeFeatureContainer_Description;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#createFeatureContainer(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		EClass eClass = (EClass) ModelDecorator.findEClassifier(
 				customTaskDescriptor.getRuntime().getModelDescriptor().getEPackage(), customTaskDescriptor.getType());
 		return ((IBpmn2FeatureProvider)fp).getFeatureContainer(eClass.getInstanceClass());
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getFeatureContainer(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	protected IFeatureContainer getFeatureContainer(IFeatureProvider fp) {
 		if (featureContainerDelegate==null) {
 			featureContainerDelegate = createFeatureContainer(fp);
@@ -61,11 +74,17 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		return featureContainerDelegate;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getCreateFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateCustomShapeFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getAddFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddCustomShapeFeature(fp);
@@ -86,8 +105,16 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	 */
 	public class CreateCustomShapeFeature extends AbstractBpmn2CreateFeature<BaseElement> {
 
+		/** The create feature delegate. */
 		protected AbstractBpmn2CreateFeature<BaseElement> createFeatureDelegate;
 		
+		/**
+		 * Instantiates a new creates the custom shape feature.
+		 *
+		 * @param fp the fp
+		 * @param name the name
+		 * @param description the description
+		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public CreateCustomShapeFeature(IFeatureProvider fp, String name, String description) {
 			super(fp, name, description);
@@ -96,11 +123,19 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			Assert.isNotNull(createFeatureDelegate);
 		}
 
+		/**
+		 * Instantiates a new creates the custom shape feature.
+		 *
+		 * @param fp the fp
+		 */
 		public CreateCustomShapeFeature(IFeatureProvider fp) {
 			this(fp, customTaskDescriptor.getName(),
 					NLS.bind(Messages.CustomElementFeatureContainer_Create, customTaskDescriptor.getName()));
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractFeature#addGraphicalRepresentation(org.eclipse.graphiti.features.context.IAreaContext, java.lang.Object)
+		 */
 		@Override
 		protected PictogramElement addGraphicalRepresentation(IAreaContext context, Object newObject) {
 
@@ -115,6 +150,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return pe;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+		 */
 		@Override
 		public boolean canCreate(ICreateContext context) {
 			// copy our ID into the CreateContext - this is where it all starts!
@@ -122,6 +160,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.canCreate(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#createBusinessObject(org.eclipse.graphiti.features.context.ICreateContext)
+		 */
 		@Override
 		public BaseElement createBusinessObject(ICreateContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
@@ -137,6 +178,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.getBusinessObjectClass();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+		 */
 		@Override
 		public Object[] create(ICreateContext context) {
 			// Our Custom Task ID should have already been set in canCreate()
@@ -146,6 +190,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.create(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateImageId()
+		 */
 		@Override
 		public String getCreateImageId() {
 			String icon = customTaskDescriptor.getIcon();
@@ -157,6 +204,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.getCreateImageId();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateLargeImageId()
+		 */
 		@Override
 		public String getCreateLargeImageId() {
 			String icon = customTaskDescriptor.getIcon();
@@ -168,18 +218,27 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.getCreateLargeImageId();
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getCreateDescription()
+		 */
 		@Override
 		public String getCreateDescription() {
 			return createFeatureDelegate.getCreateDescription();
 		}
 	}
 
+	/**
+	 * The Class AddCustomShapeFeature.
+	 */
 	public class AddCustomShapeFeature extends AbstractBpmn2AddFeature<BaseElement> {
 
+		/** The add feature delegate. */
 		protected AbstractBpmn2AddFeature<BaseElement> addFeatureDelegate;
 		
 		/**
-		 * @param fp
+		 * Instantiates a new adds the custom shape feature.
+		 *
+		 * @param fp the fp
 		 */
 		public AddCustomShapeFeature(IFeatureProvider fp) {
 			super(fp);
@@ -187,6 +246,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			Assert.isNotNull(addFeatureDelegate);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public PictogramElement add(IAddContext context) {
 			PictogramElement pe = addFeatureDelegate.add(context);
@@ -226,65 +288,101 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return pe;
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#getBusinessObject(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public BaseElement getBusinessObject(IAddContext context) {
 			// TODO Auto-generated method stub
 			return addFeatureDelegate.getBusinessObject(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#putBusinessObject(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.emf.ecore.EObject)
+		 */
 		@Override
 		public void putBusinessObject(IAddContext context, BaseElement businessObject) {
 			addFeatureDelegate.putBusinessObject(context, businessObject);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#postExecute(org.eclipse.graphiti.IExecutionInfo)
+		 */
 		@Override
 		public void postExecute(IExecutionInfo executionInfo) {
 			addFeatureDelegate.postExecute(executionInfo);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public boolean canAdd(IAddContext context) {
 			return addFeatureDelegate.canAdd(context);
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getUpdateFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getUpdateFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDirectEditingFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getDirectEditingFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getLayoutFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getLayoutFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getRemoveFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getRemoveFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getMoveFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
 		IShapeFeatureContainer fc = (IShapeFeatureContainer)getFeatureContainer(fp);
 		return fc.getMoveFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getResizeFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
 		IShapeFeatureContainer fc = (IShapeFeatureContainer)getFeatureContainer(fp);
 		return fc.getResizeFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDeleteFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getDeleteFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getCustomFeatures(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getCustomFeatures(fp);

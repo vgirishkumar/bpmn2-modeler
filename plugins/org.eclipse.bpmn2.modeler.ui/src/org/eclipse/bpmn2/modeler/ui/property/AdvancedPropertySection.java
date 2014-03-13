@@ -12,13 +12,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.di.impl.BPMNDiagramImpl;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
-import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,8 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
 
 public class AdvancedPropertySection extends DefaultPropertySection {
-
-	private AdvancedDetailComposite composite;
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()
@@ -44,16 +39,8 @@ public class AdvancedPropertySection extends DefaultPropertySection {
 	@Override
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-//		if (be==null) {
-//			// maybe it's the Diagram (editor canvas)?
-//			be = BusinessObjectUtil.getFirstElementOfType(pe, BPMNDiagram.class);
-//		}
 		if (be instanceof BPMNDiagramImpl) {
-			try {
-				be = ModelHandlerLocator.getModelHandler(be.eResource()).getDefinitions();
-			} catch (IOException e) {
-				Activator.showErrorWithLogging(e);
-			}
+			be = ModelUtil.getDefinitions(be);
 		}
 		return be;
 	}

@@ -20,17 +20,32 @@ import org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DirectEditBaseElementFeature.
+ */
 public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 
+	/**
+	 * Instantiates a new direct edit base element feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DirectEditBaseElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IDirectEditing#getEditingType()
+	 */
 	@Override
 	public int getEditingType() {
 		return TYPE_TEXT;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IDirectEditing#getInitialValue(org.eclipse.graphiti.features.context.IDirectEditingContext)
+	 */
 	@Override
 	public String getInitialValue(IDirectEditingContext context) {
 		BaseElement be = getBusinessObject(context);
@@ -40,6 +55,9 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 		return "";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#setValue(java.lang.String, org.eclipse.graphiti.features.context.IDirectEditingContext)
+	 */
 	@Override
 	public void setValue(String value, IDirectEditingContext context) {
 		BaseElement be = getBusinessObject(context);
@@ -51,6 +69,9 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractDirectEditingFeature#canDirectEdit(org.eclipse.graphiti.features.context.IDirectEditingContext)
+	 */
 	@Override
 	public boolean canDirectEdit(IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();

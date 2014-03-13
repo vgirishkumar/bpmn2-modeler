@@ -33,17 +33,32 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultDeleteBPMNShapeFeature.
+ */
 public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 
+	/**
+	 * Instantiates a new default delete bpmn shape feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultDeleteBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#getUserDecision(org.eclipse.graphiti.features.context.IDeleteContext)
+	 */
 	@Override
 	protected boolean getUserDecision(IDeleteContext context) {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#canDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+	 */
 	public boolean canDelete(IDeleteContext context) {
 		// don't delete the Diagram!
 		if (context.getPictogramElement() instanceof Diagram)
@@ -54,6 +69,9 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		return event.doit;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#deleteBusinessObject(java.lang.Object)
+	 */
 	@Override
 	protected void deleteBusinessObject(Object bo) {
 		EStructuralFeature reference = ((EObject)bo).eClass().getEStructuralFeature("categoryValueRef");
@@ -76,6 +94,11 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		super.deleteBusinessObject(bo);
 	}
 	
+	/**
+	 * Delete pe environment.
+	 *
+	 * @param pictogramElement the pictogram element
+	 */
 	protected void deletePeEnvironment(PictogramElement pictogramElement){
 		if (pictogramElement instanceof ContainerShape) {
 			ContainerShape containerShape = (ContainerShape) pictogramElement;
@@ -88,6 +111,12 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		}
 	}
 	
+	/**
+	 * Delete container.
+	 *
+	 * @param fp the fp
+	 * @param containerShape the container shape
+	 */
 	protected void deleteContainer(IFeatureProvider fp, ContainerShape containerShape) {
 		Object[] children = containerShape.getChildren().toArray();
 		for (Object shape : children) {
@@ -105,6 +134,12 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape));
 	}
 
+	/**
+	 * Delete connections.
+	 *
+	 * @param fp the fp
+	 * @param connections the connections
+	 */
 	protected void deleteConnections(IFeatureProvider fp, EList<Connection> connections) {
 		List<Connection> allConnections = new ArrayList<Connection>();
 		allConnections.addAll(connections);

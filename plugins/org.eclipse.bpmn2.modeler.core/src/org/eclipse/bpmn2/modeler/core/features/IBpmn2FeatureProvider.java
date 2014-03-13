@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 
+// TODO: Auto-generated Javadoc
 /**
  * An interface that extends the standard Graphiti Feature Provider with a method to
  * fetch a Feature Container for a given BPMN2 model object class.
@@ -22,5 +23,12 @@ import org.eclipse.graphiti.features.IFeatureProvider;
  * object's lifecycle.
  */
 public interface IBpmn2FeatureProvider extends IFeatureProvider {
+	
+	/**
+	 * Gets the feature container.
+	 *
+	 * @param bpmn2class the bpmn2class
+	 * @return the feature container
+	 */
 	public IFeatureContainer getFeatureContainer(Class bpmn2class);
 }

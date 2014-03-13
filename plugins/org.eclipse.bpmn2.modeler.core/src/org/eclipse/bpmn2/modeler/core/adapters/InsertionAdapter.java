@@ -26,14 +26,14 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 
 /**
- * This adapter will insert an EObject into its container feature when the EObject's
- * content changes. This allows the UI to construct new objects without inserting
- * them into their container unless the user changes some feature in the new object.
- * Thus, an empty EObject is available for use by the UI for rendering only, without
- * creating an EMF transaction, and hence, a useless entry on the undo stack.
+ * This adapter will insert a new value into its container feature when the
+ * owning object's content changes. This allows the UI to construct new objects
+ * without inserting them into their container unless the user changes some
+ * feature in the new object. Thus, an empty EObject is available for use by the
+ * UI for rendering only, without creating an EMF transaction, and hence, a
+ * useless entry on the undo stack.
  */
 public class InsertionAdapter extends EContentAdapter implements IResourceProvider {
 	
@@ -41,35 +41,32 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 	protected EObject object;
 	protected EStructuralFeature feature;
 	protected EObject value;
-	protected Object extensionValue;
-	protected EStructuralFeature extensionFeature;
 	
 	private InsertionAdapter(EObject object, EStructuralFeature feature, EObject value) {
-		this(null,object,feature,value, null, null);
-	}
-
-	private InsertionAdapter(Resource resource, EObject object, EStructuralFeature feature, EObject value, EStructuralFeature extensionFeature, Object extensionValue) {
-		// in order for this to work, the object must be contained in a Resource,
-		// the value must NOT YET be contained in a Resource,
-		// and the value must be an instance of the feature EType.
-//		assert(object.eResource()!=null);
-//		assert(value.eResource()==null);
-//		assert(feature.getEType().isInstance(value));
-		if (resource==null)
-			this.resource = object.eResource();
-		else
-			this.resource = resource;
+		this.resource = object.eResource();
 		this.object = object;
 		this.feature = feature;
 		this.value = value;
-		this.extensionFeature = extensionFeature;
-		this.extensionValue = extensionValue;
 	}
 	
 	private InsertionAdapter(EObject object, String featureName, EObject value) {
 		this(object, object.eClass().getEStructuralFeature(featureName), value);
 	}
 
+	/**
+	 * Create an InsertionAdapter that will add the value into the given
+	 * object's containment feature as soon as some feature in the value is
+	 * changed by the user.
+	 * <p>
+	 * In order for this to work, the object being adapted must be contained in
+	 * a Resource, the value must <b>not yet</b> be contained in a Resource, and
+	 * the value must be an instance of the feature's EType.
+	 * 
+	 * @param object the object being adapted
+	 * @param feature a containment feature of the object
+	 * @param value the value to be inserted
+	 * @return the value to be inserted
+	 */
 	public static EObject add(EObject object, EStructuralFeature feature, EObject value) {
 		if (object!=null) {
 			value.eAdapters().add(
@@ -77,15 +74,15 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 		}
 		return value;
 	}
-
-	public static EObject add(EObject object, EStructuralFeature feature, EObject value, EStructuralFeature extensionFeature, Object extensionValue) {
-		if (object!=null) {
-			value.eAdapters().add(
-					new InsertionAdapter(null, object, feature, value, extensionFeature, extensionValue));
-		}
-		return value;
-	}
 	
+	/**
+	 * Convenience method for creating an InsertionAdapter given a feature name.
+	 * 
+	 * @param object the object being adapted
+	 * @param featureName the name of a containment feature of the object
+	 * @param value the value to be inserted
+	 * @return the value to be inserted
+	 */
 	public static EObject add(EObject object, String featureName, EObject value) {
 		if (object!=null) {
 			value.eAdapters().add(
@@ -94,6 +91,9 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 		return value;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.ecore.util.EContentAdapter#notifyChanged(org.eclipse.emf.common.notify.Notification)
+	 */
 	public void notifyChanged(Notification notification) {
 		if (notification.getNotifier() == value && !(notification.getOldValue() instanceof InsertionAdapter)) {
 			// execute if an attribute in the new value has changed
@@ -136,7 +136,7 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void execute() {
+	private void execute() {
 		// if the object into which this value is being added has other adapters execute those first
 		executeIfNeeded(object);
 		
@@ -185,6 +185,11 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 		}
 	}
 	
+	/**
+	 * Adds the value to the object's containment feature.
+	 * 
+	 * @param value
+	 */
 	public static void executeIfNeeded(EObject value) {
 		List<InsertionAdapter> allAdapters = new ArrayList<InsertionAdapter>();
 		
@@ -198,6 +203,9 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 			adapter.execute();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.IResourceProvider#getResource()
+	 */
 	@Override
 	public Resource getResource() {
 		if (resource==null) {
@@ -211,11 +219,21 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 		return resource;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.IResourceProvider#setResource(org.eclipse.emf.ecore.resource.Resource)
+	 */
 	@Override
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
 
+	/**
+	 * Gets the EMF Resource that contains the given object. If the object has been adapted
+	 * for InsertionAdapter, the Resource defined by that adapter is returned.
+	 * 
+	 * @param object the object.
+	 * @return an EMF Resource or null.
+	 */
 	public static Resource getResource(EObject object) {
 		InsertionAdapter adapter = AdapterUtil.adapt(object, InsertionAdapter.class);
 		if (adapter!=null) {
@@ -226,18 +244,36 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 		return null;
 	}
 	
+	/**
+	 * Gets the object managed by this InsertionAdapter.
+	 * 
+	 * @return the object
+	 */
 	public EObject getObject() {
 		return object;
 	}
 	
+	/**
+	 * Gets the object's containment feature managed by this InsertionAdapter
+	 * 
+	 * @return the containment feature
+	 */
 	public EStructuralFeature getFeature() {
 		return feature;
 	}
 	
+	/**
+	 * Gets the object to be inserted into the containment feature.
+	 * 
+	 * @return the value
+	 */
 	public EObject getValue() {
 		return value;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.edit.domain.IEditingDomainProvider#getEditingDomain()
+	 */
 	@Override
 	public EditingDomain getEditingDomain() {
 		getResource();

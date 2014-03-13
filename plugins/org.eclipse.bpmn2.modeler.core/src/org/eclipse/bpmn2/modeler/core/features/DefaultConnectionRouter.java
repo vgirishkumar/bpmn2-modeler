@@ -53,6 +53,7 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
+// TODO: Auto-generated Javadoc
 /**
  * Router for straight-line connections from source to target.
  * Currently this does nothing but serves as a container for common
@@ -60,16 +61,33 @@ import org.eclipse.graphiti.util.IColorConstant;
  */
 public class DefaultConnectionRouter extends AbstractConnectionRouter {
 
+	/** The all shapes. */
 	protected List<ContainerShape> allShapes;
+	
+	/** The connection. */
 	protected Connection connection;
+	
+	/** The source. */
 	protected Shape source;
+	
+	/** The target. */
 	protected Shape target;
+	
+	/** The target anchor. */
 	protected Anchor sourceAnchor, targetAnchor;
 	
+	/**
+	 * Instantiates a new default connection router.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultConnectionRouter(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
 	@Override
 	public boolean route(Connection connection) {
 		this.connection = connection;
@@ -87,9 +105,15 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return false;
 	}
 	
+	/**
+	 * Initialize.
+	 */
 	protected void initialize() {
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter#dispose()
+	 */
 	@Override
 	public void dispose() {
 		// be sure to clean up the routing info
@@ -107,6 +131,11 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return true;
 	}
 
+	/**
+	 * Find all shapes.
+	 *
+	 * @return the list
+	 */
 	protected List<ContainerShape> findAllShapes() {
 		allShapes = new ArrayList<ContainerShape>();
 		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
@@ -139,6 +168,13 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return allShapes;
 	}
 
+	/**
+	 * Gets the collision edge.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @return the collision edge
+	 */
 	protected LineSegment getCollisionEdge(Point p1, Point p2) {
 		ContainerShape shape = getCollision(p1, p2);
 		if (shape!=null) {
@@ -147,6 +183,13 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return null;
 	}
 
+	/**
+	 * Gets the collision.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @return the collision
+	 */
 	protected ContainerShape getCollision(Point p1, Point p2) {
 		List<ContainerShape> collisions = findCollisions(p1, p2);
 		if (collisions.size()==0)
@@ -157,6 +200,13 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return collisions.get(0);
 	}
 	
+	/**
+	 * Find collisions.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @return the list
+	 */
 	protected List<ContainerShape> findCollisions(Point p1, Point p2) {
 		List<ContainerShape> collisions = new ArrayList<ContainerShape>();
 		if (allShapes==null)
@@ -171,6 +221,12 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return collisions;
 	}
 
+	/**
+	 * Sort collisions.
+	 *
+	 * @param collisions the collisions
+	 * @param p the p
+	 */
 	protected void sortCollisions(List<ContainerShape> collisions, final Point p) {
 		Collections.sort(collisions, new Comparator<ContainerShape>() {
 	
@@ -185,6 +241,13 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		});
 	}
 	
+	/**
+	 * Find crossings.
+	 *
+	 * @param start the start
+	 * @param end the end
+	 * @return the list
+	 */
 	protected List<Connection> findCrossings(Point start, Point end) {
 		// TODO: figure out why this isn't working!
 		List<Connection> crossings = new ArrayList<Connection>();
@@ -216,10 +279,22 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		return crossings;
 	}
 
+	/**
+	 * Length.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @return the double
+	 */
 	protected static double length(Point p1, Point p2) {
 		return GraphicsUtil.getLength(p1, p2);
 	}
 
+	/**
+	 * Draw connection routes.
+	 *
+	 * @param allRoutes the all routes
+	 */
 	protected void drawConnectionRoutes(List<ConnectionRoute> allRoutes) {
 		if (GraphicsUtil.debug) {
 
@@ -242,18 +317,34 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		}
 	}
 	
+	/**
+	 * The Class AddRoutingConnectionFeature.
+	 */
 	protected class AddRoutingConnectionFeature extends AbstractAddShapeFeature {
+		
+		/** The Constant CONNECTION. */
 		public static final String CONNECTION = "ROUTING_NET_CONNECTION"; //$NON-NLS-1$
 
+		/**
+		 * Instantiates a new adds the routing connection feature.
+		 *
+		 * @param fp the fp
+		 */
 		public AddRoutingConnectionFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public boolean canAdd(IAddContext ac) {
 			return true;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public PictogramElement add(IAddContext ac) {
 			IAddConnectionContext context = (IAddConnectionContext) ac;
@@ -297,21 +388,38 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		}
 	}
 	
+	/**
+	 * The Class DeleteRoutingConnectionFeature.
+	 */
 	protected class DeleteRoutingConnectionFeature extends DefaultDeleteFeature {
 
+		/**
+		 * Instantiates a new delete routing connection feature.
+		 *
+		 * @param fp the fp
+		 */
 		public DeleteRoutingConnectionFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#canDelete(org.eclipse.graphiti.features.context.IDeleteContext)
+		 */
 		@Override
 		public boolean canDelete(IDeleteContext context) {
 			return true;
 		}
 
+		/**
+		 * Delete.
+		 */
 		public void delete() {
 			delete(null);
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.ui.features.DefaultDeleteFeature#delete(org.eclipse.graphiti.features.context.IDeleteContext)
+		 */
 		@Override
 		public void delete(IDeleteContext context) {
 			List<Connection> deleted = new ArrayList<Connection>();

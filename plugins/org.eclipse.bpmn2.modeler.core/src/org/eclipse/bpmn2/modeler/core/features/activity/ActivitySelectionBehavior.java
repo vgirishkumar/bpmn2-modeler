@@ -23,8 +23,18 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ActivitySelectionBehavior.
+ */
 public class ActivitySelectionBehavior {
 
+	/**
+	 * Can apply to.
+	 *
+	 * @param element the element
+	 * @return true, if successful
+	 */
 	public static boolean canApplyTo(PictogramElement element) {
 		if (element.getLink() == null || !(element instanceof ContainerShape)) {
 			return false;
@@ -41,6 +51,12 @@ public class ActivitySelectionBehavior {
 		return false;
 	}
 
+	/**
+	 * Gets the click area.
+	 *
+	 * @param element the element
+	 * @return the click area
+	 */
 	public static GraphicsAlgorithm[] getClickArea(PictogramElement element) {
 		Iterator<PictogramElement> iterator = Graphiti.getPeService().getPictogramElementChildren(element).iterator();
 		GraphicsAlgorithm[] algorithms = new GraphicsAlgorithm[2];
@@ -49,6 +65,12 @@ public class ActivitySelectionBehavior {
 		return algorithms;
 	}
 
+	/**
+	 * Gets the selection border.
+	 *
+	 * @param element the element
+	 * @return the selection border
+	 */
 	public static GraphicsAlgorithm getSelectionBorder(PictogramElement element) {
 		Collection<PictogramElement> children = Graphiti.getPeService().getPictogramElementChildren(element);
 		PictogramElement first = children.iterator().next();

@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +54,7 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Messages;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -430,16 +430,18 @@ public class ModelHandler {
 	}
 	
 	
-	public static ModelHandler getInstance(EObject object) throws IOException {
+	public static ModelHandler getInstance(EObject object) {
 		return ModelHandlerLocator.getModelHandler(object.eResource());
 	}
 
+	public void dispose() {
+		ModelHandlerLocator.dispose(this);
+	}
+	
 	/**
 	 * @param <T>
-	 * @param target
-	 *            object that this element is being added to
-	 * @param elem
-	 *            flow element to be added
+	 * @param target object that this element is being added to
+	 * @param elem flow element to be added
 	 * @return
 	 */
 	public <T extends FlowElement> T addFlowElement(Object target, T elem) {
@@ -450,10 +452,8 @@ public class ModelHandler {
 
 	/**
 	 * @param <A>
-	 * @param target
-	 *            object that this artifact is being added to
-	 * @param artifact
-	 *            artifact to be added
+	 * @param target object that this artifact is being added to
+	 * @param artifact artifact to be added
 	 * @return
 	 */
 	public <T extends Artifact> T addArtifact(Object target, T artifact) {
@@ -957,6 +957,7 @@ public class ModelHandler {
 		EClassifier eClassifier = Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
 		if (eClassifier instanceof EClass) {
 			EClass eClass = (EClass)eClassifier;
+			ObjectPropertyProvider.adapt(Bpmn2ModelerFactory.eINSTANCE, resource);
 			newObject = Bpmn2ModelerFactory.getInstance().create(eClass);
 		}
 		else {

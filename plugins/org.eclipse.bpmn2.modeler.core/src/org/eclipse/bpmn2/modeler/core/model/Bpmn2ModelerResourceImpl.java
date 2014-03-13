@@ -49,7 +49,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -478,7 +478,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					// properly such that all extension attributes and elements are created and
 					// initialized.
 					EFactory factory = newObject.eClass().getEPackage().getEFactoryInstance();
-					ResourceProvider adapter = ResourceProvider.adapt(factory, xmlResource);
+					ObjectPropertyProvider adapter = ObjectPropertyProvider.adapt(factory, xmlResource);
 					try {
 						// remove all traces of the old object
 						objects.pop();

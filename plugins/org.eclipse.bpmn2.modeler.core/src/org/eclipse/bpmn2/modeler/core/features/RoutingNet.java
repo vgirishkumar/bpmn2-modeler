@@ -47,6 +47,7 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
+// TODO: Auto-generated Javadoc
 /**
  * This class manages a network of RoutingLane nodes. The nodes are linked if their
  * physical rectangles share an edge. Depending on the orientation in which the net was created,
@@ -56,26 +57,58 @@ import org.eclipse.graphiti.util.IColorConstant;
 public class RoutingNet extends ArrayList<RoutingLane> {
 	
 	private static final long serialVersionUID = -3041403111796385182L;
+	
+	/** The Constant gaService. */
 	protected static final IGaService gaService = Graphiti.getGaService();
+	
+	/** The Constant peService. */
 	protected static final IPeService peService = Graphiti.getPeService();
 	
+	/** The Constant CONNECTION. */
 	public static final String CONNECTION = "ROUTING_NET_CONNECTION"; //$NON-NLS-1$
+	
+	/** The Constant LANE. */
 	public static final String LANE = "ROUTING_NET_LANE"; //$NON-NLS-1$
 	
+	/** The is rotated. */
 	boolean isRotated = false;
+	
+	/** The source. */
 	Shape source;
+	
+	/** The target. */
 	Shape target;
+	
+	/** The source adjacent lanes. */
 	List<RoutingLane> sourceAdjacentLanes = new ArrayList<RoutingLane>();
+	
+	/** The target adjacent lanes. */
 	List<RoutingLane> targetAdjacentLanes = new ArrayList<RoutingLane>();
+	
+	/** The solution stack. */
 	Stack<RoutingLane> solutionStack;
+	
+	/** The all solutions. */
 	List< List<RoutingLane> > allSolutions;
+	
+	/** The min dist. */
 	int minDist = Integer.MAX_VALUE;
+	
+	/** The fp. */
 	IFeatureProvider fp;
 	
+	/**
+	 * Instantiates a new routing net.
+	 *
+	 * @param fp the fp
+	 */
 	public RoutingNet(IFeatureProvider fp) {
 		this.fp = fp;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.ArrayList#add(java.lang.Object)
+	 */
 	@Override
 	public boolean add(RoutingLane a) {
 		if (!contains(a) && a.getWidth()>0 && a.getHeight()>0)
@@ -83,15 +116,32 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return false;
 	}
 
+	/**
+	 * Adds the.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @param width the width
+	 * @param height the height
+	 * @return true, if successful
+	 */
 	public boolean add(int x, int y, int width, int height) {
 		RoutingLane a = new RoutingLane(x,y,width,height);
 		return this.add(a);
 	}
 	
+	/**
+	 * Sets the feature provider.
+	 *
+	 * @param fp the new feature provider
+	 */
 	public void setFeatureProvider(IFeatureProvider fp) {
 		this.fp = fp;
 	}
 	
+	/**
+	 * Link.
+	 */
 	public void link() {
 		for (RoutingLane a1 : this) {
 			for (RoutingLane a2 : this) {
@@ -113,6 +163,9 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.util.ArrayList#clear()
+	 */
 	public void clear() {
 		super.clear();
 		sourceAdjacentLanes.clear();
@@ -123,6 +176,13 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 			allSolutions.clear();
 	}
 	
+	/**
+	 * Find solutions.
+	 *
+	 * @param source2 the source2
+	 * @param target2 the target2
+	 * @return the list
+	 */
 	public List< List<RoutingLane> > findSolutions(Shape source2, Shape target2) {
 		allSolutions = new ArrayList< List<RoutingLane> >();
 		this.source = source2;
@@ -204,6 +264,12 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return allSolutions;
 	}
 	
+	/**
+	 * Merit.
+	 *
+	 * @param list the list
+	 * @return the double
+	 */
 	public double merit(List<RoutingLane> list) {
 		ILocation sourceLoc = Graphiti.getPeService().getLocationRelativeToDiagram(source);
 		IDimension sourceSize = GraphicsUtil.calculateSize(source);
@@ -249,23 +315,51 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return (double) i / (double)(length * list.size());
 	}
 
+	/**
+	 * Point to line distance.
+	 *
+	 * @param p1 the p1
+	 * @param p2 the p2
+	 * @param p the p
+	 * @return the double
+	 */
 	public double pointToLineDistance(Point p1, Point p2, Point p) {
 		double normalLength = Math.sqrt((p2.getX() - p1.getX()) * (p2.getX() - p1.getX()) + (p2.getY() - p1.getY()) * (p2.getY() - p1.getY()));
 		return Math.abs((p.getX() - p1.getX()) * (p2.getY() - p1.getY()) - (p.getY() - p1.getY()) * (p2.getX() - p1.getX())) / normalLength;
 	}
 
+	/**
+	 * Pop.
+	 */
 	public void pop() {
 		solutionStack.pop();
 	}
 
+	/**
+	 * Visited.
+	 *
+	 * @param lane the lane
+	 * @return true, if successful
+	 */
 	public boolean visited(RoutingLane lane) {
 		return solutionStack.contains(lane);
 	}
 
+	/**
+	 * Push.
+	 *
+	 * @param lane the lane
+	 */
 	public void push(RoutingLane lane) {
 		solutionStack.push(lane);
 	}
 
+	/**
+	 * Gets the manhattan distance.
+	 *
+	 * @param lanes the lanes
+	 * @return the manhattan distance
+	 */
 	public int getManhattanDistance(List<RoutingLane> lanes) {
 		int dist = 0;
 		Rectangle r0 = getBounds(false, source);
@@ -359,6 +453,11 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return dist;
 	}
 	
+	/**
+	 * Solution found.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean solutionFound() {
 		
 		if (!allSolutions.contains(solutionStack)) {
@@ -373,6 +472,11 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return true;
 	}
 	
+	/**
+	 * Rotate.
+	 *
+	 * @param b the b
+	 */
 	public void rotate(boolean b) {
 		if (isRotated!=b) {
 			for (RoutingLane node : this) {
@@ -382,6 +486,13 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 	
+	/**
+	 * Gets the lanes adjacent to.
+	 *
+	 * @param shape the shape
+	 * @param adjacence the adjacence
+	 * @return the lanes adjacent to
+	 */
 	public List<RoutingLane> getLanesAdjacentTo(ContainerShape shape, Adjacence adjacence) {
 		List<RoutingLane> adjacentLanes;
 		List<RoutingLane> list = new ArrayList<RoutingLane>();
@@ -406,6 +517,13 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return getBounds(isRotated,target2);
 	}
 
+	/**
+	 * Gets the bounds.
+	 *
+	 * @param rotate the rotate
+	 * @param source2 the source2
+	 * @return the bounds
+	 */
 	protected static Rectangle getBounds(boolean rotate, Shape source2) {
 		ILocation loc = peService.getLocationRelativeToDiagram(source2);
 		IDimension size = GraphicsUtil.calculateSize(source2);
@@ -415,10 +533,25 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return new Rectangle(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
 	}
 
+	/**
+	 * Rotate rectangle.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @param width the width
+	 * @param height the height
+	 * @return the rectangle
+	 */
 	protected static Rectangle rotateRectangle(int x, int y, int width, int height) {
 		return rotateRectangle(new Rectangle(x,y,width,height));
 	}
 
+	/**
+	 * Rotate rectangle.
+	 *
+	 * @param r the r
+	 * @return the rectangle
+	 */
 	public static Rectangle rotateRectangle(Rectangle r) {
 		int y = r.x;
 		int x = r.y;
@@ -431,21 +564,35 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		return r;
 	}
 
-	/****************************************************************************************
+	/**
+	 * **************************************************************************************
 	 * 
 	 * Debug stuff
 	 * 
-	 ****************************************************************************************/
+	 * **************************************************************************************.
+	 */
 	protected class AddRoutingLaneFeature extends AbstractAddShapeFeature {
 		
+		/**
+		 * Instantiates a new adds the routing lane feature.
+		 *
+		 * @param fp the fp
+		 */
 		public AddRoutingLaneFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public boolean canAdd(IAddContext context) {
 			return true;
 		}
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public PictogramElement add(IAddContext context) {
 			int x = context.getX();
@@ -561,6 +708,9 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 	
+	/**
+	 * Draw lanes.
+	 */
 	public void drawLanes() {
 		if (fp!=null) {
 			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
@@ -577,6 +727,9 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 	
+	/**
+	 * Draw connections.
+	 */
 	public void drawConnections() {
 		if (fp!=null) {
 			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
@@ -622,6 +775,12 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 
+	/**
+	 * Draw solution.
+	 *
+	 * @param net the net
+	 * @param i the i
+	 */
 	public void drawSolution(List<RoutingLane> net, int i) {
 		if (fp!=null) {
 			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
@@ -638,6 +797,9 @@ public class RoutingNet extends ArrayList<RoutingLane> {
 		}
 	}
 
+	/**
+	 * Erase lanes.
+	 */
 	public void eraseLanes() {
 		if (fp!=null) {
 			for (RoutingLane a : this) {

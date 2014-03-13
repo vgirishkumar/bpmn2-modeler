@@ -35,18 +35,33 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class LayoutActivityFeature.
+ */
 public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 
+	/**
+	 * Instantiates a new layout activity feature.
+	 *
+	 * @param fp the fp
+	 */
 	public LayoutActivityFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean canLayout(ILayoutContext context) {
 		Object bo = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BaseElement.class);
 		return bo != null && bo instanceof Activity;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature#layout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean layout(ILayoutContext context) {
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
@@ -103,13 +118,33 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 		return true;
 	}
 
+	/**
+	 * Gets the marker container offset.
+	 *
+	 * @return the marker container offset
+	 */
 	protected int getMarkerContainerOffset() {
 		return 0;
 	}
 
+	/**
+	 * Layout in rectangle.
+	 *
+	 * @param rect the rect
+	 */
 	protected void layoutInRectangle(RoundedRectangle rect) {
 	}
 
+	/**
+	 * Layout hook.
+	 *
+	 * @param shape the shape
+	 * @param ga the ga
+	 * @param bo the bo
+	 * @param newWidth the new width
+	 * @param newHeight the new height
+	 * @return true, if successful
+	 */
 	protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
 		return false;
 	}

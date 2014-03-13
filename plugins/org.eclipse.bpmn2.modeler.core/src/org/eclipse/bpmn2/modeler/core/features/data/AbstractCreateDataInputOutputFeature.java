@@ -12,12 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.data;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
@@ -50,12 +47,8 @@ public abstract class AbstractCreateDataInputOutputFeature<T extends ItemAwareEl
 	@Override
 	public Object[] create(ICreateContext context) {
 		T element = createBusinessObject(context);
-		try {
-			ModelHandler handler = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
-			handler.addDataInputOutput(context.getTargetContainer(), element);
-		} catch (IOException e) {
-			Activator.logError(e);
-		}
+		ModelHandler mh = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
+		mh.addDataInputOutput(context.getTargetContainer(), element);
 		addGraphicalRepresentation(context, element);
 		return new Object[] { element };
 	}

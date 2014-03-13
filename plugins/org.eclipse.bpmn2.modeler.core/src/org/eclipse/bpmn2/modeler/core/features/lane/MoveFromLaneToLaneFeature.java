@@ -12,14 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.lane;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -70,15 +67,11 @@ public class MoveFromLaneToLaneFeature extends MoveLaneFeature {
 			ModelUtil.setID(createLaneSet);
 		}
 
-		try {
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-			Participant sourceParticipant = handler.getParticipant(sourceLane);
-			Participant targetParticipant = handler.getParticipant(targetLane);
-			if (!sourceParticipant.equals(targetParticipant)) {
-				handler.moveLane(movedLane, sourceParticipant, targetParticipant);
-			}
-		} catch (IOException e) {
-			Activator.logError(e);
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
+		Participant sourceParticipant = mh.getParticipant(sourceLane);
+		Participant targetParticipant = mh.getParticipant(targetLane);
+		if (!sourceParticipant.equals(targetParticipant)) {
+			mh.moveLane(movedLane, sourceParticipant, targetParticipant);
 		}
 
 		targetLane.getChildLaneSet().getLanes().add(movedLane);

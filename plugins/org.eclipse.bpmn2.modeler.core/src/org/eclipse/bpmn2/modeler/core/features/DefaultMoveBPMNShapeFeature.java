@@ -34,15 +34,30 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultMoveBPMNShapeFeature.
+ */
 public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
+	/** The pre shape x. */
 	protected int preShapeX;
+	
+	/** The pre shape y. */
 	protected int preShapeY;
 	
+	/**
+	 * Instantiates a new default move bpmn shape feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultMoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#canMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	public boolean canMoveShape(IMoveShapeContext context) {
 		if (Graphiti.getPeService().getProperty(context.getShape(), RoutingNet.LANE)!=null) {
 			return false;
@@ -71,6 +86,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		return event.doit;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#moveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	public void moveShape(IMoveShapeContext context) {
 		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
@@ -83,6 +101,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 				getFeatureProvider(), context, context.getPictogramElement()));
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#preMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	protected void preMoveShape(IMoveShapeContext context) {
 		super.preMoveShape(context);
@@ -95,6 +116,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature#postMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
 		DIUtils.updateDIShape(context.getPictogramElement());

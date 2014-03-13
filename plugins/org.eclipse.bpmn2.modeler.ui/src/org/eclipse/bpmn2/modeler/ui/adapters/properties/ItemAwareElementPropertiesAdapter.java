@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -81,7 +81,7 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 				public Hashtable<String, Object> getChoiceOfValues() {
 					Hashtable<String,Object> choices = new Hashtable<String,Object>();
 					try {
-						Resource resource = ResourceProvider.getResource(object);
+						Resource resource = ObjectPropertyProvider.getResource(object);
 						List<DataState> states = ModelHandler.getAll(resource, DataState.class);
 						for (DataState s : states) {
 							String label = s.getName();

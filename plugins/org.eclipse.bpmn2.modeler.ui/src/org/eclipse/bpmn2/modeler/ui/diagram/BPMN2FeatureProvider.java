@@ -198,7 +198,7 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class Bpmn2FeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
+public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
 
 	private Hashtable<Class,IFeatureContainer> containers;
 	private Hashtable<String,ICustomElementFeatureContainer> customTaskContainers;
@@ -208,7 +208,7 @@ public class Bpmn2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	private DefaultCopyBPMNElementFeature defaultCopyFeature = new DefaultCopyBPMNElementFeature(this);
 	private DefaultPasteBPMNElementFeature defaultPasteFeature = new DefaultPasteBPMNElementFeature(this);
 	
-	public Bpmn2FeatureProvider(IDiagramTypeProvider dtp) {
+	public BPMN2FeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
 		updateFeatureLists();
 	}

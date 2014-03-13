@@ -51,7 +51,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
  * {@code org.eclipse.bpmn2.modeler.runtime} extension point documentation for
  * more details.
  */
-public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvider {
+public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectPropertyProvider {
 
 	/** Property key for the verbose description of this model object */
 	public final static String LONG_DESCRIPTION = "long.description"; //$NON-NLS-1$
@@ -82,8 +82,6 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	public static final String OBJECT_DESCRIPTOR = "object.descriptor"; //$NON-NLS-1$
 	/** Property key for the {@code FeatureDescriptor} object */
 	public static final String FEATURE_DESCRIPTOR = "feature.descriptor"; //$NON-NLS-1$
-	/** Property key for the EMF Resource that the object will eventually be (or already is) contained in */
-	public static final String RESOURCE = "resource"; //$NON-NLS-1$
 	/** Property key for the line number in XML document where this object is defined */
 	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
 	
@@ -96,21 +94,18 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	private static Hashtable<EClass,EObject> dummyObjects = new Hashtable<EClass,EObject>();
 
 	/**
-	 * The map of EStructuralFeatures that need {@code FeatureDescriptor} provider classes.
+	 * The map of EStructuralFeatures that need {@code FeatureDescriptor}
+	 * provider classes.
 	 */
 	private Hashtable<
 		EStructuralFeature, // feature type
 		Hashtable<String,Object>> // property key and value
 			featureProperties = new Hashtable<EStructuralFeature, Hashtable<String,Object>>();
-	/**
-	 * The map of object properties.
-	 */
-	private Hashtable <
-		String, // property key
-		Object> // value
-			objectProperties;
 	
-	/** The Adapter Factory that was used to construct this {@code ExtendedPropertiesAdapter} */
+	/**
+	 * The Adapter Factory that was used to construct this
+	 * {@code ExtendedPropertiesAdapter}
+	 */
 	private AdapterFactory adapterFactory;
 	
 	/**
@@ -301,7 +296,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	 * Convenience method for getting the Feature Descriptor by feature name.
 	 * 
 	 * @param featureName name of a feature.
-	 * @return same as {@code getFeatureDescriptor(EStructuralFeature))
+	 * @return same as {@code getFeatureDescriptor(EStructuralFeature)}
 	 */
 	public FeatureDescriptor<T> getFeatureDescriptor(String featureName) {
 		EStructuralFeature feature = getFeature(featureName);
@@ -376,20 +371,20 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	 * @return a list of Object Properties
 	 */
 	private Hashtable <String, Object> getObjectProperties() {
-		if (objectProperties==null)
-			objectProperties = new Hashtable <String,Object>();
-		return objectProperties;
+		if (properties==null)
+			properties = new Hashtable <String,Object>();
+		return properties;
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider#getProperty(java.lang.String)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider#getProperty(java.lang.String)
 	 */
 	public Object getProperty(String key) {
 		return getObjectProperties().get(key);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider#setProperty(java.lang.String, java.lang.Object)
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider#setProperty(java.lang.String, java.lang.Object)
 	 * 
 	 * Set the value for an Object Property.
 	 * 
@@ -683,21 +678,13 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 		}
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider#setResource(org.eclipse.emf.ecore.resource.Resource)
-	 */
-	public void setResource(Resource resource) {
-		super.setResource(resource);
-		setProperty(RESOURCE, resource);
-	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider#getResource()
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider#getResource()
 	 */
 	@Override
 	public Resource getResource() {
-		Resource resource = (Resource) getProperty(RESOURCE);
+		Resource resource = super.getResource();
 		if (resource==null) {
 			ObjectDescriptor<T> od = (ObjectDescriptor<T>) getProperty(OBJECT_DESCRIPTOR);
 			if (od!=null) {
@@ -713,7 +700,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ResourceProvid
 	
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider#getEditingDomain()
+	 * @see org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider#getEditingDomain()
 	 */
 	public TransactionalEditingDomain getEditingDomain() {
 		EditingDomain result = null;

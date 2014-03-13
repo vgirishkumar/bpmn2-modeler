@@ -33,8 +33,6 @@ public class JbpmScriptTaskFeatureContainer extends ScriptTaskFeatureContainer {
 				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
 				ElementParameters ep = JbpmModelUtil.getElementParameters(be);
 				getFeatureProvider().link(pe, ep);
-				ColorChangeAdapter adapter = new ColorChangeAdapter();
-				adapter.adapt((ContainerShape)pe);
 				return pe;
 			}
 			

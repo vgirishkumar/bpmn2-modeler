@@ -12,11 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views;
 
-import java.io.IOException;
-
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -25,7 +21,6 @@ import org.eclipse.ui.IWorkbenchPart;
 
 class BpmnModelViewerSelectionListener implements ISelectionListener {
 	private final ViewContentProvider contentProvider;
-	private BPMN2Editor editor;
 	private final TreeViewer viewer;
 
 	public BpmnModelViewerSelectionListener(TreeViewer viewer) {
@@ -36,17 +31,10 @@ class BpmnModelViewerSelectionListener implements ISelectionListener {
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 
-		Object bpmn2Editor = part.getAdapter(BPMN2Editor.class);
-		if (bpmn2Editor instanceof BPMN2Editor) {
-			editor = (BPMN2Editor)bpmn2Editor;
-			try {
-				ModelHandler modelHandler = ModelHandlerLocator.getModelHandler(editor.getDiagramTypeProvider()
-						.getDiagram().eResource());
-				contentProvider.updateModel(modelHandler);
-				viewer.refresh(true);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		DiagramEditor editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
+		if (editor!=null) {
+			contentProvider.updateModel(editor);
+			viewer.refresh(true);
 		}
 		Object[] selected = contentProvider.getSelected(selection);
 		if (selected != null) {

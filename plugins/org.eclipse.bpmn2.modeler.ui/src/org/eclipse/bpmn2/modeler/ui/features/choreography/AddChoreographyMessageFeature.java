@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
@@ -149,68 +147,64 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof Participant) {
-				try {
-					ModelHandler mh = ModelHandler.getInstance(getDiagram());
+				ModelHandler mh = ModelHandler.getInstance(getDiagram());
 
-					ContainerShape containerShape = (ContainerShape)pe;
-					Participant participant = (Participant)bo;
+				ContainerShape containerShape = (ContainerShape)pe;
+				Participant participant = (Participant)bo;
+				
+				Object parent = getBusinessObjectForPictogramElement(containerShape.getContainer());
+				if (parent instanceof ChoreographyTask) {
+					ChoreographyTask ct=(ChoreographyTask)parent;
+											
+					Message message = null;
+					List<Message> messageList = new ArrayList<Message>();
+					message = mh.create(Message.class);
+					message.setName(message.getId());
 					
-					Object parent = getBusinessObjectForPictogramElement(containerShape.getContainer());
-					if (parent instanceof ChoreographyTask) {
-						ChoreographyTask ct=(ChoreographyTask)parent;
-												
-						Message message = null;
-						List<Message> messageList = new ArrayList<Message>();
-						message = mh.create(Message.class);
-						message.setName(message.getId());
-						
-						messageList.add(message);
-						for (RootElement re : mh.getDefinitions().getRootElements()) {
-							if (re instanceof Message) {
-								messageList.add((Message)re);
-							}
-						}
-
-						Message result = message;
-		
-						if (messageList.size()>1) {
-							PopupMenu popupMenu = new PopupMenu(messageList, labelProvider);
-							changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
-							if (changesDone) {
-								result = (Message) popupMenu.getResult();
-							}
-						}
-						if (changesDone) {
-							if (result==message) { // the new one
-								message.setName( ExtendedPropertiesProvider.getTextValue(message)); // ModelUtil.toDisplayName(message.getId()) );
-								
-								mh.getDefinitions().getRootElements().add(result);
-							}
-							
-							java.util.List<Participant> parts=new java.util.ArrayList<Participant>(
-													ct.getParticipantRefs());
-							parts.remove(participant);
-							
-							if (parts.size() == 1) {
-								MessageFlow mf=mh.createMessageFlow(participant, parts.get(0));
-								mf.setName(ModelUtil.toCanonicalString(mf.getId()));
-								
-								Choreography choreography = (Choreography)ct.eContainer();
-								choreography.getMessageFlows().add(mf);
-
-								mf.setMessageRef(result);
-								ct.getMessageFlowRef().add(mf);
-								
-								BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
-								bpmnShape.setIsMessageVisible(true);
-
-							} else {
-								// TODO: REPORT ERROR??
-							}
+					messageList.add(message);
+					for (RootElement re : mh.getDefinitions().getRootElements()) {
+						if (re instanceof Message) {
+							messageList.add((Message)re);
 						}
 					}
-				} catch (IOException e) {
-					Activator.logError(e);
+
+					Message result = message;
+	
+					if (messageList.size()>1) {
+						PopupMenu popupMenu = new PopupMenu(messageList, labelProvider);
+						changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+						if (changesDone) {
+							result = (Message) popupMenu.getResult();
+						}
+					}
+					if (changesDone) {
+						if (result==message) { // the new one
+							message.setName( ExtendedPropertiesProvider.getTextValue(message)); // ModelUtil.toDisplayName(message.getId()) );
+							
+							mh.getDefinitions().getRootElements().add(result);
+						}
+						
+						java.util.List<Participant> parts=new java.util.ArrayList<Participant>(
+												ct.getParticipantRefs());
+						parts.remove(participant);
+						
+						if (parts.size() == 1) {
+							MessageFlow mf=mh.createMessageFlow(participant, parts.get(0));
+							mf.setName(ModelUtil.toCanonicalString(mf.getId()));
+							
+							Choreography choreography = (Choreography)ct.eContainer();
+							choreography.getMessageFlows().add(mf);
+
+							mf.setMessageRef(result);
+							ct.getMessageFlowRef().add(mf);
+							
+							BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
+							bpmnShape.setIsMessageVisible(true);
+
+						} else {
+							// TODO: REPORT ERROR??
+						}
+					}
 				}
 			}
 		}

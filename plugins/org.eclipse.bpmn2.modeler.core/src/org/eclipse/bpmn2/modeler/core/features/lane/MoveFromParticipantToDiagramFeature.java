@@ -12,15 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.lane;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -48,13 +45,9 @@ public class MoveFromParticipantToDiagramFeature extends MoveLaneFeature {
 		Participant sourceParticipant = (Participant) getBusinessObjectForPictogramElement(context.getSourceContainer());
 		Participant internalParticipant = null;
 
-		try {
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-			internalParticipant = handler.getInternalParticipant();
-			handler.moveLane(movedLane, internalParticipant);
-		} catch (IOException e) {
-			Activator.logError(e);
-		}
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
+		internalParticipant = mh.getInternalParticipant();
+		mh.moveLane(movedLane, internalParticipant);
 
 		LaneSet laneSet = null;
 		for (LaneSet set : sourceParticipant.getProcessRef().getLaneSets()) {

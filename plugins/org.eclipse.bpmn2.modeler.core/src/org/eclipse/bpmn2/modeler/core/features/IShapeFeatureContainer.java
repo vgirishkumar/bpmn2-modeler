@@ -17,9 +17,33 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface IShapeFeatureContainer.
+ */
 public interface IShapeFeatureContainer extends IFeatureContainer {
 
+	/**
+	 * Gets the creates the feature.
+	 *
+	 * @param fp the fp
+	 * @return the creates the feature
+	 */
 	ICreateFeature getCreateFeature(IFeatureProvider fp);
+	
+	/**
+	 * Gets the move feature.
+	 *
+	 * @param fp the fp
+	 * @return the move feature
+	 */
 	IMoveShapeFeature getMoveFeature(IFeatureProvider fp);
+	
+	/**
+	 * Gets the resize feature.
+	 *
+	 * @param fp the fp
+	 * @return the resize feature
+	 */
 	IResizeShapeFeature getResizeFeature(IFeatureProvider fp);
 }

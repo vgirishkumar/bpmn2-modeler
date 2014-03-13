@@ -269,7 +269,7 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 	 * @see org.eclipse.bpmn2.modeler.ui.features.activity.task.CustomTaskFeatureContainer#getId(org.eclipse.emf.ecore.EObject)
 	 * 
 	 * This method is called by the Feature Provider when it needs to find the Feature Container that will be handling the
-	 * creation of a new object. @see org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureProvider.getAddFeature(IAddContext).
+	 * creation of a new object. @see org.eclipse.bpmn2.modeler.ui.diagram.BPMN2FeatureProvider.getAddFeature(IAddContext).
 	 * This method should inspect the object (which will be a bpmn2 element) and determine whether it is responsible for
 	 * managing this object's lifecycle, typically by examining extension attributes, as shown in this example.
 	 */

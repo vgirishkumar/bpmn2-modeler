@@ -29,15 +29,30 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeLayoutService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MoveActivityFeature.
+ */
 public class MoveActivityFeature extends MoveFlowNodeFeature {
 
+	/** The Constant ACTIVITY_MOVE_PROPERTY. */
 	public static final String ACTIVITY_MOVE_PROPERTY = "activity.move"; //$NON-NLS-1$
+	
+	/** The Constant SELECTION_MOVE_PROPERTY. */
 	public static final String SELECTION_MOVE_PROPERTY = "selection.move"; //$NON-NLS-1$
 
+	/**
+	 * Instantiates a new move activity feature.
+	 *
+	 * @param fp the fp
+	 */
 	public MoveActivityFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature#preMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	protected void preMoveShape(IMoveShapeContext context) {
 		MoveShapeContext msc = (MoveShapeContext)context;
@@ -94,6 +109,9 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 		super.preMoveShape(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature#postMoveShape(org.eclipse.graphiti.features.context.IMoveShapeContext)
+	 */
 	@Override
 	protected void postMoveShape(final IMoveShapeContext context) {
 		super.postMoveShape(context);

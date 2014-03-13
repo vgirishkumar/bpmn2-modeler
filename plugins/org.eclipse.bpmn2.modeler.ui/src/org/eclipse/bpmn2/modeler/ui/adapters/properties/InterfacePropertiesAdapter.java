@@ -22,7 +22,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -98,7 +98,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 		@Override
 		public String getTextValue() {
-			Resource resource = ResourceProvider.getResource(object);
+			Resource resource = ObjectPropertyProvider.getResource(object);
 			String text = null;
 			EObject value = (EObject)object.eGet(feature);
 			if (value!=null) {
@@ -149,7 +149,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 		@Override
 		protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
-			Resource resource = ResourceProvider.getResource(object);
+			Resource resource = ObjectPropertyProvider.getResource(object);
 			
 			if (value instanceof PortType) {
 				PortType portType = (PortType)value;

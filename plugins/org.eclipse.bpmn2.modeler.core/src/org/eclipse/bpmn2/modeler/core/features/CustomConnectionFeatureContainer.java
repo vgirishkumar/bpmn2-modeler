@@ -37,27 +37,42 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CustomConnectionFeatureContainer.
+ */
 public class CustomConnectionFeatureContainer extends CustomElementFeatureContainer implements IConnectionFeatureContainer {
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDescription()
+	 */
 	public String getDescription() {
 		if (customTaskDescriptor!=null)
 			return customTaskDescriptor.getDescription();
 		return Messages.CustomConnectionFeatureContainer_Description;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer#getCreateConnectionFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICreateConnectionFeature getCreateConnectionFeature(IFeatureProvider fp) {
 		return new CreateCustomConnectionFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getAddFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddCustomConnectionFeature(fp);
 	}
 	
 	/**
-	 * @author bbrodt
+	 * The Class CreateCustomConnectionFeature.
 	 *
+	 * @author bbrodt
+	 * 
 	 * Base class for Custom Connection Feature construction. Custom Connections contributed to
 	 * the editor MUST subclass this!
 	 * 
@@ -72,8 +87,16 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 	 */
 	public class CreateCustomConnectionFeature extends AbstractBpmn2CreateConnectionFeature<BaseElement, EObject, EObject> {
 
+		/** The create feature delegate. */
 		protected AbstractBpmn2CreateConnectionFeature createFeatureDelegate;
 		
+		/**
+		 * Instantiates a new creates the custom connection feature.
+		 *
+		 * @param fp the fp
+		 * @param name the name
+		 * @param description the description
+		 */
 		public CreateCustomConnectionFeature(IFeatureProvider fp, String name, String description) {
 			super(fp, name, description);
 			IConnectionFeatureContainer fc = (IConnectionFeatureContainer)getFeatureContainer(fp);
@@ -81,11 +104,19 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			Assert.isNotNull(createFeatureDelegate);
 		}
 
+		/**
+		 * Instantiates a new creates the custom connection feature.
+		 *
+		 * @param fp the fp
+		 */
 		public CreateCustomConnectionFeature(IFeatureProvider fp) {
 			this(fp, customTaskDescriptor.getName(),
 					NLS.bind(Messages.CustomElementFeatureContainer_Create, customTaskDescriptor.getName()));
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#isAvailable(org.eclipse.graphiti.features.context.IContext)
+		 */
 		@Override
 		public boolean isAvailable(IContext context) {
 			// Custom Elements are not available to the Context Button Pad:
@@ -100,6 +131,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return false;
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractFeature#addGraphicalRepresentation(org.eclipse.graphiti.features.context.IAreaContext, java.lang.Object)
+		 */
 		@Override
 		protected PictogramElement addGraphicalRepresentation(IAreaContext context, Object newObject) {
 
@@ -114,6 +148,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return pe;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.ICreateConnection#canCreate(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+		 */
 		@Override
 		public boolean canCreate(ICreateConnectionContext context) {
 			// copy our ID into the CreateContext - this is where it all starts!
@@ -121,12 +158,18 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return createFeatureDelegate.canCreate(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#canStartConnection(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+		 */
 		@Override
 		public boolean canStartConnection(ICreateConnectionContext context) {
 			setId(context, id);
 			return createFeatureDelegate.canStartConnection(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#createBusinessObject(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+		 */
 		@Override
 		public BaseElement createBusinessObject(ICreateConnectionContext context) {
 			BaseElement businessObject = createFeatureDelegate.createBusinessObject(context);
@@ -142,6 +185,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return createFeatureDelegate.getBusinessObjectClass();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.ICreateConnection#create(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+		 */
 		@Override
 		public Connection create(ICreateConnectionContext context) {
 			// Our Custom Task ID should have already been set in canCreate()
@@ -151,6 +197,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return createFeatureDelegate.create(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature#getCreateImageId()
+		 */
 		@Override
 		public String getCreateImageId() {
 			String icon = customTaskDescriptor.getIcon();
@@ -162,6 +211,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return createFeatureDelegate.getCreateImageId();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature#getCreateLargeImageId()
+		 */
 		@Override
 		public String getCreateLargeImageId() {
 			String icon = customTaskDescriptor.getIcon();
@@ -173,17 +225,26 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return createFeatureDelegate.getCreateLargeImageId();
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#getCreateDescription()
+		 */
 		@Override
 		public String getCreateDescription() {
 			return createFeatureDelegate.getCreateDescription();
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#getSourceClass()
+		 */
 		@Override
 		protected Class<EObject> getSourceClass() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#getTargetClass()
+		 */
 		@Override
 		protected Class<EObject> getTargetClass() {
 			// TODO Auto-generated method stub
@@ -191,12 +252,18 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		}
 	}
 
+	/**
+	 * The Class AddCustomConnectionFeature.
+	 */
 	public class AddCustomConnectionFeature extends AbstractBpmn2AddFeature<BaseElement> {
 
+		/** The add feature delegate. */
 		protected AbstractBpmn2AddFeature<BaseElement> addFeatureDelegate;
 		
 		/**
-		 * @param fp
+		 * Instantiates a new adds the custom connection feature.
+		 *
+		 * @param fp the fp
 		 */
 		public AddCustomConnectionFeature(IFeatureProvider fp) {
 			super(fp);
@@ -204,6 +271,9 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			Assert.isNotNull(addFeatureDelegate);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public PictogramElement add(IAddContext context) {
 			PictogramElement pe = addFeatureDelegate.add(context);
@@ -214,58 +284,91 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			return pe;
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#getBusinessObject(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public BaseElement getBusinessObject(IAddContext context) {
 			// TODO Auto-generated method stub
 			return addFeatureDelegate.getBusinessObject(context);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#putBusinessObject(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.emf.ecore.EObject)
+		 */
 		@Override
 		public void putBusinessObject(IAddContext context, BaseElement businessObject) {
 			addFeatureDelegate.putBusinessObject(context, businessObject);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature#postExecute(org.eclipse.graphiti.IExecutionInfo)
+		 */
 		@Override
 		public void postExecute(IExecutionInfo executionInfo) {
 			addFeatureDelegate.postExecute(executionInfo);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+		 */
 		@Override
 		public boolean canAdd(IAddContext context) {
 			return addFeatureDelegate.canAdd(context);
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getUpdateFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getUpdateFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDirectEditingFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getDirectEditingFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getLayoutFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getLayoutFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getRemoveFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IRemoveFeature getRemoveFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getRemoveFeature(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getDeleteFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getDeleteFeature(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer#getCustomFeatures(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getCustomFeatures(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer#getReconnectionFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IFeatureProvider fp) {
 		IConnectionFeatureContainer fc = (IConnectionFeatureContainer)getFeatureContainer(fp);

@@ -22,16 +22,30 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MultiUpdateFeature.
+ */
 public class MultiUpdateFeature extends AbstractUpdateFeature {
 
+	/** The Constant FORCE_UPDATE_ALL. */
 	public final static String FORCE_UPDATE_ALL = "force.update.all";
 	
+	/** The features. */
 	protected List<IUpdateFeature> features = new ArrayList<IUpdateFeature>();
 
+	/**
+	 * Instantiates a new multi update feature.
+	 *
+	 * @param fp the fp
+	 */
 	public MultiUpdateFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
 		for (IUpdateFeature p : features) {
@@ -42,6 +56,9 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		String text = null;
@@ -60,6 +77,9 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 		return Reason.createFalseReason();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
 	public boolean update(IUpdateContext context) {
 		boolean updated = false;
@@ -74,6 +94,11 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 		return updated;
 	}
 
+	/**
+	 * Adds the update feature.
+	 *
+	 * @param feature the feature
+	 */
 	public void addUpdateFeature(IUpdateFeature feature) {
 		if (feature != null) {
 			features.add(feature);

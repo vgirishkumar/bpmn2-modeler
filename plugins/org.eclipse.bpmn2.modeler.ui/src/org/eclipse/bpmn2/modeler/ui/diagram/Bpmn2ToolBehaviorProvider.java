@@ -114,7 +114,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 	protected BPMN2Editor editor;
 	protected TargetRuntime targetRuntime;
-	protected Bpmn2FeatureProvider featureProvider;
+	protected BPMN2FeatureProvider featureProvider;
 	protected ModelEnablements modelEnablements;
 	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	protected List<IPaletteCompartmentEntry> palette;
@@ -187,7 +187,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 		targetRuntime = editor.getTargetRuntime();
 		modelEnablements = editor.getModelEnablements();
-		featureProvider = (Bpmn2FeatureProvider)getFeatureProvider();
+		featureProvider = (BPMN2FeatureProvider)getFeatureProvider();
 
 		palette = new ArrayList<IPaletteCompartmentEntry>();
 		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor.getBpmnDiagram());

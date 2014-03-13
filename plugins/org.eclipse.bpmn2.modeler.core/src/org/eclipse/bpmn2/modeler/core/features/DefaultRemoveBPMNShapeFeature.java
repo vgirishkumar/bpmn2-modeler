@@ -17,19 +17,26 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author Bob Brodt
+ * The Class DefaultRemoveBPMNShapeFeature.
  *
+ * @author Bob Brodt
  */
 public class DefaultRemoveBPMNShapeFeature extends DefaultRemoveFeature {
 
 	/**
-	 * @param fp
+	 * Instantiates a new default remove bpmn shape feature.
+	 *
+	 * @param fp the fp
 	 */
 	public DefaultRemoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultRemoveFeature#canRemove(org.eclipse.graphiti.features.context.IRemoveContext)
+	 */
 	@Override
 	public boolean canRemove(IRemoveContext context) {
 		return false;

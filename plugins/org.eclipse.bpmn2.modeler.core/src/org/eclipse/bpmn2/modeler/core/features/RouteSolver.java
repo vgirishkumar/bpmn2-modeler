@@ -25,21 +25,49 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class RouteSolver.
+ */
 public class RouteSolver {
 
+	/** The Constant gaService. */
 	protected final static IGaService gaService = Graphiti.getGaService();
+	
+	/** The Constant peService. */
 	protected static final IPeService peService = Graphiti.getPeService();
+	
+	/** The Constant topMargin. */
 	static final int topMargin = 50;
+	
+	/** The Constant bottomMargin. */
 	static final int bottomMargin = 50;
+	
+	/** The Constant leftMargin. */
 	static final int leftMargin = 50;
+	
+	/** The Constant rightMargin. */
 	static final int rightMargin = 50;
 
+	/** The fp. */
 	IFeatureProvider fp;
+	
+	/** The all shapes. */
 	List<ContainerShape> allShapes;
+	
+	/** The source. */
 	Shape source; 
+	
+	/** The target. */
 	Shape target;
+	
+	/** The right. */
 	int top, left, bottom, right;
+	
+	/** The vertical net. */
 	RoutingNet verticalNet;
+	
+	/** The horizontal net. */
 	RoutingNet horizontalNet;
 	private boolean rotate = false;
 	
@@ -56,6 +84,13 @@ public class RouteSolver {
 		initialize();
 	}
 	
+	/**
+	 * Solve.
+	 *
+	 * @param source the source
+	 * @param target the target
+	 * @return true, if successful
+	 */
 	public boolean solve(Shape source, Shape target) {
 		this.source = source;
 		this.target = target;
@@ -98,6 +133,11 @@ public class RouteSolver {
 		return true;
 	}
 	
+	/**
+	 * Initialize.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean initialize() {
 		
 		if (allShapes.size()<2)
@@ -132,6 +172,11 @@ public class RouteSolver {
 		return true;
 	}
 
+	/**
+	 * Calculate diagram bounds.
+	 *
+	 * @return the rectangle
+	 */
 	protected Rectangle calculateDiagramBounds() {
 		// find bounding rectangle that contains all shapes
 		int left = Integer.MAX_VALUE;
@@ -163,6 +208,11 @@ public class RouteSolver {
 		return new Rectangle(left, top, right-left, bottom-top);
 	}
 	
+	/**
+	 * Calculate routing net.
+	 *
+	 * @param net the net
+	 */
 	protected void calculateRoutingNet(RoutingNet net) {
 
 		net.add(left, top, leftMargin, bottom-top);
@@ -258,6 +308,12 @@ public class RouteSolver {
 		net.rotate(rotate);
 	}
 	
+	/**
+	 * Adds the trailing aisle.
+	 *
+	 * @param net the net
+	 * @param shape the shape
+	 */
 	protected void addTrailingAisle(RoutingNet net, ContainerShape shape) {
 		Rectangle shapeBounds = getBounds(shape);
 		int x = shapeBounds.right();
@@ -286,6 +342,12 @@ public class RouteSolver {
 		}
 	}
 
+	/**
+	 * Gets the shapes below.
+	 *
+	 * @param shape the shape
+	 * @return the shapes below
+	 */
 	protected List<ContainerShape> getShapesBelow(ContainerShape shape) {
 		final Rectangle bounds = getBounds(shape);
 		List<ContainerShape> shapes = new ArrayList<ContainerShape>();
@@ -337,6 +399,12 @@ public class RouteSolver {
 		return shapes;
 	}
 
+	/**
+	 * Gets the shapes above.
+	 *
+	 * @param shape the shape
+	 * @return the shapes above
+	 */
 	protected List<ContainerShape> getShapesAbove(ContainerShape shape) {
 		final Rectangle bounds = getBounds(shape);
 		List<ContainerShape> shapes = new ArrayList<ContainerShape>();
@@ -388,16 +456,40 @@ public class RouteSolver {
 		return shapes;
 	}
 	
+	/**
+	 * The Class Slice.
+	 */
 	class Slice {
+		
+		/** The parent. */
 		protected Slice parent;
+		
+		/** The right. */
 		protected int left, right;
+		
+		/** The cuts. */
 		List<Integer> cuts = new ArrayList<Integer>();
+		
+		/** The children. */
 		List<Slice> children = new ArrayList<Slice>();
 		
+		/**
+		 * Instantiates a new slice.
+		 *
+		 * @param left the left
+		 * @param right the right
+		 */
 		public Slice(int left, int right) {
 			this(null,left,right);
 		}
 		
+		/**
+		 * Instantiates a new slice.
+		 *
+		 * @param parent the parent
+		 * @param left the left
+		 * @param right the right
+		 */
 		protected Slice(Slice parent, int left, int right) {
 			this.parent = parent;
 			this.left = left;
@@ -406,6 +498,13 @@ public class RouteSolver {
 			cuts.add(right);
 		}
 		
+		/**
+		 * Removes the.
+		 *
+		 * @param l the l
+		 * @param r the r
+		 * @return the int
+		 */
 		public int remove(int l, int r) {
 			if (r<left || right<l) {
 				for (Slice s : children) {
@@ -446,6 +545,11 @@ public class RouteSolver {
 			return length();
 		}
 		
+		/**
+		 * Length.
+		 *
+		 * @return the int
+		 */
 		public int length() {
 			int length = right - left;
 			for (Slice s : children) {
@@ -454,11 +558,21 @@ public class RouteSolver {
 			return length;
 		}
 		
+		/**
+		 * Cut.
+		 *
+		 * @param point the point
+		 */
 		protected void cut(int point) {
 			if (!cuts.contains(point))
 				cuts.add(point);
 		}
 		
+		/**
+		 * Gets the cuts.
+		 *
+		 * @return the cuts
+		 */
 		public List<Integer> getCuts() {
 			cut(left);
 			cut(right);
@@ -473,6 +587,9 @@ public class RouteSolver {
 		}
 	}
 	
+	/**
+	 * Sort all shapes.
+	 */
 	protected void sortAllShapes() {
 		Collections.sort(allShapes, new Comparator<ContainerShape>() {
 

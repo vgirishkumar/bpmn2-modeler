@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
@@ -415,7 +415,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			containingResource = resource;
 			modelObject = object;
 			if (containingResource==null)
-				containingResource = ResourceProvider.getResource(object);
+				containingResource = ObjectPropertyProvider.getResource(object);
 			getModelDecorator(); 
 			populateObject(modelObject, initialize);
 		}

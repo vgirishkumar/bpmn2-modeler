@@ -32,7 +32,7 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
@@ -397,7 +397,7 @@ public class JbpmModelUtil {
 	public static ItemDefinition findOrCreateItemDefinition(EObject context, String structureRef) {
 		ItemDefinition itemDef = null;
 		Definitions definitions = ModelUtil.getDefinitions(context);
-		Resource resource = ResourceProvider.getResource(context);
+		Resource resource = ObjectPropertyProvider.getResource(context);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
 			String s = ModelUtil.getStringWrapperValue(id.getStructureRef());
@@ -420,7 +420,7 @@ public class JbpmModelUtil {
 	public static BPSimDataType getBPSimData(EObject object) {
 		BPSimDataType processAnalysisData = null;
 		Relationship rel = null;
-		Resource resource = ResourceProvider.getResource(object);
+		Resource resource = ObjectPropertyProvider.getResource(object);
 		Definitions definitions = (Definitions) ModelUtil.getDefinitions(object);
 		List<Relationship> relationships = definitions.getRelationships();
 		if (relationships.size()==0) {

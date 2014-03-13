@@ -10,17 +10,14 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 
 /**
  * An EMF Resource provider interface. This is also an Editing Domain provider since
- * the Resource MAY have a reference to an Editing Domain.
+ * the Resource <b>may</b> have a reference to an Editing Domain.
  */
-public interface IResourceProvider extends IEditingDomainProvider, Adapter {
+public interface IResourceProvider extends IEditingDomainProvider {
 	Resource getResource();
 	void setResource(Resource resource);
-//	public void putProperty(String key, Object value);
-//	public Object getProperty(String key);
 }

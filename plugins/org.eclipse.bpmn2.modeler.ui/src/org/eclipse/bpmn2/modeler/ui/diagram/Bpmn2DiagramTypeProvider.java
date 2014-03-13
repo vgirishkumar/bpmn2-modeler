@@ -35,7 +35,7 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 
 	public Bpmn2DiagramTypeProvider() {
 		super();
-		setFeatureProvider(new Bpmn2FeatureProvider(this));
+		setFeatureProvider(new BPMN2FeatureProvider(this));
 	}
 
 	@Override

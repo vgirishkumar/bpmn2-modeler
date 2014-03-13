@@ -12,12 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
@@ -25,7 +22,6 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 
@@ -67,19 +63,15 @@ public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conver
 
 	@Override
 	public Conversation createBusinessObject(ICreateContext context) {
-		Conversation bo = null;
-		try {
-			bo = Bpmn2ModelerFactory.create(Conversation.class);
-			ModelHandler mh = ModelHandler.getInstance(getDiagram());
-			bo.setName(Messages.CreateConversationFeature_Name);
-	        BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
-	        mh.addConversationNode(bpmnDiagram,bo);
-			ModelUtil.setID(bo);
-			putBusinessObject(context, bo);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return bo;
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
+
+		Conversation conversation = Bpmn2ModelerFactory.create(Conversation.class);
+		conversation.setName(Messages.CreateConversationFeature_Name);
+        BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
+        mh.addConversationNode(bpmnDiagram,conversation);
+		ModelUtil.setID(conversation);
+		putBusinessObject(context, conversation);
+		
+		return conversation;
 	}
 }

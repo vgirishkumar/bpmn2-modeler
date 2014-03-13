@@ -12,16 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.data;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.impl.DataObjectImpl;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
@@ -30,7 +27,6 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -140,21 +136,19 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 		@Override
 		public FlowElement createBusinessObject(ICreateContext context) {
 			changesDone = true;
-			FlowElement bo = null;
-			try {
-				DataObjectReference dataObjectReference = null;
-				DataObject dataObject = null;
-				ModelHandler mh = ModelHandler.getInstance(getDiagram());
-				dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
-				dataObject = Bpmn2ModelerFactory.create(DataObject.class);
-				String oldName = dataObject.getName();
-				dataObject.setName(Messages.DataObjectFeatureContainer_New);
-				dataObject.setId(null);
-				EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
-				
-				// NOTE: this code removed. A DataObjectReference may reference DataObjects
-				// from any other container (Process) in the BPMN file, not just those defined
-				// within the same container as the target (context.getTargetContainer())
+			ModelHandler mh = ModelHandler.getInstance(getDiagram());
+
+			FlowElement flowElement = null;
+			DataObjectReference dataObjectReference = Bpmn2ModelerFactory.create(DataObjectReference.class);
+			DataObject dataObject = Bpmn2ModelerFactory.create(DataObject.class);
+			String oldName = dataObject.getName();
+			dataObject.setName(Messages.DataObjectFeatureContainer_New);
+			dataObject.setId(null);
+			EObject targetBusinessObject = (EObject)getBusinessObjectForPictogramElement(context.getTargetContainer());
+			
+			// NOTE: this code removed. A DataObjectReference may reference DataObjects
+			// from any other container (Process) in the BPMN file, not just those defined
+			// within the same container as the target (context.getTargetContainer())
 //				Object containerBO = container;
 //				if (container instanceof BPMNDiagram) {
 //					containerBO = ((BPMNDiagram)container).getPlane().getBpmnElement();
@@ -165,54 +159,51 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 //						containerBO = laneSet.eContainer();
 //				}
 
-				List<DataObject> dataObjectList = new ArrayList<DataObject>();
-				dataObjectList.add(dataObject);
-				TreeIterator<EObject> iter = ModelUtil.getDefinitions(targetBusinessObject).eAllContents();
-				while (iter.hasNext()) {
-					EObject obj = iter.next();
-					if (obj instanceof DataObject) // removed, see above: && obj.eContainer() == containerBO)
-						dataObjectList.add((DataObject) obj);
-				}
-
-				DataObject result = dataObject;
-				if (dataObjectList.size() > 1) {
-					PopupMenu popupMenu = new PopupMenu(dataObjectList, labelProvider);
-					changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
-					if (changesDone) {
-						result = (DataObject) popupMenu.getResult();
-					}
-					else {
-						EcoreUtil.delete(dataObject);
-						EcoreUtil.delete(dataObjectReference);
-					}
-				}
-				if (changesDone) {
-					if (result == dataObject) { // the new one
-						mh.addFlowElement(targetBusinessObject,dataObject);
-						ModelUtil.setID(dataObject);
-						dataObject.setIsCollection(false);
-						dataObject.setName(oldName);
-						bo = dataObject;
-					} else {
-						mh.addFlowElement(targetBusinessObject,dataObjectReference);
-						ModelUtil.setID(dataObjectReference);
-						dataObjectReference.setName(
-							NLS.bind(
-								Messages.DataObjectFeatureContainer_Default_Name,
-								result.getName()
-							)
-						);
-						dataObjectReference.setDataObjectRef(result);
-						dataObject = result;
-						bo = dataObjectReference;
-					}
-					putBusinessObject(context, bo);
-				}
-
-			} catch (IOException e) {
-				Activator.showErrorWithLogging(e);
+			List<DataObject> dataObjectList = new ArrayList<DataObject>();
+			dataObjectList.add(dataObject);
+			TreeIterator<EObject> iter = ModelUtil.getDefinitions(targetBusinessObject).eAllContents();
+			while (iter.hasNext()) {
+				EObject obj = iter.next();
+				if (obj instanceof DataObject) // removed, see above: && obj.eContainer() == containerBO)
+					dataObjectList.add((DataObject) obj);
 			}
-			return bo;
+
+			DataObject result = dataObject;
+			if (dataObjectList.size() > 1) {
+				PopupMenu popupMenu = new PopupMenu(dataObjectList, labelProvider);
+				changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (changesDone) {
+					result = (DataObject) popupMenu.getResult();
+				}
+				else {
+					EcoreUtil.delete(dataObject);
+					EcoreUtil.delete(dataObjectReference);
+				}
+			}
+			if (changesDone) {
+				if (result == dataObject) { // the new one
+					mh.addFlowElement(targetBusinessObject,dataObject);
+					ModelUtil.setID(dataObject);
+					dataObject.setIsCollection(false);
+					dataObject.setName(oldName);
+					flowElement = dataObject;
+				} else {
+					mh.addFlowElement(targetBusinessObject,dataObjectReference);
+					ModelUtil.setID(dataObjectReference);
+					dataObjectReference.setName(
+						NLS.bind(
+							Messages.DataObjectFeatureContainer_Default_Name,
+							result.getName()
+						)
+					);
+					dataObjectReference.setDataObjectRef(result);
+					dataObject = result;
+					flowElement = dataObjectReference;
+				}
+				putBusinessObject(context, flowElement);
+			}
+
+			return flowElement;
 		}
 	}
 }

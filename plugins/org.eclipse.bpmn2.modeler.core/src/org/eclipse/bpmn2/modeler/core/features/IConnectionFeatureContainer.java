@@ -16,8 +16,25 @@ import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface IConnectionFeatureContainer.
+ */
 public interface IConnectionFeatureContainer extends IFeatureContainer {
 
+	/**
+	 * Gets the creates the connection feature.
+	 *
+	 * @param fp the fp
+	 * @return the creates the connection feature
+	 */
 	ICreateConnectionFeature getCreateConnectionFeature(IFeatureProvider fp);
+	
+	/**
+	 * Gets the reconnection feature.
+	 *
+	 * @param fp the fp
+	 * @return the reconnection feature
+	 */
 	IReconnectionFeature getReconnectionFeature(IFeatureProvider fp);
 }

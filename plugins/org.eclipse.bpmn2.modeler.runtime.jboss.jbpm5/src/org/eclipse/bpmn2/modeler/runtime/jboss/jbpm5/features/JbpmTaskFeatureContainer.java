@@ -41,7 +41,6 @@ public class JbpmTaskFeatureContainer extends TaskFeatureContainer {
 			final PictogramElement pe = super.add(context);
 			ElementParameters ep = JbpmModelUtil.getElementParameters(be);
 			getFeatureProvider().link(pe, ep);
-			ColorChangeAdapter.adapt((ContainerShape)pe);
 			return pe;
 		}
 		

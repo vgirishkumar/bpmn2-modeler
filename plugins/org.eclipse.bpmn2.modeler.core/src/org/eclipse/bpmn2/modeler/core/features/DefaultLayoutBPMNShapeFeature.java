@@ -15,23 +15,43 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultLayoutBPMNShapeFeature.
+ */
 public class DefaultLayoutBPMNShapeFeature extends AbstractLayoutFeature {
 
+	/**
+	 * Instantiates a new default layout bpmn shape feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultLayoutBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ILayout#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean canLayout(ILayoutContext context) {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ILayout#layout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 */
 	@Override
 	public boolean layout(ILayoutContext context) {
 		layoutConnections(context.getPictogramElement());
 		return true;
 	}
 	
+	/**
+	 * Layout connections.
+	 *
+	 * @param shape the shape
+	 */
 	public void layoutConnections(PictogramElement shape) {
 //		Diagram diagram = getDiagram();
 //		if (diagram!=null) {

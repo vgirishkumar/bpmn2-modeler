@@ -12,16 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.event;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -58,30 +54,26 @@ public class CreateBoundaryEventFeature extends AbstractBpmn2CreateFeature<Bound
 	
 	@Override
 	public BoundaryEvent createBusinessObject(ICreateContext context) {
-		BoundaryEvent event = null;
-		try {
-			Activity activity = (Activity) getBusinessObjectForPictogramElement(context.getTargetContainer());
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-			event = super.createBusinessObject(context);
-			event.setAttachedToRef(activity);
-			event.setName(""); //$NON-NLS-1$
-			event.setCancelActivity(true); // by default is interrupting
-			Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
-			
-			if (bo instanceof FlowNode &&  !((FlowNode)bo).getLanes().isEmpty()) {
-				((FlowNode)bo).getLanes().get(0).getFlowNodeRefs().add(event);
-			}
-			
-			if (bo instanceof SubProcess) {
-				bo = getBusinessObjectForPictogramElement((PictogramElement) context.getTargetContainer().eContainer());
-			}
-			
-			handler.addFlowElement(bo, event);
-			ModelUtil.setID(event);
+		Activity activity = (Activity) getBusinessObjectForPictogramElement(context.getTargetContainer());
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
 		
-		} catch (IOException e) {
-			Activator.logError(e);
+		BoundaryEvent event = super.createBusinessObject(context);
+		event.setAttachedToRef(activity);
+		event.setName(""); //$NON-NLS-1$
+		event.setCancelActivity(true); // by default is interrupting
+		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
+		
+		if (bo instanceof FlowNode &&  !((FlowNode)bo).getLanes().isEmpty()) {
+			((FlowNode)bo).getLanes().get(0).getFlowNodeRefs().add(event);
 		}
+		
+		if (bo instanceof SubProcess) {
+			bo = getBusinessObjectForPictogramElement((PictogramElement) context.getTargetContainer().eContainer());
+		}
+		
+		mh.addFlowElement(bo, event);
+		ModelUtil.setID(event);
+
 		return event;
 	}
 

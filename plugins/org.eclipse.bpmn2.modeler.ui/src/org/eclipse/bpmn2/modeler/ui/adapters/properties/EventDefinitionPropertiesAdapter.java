@@ -14,6 +14,7 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public class EventDefinitionPropertiesAdapter<T extends EventDefinition> extends ExtendedPropertiesAdapter<T> {
@@ -23,8 +24,8 @@ public class EventDefinitionPropertiesAdapter<T extends EventDefinition> extends
 		
 		setObjectDescriptor(new ObjectDescriptor<T>(object) {
 			@Override
-			public T createObject(Resource resource, Object context) {
-				T rootElement = super.createObject(resource, context);
+			public T createObject(Resource resource, EClass eclass) {
+				T rootElement = super.createObject(resource, eclass);
 				return rootElement;
 			}
 		});

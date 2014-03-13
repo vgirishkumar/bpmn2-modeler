@@ -23,12 +23,24 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultCopyBPMNElementFeature.
+ */
 public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
 
+	/**
+	 * Instantiates a new default copy bpmn element feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultCopyBPMNElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.ICopyFeature#canCopy(org.eclipse.graphiti.features.context.ICopyContext)
+	 */
 	@Override
 	public boolean canCopy(ICopyContext context) {
         final PictogramElement[] pes = context.getPictogramElements();
@@ -46,6 +58,9 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
         return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.ICopyFeature#copy(org.eclipse.graphiti.features.context.ICopyContext)
+	 */
 	@Override
 	public void copy(ICopyContext context) {
         PictogramElement[] pes = context.getPictogramElements();
@@ -95,6 +110,12 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
         putToClipboard(copied.toArray());
 	}
 	
+	/**
+	 * Find all connections.
+	 *
+	 * @param shapes the shapes
+	 * @return the list
+	 */
 	public static List<Connection> findAllConnections(List<PictogramElement> shapes) {
         List<Connection> connections = new ArrayList<Connection>();
         for (PictogramElement pe : shapes) {

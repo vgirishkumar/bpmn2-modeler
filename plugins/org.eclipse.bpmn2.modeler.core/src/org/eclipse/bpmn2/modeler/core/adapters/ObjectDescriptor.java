@@ -41,9 +41,13 @@ import org.eclipse.osgi.util.NLS;
  */
 public class ObjectDescriptor<T extends EObject> {
 
+	/** the object managed by this {@code ObjectDescriptor} */
 	protected T object;
+	/** a default text label used by the UI in Property Sheets and dialogs */
 	protected String label;
+	/** a default string representation for this object's value */ 
 	protected String textValue;
+	/** the {@link ExtendedPropertiesAdapter} that owns this {@code ObjectDescriptor} */
 	protected ExtendedPropertiesAdapter<T> owner;
 
 	public ObjectDescriptor(ExtendedPropertiesAdapter<T> owner, T object) {
@@ -55,26 +59,56 @@ public class ObjectDescriptor<T extends EObject> {
 		this.object = object;
 	}
 	
+	/**
+	 * Gets the {@link ExtendedPropertiesAdapter} owner for this ObjectDescriptor.
+	 * 
+	 * @return the owner
+	 */
 	public ExtendedPropertiesAdapter<T> getOwner() {
 		return owner;
 	}
 
+	/**
+	 * Sets the {@link ExtendedPropertiesAdapter} owner for this ObjectDescriptor.
+	 * 
+	 * @param owner
+	 */
 	public void setOwner(ExtendedPropertiesAdapter<T> owner) {
 		this.owner = owner;
 	}
 	
+	/**
+	 * Gets the object managed by this ObjectDescriptor.
+	 * 
+	 * @return the object.
+	 */
 	public T getObject() {
 		return object;
 	}
 	
+	/**
+	 * Sets the object.
+	 * 
+	 * @param object the object.
+	 */
 	public void setObject(T object) {
 		this.object = object;
 	}
 	
+	/**
+	 * Sets the Label for this object.
+	 * 
+	 * @param label the label.
+	 */
 	public void setLabel(String label) {
 		this.label = label;
 	}
 	
+	/**
+	 * Gets the Label for this object. The default implementation returns the object's type name 
+	 * 
+	 * @return text label for the object.
+	 */
 	public String getLabel() {
 		String s = ModelDecorator.getLabel(object.eClass());
 		if (s!=null) {
@@ -89,10 +123,20 @@ public class ObjectDescriptor<T extends EObject> {
 		return label;
 	}
 	
-	public void setTextValue(String name) {
-		this.textValue = name;
+	/**
+	 * Sets the text representation of the object managed by this ObjectDescriptor.
+	 * 
+	 * @param textValue the text string representation of this object.
+	 */
+	public void setTextValue(String textValue) {
+		this.textValue = textValue;
 	}
 	
+	/**
+	 * Gets the text representation of the object managed by this ObjectDescriptor.
+	 * 
+	 * @return a text string representation of this object.
+	 */
 	public String getTextValue() {
 		if (textValue==null) {
 			// derive text from feature's value: default behavior is
@@ -126,10 +170,26 @@ public class ObjectDescriptor<T extends EObject> {
 		return textValue;
 	}
 
+	/**
+	 * Convenience method for
+	 * {@code getPropertyDescriptor(Object,EStructuralFeature)} for returning
+	 * the feature Property Descriptor for the object managed by this
+	 * ObjectDescriptor.
+	 * 
+	 * @param feature the feature
+	 * @return an ItemPropertyDescriptor.
+	 */
 	protected IItemPropertyDescriptor getPropertyDescriptor(EStructuralFeature feature) {
 		return getPropertyDescriptor(object, feature);
 	}
 
+	/**
+	 * Gets the EMF-generated Property Descriptor for the given object and feature.
+	 * 
+	 * @param object the object
+	 * @param feature the feature
+	 * @return an ItemPropertyDescriptor.
+	 */
 	protected IItemPropertyDescriptor getPropertyDescriptor(T object, EStructuralFeature feature) {
 		ItemProviderAdapter adapter = null;
 		for (Adapter a : object.eAdapters()) {
@@ -142,20 +202,10 @@ public class ObjectDescriptor<T extends EObject> {
 			return adapter.getPropertyDescriptor(object, feature);
 		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected EObject clone(T oldObject) {
-		T newObject = null;
-		if (oldObject!=null) {
-			EClass eClass = oldObject.eClass();
-			newObject = (T) eClass.getEPackage().getEFactoryInstance().create(eClass);
-			for (EStructuralFeature f : eClass.getEAllAttributes()) {
-				newObject.eSet(f, oldObject.eGet(f));
-			}
-		}
-		return newObject;
-	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object otherObject) {
 		EObject thisObject = this.object;
 		if (otherObject instanceof EObject) {
@@ -166,18 +216,33 @@ public class ObjectDescriptor<T extends EObject> {
 		return super.equals(otherObject);
 	}
 
-	public boolean similar(Object otherObject) {
+	/**
+	 * Convenience method to check if a given object is similar to the object
+	 * managed by this ObjectDescriptor.
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public boolean similar(Object other) {
 		EObject thisObject = this.object;
-		if (otherObject instanceof EObject) {
+		if (other instanceof EObject) {
 			// compare feature values of both EObjects:
 			// this should take care of most of the BPMN2 elements
-			return ExtendedPropertiesAdapter.compare(thisObject, (EObject)otherObject, true);
+			return ExtendedPropertiesAdapter.compare(thisObject, (EObject)other, true);
 		}
-		return super.equals(otherObject);
+		return super.equals(other);
 	}
 	
-	protected boolean compare(EObject v2, boolean similar) {
-		return ExtendedPropertiesAdapter.compare(object, v2, similar);
+	/**
+	 * Convenience method to compare the object managed by this ObjectDescriptor
+	 * with the given object.
+	 * 
+	 * @param other another object to compare against this one.
+	 * @param similar if true, then ignore IDs when doing the compare.
+	 * @return true if the objects are equal.
+	 */
+	protected boolean compare(EObject other, boolean similar) {
+		return ExtendedPropertiesAdapter.compare(object, other, similar);
 	}
 
 	/**
@@ -194,7 +259,17 @@ public class ObjectDescriptor<T extends EObject> {
 		return result;
 	}
 
-	public TransactionalEditingDomain getEditingDomain(Object context) {
+	/**
+	 * Gets the Editing Domain for the given EObject. See also
+	 * {@link AdapterFactoryEditingDomain}
+	 * 
+	 * If an Editing Domain can not be determined for the given context object,
+	 * then consult our {@link ExtendedPropertiesAdapter} owner.
+	 * 
+	 * @param context an EObject which must be contained in an EMF Resource.
+	 * @return
+	 */
+	public TransactionalEditingDomain getEditingDomain(EObject context) {
 		T object = adopt(context);
 		// check the EObject's contained Resource
 		EditingDomain result = AdapterFactoryEditingDomain.getEditingDomainFor(object);
@@ -221,23 +296,46 @@ public class ObjectDescriptor<T extends EObject> {
 		return null;
 	}
 
-	public T createObject(Object context) {
-		return createObject(getResource(),context);
+	/**
+	 * Create a new instance of the object that is managed by this
+	 * ObjectDescriptor.
+	 * 
+	 * @param eclass an optional type for the new object. Note that this must be
+	 *            a subtype of the feature type as returned by
+	 *            {@code getEType()}.
+	 * @return the new object.
+	 */
+	public T createObject(EClass eclass) {
+		return createObject(getResource(),eclass);
 	}
 	
+	/**
+	 * Gets the EMF Resource managed by our {@link ExtendedPropertiesAdapter}
+	 * 
+	 * @return and EMF Resource or null if not set.
+	 */
 	public Resource getResource() {
 		return owner.getResource();
 	}
 	
+	/**
+	 * Create a new instance of the object that is managed by this ObjectDescriptor.
+	 *  
+	 * @param resource the EMF Resource in which to create the new object.
+	 * @param eclass an optional type for the new object. Note that this must be
+	 *            a subtype of the feature type as returned by
+	 *            {@code getEType()}.
+	 * @return the new object.
+	 */
 	@SuppressWarnings("unchecked")
-	public T createObject(Resource resource, Object context) {
+	public T createObject(Resource resource, EClass eclass) {
 		
 		EClass eClass = null;
-		if (context instanceof EClass) {
-			eClass = (EClass)context;
+		if (eclass instanceof EClass) {
+			eClass = (EClass)eclass;
 		}
-		else if (context instanceof EObject) {
-			eClass = ((EObject)context).eClass();
+		else if (eclass instanceof EObject) {
+			eClass = ((EObject)eclass).eClass();
 		}
 		else {
 			eClass = object.eClass();
@@ -250,7 +348,7 @@ public class ObjectDescriptor<T extends EObject> {
 		// set the Resource into the Factory's adapter temporarily for use during
 		// object construction and initialization (@see ModelExtensionDescriptor)
 		EFactory factory = eClass.getEPackage().getEFactoryInstance();
-		ResourceProvider adapter = ResourceProvider.adapt(factory, resource);
+		ObjectPropertyProvider adapter = ObjectPropertyProvider.adapt(factory, resource);
 		Object value = owner.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
 		if (value!=null)
 			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);

@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter.ImplementationRefFeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -63,8 +64,8 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
     	setObjectDescriptor( new ObjectDescriptor<Operation>(object) {
 
 			@Override
-			public Operation createObject(Resource resource, Object context) {
-				Operation operation = super.createObject(resource, context);
+			public Operation createObject(Resource resource, EClass eclass) {
+				Operation operation = super.createObject(resource, eclass);
 				// find an Interface to which we can add this new Operation
 				// Ask user which Interface if there are more than one.
 				Definitions definitions = ModelUtil.getDefinitions(resource);

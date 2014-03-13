@@ -24,24 +24,43 @@ import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.window.Window;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ShowPropertiesFeature.
+ */
 public class ShowPropertiesFeature extends AbstractCustomFeature {
 
+	/** The changes done. */
 	protected boolean changesDone = false;
 	
+	/**
+	 * Instantiates a new show properties feature.
+	 *
+	 * @param fp the fp
+	 */
 	public ShowPropertiesFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+	 */
 	@Override
 	public String getName() {
 		return Messages.ShowPropertiesFeature_Name;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+	 */
 	@Override
 	public String getDescription() {
 		return Messages.ShowPropertiesFeature_Title;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+	 */
 	@Override
 	public boolean canExecute(ICustomContext context) {
 		PictogramElement[] pes = context.getPictogramElements();
@@ -52,11 +71,17 @@ public class ShowPropertiesFeature extends AbstractCustomFeature {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#isAvailable(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public boolean isAvailable(IContext context) {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+	 */
 	@Override
 	public void execute(ICustomContext context) {
 		PictogramElement[] pes = context.getPictogramElements();
@@ -72,11 +97,17 @@ public class ShowPropertiesFeature extends AbstractCustomFeature {
 			changesDone = false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+	 */
 	@Override
 	public boolean hasDoneChanges() {
 		return changesDone;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getImageId()
+	 */
 	@Override
 	public String getImageId() {
 		return IConstants.ICON_PROPERTIES_16;

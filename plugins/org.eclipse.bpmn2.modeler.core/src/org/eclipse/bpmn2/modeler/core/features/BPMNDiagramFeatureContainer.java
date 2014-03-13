@@ -16,7 +16,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.dd.di.DiagramElement;
@@ -36,19 +35,19 @@ import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class provides Graphiti features for the BPMNDiagram. Currently, it is only used
+ * This is the Graphiti Feature Container class for {@link BPMNDiagram} elements. Currently, it is only used
  * to contribute context menu actions for Connection Routing.
  */
 public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 
-	public BPMNDiagramFeatureContainer() {
-	}
-
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer#getApplyObject(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public Object getApplyObject(IContext context) {
 		if (context instanceof ICustomContext) {
@@ -59,51 +58,81 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer#canApplyTo(java.lang.Object)
+	 */
 	@Override
 	public boolean canApplyTo(Object o) {
 		return o instanceof BPMNDiagram;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getCreateFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getAddFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getUpdateFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer#getDirectEditingFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getLayoutFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getMoveFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer#getResizeFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IFeatureContainer#getDeleteFeature(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer#getCustomFeatures(org.eclipse.graphiti.features.IFeatureProvider)
+	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return new ICustomFeature[] {
@@ -113,13 +142,19 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 	}
 
 	/**
-	 * Context menu action to globally enable or disable the (still experimental)
-	 * Manhattan Connection Router.
+	 * Context menu action to globally enable or disable the Manhattan
+	 * Connection Router.
 	 */
 	public class EnableConnectionRoutingFeature extends AbstractCustomFeature {
 
+		/** The User Preferences. */
 		Bpmn2Preferences preferences;
 		
+		/**
+		 * Instantiates a new connection routing custom feature.
+		 *
+		 * @param fp the Feature Provider
+		 */
 		public EnableConnectionRoutingFeature(IFeatureProvider fp) {
 			super(fp);
 			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
@@ -127,16 +162,25 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 			preferences = Bpmn2Preferences.getInstance(bo);
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+		 */
 		@Override
 		public boolean canExecute(ICustomContext context) {
 			return true;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#isAvailable(org.eclipse.graphiti.features.context.IContext)
+		 */
 		@Override
 		public boolean isAvailable(IContext context) {
 			return true;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+		 */
 		@Override
 		public String getName() {
 			if (preferences.getEnableConnectionRouting())
@@ -144,11 +188,17 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 			return Messages.BPMNDiagramFeatureContainer_Enable_Name;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+		 */
 		@Override
 		public String getDescription() {
 			return Messages.BPMNDiagramFeatureContainer_Disable_Enable_Description;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+		 */
 		@Override
 		public void execute(ICustomContext context) {
 			boolean enabled = preferences.getEnableConnectionRouting();
@@ -162,22 +212,37 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 	 */
 	public class LayoutConnectionsFeature extends AbstractCustomFeature {
 
+		/** indicates if changes were made as a result of updating all connections. */
 		boolean hasDoneChanges = false;
 		
+		/**
+		 * Instantiates a new layout connections feature.
+		 *
+		 * @param fp the fp
+		 */
 		public LayoutConnectionsFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractFeature#getName()
+		 */
 		@Override
 		public String getName() {
 			return Messages.BPMNDiagramFeatureContainer_Reroute_All_Name;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#getDescription()
+		 */
 		@Override
 		public String getDescription() {
 			return Messages.BPMNDiagramFeatureContainer_Reroute_All_Description;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.ICustomContext)
+		 */
 		@Override
 		public boolean canExecute(ICustomContext context) {
 			PictogramElement[] pes = context.getPictogramElements();
@@ -185,11 +250,17 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 			return businessObject instanceof BPMNDiagram;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+		 */
 		@Override
 		public boolean hasDoneChanges() {
 			return hasDoneChanges;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+		 */
 		@Override
 		public void execute(ICustomContext context) {
 			PictogramElement[] pes = context.getPictogramElements();

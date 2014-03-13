@@ -24,9 +24,11 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramLink;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.parts.ContainerShapeEditPart;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -89,13 +91,9 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		invisibleRoot = new TreeParent(""); //$NON-NLS-1$
 	}
 
-	void updateModel(ModelHandler mh) {
+	void updateModel(DiagramEditor editor) {
 		invisibleRoot.removeChildren();
-		if (mh == null) {
-			return;
-		}
-
-		Definitions definitions = mh.getDefinitions();
+		Definitions definitions = ModelUtil.getDefinitions(editor);
 
 		List<RootElement> rootElements = definitions.getRootElements();
 		for (RootElement element : rootElements) {

@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /**
@@ -37,7 +38,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
     	
 		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
 			@Override
-			public Definitions createObject(Resource resource, Object context) {
+			public Definitions createObject(Resource resource, EClass eclass) {
 				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
 				IBpmn2RuntimeExtension rte = TargetRuntime.getCurrentRuntime().getRuntimeExtension();
 				definitions.setTypeLanguage(rte.getTypeLanguages()[0]);

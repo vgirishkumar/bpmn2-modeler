@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,6 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FormalExpression;
-import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -39,19 +37,15 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
-import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.dd.dc.DcPackage;
-import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -66,10 +60,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
-import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
-import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.emf.edit.domain.IEditingDomainProvider;
-import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.platform.IDiagramContainer;
@@ -157,7 +147,7 @@ public class ModelUtil {
 	}
 	
 	private static Object getKey(EObject obj) {
-		Resource resource = ResourceProvider.getResource(obj);
+		Resource resource = ObjectPropertyProvider.getResource(obj);
 		if (resource==null) {
 //			System.out.println("The object type "+obj.getClass().getName()+" is not contained in a Resource");
 			return null;
@@ -209,7 +199,7 @@ public class ModelUtil {
 
 	public static String generateID(EObject obj, Resource res, String name) {
 		if (res==null)
-			res = ResourceProvider.getResource(obj);
+			res = ObjectPropertyProvider.getResource(obj);
 		Object key = (res==null ? getKey(obj) : getKey(res));
 		if (key!=null) {
 			Hashtable<String, EObject> tab = ids.get(key);
@@ -315,7 +305,7 @@ public class ModelUtil {
 	 * @param obj - the BPMN2 object
 	 */
 	public static String setID(EObject obj) {
-		return setID(obj,ResourceProvider.getResource(obj));
+		return setID(obj,ObjectPropertyProvider.getResource(obj));
 	}
 
 	/**
@@ -569,7 +559,7 @@ public class ModelUtil {
 	}
 
 	public static DiagramEditor getDiagramEditor(EObject object) {
-		DiagramEditor ed = getDiagramEditor(ResourceProvider.getResource(object));
+		DiagramEditor ed = getDiagramEditor(ObjectPropertyProvider.getResource(object));
 		return ed;
 	}
 	
@@ -607,7 +597,7 @@ public class ModelUtil {
 	}
 	
 	public static Bpmn2DiagramType getDiagramType(BPMNDiagram diagram) {
-		if (diagram!=null && ResourceProvider.getResource(diagram)!=null) {
+		if (diagram!=null && ObjectPropertyProvider.getResource(diagram)!=null) {
 			BPMNPlane plane = diagram.getPlane();
 			if (plane!=null) {
 				BaseElement be = plane.getBpmnElement();
@@ -731,9 +721,25 @@ public class ModelUtil {
 		return false;
 	}
 	
-	public static Resource getResource(DiagramEditor editor) {
-		if (editor!=null)
-			return ResourceProvider.getResource(editor.getDiagramTypeProvider().getDiagram());
+	public static Definitions getDefinitions(Object object) {
+		if (object instanceof DiagramEditor) {
+			DiagramEditor editor = (DiagramEditor) object;
+			object = editor.getDiagramTypeProvider().getDiagram();
+		}
+		if (object instanceof Diagram) {
+			object = ((Diagram)object).eResource();
+		}
+		if (object instanceof EObject) {
+			object = ((EObject)object).eResource();
+		}
+		if (object instanceof Resource) {
+			Resource resource = (Resource) object;
+			if (resource!=null && !resource.getContents().isEmpty() && !resource.getContents().get(0).eContents().isEmpty()) {
+				Object defs = resource.getContents().get(0).eContents().get(0);
+				if (defs instanceof Definitions)
+					return (Definitions)defs;
+			}
+		}
 		return null;
 	}
 	
@@ -750,22 +756,8 @@ public class ModelUtil {
 		return container;
 	}
 
-	public static Definitions getDefinitions(EObject object) {
-		Resource resource = ResourceProvider.getResource(object);
-		return getDefinitions(resource);
-	}
-	
-	public static Definitions getDefinitions(Resource resource) {
-		if (resource!=null && !resource.getContents().isEmpty() && !resource.getContents().get(0).eContents().isEmpty()) {
-			Object defs = resource.getContents().get(0).eContents().get(0);
-			if (defs instanceof Definitions)
-				return (Definitions)defs;
-		}
-		return null;
-	}
-	
 	public static DocumentRoot getDocumentRoot(EObject object) {
-		Resource resource = ResourceProvider.getResource(object);
+		Resource resource = ObjectPropertyProvider.getResource(object);
 		if (resource!=null) {
 			EList<EObject> contents = resource.getContents();
 			if (!contents.isEmpty() && contents.get(0) instanceof DocumentRoot)
@@ -777,7 +769,7 @@ public class ModelUtil {
 	public static List<EObject> getAllReachableObjects(EObject object, EStructuralFeature feature) {
 		ArrayList<EObject> list = null;
 		if (object!=null && feature.getEType() instanceof EClass) {
-			Resource resource = ResourceProvider.getResource(object);
+			Resource resource = ObjectPropertyProvider.getResource(object);
 			if (resource!=null) {
 				EClass eClass = (EClass)feature.getEType();
 				if (eClass != EcorePackage.eINSTANCE.getEObject()) {
@@ -797,7 +789,7 @@ public class ModelUtil {
 	
 	public static List<EObject> getAllReachableObjects(EObject object, EClass eClass) {
 		ArrayList<EObject> list = null;
-		Resource resource = ResourceProvider.getResource(object);
+		Resource resource = ObjectPropertyProvider.getResource(object);
 		if (resource!=null) {
 			list = new ArrayList<EObject>();
 			if (eClass != EcorePackage.eINSTANCE.getEObject()) {
@@ -1052,7 +1044,7 @@ public class ModelUtil {
 	}
 	
 	public static boolean isParticipantBand(Participant participant) {
-		Resource resource = ResourceProvider.getResource(participant);
+		Resource resource = ObjectPropertyProvider.getResource(participant);
 		for (ChoreographyActivity ca : ModelUtil.getAllObjectsOfType(resource, ChoreographyActivity.class)) {
 			if (ca.getParticipantRefs().contains(participant)) {
 				return true;
@@ -1087,7 +1079,7 @@ public class ModelUtil {
 
 	@Deprecated
 	public static Resource getResource(EObject object) {
-		return ResourceProvider.getResource(object);
+		return ObjectPropertyProvider.getResource(object);
 	}
 	
 }

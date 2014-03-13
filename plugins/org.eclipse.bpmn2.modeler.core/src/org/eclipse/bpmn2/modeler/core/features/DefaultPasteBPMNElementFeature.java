@@ -76,25 +76,57 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DefaultPasteBPMNElementFeature.
+ */
 public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
+	/** The Constant COPIED_BPMN_SHAPE. */
 	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape";
+	
+	/** The Constant COPIED_BPMN_OBJECT. */
 	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object";
+	
+	/** The Constant COPY_FROM_CONTEXT. */
 	public static final String COPY_FROM_CONTEXT = "copy.from.context";
 	
+	/** The resource. */
 	protected Resource resource;
+	
+	/** The definitions. */
 	protected Definitions definitions;
+	
+	/** The id map. */
 	protected Hashtable<String, String> idMap;
+	
+	/** The shape map. */
 	protected HashMap<ContainerShape, ContainerShape> shapeMap;
+	
+	/** The connection map. */
 	protected HashMap<Connection, Connection> connectionMap;
+	
+	/** The x reference. */
 	protected int xReference;
+	
+	/** The y reference. */
 	protected int yReference;
+	
+	/** The diagram. */
 	protected Diagram diagram;
 
+	/**
+	 * Instantiates a new default paste bpmn element feature.
+	 *
+	 * @param fp the fp
+	 */
 	public DefaultPasteBPMNElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.IPasteFeature#canPaste(org.eclipse.graphiti.features.context.IPasteContext)
+	 */
 	@Override
 	public boolean canPaste(IPasteContext context) {
 		// target must be a FlowElementsContainer (Process, etc.)
@@ -146,6 +178,9 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.IPasteFeature#paste(org.eclipse.graphiti.features.context.IPasteContext)
+	 */
 	@Override
 	public void paste(IPasteContext context) {
 		// TODO: COPY-PASTE
@@ -222,6 +257,9 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		this.getDiagramEditor().setPictogramElementsForSelection(newPes);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.ui.features.AbstractPasteFeature#getFromClipboard()
+	 */
 	protected Object[] getFromClipboard() {
 		List<Object> allObjects = new ArrayList<Object>();
 		Object[] objects = super.getFromClipboard();

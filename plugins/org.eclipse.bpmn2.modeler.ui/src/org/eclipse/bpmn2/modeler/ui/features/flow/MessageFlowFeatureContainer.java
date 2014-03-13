@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.flow;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
@@ -25,7 +24,6 @@ import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.StartEvent;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -427,19 +425,16 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 				return true;
 			}
 			boolean different = false;
-			try {
-				ModelHandler handler = ModelHandler.getInstance(getDiagram());
-				Participant sourceParticipant = handler.getParticipant(source);
-				Participant targetParticipant = handler.getParticipant(target);
-				if (sourceParticipant==null) {
-					if (targetParticipant==null)
-						return true;
-					return false;
-				}
-				different = !sourceParticipant.equals(targetParticipant);
-			} catch (IOException e) {
-				Activator.logError(e);
+			ModelHandler mh = ModelHandler.getInstance(getDiagram());
+			Participant sourceParticipant = mh.getParticipant(source);
+			Participant targetParticipant = mh.getParticipant(target);
+			if (sourceParticipant==null) {
+				if (targetParticipant==null)
+					return true;
+				return false;
 			}
+			different = !sourceParticipant.equals(targetParticipant);
+
 			return different;
 		}
 

@@ -85,7 +85,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		setObjectDescriptor(new ObjectDescriptor<InputOutputSpecification>(object) {
 			
 			@Override
-			public InputOutputSpecification createObject(Resource resource, Object context) {
+			public InputOutputSpecification createObject(Resource resource, EClass eclass) {
 				InputOutputSpecification ioSpec = Bpmn2ModelerFactory.eINSTANCE.createInputOutputSpecification();
 				ModelUtil.setID(ioSpec, resource);
 				InputSet is = Bpmn2ModelerFactory.eINSTANCE.createInputSet();

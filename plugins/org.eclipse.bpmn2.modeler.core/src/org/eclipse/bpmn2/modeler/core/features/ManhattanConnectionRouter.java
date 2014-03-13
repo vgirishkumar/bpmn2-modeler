@@ -51,6 +51,7 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
+// TODO: Auto-generated Javadoc
 /**
  * A Connection Router that constrains all line segments of a connection to be either
  * horizontal or vertical; thus, diagonal lines are split into two segments that are
@@ -62,27 +63,61 @@ import org.eclipse.graphiti.util.IColorConstant;
  */
 public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 
+	/** The source top edge. */
 	protected LineSegment sourceTopEdge;
+	
+	/** The source bottom edge. */
 	protected LineSegment sourceBottomEdge;
+	
+	/** The source left edge. */
 	protected LineSegment sourceLeftEdge;
+	
+	/** The source right edge. */
 	protected LineSegment sourceRightEdge;
 
+	/** The target top edge. */
 	protected LineSegment targetTopEdge;
+	
+	/** The target bottom edge. */
 	protected LineSegment targetBottomEdge;
+	
+	/** The target left edge. */
 	protected LineSegment targetLeftEdge;
+	
+	/** The target right edge. */
 	protected LineSegment targetRightEdge;
 	
+	/** The Constant offset. */
 	static final int offset = 20;
+	
+	/** The test route solver. */
 	static boolean testRouteSolver = false;
 	
+	/**
+	 * The Enum Orientation.
+	 */
 	enum Orientation {
-		HORIZONTAL, VERTICAL, NONE
+		
+		/** The horizontal. */
+		HORIZONTAL, 
+ /** The vertical. */
+ VERTICAL, 
+ /** The none. */
+ NONE
 	};
 	
+	/**
+	 * Instantiates a new manhattan connection router.
+	 *
+	 * @param fp the fp
+	 */
 	public ManhattanConnectionRouter(IFeatureProvider fp) {
 		super(fp);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter#calculateRoute()
+	 */
 	@Override
 	protected ConnectionRoute calculateRoute() {
 		
@@ -287,6 +322,13 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return route;
 	}
 	
+	/**
+	 * Checks if is valid boundary anchor.
+	 *
+	 * @param ba the ba
+	 * @param shape the shape
+	 * @return true, if is valid boundary anchor
+	 */
 	protected boolean isValidBoundaryAnchor(BoundaryAnchor ba, Shape shape) {
 		PositionOnLine sp = BoundaryEventPositionHelper.getPositionOnLineProperty(shape);
 		if (sp!=null) {
@@ -334,6 +376,18 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return true;
 	}
 	
+	/**
+	 * Calculate route.
+	 *
+	 * @param allRoutes the all routes
+	 * @param source the source
+	 * @param start the start
+	 * @param middle the middle
+	 * @param target the target
+	 * @param end the end
+	 * @param orientation the orientation
+	 * @return the connection route
+	 */
 	protected ConnectionRoute calculateRoute(List<ConnectionRoute> allRoutes, Shape source, Point start, Point middle, Shape target, Point end, Orientation orientation) {
 		
 		ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
@@ -376,6 +430,14 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return m;
 	}
 
+	/**
+	 * Calculate departure.
+	 *
+	 * @param source the source
+	 * @param start the start
+	 * @param end the end
+	 * @return the list
+	 */
 	protected List<Point> calculateDeparture(Shape source, Point start, Point end) {
 		AnchorLocation sourceEdge = AnchorUtil.findNearestBoundaryAnchor(source, start).locationType;
 		List<Point> points = new ArrayList<Point>();
@@ -431,6 +493,14 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return points;
 	}
 	
+	/**
+	 * Calculate approach.
+	 *
+	 * @param start the start
+	 * @param target the target
+	 * @param end the end
+	 * @return the list
+	 */
 	protected List<Point> calculateApproach(Point start, Shape target, Point end) {
 		AnchorLocation targetEdge = AnchorUtil.findNearestBoundaryAnchor(target, end).locationType;
 		List<Point> points = new ArrayList<Point>();
@@ -486,10 +556,26 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return points;
 	}
 
+	/**
+	 * Creates the point.
+	 *
+	 * @param x the x
+	 * @param y the y
+	 * @return the point
+	 */
 	Point createPoint(int x, int y) {
 		return GraphicsUtil.createPoint(x, y); 
 	}
 	
+	/**
+	 * Calculate enroute.
+	 *
+	 * @param route the route
+	 * @param start the start
+	 * @param end the end
+	 * @param orientation the orientation
+	 * @return true, if successful
+	 */
 	protected boolean calculateEnroute(ConnectionRoute route, Point start, Point end, Orientation orientation) {
 		if (GraphicsUtil.pointsEqual(start, end))
 			return false;
@@ -633,6 +719,9 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return route.isValid();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter#getDetourPoints(org.eclipse.graphiti.mm.pictograms.ContainerShape)
+	 */
 	protected DetourPoints getDetourPoints(ContainerShape shape) {
 		DetourPoints detour = new DetourPoints(shape, offset);
 		if (allShapes==null)
@@ -652,16 +741,33 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return detour;
 	}
 	
+	/**
+	 * Finalize connection.
+	 */
 	protected void finalizeConnection() {
 	}
 	
+	/**
+	 * Fix collisions.
+	 *
+	 * @return true, if successful
+	 */
 	protected boolean fixCollisions() {
 		return false;
 	}
 	
+	/**
+	 * Calculate anchors.
+	 *
+	 * @return true, if successful
+	 */
 	protected boolean calculateAnchors() {
 		return false;
 	}
+	
+	/**
+	 * Update connection.
+	 */
 	protected void updateConnection() {
 		DIUtils.updateDIEdge(ffc);
 	}

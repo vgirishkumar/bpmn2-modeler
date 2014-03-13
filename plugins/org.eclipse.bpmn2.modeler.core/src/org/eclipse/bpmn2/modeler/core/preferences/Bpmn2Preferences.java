@@ -44,7 +44,7 @@ import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.ResourceProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
@@ -234,7 +234,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	 * @return project preferences
 	 */
 	public static Bpmn2Preferences getInstance(EObject object) {
-		return getInstance(ResourceProvider.getResource(object));
+		return getInstance(ObjectPropertyProvider.getResource(object));
 	}
 	
 	public static Bpmn2Preferences getInstance(Resource resource) {

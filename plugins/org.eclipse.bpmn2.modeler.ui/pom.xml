@@ -21,6 +21,7 @@
 	<name>BPMN2 Modeler Plugins: UI</name>
 	<description>Main UI for BPMN2 Modeler</description>
 
+<!-- 
 	<build>
 		<plugins>
 			<plugin>
@@ -28,7 +29,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
 				<configuration>
-					<destDir>../javadocs</destDir>
+					<destDir>doc</destDir>
 				</configuration>
 				<executions>
 					<execution>
@@ -41,4 +42,5 @@
 			</plugin>
 		</plugins>
 	</build>
+ -->
 </project>

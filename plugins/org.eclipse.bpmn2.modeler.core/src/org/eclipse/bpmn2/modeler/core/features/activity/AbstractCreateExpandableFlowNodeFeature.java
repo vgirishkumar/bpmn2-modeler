@@ -19,14 +19,30 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractCreateExpandableFlowNodeFeature.
+ *
+ * @param <T> the generic type
+ */
 public abstract class AbstractCreateExpandableFlowNodeFeature<T extends FlowNode> extends
 		AbstractCreateFlowElementFeature<T> {
 
+	/**
+	 * Instantiates a new abstract create expandable flow node feature.
+	 *
+	 * @param fp the fp
+	 * @param name the name
+	 * @param description the description
+	 */
 	public AbstractCreateExpandableFlowNodeFeature(IFeatureProvider fp, String name,
 			String description) {
 		super(fp, name, description);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature#create(org.eclipse.graphiti.features.context.ICreateContext)
+	 */
 	@Override
 	public Object[] create(ICreateContext context) {
 		Object[] elems = super.create(context);

@@ -975,12 +975,15 @@ public class ModelDecorator {
 	}
 	
 	private static EStructuralFeature getAnyAttributeFeature(EObject object) {
-		EClass eclass = null;
-		if (object instanceof EClass)
-			eclass = (EClass)object;
-		else
-			eclass = object.eClass();
-		EStructuralFeature anyAttribute = eclass.getEStructuralFeature("anyAttribute");
+		EStructuralFeature anyAttribute = null;
+		if (object!=null) {
+			EClass eclass = null;
+			if (object instanceof EClass)
+				eclass = (EClass)object;
+			else
+				eclass = object.eClass();
+			anyAttribute = eclass.getEStructuralFeature("anyAttribute");
+		}
 		return anyAttribute;
 	}
 	

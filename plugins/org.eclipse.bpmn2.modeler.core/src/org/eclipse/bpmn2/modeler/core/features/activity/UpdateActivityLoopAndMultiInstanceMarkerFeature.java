@@ -23,19 +23,31 @@ import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class UpdateActivityLoopAndMultiInstanceMarkerFeature.
+ */
 public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpdateMarkerFeature<Activity> {
 
+	/** The is loop or multi instance. */
 	public static String IS_LOOP_OR_MULTI_INSTANCE = "marker.loop.or.multi"; //$NON-NLS-1$
 
+	/**
+	 * The Enum LoopCharacteristicType.
+	 */
 	enum LoopCharacteristicType {
 		
+		/** The null. */
 		NULL("null"),  //$NON-NLS-1$
 		
-		LOOP(StandardLoopCharacteristics.class.getSimpleName()), 
+		/** The loop. */
+  LOOP(StandardLoopCharacteristics.class.getSimpleName()), 
 		
+		/** The multi parallel. */
 		MULTI_PARALLEL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":parallel"),  //$NON-NLS-1$
 		
-		MULTI_SEQUENTIAL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":sequential"); //$NON-NLS-1$
+		/** The multi sequential. */
+  MULTI_SEQUENTIAL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":sequential"); //$NON-NLS-1$
 
 		private String name;
 
@@ -43,25 +55,44 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 			this.name = name;
 		}
 
+		/**
+		 * Gets the name.
+		 *
+		 * @return the name
+		 */
 		String getName() {
 			return name;
 		}
 	}
 
+	/**
+	 * Instantiates a new update activity loop and multi instance marker feature.
+	 *
+	 * @param fp the fp
+	 */
 	public UpdateActivityLoopAndMultiInstanceMarkerFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#getPropertyKey()
+	 */
 	@Override
 	protected String getPropertyKey() {
 		return IS_LOOP_OR_MULTI_INSTANCE;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#isPropertyChanged(org.eclipse.bpmn2.FlowElement, java.lang.String)
+	 */
 	@Override
 	protected boolean isPropertyChanged(Activity activity, String propertyValue) {
 		return !getLoopCharacteristicsValue(activity).getName().equals(propertyValue);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#doUpdate(org.eclipse.bpmn2.FlowElement, org.eclipse.graphiti.mm.pictograms.ContainerShape)
+	 */
 	@Override
 	protected void doUpdate(Activity activity, ContainerShape markerContainer) {
 		switch (getLoopCharacteristicsValue(activity)) {
@@ -87,11 +118,20 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#convertPropertyToString(org.eclipse.bpmn2.FlowElement)
+	 */
 	@Override
 	protected String convertPropertyToString(Activity activity) {
 		return getLoopCharacteristicsValue(activity).getName();
 	}
 
+	/**
+	 * Gets the loop characteristics value.
+	 *
+	 * @param activity the activity
+	 * @return the loop characteristics value
+	 */
 	public static LoopCharacteristicType getLoopCharacteristicsValue(Activity activity) {
 		LoopCharacteristics loopCharacteristics = activity.getLoopCharacteristics();
 		LoopCharacteristicType type = LoopCharacteristicType.NULL;

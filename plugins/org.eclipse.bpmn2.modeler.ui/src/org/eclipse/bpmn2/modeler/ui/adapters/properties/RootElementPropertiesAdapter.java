@@ -65,8 +65,8 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 		}
 		
 		@Override
-		public T createObject(Resource resource, Object context) {
-			T rootElement = super.createObject(resource, context);
+		public T createObject(Resource resource, EClass eclass) {
+			T rootElement = super.createObject(resource, eclass);
 			
 			Definitions definitions = null;
 			if (resource!=null)

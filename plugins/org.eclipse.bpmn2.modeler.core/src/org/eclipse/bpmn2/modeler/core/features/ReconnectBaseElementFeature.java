@@ -37,14 +37,27 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ReconnectBaseElementFeature.
+ */
 public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 
+	/** The changes done. */
 	protected boolean changesDone = false;
 	
+	/**
+	 * Instantiates a new reconnect base element feature.
+	 *
+	 * @param fp the fp
+	 */
 	public ReconnectBaseElementFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#canReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+	 */
 	@Override
 	public boolean canReconnect(IReconnectionContext context) {
 		AnchorContainer sourceContainer = null;
@@ -66,6 +79,9 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 		return super.canReconnect(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#preReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+	 */
 	@Override
 	public void preReconnect(IReconnectionContext context) {
 		IPeService peService = Graphiti.getPeService();
@@ -121,6 +137,9 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 		super.preReconnect(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.DefaultReconnectionFeature#postReconnect(org.eclipse.graphiti.features.context.IReconnectionContext)
+	 */
 	@Override
 	public void postReconnect(IReconnectionContext context) {
 		super.postReconnect(context);
@@ -159,6 +178,9 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 		changesDone = true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
+	 */
 	@Override
 	public boolean hasDoneChanges() {
 		return changesDone;

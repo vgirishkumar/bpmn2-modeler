@@ -37,21 +37,42 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractAddActivityFeature.
+ *
+ * @param <T> the generic type
+ */
 public abstract class AbstractAddActivityFeature<T extends Activity>
 	extends AbstractBpmn2AddElementFeature<T> {
 
+	/** The Constant ACTIVITY_DECORATOR. */
 	public static final String ACTIVITY_DECORATOR = "activity-decorator"; //$NON-NLS-1$
+	
+	/** The Constant IS_ACTIVITY. */
 	public static final String IS_ACTIVITY = "activity"; //$NON-NLS-1$
 
+	/** The ga service. */
 	protected final IGaService gaService = Graphiti.getGaService();
+	
+	/** The pe service. */
 	protected final IPeService peService = Graphiti.getPeService();
 
+	/** The preferences. */
 	protected Bpmn2Preferences preferences;
 	
+	/**
+	 * Instantiates a new abstract add activity feature.
+	 *
+	 * @param fp the fp
+	 */
 	public AbstractAddActivityFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
+	 */
 	@Override
 	public boolean canAdd(IAddContext context) {
 		/*
@@ -75,6 +96,9 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		return FeatureSupport.isValidFlowElementTarget(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
+	 */
 	@Override
 	public PictogramElement add(IAddContext context) {
 		preferences = Bpmn2Preferences.getInstance((EObject)context.getNewObject());
@@ -139,11 +163,22 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		return containerShape;
 	}
 
+	/**
+	 * Gets the marker container offset.
+	 *
+	 * @return the marker container offset
+	 */
 	protected int getMarkerContainerOffset() {
 		return 0;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature#getWidth()
+	 */
 	public abstract int getWidth();
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature#getHeight()
+	 */
 	public abstract int getHeight();
 }
