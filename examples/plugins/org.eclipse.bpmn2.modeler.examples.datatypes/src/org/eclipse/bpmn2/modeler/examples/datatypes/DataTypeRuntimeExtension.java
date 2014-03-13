@@ -25,7 +25,6 @@ public class DataTypeRuntimeExtension extends DefaultBpmn2RuntimeExtension {
 
 	@Override
 	public void notify(LifecycleEvent event) {
-		System.out.println(event.eventType+" "+event.target);
 		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_ADDED) && event.target instanceof ContainerShape) {
 			ColorChangeAdapter.adapt((ContainerShape) event.target);
 		}
