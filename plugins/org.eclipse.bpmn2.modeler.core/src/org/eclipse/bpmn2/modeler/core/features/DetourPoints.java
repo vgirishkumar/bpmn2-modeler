@@ -20,10 +20,10 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
-// TODO: Auto-generated Javadoc
 /**
- * Calculates detour cuts for a given shape. These cuts surround the shape at each of the corners
- * of the shape's bounding rectangle, but "just outside" the shape.
+ * Calculates detours for a given shape. These routes surround the shape at each
+ * of the corners of the shape's bounding rectangle, but "just outside" the
+ * shape.
  */
 public class DetourPoints {
 	
@@ -380,7 +380,7 @@ public class DetourPoints {
 			if (isTop(np2)) {
 				// check top edge
 				if (p1.getY()>topLeft.getY() && p2.getY()>topLeft.getY()) {
-					// both cuts below top edge
+					// both points below top edge
 					detour.add(np1);
 					detour.add(np2);
 				}
@@ -394,7 +394,7 @@ public class DetourPoints {
 			else {
 				// check bottom edge
 				if (p1.getY()<bottomLeft.getY() && p2.getY()<bottomLeft.getY()) {
-					// both cuts above bottom edge
+					// both points above bottom edge
 					detour.add(np1);
 					detour.add(np2);
 				}
@@ -410,7 +410,7 @@ public class DetourPoints {
 			if (isLeft(np2)) {
 				// check left edge
 				if (p1.getX()>topLeft.getX() && p2.getX()>topLeft.getX()) {
-					// both cuts to right of left edge
+					// both points to right of left edge
 					detour.add(np1);
 					detour.add(np2);
 				}
@@ -422,7 +422,7 @@ public class DetourPoints {
 			else {
 				// check right edge
 				if (p1.getX()<topRight.getX() && p2.getX()<topRight.getX()) {
-					// both cuts to right of left edge
+					// both points to right of left edge
 					detour.add(np1);
 					detour.add(np2);
 				}

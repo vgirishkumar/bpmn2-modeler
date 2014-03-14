@@ -22,15 +22,16 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
-// TODO: Auto-generated Javadoc
 /**
- * Layout Feature class for Connections. This simply invokes one of the Connection Routers
- * depending on the user preferences for each type of connection: SequenceFlow, MessageFlow,
+ * Default Graphiti {@code LayoutFeature} class for Connections.
+ * <p>
+ * This simply invokes one of the Connection Routers depending on the user
+ * preferences for each type of connection: SequenceFlow, MessageFlow,
  * Association and Conversation. See the Bpmn2EditorPreferencePage for details.
  */
 public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 
-	/** The has done changes. */
+	/** True if changes were made by this feature. */
 	boolean hasDoneChanges = false;
 	
 	/**

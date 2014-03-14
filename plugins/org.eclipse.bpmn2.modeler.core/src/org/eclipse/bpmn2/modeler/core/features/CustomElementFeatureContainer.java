@@ -38,22 +38,21 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class CustomElementFeatureContainer.
+ * The base class for custom shape and connection Feature Containers.
  */
 public class CustomElementFeatureContainer implements ICustomElementFeatureContainer {
 	
-	/** The id. */
+	/** The custom element id. */
 	protected String id;
 	
-	/** The custom task descriptor. */
+	/** The custom task descriptor contributed by the extension plug-in. */
 	protected CustomTaskDescriptor customTaskDescriptor;
 	
 	/** The feature container delegate. */
 	protected IFeatureContainer featureContainerDelegate = null;
 	
-	/** The fp. */
+	/** The Feature Provider. */
 	protected IBpmn2FeatureProvider fp;
 	
 	/**
@@ -74,7 +73,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	/**
 	 * Creates the feature container.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the i feature container
 	 */
 	protected IFeatureContainer createFeatureContainer(IFeatureProvider fp) {
@@ -86,7 +85,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	/**
 	 * Gets the feature container.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the feature container
 	 */
 	protected IFeatureContainer getFeatureContainer(IFeatureProvider fp) {
@@ -146,8 +145,8 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	 * Set this modelObject's ID in the given Graphiti context.
 	 * 
 	 * @param context - if this is a IPictogramElementContext, set the property
-	 *                  in the contained PictogramElement's list of properties;
-	 *                  otherwise set the Context's property 
+	 *            in the contained PictogramElement's list of properties;
+	 *            otherwise set the Context's property
 	 * @param id - ID of this Custom Task
 	 */
 	public static void setId(IContext context, String id) {
@@ -170,10 +169,8 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	public static String getId(IContext context) {
 		Object id = null;
 
-		/**
-		 * IAddContext can also mean that a file is dragged,
-		 * therefore we have to check if we are really dragging a customTask
-		 */
+		// IAddContext can also mean that a file is dragged, therefore we have
+		// to check if we are really dragging a customTask
 		if (context instanceof IAddContext && 
 			((IAddContext)context).getNewObject() instanceof EObject ) {
 			EObject object = (EObject) ((IAddContext)context).getNewObject();
@@ -237,9 +234,9 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		protected AbstractBpmn2AddFeature<BaseElement> addFeatureDelegate;
 		
 		/**
-		 * Instantiates a new adds the custom element feature.
+		 * Instantiates a new {@code AddFeature} for custom elements.
 		 *
-		 * @param fp the fp
+		 * @param fp the Feature Provider
 		 */
 		public AddCustomElementFeature(IFeatureProvider fp) {
 			super(fp);
@@ -294,7 +291,6 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		 */
 		@Override
 		public BaseElement getBusinessObject(IAddContext context) {
-			// TODO Auto-generated method stub
 			return addFeatureDelegate.getBusinessObject(context);
 		}
 

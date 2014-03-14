@@ -53,11 +53,9 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 
-// TODO: Auto-generated Javadoc
 /**
- * Router for straight-line connections from source to target.
- * Currently this does nothing but serves as a container for common
- * fields and methods.
+ * Router for straight-line connections from source to target. Currently this
+ * does nothing but serves as a container for common fields and methods.
  */
 public class DefaultConnectionRouter extends AbstractConnectionRouter {
 

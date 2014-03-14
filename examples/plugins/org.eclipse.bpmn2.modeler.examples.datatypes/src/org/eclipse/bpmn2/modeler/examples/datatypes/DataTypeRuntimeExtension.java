@@ -15,8 +15,14 @@ package org.eclipse.bpmn2.modeler.examples.datatypes;
 
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  *
@@ -25,6 +31,34 @@ public class DataTypeRuntimeExtension extends DefaultBpmn2RuntimeExtension {
 
 	@Override
 	public void notify(LifecycleEvent event) {
+		if (event.eventType.equals(EventType.BUSINESSOBJECT_CREATED)) {
+			// As soon as the Business Object is created initialize the foreground
+			// and background color attributes to their defaults as set in the
+			// User Preferences for this object type.
+			EObject be = (EObject) event.target;
+			// We need an adapter to do this:
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
+			if (adapter!=null) {
+				// Fetch the colors from User Preferences
+				Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
+				ShapeStyle ss = pref.getShapeStyle(be);
+				RGB foreground = ShapeStyle.colorToRGB(ss.getShapeForeground());
+				RGB background = ShapeStyle.colorToRGB(ss.getShapeBackground());
+				EStructuralFeature feature;
+				// does this object have a "bgcolor" extension attribute?
+				feature = adapter.getFeature("bgcolor");
+				if (feature!=null) {
+					// yes, set the default value
+					be.eSet(feature,background);
+				}
+				// does this object have a "fgcolor" extension attribute?
+				feature = adapter.getFeature("fgcolor");
+				if (feature!=null) {
+					// yes, set it
+					be.eSet(feature,foreground);
+				}
+			}
+		}
 		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_ADDED) && event.target instanceof ContainerShape) {
 			ColorChangeAdapter.adapt((ContainerShape) event.target);
 		}

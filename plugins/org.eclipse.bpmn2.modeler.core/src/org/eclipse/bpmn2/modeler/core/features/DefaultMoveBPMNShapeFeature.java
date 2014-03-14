@@ -34,22 +34,22 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DefaultMoveBPMNShapeFeature.
+ * Default Graphiti {@code MoveShapeFature} class for Shapes.
+ * <p>
  */
 public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
-	/** The pre shape x. */
+	/** The shape's x coordinate before the move. */
 	protected int preShapeX;
 	
-	/** The pre shape y. */
+	/** The shape's y coordinate before the move. */
 	protected int preShapeY;
 	
 	/**
-	 * Instantiates a new default move bpmn shape feature.
+	 * Instantiates a new default MoveShapeFature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 */
 	public DefaultMoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);

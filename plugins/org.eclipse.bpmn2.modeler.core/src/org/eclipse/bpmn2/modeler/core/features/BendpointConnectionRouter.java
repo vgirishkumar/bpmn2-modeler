@@ -31,32 +31,27 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
 /**
- * Router for connections from source to target that can have user-settable bendpoints.
+ * Router for connections that can have user-settable bendpoints.
  */
 public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
-	/** The Constant margin. */
+	/** The minimum distance between a bendpoint and a shape when rerouting to avoid collisions. */
 	protected static final int margin = 10;
-	// The Connection passed in to route(), cast as a FreeFormConnection for convenience
-	/** The ffc. */
+	/** The connection, must be a {@code FreeFormConnection}. */
 	protected FreeFormConnection ffc;
-	// The moved or added bendpoint (if any)
-	/** The moved bendpoint. */
+	/** The moved or added bendpoint (if any). */
 	protected Point movedBendpoint;
-	
 	/** The removed bendpoint. */
 	protected Point removedBendpoint;
-	// The list of old connection cuts (including the end cuts) for determining if a route has changed
-	/** The old points. */
+	/** The list of old connection cuts (including the end cuts) for determining if a route has changed */
 	protected List<Point> oldPoints;
-	// flag to disable automatic collision avoidance and optimization
-	/** The manual. */
+	/** flag to disable automatic collision avoidance and optimization. */
 	protected boolean manual = true;
 	
 	/**
 	 * Instantiates a new bendpoint connection router.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 */
 	public BendpointConnectionRouter(IFeatureProvider fp) {
 		super(fp);
@@ -206,9 +201,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 	
 	/**
-	 * Route connections whose source and target are the same. This only reroutes the
-	 * connection if there are currently no bendpoints in the connection - we don't
-	 * want to reroute a connection that may have already been manually rerouted.
+	 * Route connections whose source and target are the same. This only
+	 * reroutes the connection if there are currently no bendpoints in the
+	 * connection - we don't want to reroute a connection that may have already
+	 * been manually rerouted.
 	 *
 	 * @return true if the router has done any work
 	 */
@@ -269,11 +265,12 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 	
 	/**
-	 * Compare the connection's original start/end locations and all of its bendpoints
-	 * with the newly calculated cuts.
+	 * Compare the connection's original start/end locations and all of its
+	 * bendpoints with the newly calculated route.
 	 *
 	 * @param route the route
-	 * @return true if the connection is different from the newly calculated cuts
+	 * @return true if the connection is different from the newly calculated
+	 *         route
 	 */
 	protected boolean isRouteChanged(ConnectionRoute route) {
 		if (route==null || route.size()==0)
@@ -292,7 +289,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	/**
-	 * Set the connection's new start/end point anchors and the newly calculated bendpoints.
+	 * Set the connection's new start/end point anchors and the newly calculated
+	 * bendpoints.
 	 *
 	 * @param route the route
 	 */
@@ -327,13 +325,13 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	/**
-	 * Set a property in the given FreeFormConnection that represents the index of an existing
-	 * bendpoint that has been moved by the user. This bendpoint is taken into consideration
-	 * in the new routing calculations.
+	 * Set a property in the given FreeFormConnection that represents the index
+	 * of an existing bendpoint that has been moved by the user. This bendpoint
+	 * is taken into consideration in the new routing calculations.
 	 * 
 	 * @param connection - FreeFormConnection to check
-	 * @param index - index of a bendpoint. If this value is out of range, the property will be
-	 * remmoved from the connection
+	 * @param index - index of a bendpoint. If this value is out of range, the
+	 *            property will be remmoved from the connection
 	 */
 	public static void setMovedBendpoint(Connection connection, int index) {
 		setInterestingBendpoint(connection, "moved.", index); //$NON-NLS-1$
@@ -390,11 +388,12 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	/**
-	 * Return the "moved bendpoint" property that was previously set in the FreeFormConnection
-	 * by setMovedBendpoint()
-	 *  
+	 * Return the "moved bendpoint" property that was previously set in the
+	 * FreeFormConnection by setMovedBendpoint()
+	 * 
 	 * @param connection - FreeFormConnection to check
-	 * @return a Graphiti Point in Diagram-relative coordinates, or null if the property is not set
+	 * @return a Graphiti Point in Diagram-relative coordinates, or null if the
+	 *         property is not set
 	 */
 	public static Point getMovedBendpoint(Connection connection) {
 		return getInterestingBendpoint(connection, "moved."); //$NON-NLS-1$

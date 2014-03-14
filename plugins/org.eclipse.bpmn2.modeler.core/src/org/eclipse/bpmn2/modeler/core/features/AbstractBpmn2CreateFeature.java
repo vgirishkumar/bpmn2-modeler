@@ -122,7 +122,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	public void putBusinessObject(ICreateContext context, T businessObject) {
 		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
 		
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED,
+		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
 

@@ -40,9 +40,15 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class CustomShapeFeatureContainer.
+ * The Feature Container for Custom Shapes.
+ * <p>
+ * This class must be extended by contributing plug-ins that want to extend any
+ * of the BPMN2 shape elements, e.g. {@link org.eclipse.bpmn2.Task}, {@link org.eclipse.bpmn2.Gateway},
+ * {@link org.eclipse.bpmn2.Event}, etc.
+ * <p>
+ * See the {@code <customTask>} element of the
+ * {@code org.eclipse.bpmn2.modeler.runtime} extension point.
  */
 public class CustomShapeFeatureContainer extends CustomElementFeatureContainer implements IShapeFeatureContainer {
 	
@@ -91,13 +97,15 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	}
 	
 	/**
-	 * Base class for Custom Shape Feature construction. Custom Shapes contributed to
-	 * the editor MUST subclass this!
-	 * 
+	 * Base class for Custom Shape Feature construction.
+	 * <p>
+	 * Custom Connections contributed to the editor <b>MUST</b> subclass this in
+	 * their FeatureContainer implementation.
+	 * <p>
 	 * This class is intended for creation of BPMN2 objects that have custom model
 	 * extensions. This is for any object considered to be a "shape", e.g. Activities,
 	 * Data Objects, Gateways, Events, etc. 
-	 * 
+	 * <p> 
 	 * The creation process copies the modelObject ID string into the Graphiti create
 	 * context during the construction phase, then migrates that ID into the created
 	 * PictogramElement. This is necessary because the ID must be associated with the
@@ -109,10 +117,10 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		protected AbstractBpmn2CreateFeature<BaseElement> createFeatureDelegate;
 		
 		/**
-		 * Instantiates a new creates the custom shape feature.
+		 * Instantiates a new {@code CreateFeature} for custom shapes.
 		 *
-		 * @param fp the fp
-		 * @param name the name
+		 * @param fp the Feature Provider
+		 * @param name the name of the element being created
 		 * @param description the description
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -124,9 +132,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		}
 
 		/**
-		 * Instantiates a new creates the custom shape feature.
+		 * Alternate constructor.
 		 *
-		 * @param fp the fp
+		 * @param fp the Feature Provider
 		 */
 		public CreateCustomShapeFeature(IFeatureProvider fp) {
 			this(fp, customTaskDescriptor.getName(),
@@ -228,7 +236,10 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 	}
 
 	/**
-	 * The Class AddCustomShapeFeature.
+	 * The {@code AddFeature} base class for creating custom shapes.
+	 * <p>
+	 * Custom shapes contributed to the editor <b>MUST</b> subclass this in
+	 * their FeatureContainer implementation.
 	 */
 	public class AddCustomShapeFeature extends AbstractBpmn2AddFeature<BaseElement> {
 
@@ -236,9 +247,9 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		protected AbstractBpmn2AddFeature<BaseElement> addFeatureDelegate;
 		
 		/**
-		 * Instantiates a new adds the custom shape feature.
+		 * Instantiates a new {@code AddConnectionFeature} for custom connections.
 		 *
-		 * @param fp the fp
+		 * @param fp the Feature Provider
 		 */
 		public AddCustomShapeFeature(IFeatureProvider fp) {
 			super(fp);

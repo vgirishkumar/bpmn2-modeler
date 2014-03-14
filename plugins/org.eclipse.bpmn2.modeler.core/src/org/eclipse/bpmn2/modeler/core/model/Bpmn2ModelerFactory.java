@@ -21,6 +21,8 @@ import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
@@ -163,6 +165,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 			    		}
 			    	}
 	    		}
+	    		
+	    		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
 	    	}
 		}
 		finally {

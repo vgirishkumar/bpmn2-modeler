@@ -16,43 +16,39 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ConnectionRoute.
  */
 public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<ConnectionRoute> {
 		
 		/**
-		 * The Class Collision.
+		 * Records a collision of a line segment with a shape.
 		 */
 		class Collision {
 			
 			/** The shape. */
 			Shape shape;
-			
-			/** The start. */
+			/** The line segment start point. */
 			Point start;
-			
-			/** The end. */
+			/** The line segment end point. */
 			Point end;
 			
 			/**
 			 * Instantiates a new collision.
 			 *
-			 * @param shape the shape
-			 * @param start the start
-			 * @param end the end
+			 * @param shape the collision shape
+			 * @param start the line segment start point
+			 * @param end the line segment end point
 			 */
 			public Collision(Shape shape, Point start, Point end) {
 				this.shape = shape;
@@ -70,25 +66,23 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		}
 		
 		/**
-		 * The Class Crossing.
+		 * Records the crossing of a line segment with an existing connection.
 		 */
 		class Crossing {
 			
 			/** The connection. */
 			Connection connection;
-			
-			/** The start. */
+			/** The line segment start point. */
 			Point start;
-			
-			/** The end. */
+			/** The line segment end point. */
 			Point end;
 			
 			/**
 			 * Instantiates a new crossing.
 			 *
-			 * @param connection the connection
-			 * @param start the start
-			 * @param end the end
+			 * @param connection the crossed connection
+			 * @param start the line segment start point
+			 * @param end the line segment end point
 			 */
 			public Crossing(Connection connection, Point start, Point end) {
 				this.connection = connection;
@@ -107,24 +101,22 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		
 		/** The router. */
 		DefaultConnectionRouter router;
-		
-		/** The id. */
+		/** The route id. */
 		int id;
 		private List<Point> points = new ArrayList<Point>();
 		
-		/** The collisions. */
+		/** The list of shape collisions. */
 		List<Collision> collisions = new ArrayList<Collision>();
 		
-		/** The crossings. */
+		/** The list of connection crossings. */
 		List<Crossing> crossings = new ArrayList<Crossing>();
 		
-		/** The source. */
+		/** The source shape of the route being calculated. */
 		Shape source;
 		
-		/** The target. */
+		/** The target shape of the route being calculated. */
 		Shape target;
 		
-		/** The valid. */
 		boolean valid = true;
 		private int rank = 0;
 		

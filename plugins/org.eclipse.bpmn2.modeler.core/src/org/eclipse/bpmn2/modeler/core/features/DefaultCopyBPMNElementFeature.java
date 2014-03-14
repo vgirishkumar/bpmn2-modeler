@@ -23,16 +23,16 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.AbstractCopyFeature;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DefaultCopyBPMNElementFeature.
+ * Default Graphiti {@code CopyFeature} base class for all BPMN2 model elements which
+ * are associated with BPMN DI elements.
  */
 public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
 
 	/**
-	 * Instantiates a new default copy bpmn element feature.
+	 * Instantiates a new default {@code CopyFeature).
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 */
 	public DefaultCopyBPMNElementFeature(IFeatureProvider fp) {
 		super(fp);
@@ -111,10 +111,10 @@ public class DefaultCopyBPMNElementFeature extends AbstractCopyFeature {
 	}
 	
 	/**
-	 * Find all connections.
+	 * Find all outgoing and incoming connections attached to the given list of shapes.
 	 *
 	 * @param shapes the shapes
-	 * @return the list
+	 * @return a list of connections
 	 */
 	public static List<Connection> findAllConnections(List<PictogramElement> shapes) {
         List<Connection> connections = new ArrayList<Connection>();

@@ -63,7 +63,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
 
 /**
- * This is the Graphiti AddFeature base class for all BPMN2 model elements which
+ * This is the Graphiti {@code AddFeature} base class for all BPMN2 model elements which
  * are associated with BPMN DI elements.
  * <p>
  * This class adds support for managing BPMN DI elements, i.e. BPMNShape and

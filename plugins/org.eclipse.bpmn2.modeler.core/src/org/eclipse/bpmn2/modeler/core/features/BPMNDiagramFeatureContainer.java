@@ -38,10 +38,10 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
-// TODO: Auto-generated Javadoc
 /**
- * This is the Graphiti Feature Container class for {@link BPMNDiagram} elements. Currently, it is only used
- * to contribute context menu actions for Connection Routing.
+ * This is the Graphiti Feature Container class for {@link BPMNDiagram}
+ * elements. Currently, it is only used to contribute context menu actions for
+ * Connection Routing.
  */
 public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 

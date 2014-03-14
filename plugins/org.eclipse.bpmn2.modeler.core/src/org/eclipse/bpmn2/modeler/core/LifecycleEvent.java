@@ -13,8 +13,11 @@
 
 package org.eclipse.bpmn2.modeler.core;
 
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.part.WorkbenchPart;
 
 /**
@@ -63,9 +66,8 @@ public class LifecycleEvent {
 		EDITOR_SHUTDOWN,
 		// Business Object Events:
 		/**
-		 * Sent by the BPMN2 Create Feature immediately after a business object
-		 * has been created. Only create actions from the user will trigger this
-		 * event. This event will not be sent as a result of a redo action.
+		 * Sent by the BPMN2 Object Factory immediately after a business object
+		 * has been created. This event is always sent, even during file loading.
 		 * <p>
 		 * This is a good place to do any additional BPMN2 model object
 		 * initialization, or hook adapters.
@@ -74,6 +76,25 @@ public class LifecycleEvent {
 		 * object instance.
 		 */
 		BUSINESSOBJECT_CREATED,
+		/**
+		 * Sent by the BPMN2 Create Feature immediately after a business object
+		 * has been created and initialized by the editor framework. Only create
+		 * actions from the user will trigger this event. This event will not be
+		 * sent during file loading, or as a result of a redo action.
+		 * <p>
+		 * This is a good place to do any additional BPMN2 model object
+		 * initialization, or hook adapters.
+		 * <p>
+		 * The {@code LifecycleEvent.target} field will contain the BPMN2 model
+		 * object instance.
+		 * <p>
+		 * The {@code LifecycleEvent.context} field will contain an
+		 * {@code org.eclipse.graphiti.features.context.IAddContext} instance.
+		 * <p>
+		 * The {@code LifecycleEvent.featureProvider} field will be set to the
+		 * BPMN2 Modeler Feature Provider instance.
+		 */
+		BUSINESSOBJECT_INITIALIZED,
 		/**
 		 * Sent by the BPMN2 Delete Feature immediately before the business
 		 * object is destroyed. Only delete actions from the user will trigger
@@ -420,5 +441,21 @@ public class LifecycleEvent {
 		this.featureProvider = featureProvider;
 		this.context = context;
 		this.target = target;
+	}
+	
+	@Override
+	public String toString() {
+		String s = "Event: "+eventType;
+		if (target instanceof PictogramElement) {
+			EObject o = BusinessObjectUtil.getBusinessObjectForPictogramElement((PictogramElement)target);
+			if (o!=null) {
+				s += " " +o.eClass().getName();
+			}
+		}
+		else if (target instanceof EObject) {
+			EObject o = (EObject) target;
+			s += " " +o.eClass().getName();
+		}
+		return s;
 	}
 }

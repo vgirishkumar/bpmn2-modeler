@@ -13,17 +13,13 @@
 
 package org.eclipse.bpmn2.modeler.examples.dynamic;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.ui.features.flow.SequenceFlowFeatureContainer;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -33,25 +29,30 @@ import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
 /**
- * Example implementation of a Custom Connection feature container. The main things to consider
- * here are:
- * 
- * createFeatureContainer() - creates the Feature Container that is responsible for
- *   building the "custom connection". This can be a subclass of an existing Feature Container
- *   from the editor core, or a new one. Typically, this should be a subclass of the
- *   Feature Container for the type of bpmn2 element defined in the "type" attribute
- *   of this Custom Task extension point.
- * 
- * If your Feature Container extends one of the existing classes from editor core, you should
- * override the following methods:
- * 
- * getAddFeature() - this should override the Add Feature from the chosen Feature Container
- *   base class (see above). Typically you will want to override the decorateShape() method
- *   which allows you to customize the graphical representation of this Custom Connection figure.
- * getCreateFeature() - this MUST be overridden if you intend to add extension attributes to
- *   your business object (bpmn2 element) - see the code example below. You will also want to
- *   provide your own images for the tool palette by overriding getCreateImageId() and
- *   getCreateLargeImageId() in your Create Feature.
+ * Example implementation of a Custom Connection feature container. The main
+ * things to consider here are:
+ * <p>
+ * <ul>
+ * <li>{@link createFeatureContainer()} - creates the Feature Container that is
+ * responsible for building the "custom connection". This can be a subclass of
+ * an existing Feature Container from the editor core, or a new one. Typically,
+ * this should be a subclass of the Feature Container for the type of bpmn2
+ * element defined in the "type" attribute of this Custom Task extension point.
+ * </ul>
+ * <p>
+ * If your Feature Container extends one of the existing classes from editor
+ * core, you should override the following methods:
+ * <ul>
+ * <li>{@link getAddFeature()} - this should override the Add Feature from the
+ * chosen Feature Container base class (see above). Typically you will want to
+ * override the decorateShape() method which allows you to customize the
+ * graphical representation of this Custom Connection figure.
+ * <li>{@link getCreateFeature()} - this MUST be overridden if you intend to add
+ * extension attributes to your business object (bpmn2 element) - see the code
+ * example below. You will also want to provide your own images for the tool
+ * palette by overriding getCreateImageId() and getCreateLargeImageId() in your
+ * Create Feature.
+ * </ul>
  * 
  * @author Bob Brodt
  */
