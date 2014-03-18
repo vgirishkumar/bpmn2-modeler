@@ -197,67 +197,73 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	 * Updates the error decorators and tooltips of this editor's Label widget.
 	 */
 	protected void updateLabelDecorator() {
-		String tooltip = label.getToolTipText();
-		
-		if (tooltip==null && object!=null && feature!=null) {
-   			label.setToolTipText(getToolTipText());
-		}
-		
-		
-		boolean applies = false;
-    	String text = null;
-    	String image = null;
+    	label.getShell().getDisplay().asyncExec(new Runnable() {
 
-    	if (isVisible()) {
-	        ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
-	        		object, ValidationStatusAdapter.class);
-	        if (statusAdapter != null) {
-	            final IStatus status = statusAdapter.getValidationStatus();
-	            if (status.isMultiStatus()) {
-	            	for (IStatus s : status.getChildren()) {
-	            		if (statusApplies(s)) {
-	            			applies = true;
-	            			break;
-	            		}
-	            	}
-	            }
-	            else if (statusApplies(status))
-	            	applies = true;
-	            
-	            if (applies) {
-		            text = status.getMessage();
-		            switch (status.getSeverity()) {
-		            case IStatus.INFO:
-		                image = ISharedImages.IMG_OBJS_INFO_TSK;
-		                break;
-		            case IStatus.WARNING:
-		                image = ISharedImages.IMG_DEC_FIELD_WARNING;
-		                break;
-		            case IStatus.ERROR:
-		                image = ISharedImages.IMG_DEC_FIELD_ERROR;
-		                break;
-		            default:
-		                break;
-		            }
-	            }
-	        }
-		}
+			@Override
+			public void run() {
+				String tooltip = label.getToolTipText();
+				
+				if (tooltip==null && object!=null && feature!=null) {
+		   			label.setToolTipText(getToolTipText());
+				}
+				
+				
+				boolean applies = false;
+		    	String text = null;
+		    	String image = null;
 		
-        if (applies) {
-        	if (decoration==null) {
-        		decoration = new ControlDecoration(label, SWT.TOP | SWT.LEFT);
-        	}
-        	decoration.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(image));
-        	decoration.show();
-        	decoration.setDescriptionText(text);
-        }
-        else {
-        	if (decoration!=null) {
-        		decoration.hide();
-        		decoration.dispose();
-        		decoration = null;
-        	}
-        }
+		    	if (isVisible()) {
+			        ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+			        		object, ValidationStatusAdapter.class);
+			        if (statusAdapter != null) {
+			            final IStatus status = statusAdapter.getValidationStatus();
+			            if (status.isMultiStatus()) {
+			            	for (IStatus s : status.getChildren()) {
+			            		if (statusApplies(s)) {
+			            			applies = true;
+			            			break;
+			            		}
+			            	}
+			            }
+			            else if (statusApplies(status))
+			            	applies = true;
+			            
+			            if (applies) {
+				            text = status.getMessage();
+				            switch (status.getSeverity()) {
+				            case IStatus.INFO:
+				                image = ISharedImages.IMG_OBJS_INFO_TSK;
+				                break;
+				            case IStatus.WARNING:
+				                image = ISharedImages.IMG_DEC_FIELD_WARNING;
+				                break;
+				            case IStatus.ERROR:
+				                image = ISharedImages.IMG_DEC_FIELD_ERROR;
+				                break;
+				            default:
+				                break;
+				            }
+			            }
+			        }
+				}
+				
+		        if (applies) {
+		        	if (decoration==null) {
+		        		decoration = new ControlDecoration(label, SWT.TOP | SWT.LEFT);
+		        	}
+		        	decoration.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(image));
+		        	decoration.show();
+		        	decoration.setDescriptionText(text);
+		        }
+		        else {
+		        	if (decoration!=null) {
+		        		decoration.hide();
+		        		decoration.dispose();
+		        		decoration = null;
+		        	}
+		        }
+			}
+		});
 	}
 	
 	protected boolean setValue(final Object result) {
