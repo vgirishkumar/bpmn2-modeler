@@ -26,8 +26,10 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CategoryValue;
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
@@ -206,6 +208,35 @@ public class FeatureSupport {
 	public static boolean isTargetLaneOnTop(ITargetContext context) {
 		Lane lane = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), Lane.class);
 		return lane.getChildLaneSet() == null || lane.getChildLaneSet().getLanes().isEmpty();
+	}
+	
+	public static EObject getTargetObject(ITargetContext context) {
+		ContainerShape targetContainer = context.getTargetContainer();
+		EObject targetObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(targetContainer);
+		if (targetObject instanceof BPMNDiagram) {
+			targetObject = ((BPMNDiagram)targetObject).getPlane().getBpmnElement();
+		}
+		if (targetObject instanceof Lane) {
+			while (targetObject!=null) {
+				targetObject = targetObject.eContainer();
+				if (targetObject instanceof FlowElementsContainer)
+					break;
+			}
+		}
+		if (targetObject instanceof Collaboration && !(targetObject instanceof Choreography)) {
+			Collaboration collaboration = (Collaboration)targetObject;
+			for (Participant p : collaboration.getParticipants()) {
+				if (p.getProcessRef()!=null) {
+					targetObject = p.getProcessRef();
+					break;
+				}
+			}
+
+		}
+		if (targetObject instanceof Participant) {
+			targetObject = ((Participant)targetObject).getProcessRef();
+		}
+		return targetObject;
 	}
 
 	public static boolean isHorizontal(ContainerShape container) {

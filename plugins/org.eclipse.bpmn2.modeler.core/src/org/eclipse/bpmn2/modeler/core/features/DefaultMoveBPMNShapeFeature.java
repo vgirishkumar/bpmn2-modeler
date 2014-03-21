@@ -76,8 +76,8 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			((MoveShapeContext)context).setTargetContainer(targetContainer.getContainer());
 		}
 		
-		boolean doit = context.getSourceContainer() != null
-				&& context.getSourceContainer().equals(context.getTargetContainer());
+		boolean doit = true;
+//		context.getSourceContainer() != null && context.getSourceContainer().equals(context.getTargetContainer());
 		
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_MOVE,
 				getFeatureProvider(), context, context.getPictogramElement());

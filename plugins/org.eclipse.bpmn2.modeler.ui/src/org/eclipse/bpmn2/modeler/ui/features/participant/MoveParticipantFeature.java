@@ -35,6 +35,8 @@ public class MoveParticipantFeature extends DefaultMoveBPMNShapeFeature {
 //		if (ChoreographyUtil.isChoreographyParticipantBand(context.getShape())) {
 //			return false;
 //		}
+		if (context.getSourceContainer() != context.getTargetContainer())
+			return false;
 		return super.canMoveShape(context);
 	}
 
