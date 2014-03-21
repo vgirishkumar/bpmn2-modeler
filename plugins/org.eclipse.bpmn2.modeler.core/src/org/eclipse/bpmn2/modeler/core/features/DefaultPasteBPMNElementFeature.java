@@ -76,28 +76,35 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class DefaultPasteBPMNElementFeature.
+ * Default Graphiti {@code PasteFeature} class for Shapes.
+ * <p>
  */
 public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
-	/** The Constant COPIED_BPMN_SHAPE. */
+	/**
+	 * The key used to store the copied shape in the Paste Context.
+	 * This is copied to the AddContext and picked up by the AddFeature
+	 * which duplicates the copied shape's size and other attributes.
+	 */
 	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape";
 	
-	/** The Constant COPIED_BPMN_OBJECT. */
+	/** The key used to store the copied business object in the Paste Context. */
 	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object";
 	
 	/** The Constant COPY_FROM_CONTEXT. */
 	public static final String COPY_FROM_CONTEXT = "copy.from.context";
 	
-	/** The resource. */
+	/** The EMF Resource. */
 	protected Resource resource;
 	
-	/** The definitions. */
+	/** The BPMN2 Definitions object - the root element of the document. */
 	protected Definitions definitions;
 	
-	/** The id map. */
+	/**
+	 * Maps the ID strings of the original BPMN2 elements to their
+	 * corresponding newly constructed copies.
+	 */
 	protected Hashtable<String, String> idMap;
 	
 	/** The shape map. */
@@ -116,9 +123,9 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	protected Diagram diagram;
 
 	/**
-	 * Instantiates a new default paste bpmn element feature.
+	 * Instantiates a new default {@code PasteFeature).
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 */
 	public DefaultPasteBPMNElementFeature(IFeatureProvider fp) {
 		super(fp);

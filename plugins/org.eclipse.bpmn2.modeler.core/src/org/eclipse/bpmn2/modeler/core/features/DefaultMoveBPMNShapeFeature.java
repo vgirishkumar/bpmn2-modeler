@@ -35,7 +35,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
- * Default Graphiti {@code MoveShapeFature} class for Shapes.
+ * Default Graphiti {@code MoveShapeFeature} class for Shapes.
  * <p>
  */
 public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {

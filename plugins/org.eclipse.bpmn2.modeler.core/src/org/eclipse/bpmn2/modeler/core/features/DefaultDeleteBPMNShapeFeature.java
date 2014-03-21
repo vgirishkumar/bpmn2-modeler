@@ -35,7 +35,8 @@ import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class DefaultDeleteBPMNShapeFeature.
+ * Default Graphiti {@code DeleteFeature} class for Shapes.
+ * <p>
  */
 public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 
