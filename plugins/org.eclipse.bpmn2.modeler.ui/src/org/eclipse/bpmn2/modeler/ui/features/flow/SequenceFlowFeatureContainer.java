@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
@@ -187,7 +188,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			if (source==target)
 				return true;
 			
-			if (target instanceof CatchEvent)
+			if (target instanceof StartEvent)
 				return false;
 			
 			EObject sourceContainer = source.eContainer();
