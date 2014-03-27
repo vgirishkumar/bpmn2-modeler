@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -23,6 +24,9 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -312,16 +316,17 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				if (entry.getKey().startsWith("$")) { //$NON-NLS-1$
 					String featureName = entry.getKey().substring(1);
 					EStructuralFeature feature = md.getFeature(be.eClass().getName(), featureName);
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
 					String value = entry.getValue();
 					if (value.startsWith("$")) { //$NON-NLS-1$
 						String name = value.substring(1);
 						EClassifier eClass = md.getClassifier(name);
 						EFactory factory = eClass.getEPackage().getEFactoryInstance();
 						EObject object = factory.create((EClass)eClass);
-						be.eSet(feature, object);
+						adapter.getFeatureDescriptor(feature).setValue(object);
 					}
 					else {
-						be.eSet(feature, value);
+						adapter.getFeatureDescriptor(feature).setValue(value);
 					}
 				}
 			}

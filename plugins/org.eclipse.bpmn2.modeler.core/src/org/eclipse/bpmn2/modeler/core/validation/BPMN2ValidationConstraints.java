@@ -140,14 +140,21 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		return ctx.createSuccessStatus();
 	}
 
-	public IStatus createFailureStatus(IValidationContext ctx, EObject object, Object... messageArgs) {
-		IStatus status = ctx.createFailureStatus(messageArgs);
+	public IStatus createFailureStatus(IValidationContext ctx, EObject object, String featureName, String message) {
 		ctx.addResult(object);
+		if (featureName!=null && !featureName.isEmpty()) {
+			EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+			if (feature!=null)
+				ctx.addResult(feature);
+		}
+		IStatus status = ctx.createFailureStatus(message);
 		return status;
 	}
 
 	public IStatus createMissingFeatureStatus(IValidationContext ctx, EObject object, String featureName) {
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+		ctx.addResult(object);
+		ctx.addResult(feature);
 		// change error message slightly for connections
 		String message;
 		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
@@ -155,7 +162,6 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		else
 			message = NLS.bind(Messages.BPMN2ValidationConstraints_Missing_Feature, ExtendedPropertiesProvider.getLabel(object), ExtendedPropertiesProvider.getLabel(object, feature));
 		IStatus status = ctx.createFailureStatus(message);
-		ctx.addResult(object);
 		return status;
 	}
 
@@ -178,10 +184,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 					}
 				}
 				if (!foundStartEvent) {
-					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_6);
+					return createFailureStatus(ctx, be, null, Messages.BPMN2ValidationConstraints_6);
 				}
 				if (!foundEndEvent) {
-					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_7);
+					return createFailureStatus(ctx, be, null, Messages.BPMN2ValidationConstraints_7);
 				}
 				if (isEmpty(process.getName())) {
 					return createMissingFeatureStatus(ctx,be,"name"); //$NON-NLS-1$
@@ -190,7 +196,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			else {
 				// see Bug 425903 - need to figure this out...
 //				if (ProcessType.NONE.equals(process.getProcessType())) {
-//					return createFailureStatus(ctx, be, Messages.BPMN2ValidationConstraints_0);
+//					return createFailureStatus(ctx, be, "processType", Messages.BPMN2ValidationConstraints_0);
 //				}
 				// report errors only
 			}
@@ -337,34 +343,34 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				if (elem instanceof ExclusiveGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be, "gatewayDirection",
 								Messages.BPMN2ValidationConstraints_29);
 					}
 				}
 				if (elem instanceof EventBasedGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()) {
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_30);
 					}
 				}
 				if (elem instanceof ParallelGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_31);
 					}
 				}
 				if (elem instanceof InclusiveGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_32);
 					}
 				}
 				if (elem instanceof ComplexGateway) {
 					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
 							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_33);
 					}
 				}
@@ -453,10 +459,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 		else if (be instanceof ChoreographyActivity) {
 			ChoreographyActivity elem = (ChoreographyActivity)be;
 			if (elem.getParticipantRefs().size()<2) {
-				return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_45);
+				return createFailureStatus(ctx,be,"participantRefs",Messages.BPMN2ValidationConstraints_45);
 			}
 			if (elem.getInitiatingParticipantRef()==null) {
-				return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_46);
+				return createFailureStatus(ctx,be,"initiatingParticipantRef",Messages.BPMN2ValidationConstraints_46);
 			}
 		}
 		else if (be instanceof Resource) {
@@ -470,11 +476,11 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			for (MessageFlow mf : elem.getMessageFlowRef()) {
 				InteractionNode in = mf.getSourceRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_48);
+					return createFailureStatus(ctx,be,"participantRefs",Messages.BPMN2ValidationConstraints_48);
 				}
 				in = mf.getTargetRef();
 				if (!elem.getParticipantRefs().contains(in)) {
-					return createFailureStatus(ctx,be,Messages.BPMN2ValidationConstraints_49);
+					return createFailureStatus(ctx,be,"participantRefs",Messages.BPMN2ValidationConstraints_49);
 				}
 			}
 		}
@@ -575,11 +581,14 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	private IStatus validateEventDefinition(IValidationContext ctx, EventDefinition ed) {
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
-			if (	ted.getTimeDate() == null
-					&& ted.getTimeDuration() == null
-					&& ted.getTimeCycle() == null
-			) {
-				return createFailureStatus(ctx,ed,Messages.BPMN2ValidationConstraints_52);
+			if (ted.getTimeDate() == null) {
+				return createFailureStatus(ctx,ed,"timeDate",Messages.BPMN2ValidationConstraints_52);
+			}
+			if (ted.getTimeDuration() == null) {
+				return createFailureStatus(ctx,ed,"timeDuration",Messages.BPMN2ValidationConstraints_52);
+			}
+			if (ted.getTimeCycle() == null) {
+				return createFailureStatus(ctx,ed,"timeCycle",Messages.BPMN2ValidationConstraints_52);
 			}
 		} else if (ed instanceof SignalEventDefinition) {
 			if (!isValidForExecutableProcess(ed, ((SignalEventDefinition) ed).getSignalRef())) {
@@ -703,7 +712,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 								(ModelUtil.isStringWrapper(structureRef) &&
 								ModelUtil.getStringWrapperValue(structureRef).isEmpty()))
 							continue;
-						return createFailureStatus(ctx,be,
+						return createFailureStatus(ctx,be,"structureRef",
 							NLS.bind(
 								Messages.BPMN2ValidationConstraints_Duplicate_Data_Type,
 								new Object[] {

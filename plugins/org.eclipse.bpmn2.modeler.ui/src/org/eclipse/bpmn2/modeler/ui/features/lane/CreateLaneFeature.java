@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 
@@ -50,8 +51,8 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 	public Object[] create(ICreateContext context) {
 		Lane lane = createBusinessObject(context);
 		lane.setName(Messages.CreateLaneFeature_Default_Name+ModelUtil.getIDNumber(lane.getId()));
-		addGraphicalRepresentation(context, lane);
-		return new Object[] { lane };
+		PictogramElement pe = addGraphicalRepresentation(context, lane);
+		return new Object[] { lane, pe };
 	}
 
 	@Override

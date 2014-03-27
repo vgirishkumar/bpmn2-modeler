@@ -186,7 +186,13 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			return createFeatureDelegate.getBusinessObjectClass();
 		}
 
-		/* (non-Javadoc)
+		/**
+		 * This delegates to the CreateFeature implementation defined by the
+		 * extension plugin. Note that the create() method of this delegate MUST
+		 * return an array of two objects: the first object is the BPMN2
+		 * element, the second object is the ContainerShape that is the
+		 * graphical representation of that element.
+		 * 
 		 * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
 		 */
 		@Override

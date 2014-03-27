@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Participant> {
 	
@@ -49,8 +50,8 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
 			process.setDefinitionalCollaborationRef((Collaboration)participant.eContainer());
 		}
 
-		addGraphicalRepresentation(context, participant);
-		return new Object[] { participant };
+		PictogramElement pe = addGraphicalRepresentation(context, participant);
+		return new Object[] { participant, pe };
 	}
 	
 	@Override

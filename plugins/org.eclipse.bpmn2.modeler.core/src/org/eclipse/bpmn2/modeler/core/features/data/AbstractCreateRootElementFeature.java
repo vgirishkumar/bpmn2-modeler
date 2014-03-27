@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateRootElementFeature<T extends RootElement> extends AbstractBpmn2CreateFeature<T> {
 
@@ -33,7 +34,8 @@ public abstract class AbstractCreateRootElementFeature<T extends RootElement> ex
     public Object[] create(ICreateContext context) {
 		RootElement element = createBusinessObject(context);
 		if (element!=null) {
-			addGraphicalRepresentation(context, element);
+			PictogramElement pe = addGraphicalRepresentation(context, element);
+			return new Object[] { element, pe };
 		}
 
 		return new Object[] { element };

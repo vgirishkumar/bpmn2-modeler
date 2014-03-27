@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateArtifactFeature<T extends Artifact> extends AbstractBpmn2CreateFeature<T> {
 
@@ -41,8 +42,8 @@ public abstract class AbstractCreateArtifactFeature<T extends Artifact> extends 
 	@Override
 	public Object[] create(ICreateContext context) {
 		T artifact = createBusinessObject(context);
-		addGraphicalRepresentation(context, artifact);
-		return new Object[] { artifact };
+		PictogramElement pe = addGraphicalRepresentation(context, artifact);
+		return new Object[] { artifact, pe };
 	}
 
 	protected abstract String getStencilImageId();

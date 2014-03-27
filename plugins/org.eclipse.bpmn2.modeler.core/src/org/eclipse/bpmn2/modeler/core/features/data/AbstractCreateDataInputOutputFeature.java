@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateDataInputOutputFeature<T extends ItemAwareElement> extends AbstractBpmn2CreateFeature<T> {
 
@@ -49,8 +50,8 @@ public abstract class AbstractCreateDataInputOutputFeature<T extends ItemAwareEl
 		T element = createBusinessObject(context);
 		ModelHandler mh = ModelHandlerLocator.getModelHandler(getDiagram().eResource());
 		mh.addDataInputOutput(context.getTargetContainer(), element);
-		addGraphicalRepresentation(context, element);
-		return new Object[] { element };
+		PictogramElement pe = addGraphicalRepresentation(context, element);
+		return new Object[] { element, pe };
 	}
 
 	protected abstract String getStencilImageId();

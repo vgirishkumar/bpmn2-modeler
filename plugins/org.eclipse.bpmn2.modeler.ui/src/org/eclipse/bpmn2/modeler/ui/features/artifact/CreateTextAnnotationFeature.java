@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateTextAnnotationFeature extends AbstractCreateArtifactFeature<TextAnnotation> {
 
@@ -36,9 +37,9 @@ public class CreateTextAnnotationFeature extends AbstractCreateArtifactFeature<T
 	public Object[] create(ICreateContext context) {
 
 		TextAnnotation ta = createBusinessObject(context);
-		addGraphicalRepresentation(context, ta);
+		PictogramElement pe = addGraphicalRepresentation(context, ta);
 
-		return new Object[] { ta };
+		return new Object[] { ta, pe };
 	}
 
 	@Override

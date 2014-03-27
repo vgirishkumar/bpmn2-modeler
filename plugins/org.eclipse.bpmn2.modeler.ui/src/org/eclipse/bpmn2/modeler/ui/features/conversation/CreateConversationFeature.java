@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conversation> {
 
@@ -39,8 +40,8 @@ public class CreateConversationFeature extends AbstractBpmn2CreateFeature<Conver
 	@Override
 	public Object[] create(ICreateContext context) {
 		Conversation c = createBusinessObject(context);
-		addGraphicalRepresentation(context, c);
-		return new Object[] { c };
+		PictogramElement pe = addGraphicalRepresentation(context, c);
+		return new Object[] { c, pe };
 	}
 
 	@Override
