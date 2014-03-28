@@ -24,20 +24,28 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -142,7 +150,85 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				if (o instanceof GlobalType && f==Bpmn2Package.eINSTANCE.getBaseElement_Id()) {
 					return false;
 				}
-				
+
+				// workaround for Bug 430953 don't save the following collections:
+				//
+				// OutputSet
+				// DataOutputs
+				// DataOutputAssociation
+				// InputSet
+				// DataInputs
+				// DataInputAssociations
+				//
+				// if no associations have been made.
+				if (o instanceof CatchEvent) {
+					CatchEvent event = (CatchEvent) o;
+					String featureName = f.getName();
+					if (	featureName.equals("outputSet") ||
+							featureName.equals("dataOutputs") ||
+							featureName.equals("dataOutputAssociation")) {
+						if (	event.getOutputSet()==null ||
+								event.getOutputSet().getDataOutputRefs().size()==0 ||
+								event.getDataOutputAssociation().size()==0 ||
+								event.getDataOutputs().size()==0) {
+							return false;
+						}
+						DataOutputAssociation association = event.getDataOutputAssociation().get(0);
+						if (association.getTargetRef()==null)
+							return false;
+					}
+				}
+				if (o.eContainer() instanceof CatchEvent) {
+					CatchEvent event = (CatchEvent) o.eContainer();
+					if (	o instanceof OutputSet ||
+							o instanceof DataOutput ||
+							o instanceof DataOutputAssociation) {
+						if (	event.getOutputSet()==null ||
+								event.getOutputSet().getDataOutputRefs().size()==0 ||
+								event.getDataOutputAssociation().size()==0 ||
+								event.getDataOutputs().size()==0) {
+							return false;
+						}
+						DataOutputAssociation association = event.getDataOutputAssociation().get(0);
+						if (association.getTargetRef()==null)
+							return false;
+					}
+				}
+
+				if (o instanceof ThrowEvent) {
+					ThrowEvent event = (ThrowEvent) o;
+					String featureName = f.getName();
+					if (	featureName.equals("inputSet") ||
+							featureName.equals("dataInputs") ||
+							featureName.equals("dataInputAssociation")) {
+						if (	event.getInputSet()==null ||
+								event.getInputSet().getDataInputRefs().size()==0 ||
+								event.getDataInputAssociation().size()==0 ||
+								event.getDataInputs().size()==0) {
+							return false;
+						}
+						DataInputAssociation association = event.getDataInputAssociation().get(0);
+						if (association.getTargetRef()==null)
+							return false;
+					}
+				}
+				if (o.eContainer() instanceof ThrowEvent) {
+					ThrowEvent event = (ThrowEvent) o.eContainer();
+					if (	o instanceof InputSet ||
+							o instanceof DataInput ||
+							o instanceof DataInputAssociation) {
+						if (	event.getInputSet()==null ||
+								event.getInputSet().getDataInputRefs().size()==0 ||
+								event.getDataInputAssociation().size()==0 ||
+								event.getDataInputs().size()==0) {
+							return false;
+						}
+						DataInputAssociation association = event.getDataInputAssociation().get(0);
+						if (association.getTargetRef()==null)
+							return false;
+					}
+				}
+
 				return super.shouldSaveFeature(o, f);
 			}
 
