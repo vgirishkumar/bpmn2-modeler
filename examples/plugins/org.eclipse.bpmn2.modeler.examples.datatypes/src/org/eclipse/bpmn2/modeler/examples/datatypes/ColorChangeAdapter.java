@@ -83,8 +83,14 @@ public class ColorChangeAdapter extends AdapterImpl {
 				foreground = (RGB) value;
 			}
 		}
-		Shape shape = (containerShape).getChildren().get(0);
-		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
+		GraphicsAlgorithm ga = null;
+		if (containerShape.getChildren().size()>0) {
+			Shape shape = containerShape.getChildren().get(0);
+			ga = shape.getGraphicsAlgorithm();
+		}
+		else
+			ga = containerShape.getGraphicsAlgorithm();
+		
 		Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
 		ShapeStyle ss = new ShapeStyle( pref.getShapeStyle(be) );
 		if (background!=null) {
