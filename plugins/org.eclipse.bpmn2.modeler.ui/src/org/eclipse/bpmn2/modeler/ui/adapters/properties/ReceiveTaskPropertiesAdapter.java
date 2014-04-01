@@ -74,7 +74,7 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 
     	feature = Bpmn2Package.eINSTANCE.getReceiveTask_OperationRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
 		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {

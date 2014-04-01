@@ -64,7 +64,7 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 
     	feature = Bpmn2Package.eINSTANCE.getSendTask_OperationRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
 		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
