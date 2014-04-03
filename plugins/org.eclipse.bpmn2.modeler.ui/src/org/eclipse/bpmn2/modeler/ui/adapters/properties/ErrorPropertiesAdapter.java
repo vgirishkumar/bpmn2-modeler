@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Error;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -47,6 +48,11 @@ public class ErrorPropertiesAdapter extends RootElementPropertiesAdapter<Error> 
 				}
 				if (text.isEmpty())
 					text = Messages.ErrorPropertiesAdapter_ID + object.getId();
+				
+				if (object.getStructureRef()!=null) {
+					String type = "(" + ExtendedPropertiesProvider.getTextValue(object.getStructureRef()) +")"; //$NON-NLS-1$ //$NON-NLS-2$
+					text += type;
+				}
 				return text;
 			}
     	});

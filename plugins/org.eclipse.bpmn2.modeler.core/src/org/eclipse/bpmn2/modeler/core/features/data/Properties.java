@@ -16,5 +16,6 @@ public interface Properties {
 	
 	public static final String COLLECTION_PROPERTY = "isCollection"; //$NON-NLS-1$
 	public static final String HIDEABLE_PROPERTY = "hideable"; //$NON-NLS-1$
+	public static final String DATASTATE_PROPERTY = "datastate"; //$NON-NLS-1$
 	
 }

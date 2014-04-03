@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Message;
 import org.eclipse.xsd.XSDElementDeclaration;
 
@@ -178,18 +179,27 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		String name = ""; //$NON-NLS-1$
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();
-			if (value!=null) {
-				if (value instanceof XSDElementDeclaration) {
-					XSDElementDeclaration elem = (XSDElementDeclaration)value;
-					name = elem.getQName();
-				}
-				else if (value instanceof Message) {
-					Message message = (Message)value;
-					name = NamespaceUtil.normalizeQName(resource,message.getQName());
-				}
-				else if (ModelUtil.isStringWrapper(value))
-					name = ModelUtil.getStringWrapperValue(value);
+			if (value instanceof XSDElementDeclaration) {
+				XSDElementDeclaration elem = (XSDElementDeclaration)value;
+				String prefix = NamespaceUtil.getPrefixForNamespace(resource, elem.getSchema().getTargetNamespace());
+				name = elem.getName();
+				if (prefix!=null && !prefix.isEmpty())
+					name = prefix + ":" + name;
 			}
+			else if (value instanceof Message) {
+				Message message = (Message)value;
+				name = NamespaceUtil.normalizeQName(resource,message.getQName());
+			}
+			else if (value instanceof Fault) {
+				Fault fault = (Fault)value;
+				String prefix = NamespaceUtil.getPrefixForNamespace(resource, fault.getEnclosingDefinition().getTargetNamespace());
+				name = fault.getName();
+				if (prefix!=null && !prefix.isEmpty())
+					name = prefix + ":" + name;
+			}
+			else if (ModelUtil.isStringWrapper(value))
+				name = ModelUtil.getStringWrapperValue(value);
+
 			if (name==null || name.isEmpty()) {
 				name = ModelUtil.generateUndefinedID(itemDefinition.getId());
 			}

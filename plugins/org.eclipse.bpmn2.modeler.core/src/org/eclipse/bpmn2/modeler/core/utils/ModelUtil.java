@@ -542,10 +542,12 @@ public class ModelUtil {
 	public static Object resolveXSDObject(Object xsdObject) {
 		if (xsdObject instanceof XSDElementDeclaration) {
 			XSDElementDeclaration resolvedElement = ((XSDElementDeclaration)xsdObject).getResolvedElementDeclaration();
-			if (resolvedElement != null) xsdObject = resolvedElement;
+			if (resolvedElement != null)
+				xsdObject = resolvedElement;
 		} else if (xsdObject instanceof XSDAttributeDeclaration) {
 			XSDAttributeDeclaration resolvedAttribute = ((XSDAttributeDeclaration)xsdObject).getResolvedAttributeDeclaration();
-			if (resolvedAttribute != null) xsdObject = resolvedAttribute;
+			if (resolvedAttribute != null)
+				xsdObject = resolvedAttribute;
 		}
 		return xsdObject;
 	}

@@ -218,7 +218,10 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 			Object data = sel.getData();
 			if (data instanceof TreeNode) {
 				TreeNode tn = (TreeNode)data;
-				path += "/" + tn.getLabel(); //$NON-NLS-1$
+				if (path.isEmpty())
+					path = tn.getLabel();
+				else
+					path += "/" + tn.getLabel(); //$NON-NLS-1$
 			}
 		}
 		else
@@ -288,16 +291,17 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 		if (uri == null) {
 			return ;
 		}
-		if (uri.isRelative())
-			uri = URI.createFileURI( path );
-		if (uri == null) {
-			return ;
-		}
-		if (uri.isRelative()) {
-			// construct absolute path
-			String basePath = bpmn2Editor.getModelFile().getLocation().removeLastSegments(1).toString();
-			uri = URI.createFileURI( basePath + "/" + path ); //$NON-NLS-1$
-		}
+		// All of this is already being handled by the ResourceSet loader
+//		if (uri.isRelative())
+//			uri = URI.createFileURI( path );
+//		if (uri == null) {
+//			return ;
+//		}
+//		if (uri.isRelative()) {
+//			// construct absolute path
+//			String basePath = bpmn2Editor.getModelFile().getLocation().removeLastSegments(1).toString();
+//			uri = URI.createFileURI( basePath + "/" + path ); //$NON-NLS-1$
+//		}
 
 		final URI loadUri = uri;
 		loaderJob = new Job("") { //$NON-NLS-1$

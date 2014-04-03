@@ -15,6 +15,7 @@ import java.util.Iterator;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
@@ -63,12 +64,18 @@ public class UpdateDataObjectFeature extends AbstractUpdateFeature {
 		DataObject data = null;
 		if (bo instanceof DataObject)
 			data = (DataObject) bo;
-		else if (bo instanceof DataObjectReference)
-			data = ((DataObjectReference)bo).getDataObjectRef();
+		else if (bo instanceof DataObjectReference) {
+			DataObjectReference dataRef = (DataObjectReference)bo;
+			data = dataRef.getDataObjectRef();
+			Object dataStateProperty = peService.getPropertyValue(container,Properties.DATASTATE_PROPERTY);
+			String dataState = getDataStateAsString(dataRef);
+			if (!dataState.equals(dataStateProperty))
+				return Reason.createTrueReason("Data State Changed");
+		}
 		
 		boolean isCollection = Boolean.parseBoolean(peService.getPropertyValue(container,
 				Properties.COLLECTION_PROPERTY));
-		return data.isIsCollection() != isCollection ? Reason.createTrueReason() : Reason.createFalseReason();
+		return data.isIsCollection() != isCollection ? Reason.createTrueReason("Cardinality Changed") : Reason.createFalseReason();
 	}
 
 	@Override
@@ -79,8 +86,12 @@ public class UpdateDataObjectFeature extends AbstractUpdateFeature {
 		DataObject data = null;
 		if (bo instanceof DataObject)
 			data = (DataObject) bo;
-		else if (bo instanceof DataObjectReference)
+		else if (bo instanceof DataObjectReference) {
 			data = ((DataObjectReference)bo).getDataObjectRef();
+			DataObjectReference dataRef = (DataObjectReference)bo;
+			String dataState = getDataStateAsString(dataRef);
+			peService.setPropertyValue(container, Properties.DATASTATE_PROPERTY, dataState);
+		}
 
 		boolean drawCollectionMarker = data.isIsCollection();
 
@@ -116,5 +127,18 @@ public class UpdateDataObjectFeature extends AbstractUpdateFeature {
 		}
 
 		return true;
+	}
+	
+	private String getDataStateAsString(DataObjectReference dataRef) {
+		DataState dataState = dataRef.getDataState();
+		if (dataState==null)
+			return "";
+		String name = dataState.getName();
+		if (name==null || name.isEmpty())
+			name = "no_name";
+		String id = dataState.getId();
+		if (id==null || id.isEmpty())
+			id = "no_id";
+		return name + " - " + id;
 	}
 }

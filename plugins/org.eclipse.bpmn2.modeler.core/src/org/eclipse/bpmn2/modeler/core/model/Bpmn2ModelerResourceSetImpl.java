@@ -197,8 +197,10 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 			}
 		}
 
+//		System.out.println("Loading Resource "+uri);
 		URIConverter theURIConverter = getURIConverter();
 		URI normalizedURI = theURIConverter.normalize(uri);
+//		System.out.println("     Normalized="+normalizedURI);
 		
 		for (Resource resource : getResources()) {
 			if (theURIConverter.normalize(resource.getURI()).equals(

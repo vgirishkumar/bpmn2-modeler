@@ -358,21 +358,21 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	@Override
 	protected void prepareSave() {
 		EObject cur;
-		Definitions definitions = ImportHelper.getDefinitions(this);
+//		Definitions definitions = ImportHelper.getDefinitions(this);
 		for (Iterator<EObject> iter = getAllContents(); iter.hasNext();) {
 			cur = iter.next();
 
 			setDefaultId(cur);
 
-			for (EObject referenced : cur.eCrossReferences()) {
-				setDefaultId(referenced);
-				if (definitions != null) {
-					Resource refResource = referenced.eResource();
-					if (refResource != null && refResource != this) {
-						createImportIfNecessary(definitions, refResource);
-					}
-				}
-			}
+//			for (EObject referenced : cur.eCrossReferences()) {
+//				setDefaultId(referenced);
+//				if (definitions != null) {
+//					Resource refResource = referenced.eResource();
+//					if (refResource != null && refResource != this) {
+//						createImportIfNecessary(definitions, refResource);
+//					}
+//				}
+//			}
 		}
 	}
 
@@ -573,7 +573,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			else if (obj instanceof ItemDefinition) {
 				ItemDefinition itemDef = (ItemDefinition)obj;
 
-				Definitions definitions = ImportHelper.getDefinitions(xmlResource);
+				Definitions definitions = ModelUtil.getDefinitions(xmlResource);
 				URI referencingURI = ImportHelper.makeURICanonical(resourceURI);
 				String location = ModelUtil.getStringWrapperValue(itemDef.getStructureRef());
 				if (location!=null) {
@@ -990,6 +990,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		protected void saveElement(EObject o, EStructuralFeature f) {
+			
 			float oldX = 0, oldY = 0;
 			List<Point> oldPoints = null;
 			
@@ -1075,6 +1076,12 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 				}
 			}
+		}
+
+		@Override
+		protected String convertURI(String s) {
+			URI uri = helper.deresolve( URI.createURI(s) );
+			return uri.toString();
 		}
 
 		@Override
@@ -1252,8 +1259,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				URI otherURI = uri.trimFragment();
 				if (baseURI.equals(otherURI))
 					return URI.createURI(fragment);
-				else
-					return uri;
+			}
+
+			if (
+					(uri.isPlatformResource() && baseURI.isPlatformResource()) ||
+					(uri.isFile() && baseURI.isFile())) {
+				uri = uri.deresolve(baseURI, false, true, true);
+				return uri;
 			}
 			return super.deresolve(uri);
 		}
@@ -1383,7 +1395,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		 * @return a namespace URI or null if targetNamespace is not defined.
 		 */
 		private String getTargetNamespace() {
-			Definitions definitions = ImportHelper.getDefinitions(getResource());
+			Definitions definitions = ModelUtil.getDefinitions(getResource());
 			if (definitions==null)
 				return null;
 			return definitions.getTargetNamespace();

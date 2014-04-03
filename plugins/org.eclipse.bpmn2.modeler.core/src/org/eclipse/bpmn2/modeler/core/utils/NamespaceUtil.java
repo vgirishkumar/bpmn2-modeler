@@ -67,11 +67,11 @@ public class NamespaceUtil {
 	public static String normalizeQName(Resource resource, QName qname) {
 		String localPart = qname.getLocalPart();
 		String namespace = qname.getNamespaceURI();
-		String prefix = qname.getPrefix();
+		String prefix = getPrefixForNamespace(resource, namespace);
 		if (prefix!=null && !prefix.isEmpty()) {
 			return prefix + ":" + localPart; //$NON-NLS-1$
 		}
-		prefix = getPrefixForNamespace(resource, namespace);
+		prefix = qname.getPrefix();
 		if (prefix!=null && !prefix.isEmpty()) {
 			return prefix + ":" + localPart; //$NON-NLS-1$
 		}
