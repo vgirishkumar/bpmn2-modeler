@@ -155,6 +155,10 @@ public class WIDHandler {
         					  currentWid.setName(value);
         				  } else if (name.equalsIgnoreCase("displayName")) { //$NON-NLS-1$
         					  currentWid.setDispalyName(value);
+						  } else if (name.equalsIgnoreCase("description")) { //$NON-NLS-1$
+							  currentWid.setDescription(value);
+						  } else if (name.equalsIgnoreCase("category")) { //$NON-NLS-1$
+							  currentWid.setCategory(value);
         				  } else if (name.equalsIgnoreCase("icon")) { //$NON-NLS-1$
         					  currentWid.setIcon(value);
         				  } else if (name.equalsIgnoreCase("customEditor")) { //$NON-NLS-1$

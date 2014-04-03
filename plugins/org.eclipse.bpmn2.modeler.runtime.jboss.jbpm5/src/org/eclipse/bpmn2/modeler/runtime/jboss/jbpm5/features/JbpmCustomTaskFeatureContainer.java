@@ -130,9 +130,10 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			
 			// Create the ItemDefinitions for each I/O parameter if needed
 			JBPM5RuntimeExtension rx = (JBPM5RuntimeExtension)customTaskDescriptor.getRuntime().getRuntimeExtension();
-			WorkItemDefinition wid = rx.getWorkItemDefinition(name);
-			if (task.getIoSpecification()!=null && wid!=null) {
-				for (DataInput input : task.getIoSpecification().getDataInputs()) {
+			String id = customTaskDescriptor.getId();
+			WorkItemDefinition wid = rx.getWorkItemDefinition(id);
+			if (ioSpecification!=null && wid!=null) {
+				for (DataInput input : ioSpecification.getDataInputs()) {
 					for (Entry<String, String> entry : wid.getParameters().entrySet()) {
 						if (input.getName().equals(entry.getKey())) {
 							if (entry.getValue()!=null)
@@ -141,7 +142,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 						}
 					}
 				}
-				for (DataOutput output : task.getIoSpecification().getDataOutputs()) {
+				for (DataOutput output : ioSpecification.getDataOutputs()) {
 					for (Entry<String, String> entry : wid.getResults().entrySet()) {
 						if (output.getName().equals(entry.getKey())) {
 							if (entry.getValue()!=null)

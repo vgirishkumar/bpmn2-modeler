@@ -132,7 +132,9 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	    		String customElementId = null;
 	    		if (adapter!=null) {
 	    			resource = adapter.getResource();
+	    			adapter.setResource(null);
 	    			customElementId = (String)adapter.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+	    			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
 	    		}
 	    		
 				String className = eClass.getName();

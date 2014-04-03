@@ -178,9 +178,11 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 					adapter.getFeatureDescriptor(feature).setObject(eObject);
 				
 				// load the description for this object from Messages
-				String description = getDescription(adapter.adapterFactory, eObject);
-				if (description!=null && !description.isEmpty())
-					adapter.setProperty(LONG_DESCRIPTION, description);
+				if (adapter.getProperty(LONG_DESCRIPTION)==null) {
+					String description = getDescription(adapter.adapterFactory, eObject);
+					if (description!=null && !description.isEmpty())
+						adapter.setProperty(LONG_DESCRIPTION, description);
+				}
 			}
 		}
 		return adapter;

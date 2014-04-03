@@ -212,7 +212,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		 * Run all initializers up to and including the ones for the given object but not beyond.
 		 * @param object
 		 */
-		public void execute(EObject object) {
+		public boolean execute(EObject object) {
 			int last = -1;
 			for (int i=size()-1; i>=0; --i) {
 				Initializer item = get(i);
@@ -233,6 +233,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 					item.adapter.getFeatureDescriptor(item.feature).setValue(item.value);
 				--last;
 			}
+			
+			return initialize;
 		}
 	}
 	
@@ -434,7 +436,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		try {
 			modelObject = object;
 			initializers.clear();
-			initializers.initialize = true;
+			initializers.initialize = initialize;
 			
 			populateObject(object, getProperties());
 			adaptObject(object);
@@ -556,9 +558,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 					}
 					// run all of the initializers that apply to the current child object
 					// so that references can be resolved
-					initializers.execute(childObject);
-					childFeature = childObject.eClass().getEStructuralFeature(s);
-					childObject = (EObject)getValue(childObject, childFeature, index);
+					if (initializers.execute(childObject)) {
+						childFeature = childObject.eClass().getEStructuralFeature(s);
+						childObject = (EObject)getValue(childObject, childFeature, index);
+					}
 				}
 				adaptFeature(object, feature, childObject, property);
 			}

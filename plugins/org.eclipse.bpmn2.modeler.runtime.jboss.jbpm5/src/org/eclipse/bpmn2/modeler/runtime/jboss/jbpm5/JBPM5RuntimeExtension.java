@@ -271,10 +271,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	private CustomTaskDescriptor convertWIDtoCT ( WorkItemDefinition wid ) {
 		if (wid != null) {
 			String id = wid.getName();
-			String name = wid.getName();
+			String name = wid.getDisplayName();
 			CustomTaskDescriptor ct = new CustomTaskDescriptor(id,name);
 			ct.setType("Task"); //$NON-NLS-1$
-			ct.setDescription(wid.getName());
+			ct.setDescription(wid.getDescription());
+			ct.setCategory(wid.getCategory());
 			ct.setFeatureContainer(new JbpmCustomTaskFeatureContainer());
 			ct.getFeatureContainer().setCustomTaskDescriptor(ct);
 			ct.getFeatureContainer().setId(id);

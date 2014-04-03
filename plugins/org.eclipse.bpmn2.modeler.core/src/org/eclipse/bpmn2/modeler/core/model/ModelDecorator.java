@@ -546,8 +546,8 @@ public class ModelDecorator {
 	public EAttribute getEAttribute(String name, String type, String owningtype) {
 		EStructuralFeature feature = findEStructuralFeatureInDocumentRoot(name);
 		if (feature instanceof EAttribute) {
-			if (type!=null)
-				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
+//			if (type!=null)
+//				Assert.isTrue(type.equals(((EAttribute) feature).getEType().getName()) );
 			return (EAttribute) feature;
 		}
 		

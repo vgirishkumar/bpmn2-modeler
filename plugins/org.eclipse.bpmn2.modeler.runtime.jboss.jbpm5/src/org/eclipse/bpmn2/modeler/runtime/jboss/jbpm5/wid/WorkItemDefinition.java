@@ -24,11 +24,15 @@ public interface WorkItemDefinition {
 	public String getName();
 	public void setName ( String name );
 	public String getDisplayName();
+	public String getDescription();
+	public String getCategory();
 	public String getCustomEditor();
 	public String getEclipseCustomEditor();
 	public void setCustomEditor ( String editor );
 	public void setEclipseCustomEditor ( String editor );
 	public void setDispalyName ( String displayName );
+	public void setDescription ( String description );
+	public void setCategory ( String category );
 	public String getIcon();
 	public void setIcon ( String iconPath );
 	public LinkedHashMap<String, String> getParameters();

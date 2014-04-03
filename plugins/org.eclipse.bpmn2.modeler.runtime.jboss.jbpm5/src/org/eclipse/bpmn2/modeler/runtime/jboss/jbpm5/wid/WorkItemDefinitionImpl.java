@@ -24,6 +24,7 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 	public String toString() {
 		return "WorkItemDefinitionImpl [widName=" + widName //$NON-NLS-1$
 				+ ", widDisplayName=" + widDisplayName  //$NON-NLS-1$
+				+ ", widCategory=" + widCategory //$NON-NLS-1$
 				+ ", widIcon=" + widIcon //$NON-NLS-1$
 				+ ", widCustomEditor=" + widCustomEditor //$NON-NLS-1$
 				+ ", widEclipseCustomEditor=" + widEclipseCustomEditor //$NON-NLS-1$
@@ -34,6 +35,8 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 
 	private String widName;
 	private String widDisplayName;
+	private String widDescription;
+	private String widCategory;
 	private String widIcon;
 	private String widCustomEditor;
 	private String widEclipseCustomEditor;
@@ -49,6 +52,16 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 	@Override
 	public String getDisplayName() {
 		return this.widDisplayName;
+	}
+
+	@Override
+	public String getDescription() {
+		return widDescription;
+	}
+
+	@Override
+	public String getCategory() {
+		return widCategory;
 	}
 
 	@Override
@@ -79,6 +92,16 @@ public class WorkItemDefinitionImpl implements WorkItemDefinition {
 	@Override
 	public void setDispalyName(String displayName) {
 		this.widDisplayName = displayName;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		this.widDescription = description;
+	}
+
+	@Override
+	public void setCategory(String category) {
+		this.widCategory = category;
 	}
 
 	@Override

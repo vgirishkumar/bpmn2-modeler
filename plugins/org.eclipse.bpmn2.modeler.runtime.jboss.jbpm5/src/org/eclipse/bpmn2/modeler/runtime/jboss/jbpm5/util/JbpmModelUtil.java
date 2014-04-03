@@ -396,8 +396,8 @@ public class JbpmModelUtil {
 	
 	public static ItemDefinition findOrCreateItemDefinition(EObject context, String structureRef) {
 		ItemDefinition itemDef = null;
-		Definitions definitions = ModelUtil.getDefinitions(context);
 		Resource resource = ObjectPropertyProvider.getResource(context);
+		Definitions definitions = ModelUtil.getDefinitions(resource);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
 			String s = ModelUtil.getStringWrapperValue(id.getStructureRef());
