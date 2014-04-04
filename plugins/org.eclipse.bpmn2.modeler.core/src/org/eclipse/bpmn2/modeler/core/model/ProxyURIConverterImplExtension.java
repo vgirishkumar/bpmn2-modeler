@@ -88,7 +88,7 @@ public final class ProxyURIConverterImplExtension extends ExtensibleURIConverter
 	public URI normalize(URI uri) {
 		URI normalizedURI = super.normalize(uri);
 		if (normalizedURI.isRelative()) {
-			normalizedURI = normalizedURI.resolve(baseUri.trimSegments(1));
+			normalizedURI = normalizedURI.resolve(baseUri);
 		}
 		return normalizedURI;
 	}

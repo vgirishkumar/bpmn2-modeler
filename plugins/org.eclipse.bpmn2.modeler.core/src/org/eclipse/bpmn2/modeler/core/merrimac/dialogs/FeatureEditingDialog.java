@@ -80,12 +80,6 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		}
 	}
 	
-	protected Composite createDialogContent(Composite parent) {
-		Composite content = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-				featureEType.getInstanceClass(), parent, SWT.NONE);
-		return content;
-	}
-	
 	protected EObject createNewObject(final EObject object, final EStructuralFeature feature, final EClass eclass) {
 		final EObject[] result = new EObject[1];
 		final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
