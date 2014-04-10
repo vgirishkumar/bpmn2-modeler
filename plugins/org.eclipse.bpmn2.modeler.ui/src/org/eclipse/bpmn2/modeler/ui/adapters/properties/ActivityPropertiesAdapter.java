@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
@@ -47,6 +48,18 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 				}
 			}
 		);
+
+		if (object instanceof AdHocSubProcess) {
+			feature = Bpmn2Package.eINSTANCE.getAdHocSubProcess_CompletionCondition();
+			setFeatureDescriptor(feature,
+					new FeatureDescriptor<T>(object,feature) {
+						@Override
+						public String getLabel() {
+							return "Completion Condition";
+						}
+					}
+				);
+		}
 	}
 
 }
