@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.Iterator;
+
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Interface;
@@ -20,7 +22,6 @@ import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -61,8 +62,30 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 				object.getOperations().add(operation);
 				return operation;
 			}
-    		
+			
+			@Override
+			public String getLabel() {
+				return Messages.Interface_Operations_Label;
+			}
+
+			@Override
+			public String getTextValue() {
+				String text = "";
+				Iterator<Operation> iter = object.getOperations().iterator();
+				while (iter.hasNext()) {
+					Operation op = iter.next();
+					String name = op.getName();
+					if (name==null || name.isEmpty())
+						name = op.getId();
+					text += name;
+					if (iter.hasNext())
+						text += ", ";
+				}
+				return text;
+			}
     	});
+    	
+    	
 	}
 
 	public static class ImplementationRefFeatureDescriptor<T extends BaseElement> extends FeatureDescriptor<T> {
@@ -92,8 +115,12 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 					}
 					return false;
 				}
+				
+				@Override
+				public String getLabel() {
+					return Messages.Interface_Implementation_Label;
+				}
 			});
-
 		}
 
 		@Override

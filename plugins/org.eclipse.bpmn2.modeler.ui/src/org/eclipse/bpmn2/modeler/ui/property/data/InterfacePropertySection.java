@@ -145,7 +145,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 		 * @param style
 		 */
 		public DefinedInterfaceListComposite(Composite parent) {
-			super(parent, DELETE_STYLE);
+			super(parent, DEFAULT_STYLE);
 		}
 
 		@Override

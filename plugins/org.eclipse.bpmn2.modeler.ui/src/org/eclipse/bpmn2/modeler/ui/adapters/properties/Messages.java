@@ -36,6 +36,8 @@ public class Messages extends NLS {
 	public static String PropertyPropertiesAdapter_TaskVar_Prefix;
 	public static String PropertyPropertiesAdapter_Variable;
 	public static String SignalPropertiesAdapter_ID;
+	public static String Interface_Operations_Label;
+	public static String Interface_Implementation_Label;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

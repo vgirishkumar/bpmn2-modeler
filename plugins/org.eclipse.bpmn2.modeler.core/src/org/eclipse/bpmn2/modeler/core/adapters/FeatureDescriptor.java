@@ -108,7 +108,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			else {
 				// If the referenced type is an EObject, we'll get an "E Class" label
 				// so use the feature name instead.
-				if (feature instanceof EReference && (getEType().getInstanceClass()==EObject.class))
+				if (feature instanceof EReference && !(getEType().getInstanceClass()==EObject.class))
 					label = ExtendedPropertiesProvider.getLabel(getEType());
 				else
 					label = ModelUtil.toCanonicalString(feature.getName());
