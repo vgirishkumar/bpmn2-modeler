@@ -46,6 +46,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.flow.DataAssociationFeatureContainer;
@@ -247,6 +248,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					association.getSourceRef().clear();
 				else
 					association.getSourceRef().add(value);
+				updateConnectionIfNeeded(association, value);
 			}
 			else {
 				if (container!=null) {
@@ -260,6 +262,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					association.getSourceRef().clear();
 				else
 					association.getSourceRef().set(0,value);
+				updateConnectionIfNeeded(association, value);
 			}
 			if (association.getTargetRef()!=null) {
 				ItemAwareElement targetRef = association.getTargetRef();
@@ -267,6 +270,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					targetRef.setItemSubjectRef(value.getItemSubjectRef());
 				else
 					targetRef.setItemSubjectRef(null);
+				updateConnectionIfNeeded(association, value);
 			}
 		}
 		
@@ -287,24 +291,28 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				else
 					sourceRef.setItemSubjectRef(null);
 			}
+			updateConnectionIfNeeded(association, value);
 		}
 
 		private void updateConnectionIfNeeded(DataAssociation association, ItemAwareElement value) {
 			DiagramEditor diagramEditor = ModelUtil.getDiagramEditor(association);
 			if (diagramEditor==null)
 				return;
+			boolean hasDoneChanges = false;
 			Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
 			IFeatureProvider fp = diagramEditor.getDiagramTypeProvider().getFeatureProvider();
-			Shape owner = null;
+			Shape taskShape = null;
 			EObject container = association.eContainer();
 			if (container instanceof Activity || container instanceof Event) {
 				for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, container)) {
-					if (pe instanceof Shape && BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null)
-						owner = (Shape) pe;
+					if (pe instanceof Shape && BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null) {
+						taskShape = (Shape) pe;
+						break;
+					}
 				}
 			}
 			
-			PictogramElement pe = null;
+			Shape dataShape = null;
 			if (value instanceof DataObject ||
 					value instanceof DataObjectReference ||
 					value instanceof DataStore ||
@@ -314,7 +322,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, (EObject)value);
 				for (PictogramElement p : pes) {
 					if (BusinessObjectUtil.getFirstElementOfType(p, BPMNShape.class)!=null) {
-						pe = p;
+						dataShape = (Shape) p;
 						break;
 					}
 				}
@@ -325,28 +333,29 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				// There's an existing DataAssociation connection which needs to
 				// either be reconnected or deleted, depending on what the combobox
 				// selection is.
-				if (pe!=null) {
+				if (dataShape!=null) {
 					// need to reconnect the DataAssociation
 					ReconnectionContext rc = null;
-					if (association instanceof DataOutputAssociation) {
+					if (association instanceof DataInputAssociation) {
 						Point p = GraphicsUtil.createPoint(connection.getStart());
-						Anchor a = AnchorUtil.findNearestAnchor((AnchorContainer) pe, p);
+						Anchor a = AnchorUtil.findNearestAnchor((AnchorContainer) dataShape, p);
 						rc = new ReconnectionContext(connection, connection.getStart(), a, null);
-						rc.setTargetPictogramElement(pe);
+						rc.setTargetPictogramElement(dataShape);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
-						rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
+						rc.setReconnectType(ReconnectionContext.RECONNECT_SOURCE);
 					}
 					else {
 						Point p = GraphicsUtil.createPoint(connection.getEnd());
-						Anchor a = AnchorUtil.findNearestAnchor(owner, p);
+						Anchor a = AnchorUtil.findNearestAnchor(dataShape, p);
 						rc = new ReconnectionContext(connection, a, connection.getEnd(), null);
-						rc.setTargetPictogramElement(pe);
+						rc.setTargetPictogramElement(dataShape);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
-						rc.setReconnectType(ReconnectionContext.RECONNECT_SOURCE);
+						rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
 					}
 					IReconnectionFeature rf = fp.getReconnectionFeature(rc);
 					if (rf.canReconnect(rc)) {
 						rf.reconnect(rc);
+						hasDoneChanges = true;
 					}
 				}
 				else {
@@ -357,14 +366,14 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					df.delete(dc);
 				}
 			}
-			else if (pe!=null){
+			else if (dataShape!=null){
 				// There is no existing DataAssociation connection, but the newly selected source or target
 				// is some kind of data object shape, so we need to create a connection between the Activity
 				// (or Throw/Catch Event) that owns the DataAssociation, and the new data object shape.
-				Point p = GraphicsUtil.createPoint((AnchorContainer) pe);
-				Anchor ownerAnchor = AnchorUtil.findNearestAnchor(owner, p);
-				p = GraphicsUtil.createPoint(owner);
-				Anchor peAnchor = AnchorUtil.findNearestAnchor((AnchorContainer) pe, p);
+				Point p = GraphicsUtil.createPoint((AnchorContainer) dataShape);
+				Anchor ownerAnchor = AnchorUtil.findNearestAnchor(taskShape, p);
+				p = GraphicsUtil.createPoint(taskShape);
+				Anchor peAnchor = AnchorUtil.findNearestAnchor((AnchorContainer) dataShape, p);
 				AddConnectionContext ac = null;
 				if (association instanceof DataOutputAssociation) {
 					ac = new AddConnectionContext(ownerAnchor, peAnchor);
@@ -377,7 +386,11 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				IAddFeature af = fp.getAddFeature(ac);
 				if (af.canAdd(ac)) {
 					af.add(ac);
+					hasDoneChanges = true;
 				}
+			}
+			if (hasDoneChanges) {
+				FeatureSupport.updateConnection(diagramEditor.getDiagramTypeProvider().getFeatureProvider(), connection);
 			}
 		}
 	}

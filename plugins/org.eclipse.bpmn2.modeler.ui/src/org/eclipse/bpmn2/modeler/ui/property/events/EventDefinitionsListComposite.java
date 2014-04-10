@@ -432,6 +432,12 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 
 	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+		if (eClass==TimerEventDefinition.class) {
+			return new TimerEventDefinitionDetailComposite(parent, style);
+		}
+		if (eClass==ConditionalEventDefinition.class){
+			return new ConditionalEventDefinitionDetailComposite(parent, style);
+		}
 		return new EventDefinitionsDetailComposite(parent, (Event)getBusinessObject());
 	}
 	

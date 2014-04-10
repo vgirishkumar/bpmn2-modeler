@@ -27,6 +27,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -138,6 +141,13 @@ public class DefaultListComposite extends AbstractListComposite {
 		EObject selected = null;
 		if (index<map.length-1)
 			selected = list.get(map[index+1]);
+		EObject removed = list.get(map[index]);
+		Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+		for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, removed)) {
+			if (pe.getLink()!=null) {
+				pe.getLink().getBusinessObjects().remove(removed);
+			}
+		}
 		list.remove(map[index]);
 		return selected;
 	}

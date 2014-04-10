@@ -581,13 +581,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	private IStatus validateEventDefinition(IValidationContext ctx, EventDefinition ed) {
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
-			if (ted.getTimeDate() == null) {
-				return createFailureStatus(ctx,ed,"timeDate",Messages.BPMN2ValidationConstraints_52);
-			}
-			if (ted.getTimeDuration() == null) {
-				return createFailureStatus(ctx,ed,"timeDuration",Messages.BPMN2ValidationConstraints_52);
-			}
-			if (ted.getTimeCycle() == null) {
+			if (ted.getTimeDate() == null && ted.getTimeDuration() == null && ted.getTimeCycle() == null) {
 				return createFailureStatus(ctx,ed,"timeCycle",Messages.BPMN2ValidationConstraints_52);
 			}
 		} else if (ed instanceof SignalEventDefinition) {

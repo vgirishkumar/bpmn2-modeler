@@ -38,6 +38,9 @@ public class ConditionalEventDefinitionDetailComposite extends ExpressionDetailC
 	@Override
 	public void setBusinessObject(EObject object) {
 		if (object instanceof ConditionalEventDefinition) {
+			getDiagramEditor();
+			addDomainListener();
+			
 			ConditionalEventDefinition ced = (ConditionalEventDefinition)object;
 			if (ced.getCondition()==null) {
 				object = createModelObject(FormalExpression.class);
