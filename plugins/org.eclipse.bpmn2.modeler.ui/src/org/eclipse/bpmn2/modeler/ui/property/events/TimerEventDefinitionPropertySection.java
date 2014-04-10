@@ -35,15 +35,6 @@ public class TimerEventDefinitionPropertySection extends DefaultPropertySection 
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		return new TimerEventDefinitionDetailComposite(parent,style);
 	}
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		return super.appliesTo(part, selection);
-	}
-
-	@Override
-	public boolean appliesTo(EObject eObj) {
-		return super.appliesTo(eObj);
-	}
 	
 	@Override
 	protected EObject getBusinessObjectForSelection(ISelection selection) {
