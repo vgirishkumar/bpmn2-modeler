@@ -95,6 +95,7 @@ import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.model.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -176,6 +177,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.common.command.BasicCommandStack;
@@ -197,6 +199,7 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
+import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -207,6 +210,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -1353,6 +1357,37 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 							}
 						}
 					}
+				}
+			});
+		}
+		
+		if (event.getKey().contains("GridLayer")) { //$NON-NLS-1$
+			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+				@Override
+				protected void doExecute() {
+					ShapeStyle ss = getPreferences().getShapeStyle(GridLayer.class);
+					Diagram diagram = getDiagramTypeProvider().getDiagram();
+					diagram.setGridUnit(ss.getGridWidth());
+					diagram.setVerticalGridUnit(ss.getGridHeight());
+					diagram.setSnapToGrid(ss.getSnapToGrid());
+					GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
+					IGaService gaService = Graphiti.getGaService();
+					ga.setForeground(gaService.manageColor(diagram, ss.getShapeForeground()));
+					refresh();
+				}
+			});
+		}
+		
+		if (event.getKey().contains("FigureCanvas")) { //$NON-NLS-1$
+			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+				@Override
+				protected void doExecute() {
+					ShapeStyle ss = getPreferences().getShapeStyle(FigureCanvas.class);
+					Diagram diagram = getDiagramTypeProvider().getDiagram();
+					GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
+					IGaService gaService = Graphiti.getGaService();
+					ga.setBackground(gaService.manageColor(diagram, ss.getShapeBackground()));
+					refresh();
 				}
 			});
 		}

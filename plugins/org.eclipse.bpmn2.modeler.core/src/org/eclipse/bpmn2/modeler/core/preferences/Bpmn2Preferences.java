@@ -555,7 +555,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		if (ss==null) {
 			String key = getShapeStyleKey(getRuntime(), clazz);
 			String value = get(key, ""); //$NON-NLS-1$
-			ss = ShapeStyle.decode(value);
+			if (value.isEmpty())
+				ss = new ShapeStyle(clazz);
+			else
+				ss = ShapeStyle.decode(value);
 			shapeStyles.put(clazz, ss);
 		}
 		return ss;

@@ -19,7 +19,9 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
@@ -52,6 +54,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	IColorConstant textColor;
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
 	boolean defaultSize;
+	boolean snapToGrid;
+	int gridWidth;
+	int gridHeight;
 	boolean dirty;
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
@@ -59,6 +64,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public ShapeStyle() {
 		setDefaultColors(DEFAULT_COLOR);
 		textFont = stringToFont(DEFAULT_FONT_STRING);
+		snapToGrid = true;
+		gridWidth = 10;
+		gridHeight = 10;
 	}
 
 	public ShapeStyle(IConfigurationElement e) {
@@ -75,7 +83,18 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public ShapeStyle(ShapeStyle other) {
 		this(encode(other));
 	}
-	
+
+	public ShapeStyle(Class c) {
+		this();
+		if (c==GridLayer.class || c==FigureCanvas.class) {
+			shapeForeground = stringToColor("E3EEF9");
+			shapeBackground = stringToColor("FFFFFF");
+			snapToGrid = true;
+			gridWidth = 10;
+			gridHeight = 10;
+		}
+	}
+
 	public void initialize(String foreground, String background, String textColor, String font) {
 		// only background color is required to set up default color scheme
 		shapeBackground = stringToColor(background);
@@ -120,6 +139,24 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 		else
 			routingStyle = RoutingStyle.ManualBendpoint;
+		
+		if (a.length>8) {
+			snapToGrid = Integer.parseInt(a[8])==0 ? false : true;
+		}
+		else
+			snapToGrid = true;
+		
+		if (a.length>9) {
+			gridWidth = Integer.parseInt(a[9]);
+		}
+		else
+			gridWidth = 10;
+		
+		if (a.length>10) {
+			gridHeight= Integer.parseInt(a[10]);
+		}
+		else
+			gridHeight = 10;
 	}
 	
 	@Override
@@ -224,7 +261,39 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 
+	public boolean getSnapToGrid() {
+		return snapToGrid;
+	}
 	
+	public void setSnapToGrid(boolean value) {
+		if (snapToGrid!=value) {
+			snapToGrid = value;
+			setDirty(true);
+		}
+	}
+	
+	public int getGridWidth() {
+		return gridWidth;
+	}
+
+	public void setGridWidth(int gridWidth) {
+		if (this.gridWidth!=gridWidth) {
+			this.gridWidth = gridWidth;
+			setDirty(true);
+		}
+	}
+	
+	public int getGridHeight() {
+		return gridHeight;
+	}
+
+	public void setGridHeight(int gridHeight) {
+		if (this.gridHeight!=gridHeight) {
+			this.gridHeight = gridHeight;
+			setDirty(true);
+		}
+	}
+
 	public boolean isDefaultSize() {
 		return defaultSize;
 	}
@@ -325,7 +394,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				fontToString(sp.textFont) + ";" + //$NON-NLS-1$
 				colorToString(sp.textColor) + ";" + //$NON-NLS-1$
 				booleanToString(sp.defaultSize) + ";" + //$NON-NLS-1$
-				sp.routingStyle.name()
+				sp.routingStyle.name() + ";" + //$NON-NLS-1$
+				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$
+				sp.gridWidth + ";" + //$NON-NLS-1$
+				sp.gridHeight
 				);
 	}
 	

@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
@@ -32,6 +33,7 @@ import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiagramElement;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -41,6 +43,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
@@ -59,6 +62,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramLink;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
 
 public class DIUtils {
@@ -228,8 +232,7 @@ public class DIUtils {
 
 		// create a new one
 		IDiagramTypeProvider dtp = editor.getDiagramContainer().getDiagramTypeProvider();
-		String typeId = dtp.getDiagram().getDiagramTypeId();
-		final Diagram newDiagram = Graphiti.getCreateService().createDiagram(typeId, bpmnDiagram.getName(), true);
+		final Diagram newDiagram = createDiagram(bpmnDiagram.getName());
 		final IFeatureProvider featureProvider = dtp.getFeatureProvider();
 		final Resource resource = dtp.getDiagram().eResource();
 		TransactionalEditingDomain domain = editor.getEditingDomain();
@@ -241,6 +244,21 @@ public class DIUtils {
 			}
 		});
 		return newDiagram;
+	}
+	
+	public static Diagram createDiagram(String diagramName) {
+		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", diagramName, true); //$NON-NLS-1$
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
+		ShapeStyle ss = prefs.getShapeStyle(GridLayer.class);
+		diagram.setGridUnit(ss.getGridWidth());
+		diagram.setVerticalGridUnit(ss.getGridHeight());
+		diagram.setSnapToGrid(ss.getSnapToGrid());
+		GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
+		IGaService gaService = Graphiti.getGaService();
+		ga.setForeground(gaService.manageColor(diagram, ss.getShapeForeground()));
+		ss = prefs.getShapeStyle(FigureCanvas.class);
+		ga.setBackground(gaService.manageColor(diagram, ss.getShapeBackground()));
+		return diagram;
 	}
 	
 	/**

@@ -14,30 +14,22 @@ package org.eclipse.bpmn2.modeler.ui.wizards;
 
 import java.io.File;
 
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2MultiPageEditor;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -58,9 +50,7 @@ public class BPMN2DiagramCreator {
 		
 		String modelName = modelUri.trimFragment().trimFileExtension().lastSegment();
 		// We still need to create a Diagram object for this editor
-		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", modelName, true); //$NON-NLS-1$
-//		diagram.setVerticalGridUnit(0);
-//		diagram.setGridUnit(0);
+		final Diagram diagram = DIUtils.createDiagram(modelName); //$NON-NLS-1$
 
 		if (otherEditor!=null) {
 			// reuse the temp Diagram File from other editor
