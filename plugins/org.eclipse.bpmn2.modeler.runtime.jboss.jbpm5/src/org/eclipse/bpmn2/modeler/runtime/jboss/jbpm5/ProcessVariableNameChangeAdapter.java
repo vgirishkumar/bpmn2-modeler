@@ -143,7 +143,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 			EObject object = (EObject)newTarget;
 			EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (feature!=null) {
-				Object oldValue = null;
+				Object oldValue = "";
 				Object newValue = object.eGet(feature);
 				Notification notification = new ENotificationImpl((InternalEObject)object,
 						Notification.SET, feature,
