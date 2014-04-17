@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.runtime.ExpressionLanguageDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
@@ -95,9 +96,8 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 					if (choiceOfValues==null) {
 						choiceOfValues = new Hashtable<String, Object>();
 						TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-						String[] s = rt.getRuntimeExtension().getExpressionLanguages();
-						for (int i=0; i<s.length; i+=2) {
-							choiceOfValues.put(s[i+1], s[i]);
+						for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
+							choiceOfValues.put(el.getName(), el.getUri());
 						}
 					}
 					return choiceOfValues;

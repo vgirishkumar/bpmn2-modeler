@@ -130,7 +130,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			EObject value = (EObject)object.eGet(feature);
 			if (value!=null) {
 				if (ModelUtil.isStringWrapper(value)) {
-					text = ModelUtil.getStringWrapperValue( object.eGet(feature) ); // + type;
+					text = ModelUtil.getStringWrapperTextValue( object.eGet(feature) ); // + type;
 				}
 				else if (value instanceof PortType) {
 					PortType portType = (PortType)value;

@@ -57,6 +57,6 @@ public final class FloatDataType
     }
 
     public String getStringType() {
-        return "Float"; //$NON-NLS-1$
+        return "java.lang.Float"; //$NON-NLS-1$
     }
 }

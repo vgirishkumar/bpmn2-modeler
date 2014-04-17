@@ -54,6 +54,6 @@ public final class BooleanDataType
     }
 
     public String getStringType() {
-        return "Boolean"; //$NON-NLS-1$
+        return "java.lang.Boolean"; //$NON-NLS-1$
     }
 }

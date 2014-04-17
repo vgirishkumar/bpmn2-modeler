@@ -31,7 +31,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  * This is the Graphiti UpdateFeature class for all BPMN2 model elements that
  * subclass {@link BaseElement}.
  */
-public abstract class AbstractUpdateBaseElementFeature extends AbstractUpdateFeature {
+public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2UpdateFeature {
 
 	/**
 	 * Instantiates a new UpdateFeature.
@@ -47,12 +47,10 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractUpdateFea
 	 */
 	@Override
 	public IReason updateNeeded(final IUpdateContext context) {
-		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
-			// if the UpdateContext has a "businessObject" property, then this update is needed
-			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
-		}
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
 			String shapeValue = FeatureSupport.getShapeValue(context);

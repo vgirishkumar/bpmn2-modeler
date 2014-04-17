@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
+import org.eclipse.bpmn2.modeler.ui.property.editors.StructureObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -104,7 +105,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			if (def.getItemKind().equals(ItemKind.INFORMATION)) {
-				SchemaObjectEditor editor = new SchemaObjectEditor(this,object,reference);
+				StructureObjectEditor editor = new StructureObjectEditor(this,object,reference);
 				editor.createControl(parent,displayName);
 			}
 			else {

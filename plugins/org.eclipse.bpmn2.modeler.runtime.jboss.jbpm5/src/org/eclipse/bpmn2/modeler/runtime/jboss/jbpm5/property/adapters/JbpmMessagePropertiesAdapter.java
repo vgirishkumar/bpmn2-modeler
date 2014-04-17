@@ -31,7 +31,7 @@ public class JbpmMessagePropertiesAdapter extends MessagePropertiesAdapter {
 
 			@Override
     		public Hashtable<String, Object> getChoiceOfValues() {
-				return JbpmModelUtil.collectAllDataTypes(object);
+				return JbpmModelUtil.getChoiceOfValues(object);
     		}
 	
     	});

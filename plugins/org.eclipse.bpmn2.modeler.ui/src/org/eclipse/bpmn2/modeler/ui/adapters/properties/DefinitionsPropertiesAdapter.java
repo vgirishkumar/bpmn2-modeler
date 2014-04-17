@@ -13,14 +13,22 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.Hashtable;
+
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.ExpressionLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /**
@@ -36,13 +44,66 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 	public DefinitionsPropertiesAdapter(AdapterFactory adapterFactory, Definitions object) {
 		super(adapterFactory, object);
     	
+		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getDefinitions_TypeLanguage();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+		
+		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(object, feature) {
+
+			@Override
+			protected void internalSet(Definitions object, EStructuralFeature feature, Object value, int index) {
+				super.internalSet(object, feature, value, index);
+			}
+			
+			@Override
+			public Hashtable<String, Object> getChoiceOfValues() {
+				Hashtable<String,Object> choices = new Hashtable<String,Object>();
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				for (TypeLanguageDescriptor tld : rt.getTypeLanguageDescriptors()) {
+					choices.put(tld.getName(), tld.getUri());
+				}
+				return choices;
+			}
+		});
+    	
 		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
 			@Override
 			public Definitions createObject(Resource resource, EClass eclass) {
 				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
-				IBpmn2RuntimeExtension rte = TargetRuntime.getCurrentRuntime().getRuntimeExtension();
-				definitions.setTypeLanguage(rte.getTypeLanguages()[0]);
-				definitions.setExpressionLanguage(rte.getExpressionLanguages()[0]);
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				definitions.setTypeLanguage(rt.getTypeLanguage());
+				definitions.setExpressionLanguage(rt.getExpressionLanguage());
+				return definitions;
+			}
+		});
+
+		feature = Bpmn2Package.eINSTANCE.getDefinitions_ExpressionLanguage();
+		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+		
+		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(object, feature) {
+
+			@Override
+			protected void internalSet(Definitions object, EStructuralFeature feature, Object value, int index) {
+				super.internalSet(object, feature, value, index);
+			}
+			
+			@Override
+			public Hashtable<String, Object> getChoiceOfValues() {
+				Hashtable<String,Object> choices = new Hashtable<String,Object>();
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				for (ExpressionLanguageDescriptor eld : rt.getExpressionLanguageDescriptors()) {
+					choices.put(eld.getName(), eld.getUri());
+				}
+				return choices;
+			}
+		});
+    	
+		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
+			@Override
+			public Definitions createObject(Resource resource, EClass eclass) {
+				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				definitions.setTypeLanguage(rt.getTypeLanguage());
+				definitions.setExpressionLanguage(rt.getExpressionLanguage());
 				return definitions;
 			}
 		});

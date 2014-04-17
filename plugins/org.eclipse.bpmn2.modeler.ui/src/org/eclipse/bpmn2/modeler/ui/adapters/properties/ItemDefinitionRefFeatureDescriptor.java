@@ -25,9 +25,12 @@ import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
+import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -43,6 +46,8 @@ import org.eclipse.emf.ecore.resource.Resource;
  */
 public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends FeatureDescriptor<T> {
 
+	protected ImportUtil importer = new ImportUtil();
+	
 	/**
 	 * @param adapterFactory
 	 * @param object
@@ -80,6 +85,11 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 
 	@Override
 	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
+		Definitions definitions = ModelUtil.getDefinitions(object);
+		if (value instanceof String) {
+			value = importer.createItemDefinition(definitions, null, (String)value, ItemKind.INFORMATION);
+		}
+		
 		if (value==null || value instanceof ItemDefinition) {
 			ItemDefinition itemDefinition = (ItemDefinition) value;
 
@@ -87,7 +97,6 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 			
 			// if there are any DataInputAssociations or DataOutputAssociations that map to this object
 			// then change their ItemDefinitions to match.
-			Definitions definitions = ModelUtil.getDefinitions(object);
 			if (definitions!=null) {
 				TreeIterator<EObject> iter = definitions.eAllContents();
 				while (iter.hasNext()) {

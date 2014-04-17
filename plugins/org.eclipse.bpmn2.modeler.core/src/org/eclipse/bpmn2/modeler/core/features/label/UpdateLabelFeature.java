@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features.label;
 import static org.eclipse.bpmn2.modeler.core.utils.FeatureSupport.getChildElementOfType;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -31,7 +32,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 
-public class UpdateLabelFeature extends AbstractUpdateFeature {
+public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 	public static final String TEXT_ELEMENT = "baseelement.text"; //$NON-NLS-1$
 
@@ -51,6 +52,10 @@ public class UpdateLabelFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		PictogramElement container = context.getPictogramElement();
 
 		BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(container,

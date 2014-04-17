@@ -31,7 +31,7 @@ public class JbpmEscalationPropertiesAdapter extends EscalationPropertiesAdapter
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {
-				return JbpmModelUtil.collectAllDataTypes(object);
+				return JbpmModelUtil.getChoiceOfValues(object);
     		}
 	
     	});

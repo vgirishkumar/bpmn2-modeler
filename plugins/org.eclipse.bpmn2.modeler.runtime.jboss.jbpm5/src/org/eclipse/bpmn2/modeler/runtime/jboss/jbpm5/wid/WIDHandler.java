@@ -17,7 +17,11 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Map.Entry;
 
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeFactory;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeRegistry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 
@@ -170,6 +174,13 @@ public class WIDHandler {
         				  if (value.startsWith("new") && value.indexOf("(")>0) { //$NON-NLS-1$ //$NON-NLS-2$
         					  int index = value.indexOf("("); //$NON-NLS-1$
         					  value = value.substring(3,index).trim();
+        					  // look up the DataType in the registry and replace the DataType
+        					  // name with its Java type equivalent name
+        					  DataTypeFactory dtf = DataTypeRegistry.getFactory(value);
+        					  if (dtf!=null) {
+        						  DataType dt = dtf.createDataType();
+        						  value = dt.getStringType();
+        					  }
         				  }
         				  if (current == Section.PARAMETERS)
         					  currentWid.getParameters().put(name, value);

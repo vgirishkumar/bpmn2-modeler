@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.property.editors;
 import javax.xml.namespace.QName;
 
 import org.eclipse.bpmn2.Import;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
@@ -45,14 +46,17 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDTypeDefinition;
 
 /**
- * @author Bob Brodt
- * 
+ * This class implements a Schema Browser editor which consists of an editable
+ * Text field and a "Browse" button. The button allows for selection of a BPMN2
+ * Import and schema element defined in the Import. The button uses the
+ * {@link SchemaSelectionDialog} which can be used to either select an existing
+ * Import or add a new Import to the BPMN2 file.
+ * <p>
+ * The ItemDefinition which is the object of this {@link ObjectEditor} will be
+ * populated with the structureRef (the selected schema element) and the
+ * import selected in the {@link SchemaSelectionDialog}
  */
 public class SchemaObjectEditor extends TextAndButtonObjectEditor {
-
-	protected Resource resource;
-	protected Import imp;
-	protected Button editButton;
 
 	/**
 	 * @param parent
@@ -61,7 +65,6 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 	 */
 	public SchemaObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
-		resource = BPMN2Editor.getActiveEditor().getModelHandler().getResource();
 	}
 
 	/*
@@ -87,17 +90,31 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 	 */
 	@Override
 	protected void buttonClicked(int buttonId) {
+		Object[] result = showSchemaSelectionDialog(parent, object);
+		if (result.length==2) {
+			setValue((String)result[0]);
+			if (object instanceof ItemDefinition) {
+				((ItemDefinition)object).setImport((Import)result[1]);
+			}
+		}
+	}
+	
+	public static Object[] showSchemaSelectionDialog(Composite parent, EObject object) {
+		// "Browse" button was clicked: open a {@link SchemaSelectionDialog} and
+		// get the selected schema element and Import reference.
 		SchemaSelectionDialog dialog = new SchemaSelectionDialog(parent.getShell(), object);
 
 		if (dialog.open() == Window.OK) {
-			Object result = dialog.getResult()[0];
+			Resource resource = object.eResource();
+			Object element = dialog.getResult()[0];
+			Import importRef = (Import)dialog.getResult()[1];
 			String selectionPath = dialog.getSelectionPath();
 			String value = ""; //$NON-NLS-1$
 			String selectionType = ""; //$NON-NLS-1$
 
-			// TODO: do we need these?
-			if (result instanceof PortType) {
-				PortType portType = (PortType)result;
+			if (element instanceof PortType) {
+				// the element is a WSDL PortType
+				PortType portType = (PortType)element;
 				QName qname = portType.getQName();
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
 				if (prefix==null)
@@ -107,31 +124,37 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				value += qname.getLocalPart();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Port;
 			}
-			if (result instanceof Operation) {
+			if (element instanceof Operation) {
+				// the element is a WSDL Operation
 				selectionType = Messages.SchemaObjectEditor_WSDL_Operation;
 			}
-			if (result instanceof Input) {
-				Input input = (Input)result;
-				result = input.getMessage();
+			if (element instanceof Input) {
+				// the element is a WSDL Input
+				Input input = (Input)element;
+				element = input.getMessage();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Input;
 			}
-			if (result instanceof Output) {
-				Output output = (Output)result;
-				result = output.getMessage();
+			if (element instanceof Output) {
+				// the element is a WSDL Output
+				Output output = (Output)element;
+				element = output.getMessage();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Output;
 			}
-			if (result instanceof Fault) {
-				Fault fault = (Fault)result;
-				result = fault.getMessage();
+			if (element instanceof Fault) {
+				// the element is a WSDL Fault
+				Fault fault = (Fault)element;
+				element = fault.getMessage();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Fault;
 			}
-			if (result instanceof Part) {
-				Part part = (Part)result;
-				result = part.getElementDeclaration();
+			if (element instanceof Part) {
+				// the element is a WSDL Message Part
+				Part part = (Part)element;
+				element = part.getElementDeclaration();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Message_Part;
 			}
-			if (result instanceof Message) {
-				Message message = (Message)result;
+			if (element instanceof Message) {
+				// the element is a WSDL Message
+				Message message = (Message)element;
 				QName qname = message.getQName();
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
 				if (prefix==null)
@@ -141,12 +164,14 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				value += qname.getLocalPart();
 				selectionType = Messages.SchemaObjectEditor_WSDL_Message;
 			}
-			if (result instanceof XSDAttributeDeclaration) {
+			if (element instanceof XSDAttributeDeclaration) {
+				// the element is a XSD attribute
 				selectionType = Messages.SchemaObjectEditor_XML_Attribute;
 			}
 			
-			if (result instanceof XSDElementDeclaration) {
-				XSDElementDeclaration decl = (XSDElementDeclaration)result;
+			if (element instanceof XSDElementDeclaration) {
+				// the element is a XSD element
+				XSDElementDeclaration decl = (XSDElementDeclaration)element;
 				XSDSchema schema = getContainingSchema(decl);
 				String ns = schema.getTargetNamespace();
 				if (ns==null) {
@@ -160,8 +185,9 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 					value = prefix + ":"; //$NON-NLS-1$
 				value += selectionPath;
 			}
-			if (result instanceof XSDTypeDefinition) {
-				XSDTypeDefinition type = (XSDTypeDefinition)result;
+			if (element instanceof XSDTypeDefinition) {
+				// the element is a XSD type
+				XSDTypeDefinition type = (XSDTypeDefinition)element;
 				XSDSchema schema = getContainingSchema(type);
 				String ns = schema.getTargetNamespace();
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, ns);
@@ -169,19 +195,22 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 					value = prefix + ":"; //$NON-NLS-1$
 				value += selectionPath;
 			}
-			if (result instanceof XSDSchema) {
-				XSDSchema schema = (XSDSchema)result;
+			if (element instanceof XSDSchema) {
+				// the element is a XSD schema
+				XSDSchema schema = (XSDSchema)element;
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, schema.getTargetNamespace());
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += "schema"; //$NON-NLS-1$
 			}
-			if (result instanceof Process) {
-				Process process = (Process)result;
+			if (element instanceof Process) {
+				// the element is a BPMN2 Process
+				Process process = (Process)element;
 				process.getSupportedInterfaceRefs();
 			}
-			if (result instanceof IType) {
-				value = ((IType)result).getFullyQualifiedName('.');
+			if (element instanceof IType) {
+				// the element is a Java type
+				value = ((IType)element).getFullyQualifiedName('.');
 			}
 			if (value.isEmpty()) {
 				MessageDialog.openWarning(parent.getShell(),
@@ -189,12 +218,14 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 					NLS.bind(Messages.SchemaObjectEditor_Invalid_Selection_Message,selectionType)
 				);
 			}
-			else
-				setValue(value);
+			else {
+				return new Object[] {value, importRef};
+			}
 		}
+		return new Object[] {};
 	}
 	
-	private XSDSchema getContainingSchema(EObject object) {
+	private static XSDSchema getContainingSchema(EObject object) {
 		EObject container = object.eContainer();
 		if (container instanceof XSDSchema)
 			return (XSDSchema) container;

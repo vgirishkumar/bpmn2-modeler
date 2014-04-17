@@ -59,6 +59,6 @@ public final class UndefinedDataType implements DataType {
     }
 
     public String getStringType() {
-        return "Object"; //$NON-NLS-1$
+        return "java.lang.Object"; //$NON-NLS-1$
     }
 }

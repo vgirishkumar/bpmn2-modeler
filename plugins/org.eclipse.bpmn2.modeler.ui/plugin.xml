@@ -1114,6 +1114,35 @@
 		<style object="TextAnnotation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="Transaction" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="UserTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
+		
+		<typeLanguage name="XSD Schema" uri="http://www.w3.org/2001/XMLSchema" prefix="xs">
+			<type name="string"/>
+			<type name="date"/>
+			<type name="byte"/>
+			<type name="decimal"/>
+			<type name="int"/>
+			<type name="integer"/>
+			<type name="long"/>
+			<type name="short"/>
+			<type name="boolean"/>
+		</typeLanguage>
+		
+		<typeLanguage name="Java Types" uri="http://www.java.com/javaTypes" prefix="java">
+			<type name="Boolean" qname="java.lang.Boolean"/>
+			<type name="Byte" qname="java.lang.Byte"/>
+			<type name="Character" qname="java.lang.Character"/>
+			<type name="Float" qname="java.lang.Float"/>
+			<type name="Integer" qname="java.lang.Integer"/>
+			<type name="Long" qname="java.lang.Long"/>
+			<type name="Short" qname="java.lang.Short"/>
+			<type name="Double" qname="java.lang.Double"/>
+			<type name="String" qname="java.lang.String"/>
+			<type name="Object" qname="java.lang.Object"/>
+		</typeLanguage>
+		
+		<expressionLanguage name="XPath" uri="http://www.w3.org/1999/XPath"/>
+		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
+		
 	</extension>
 	
 	<!-- menu commands -->

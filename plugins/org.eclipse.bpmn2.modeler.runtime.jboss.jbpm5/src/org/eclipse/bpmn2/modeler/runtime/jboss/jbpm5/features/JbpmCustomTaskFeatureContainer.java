@@ -309,7 +309,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 						if (ModelUtil.isStringWrapper(structureRef)) {
 							ParameterDefinition parameterDefinition = w.getParameterDefinition(name);
 							try {
-								Object value = parameterDefinition.getType().readValue(ModelUtil.getStringWrapperValue(structureRef));
+								Object value = parameterDefinition.getType().readValue(ModelUtil.getStringWrapperTextValue(structureRef));
 								w.setParameter(name, value);
 							}
 							catch (Exception e) {

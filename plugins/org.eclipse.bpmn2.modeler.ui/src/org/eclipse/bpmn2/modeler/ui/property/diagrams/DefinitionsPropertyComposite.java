@@ -61,6 +61,8 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -186,7 +188,20 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 			}
 			return null;
 		}
-
+		
+		protected EObject editListItem(EObject object, EStructuralFeature feature) {
+			IStructuredSelection sel = (IStructuredSelection)tableViewer.getSelection();
+			Map.Entry<String, String> entry = (Map.Entry<String, String>)sel.getFirstElement();
+			DocumentRoot root = (DocumentRoot)object;
+			Map<String,String> map = root.getXMLNSPrefixMap();
+			NamespacesEditingDialog dialog = new NamespacesEditingDialog(getShell(),
+				Messages.DefinitionsPropertyComposite_Change_Namespace_Title, map, entry.getKey(), entry.getValue());
+			if (dialog.open() == Window.OK) {
+				map.put(dialog.getPrefix(), dialog.getNamespace());
+			}
+			return null;
+		}
+		
 		@Override
 		public AbstractDetailComposite createDetailComposite(Class eClass, final Composite parent, int style) {
 			detailSection.setText(Messages.DefinitionsPropertyComposite_Namespace_Details_Title);

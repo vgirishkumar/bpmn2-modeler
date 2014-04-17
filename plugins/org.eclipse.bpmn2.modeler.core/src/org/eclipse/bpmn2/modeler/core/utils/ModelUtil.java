@@ -44,6 +44,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
@@ -693,12 +694,18 @@ public class ModelUtil {
 		if (wrapper instanceof DynamicEObjectImpl) {
 			DynamicEObjectImpl de = (DynamicEObjectImpl)wrapper;
 			URI uri = de.eProxyURI();
-			return uri.toString();
+			String value = uri.toString();
+			return value;
 		}
 		else if (wrapper instanceof EObject) {
 			return EcoreUtil.getURI((EObject)wrapper).toString();
 		}
 		return null;
+	}
+	
+	public static String getStringWrapperTextValue(Object wrapper) {
+		String value = ModelUtil.getStringWrapperValue(wrapper);
+		return SyntaxCheckerUtils.fromXMLString(value);
 	}
 	
 	public static boolean setStringWrapperValue(Object wrapper, String value) {

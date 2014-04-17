@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features.participant;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -35,7 +36,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateParticipantMultiplicityFeature extends AbstractUpdateFeature {
+public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFeature {
 
 	public static final String MULTIPLICITY_MARKER = "multiplicity.marker"; //$NON-NLS-1$
 
@@ -58,12 +59,10 @@ public class UpdateParticipantMultiplicityFeature extends AbstractUpdateFeature 
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
-			// if the UpdateContext has a "businessObject" property, then this update is needed
-			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
-		}
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		EObject container = context.getPictogramElement().eContainer();
 		if (container instanceof PictogramElement) {
 			PictogramElement containerElem = (PictogramElement) container;

@@ -95,7 +95,7 @@ public class Bpmn2EditorDiItemProviderAdapterFactory extends BpmnDiItemProviderA
 		        	}
 		        	
 					if (ModelUtil.isStringWrapper(object)) {
-						return ModelUtil.getStringWrapperValue(object);
+						return ModelUtil.getStringWrapperTextValue(object);
 					}
 					return super.getTextValue();
 				}

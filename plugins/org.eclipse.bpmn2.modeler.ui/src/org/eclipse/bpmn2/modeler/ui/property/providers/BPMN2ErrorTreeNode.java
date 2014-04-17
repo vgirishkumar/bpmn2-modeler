@@ -12,9 +12,9 @@ package org.eclipse.bpmn2.modeler.ui.property.providers;
 
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionPropertiesAdapter;
 import org.eclipse.swt.graphics.Image;
 
 
@@ -35,7 +35,7 @@ public class BPMN2ErrorTreeNode extends TreeNode {
 		ItemDefinition itemDef = error.getStructureRef();
 		if (itemDef==null || itemDef.getStructureRef()==null)
 			return null;
-		return ModelUtil.getStringWrapperValue(itemDef.getStructureRef());
+		return ItemDefinitionPropertiesAdapter.getDisplayName(itemDef);
 	}
 
 	@Override

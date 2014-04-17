@@ -53,6 +53,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * @author Bob Brodt
  */
 public abstract class ObjectEditor implements INotifyChangedListener {
+	
+	public static int ID_CREATE_BUTTON = 1;
+	public static int ID_EDIT_BUTTON = 2;
+	public static int ID_DELETE_BUTTON = 3;
+	public static int ID_OTHER_BUTTONS = 4;
+
 	protected EObject object;
 	protected EStructuralFeature feature;
 	protected AbstractDetailComposite parent;

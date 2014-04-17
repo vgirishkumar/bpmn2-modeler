@@ -130,12 +130,10 @@ public abstract class AbstractGatewayFeatureContainer extends BaseElementFeature
 
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
-			Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-			if (value instanceof EObject) {
-				// if the UpdateContext has a "businessObject" property, then this update is needed
-				// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-				return Reason.createTrueReason("Initial update");
-			}
+			IReason reason = super.updateNeeded(context);
+			if (reason.toBoolean())
+				return reason;
+
 			IFeatureProvider featureProvider = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
 
 			Shape gatewayShape = (Shape) context.getPictogramElement();

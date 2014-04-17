@@ -138,6 +138,8 @@ A final note: these configuration files are intended to be used primarily by plu
             <element ref="style" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="toolPalette" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="dataType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="typeLanguage" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="expressionLanguage" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -1297,6 +1299,112 @@ The second method references previous &lt;b&gt;object&lt;/b&gt; definitions by t
                <appinfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.bpmn2.modeler.core.DefaultConversionDelegate:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="typeLanguage">
+      <annotation>
+         <documentation>
+            This extension element identifies a data type system supported by the Target Runtime. A Target Runtime may define any number of these type systems. The definition element that appears first is used as the default.
+
+The Default Target Runtime provides support for XSD Schema and Java types only.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="type" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;typeLanguage&lt;/b&gt; definition will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Descriptive text label that will be displayed in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="uri" type="string">
+            <annotation>
+               <documentation>
+                  A URI that identifies a specific data type system.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="prefix" type="string">
+            <annotation>
+               <documentation>
+                  Optional namespace prefix to use for creating QName references for the primitive data types (if any) defined by the type language.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="expressionLanguage">
+      <annotation>
+         <documentation>
+            This extension element identifies an expression language supported by the Target Runtime. A Target Runtime may define any number of these expression languages. The definition element that appears first is used as the default.
+
+The Default Target Runtime provides support for XPath and Java only.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;expressionLanguage&lt;/b&gt; definition will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Descriptive text label that will be displayed in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="uri" type="string">
+            <annotation>
+               <documentation>
+                  A URI that identifies a specific expression language.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="type">
+      <annotation>
+         <documentation>
+            Specification of a data type supported by the type system.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Name of the data type.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="qname" type="string">
+            <annotation>
+               <documentation>
+                  A fully qualified name for the data type. For example, if the type system implements Java types, this would be the fully qualified name of a primitive Java data type, e.g. &quot;java.lang.String&quot;.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

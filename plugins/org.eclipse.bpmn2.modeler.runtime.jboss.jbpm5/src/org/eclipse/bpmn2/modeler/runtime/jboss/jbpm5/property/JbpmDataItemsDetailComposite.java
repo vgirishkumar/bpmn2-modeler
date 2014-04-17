@@ -58,7 +58,6 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
 				String[] properties = new String[] {
-						"rootElements#Process.global", //$NON-NLS-1$
 						"rootElements#Process.properties", //$NON-NLS-1$
 						"rootElements#Process.resources", //$NON-NLS-1$
 				};

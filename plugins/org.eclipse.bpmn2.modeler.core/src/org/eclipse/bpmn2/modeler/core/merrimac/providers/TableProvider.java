@@ -180,14 +180,16 @@ public class TableProvider implements ITableLabelProvider, ICellModifier  {
 	public boolean canModify(Object element, String property) {
 		// delegate to the appropriate cell modifier.
 		ICellModifier cm = (ICellModifier)propertyToCellModifier.get(property);
-		if (cm != null)  return cm.canModify(element, property);
+		if (cm != null)
+			return cm.canModify(element, property);
 		// no cell modifier found.
 		return false;
 	}
 	public Object getValue(Object element, String property) {
 		// delegate to the appropriate cell modifier.
 		ICellModifier cm = (ICellModifier)propertyToCellModifier.get(property);
-		if (cm != null)  return cm.getValue(element, property);
+		if (cm != null && element!=null)
+			return cm.getValue(element, property);
 		// no cell modifier found.
 		return null;
 	}
@@ -195,7 +197,9 @@ public class TableProvider implements ITableLabelProvider, ICellModifier  {
 		if (element instanceof Item)  element = ((Item)element).getData();
 		// delegate to the appropriate cell modifier.
 		ICellModifier cm = (ICellModifier)propertyToCellModifier.get(property);
-		if (cm != null)  { cm.modify(element, property, value); return; }
+		if (cm != null && element!=null)  {
+			cm.modify(element, property, value);
+		}
 		// no cell modifier found.
 		// do nothing
 	}	

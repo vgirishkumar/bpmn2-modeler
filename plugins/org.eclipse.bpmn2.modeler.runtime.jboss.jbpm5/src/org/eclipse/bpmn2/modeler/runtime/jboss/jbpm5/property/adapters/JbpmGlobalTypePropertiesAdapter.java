@@ -67,7 +67,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 				
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {
-					return JbpmModelUtil.collectAllDataTypes(object);
+					return JbpmModelUtil.getChoiceOfValues(object);
 				}
 				
 				@Override

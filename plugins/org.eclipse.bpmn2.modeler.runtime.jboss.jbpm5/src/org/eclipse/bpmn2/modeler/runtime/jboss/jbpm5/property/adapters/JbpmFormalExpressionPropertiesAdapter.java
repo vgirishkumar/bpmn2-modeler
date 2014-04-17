@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ExpressionLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -52,9 +53,8 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 				public Hashtable<String, Object> getChoiceOfValues() {
 					choiceOfValues = new Hashtable<String, Object>();
 					TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-					String[] s = rt.getRuntimeExtension().getExpressionLanguages();
-					for (int i=0; i<s.length; i+=2) {
-						choiceOfValues.put(s[i+1], s[i]);
+					for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
+						choiceOfValues.put(el.getName(), el.getUri());
 					}
 					if (!(object.eContainer() instanceof SequenceFlow))
 						choiceOfValues.remove(Messages.JbpmFormalExpressionPropertiesAdapter_Rule);

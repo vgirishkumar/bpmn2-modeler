@@ -1204,6 +1204,16 @@
 			
 		</toolPalette>
 		
+		<typeLanguage name="Java Types" uri="http://www.java.com/javaTypes" prefix="java">
+			<type name="Boolean" qname="java.lang.Boolean"/>
+			<type name="Float" qname="java.lang.Float"/>
+			<type name="Integer" qname="java.lang.Integer"/>
+			<type name="String" qname="java.lang.String"/>
+			<type name="Object" qname="java.lang.Object"/>
+		</typeLanguage>
+		<expressionLanguage name="mvel" uri="http://www.mvel.org/2.0"/>
+		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
+		<expressionLanguage name="Rule" uri="http://www.jboss.org/drools/rule"/>
 		
 	</extension>
 

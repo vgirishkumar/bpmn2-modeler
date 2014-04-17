@@ -12,21 +12,17 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
-import java.util.Iterator;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
@@ -36,7 +32,7 @@ import org.eclipse.graphiti.services.IPeService;
  *
  * @param <T> the generic type
  */
-public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractUpdateFeature {
+public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractBpmn2UpdateFeature {
 
 	/**
 	 * Instantiates a new abstract update marker feature.
@@ -61,12 +57,10 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 	 */
 	@Override
     public IReason updateNeeded(IUpdateContext context) {
-		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
-			// if the UpdateContext has a "businessObject" property, then this update is needed
-			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
-		}
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		IPeService peService = Graphiti.getPeService();
 		PictogramElement element = context.getPictogramElement();
 		String property = peService.getPropertyValue(element, getPropertyKey());

@@ -101,7 +101,7 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 	
 	protected EObject editObject(EObject value) throws Exception {
 		Hashtable<String,Object> choices = getChoiceOfValues(object, feature);
-		final String oldValue = ModelUtil.getStringWrapperValue(value);
+		final String oldValue = ModelUtil.getStringWrapperTextValue(value);
 		ImplementationEditingDialog dialog = new ImplementationEditingDialog(
 				getDiagramEditor().getEditorSite().getShell(), 
 				Messages.ServiceImplementationObjectEditor_Edit_Title, 

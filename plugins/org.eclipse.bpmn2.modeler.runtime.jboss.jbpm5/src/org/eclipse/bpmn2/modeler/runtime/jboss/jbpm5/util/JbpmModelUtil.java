@@ -226,7 +226,6 @@ public class JbpmModelUtil {
 					if (object instanceof ItemDefinition) {
 						// update the ItemDefinition passed to us
 						ItemDefinition oldItemDef = (ItemDefinition)object;
-						String oldName = ModelUtil.getStringWrapperValue(oldItemDef.getStructureRef());
 						// and now update the existing item's structureRef
 						oldItemDef.setItemKind(ItemKind.INFORMATION);
 						EObject structureRef = ModelUtil.createStringWrapper(className);
@@ -267,55 +266,55 @@ public class JbpmModelUtil {
 	 * @param object - a context EObject used to search for ItemDefinitions, Globals and Imports
 	 * @return a map of Strings and Objects representing the various data types
 	 */
-	public static Hashtable<String, Object> collectAllDataTypes(EObject object) {
+	public static Hashtable<String, Object> getChoiceOfValues(EObject object) {
 
-		Hashtable<String,Object> choices = new Hashtable<String,Object>();
-		Definitions defs = ModelUtil.getDefinitions(object);
-
-		// add all native types (as defined in the DataTypeRegistry)
-		DataTypeRegistry.getFactory("dummy"); //$NON-NLS-1$
-		for (Entry<String, DataTypeFactory> e : DataTypeRegistry.instance.entrySet()) {
-			DataType dt = e.getValue().createDataType();
-			if (dt instanceof EnumDataType || dt instanceof UndefinedDataType)
-				continue;
-			String dts = dt.getStringType();
-			
-			ItemDefinition itemDef = null;
-			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
-			for (ItemDefinition id : itemDefs) {
-				String ids = ModelUtil.getStringWrapperValue(id.getStructureRef());
-				if (ids==null || ids.isEmpty())
-					ids = id.getId();
-				if (ids.equals(dts)) {
-					itemDef = id;
-					break;
-				}
-			}
-			if (itemDef==null) {
-				// create a new ItemDefinition for the jBPM data type
-				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
-				itemDef.setItemKind(ItemKind.INFORMATION);
-				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
-				itemDef.setId("_"+dts); //$NON-NLS-1$
-				if (defs!=null) {
-					InsertionAdapter.add(defs, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
-				}
-			}
-			choices.put(dt.getStringType(),itemDef);
-		}
-		
-		// add all imported data types
+//		Hashtable<String,Object> choices = new Hashtable<String,Object>();
+//		Definitions definitions = ModelUtil.getDefinitions(object);
+//
+//		// add all native types (as defined in the DataTypeRegistry)
+//		DataTypeRegistry.getFactory("dummy"); //$NON-NLS-1$
+//		for (Entry<String, DataTypeFactory> e : DataTypeRegistry.instance.entrySet()) {
+//			DataType dt = e.getValue().createDataType();
+//			if (dt instanceof EnumDataType || dt instanceof UndefinedDataType)
+//				continue;
+//			String dts = dt.getStringType();
+//			
+//			ItemDefinition itemDef = null;
+//			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
+//			for (ItemDefinition id : itemDefs) {
+//				String ids = ModelUtil.getStringWrapperValue(id.getStructureRef());
+//				if (ids==null || ids.isEmpty())
+//					ids = id.getId();
+//				if (ids.equals(dts)) {
+//					itemDef = id;
+//					break;
+//				}
+//			}
+//			if (itemDef==null) {
+//				// create a new ItemDefinition for the jBPM data type
+//				itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
+//				itemDef.setItemKind(ItemKind.INFORMATION);
+//				itemDef.setStructureRef(ModelUtil.createStringWrapper(dts));
+//				itemDef.setId("_"+dts); //$NON-NLS-1$
+//				if (definitions!=null) {
+//					InsertionAdapter.add(definitions, Bpmn2Package.eINSTANCE.getDefinitions_RootElements(), itemDef);
+//				}
+//			}
+//			choices.put(dt.getStringType(),itemDef);
+//		}
+//		
+//		// add all imported data types
 //		EObject process = object;
 //		while (process!=null && !(process instanceof org.eclipse.bpmn2.Process))
 //			process = process.eContainer();
 //		if (process==null) {
-//			List<Process> list = ModelUtil.getAllRootElements(defs, Process.class);
+//			List<Process> list = ModelUtil.getAllRootElements(definitions, Process.class);
 //			if (list.size()>0)
 //				process = list.get(0);
 //		}
 //		
 //		String s;
-//		List<ImportType> imports = ModelUtil.getAllExtensionAttributeValues(process, ImportType.class);
+//		List<ImportType> imports = ModelDecorator.getAllExtensionAttributeValues(process, ImportType.class);
 //		for (ImportType it : imports) {
 //			s = it.getName();
 //			if (s!=null && !s.isEmpty())
@@ -323,17 +322,19 @@ public class JbpmModelUtil {
 //		}
 //		
 //		// add all Global variable types
-//		List<GlobalType> globals = ModelUtil.getAllExtensionAttributeValues(process, GlobalType.class);
+//		List<GlobalType> globals = ModelDecorator.getAllExtensionAttributeValues(process, GlobalType.class);
 //		for (GlobalType gt : globals) {
 //			s = gt.getType();
 //			if (s!=null && !s.isEmpty())
 //				choices.put(s, gt);
 //		}
-
-		// add all ItemDefinitions
-		choices.putAll( ItemDefinitionPropertiesAdapter.getChoiceOfValues(object) );
+//
+//		// add all ItemDefinitions
+//		choices.putAll( ItemDefinitionPropertiesAdapter.getChoiceOfValues(object) );
+//		
+//		return choices;
 		
-		return choices;
+		return ItemDefinitionPropertiesAdapter.getChoiceOfValues(object);
 	}
 	
 	/**
@@ -400,7 +401,7 @@ public class JbpmModelUtil {
 		Definitions definitions = ModelUtil.getDefinitions(resource);
 		List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition id : itemDefs) {
-			String s = ModelUtil.getStringWrapperValue(id.getStructureRef());
+			String s = ModelUtil.getStringWrapperTextValue(id.getStructureRef());
 			if (s!=null && s.equals(structureRef)) {
 				itemDef = id;
 				break;

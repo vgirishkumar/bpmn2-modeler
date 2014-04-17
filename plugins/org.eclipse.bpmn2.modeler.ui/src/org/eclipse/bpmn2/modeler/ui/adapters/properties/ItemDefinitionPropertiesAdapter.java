@@ -19,11 +19,15 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
@@ -63,9 +67,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 
 				@Override
 				public String getTextValue() {
-					String value = ItemDefinitionPropertiesAdapter.getStructureName(object);
-					value = SyntaxCheckerUtils.fromXMLString((String)value);
-					return value;
+					return ItemDefinitionPropertiesAdapter.getStructureName(object);
 				}
 				
 	    		@Override
@@ -136,7 +138,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 						return false;
 					}
 					if (ModelUtil.isStringWrapper(thisStructure)) {
-						String thisWrapper = ModelUtil.getStringWrapperValue(object.getStructureRef());
+						String thisWrapper = ModelUtil.getStringWrapperTextValue(object.getStructureRef());
 						return thisWrapper.equals(otherWrapper);
 					}
 				}
@@ -197,8 +199,9 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				if (prefix!=null && !prefix.isEmpty())
 					name = prefix + ":" + name;
 			}
-			else if (ModelUtil.isStringWrapper(value))
-				name = ModelUtil.getStringWrapperValue(value);
+			else if (ModelUtil.isStringWrapper(value)) {
+				name = ModelUtil.getStringWrapperTextValue(value);
+			}
 
 			if (name==null || name.isEmpty()) {
 				name = ModelUtil.generateUndefinedID(itemDefinition.getId());
@@ -217,17 +220,46 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	}
 
 	public static Hashtable<String, Object> getChoiceOfValues(EObject context) {
-		// add all ItemDefinitions
 		Hashtable<String,Object> choices = new Hashtable<String,Object>();
 		if (context!=null) {
 			String s;
-			Definitions defs = ModelUtil.getDefinitions(context);
-			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(defs, ItemDefinition.class);
+			Definitions definitions = ModelUtil.getDefinitions(context);
+			
+			// add all existing ItemDefinitions
+			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 			for (ItemDefinition id : itemDefs) {
 				s = getDisplayName(id);
 				if (s==null || s.isEmpty())
 					s = id.getId();
 				choices.put(s,id);
+			}
+			
+			// add all primitive data types defined by the default typeLanguage
+			String typeLanguage = definitions.getTypeLanguage();
+			if (typeLanguage!=null) {
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
+				if (tld!=null) {
+					for (TypeLanguageDescriptor.Type type : tld.getTypes()) {
+						// We'll create temporary ItemDefinition objects for all of these
+						// that don't already have ItemDefinitions. Attach an InsertionAdapter
+						// that will cause these to be added to our Definitions if the user
+						// changes anything in one of these temporary objects; this includes
+						// setting the object as the target of an ItemAwareElement.itemSubjectRef 
+						s = type.getQName(definitions.eResource());
+						if (!choices.containsKey(s)) {
+							ItemDefinition itemDefinition = Bpmn2ModelerFactory.eINSTANCE.createItemDefinition();
+							itemDefinition.setStructureRef(ModelUtil.createStringWrapper(s));
+							itemDefinition.setItemKind(ItemKind.INFORMATION);
+							ModelUtil.setID(itemDefinition, context.eResource());
+							InsertionAdapter.add(
+									definitions,
+									Bpmn2Package.eINSTANCE.getDefinitions_RootElements(),
+									itemDefinition);
+							choices.put(type.getQName(definitions.eResource()), itemDefinition);
+						}
+					}
+				}
 			}
 		}
 		return choices;

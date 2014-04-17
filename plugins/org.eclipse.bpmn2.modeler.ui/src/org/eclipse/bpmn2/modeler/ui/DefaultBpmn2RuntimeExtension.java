@@ -32,12 +32,6 @@ import org.xml.sax.InputSource;
 public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	private static final String targetNamespace = "http://org.eclipse.bpmn2/default"; //$NON-NLS-1$
-	private static final String[] typeLanguages = new String[] {
-		"http://www.w3.org/2001/XMLSchema", "XML Schema", //$NON-NLS-1$ //$NON-NLS-2$
-	};
-	private static final String[] expressionLanguages = new String[] {
-		"http://www.w3.org/1999/XPath", "XPath", //$NON-NLS-1$ //$NON-NLS-2$
-	};
 	
 	public DefaultBpmn2RuntimeExtension() {
 	}
@@ -71,22 +65,6 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 			break;
 		}
 		return targetNamespace + type;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTypeLanguages()
-	 */
-	@Override
-	public String[] getTypeLanguages() {
-		return typeLanguages;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getExpressionLanguages()
-	 */
-	@Override
-	public String[] getExpressionLanguages() {
-		return expressionLanguages;
 	}
 
 	/* (non-Javadoc)

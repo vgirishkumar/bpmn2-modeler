@@ -237,17 +237,27 @@ public class SchemaSelectionDialog extends SelectionStatusDialog {
 	 */
 	@Override
 	protected void computeResult() {
+		// get the selection from the Data Structure tree widget
+		// which should be a single selection
 		TreeItem[] sel = tree.getSelection();
 		if (sel.length==1) {
 			Object data = sel[0].getData();
 			if (data instanceof TreeNode) {
+				// this is the selected node
 				TreeNode tn = (TreeNode)data;
-				Object[] result = new Object[] {tn.getModelObject()};
+				// also get the selected BPMN2 Import element from the Imports list
+				int index = importList.getSelectionIndex();
+				Import imp = (Import)importList.getData(""+index); //$NON-NLS-1$
+				// this dialog's results will be two items:
+				// the data structure selection and a reference to the
+				// BPMN2 Import object where the data structure is defined
+				Object[] result = new Object[] {tn.getModelObject(), imp};
 				setSelectionResult(result);
 				setSelectionPath(sel[0]);
 				updateOK(true);
 			}
 			else {
+				// nothing was selected.
 				Object[] result = new Object[] {};
 				setSelectionResult(result);
 				updateOK(false);

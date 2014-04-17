@@ -373,7 +373,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 			if (value==null)
 				value = ""; //$NON-NLS-1$
 			else
-				value = ModelUtil.getStringWrapperValue(value);
+				value = ModelUtil.getStringWrapperTextValue(value);
 			super.doSetValue(value);
 		}
 

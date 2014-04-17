@@ -24,13 +24,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
-import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
-import org.eclipse.bpmn2.EndPoint;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.FormalExpression;
@@ -46,17 +44,13 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -80,17 +74,13 @@ import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
@@ -105,7 +95,6 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
-import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
@@ -425,6 +414,27 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		public void endDocument() {
 			super.endDocument();
+			// Make sure there's a namespace prefix definition for typeLanguage.
+			// We'll need that prefix to qualify data types defined in the type language.
+			Definitions definitions = ModelUtil.getDefinitions(xmlResource);
+			String typeLanguage = definitions.getTypeLanguage();
+			if (typeLanguage!=null) {
+				String prefix = NamespaceUtil.getPrefixForNamespace(helper.getResource(), typeLanguage);
+    			if (prefix==null) {
+    				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+    				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
+    				if (tld!=null)
+    					prefix = tld.getPrefix();
+    				NamespaceUtil.addNamespace(helper.getResource(), prefix, typeLanguage);
+    			}
+			}
+			// Load all of the Imports and generate Interfaces, Operations, Messages, Faults and ItemDefinitions
+			for (Import imp : definitions.getImports()) {
+            	Object importObject = importHandler.loadImport(imp);
+            	if (importObject!=null) {
+            		importHandler.addImportObjects(imp, importObject);
+            	}
+            }
 			Bpmn2ModelerFactory.setEnableModelExtensions(true);
 		}
 
@@ -587,6 +597,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
             else if (obj instanceof Definitions) {
+            	// fetch the targetNamespace from Definitions object
             	targetNamespace = ((Definitions)obj).getTargetNamespace();
             }
 
@@ -797,6 +808,22 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public Bpmn2ModelerXMLSave(XMLHelper helper) {
 			super(helper);
 			helper.getPrefixToNamespaceMap().clear();
+		}
+		
+		@Override
+		protected void addNamespaceDeclarations() {
+			EMap<String,String> map = helper.getPrefixToNamespaceMap();
+			Definitions definitions = ModelUtil.getDefinitions(helper.getResource());
+			String typeLanguage = definitions.getTypeLanguage();
+			if (!map.containsValue(typeLanguage)) {
+				String prefix = "tl";
+				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
+				if (tld!=null)
+					prefix = tld.getPrefix();
+				doc.addAttributeNS(XMLResource.XML_NS, prefix, typeLanguage);
+			}
+			super.addNamespaceDeclarations();
 		}
 
 		@Override

@@ -13,8 +13,12 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.Hashtable;
+
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
@@ -42,6 +46,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 	 */
 	public FlowElementPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
+		
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getFlowElement_Name();
 		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(object,f) {
 
@@ -116,6 +121,19 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 			
 		};
 		setFeatureDescriptor(f, fd);
+
+		if (object instanceof ItemAwareElement) {
+			f = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
+			setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+	    	setFeatureDescriptor(f, new ItemDefinitionRefFeatureDescriptor<T>(adapterFactory, object, f) {
+
+	    		@Override
+	    		public Hashtable<String, Object> getChoiceOfValues() {
+					return super.getChoiceOfValues();
+	    		}
+		
+	    	});
+		}
 		
 		setObjectDescriptor(new ObjectDescriptor<T>(object) {
 

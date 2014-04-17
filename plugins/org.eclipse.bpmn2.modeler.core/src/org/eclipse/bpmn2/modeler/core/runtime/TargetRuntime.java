@@ -84,6 +84,8 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	protected List<ToolPaletteDescriptor> toolPaletteDescriptors;
 	protected List<ShapeStyle> shapeStyles;
 	protected List<DataTypeDescriptor> dataTypeDescriptors;
+	protected List<TypeLanguageDescriptor> typeLanguageDescriptors;
+	protected List<ExpressionLanguageDescriptor> expressionLanguageDescriptors;
 
 	// all of the extension descriptor classes in the order in which they need to be processed
 	static Class extensionDescriptorClasses[] = {
@@ -97,6 +99,8 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		ToolPaletteDescriptor.class,
 		PropertyExtensionDescriptor.class,
 		FeatureContainerDescriptor.class,
+		TypeLanguageDescriptor.class,
+		ExpressionLanguageDescriptor.class,
 		ShapeStyle.class,
 	};
 
@@ -689,6 +693,54 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return list;
 	}
 
+	/**
+	 * Gets the default Type Language for this Target Runtime. If the Target Runtime does
+	 * not define its own Type Languages, use the Default Target Runtime.
+	 * 
+	 * @return the Type Language URI
+	 */
+	public String getTypeLanguage() {
+		if (getTypeLanguageDescriptors().size()>0) {
+			return getTypeLanguageDescriptors().get(0).getUri();
+		}
+		// extension plugin does not specify a type language, so use default
+		return TargetRuntime.getDefaultRuntime().getTypeLanguage();
+	}
+	
+	public TypeLanguageDescriptor getTypeLanguageDescriptor(String uri) {
+		if (uri!=null) {
+			for (TypeLanguageDescriptor tld : getTypeLanguageDescriptors()) {
+				if (uri.equals(tld.getUri()))
+					return tld;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the default Expression Language for this Target Runtime. If the Target Runtime does
+	 * not define its own Expression Languages, use the Default Target Runtime.
+	 * 
+	 * @return the Expression Language URI
+	 */
+	public String getExpressionLanguage() {
+		if (getExpressionLanguageDescriptors().size()>0) {
+			return getExpressionLanguageDescriptors().get(0).getUri();
+		}
+		// extension plugin does not specify an expression language, so use default
+		return TargetRuntime.getDefaultRuntime().getExpressionLanguage();
+	}
+
+	public ExpressionLanguageDescriptor getExpressionLanguageDescriptor(String uri) {
+		if (uri!=null) {
+			for (ExpressionLanguageDescriptor tld : getExpressionLanguageDescriptors()) {
+				if (uri.equals(tld.getUri()))
+					return tld;
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public boolean equals(Object arg0) {
 		if (arg0 instanceof TargetRuntime) {
@@ -882,6 +934,18 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		if (dataTypeDescriptors==null)
 			dataTypeDescriptors = new ArrayList<DataTypeDescriptor>();
 		return dataTypeDescriptors;
+	}
+	
+	public List<TypeLanguageDescriptor> getTypeLanguageDescriptors() {
+		if (typeLanguageDescriptors==null)
+			typeLanguageDescriptors = new ArrayList<TypeLanguageDescriptor>();
+		return typeLanguageDescriptors;
+	}
+	
+	public List<ExpressionLanguageDescriptor> getExpressionLanguageDescriptors() {
+		if (expressionLanguageDescriptors==null)
+			expressionLanguageDescriptors = new ArrayList<ExpressionLanguageDescriptor>();
+		return expressionLanguageDescriptors;
 	}
 	
 	public static class ConfigurationElementSorter {

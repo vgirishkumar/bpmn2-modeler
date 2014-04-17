@@ -54,6 +54,6 @@ public class StringDataType implements DataType {
     }
 
     public String getStringType() {
-        return "String"; //$NON-NLS-1$
+        return "java.lang.String"; //$NON-NLS-1$
     }
 }

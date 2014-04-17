@@ -22,12 +22,12 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
-import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -400,54 +400,60 @@ public class ImportUtil {
 			if (imp!=null) {
 				definitions.getImports().add(imp);
 				NamespaceUtil.addNamespace(imp.eResource(), imp.getNamespace());
-
-				if (importObject instanceof org.eclipse.wst.wsdl.Definition) {
-					// WSDL Definition
-					Definition wsdlDefinition = (Definition)importObject;
-
-					// WSDL Bindings are optional, instead create a new
-					// BPMN2 Interface for each PortType found in the WSDL.
-//					for (Binding b : (List<Binding>)wsdlDefinition.getEBindings()) {
-//						createInterface(definitions, imp,  b.getEPortType());
-//					}
-					for (PortType pt : (List<PortType>)wsdlDefinition.getEPortTypes()) {
-						createInterface(definitions, imp,  pt);
-					}
-
-					// create XSD types (if any) defined in the WSDL
-					Types t = wsdlDefinition.getETypes();
-					if (t!=null) {
-						for (Object s : t.getSchemas()) {
-							if (s instanceof XSDSchema) {
-								XSDSchema schema = (XSDSchema)s;
-	
-								for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
-									createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
-								}
-							}
-						}
-					}
-				}
-				else if (importObject instanceof XSDSchema){
-					XSDSchema schema = (XSDSchema)importObject;
-
-					for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
-						createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
-					}
-				}
-				else if (importObject instanceof IType) {
-					IType clazz = (IType)importObject;
-
-					createItemDefinition(definitions, imp, clazz);
-					// TODO: automatically create an interface too?
-					//createInterface(definitions, imp, clazz);
-				}
-				else if (importObject instanceof Definitions) {
-					// what to do here?
-				}
+				addImportObjects(imp, importObject);
 			}
 		}
 		return imp;
+	}
+	
+	public void addImportObjects(Import imp, Object importObject) {
+
+		final Definitions definitions = (Definitions) ModelUtil.getDefinitions(imp);
+		
+		if (importObject instanceof org.eclipse.wst.wsdl.Definition) {
+			// WSDL Definition
+			Definition wsdlDefinition = (Definition)importObject;
+
+			// WSDL Bindings are optional, instead create a new
+			// BPMN2 Interface for each PortType found in the WSDL.
+//					for (Binding b : (List<Binding>)wsdlDefinition.getEBindings()) {
+//						createInterface(definitions, imp,  b.getEPortType());
+//					}
+			for (PortType pt : (List<PortType>)wsdlDefinition.getEPortTypes()) {
+				createInterface(definitions, imp,  pt);
+			}
+
+			// create XSD types (if any) defined in the WSDL
+			Types t = wsdlDefinition.getETypes();
+			if (t!=null) {
+				for (Object s : t.getSchemas()) {
+					if (s instanceof XSDSchema) {
+						XSDSchema schema = (XSDSchema)s;
+
+						for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
+							createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
+						}
+					}
+				}
+			}
+		}
+		else if (importObject instanceof XSDSchema){
+			XSDSchema schema = (XSDSchema)importObject;
+
+			for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
+				createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
+			}
+		}
+		else if (importObject instanceof IType) {
+			IType clazz = (IType)importObject;
+
+			createItemDefinition(definitions, imp, clazz);
+			// TODO: automatically create an interface too?
+			//createInterface(definitions, imp, clazz);
+		}
+		else if (importObject instanceof Definitions) {
+			// what to do here?
+		}
 	}
 
 	public static String makeURIRelative(URI baseURI, String s) {
@@ -1083,6 +1089,20 @@ public class ImportUtil {
 	public ItemDefinition createItemDefinition(Definitions definitions, Import imp, EObject structureRef, ItemKind kind) {
 		ItemDefinition itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
 		itemDef.setImport(imp);
+		if (kind==null) {
+			// try to determine the ItemKind based on the type of Process:
+			// if the Process is executable ItemKind is INFORMATION,
+			// else PHYSICAL
+			List<Process> processes = ModelUtil.getAllRootElements(definitions, Process.class);
+			if (processes.size()>0) {
+				if (processes.get(0).isIsExecutable())
+					kind = ItemKind.INFORMATION;
+				else
+					kind = ItemKind.PHYSICAL;
+			}
+			else
+				kind = ItemKind.INFORMATION;
+		}
 		itemDef.setItemKind(kind);
 		itemDef.setStructureRef(structureRef);
 		ItemDefinition i = findItemDefinition(definitions, itemDef);

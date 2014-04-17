@@ -18,6 +18,7 @@ import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProce
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -36,7 +37,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
-public class UpdateExpandableActivityFeature extends AbstractUpdateFeature {
+public class UpdateExpandableActivityFeature extends AbstractBpmn2UpdateFeature {
 
 	public UpdateExpandableActivityFeature(IFeatureProvider fp) {
 		super(fp);
@@ -50,12 +51,10 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
-			// if the UpdateContext has a "businessObject" property, then this update is needed
-			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
-		}
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		PictogramElement pe = context.getPictogramElement();
 		Property triggerProperty = Graphiti.getPeService().getProperty(pe,TRIGGERED_BY_EVENT);
 		Property expandedProperty = Graphiti.getPeService().getProperty(pe,IS_EXPANDED);

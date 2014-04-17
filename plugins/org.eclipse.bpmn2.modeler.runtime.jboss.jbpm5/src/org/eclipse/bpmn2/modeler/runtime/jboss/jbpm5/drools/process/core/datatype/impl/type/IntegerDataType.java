@@ -57,7 +57,7 @@ public class IntegerDataType
     }
 
     public String getStringType() {
-        return "Integer"; //$NON-NLS-1$
+        return "java.lang.Integer"; //$NON-NLS-1$
     }
 
 }

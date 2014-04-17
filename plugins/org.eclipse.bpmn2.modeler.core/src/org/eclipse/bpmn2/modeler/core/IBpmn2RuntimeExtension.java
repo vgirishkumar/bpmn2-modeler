@@ -46,31 +46,6 @@ public interface IBpmn2RuntimeExtension {
 	public String getTargetNamespace(Bpmn2DiagramType diagramType);
 
 	/**
-	 * Return the default data type language URIs supported by this Target
-	 * Runtime. The first entry in the array is used as the default data type
-	 * assumed for ItemDefinitions that do not reference an Import element.
-	 * ItemDefinitions can override this data type by referencing an Import
-	 * where the structure as well as the type URI are defined.
-	 * 
-	 * @return an array of String pairs for the list of supported type
-	 *         languages; the first string is the type language URI, the second
-	 *         string is a descriptive name used in the UI.
-	 */
-	public String[] getTypeLanguages();
-
-	/**
-	 * Return a string array of expression languages supported by this Target
-	 * Runtime. The first entry in the array is used as the default expression
-	 * language for the process, i.e. it is used in the <definitions
-	 * expressionLanguage="..."/> declaration.
-	 * 
-	 * @return an array of String pairs for the list of supported expression
-	 *         languages; the first string is the expression language URI, the
-	 *         second string is a descriptive name used in the UI.
-	 */
-	public String[] getExpressionLanguages();
-
-	/**
 	 * Used to notify the Target Runtime of BPMN2 editor lifecycle events.
 	 *
 	 * @param event

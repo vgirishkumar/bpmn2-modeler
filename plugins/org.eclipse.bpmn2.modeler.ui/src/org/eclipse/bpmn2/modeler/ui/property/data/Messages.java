@@ -18,6 +18,7 @@ public class Messages extends NLS {
 	public static String DataAssignmentDetailComposite_To_Title;
 	public static String InterfacePropertySection_Interfaces_Message;
 	public static String InterfacePropertySection_Interfaces_Title;
+	public static String InterfacePropertySection_Implementation_Header;
 	public static String InterfacePropertySection_No_Interfaces_Error_Message;
 	public static String InterfacePropertySection_No_Interfaces_Error_Title;
 	public static String InterfacePropertySection_Participant_Title;

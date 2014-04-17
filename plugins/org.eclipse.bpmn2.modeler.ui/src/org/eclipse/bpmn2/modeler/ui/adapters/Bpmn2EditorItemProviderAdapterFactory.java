@@ -272,7 +272,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 					@Override
 					public String getTextValue() {
 						if (ModelUtil.isStringWrapper(object)) {
-							return ModelUtil.getStringWrapperValue(object);
+							return ModelUtil.getStringWrapperTextValue(object);
 						}
 						return super.getTextValue();
 					}

@@ -105,24 +105,37 @@ public class NamespaceUtil {
 		String prefix = null;
 		Map<String,String> map = getXMLNSPrefixMap(resource);
 		if (map!=null) {
-			prefix = "ns"; //$NON-NLS-1$
-			int index = 1;
-			while (map.containsKey(prefix+index))
-				++index;
-			prefix = addNamespace(resource, prefix+index, namespace);
+			prefix = createUniquePrefix(map, "ns");
+			addNamespace(resource, prefix, namespace);
 		}
 		return prefix;
 	}
 	
-	public static String addNamespace(final Resource resource, final String prefix, final String namespace) {
+	public static String createUniquePrefix(Map<String,String> map, String prefix) {
+		if (map!=null) {
+			if (map.containsKey(prefix)) {
+				int index = 1;
+				while (map.containsKey(prefix+index))
+					++index;
+				prefix = prefix + index;
+			}
+		}
+		return prefix;
+	}
+	
+	public static String addNamespace(final Resource resource, String prefix, final String namespace) {
 		final Map<String,String> map = getXMLNSPrefixMap(resource);
 		if (map!=null) {
+			if (prefix==null) {
+				prefix = "ns";
+			}
+			final String pfx = createUniquePrefix(map, prefix);
 			TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
 			if (domain != null) {
 				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
 					protected void doExecute() {
-						map.put(prefix, namespace);
+						map.put(pfx, namespace);
 					}
 				});
 			}

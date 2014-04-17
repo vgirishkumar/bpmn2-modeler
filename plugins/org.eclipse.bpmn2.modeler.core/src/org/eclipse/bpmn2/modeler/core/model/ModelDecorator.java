@@ -103,7 +103,7 @@ public class ModelDecorator {
 		String nsURI = pkg.getNsURI();
 
 		addRelatedEPackage(pkg);
-		AdapterRegistry.INSTANCE.registerFactory(pkg, AnyTypeAdaptorFactory.INSTANCE);
+//		AdapterRegistry.INSTANCE.registerFactory(pkg, AnyTypeAdaptorFactory.INSTANCE);
 		
 		getResourceSet();
 		ePackage = (EPackage) resourceSet.getPackageRegistry().get(nsURI);

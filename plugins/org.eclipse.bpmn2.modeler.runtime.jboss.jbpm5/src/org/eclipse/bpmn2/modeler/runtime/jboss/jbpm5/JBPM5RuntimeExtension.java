@@ -112,14 +112,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5"; //$NON-NLS-1$
 	
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools"; //$NON-NLS-1$
-	private static final String[] typeLanguages = new String[] {
-		"http://www.java.com/javaTypes", "Java", //$NON-NLS-1$ //$NON-NLS-2$
-	};
-	private static final String [] expressionLanguages = new String[] {
-		"http://www.mvel.org/2.0", "mvel", //$NON-NLS-1$ //$NON-NLS-2$
-		"http://www.java.com/java", "java", //$NON-NLS-1$ //$NON-NLS-2$
-		"http://www.jboss.org/drools/rule", "Rule", //$NON-NLS-1$ //$NON-NLS-2$
-	};
 	private List<WorkItemDefinition> workItemDefinitions;
 	private static boolean initialized = false;
 	
@@ -138,16 +130,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 
 	public String getTargetNamespace(Bpmn2DiagramType diagramType){
 		return DROOLS_NAMESPACE;
-	}
-
-	@Override
-	public String[] getTypeLanguages() {
-		return typeLanguages;
-	}
-
-	@Override
-	public String[] getExpressionLanguages() {
-		return expressionLanguages;
 	}
 
 	public List<WorkItemDefinition> getWorkItemDefinitions() {

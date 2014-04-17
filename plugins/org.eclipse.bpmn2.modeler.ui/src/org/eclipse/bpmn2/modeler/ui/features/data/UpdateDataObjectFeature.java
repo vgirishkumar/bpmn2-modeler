@@ -12,13 +12,11 @@ package org.eclipse.bpmn2.modeler.ui.features.data;
 
 import java.util.Iterator;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.Properties;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -28,7 +26,6 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -37,7 +34,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateDataObjectFeature extends AbstractUpdateFeature {
+public class UpdateDataObjectFeature extends AbstractBpmn2UpdateFeature {
 
 
 	public UpdateDataObjectFeature(IFeatureProvider fp) {
@@ -52,12 +49,10 @@ public class UpdateDataObjectFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
-			// if the UpdateContext has a "businessObject" property, then this update is needed
-			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
-		}
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+
 		IPeService peService = Graphiti.getPeService();
 		ContainerShape container = (ContainerShape) context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(container);

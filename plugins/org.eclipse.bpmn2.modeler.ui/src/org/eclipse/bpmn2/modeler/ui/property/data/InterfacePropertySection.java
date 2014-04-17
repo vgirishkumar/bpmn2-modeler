@@ -124,6 +124,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 			else {
 				definedInterfacesTable = new DefinedInterfaceListComposite(this);
 				definedInterfacesTable.bindList(be);
+				definedInterfacesTable.setTitle(Messages.InterfacePropertySection_Interfaces_Title);
 	
 				if (be instanceof Participant) {
 					providedInterfacesTable = new ProvidedInterfaceListComposite(this);
@@ -176,7 +177,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 				tc.setEditable(false);
 				
 				tc = new TableColumn(object,Bpmn2Package.eINSTANCE.getInterface_ImplementationRef());
-				columnProvider.add(tc).setHeaderText("Implementation"); //$NON-NLS-1$
+				columnProvider.add(tc).setHeaderText(Messages.InterfacePropertySection_Implementation_Header);
 				tc.setEditable(false);
 			}
 			return columnProvider;
