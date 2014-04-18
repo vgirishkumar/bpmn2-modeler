@@ -34,7 +34,7 @@ public class ResourceParameterPropertiesAdapter extends ExtendedPropertiesAdapte
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getResourceParameter_Type();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<ResourceParameter>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<ResourceParameter>(this, object, feature));
 	}
 
 }

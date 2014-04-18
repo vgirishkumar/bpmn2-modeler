@@ -55,7 +55,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 	public MultiInstanceLoopCharacteristicsPropertiesAdapter(AdapterFactory adapterFactory, MultiInstanceLoopCharacteristics object) {
 		super(adapterFactory, object);
 
-		setFeatureDescriptor(LOOP_DATA_INPUT_REF, new LoopCharacteristicsDataIoFeatureDescriptor(adapterFactory,object, LOOP_DATA_INPUT_REF));
+		setFeatureDescriptor(LOOP_DATA_INPUT_REF, new LoopCharacteristicsDataIoFeatureDescriptor(this, object, LOOP_DATA_INPUT_REF));
 		setProperty(LOOP_DATA_INPUT_REF, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setProperty(LOOP_DATA_INPUT_REF, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(LOOP_DATA_INPUT_REF, UI_CAN_CREATE_NEW, Boolean.TRUE);
@@ -63,7 +63,7 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 //		setFeatureDescriptor(INPUT_DATA_ITEM, new LoopCharacteristicsDataIoFeatureDescriptor(adapterFactory,object, INPUT_DATA_ITEM));
 //		setProperty(INPUT_DATA_ITEM, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(LOOP_DATA_OUTPUT_REF, new LoopCharacteristicsDataIoFeatureDescriptor(adapterFactory,object, LOOP_DATA_OUTPUT_REF));
+		setFeatureDescriptor(LOOP_DATA_OUTPUT_REF, new LoopCharacteristicsDataIoFeatureDescriptor(this, object, LOOP_DATA_OUTPUT_REF));
 		setProperty(LOOP_DATA_OUTPUT_REF, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setProperty(LOOP_DATA_OUTPUT_REF, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(LOOP_DATA_OUTPUT_REF, UI_CAN_CREATE_NEW, Boolean.TRUE);
@@ -88,13 +88,10 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 	 */
 	protected class LoopCharacteristicsDataIoFeatureDescriptor extends FeatureDescriptor<MultiInstanceLoopCharacteristics> {
 
-		/**
-		 * @param adapterFactory
-		 * @param object
-		 * @param feature
-		 */
-		public LoopCharacteristicsDataIoFeatureDescriptor(AdapterFactory adapterFactory, MultiInstanceLoopCharacteristics object, EStructuralFeature feature) {
-			super(object, feature);
+		public LoopCharacteristicsDataIoFeatureDescriptor(
+				ExtendedPropertiesAdapter<MultiInstanceLoopCharacteristics> owner,
+				MultiInstanceLoopCharacteristics object, EStructuralFeature feature) {
+			super(owner, object, feature);
 		}
 
 		@Override

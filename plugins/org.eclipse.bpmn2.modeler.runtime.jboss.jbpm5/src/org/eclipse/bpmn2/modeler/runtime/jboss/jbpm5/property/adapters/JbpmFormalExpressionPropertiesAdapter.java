@@ -40,7 +40,7 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 
     	final EStructuralFeature language = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
     	setFeatureDescriptor(language,
-    		new FeatureDescriptor<FormalExpression>(object,language) {
+    		new FeatureDescriptor<FormalExpression>(this,object,language) {
     		
 				@Override
 				public String getLabel() {

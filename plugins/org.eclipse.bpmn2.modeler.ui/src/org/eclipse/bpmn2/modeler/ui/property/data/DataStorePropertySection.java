@@ -45,7 +45,7 @@ public class DataStorePropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject bo = super.getBusinessObjectForSelection(selection);
 		if (bo instanceof DataStoreReference) {
 			return ((DataStoreReference) bo).getDataStoreRef();

@@ -52,7 +52,7 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
     	setProperty(ce, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
     	setFeatureDescriptor(ce,
-			new RootElementRefFeatureDescriptor<CallActivity>(adapterFactory,object,ce) {
+			new RootElementRefFeatureDescriptor<CallActivity>(this,object,ce) {
     		
 				@Override
 				public String getLabel() {

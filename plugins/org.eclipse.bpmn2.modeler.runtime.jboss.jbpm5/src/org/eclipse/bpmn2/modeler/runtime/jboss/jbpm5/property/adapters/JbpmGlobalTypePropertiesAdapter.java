@@ -39,7 +39,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 
     	EStructuralFeature feature = DroolsPackage.eINSTANCE.getGlobalType_Identifier();
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<GlobalType>(object,feature) {
+			new FeatureDescriptor<GlobalType>(this,object,feature) {
     		
 				@Override
 				public String getLabel() {
@@ -53,7 +53,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<GlobalType>(object,feature) {
+			new FeatureDescriptor<GlobalType>(this,object,feature) {
 
     		@Override
 				public String getLabel() {
@@ -78,7 +78,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
     	);
     	
 		
-		setObjectDescriptor(new ObjectDescriptor<GlobalType>(object) {
+		setObjectDescriptor(new ObjectDescriptor<GlobalType>(this,object) {
 
 			@Override
 			public String getLabel() {

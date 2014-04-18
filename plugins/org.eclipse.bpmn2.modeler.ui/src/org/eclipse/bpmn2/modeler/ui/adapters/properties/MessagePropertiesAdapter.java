@@ -34,9 +34,9 @@ public class MessagePropertiesAdapter extends RootElementPropertiesAdapter<Messa
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(this, object, feature));
     	
-    	setObjectDescriptor(new RootElementObjectDescriptor<Message>(adapterFactory, object) {
+    	setObjectDescriptor(new RootElementObjectDescriptor<Message>(this, object) {
 			@Override
 			public String getTextValue() {
 				String text = ChoreographyUtil.getMessageName(object);

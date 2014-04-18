@@ -27,7 +27,7 @@ public class JbpmEscalationPropertiesAdapter extends EscalationPropertiesAdapter
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getEscalation_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(this, object, feature) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

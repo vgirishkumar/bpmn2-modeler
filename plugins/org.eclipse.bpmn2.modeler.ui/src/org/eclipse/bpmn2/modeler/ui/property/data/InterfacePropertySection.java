@@ -71,7 +71,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	}
 	
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject bo = super.getBusinessObjectForSelection(selection);
 		if (bo instanceof BPMNDiagram) {
 			BaseElement be = ((BPMNDiagram)bo).getPlane().getBpmnElement();
@@ -142,8 +142,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	public class DefinedInterfaceListComposite extends DefaultListComposite {
 		
 		/**
-		 * @param section
-		 * @param style
+		 * @param parent
 		 */
 		public DefinedInterfaceListComposite(Composite parent) {
 			super(parent, DEFAULT_STYLE);
@@ -187,8 +186,7 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	public static class ProvidedInterfaceListComposite extends DefaultListComposite {
 		
 		/**
-		 * @param section
-		 * @param style
+		 * @param parent
 		 */
 		public ProvidedInterfaceListComposite(Composite parent) {
 			// only allow details editing in DefinedInterfacesTable

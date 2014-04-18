@@ -38,7 +38,7 @@ public class EventPropertiesAdapter<T extends Event> extends ExtendedPropertiesA
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getEvent_Properties();
 		setFeatureDescriptor(feature,
-			new FeatureDescriptor<T>(object,feature) {
+			new FeatureDescriptor<T>(this,object,feature) {
 				@Override
 				public EObject createFeature(Resource resource, EClass eclass) {
 					return PropertyPropertiesAdapter.createProperty(object.getProperties());

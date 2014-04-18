@@ -14,6 +14,7 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -29,21 +30,21 @@ public class JbpmDataAssociationPropertiesAdapter extends
     	EStructuralFeature ref;
     	
     	ref = Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef();
-    	setFeatureDescriptor(ref, new JbpmSourceTargetFeatureDescriptor(adapterFactory,object,ref) {
+    	setFeatureDescriptor(ref, new JbpmSourceTargetFeatureDescriptor(this,object,ref) {
     		
     	});
 
 		ref = Bpmn2Package.eINSTANCE.getDataAssociation_TargetRef();
-    	setFeatureDescriptor(ref, new JbpmSourceTargetFeatureDescriptor(adapterFactory,object,ref) {
+    	setFeatureDescriptor(ref, new JbpmSourceTargetFeatureDescriptor(this,object,ref) {
     		
     	});
 	}
 
 	public class JbpmSourceTargetFeatureDescriptor extends SourceTargetFeatureDescriptor {
 
-		public JbpmSourceTargetFeatureDescriptor(AdapterFactory adapterFactory,
+		public JbpmSourceTargetFeatureDescriptor(ExtendedPropertiesAdapter<DataAssociation> owner,
 				DataAssociation object, EStructuralFeature feature) {
-			super(adapterFactory, object, feature);
+			super(owner, object, feature);
 		}
 
 		@Override

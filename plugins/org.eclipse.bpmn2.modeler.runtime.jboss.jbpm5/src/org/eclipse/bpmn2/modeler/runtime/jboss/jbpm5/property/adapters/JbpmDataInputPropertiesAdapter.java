@@ -34,7 +34,7 @@ public class JbpmDataInputPropertiesAdapter extends DataInputPropertiesAdapter {
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(feature,
-			new ItemDefinitionRefFeatureDescriptor<DataInput>(adapterFactory,object,feature) {
+			new ItemDefinitionRefFeatureDescriptor<DataInput>(this,object,feature) {
 				
 	    		@Override
 	    		protected void internalSet(DataInput dataInput, EStructuralFeature feature, Object value, int index) {

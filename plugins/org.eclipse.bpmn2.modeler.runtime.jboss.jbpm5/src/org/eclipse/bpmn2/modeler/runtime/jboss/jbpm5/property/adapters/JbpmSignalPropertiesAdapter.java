@@ -27,7 +27,7 @@ public class JbpmSignalPropertiesAdapter extends SignalPropertiesAdapter {
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getSignal_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Signal>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Signal>(this, object, feature) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

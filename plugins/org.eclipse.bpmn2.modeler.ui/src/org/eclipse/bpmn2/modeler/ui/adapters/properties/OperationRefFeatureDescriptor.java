@@ -20,9 +20,9 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Operation;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
@@ -31,15 +31,10 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public class OperationRefFeatureDescriptor<T extends BaseElement> extends FeatureDescriptor<T> {
 
-	/**
-	 * @param adapterFactory
-	 * @param object
-	 * @param feature
-	 */
-	public OperationRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(object, feature);
+	public OperationRefFeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
+		super(owner, object, feature);
 	}
-	
+
 	@Override
 	public String getChoiceString(Object value) {
 		Operation op = (Operation)value;

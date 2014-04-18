@@ -289,7 +289,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	public FeatureDescriptor<T> getFeatureDescriptor(EStructuralFeature feature) {
 		FeatureDescriptor<T> fd = (FeatureDescriptor<T>) getProperty(feature,FEATURE_DESCRIPTOR);
 		if (fd==null) {
-			setFeatureDescriptor(feature, fd = new FeatureDescriptor<T>((T)getTarget(), feature));
+			setFeatureDescriptor(feature, fd = new FeatureDescriptor<T>(this, (T)getTarget(), feature));
 		}
 		return fd;
 	}
@@ -511,7 +511,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	 *            which is assumed to contain String fields in the form
 	 * 
 	 * <pre>
-	 * UI_<i>ObjectTypeName</i>_long_description
+	 * UI_<i>ObjectTypeName</i>_description
 	 * </pre>
 	 * 
 	 *            where <i>ObjectTypeName</i> is the name of the model object's
@@ -560,21 +560,16 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 		}
 		// Get the model object's long description from the Messages class.
 		// The field in Messages that contains the description will have the
-		// form: "UI_<objectName>_long_description".
+		// form: "UI_<objectName>_description".
 		// The Messages class must be contained somewhere in the package hierarchy
 		// that contains the searchObject's class.
     	try {
-    		if (name.isEmpty()) {
-    			name = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
-    		}
-    		if (description==null || description.isEmpty()) {
-	        	String fieldName = "UI_" + name + "_long_description"; //$NON-NLS-1$ //$NON-NLS-2$
-	        	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
-				Field field = messages.getField(fieldName);
-				description = (String)field.get(null);
-    		}
+        	String fieldName = "UI_" + name + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
+        	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
+			Field field = messages.getField(fieldName);
+			description = (String)field.get(null);
 		} catch (Exception e) {
-			// no biggie
+			description = getDescription(searchObject,object,null);
 		}
     	
     	return description;
@@ -610,22 +605,51 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 		// The Messages class must be contained somewhere in the package hierarchy
 		// that contains the searchObject's class.
     	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
-		try {
-			// fetch the description for this EClass and feature
-    		fieldName = "UI_" + object.eClass().getName() + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    		field = messages.getField(fieldName);
-    		description += (String)field.get(null);
-		}
-		catch (Exception e) {
-    		try {
-    			// if a description is not found for this EClass, try "Any"
-	    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-	    		field = messages.getField(fieldName);
-	    		description += (String)field.get(null);
+    	if (messages!=null) {
+			ClassLoader classLoader = messages.getClassLoader();
+			boolean found = false;
+    		do {
+				try {
+					// fetch the description for this EClass and feature
+	    			String className = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+	    			if (feature==null)
+	    				fieldName = "UI_" + className + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
+	    			else
+	    				fieldName = "UI_" + className + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		    		field = messages.getField(fieldName);
+		    		description += (String)field.get(null);
+		    		found = true;
+				}
+				catch (Exception e) {
+		    		try {
+		    			// if a description is not found for this EClass, try "Any"
+			    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
+			    		field = messages.getField(fieldName);
+			    		description += (String)field.get(null);
+			    		found = true;
+		    		}
+		    		catch (Exception e2) {
+		    		}
+				}
+				if (!found) {
+					// try looking for a Messages class in the parent package
+					String packageName = messages.getPackage().getName();
+					messages = null;
+					int index;
+					while ((index = packageName.lastIndexOf(".")) != -1) { //$NON-NLS-1$
+						packageName = packageName.substring(0, index);
+						String className = packageName + ".Messages";  //$NON-NLS-1$
+						try {
+							messages = Class.forName(className, true, classLoader);
+							break;
+						}
+						catch (Exception e3) {
+						}
+					}
+				}
     		}
-    		catch (Exception e2) {
-    		}
-		}
+    		while (!found && messages!=null);
+    	}
 		return description;
 	}
 	

@@ -33,9 +33,9 @@ public class EscalationPropertiesAdapter extends RootElementPropertiesAdapter<Es
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getEscalation_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Escalation>(this, object, feature));
 		
-    	setObjectDescriptor(new RootElementObjectDescriptor<Escalation>(adapterFactory, object) {
+    	setObjectDescriptor(new RootElementObjectDescriptor<Escalation>(this, object) {
 			@Override
 			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$

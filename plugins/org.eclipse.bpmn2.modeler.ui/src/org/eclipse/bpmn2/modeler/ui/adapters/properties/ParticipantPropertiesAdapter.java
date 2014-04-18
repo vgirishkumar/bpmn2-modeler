@@ -58,9 +58,9 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getParticipant_ProcessRef();
     	setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
 
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Participant>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Participant>(this,object,ref));
 
-		setObjectDescriptor(new ObjectDescriptor<Participant>(object) {
+		setObjectDescriptor(new ObjectDescriptor<Participant>(this,object) {
 			
 			@Override
 			public Participant createObject(Resource resource, EClass eclass) {
@@ -117,7 +117,7 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.TRUE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.FALSE);
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Participant>(object,ref) {
+    	setFeatureDescriptor(ref, new FeatureDescriptor<Participant>(this,object,ref) {
 
 			@Override
 			public String getLabel() {

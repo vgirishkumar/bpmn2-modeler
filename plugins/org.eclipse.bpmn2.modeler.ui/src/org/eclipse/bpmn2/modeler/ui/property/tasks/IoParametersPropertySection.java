@@ -50,7 +50,7 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof SubProcess) {
 			// Section 10, P211 of the BPMN 2.0 spec:

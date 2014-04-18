@@ -32,7 +32,7 @@ public class DataStoreReferencePropertiesAdapter extends ItemAwareElementPropert
 		super(adapterFactory, object);
 		
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getDataStoreReference_DataStoreRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<DataStoreReference>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<DataStoreReference>(this,object,ref));
 	}
 
 }

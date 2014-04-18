@@ -41,7 +41,7 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getActivity_Properties();
 		setFeatureDescriptor(feature,
-			new FeatureDescriptor<T>(object,feature) {
+			new FeatureDescriptor<T>(this,object,feature) {
 				@Override
 				public EObject createFeature(Resource resource, EClass eclass) {
 					return PropertyPropertiesAdapter.createProperty(object.getProperties());
@@ -52,7 +52,7 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 		if (object instanceof AdHocSubProcess) {
 			feature = Bpmn2Package.eINSTANCE.getAdHocSubProcess_CompletionCondition();
 			setFeatureDescriptor(feature,
-					new FeatureDescriptor<T>(object,feature) {
+					new FeatureDescriptor<T>(this,object,feature) {
 						@Override
 						public String getLabel() {
 							return "Completion Condition";

@@ -27,7 +27,7 @@ public class JbpmCorrelationPropertyPropertiesAdapter extends CorrelationPropert
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getCorrelationProperty_Type();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<CorrelationProperty>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<CorrelationProperty>(this, object, feature) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

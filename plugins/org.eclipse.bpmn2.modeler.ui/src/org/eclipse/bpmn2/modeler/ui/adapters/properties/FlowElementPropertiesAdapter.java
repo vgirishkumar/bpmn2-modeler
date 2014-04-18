@@ -48,7 +48,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 		super(adapterFactory, object);
 		
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getFlowElement_Name();
-		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(object,f) {
+		final FeatureDescriptor<T> fd = new FeatureDescriptor<T>(this,object,f) {
 
 			@Override
 			public void setTextValue(String text) {
@@ -125,7 +125,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 		if (object instanceof ItemAwareElement) {
 			f = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
 			setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-	    	setFeatureDescriptor(f, new ItemDefinitionRefFeatureDescriptor<T>(adapterFactory, object, f) {
+	    	setFeatureDescriptor(f, new ItemDefinitionRefFeatureDescriptor<T>(this, object, f) {
 
 	    		@Override
 	    		public Hashtable<String, Object> getChoiceOfValues() {
@@ -135,7 +135,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 	    	});
 		}
 		
-		setObjectDescriptor(new ObjectDescriptor<T>(object) {
+		setObjectDescriptor(new ObjectDescriptor<T>(this,object) {
 
 			@Override
 			public void setTextValue(String text) {

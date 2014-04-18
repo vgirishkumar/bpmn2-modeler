@@ -48,7 +48,7 @@ public class CallChoreographyPropertiesAdapter extends ExtendedPropertiesAdapter
 		
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCallChoreography_CalledChoreographyRef();
     	setFeatureDescriptor(ref,
-    		new RootElementRefFeatureDescriptor<CallChoreography>(adapterFactory,object,ref) {
+    		new RootElementRefFeatureDescriptor<CallChoreography>(this,object,ref) {
 				
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {

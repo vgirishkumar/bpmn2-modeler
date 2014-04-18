@@ -62,26 +62,15 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 	/**
 	 * Construct a new FeatureDescriptor for the given feature of the given object.
 	 * 
+	 * @param owner - the ExtendedPropertiesAdapter that owns this FeatureDescriptor
 	 * @param object - an EObject subclass
 	 * @param feature - this must be a defined EStructuralFeature of the above EObject.
 	 */
-	public FeatureDescriptor(T object, EStructuralFeature feature) {
-		super(object);
+	public FeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
+		super(owner, object);
 		this.feature = feature;
 		Assert.isNotNull(object);
 		Assert.isNotNull(feature);
-	}
-
-	/**
-	 * This has been deprecated, as we don't use the AdapterFactory any more.
-	 * 
-	 * @param adapterFactory
-	 * @param object
-	 * @param feature
-	 */
-	@Deprecated
-	public FeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		this(object,feature);
 	}
 	
 	/**

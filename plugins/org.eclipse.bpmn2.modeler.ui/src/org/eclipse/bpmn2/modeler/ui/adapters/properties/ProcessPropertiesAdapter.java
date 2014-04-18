@@ -44,7 +44,7 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
     	
     	feature = Bpmn2Package.eINSTANCE.getCallableElement_Name();
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<Process>(object,feature) {
+			new FeatureDescriptor<Process>(this,object,feature) {
     		
 	    		@Override
 				protected void internalSet(Process process, EStructuralFeature feature, Object value, int index) {
@@ -68,7 +68,7 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
     		}
     	);
     	
-		setObjectDescriptor(new ObjectDescriptor<Process>(object) {
+		setObjectDescriptor(new ObjectDescriptor<Process>(this,object) {
 			@Override
 			public Process createObject(Resource resource, EClass eclass) {
 				ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(
@@ -81,7 +81,7 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
 		
 		feature = Bpmn2Package.eINSTANCE.getProcess_Properties();
 		setFeatureDescriptor(feature,
-			new FeatureDescriptor<Process>(object,feature) {
+			new FeatureDescriptor<Process>(this,object,feature) {
 				@Override
 				public EObject createFeature(Resource resource, EClass eclass) {
 					return PropertyPropertiesAdapter.createProperty(object.getProperties());

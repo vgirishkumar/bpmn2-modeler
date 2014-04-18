@@ -69,7 +69,7 @@ public class Bpmn2EditorDiItemProviderAdapterFactory extends BpmnDiItemProviderA
         		return adapter;
         	
         	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
-        	adapter.setObjectDescriptor(new ObjectDescriptor(object) {
+        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter, object) {
 				@Override
 				public String getLabel() {
 		        	ExtendedPropertiesAdapter adapter = getBpmnElementAdapter(object);

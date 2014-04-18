@@ -64,7 +64,7 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof Task)
 			return be;

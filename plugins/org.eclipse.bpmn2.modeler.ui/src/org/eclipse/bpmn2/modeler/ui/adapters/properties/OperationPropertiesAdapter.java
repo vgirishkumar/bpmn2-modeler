@@ -54,14 +54,14 @@ public class OperationPropertiesAdapter extends ExtendedPropertiesAdapter<Operat
     	setFeatureDescriptor(ref, new ImplementationRefFeatureDescriptor<Operation>(this, adapterFactory, object, ref));
 
     	ref = Bpmn2Package.eINSTANCE.getOperation_InMessageRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(this,object,ref));
        	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
     	ref = Bpmn2Package.eINSTANCE.getOperation_OutMessageRef();
-       	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(adapterFactory,object,ref));
+       	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<Operation>(this,object,ref));
        	setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
-    	setObjectDescriptor( new ObjectDescriptor<Operation>(object) {
+    	setObjectDescriptor( new ObjectDescriptor<Operation>(this,object) {
 
 			@Override
 			public Operation createObject(Resource resource, EClass eclass) {

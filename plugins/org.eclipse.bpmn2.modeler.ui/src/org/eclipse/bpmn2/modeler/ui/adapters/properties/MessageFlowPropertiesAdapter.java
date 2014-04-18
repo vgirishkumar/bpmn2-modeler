@@ -48,7 +48,7 @@ public class MessageFlowPropertiesAdapter extends ExtendedPropertiesAdapter<Mess
 		super(adapterFactory, object);
 
 		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getMessageFlow_MessageRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<MessageFlow>(adapterFactory,object,ref) {
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<MessageFlow>(this,object,ref) {
     		
     		protected void internalSet(MessageFlow messageFlow, EStructuralFeature feature, Object value, int index) {
     			if (value instanceof Message || value==null) {
@@ -76,7 +76,7 @@ public class MessageFlowPropertiesAdapter extends ExtendedPropertiesAdapter<Mess
     		
     	});
 
-    	setObjectDescriptor(new ObjectDescriptor<MessageFlow>(object) {
+    	setObjectDescriptor(new ObjectDescriptor<MessageFlow>(this,object) {
 			@Override
 			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$

@@ -48,7 +48,7 @@ public class CallConversationPropertiesAdapter extends ExtendedPropertiesAdapter
 		
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCallConversation_CalledCollaborationRef();
     	setFeatureDescriptor(ref,
-    		new RootElementRefFeatureDescriptor<CallConversation>(adapterFactory,object,ref) {
+    		new RootElementRefFeatureDescriptor<CallConversation>(this,object,ref) {
 			
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {

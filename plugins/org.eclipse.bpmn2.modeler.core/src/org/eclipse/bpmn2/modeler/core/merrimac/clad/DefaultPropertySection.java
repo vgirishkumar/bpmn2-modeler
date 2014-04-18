@@ -124,7 +124,7 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		appliesToClasses.add(c);
 	}
 	
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		return BusinessObjectUtil.getBusinessObjectForSelection(selection);
 	}
 }

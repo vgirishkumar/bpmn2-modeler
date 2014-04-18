@@ -35,6 +35,7 @@ import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.forms.widgets.Section;
 
 public class DefaultDetailComposite extends AbstractDetailComposite {
 
@@ -87,8 +88,9 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				}
 				EStructuralFeature f = PACKAGE.getDocumentation_Text();
 				ExtendedPropertiesProvider.setMultiLineText(documentation, f, true);
+				Composite container = createSectionComposite(this, Messages.DefaultDetailComposite_Documentation);
 				TextObjectEditor documentationEditor = new TextObjectEditor(this,documentation,f);
-				documentationEditor.createControl(getAttributesParent(),Messages.DefaultDetailComposite_Documentation);
+				documentationEditor.createControl(container,"");
 				return null;
 			}
 		}

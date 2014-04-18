@@ -178,7 +178,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	protected abstract AbstractDetailComposite createSectionRoot();
 	public abstract AbstractDetailComposite createSectionRoot(Composite parent, int style);
-	protected abstract EObject getBusinessObjectForSelection(ISelection selection);
+	public abstract EObject getBusinessObjectForSelection(ISelection selection);
 	
 	/* (non-Javadoc)
 	 * Yet another ugly hack: this restores the current property sheet page parent

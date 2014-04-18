@@ -260,7 +260,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
         	
         	if (adapter==null) {
 	        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
-	        	adapter.setObjectDescriptor(new ObjectDescriptor(object) {
+	        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter,object) {
 					@Override
 					public String getLabel() {
 						if (ModelUtil.isStringWrapper(object)) {

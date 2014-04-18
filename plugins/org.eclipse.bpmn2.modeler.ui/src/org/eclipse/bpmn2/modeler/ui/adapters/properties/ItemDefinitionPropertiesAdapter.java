@@ -58,7 +58,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<ItemDefinition>(object,ref) {
+			new FeatureDescriptor<ItemDefinition>(this,object,ref) {
     		
 				@Override
 				public String getLabel() {
@@ -88,6 +88,11 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 
 	    		@Override
 	    		protected void internalSet(ItemDefinition itemDefinition, EStructuralFeature feature, Object value, int index) {
+					if (value instanceof ItemDefinition) {
+						value = ((ItemDefinition)value).getStructureRef();
+						if (ModelUtil.isStringWrapper(value))
+							value = ModelUtil.getStringWrapperTextValue(value);
+					}
 					if (value instanceof String) {
 						if (itemDefinition.getStructureRef()==null) {
 							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
@@ -106,7 +111,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 			}
     	);
     	
-		setObjectDescriptor(new ObjectDescriptor<ItemDefinition>(object) {
+		setObjectDescriptor(new ObjectDescriptor<ItemDefinition>(this,object) {
 			
 			@Override
 			public String getTextValue() {

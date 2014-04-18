@@ -37,7 +37,7 @@ public class AdvancedPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof BPMNDiagramImpl) {
 			be = ModelUtil.getDefinitions(be);

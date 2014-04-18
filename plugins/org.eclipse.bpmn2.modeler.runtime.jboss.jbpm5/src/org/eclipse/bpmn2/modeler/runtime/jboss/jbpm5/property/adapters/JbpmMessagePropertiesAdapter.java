@@ -27,7 +27,7 @@ public class JbpmMessagePropertiesAdapter extends MessagePropertiesAdapter {
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getMessage_ItemRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Message>(this, object, feature) {
 
 			@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

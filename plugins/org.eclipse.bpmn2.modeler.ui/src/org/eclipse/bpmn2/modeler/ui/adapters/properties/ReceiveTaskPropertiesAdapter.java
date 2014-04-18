@@ -61,7 +61,7 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
     	
-    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
+    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<ReceiveTask>(this,object,feature) {
     		
     		@Override
     		protected void internalSet(ReceiveTask receiveTask, EStructuralFeature feature, Object value, int index) {
@@ -77,7 +77,7 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ReceiveTask>(adapterFactory,object,feature) {
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ReceiveTask>(this,object,feature) {
     		
     		@Override
     		protected void internalSet(ReceiveTask receiveTask, EStructuralFeature feature, Object value, int index) {

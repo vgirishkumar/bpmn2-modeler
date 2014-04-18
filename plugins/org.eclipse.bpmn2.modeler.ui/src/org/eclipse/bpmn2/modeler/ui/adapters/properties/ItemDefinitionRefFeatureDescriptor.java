@@ -28,12 +28,11 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -53,8 +52,10 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 	 * @param object
 	 * @param feature
 	 */
-	public ItemDefinitionRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(object, feature);
+	public ItemDefinitionRefFeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
+		super(owner, object, feature);
+		owner.setProperty(feature, ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW, Boolean.FALSE);
+
 		// I found a couple of instances where this class was used for references that were NOT
 		// RootElements - just check to make sure here...
 		Assert.isTrue( RootElement.class.isAssignableFrom(feature.getEType().getInstanceClass()) );

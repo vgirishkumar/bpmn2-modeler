@@ -33,7 +33,7 @@ public class CorrelationPropertyRetrievalExpressionPropertiesAdapter extends Ext
 		super(adapterFactory, object);
 
     	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCorrelationPropertyRetrievalExpression_MessageRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationPropertyRetrievalExpression>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationPropertyRetrievalExpression>(this,object,ref));
 	}
 
 }

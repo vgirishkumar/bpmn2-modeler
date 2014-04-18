@@ -34,9 +34,9 @@ public class ErrorPropertiesAdapter extends RootElementPropertiesAdapter<Error> 
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getError_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(this, object, feature));
 		
-    	setObjectDescriptor(new RootElementObjectDescriptor<Error>(adapterFactory, object) {
+    	setObjectDescriptor(new RootElementObjectDescriptor<Error>(this, object) {
 			@Override
 			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$

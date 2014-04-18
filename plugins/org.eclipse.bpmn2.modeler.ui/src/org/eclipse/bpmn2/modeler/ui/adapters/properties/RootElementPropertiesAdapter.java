@@ -49,19 +49,19 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 				EList<EClass> supertypes = ((EClass)type).getEAllSuperTypes();
 				for (EClass st : supertypes) {
 					if (st == Bpmn2Package.eINSTANCE.getRootElement()) {
-						setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<T>(adapterFactory,object,ref));
+						setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<T>(this,object,ref));
 					}
 				}
 			}
 		}
 		
-		setObjectDescriptor(new RootElementObjectDescriptor<T>(adapterFactory, object));
+		setObjectDescriptor(new RootElementObjectDescriptor<T>(this, object));
 	}
 	
 	public class RootElementObjectDescriptor<T extends RootElement> extends ObjectDescriptor<T> {
 
-		public RootElementObjectDescriptor(AdapterFactory adapterFactory,T object) {
-			super(object);
+		public RootElementObjectDescriptor(ExtendedPropertiesAdapter<T> owner, T object) {
+			super(owner, object);
 		}
 		
 		@Override

@@ -190,28 +190,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		
 		if (attributesSection==null || attributesSection.isDisposed()) {
 
-			attributesSection = createSection(this, Messages.AbstractDetailComposite_Attributes);
+			attributesSection = createSection(this, Messages.AbstractDetailComposite_Attributes, true);
 			
 			attributesSection.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 3, 1));
 			attributesComposite = toolkit.createComposite(attributesSection);
 			attributesSection.setClient(attributesComposite);
 			attributesComposite.setLayout(new GridLayout(3,false));
-
-			final String prefName = "detail."+businessObject.eClass().getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
-			attributesSection.addExpansionListener(new IExpansionListener() {
-				
-				@Override
-				public void expansionStateChanging(ExpansionEvent e) {
-				}
-
-				@Override
-				public void expansionStateChanged(ExpansionEvent e) {
-					preferenceStore.setValue(prefName, e.getState());
-					redrawPage();
-				}
-			});
-			boolean expanded = preferenceStore.contains(prefName) ? preferenceStore.getBoolean(prefName) : true;
-			attributesSection.setExpanded(expanded);
 		}
 		return attributesComposite;
 	}
@@ -321,7 +305,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		return descriptionText;
 	}
 
-	protected Section createSection(Composite parent, final String title) {
+	protected Section createSection(Composite parent, final String title, boolean expanded) {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE |
 				ExpandableComposite.EXPANDED |
@@ -341,11 +325,13 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 //	    toolBarManager.update(true);
 //	    section.setTextClient(toolbar);
 
-		if (getBusinessObject()!=null) {
-			final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			boolean expanded = preferenceStore.getBoolean(prefKey);
-			section.setExpanded(expanded);
-		}
+		final String prefKey = (getBusinessObject()==null) ?
+				null :
+				"section."+getBusinessObject().eClass().getName()+"."+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+		if (prefKey!=null && preferenceStore.contains(prefKey))
+			expanded = preferenceStore.getBoolean(prefKey);
+		section.setExpanded(expanded);
 		
 		section.addExpansionListener(new IExpansionListener() {
 			@Override
@@ -354,15 +340,24 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 
 			@Override
 			public void expansionStateChanged(ExpansionEvent e) {
-				if (getBusinessObject()!=null) {
-					final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (prefKey!=null) {
 					preferenceStore.setValue(prefKey, e.getState());
 				}
 			}
 		});
+		
 		return section;
 	}
 
+	protected Composite createSectionComposite(Composite parent, String title) {
+		Section section = createSection(parent, title, false);
+		section.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 3, 1));
+		Composite composite = toolkit.createComposite(section);
+		section.setClient(composite);
+		composite.setLayout(new GridLayout(3,false));
+		return composite;
+	}
+	
 	protected Section createSubSection(Composite parent, String title) {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.EXPANDED |

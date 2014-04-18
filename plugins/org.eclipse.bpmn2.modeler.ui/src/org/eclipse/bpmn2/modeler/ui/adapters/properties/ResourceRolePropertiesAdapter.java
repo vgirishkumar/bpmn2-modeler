@@ -41,7 +41,7 @@ public class ResourceRolePropertiesAdapter extends ExtendedPropertiesAdapter<Res
 
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getResourceRole_ResourceAssignmentExpression();
     	setFeatureDescriptor(ref,
-			new FeatureDescriptor<ResourceRole>(object,ref) {
+			new FeatureDescriptor<ResourceRole>(this,object,ref) {
 
 				@Override
 				public String getTextValue() {

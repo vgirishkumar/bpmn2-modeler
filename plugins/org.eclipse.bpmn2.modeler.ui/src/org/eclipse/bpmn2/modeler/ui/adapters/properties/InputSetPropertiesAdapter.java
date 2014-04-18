@@ -41,27 +41,28 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 
     	EStructuralFeature f = Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs();
 		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
+		setFeatureDescriptor(f, new DataInputFeatureDescriptor(this,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_OptionalInputRefs();
 		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
+		setFeatureDescriptor(f, new DataInputFeatureDescriptor(this,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_WhileExecutingInputRefs();
 		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-		setFeatureDescriptor(f, new DataInputFeatureDescriptor(adapterFactory,object, f));
+		setFeatureDescriptor(f, new DataInputFeatureDescriptor(this,object, f));
 
     	f = Bpmn2Package.eINSTANCE.getInputSet_OutputSetRefs();
 		setProperty(f, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-		setFeatureDescriptor(f, new OutputSetFeatureDescriptor(adapterFactory,object, f));
+		setFeatureDescriptor(f, new OutputSetFeatureDescriptor(this,object, f));
 	}
 
 	protected class DataInputFeatureDescriptor extends FeatureDescriptor<InputSet> {
-
-		public DataInputFeatureDescriptor(AdapterFactory adapterFactory, InputSet object, EStructuralFeature feature) {
-			super(object, feature);
-		}
 		
+		public DataInputFeatureDescriptor(ExtendedPropertiesAdapter<InputSet> owner, InputSet object,
+				EStructuralFeature feature) {
+			super(owner, object, feature);
+		}
+
 		@Override
 		public Hashtable<String, Object> getChoiceOfValues() {
 			Hashtable<String, Object> values = new Hashtable<String, Object>();
@@ -108,12 +109,12 @@ public class InputSetPropertiesAdapter extends ExtendedPropertiesAdapter<InputSe
 	}
 
 	protected class OutputSetFeatureDescriptor extends FeatureDescriptor<InputSet> {
-
-		public OutputSetFeatureDescriptor(AdapterFactory adapterFactory, InputSet object, EStructuralFeature feature) {
-			super(object, feature);
+		
+		public OutputSetFeatureDescriptor(ExtendedPropertiesAdapter<InputSet> owner, InputSet object,
+				EStructuralFeature feature) {
+			super(owner, object, feature);
 		}
-		
-		
+
 		@Override
 		public Hashtable<String, Object> getChoiceOfValues() {
 			Hashtable<String, Object> values = new Hashtable<String, Object>();

@@ -55,9 +55,9 @@ public class ObjectDescriptor<T extends EObject> {
 		this.object = object;
 	}
 
-	public ObjectDescriptor(T object) {
-		this.object = object;
-	}
+//	public ObjectDescriptor(T object) {
+//		this.object = object;
+//	}
 	
 	/**
 	 * Gets the {@link ExtendedPropertiesAdapter} owner for this ObjectDescriptor.

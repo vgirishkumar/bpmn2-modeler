@@ -27,7 +27,7 @@ public class JbpmResourceParameterPropertiesAdapter extends ResourceParameterPro
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getResourceParameter_Type();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<ResourceParameter>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<ResourceParameter>(this, object, feature) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

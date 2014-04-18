@@ -48,7 +48,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 
     	final EStructuralFeature body = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
     	setFeatureDescriptor(body,
-			new FeatureDescriptor<FormalExpression>(object,body) {
+			new FeatureDescriptor<FormalExpression>(this,object,body) {
     		
     			@Override
     	   		protected void internalSet(FormalExpression formalExpression, EStructuralFeature feature, Object value, int index) {
@@ -84,7 +84,7 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 		setProperty(language, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		setProperty(language, UI_CAN_SET_NULL, Boolean.TRUE);
     	setFeatureDescriptor(language,
-    		new FeatureDescriptor<FormalExpression>(object,language) {
+    		new FeatureDescriptor<FormalExpression>(this,object,language) {
     		
 				@Override
 				public String getLabel() {
@@ -108,9 +108,9 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 		
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getFormalExpression_EvaluatesToTypeRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<FormalExpression>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<FormalExpression>(this, object, feature));
 
-		setObjectDescriptor(new ObjectDescriptor<FormalExpression>(object) {
+		setObjectDescriptor(new ObjectDescriptor<FormalExpression>(this,object) {
 			@Override
 			public String getTextValue() {
 				return getFeatureDescriptor(body).getTextValue();

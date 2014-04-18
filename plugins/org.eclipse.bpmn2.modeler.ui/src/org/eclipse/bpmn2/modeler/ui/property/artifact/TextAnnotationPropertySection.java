@@ -35,7 +35,7 @@ public class TextAnnotationPropertySection extends DefaultPropertySection implem
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof TextAnnotation)
 			return be;

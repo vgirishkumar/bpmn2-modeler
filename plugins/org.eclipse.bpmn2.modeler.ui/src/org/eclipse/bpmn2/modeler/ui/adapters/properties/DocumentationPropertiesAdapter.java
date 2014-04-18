@@ -13,17 +13,12 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Documentation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -38,9 +33,9 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
 	public DocumentationPropertiesAdapter(AdapterFactory adapterFactory, Documentation object) {
 		super(adapterFactory, object);
 
-    	final EStructuralFeature textFeature = Bpmn2Package.eINSTANCE.getDocumentation_Text();
-    	setFeatureDescriptor(textFeature,
-			new FeatureDescriptor<Documentation>(object,textFeature) {
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getDocumentation_Text();
+    	setFeatureDescriptor(feature,
+			new FeatureDescriptor<Documentation>(this,object,feature) {
     		
     			@Override
     	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {

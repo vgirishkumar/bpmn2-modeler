@@ -27,7 +27,7 @@ public class JbpmErrorPropertiesAdapter extends ErrorPropertiesAdapter {
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getError_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(adapterFactory, object, feature) {
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Error>(this, object, feature) {
 
     		@Override
     		public Hashtable<String, Object> getChoiceOfValues() {

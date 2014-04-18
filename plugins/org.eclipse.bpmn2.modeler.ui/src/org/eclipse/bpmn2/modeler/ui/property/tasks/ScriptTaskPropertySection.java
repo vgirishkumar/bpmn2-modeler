@@ -36,7 +36,7 @@ public class ScriptTaskPropertySection extends DefaultPropertySection implements
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof ScriptTask)
 			return be;

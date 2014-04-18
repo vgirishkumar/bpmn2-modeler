@@ -47,7 +47,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getDefinitions_TypeLanguage();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
-		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(object, feature) {
+		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(this,object, feature) {
 
 			@Override
 			protected void internalSet(Definitions object, EStructuralFeature feature, Object value, int index) {
@@ -65,7 +65,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			}
 		});
     	
-		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
+		setObjectDescriptor(new ObjectDescriptor<Definitions>(this,object) {
 			@Override
 			public Definitions createObject(Resource resource, EClass eclass) {
 				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
@@ -79,7 +79,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 		feature = Bpmn2Package.eINSTANCE.getDefinitions_ExpressionLanguage();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
-		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(object, feature) {
+		setFeatureDescriptor(feature, new FeatureDescriptor<Definitions>(this,object, feature) {
 
 			@Override
 			protected void internalSet(Definitions object, EStructuralFeature feature, Object value, int index) {
@@ -97,7 +97,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 			}
 		});
     	
-		setObjectDescriptor(new ObjectDescriptor<Definitions>(object) {
+		setObjectDescriptor(new ObjectDescriptor<Definitions>(this,object) {
 			@Override
 			public Definitions createObject(Resource resource, EClass eclass) {
 				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);

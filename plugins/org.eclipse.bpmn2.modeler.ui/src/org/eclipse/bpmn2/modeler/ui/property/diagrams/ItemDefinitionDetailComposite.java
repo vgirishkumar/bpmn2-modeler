@@ -49,6 +49,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 						"itemKind", //$NON-NLS-1$
 						"isCollection", //$NON-NLS-1$
 						"structureRef", //$NON-NLS-1$
+						"documentation", //$NON-NLS-1$
 						// this thing is transient so it won't be serialized; no point in allowing user to set it
 						// "import"
 				};

@@ -90,14 +90,14 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
     	EStructuralFeature ref;
     	
     	ref = Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef();
-    	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(this,object,ref));
 		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.FALSE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.FALSE);
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
 		setProperty(ref, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
 		ref = Bpmn2Package.eINSTANCE.getDataAssociation_TargetRef();
-    	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new SourceTargetFeatureDescriptor(this,object,ref));
 		setProperty(ref, UI_CAN_EDIT_INLINE, Boolean.FALSE);
 		setProperty(ref, UI_CAN_EDIT, Boolean.FALSE);
 		setProperty(ref, UI_CAN_CREATE_NEW, Boolean.FALSE);
@@ -106,10 +106,11 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 
 	public class SourceTargetFeatureDescriptor extends FeatureDescriptor<DataAssociation> {
 
-		public SourceTargetFeatureDescriptor(AdapterFactory adapterFactory, DataAssociation object, EStructuralFeature feature) {
-			super(object, feature);
+		public SourceTargetFeatureDescriptor(ExtendedPropertiesAdapter<DataAssociation> owner, DataAssociation object,
+				EStructuralFeature feature) {
+			super(owner, object, feature);
 		}
-		
+
 		@Override
 		public String getLabel() {
 			if (object instanceof DataInputAssociation)

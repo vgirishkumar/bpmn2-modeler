@@ -35,7 +35,7 @@ public class DataInputPropertySection extends DefaultPropertySection implements 
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof DataInput)
 			return be;

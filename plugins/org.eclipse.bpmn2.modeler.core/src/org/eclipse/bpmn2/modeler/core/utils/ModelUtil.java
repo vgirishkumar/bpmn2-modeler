@@ -50,16 +50,22 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -659,6 +665,9 @@ public class ModelUtil {
 		return Messages.ModelUtil_Unknown_Diagram_Type;
 	}
 	
+	private static EClass stringWrapperClass = null;
+	private static EPackage myPackage = null;
+	
 	public static EObject createStringWrapper(String value) {
 		DynamicEObjectImpl de = new DynamicEObjectImpl() {
 			// prevent owners from trying to resolve this thing - it's just a string!
@@ -667,35 +676,55 @@ public class ModelUtil {
 			}
 
 			@Override
-			public boolean equals(Object object) {
-				if (object instanceof DynamicEObjectImpl) {
-					DynamicEObjectImpl that = (DynamicEObjectImpl) object;
-					if (eProxyURI()==null) {
-						return that.eProxyURI()==null;
-					}
-					String thisString = eProxyURI().toString();
-					String thatString = that.eProxyURI() == null ? null : that.eProxyURI().toString();
-					return thisString.equals(thatString);
+			public boolean equals(Object that) {
+				String thisValue = this.toString();
+				String thatValue = that.toString();
+				if (thisValue==null) {
+					return thatValue==null;
 				}
-				else if (object instanceof String) {
-					String thisString = eProxyURI().toString();
-					return thisString.equals(object);
-				}
-				return super.equals(object);
+				return thisValue.equals(thatValue);
 			}
 			
+			@Override
+			public String toString() {
+				EStructuralFeature feature = this.eClass().getEStructuralFeature("value");
+				if (feature!=null) {
+					return (String)eGet(feature);
+				}
+				return null;
+			}
 		};
-		de.eSetClass(EcorePackage.eINSTANCE.getEObject());
-		de.eSetProxyURI(URI.createURI(value));
+		
+		if (stringWrapperClass==null) {
+			myPackage = EcoreFactory.eINSTANCE.createEPackage();
+			stringWrapperClass = EcoreFactory.eINSTANCE.createEClass();
+			myPackage.getEClassifiers().add(stringWrapperClass);
+			
+			stringWrapperClass.setName("StringWrapper");
+			stringWrapperClass.getESuperTypes().add(XMLTypePackage.eINSTANCE.getAnyType());
+			ExtendedMetaData.INSTANCE.setName(stringWrapperClass, "");
+			stringWrapperClass.setInstanceClass(AnyType.class);
+
+			EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
+			eAttribute.setName("value");
+			eAttribute.setChangeable(true);
+			eAttribute.setUnsettable(true);
+			eAttribute.setEType(EcorePackage.eINSTANCE.getEClassifier("EString"));
+			stringWrapperClass.getEStructuralFeatures().add(eAttribute);
+
+//			ExtendedMetaData.INSTANCE.setNamespace(eAttribute, ePackage.getNsURI());
+			ExtendedMetaData.INSTANCE.setFeatureKind(eAttribute, ExtendedMetaData.ATTRIBUTE_FEATURE);
+			ExtendedMetaData.INSTANCE.setName(eAttribute, "value");
+		}
+		de.eSetClass(stringWrapperClass);
+		de.eSet(stringWrapperClass.getEStructuralFeature("value"), value);
+		
 		return de;
 	}
 	
 	public static String getStringWrapperValue(Object wrapper) {
 		if (wrapper instanceof DynamicEObjectImpl) {
-			DynamicEObjectImpl de = (DynamicEObjectImpl)wrapper;
-			URI uri = de.eProxyURI();
-			String value = uri.toString();
-			return value;
+			return wrapper.toString();
 		}
 		else if (wrapper instanceof EObject) {
 			return EcoreUtil.getURI((EObject)wrapper).toString();
@@ -711,14 +740,20 @@ public class ModelUtil {
 	public static boolean setStringWrapperValue(Object wrapper, String value) {
 		if (isStringWrapper(wrapper)) {
 			DynamicEObjectImpl de = (DynamicEObjectImpl)wrapper;
-			de.eSetProxyURI(URI.createURI(value));
+			EStructuralFeature feature = de.eClass().getEStructuralFeature("value");
+			de.eSet(feature, value);
 			return true;
 		}
 		return false;
 	}
 	
 	public static boolean isStringWrapper(Object wrapper) {
-		return wrapper instanceof DynamicEObjectImpl;
+		if (wrapper instanceof DynamicEObjectImpl) {
+			EStructuralFeature feature = ((DynamicEObjectImpl)wrapper).eClass().getEStructuralFeature("value");
+			return feature!=null;
+
+		}
+		return false;
 	}
 	
 	public static boolean isElementSelected(IDiagramContainer editor, PictogramElement element) {
@@ -739,7 +774,7 @@ public class ModelUtil {
 			object = ((Diagram)object).eResource();
 		}
 		if (object instanceof EObject) {
-			object = ((EObject)object).eResource();
+			object = ObjectPropertyProvider.getResource((EObject)object);
 		}
 		if (object instanceof Resource) {
 			Resource resource = (Resource) object;

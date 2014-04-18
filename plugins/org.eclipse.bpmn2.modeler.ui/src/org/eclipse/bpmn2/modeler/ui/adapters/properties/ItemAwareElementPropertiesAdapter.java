@@ -28,8 +28,6 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 
 /**
  * @author Bob Brodt
@@ -47,13 +45,15 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+		setProperty(feature, UI_CAN_CREATE_NEW, Boolean.FALSE);
+		
     	setFeatureDescriptor(feature,
-			new ItemDefinitionRefFeatureDescriptor<T>(adapterFactory, object, feature)
+			new ItemDefinitionRefFeatureDescriptor<T>(this, object, feature)
     	);
     	
     	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
     	setFeatureDescriptor(feature,
-			new FeatureDescriptor<T>(object,feature) {
+			new FeatureDescriptor<T>(this, object,feature) {
     		
 				@Override
 				protected void internalSet(ItemAwareElement element, EStructuralFeature feature, Object value, int index) {

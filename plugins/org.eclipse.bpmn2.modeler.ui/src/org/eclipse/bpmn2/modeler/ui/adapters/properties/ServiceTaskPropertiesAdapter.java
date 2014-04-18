@@ -39,7 +39,7 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(adapterFactory,object,feature));
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(this,object,feature));
 
     	feature = Bpmn2Package.eINSTANCE.getServiceTask_Implementation();
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);

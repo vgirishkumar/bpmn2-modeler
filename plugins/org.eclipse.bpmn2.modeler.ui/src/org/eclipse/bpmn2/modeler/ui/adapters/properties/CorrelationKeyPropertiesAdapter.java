@@ -33,7 +33,7 @@ public class CorrelationKeyPropertiesAdapter extends ExtendedPropertiesAdapter<C
 		super(adapterFactory, object);
 		
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCorrelationKey_CorrelationPropertyRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationKey>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationKey>(this,object,ref));
 	}
 
 }

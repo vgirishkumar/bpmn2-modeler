@@ -20,7 +20,7 @@ public class ImportPropertiesAdapter extends ExtendedPropertiesAdapter<Import> {
 	public ImportPropertiesAdapter(AdapterFactory adapterFactory, Import object) {
 		super(adapterFactory, object);
     	
-		setObjectDescriptor(new ObjectDescriptor<Import>(object) {
+		setObjectDescriptor(new ObjectDescriptor<Import>(this,object) {
 			@Override
 			public String getTextValue() {
 				String text = object.getLocation();

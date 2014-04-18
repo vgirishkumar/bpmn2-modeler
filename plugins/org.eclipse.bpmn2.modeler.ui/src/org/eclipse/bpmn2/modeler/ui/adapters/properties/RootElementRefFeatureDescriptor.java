@@ -19,19 +19,16 @@ import java.util.Iterator;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.core.runtime.Assert;
 
 /**
  * @author Bob Brodt
@@ -39,18 +36,10 @@ import org.eclipse.core.runtime.Assert;
  */
 public class RootElementRefFeatureDescriptor<T extends BaseElement> extends FeatureDescriptor<T> {
 
-	/**
-	 * @param adapterFactory
-	 * @param object
-	 * @param feature
-	 */
-	public RootElementRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(object, feature);
-		// I found a couple of instances where this class was used for references that were NOT
-		// RootElements - just check to make sure here...
-		Assert.isTrue( RootElement.class.isAssignableFrom(feature.getEType().getInstanceClass()) );
+	public RootElementRefFeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
+		super(owner, object, feature);
 	}
-	
+
 	@Override
 	public EObject createFeature(Resource resource, EClass eClass) {
 		if (resource==null && object.eResource()!=null)

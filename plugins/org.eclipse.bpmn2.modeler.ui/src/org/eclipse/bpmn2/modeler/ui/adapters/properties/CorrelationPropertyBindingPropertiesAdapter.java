@@ -33,7 +33,7 @@ public class CorrelationPropertyBindingPropertiesAdapter extends ExtendedPropert
 		super(adapterFactory, object);
 		
     	final EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCorrelationPropertyBinding_CorrelationPropertyRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationPropertyBinding>(adapterFactory,object,ref));
+    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationPropertyBinding>(this,object,ref));
 	}
 
 }

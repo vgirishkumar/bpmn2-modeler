@@ -1384,12 +1384,14 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		public String getHREF(EObject obj) {
 			// convert the attribute ID references to a QName
-			String s = super.getHREF(obj);
+			String s = null;
+			if (ModelUtil.isStringWrapper(obj)) {
+				s = ModelUtil.getStringWrapperValue(obj);
+			}
+			else
+				s = super.getHREF(obj);
 			if (isQNameFeature) {
-				if (ModelUtil.isStringWrapper(obj)) {
-					s = ModelUtil.getStringWrapperValue(obj);
-				}
-				else if (s!=null && s.contains("#")) { //$NON-NLS-1$
+				if (s!=null && s.contains("#")) { //$NON-NLS-1$
 					// object is a reference possibly to another document
 					Import imp = importHandler.findImportForObject(resource, obj);
 					if (imp!=null) {

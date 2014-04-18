@@ -33,9 +33,9 @@ public class SignalPropertiesAdapter extends RootElementPropertiesAdapter<Signal
 
 		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getSignal_StructureRef();
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Signal>(adapterFactory, object, feature));
+    	setFeatureDescriptor(feature, new ItemDefinitionRefFeatureDescriptor<Signal>(this, object, feature));
 		
-    	setObjectDescriptor(new RootElementObjectDescriptor<Signal>(adapterFactory, object) {
+    	setObjectDescriptor(new RootElementObjectDescriptor<Signal>(this, object) {
 			@Override
 			public String getTextValue() {
 				String text = ""; //$NON-NLS-1$

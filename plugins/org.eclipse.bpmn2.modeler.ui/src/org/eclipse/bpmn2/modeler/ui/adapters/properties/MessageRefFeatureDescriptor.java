@@ -18,9 +18,8 @@ import java.util.Hashtable;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
@@ -28,16 +27,11 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  *
  */
 public class MessageRefFeatureDescriptor<T extends BaseElement> extends RootElementRefFeatureDescriptor<T> {
-
-	/**
-	 * @param adapterFactory
-	 * @param object
-	 * @param feature
-	 */
-	public MessageRefFeatureDescriptor(AdapterFactory adapterFactory, T object, EStructuralFeature feature) {
-		super(adapterFactory, object, feature);
-	}
 	
+	public MessageRefFeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
+		super(owner, object, feature);
+	}
+
 	@Override
 	public Hashtable<String, Object> getChoiceOfValues() {
 		Hashtable<String, Object> choices = super.getChoiceOfValues();

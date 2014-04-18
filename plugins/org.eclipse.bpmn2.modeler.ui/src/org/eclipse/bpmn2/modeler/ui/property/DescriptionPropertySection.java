@@ -124,6 +124,9 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			if (adapter!=null) {
 				description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
 			}
+			if (description==null) {
+				description = ExtendedPropertiesAdapter.getDescription(getDiagramEditor(), object);
+			}
 			return description;
 		}
 	}

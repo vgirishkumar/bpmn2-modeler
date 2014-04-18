@@ -49,7 +49,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 		EStructuralFeature feature;
 		
 		feature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs();
-    	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(object, feature) {
+    	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(this,object, feature) {
     		
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
@@ -66,7 +66,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
     	});
 
     	feature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs();
-    	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(object, feature) {
+    	setFeatureDescriptor(feature, new FeatureDescriptor<InputOutputSpecification>(this,object, feature) {
    		
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
@@ -82,7 +82,7 @@ public class IoSpecificationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			}
     	});
     	
-		setObjectDescriptor(new ObjectDescriptor<InputOutputSpecification>(object) {
+		setObjectDescriptor(new ObjectDescriptor<InputOutputSpecification>(this,object) {
 			
 			@Override
 			public InputOutputSpecification createObject(Resource resource, EClass eclass) {

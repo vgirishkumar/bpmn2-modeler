@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaSelectionDialog;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -37,7 +38,7 @@ import org.eclipse.jface.window.Window;
  * populated with the structureRef (the selected schema element) and the
  * import selected in the {@link SchemaSelectionDialog}
  */
-public class StructureObjectEditor extends ComboObjectEditor {
+public class StructureObjectEditor extends TextAndButtonObjectEditor {
 
 	/**
 	 * @param parent
@@ -65,17 +66,17 @@ public class StructureObjectEditor extends ComboObjectEditor {
 	
 	@Override
 	protected void buttonClicked(int buttonId) {
-		if (buttonId==ID_CREATE_BUTTON) {
-			Object[] result = SchemaObjectEditor.showSchemaSelectionDialog(parent, object);
-			if (result.length==2) {
-				setValue((String)result[0]);
-				if (object instanceof ItemDefinition) {
-					((ItemDefinition)object).setImport((Import)result[1]);
-				}
-				fillCombo();
-			}
-		}
-		else if (buttonId==ID_EDIT_BUTTON) {
+//		if (buttonId==ID_CREATE_BUTTON) {
+//			Object[] result = SchemaObjectEditor.showSchemaSelectionDialog(parent, object);
+//			if (result.length==2) {
+//				setValue((String)result[0]);
+//				if (object instanceof ItemDefinition) {
+//					((ItemDefinition)object).setImport((Import)result[1]);
+//				}
+////				fillCombo();
+//			}
+//		}
+//		else if (buttonId==ID_EDIT_BUTTON) {
 			IInputValidator validator = new IInputValidator() {
 
 				@Override
@@ -86,22 +87,22 @@ public class StructureObjectEditor extends ComboObjectEditor {
 				}
 				
 			};
-			StructuredSelection sel = (StructuredSelection)comboViewer.getSelection();
-			String value = (String) sel.getFirstElement();
+//			StructuredSelection sel = (StructuredSelection)comboViewer.getSelection();
+//			String value = (String) sel.getFirstElement();
 
 			InputDialog dialog = new InputDialog(
 					parent.getShell(),
 					"Edit Data Type",
 					"Enter new data type:",
-					value,
+					getText(),
 					validator);
 			if (dialog.open()==Window.OK){
 				setValue(dialog.getValue());
 				if (object instanceof ItemDefinition) {
 					((ItemDefinition)object).setImport(null);
 				}
-				fillCombo();
+//				fillCombo();
 			}
-		}
+//		}
 	}
 }

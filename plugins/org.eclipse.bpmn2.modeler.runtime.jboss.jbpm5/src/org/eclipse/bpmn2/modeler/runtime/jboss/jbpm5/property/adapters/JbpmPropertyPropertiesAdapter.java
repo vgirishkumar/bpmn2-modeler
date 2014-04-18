@@ -45,7 +45,7 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(feature,
-			new ItemDefinitionRefFeatureDescriptor<Property>(adapterFactory,object,feature) {
+			new ItemDefinitionRefFeatureDescriptor<Property>(this,object,feature) {
 				
 	    		@Override
 	    		protected void internalSet(Property property, EStructuralFeature feature, Object value, int index) {

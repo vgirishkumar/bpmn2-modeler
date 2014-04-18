@@ -51,7 +51,7 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
+    	setFeatureDescriptor(feature, new MessageRefFeatureDescriptor<SendTask>(this,object,feature) {
 
     		@Override
     		protected void internalSet(SendTask sendTask, EStructuralFeature feature, Object value, int index) {
@@ -67,7 +67,7 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<SendTask>(adapterFactory,object,feature) {
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<SendTask>(this,object,feature) {
     		
     		@Override
     		protected void internalSet(SendTask sendTask, EStructuralFeature feature, Object value, int index) {
