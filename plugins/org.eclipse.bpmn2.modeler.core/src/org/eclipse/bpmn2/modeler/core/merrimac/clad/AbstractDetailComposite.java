@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -275,6 +276,16 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		return label;
 	}
 
+	protected Text createText(Composite parent, String label, String value) {
+		createLabel(parent,label);
+		Text text = getToolkit().createText(parent, "", style | SWT.BORDER); //$NON-NLS-1$
+		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		text.setLayoutData(data);
+		text.setText(value==null ? "" : value);
+		text.setEditable(false);
+		return text;
+	}
+	
 	public Font getDescriptionFont() {
 		if (descriptionFont==null) {
 			Display display = Display.getCurrent();

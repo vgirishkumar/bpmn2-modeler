@@ -156,6 +156,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
 
+		FeatureSupport.setToolTip(rect, "Tooltip");
 		splitConnection(context, containerShape);
 		updatePictogramElement(context, containerShape);
 		layoutPictogramElement(context, containerShape);

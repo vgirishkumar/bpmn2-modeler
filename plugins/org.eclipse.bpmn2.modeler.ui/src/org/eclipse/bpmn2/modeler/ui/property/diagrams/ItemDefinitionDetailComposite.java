@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -20,11 +22,12 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
-import org.eclipse.bpmn2.modeler.ui.property.editors.StructureObjectEditor;
+import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.ui.property.editors.ItemDefinitionStructureEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
@@ -62,9 +65,8 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 		}
 		return propertiesProvider;
 	}
-	
-	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
+	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 		if ("itemKind".equals(attribute.getName())) { //$NON-NLS-1$
 			if (isModelObjectEnabled(object.eClass(), attribute)) {
 
@@ -102,14 +104,16 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			final ItemDefinition def = (ItemDefinition)object;
+			final ItemDefinition itemDefinition = (ItemDefinition)object;
 			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
-			if (def.getItemKind().equals(ItemKind.INFORMATION)) {
-				StructureObjectEditor editor = new StructureObjectEditor(this,object,reference);
+			if (itemDefinition.getItemKind().equals(ItemKind.INFORMATION)) {
+				// This is an Information item: enforce constraints on this thing
+				ItemDefinitionStructureEditor editor = new ItemDefinitionStructureEditor(this,itemDefinition);
 				editor.createControl(parent,displayName);
 			}
 			else {
+				// This is a Physical item: anything goes
 				ObjectEditor editor = new TextObjectEditor(this,object,reference) {
 					@Override
 					protected boolean setValue(Object result) {
@@ -117,6 +121,35 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 					}
 				};
 				editor.createControl(parent,displayName);
+			}
+
+			// create a Twistie Section for read-only information about this ItemDefinition 
+			Composite container = createSectionComposite(this, "Defined In");
+			Object structureRef = itemDefinition.getStructureRef();
+			Import imp = itemDefinition.getImport();
+			if (imp!=null) {
+				// the thing is defined in an Import: display Import location, type and namespace
+				createText(container, "Import", imp.getLocation());
+				createText(container, "Type", imp.getImportType());
+				createText(container, "Namespace", imp.getNamespace());
+			}
+			else if (ModelUtil.isStringWrapper(structureRef)) {
+				// the thing is defined within the namespace of the type language,
+				// or some other namespace defined within the document: display
+				// the namespace information
+				String string = ModelUtil.getStringWrapperTextValue(structureRef);
+				String prefix = "";
+				int index = string.indexOf(":");
+				if (index>0)
+					prefix = string.substring(0,index);
+				Resource resource = ModelUtil.getResource(object);
+				String namespace = NamespaceUtil.getNamespaceForPrefix(resource, prefix);
+				if (namespace!=null)
+					createText(container, "Namespace", namespace);
+				else {
+					Definitions definitions = ModelUtil.getDefinitions(resource);
+					createText(container, "Type Language", definitions.getTypeLanguage());
+				}
 			}
 		}
 		else

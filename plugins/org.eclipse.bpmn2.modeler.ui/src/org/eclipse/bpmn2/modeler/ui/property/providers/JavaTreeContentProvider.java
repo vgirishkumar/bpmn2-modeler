@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.providers;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.ui.util.ListMap;
@@ -56,6 +59,24 @@ public class JavaTreeContentProvider extends ModelTreeContentProvider {
 					return (r == null ? ListMap.IGNORE : r );
 				}					
 			};
+			Arrays.sort(elements, new Comparator<Object>() {
+
+				@Override
+				public int compare(Object arg0, Object arg1) {
+					if (arg0 instanceof IType) {
+						IType t0 = (IType)arg0;
+						IType t1 = (IType)arg1;
+						return t0.getElementName().compareTo(t1.getElementName());
+					}
+					else if (arg0 instanceof IMember) {
+						IMember m0 = (IMember)arg0;
+						IMember m1 = (IMember)arg1;
+						return m0.getElementName().compareTo(m1.getElementName());
+					}
+					return 0;
+				}
+				
+			});
 			return (Object[]) ListMap.Map(elements,  visitor, EMPTY_ARRAY);							
 		}
 		
