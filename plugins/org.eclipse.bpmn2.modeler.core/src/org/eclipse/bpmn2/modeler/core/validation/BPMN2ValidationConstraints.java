@@ -335,41 +335,87 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			Gateway elem = (Gateway) be;
 
 			if (!warnings) {
-				if (elem.getGatewayDirection() == null
-						|| elem.getGatewayDirection().getValue() == GatewayDirection.UNSPECIFIED.getValue()) {
-					ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
-					return createMissingFeatureStatus(ctx,be,"gatewayDirection"); //$NON-NLS-1$
+				GatewayDirection direction = elem.getGatewayDirection();
+				int incoming = elem.getIncoming().size();
+				int outgoing = elem.getOutgoing().size();
+				if (direction == GatewayDirection.CONVERGING) {
+					// Converging gateways MUST have multiple incoming, and zero or one outgoing connection
+					if (incoming<1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_10);
+					}
+					if (outgoing>1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_11);
+					}
 				}
+				else if (direction == GatewayDirection.DIVERGING) {
+					// Diverging gateways MUST have zero or one incoming, and multiple outgoing connections
+					if (incoming>1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_12);
+					}
+					if (outgoing<1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_13);
+					}
+				}
+				else if (direction == GatewayDirection.MIXED) {
+					// Mixed gateways MUST have multiple incoming, and multiple outgoing connections
+					if (incoming<1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_14);
+					}
+					if (outgoing<1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_15);
+					}
+				}
+				else {
+					// Unspecified gateways MUST have either multiple incoming, or multiple outgoing connections
+					if (outgoing<1 && incoming<1) {
+						ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+						return createFailureStatus(ctx,be, "gatewayDirection",
+								Messages.BPMN2ValidationConstraints_16);
+					}
+				}
+				
 				if (elem instanceof ExclusiveGateway) {
-					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+					if (direction != GatewayDirection.DIVERGING
+							&& direction != GatewayDirection.CONVERGING) {
 						return createFailureStatus(ctx,be, "gatewayDirection",
 								Messages.BPMN2ValidationConstraints_29);
 					}
 				}
 				if (elem instanceof EventBasedGateway) {
-					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()) {
+					if (direction != GatewayDirection.DIVERGING) {
 						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_30);
 					}
 				}
 				if (elem instanceof ParallelGateway) {
-					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+					if (direction != GatewayDirection.DIVERGING
+							&& direction != GatewayDirection.CONVERGING) {
 						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_31);
 					}
 				}
 				if (elem instanceof InclusiveGateway) {
-					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+					if (direction != GatewayDirection.DIVERGING
+							&& direction != GatewayDirection.CONVERGING) {
 						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_32);
 					}
 				}
 				if (elem instanceof ComplexGateway) {
-					if (elem.getGatewayDirection().getValue() != GatewayDirection.DIVERGING.getValue()
-							&& elem.getGatewayDirection().getValue() != GatewayDirection.CONVERGING.getValue()) {
+					if (direction != GatewayDirection.DIVERGING
+							&& direction != GatewayDirection.CONVERGING) {
 						return createFailureStatus(ctx,be,"gatewayDirection",
 								Messages.BPMN2ValidationConstraints_33);
 					}

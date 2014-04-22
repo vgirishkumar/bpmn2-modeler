@@ -20,6 +20,15 @@ public class Messages extends NLS {
 	public static String BPMN2ProjectValidator_Title;
 	public static String BPMN2ValidationConstraints_0;
 	public static String BPMN2ValidationConstraints_2;
+	
+	public static String BPMN2ValidationConstraints_10;
+	public static String BPMN2ValidationConstraints_11;
+	public static String BPMN2ValidationConstraints_12;
+	public static String BPMN2ValidationConstraints_13;
+	public static String BPMN2ValidationConstraints_14;
+	public static String BPMN2ValidationConstraints_15;
+	public static String BPMN2ValidationConstraints_16;
+	
 	public static String BPMN2ValidationConstraints_29;
 	public static String BPMN2ValidationConstraints_Missing_Connection;
 	public static String BPMN2ValidationConstraints_30;
