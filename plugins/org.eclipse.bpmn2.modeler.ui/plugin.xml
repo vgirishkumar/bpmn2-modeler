@@ -975,6 +975,7 @@
 			<enable object="FormalExpression"/>
 			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
 			<enable object="EndPoint"/>
+			<enable object="Documentation"/>
 		</modelEnablement>
 
 		<modelEnablement

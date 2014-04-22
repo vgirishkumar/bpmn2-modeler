@@ -158,7 +158,8 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_16_PUSHDOWN = PREFIX + "pushdown" + dot16; //$NON-NLS-1$
 	public static final String IMG_16_PULLUP = PREFIX + "pullup" + dot16; //$NON-NLS-1$
 
-	public final String IMG_16_PROPERTIES = "org.eclipse.bpmn2.modeler.icons." + "properties" + dot16; //$NON-NLS-1$ //$NON-NLS-2$
+	public static final String IMG_16_PROPERTIES = "org.eclipse.bpmn2.modeler.icons." + "properties" + dot16; //$NON-NLS-1$ //$NON-NLS-2$
+	public static final String IMG_16_INFO = "org.eclipse.bpmn2.modeler.icons." + "info" + dot16; //$NON-NLS-1$ //$NON-NLS-2$
 
 	public static final String IMG_16_MORPH = PREFIX + "morph" + dot16; //$NON-NLS-1$
 
@@ -226,6 +227,7 @@ public class ImageProvider extends AbstractImageProvider {
 		addImageFilePath(IMG_16_REMOVE_MESSAGE, ICONS_16 + "removemessage.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_ROTATE, ICONS_16 + "rotate.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_PROPERTIES, ICONS_16 + "properties.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_INFO, ICONS_16 + "info.png"); //$NON-NLS-1$
 
 		addImageFilePath(IMG_16_WHITEBOX, ICONS_16 + "whitebox.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_BLACKBOX, ICONS_16 + "blackbox.png"); //$NON-NLS-1$

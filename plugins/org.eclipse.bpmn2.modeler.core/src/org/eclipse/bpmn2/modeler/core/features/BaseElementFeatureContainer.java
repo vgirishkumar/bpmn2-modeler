@@ -81,6 +81,7 @@ public abstract class BaseElementFeatureContainer implements IShapeFeatureContai
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return new ICustomFeature[] {
+			new ShowDocumentationFeature(fp),
 			new ShowPropertiesFeature(fp)
 		};
 	}
