@@ -54,7 +54,7 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 		
 		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 		if (isCollection!=null) {
-			boolean newIsCollection = (boolean) element.eGet(isCollection);
+			boolean newIsCollection = (Boolean) element.eGet(isCollection);
 			boolean oldIsCollection = Boolean.parseBoolean(peService.getPropertyValue(container, Properties.COLLECTION_PROPERTY));
 			if (newIsCollection != oldIsCollection)
 				return Reason.createTrueReason("Cardinality Changed"); //$NON-NLS-1$
