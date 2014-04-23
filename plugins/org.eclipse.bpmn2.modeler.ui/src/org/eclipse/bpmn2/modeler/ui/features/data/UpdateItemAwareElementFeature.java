@@ -78,7 +78,7 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 		// Update the "is collection" feature if the ItemAwareElement has one
 		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 		if (isCollection!=null) {
-			boolean newIsCollection = (boolean) element.eGet(isCollection);
+			boolean newIsCollection = (Boolean) element.eGet(isCollection);
 	
 			// Find the shape that represents the "is collection" marker
 			Iterator<Shape> iterator = peService.getAllContainedShapes(container).iterator();
