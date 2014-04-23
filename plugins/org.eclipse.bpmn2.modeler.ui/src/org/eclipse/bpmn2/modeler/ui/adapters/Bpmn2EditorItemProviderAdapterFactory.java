@@ -44,6 +44,7 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.GlobalScriptTask;
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
@@ -109,6 +110,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.EventPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FlowElementPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.GlobalScriptTaskPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.GroupPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ImportPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InputSetPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.InterfacePropertiesAdapter;
@@ -750,6 +752,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
 			return new DocumentationPropertiesAdapter(adapterFactory,object);
+        }
+
+		@Override
+        public ExtendedPropertiesAdapter caseGroup(Group object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+			return new GroupPropertiesAdapter(adapterFactory,object);
         }
 
     };

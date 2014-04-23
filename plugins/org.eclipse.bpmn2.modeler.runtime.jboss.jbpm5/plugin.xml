@@ -1036,7 +1036,6 @@
 			<enable object="ScriptTask" feature="script"/>
 			<enable object="ScriptTask" feature="scriptFormat"/>
 			<enable object="SequenceFlow" feature="auditing"/>
-			<enable object="SequenceFlow" feature="categoryValueRef"/>
 			<enable object="SequenceFlow" feature="conditionExpression"/>
 			<enable object="SequenceFlow" feature="documentation"/>
 			<enable object="SequenceFlow" feature="extensionDefinitions"/>

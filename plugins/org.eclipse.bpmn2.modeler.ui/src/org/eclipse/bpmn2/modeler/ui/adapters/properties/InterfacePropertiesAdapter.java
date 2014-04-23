@@ -95,32 +95,6 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			super(owner, object, feature);
 
 	    	owner.setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.FALSE);
-
-			owner.setObjectDescriptor(new ObjectDescriptor<T>(owner,object) {
-				@Override
-				public String getTextValue() {
-					return owner.getFeatureDescriptor(feature).getTextValue();
-				}
-
-				@Override
-				public boolean equals(Object obj) {
-					if (obj instanceof BaseElement) {
-						BaseElement other = (BaseElement)obj;
-						String otherName = ModelUtil.getName(other);
-						Object otherValue = other.eGet(feature);
-						if (ModelUtil.compare(otherName, ModelUtil.getName(object))) {
-							if (ModelUtil.compare(otherValue, (object).eGet(feature)))
-								return true;
-						}
-					}
-					return false;
-				}
-				
-				@Override
-				public String getLabel() {
-					return Messages.Interface_Implementation_Label;
-				}
-			});
 		}
 
 		@Override

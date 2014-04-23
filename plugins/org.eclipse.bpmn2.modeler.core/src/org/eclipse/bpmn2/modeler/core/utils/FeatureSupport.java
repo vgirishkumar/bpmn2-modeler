@@ -644,6 +644,12 @@ public class FeatureSupport {
 				return (T) pe;
 			}
 		}
+		
+		// also search the linked objects
+		PictogramElement pe = BusinessObjectUtil.getFirstElementOfType(container, PictogramElement.class);
+		if (pe!=null) {
+			return getChildElementOfType(pe, property, expectedValue, clazz);
+		}
 		return null;
 	}
 	

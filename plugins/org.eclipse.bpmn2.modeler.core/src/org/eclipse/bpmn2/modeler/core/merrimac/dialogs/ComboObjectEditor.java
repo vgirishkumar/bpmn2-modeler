@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -405,7 +406,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		if (notification.getEventType() == -1 || itemsChanged()) {
+		if (notification.getEventType() == -1 || (notification.getFeature()==feature) && itemsChanged()) {
 			fillCombo();
 		}
 	}

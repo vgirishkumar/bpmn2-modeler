@@ -14,7 +14,6 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
@@ -27,8 +26,6 @@ import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
 public class FeatureEditingDialog extends ObjectEditingDialog {
 
@@ -71,6 +68,8 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			else if (feature.getEType() instanceof EClass)
 				featureEType = (EClass)feature.getEType();
 		}
+		if (newObject==null)
+			cancel = true;
 		
 		if (cancel) {
 			rollbackTransaction();

@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -37,6 +38,11 @@ import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -64,7 +70,32 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateDataObjectFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateItemAwareElementFeature<DataObject>(fp) {
+			@Override
+			public boolean update(IUpdateContext context) {
+				if (super.update(context)) {
+					
+					// Also update any DataObjectReferences
+					Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+					Definitions definitions = ModelUtil.getDefinitions(bo);
+					TreeIterator<EObject> iter = definitions.eAllContents();
+					while (iter.hasNext()) {
+						EObject o = iter.next();
+						if (o instanceof DataObjectReference) {
+							for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(getDiagram(), o)) {
+								if (pe instanceof ContainerShape) {
+									UpdateContext newContext = new UpdateContext(pe);
+									IUpdateFeature f = this.getFeatureProvider().getUpdateFeature(newContext);
+									f.update(newContext);
+								}
+							}
+						}
+					}
+					return true;
+				}
+				return false;
+			}
+		});
 		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}

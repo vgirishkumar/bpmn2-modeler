@@ -74,19 +74,19 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		edge.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 		edge.setLineWidth(1);
 
-		if (isSupportCollectionMarkers()) {
-			int whalf = width / 2;
-			createCollectionShape(containerShape, new int[] { whalf - 2, height - 8, whalf - 2, height });
-			createCollectionShape(containerShape, new int[] { whalf, height - 8, whalf, height });
-			createCollectionShape(containerShape, new int[] { whalf + 2, height - 8, whalf + 2, height });
+		// Create the "is collection" marker
+		int whalf = width / 2;
+		createCollectionShape(containerShape, new int[] { whalf - 2, height - 8, whalf - 2, height });
+		createCollectionShape(containerShape, new int[] { whalf, height - 8, whalf, height });
+		createCollectionShape(containerShape, new int[] { whalf + 2, height - 8, whalf + 2, height });
 
-			String value = "false"; //$NON-NLS-1$
-			EStructuralFeature feature = ((EObject)businessObject).eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
-			if (feature!=null && businessObject.eGet(feature)!=null)
-				value = ((Boolean)businessObject.eGet(feature)).toString();
+		String value = "false"; //$NON-NLS-1$
+		EStructuralFeature feature = ((EObject)businessObject).eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
+		if (feature!=null && businessObject.eGet(feature)!=null)
+			value = ((Boolean)businessObject.eGet(feature)).toString();
 
-			Graphiti.getPeService().setPropertyValue(containerShape, Properties.COLLECTION_PROPERTY, value);
-		}
+		Graphiti.getPeService().setPropertyValue(containerShape, Properties.COLLECTION_PROPERTY, value);
+
 		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
@@ -129,10 +129,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 	@Override
 	public int getWidth() {
 		return GraphicsUtil.DATA_WIDTH;
-	}
-
-	protected boolean isSupportCollectionMarkers() {
-		return true;
 	}
 	
 	public abstract String getName(T t);

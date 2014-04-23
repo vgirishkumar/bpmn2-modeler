@@ -283,6 +283,9 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		text.setLayoutData(data);
 		text.setText(value==null ? "" : value);
 		text.setEditable(false);
+		text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		text.setForeground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+		text.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
 		return text;
 	}
 	

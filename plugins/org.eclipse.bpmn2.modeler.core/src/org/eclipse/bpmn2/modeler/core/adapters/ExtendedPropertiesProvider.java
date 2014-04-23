@@ -222,16 +222,16 @@ public class ExtendedPropertiesProvider {
 		if (feature.getEType() instanceof EEnum) {
 			return true;
 		}
-		
-		if (feature instanceof EReference) {
-			return !((EReference)feature).isContainment();
-		}
 
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
 		if (adapter != null) {
 			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE);
 			if (result instanceof Boolean)
 				return ((Boolean) result);
+		}
+		
+		if (feature instanceof EReference && feature.isMany()) {
+			return !((EReference)feature).isContainment();
 		}
 
 		return getChoiceOfValues(object, feature) != null;

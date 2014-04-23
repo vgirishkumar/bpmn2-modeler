@@ -40,6 +40,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -347,5 +348,15 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 
 	protected boolean canRemove() {
 		return false;
+	}
+	
+	public void setEditable(boolean editable) {
+		Control control = getControl();
+		if (control instanceof Text) {
+			((Text)control).setEditable(editable);
+			control.setBackground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+			control.setForeground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+			control.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
+		}
 	}
 }

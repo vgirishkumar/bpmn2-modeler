@@ -404,6 +404,7 @@ public class ModelEnablements {
 						}
 					}
 				}
+				return false;
 			}
 			return true;
 		}

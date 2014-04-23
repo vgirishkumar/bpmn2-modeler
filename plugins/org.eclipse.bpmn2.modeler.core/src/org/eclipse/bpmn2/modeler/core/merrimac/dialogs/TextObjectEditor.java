@@ -16,7 +16,6 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -111,10 +110,6 @@ public class TextObjectEditor extends ObjectEditor {
 		testMultiLine = false;
 		this.multiLine = multiLine;
 
-	}
-	
-	public void setEditable(boolean editable) {
-		text.setEditable(editable);
 	}
 	
 	@Override

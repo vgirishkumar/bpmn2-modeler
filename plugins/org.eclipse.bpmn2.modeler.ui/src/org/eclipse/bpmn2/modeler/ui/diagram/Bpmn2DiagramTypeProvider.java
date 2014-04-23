@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.diagram;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
+import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.Activator;
@@ -102,6 +103,10 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 					cbo = ((ParticipantMultiplicity)cbo).eContainer();
 					if (cbo==null)
 						continue;
+				}
+				else if (cbo instanceof DataState) {
+					// this requires a change in the PE's label
+					cbo = ((DataState)cbo).eContainer();
 				}
 				final PictogramElement[] allPictogramElementsForBusinessObject = featureProvider.getAllPictogramElementsForBusinessObject(cbo);
 				for (PictogramElement pe : allPictogramElementsForBusinessObject) {

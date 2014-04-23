@@ -95,8 +95,8 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 
 		text = getToolkit().createText(composite, ""); //$NON-NLS-1$
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		text.setEditable(false);
-
+		setEditable(false);
+		
 		references = getValue();
 		updateTextField();
 

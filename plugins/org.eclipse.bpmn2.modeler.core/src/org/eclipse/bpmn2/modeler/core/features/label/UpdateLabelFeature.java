@@ -15,6 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.label;
 import static org.eclipse.bpmn2.modeler.core.utils.FeatureSupport.getChildElementOfType;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.DataState;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -22,7 +24,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -47,7 +48,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (element == null) {
 			return false;
 		}
-		return ModelUtil.hasName(element);
+		return hasLabel(element);
 	}
 
 	@Override
@@ -63,7 +64,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 		Shape textShape = getChildElementOfType(container, TEXT_ELEMENT, Boolean.toString(true), Shape.class);
 		if (textShape!=null) {
-			String oldLabel = ModelUtil.getName(element);
+			String oldLabel = getLabel(element);
 			if (oldLabel==null || oldLabel.isEmpty())
 				oldLabel = ""; //$NON-NLS-1$
 			String newLabel = ""; //$NON-NLS-1$
@@ -82,54 +83,60 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 	@Override
 	public boolean update(IUpdateContext context) {
+		IGaService gaService = Graphiti.getGaService();
 		PictogramElement pe = (PictogramElement) context.getPictogramElement();
 		BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 		        BaseElement.class);
 		Shape textShape = getChildElementOfType(pe, TEXT_ELEMENT, Boolean.toString(true), Shape.class);
 		if (textShape!=null) {
-			AbstractText text = (AbstractText) textShape.getGraphicsAlgorithm();
-			String name = ModelUtil.getName(element);
-			if (name == null) {
-				name = ""; //$NON-NLS-1$
+			AbstractText textGA = (AbstractText) textShape.getGraphicsAlgorithm();
+			String label = getLabel(element);
+			if (label == null) {
+				label = ""; //$NON-NLS-1$
 			}
-			text.setValue(name);
+			textGA.setValue(label);
 			
-			// TODO: figure out why this causes the undo stack to be flushed if Text old value == new value
-			layoutPictogramElement(context.getPictogramElement());
-		}
-
-		if (pe instanceof ContainerShape) {
-			IGaService gaService = Graphiti.getGaService();
-				ContainerShape container = (ContainerShape)pe;
+			ContainerShape containerShape = (ContainerShape)textShape.eContainer();
+			GraphicsAlgorithm containerGA = containerShape.getGraphicsAlgorithm();
 			
-			Shape shape = container.getChildren().get(0); // Otherwise, this would never be reached!
-			if (!(shape.getGraphicsAlgorithm() instanceof AbstractText))
-				return true;
+			int oldWidth = containerGA.getWidth() - GraphicsUtil.SHAPE_PADDING;
+			int x = containerGA.getX() + ((oldWidth + GraphicsUtil.SHAPE_PADDING) / 2);
+			int y = containerGA.getY();
 			
-			GraphicsAlgorithm textGA = container.getGraphicsAlgorithm();
-			AbstractText text = (AbstractText) shape.getGraphicsAlgorithm();
-			
-			int oldWidth = textGA.getWidth() - GraphicsUtil.SHAPE_PADDING;
-			int x = textGA.getX() + ((oldWidth + GraphicsUtil.SHAPE_PADDING) / 2);
-			int y = textGA.getY();
-			
-			BaseElement o = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BaseElement.class);
-			String name = ModelUtil.getName(o);
-			
-			if (name == null) {
-				gaService.setLocationAndSize(textGA, x, y, 0, 0);
-				gaService.setLocationAndSize(text, 0, 0, 0, 0);
-				container.setVisible(false);
+			if (label.isEmpty()) {
+				gaService.setLocationAndSize(containerGA, x, y, 0, 0);
+				gaService.setLocationAndSize(textGA, 0, 0, 0, 0);
+				containerShape.setVisible(false);
 			} else {
-				int newWidth = GraphicsUtil.getLabelWidth(text);
-				int newHeight = GraphicsUtil.getLabelHeight(text);
+				int newWidth = GraphicsUtil.getLabelWidth(textGA);
+				int newHeight = GraphicsUtil.getLabelHeight(textGA);
 				x = x - ((newWidth + GraphicsUtil.SHAPE_PADDING) / 2);
-				gaService.setLocationAndSize(textGA, x, y, newWidth + GraphicsUtil.SHAPE_PADDING, newHeight + GraphicsUtil.SHAPE_PADDING);
-				gaService.setLocationAndSize(text, 0, 0, newWidth + GraphicsUtil.TEXT_PADDING, newHeight + GraphicsUtil.TEXT_PADDING);
-				container.setVisible(true);
+				gaService.setLocationAndSize(containerGA, x, y, newWidth + GraphicsUtil.SHAPE_PADDING, newHeight + GraphicsUtil.SHAPE_PADDING);
+				gaService.setLocationAndSize(textGA, 0, 0, newWidth + GraphicsUtil.TEXT_PADDING, newHeight + GraphicsUtil.TEXT_PADDING);
+				containerShape.setVisible(true);
 			}
 		}
 		
 		return true;
+	}
+	
+	protected boolean hasLabel(BaseElement element) {
+		return  ModelUtil.hasName(element);
+	}
+	
+	protected String getLabel(BaseElement element) {
+		// Unfortunately this needs to be aware of ItemAwareElements, which have a
+		// Data State (the Data State needs to appear below the element's label in [])
+		// The UpdateLabelFeature is checked in BPMN2FeatureProvider AFTER the Update
+		// Feature for Data Objects is executed - this wipes out the Label provided by
+		// ItemAwareElementUpdateFeature.
+		String label = ModelUtil.getName(element);
+		if (element instanceof ItemAwareElement) {
+			DataState state = ((ItemAwareElement)element).getDataState();
+			if (state!=null && state.getName()!=null) {
+				return label + "\n[" + state.getName() + "]";
+			}
+		}
+		return label;
 	}
 }

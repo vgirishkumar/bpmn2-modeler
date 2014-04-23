@@ -19,6 +19,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.bpmn2.Category;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -97,9 +98,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			else {
 				// If the referenced type is an EObject, we'll get an "E Class" label
 				// so use the feature name instead.
-				if (feature instanceof EReference && !(getEType().getInstanceClass()==EObject.class))
-					label = ExtendedPropertiesProvider.getLabel(getEType());
-				else
+//				if (feature instanceof EReference && !(getEType().getInstanceClass()==EObject.class))
+//					label = ExtendedPropertiesProvider.getLabel(getEType());
+//				else
 					label = ModelUtil.toCanonicalString(feature.getName());
 			}
 		}

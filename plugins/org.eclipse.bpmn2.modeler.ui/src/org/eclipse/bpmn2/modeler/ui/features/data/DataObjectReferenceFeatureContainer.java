@@ -24,6 +24,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureContainer {
 
@@ -45,7 +46,14 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateDataObjectFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateItemAwareElementFeature<DataObjectReference>(fp) {
+			@Override
+			protected Object getBusinessObjectForPictogramElement(PictogramElement pe) {
+				DataObjectReference object = (DataObjectReference)super.getBusinessObjectForPictogramElement(pe);
+				return object.getDataObjectRef();
+			}
+			
+		});
 		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
