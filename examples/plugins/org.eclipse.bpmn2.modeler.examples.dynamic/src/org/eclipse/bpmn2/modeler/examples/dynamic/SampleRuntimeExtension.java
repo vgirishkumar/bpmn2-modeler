@@ -33,15 +33,6 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.examples.dynamic";
 	
 	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.examples.dynamic";
-	private static final String[] typeLanguages = new String[] {
-		"http://www.w3.org/2001/XMLSchema", "XML Schema",
-		"http://www.java.com/javaTypes", "Java",
-	};
-	private static final String[] expressionLanguages = new String[] {
-		"http://www.w3.org/1999/XPath", "XPath",
-		"http://www.mvel.org/2.0", "mvel",
-		"http://www.java.com/java", "java",
-	};
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTargetNamespace(org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType)
@@ -49,16 +40,6 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override
 	public String getTargetNamespace(Bpmn2DiagramType diagramType) {
 		return targetNamespace;
-	}
-
-	@Override
-	public String[] getTypeLanguages() {
-		return typeLanguages;
-	}
-
-	@Override
-	public String[] getExpressionLanguages() {
-		return expressionLanguages;
 	}
 
 	/* (non-Javadoc)
