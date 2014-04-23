@@ -158,7 +158,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 								((AbstractListComposite)composite).setTitle(
 									NLS.bind(
 										Messages.DefaultDetailComposite_List_Title,
-										getPropertiesProvider().getLabel((EObject)o,feature),
+										getBusinessObjectDelegate().getLabel((EObject)o,feature),
 										ModelUtil.toCanonicalString((EObject)o)
 									)
 								);
@@ -222,7 +222,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				parent = getAttributesParent();
 			
 			if (reference.getEType() == PACKAGE.getExpression() || reference.getEType() == PACKAGE.getFormalExpression()) {
-				String displayName = getPropertiesProvider().getLabel(object, reference);
+				String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 				Expression expression = (Expression)object.eGet(reference);
 				if (expression==null) {
 					expression = createModelObject(FormalExpression.class);

@@ -63,7 +63,7 @@ public class ExpressionDetailComposite extends DefaultDetailComposite {
 				parent = getAttributesParent();
 			
 			if (label==null)
-				label = getPropertiesProvider().getLabel(object, attribute);
+				label = getBusinessObjectDelegate().getLabel(object, attribute);
 			
 			ObjectEditor editor = new ComboObjectEditor(this,object,attribute) {
 				

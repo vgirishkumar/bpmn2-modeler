@@ -422,7 +422,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				parent = getAttributesParent();
 			
 			if (label==null)
-				label = getPropertiesProvider().getLabel(object, attribute);
+				label = getBusinessObjectDelegate().getLabel(object, attribute);
 			
 			EClassifier eTypeClassifier = attribute.getEType();
 			Class eTypeClass = eTypeClassifier.getInstanceClass();
@@ -503,7 +503,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			String displayName = getPropertiesProvider().getLabel(object, reference);
+			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 
 			ObjectEditor editor = null;
 			if (getBusinessObjectDelegate().isContainmentFeature(object, reference)) {

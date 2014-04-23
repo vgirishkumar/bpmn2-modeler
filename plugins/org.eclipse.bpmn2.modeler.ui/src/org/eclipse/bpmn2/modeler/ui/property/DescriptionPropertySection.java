@@ -85,7 +85,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef");
 				if (reference!=null) {
 					if (isModelObjectEnabled(object.eClass(), reference)) {
-						String displayName = getPropertiesProvider().getLabel(object, reference);
+						String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 		
 						ObjectEditor editor = new FeatureListObjectEditor(this,object,reference) {
 							@Override

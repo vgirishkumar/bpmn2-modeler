@@ -26,7 +26,7 @@ public class Messages extends NLS {
 	public static String FormalExpressionPropertiesAdapter_Script_Language;
 	public static String ImportPropertiesAdapter_Import;
 	public static String ItemAwareElementPropertiesAdapter_ID;
-	public static String ItemDefinitionPropertiesAdapter_Data_Type;
+	public static String ItemDefinitionPropertiesAdapter_ItemDefinition_Label;
 	public static String ItemDefinitionPropertiesAdapter_Structure;
 	public static String OperationPropertiesAdapter_Title;
 	public static String ParticipantPropertiesAdapter_Multiplicity;

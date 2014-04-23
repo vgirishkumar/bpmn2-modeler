@@ -116,7 +116,7 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 					};
 					globalsTable.bindList(process, DroolsPackage.eINSTANCE.getDocumentRoot_Global());
 					globalsTable.setTitle(
-							NLS.bind(Messages.JbpmDataItemsDetailComposite_Title
+							NLS.bind(Messages.JbpmDataItemsDetailComposite_GlobalVariablesTitle
 									,ModelUtil.toCanonicalString(process)));
 				}
 			}

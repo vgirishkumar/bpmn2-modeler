@@ -240,7 +240,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		else if ("calledElementRef".equals(reference.getName())) { //$NON-NLS-1$
 			// Handle CallActivity.calledElementRef
 			//
-			String displayName = getPropertiesProvider().getLabel(object, reference);
+			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
 				// handle creation of new target elements here:
 				protected EObject createObject() throws Exception {
@@ -262,7 +262,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			// but a CallChoreography is a ChoreographyActivity, not a subclass of Activity.
 			// See the "static" initializers section of BPMN2Editor.
 			// For now, this will have to do...
-			String displayName = getPropertiesProvider().getLabel(object, reference);
+			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
 				// handle creation of new target elements here:
 				protected EObject createObject() throws Exception {
@@ -282,7 +282,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			// but a CallConversation is a ChoreographyNode, not a subclass of Activity.
 			// See the "static" initializers section of BPMN2Editor.
 			// For now, this will have to do...
-			String displayName = getPropertiesProvider().getLabel(object, reference);
+			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 			ObjectEditor editor = new ComboObjectEditor(this,object,reference) {
 				// handle creation of new target elements here:
 				protected EObject createObject() throws Exception {
@@ -311,7 +311,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 	}
 	
 	private void bindOperationMessageRef(final Composite container, final Activity activity, final EReference operationRef, final EReference messageRef) {
-		final String operationLabel = getPropertiesProvider().getLabel(activity, operationRef);
+		final String operationLabel = getBusinessObjectDelegate().getLabel(activity, operationRef);
 		final ObjectEditor operationEditor = new ComboObjectEditor(this,activity,operationRef) {
 			@Override
 			protected boolean setValue(final Object result) {
@@ -356,7 +356,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		operationEditor.createControl(container,operationLabel);
 		
 		if (messageRef!=null) {
-			final String messageLabel = getPropertiesProvider().getLabel(activity, messageRef);
+			final String messageLabel = getBusinessObjectDelegate().getLabel(activity, messageRef);
 			final ObjectEditor messageEditor = new ComboObjectEditor(this,activity,messageRef) {
 				@Override
 				protected boolean setValue(final Object result) {

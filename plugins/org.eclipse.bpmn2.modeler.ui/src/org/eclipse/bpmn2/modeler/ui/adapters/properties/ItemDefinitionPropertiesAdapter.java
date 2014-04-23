@@ -157,7 +157,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	 * Methods for dealing with ItemDefinitions
 	 */
 	public static String getLabel() {
-		return Messages.ItemDefinitionPropertiesAdapter_Data_Type;
+		return Messages.ItemDefinitionPropertiesAdapter_ItemDefinition_Label;
 	}
 
 	public static ItemDefinition createItemDefinition(Resource resource) {

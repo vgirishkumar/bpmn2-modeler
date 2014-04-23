@@ -34,6 +34,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
@@ -129,7 +130,9 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 
 	@Override
 	public String getLabel(EObject object, EStructuralFeature feature) {
-		return ExtendedPropertiesProvider.getLabel(object, feature);
+		if (feature.getEType().getEPackage() != Bpmn2Package.eINSTANCE)
+			return ExtendedPropertiesProvider.getLabel(object, feature);
+		return ExtendedPropertiesProvider.getLabel(feature.getEType());
 	}
 	
 	@Override

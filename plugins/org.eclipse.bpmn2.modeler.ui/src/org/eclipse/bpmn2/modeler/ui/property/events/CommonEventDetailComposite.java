@@ -92,7 +92,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 				final BoundaryEvent be = (BoundaryEvent) object;
 
 				if (label==null)
-					label = getPropertiesProvider().getLabel(be, attribute);
+					label = getBusinessObjectDelegate().getLabel(be, attribute);
 				
 				final ObjectEditor editor = new BooleanObjectEditor(this,be,attribute) {
 					protected boolean setValue(final Object result) {

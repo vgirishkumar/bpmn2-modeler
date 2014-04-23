@@ -23,7 +23,8 @@ public class Messages extends NLS {
 	public static String JbpmCommonEventDetailComposite_Error_Message;
 	public static String JbpmCommonEventDetailComposite_Error_Title;
 	public static String JbpmCommonEventDetailComposite_Title;
-	public static String JbpmDataItemsDetailComposite_Title;
+	public static String JbpmDataItemsDetailComposite_GlobalVariablesTitle;
+	public static String JbpmDataItemsDetailComposite_LocalVariablesTitle;
 	public static String JbpmDataItemsPropertySection_Dialog_Cancelled;
 	public static String JbpmDataItemsPropertySection_Duplicate_Import;
 	public static String JbpmDefinitionsPropertyComposite_Imports_Title;

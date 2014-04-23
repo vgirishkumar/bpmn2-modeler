@@ -364,14 +364,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		this.feature = thefeature;
 		final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
 		final EClass listItemClass = getDefaultListItemClass(businessObject,feature);
-		Composite parent = this.getParent();
-		String label;
-		if (parent instanceof AbstractDetailComposite) {
-			label = ((AbstractDetailComposite)parent).getPropertiesProvider().getLabel(listItemClass);
-		}
-		else {
-			label = ExtendedPropertiesProvider.getLabel(listItemClass);
-		}
+		String label = getBusinessObjectDelegate().getLabel(listItemClass);
 		final String prefName = "list."+listItemClass.getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
 		
 		////////////////////////////////////////////////////////////
@@ -588,14 +581,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					detailSection.setClient(detailComposite);
 					toolkit.adapt(detailComposite);
 	
-					Composite parent = this.getParent();
-					String label;
-					if (parent instanceof AbstractDetailComposite) {
-						label = ((AbstractDetailComposite)parent).getPropertiesProvider().getLabel(o);
-					}
-					else {
-						label = ExtendedPropertiesProvider.getLabel(o);
-					}
+					String label = getBusinessObjectDelegate().getLabel(o);
 					detailSection.setText(label+Messages.AbstractListComposite_Details);
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
 					enable = !detailComposite.isEmpty();

@@ -10,10 +10,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * Provider class for the Default Properties sheet tab.
@@ -33,17 +30,5 @@ public abstract class AbstractPropertiesProvider {
 	public abstract String[] getProperties();
 
 	public void setProperties(String[] properties) {
-	}
-	
-	public String getLabel(EObject object) {
-		return ExtendedPropertiesProvider.getLabel(object);
-	}
-	
-	public String getLabel(EClass eclass) {
-		return ExtendedPropertiesProvider.getLabel(eclass);
-	}
-	
-	public String getLabel(EObject object, EStructuralFeature feature) {
-		return ExtendedPropertiesProvider.getLabel(object, feature);
 	}
 }
