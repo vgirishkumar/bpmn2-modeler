@@ -124,31 +124,31 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 			}
 
 			// create a Twistie Section for read-only information about this ItemDefinition 
-			Composite container = createSectionComposite(this, "Defined In");
+			Composite container = createSectionComposite(this, Messages.ItemDefinitionDetailComposite_DefinedIn_Title);
 			Object structureRef = itemDefinition.getStructureRef();
 			Import imp = itemDefinition.getImport();
 			if (imp!=null) {
 				// the thing is defined in an Import: display Import location, type and namespace
-				createText(container, "Import", imp.getLocation());
-				createText(container, "Type", imp.getImportType());
-				createText(container, "Namespace", imp.getNamespace());
+				createText(container, Messages.ItemDefinitionDetailComposite_Import_Label, imp.getLocation());
+				createText(container, Messages.ItemDefinitionDetailComposite_Type_Label, imp.getImportType());
+				createText(container, Messages.ItemDefinitionDetailComposite_Namespace_Label, imp.getNamespace());
 			}
 			else if (ModelUtil.isStringWrapper(structureRef)) {
 				// the thing is defined within the namespace of the type language,
 				// or some other namespace defined within the document: display
 				// the namespace information
 				String string = ModelUtil.getStringWrapperTextValue(structureRef);
-				String prefix = "";
-				int index = string.indexOf(":");
+				String prefix = ""; //$NON-NLS-1$
+				int index = string.indexOf(":"); //$NON-NLS-1$
 				if (index>0)
 					prefix = string.substring(0,index);
 				Resource resource = ModelUtil.getResource(object);
 				String namespace = NamespaceUtil.getNamespaceForPrefix(resource, prefix);
 				if (namespace!=null)
-					createText(container, "Namespace", namespace);
+					createText(container, Messages.ItemDefinitionDetailComposite_Namespace_Label, namespace);
 				else {
 					Definitions definitions = ModelUtil.getDefinitions(resource);
-					createText(container, "Type Language", definitions.getTypeLanguage());
+					createText(container, Messages.ItemDefinitionDetailComposite_TypeLanguage_Label, definitions.getTypeLanguage());
 				}
 			}
 		}

@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
  */
 public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "toolPalette";
+	public final static String EXTENSION_NAME = "toolPalette"; //$NON-NLS-1$
 
 	public final static String TOOLPART_ID = "ToolPartID"; //$NON-NLS-1$
 	public final static String TOOLPART_OPTIONAL = "ToolPartOptional"; //$NON-NLS-1$

@@ -70,7 +70,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 
 			@Override
 			public String getTextValue() {
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 				Iterator<Operation> iter = object.getOperations().iterator();
 				while (iter.hasNext()) {
 					Operation op = iter.next();
@@ -79,7 +79,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 						name = op.getId();
 					text += name;
 					if (iter.hasNext())
-						text += ", ";
+						text += ", "; //$NON-NLS-1$
 				}
 				return text;
 			}

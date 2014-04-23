@@ -82,7 +82,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(object,"name"); //$NON-NLS-1$
 			bindList(object, "documentation"); //$NON-NLS-1$
 			if (!(object instanceof Group)) {
-				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef");
+				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef"); //$NON-NLS-1$
 				if (reference!=null) {
 					if (isModelObjectEnabled(object.eClass(), reference)) {
 						String displayName = getBusinessObjectDelegate().getLabel(object, reference);

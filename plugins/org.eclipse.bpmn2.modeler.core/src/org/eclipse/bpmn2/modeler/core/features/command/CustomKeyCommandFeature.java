@@ -38,9 +38,9 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 	@Override
 	public boolean isAvailable(String hint) {
 		if (hint!=null) {
-			if (hint.startsWith("move"))
+			if (hint.startsWith("move")) //$NON-NLS-1$
 				return true;
-			if (hint.startsWith("duplicate"))
+			if (hint.startsWith("duplicate")) //$NON-NLS-1$
 				return true;
 		}
 		return false;
@@ -50,9 +50,9 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 	public boolean canExecute(ICustomContext context) {
 		String command = (String) context.getProperty(COMMAND_HINT);
 		if (command!=null) {
-			if (command.startsWith("move"))
+			if (command.startsWith("move")) //$NON-NLS-1$
 				return canExecuteMove(context);
-			else if (command.startsWith("duplicate"))
+			else if (command.startsWith("duplicate")) //$NON-NLS-1$
 				return canExecuteDuplicate(context);
 		}
 		return false;
@@ -105,9 +105,9 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 	@Override
 	public void execute(ICustomContext context) {
 		String command = (String) context.getProperty(COMMAND_HINT);
-		if (command.startsWith("move"))
+		if (command.startsWith("move")) //$NON-NLS-1$
 			executeMove(context);
-		else if (command.startsWith("duplicate")) {
+		else if (command.startsWith("duplicate")) { //$NON-NLS-1$
 			executeDuplicate(context);
 		}
 	}
@@ -117,18 +117,18 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 		int dy = 0;
 		int mult = 1;
 		String command = (String) context.getProperty(COMMAND_HINT);
-		if (command.endsWith("10")) {
+		if (command.endsWith("10")) { //$NON-NLS-1$
 			mult = 10;
-			command = command.replace("10", "");
+			command = command.replace("10", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
-		if ("moveup".equals(command)) 
+		if ("moveup".equals(command))  //$NON-NLS-1$
 			dy = -1;
-		else if ("movedown".equals(command)) 
+		else if ("movedown".equals(command))  //$NON-NLS-1$
 			dy = 1;
-		else if ("moveleft".equals(command)) 
+		else if ("moveleft".equals(command))  //$NON-NLS-1$
 			dx = -1;
-		else if ("moveright".equals(command)) 
+		else if ("moveright".equals(command))  //$NON-NLS-1$
 			dx = 1;
 		
 		dx *= mult;

@@ -45,7 +45,7 @@ public class XMLConfigElement implements IConfigurationElement {
 	protected List<XMLConfigElement> children = new ArrayList<XMLConfigElement>();
 	
 	public XMLConfigElement(Object parent) {
-		this(parent,"");
+		this(parent,""); //$NON-NLS-1$
 	}
 	
 	public XMLConfigElement(Object parent, String name) {

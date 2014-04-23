@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
  */
 public class DataTypeDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "dataType";
+	public final static String EXTENSION_NAME = "dataType"; //$NON-NLS-1$
 
 	protected String name;
 	protected String delegateClassName;
@@ -75,7 +75,7 @@ public class DataTypeDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 		catch (Exception ex1) {
 			try {
-				Object object = configurationElement.createExecutableExtension("class");
+				Object object = configurationElement.createExecutableExtension("class"); //$NON-NLS-1$
 				return (DefaultConversionDelegate) object;
 			} catch (Exception ex2) {
 				throw new TargetRuntimeConfigurationException(targetRuntime,ex2);

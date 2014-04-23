@@ -76,8 +76,18 @@ public class Messages extends NLS {
 	public static String XSDSchemaAdapter_1;
 	public static String XSDTypeDefinitionAdapter_XSD_Type_1;
 	public static String XSDSimpleTypeDefinitionAdapter_0;
+	public static String Bpmn2EditorAppearancePreferencePage_Canvas;
+
 	public static String Bpmn2EditorAppearancePreferencePage_Colors_Group;
 	public static String Bpmn2EditorAppearancePreferencePage_GraphicalElements_Group;
+	public static String Bpmn2EditorAppearancePreferencePage_GridHeight;
+
+	public static String Bpmn2EditorAppearancePreferencePage_Grid;
+
+	public static String Bpmn2EditorAppearancePreferencePage_GridWidth;
+
+	public static String Bpmn2EditorAppearancePreferencePage_SnapToGrid;
+
 	public static String Bpmn2EditorPreferencePage_Activities;
 	public static String Bpmn2EditorPreferencePage_Change_Button;
 	public static String Bpmn2EditorPreferencePage_Connections;

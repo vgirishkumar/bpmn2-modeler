@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
  */
 public class ExpressionLanguageDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "expressionLanguage";
+	public final static String EXTENSION_NAME = "expressionLanguage"; //$NON-NLS-1$
 
 	protected String name;
 	protected String uri;

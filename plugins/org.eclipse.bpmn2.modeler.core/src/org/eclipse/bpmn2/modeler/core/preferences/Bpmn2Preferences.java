@@ -1575,9 +1575,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 
 	public List<String> getServiceImplementations() {
-		String value = get(PREF_SERVICE_IMPLEMENTATIONS, "");
+		String value = get(PREF_SERVICE_IMPLEMENTATIONS, ""); //$NON-NLS-1$
 		List<String> impls = new ArrayList<String>();
-		for (String s : value.split("\t")) {
+		for (String s : value.split("\t")) { //$NON-NLS-1$
 			if (!s.isEmpty())
 				impls.add(s);
 		}
@@ -1585,14 +1585,14 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	private void putServiceImplementations(List<String> impls) {
-		String value = "";
+		String value = ""; //$NON-NLS-1$
 		Iterator<String> iter = impls.iterator();
 		while (iter.hasNext()) {
 			String s = iter.next();
 			if (!s.isEmpty()) {
 				value += s;
 				if (iter.hasNext())
-					value += "\t";
+					value += "\t"; //$NON-NLS-1$
 			}
 		}
 		put(PREF_SERVICE_IMPLEMENTATIONS, value);

@@ -87,13 +87,13 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	 * This is copied to the AddContext and picked up by the AddFeature
 	 * which duplicates the copied shape's size and other attributes.
 	 */
-	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape";
+	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape"; //$NON-NLS-1$
 	
 	/** The key used to store the copied business object in the Paste Context. */
-	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object";
+	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object"; //$NON-NLS-1$
 	
 	/** The Constant COPY_FROM_CONTEXT. */
-	public static final String COPY_FROM_CONTEXT = "copy.from.context";
+	public static final String COPY_FROM_CONTEXT = "copy.from.context"; //$NON-NLS-1$
 	
 	/** The EMF Resource. */
 	protected Resource resource;

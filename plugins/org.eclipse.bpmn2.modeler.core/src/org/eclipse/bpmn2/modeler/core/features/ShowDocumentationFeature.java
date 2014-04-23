@@ -67,7 +67,7 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public String getName() {
-		return "Documentation";
+		return Messages.ShowDocumentationFeature_Documentation_Title;
 	}
 
 	/* (non-Javadoc)
@@ -78,7 +78,7 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 		if (context!=null) {
 			PictogramElement[] pes = context.getPictogramElements();
 			EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
-			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation");
+			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
 			List<Documentation> docList = (List<Documentation>)businessObject.eGet(feature);
 			if (docList.size()>0) {
 				String text = docList.get(0).getText();
@@ -86,7 +86,7 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 					return text;
 			}
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -97,7 +97,7 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
 		if (businessObject!=null && pes.length==1) {
-			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation");
+			EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
 			if (feature!=null) {
 				ModelEnablements me = getModelEnablements();
 				if (me!=null && me.isEnabled(businessObject.eClass().getName(), feature.getName())) {
@@ -125,10 +125,10 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 	public void execute(ICustomContext context) {
 		PictogramElement[] pes = context.getPictogramElements();
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(pes[0]);
-		EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation");
+		EStructuralFeature feature = businessObject.eClass().getEStructuralFeature("documentation"); //$NON-NLS-1$
 		List<Documentation> docList = (List<Documentation>)businessObject.eGet(feature);
 		Documentation documentation = null;
-		String text = "";
+		String text = ""; //$NON-NLS-1$
 		if (docList.size()>0) {
 			documentation = docList.get(0);
 			text = documentation.getText();
@@ -228,7 +228,7 @@ public class ShowDocumentationFeature extends AbstractCustomFeature {
 		
 		@Override
 		protected void configureShell(Shell newShell) {
-			newShell.setText("Documentation");
+			newShell.setText(Messages.ShowDocumentationFeature_Documentation_Title);
 			super.configureShell(newShell);
 		}
 

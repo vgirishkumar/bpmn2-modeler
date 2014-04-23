@@ -49,10 +49,10 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 	@Override
 	public String getInitialValue(IDirectEditingContext context) {
 		BaseElement be = getBusinessObject(context);
-		EStructuralFeature feature = be.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = be.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null)
 			return (String) be.eGet(feature);
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -61,7 +61,7 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 	@Override
 	public void setValue(String value, IDirectEditingContext context) {
 		BaseElement be = getBusinessObject(context);
-		EStructuralFeature feature = be.eClass().getEStructuralFeature("name");
+		EStructuralFeature feature = be.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null) {
 			be.eSet(feature, value);
 			PictogramElement e = context.getPictogramElement();
@@ -76,7 +76,7 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 	public boolean canDirectEdit(IDirectEditingContext context) {
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof BaseElement && ((BaseElement)bo).eClass().getEStructuralFeature("name")!=null)
+		if (bo instanceof BaseElement && ((BaseElement)bo).eClass().getEStructuralFeature("name")!=null) //$NON-NLS-1$
 			return true;
 		return false;
 	}

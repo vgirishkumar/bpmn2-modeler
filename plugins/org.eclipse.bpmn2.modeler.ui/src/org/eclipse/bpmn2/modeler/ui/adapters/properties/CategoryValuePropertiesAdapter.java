@@ -58,7 +58,7 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
 				@Override
 		   		protected void internalSet(CategoryValue categoryValue, EStructuralFeature feature, Object value, int index) {
 					if (value instanceof String) {
-						int i = ((String) value).indexOf(":");
+						int i = ((String) value).indexOf(":"); //$NON-NLS-1$
 						if (i>=0)
 							value = ((String) value).substring(i+1);
 					}
@@ -79,7 +79,7 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
 	
 	private static String getDisplayName(CategoryValue categoryValue) {
 		Category category = (Category) categoryValue.eContainer();
-		String prefix = (category==null || category.getName()==null) ? "" : category.getName() + ":";
+		String prefix = (category==null || category.getName()==null) ? "" : category.getName() + ":"; //$NON-NLS-1$
 		String suffix = categoryValue.getValue();
 		return prefix + suffix;
 	}

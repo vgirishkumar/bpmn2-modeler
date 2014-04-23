@@ -39,7 +39,7 @@ public class ModelEnablements {
 	private Hashtable<String, HashSet<String>> classes = new Hashtable<String, HashSet<String>>();
 	private TargetRuntime targetRuntime = null;
 	private Bpmn2DiagramType diagramType = Bpmn2DiagramType.NONE;
-	private String profile = "";
+	private String profile = ""; //$NON-NLS-1$
 	private int enableIdAttribute = -1;
 	
 	// require a TargetRuntime!
@@ -381,7 +381,7 @@ public class ModelEnablements {
 			if (featureName!=null && !featureName.isEmpty()) {
 				// the "anyAttribute" FeatureMap should always be enabled,
 				// although the features contained in the map may not be
-				if ("anyAttribute".equals(featureName))
+				if ("anyAttribute".equals(featureName)) //$NON-NLS-1$
 					return true;
 				
 				HashSet<String> features = classes.get(className);

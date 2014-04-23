@@ -191,7 +191,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, elem.getSchema().getTargetNamespace());
 				name = elem.getName();
 				if (prefix!=null && !prefix.isEmpty())
-					name = prefix + ":" + name;
+					name = prefix + ":" + name; //$NON-NLS-1$
 			}
 			else if (value instanceof Message) {
 				Message message = (Message)value;
@@ -202,7 +202,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, fault.getEnclosingDefinition().getTargetNamespace());
 				name = fault.getName();
 				if (prefix!=null && !prefix.isEmpty())
-					name = prefix + ":" + name;
+					name = prefix + ":" + name; //$NON-NLS-1$
 			}
 			else if (ModelUtil.isStringWrapper(value)) {
 				name = ModelUtil.getStringWrapperTextValue(value);

@@ -43,6 +43,8 @@ public class Messages extends NLS {
 	/** The BPMN diagram feature container_ reroute_ all_ name. */
 	public static String BPMNDiagramFeatureContainer_Reroute_All_Name;
 	
+	public static String ShowDocumentationFeature_Documentation_Title;
+
 	/** The Show properties feature_ name. */
 	public static String ShowPropertiesFeature_Name;
 	

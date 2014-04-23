@@ -104,7 +104,7 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 			
 			@Override
 			public String getLabel() {
-				return Messages.PropertyPropertiesAdapter_Variable;
+				return Messages.PropertyPropertiesAdapter_Property_Label;
 			}
 		});
 	}

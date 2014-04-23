@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
  */
 public class FeatureContainerDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "featureContainer";
+	public final static String EXTENSION_NAME = "featureContainer"; //$NON-NLS-1$
 
 	protected String type;
 	protected String containerClassName;

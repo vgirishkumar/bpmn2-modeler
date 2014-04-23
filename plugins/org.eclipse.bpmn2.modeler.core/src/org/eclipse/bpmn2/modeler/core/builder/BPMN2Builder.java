@@ -200,7 +200,7 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 				TargetRuntime.loadExtensions(rt, element.getChildren(), file);
 			}
 		} catch (Exception e) {
-			ErrorDialog dlg = new ErrorDialog("Error in Configuration File", e);
+			ErrorDialog dlg = new ErrorDialog(Messages.BPMN2Builder_ConfigFileError_Title, e);
 			dlg.show();
 		}
 	}

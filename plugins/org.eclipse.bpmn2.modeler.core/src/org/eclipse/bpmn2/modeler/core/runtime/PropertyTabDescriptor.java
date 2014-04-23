@@ -34,7 +34,7 @@ import org.eclipse.ui.views.properties.tabbed.TabContents;
  */
 public class PropertyTabDescriptor extends AbstractTabDescriptor implements IRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "propertyTab";
+	public final static String EXTENSION_NAME = "propertyTab"; //$NON-NLS-1$
 
 	protected String id;
 	protected String category;

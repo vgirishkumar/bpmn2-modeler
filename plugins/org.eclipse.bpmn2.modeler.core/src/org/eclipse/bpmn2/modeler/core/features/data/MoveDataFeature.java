@@ -95,7 +95,7 @@ public class MoveDataFeature extends DefaultMoveBPMNShapeFeature {
 				// so it belongs in an ioSpecification.
 				Resource resource = targetObject.eResource();
 				InputOutputSpecification ioSpec = null;
-				EStructuralFeature f = targetObject.eClass().getEStructuralFeature("ioSpecification");
+				EStructuralFeature f = targetObject.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
 				ioSpec = (InputOutputSpecification) targetObject.eGet(f);
 				if (ioSpec==null) {
 					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(targetObject); 

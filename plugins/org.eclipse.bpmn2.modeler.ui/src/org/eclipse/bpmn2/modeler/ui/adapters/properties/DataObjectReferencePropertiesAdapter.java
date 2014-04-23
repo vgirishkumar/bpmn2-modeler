@@ -39,11 +39,11 @@ public class DataObjectReferencePropertiesAdapter extends ItemAwareElementProper
 			@Override
 			public String getTextValue() {
 				String text = super.getTextValue();
-				text += " [";
+				text += " ["; //$NON-NLS-1$
 				if (object.getDataState()!=null) {
 					text += object.getDataState().getName();
 				}
-				text += "]";
+				text += "]"; //$NON-NLS-1$
 				return text;
 			}
     	});

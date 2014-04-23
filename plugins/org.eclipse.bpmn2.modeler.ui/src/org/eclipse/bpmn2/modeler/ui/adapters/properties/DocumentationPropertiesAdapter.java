@@ -39,7 +39,7 @@ public class DocumentationPropertiesAdapter extends ExtendedPropertiesAdapter<Do
     		
     			@Override
     	   		protected void internalSet(Documentation documentation, EStructuralFeature feature, Object value, int index) {
-    				String text = value==null ? "" : value.toString();
+    				String text = value==null ? "" : value.toString(); //$NON-NLS-1$
 					documentation.setText(text);
     			}
 

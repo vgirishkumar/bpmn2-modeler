@@ -14,6 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.adapters.properties.messages"; //$NON-NLS-1$
+	public static String ActivityPropertiesAdapter_CompletionCondition_Label;
 	public static String CallActivityPropertiesAdapter_Called_Activity;
 	public static String DataAssociationPropertiesAdapter_Source;
 	public static String DataAssociationPropertiesAdapter_Target;
@@ -24,6 +25,8 @@ public class Messages extends NLS {
 	public static String FormalExpressionPropertiesAdapter_Constraint;
 	public static String FormalExpressionPropertiesAdapter_Script;
 	public static String FormalExpressionPropertiesAdapter_Script_Language;
+	public static String GroupPropertiesAdapter_CreateCategory_Prompt;
+	public static String GroupPropertiesAdapter_CreateCategory_Title;
 	public static String ImportPropertiesAdapter_Import;
 	public static String ItemAwareElementPropertiesAdapter_ID;
 	public static String ItemDefinitionPropertiesAdapter_ItemDefinition_Label;
@@ -34,7 +37,7 @@ public class Messages extends NLS {
 	public static String PropertyPropertiesAdapter_LocalVar_Prefix;
 	public static String PropertyPropertiesAdapter_ProcessVar_Prefix;
 	public static String PropertyPropertiesAdapter_TaskVar_Prefix;
-	public static String PropertyPropertiesAdapter_Variable;
+	public static String PropertyPropertiesAdapter_Property_Label;
 	public static String SignalPropertiesAdapter_ID;
 	public static String Interface_Operations_Label;
 	public static String Interface_Implementation_Label;

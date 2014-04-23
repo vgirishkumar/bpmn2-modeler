@@ -78,7 +78,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class ModelDecorator {
 	final static EcoreFactory theCoreFactory = EcoreFactory.eINSTANCE;
-	public final static String DECORATOR_URI = "http://org.eclipse.bpmn2.modeler.core.decorator";
+	public final static String DECORATOR_URI = "http://org.eclipse.bpmn2.modeler.core.decorator"; //$NON-NLS-1$
 
 	protected EPackage ePackage;
 	protected static ResourceSet resourceSet;
@@ -98,7 +98,7 @@ public class ModelDecorator {
 	 */
 	public ModelDecorator(EPackage pkg) {
 		Assert.isTrue( isValid(pkg) );
-		String name = pkg.getName()+" Dynamic Extensions";
+		String name = pkg.getName()+" Dynamic Extensions"; //$NON-NLS-1$
 		String nsPrefix = pkg.getNsPrefix();
 		String nsURI = pkg.getNsURI();
 
@@ -264,7 +264,7 @@ public class ModelDecorator {
 		ePackage.setNsURI(nsURI);
 	
 		getResourceSet();
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new XMLResourceFactoryImpl());
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new XMLResourceFactoryImpl()); //$NON-NLS-1$
 		resourceSet.getPackageRegistry().put(nsURI, ePackage);
 
 		return ePackage;
@@ -283,13 +283,13 @@ public class ModelDecorator {
 	 */
 	private List<String> getSuperTypes(String type) {
 		List<String> supertypes = new ArrayList<String>();
-		if (type!=null && type.contains(":")) {
-			String a[] = type.split(":");
+		if (type!=null && type.contains(":")) { //$NON-NLS-1$
+			String a[] = type.split(":"); //$NON-NLS-1$
 			if (a.length>1) {
-				a = a[1].split(",");
+				a = a[1].split(","); //$NON-NLS-1$
 			}
 			else {
-				a = a[0].split(",");
+				a = a[0].split(","); //$NON-NLS-1$
 			}
 			for (int i=0; i<a.length; ++i) {
 				supertypes.add(a[i]);
@@ -310,8 +310,8 @@ public class ModelDecorator {
 	 * @return a string containing only the type name
 	 */
 	private String getType(String type) {
-		if (type!=null && type.contains(":")) {
-			return type.split(":")[0];
+		if (type!=null && type.contains(":")) { //$NON-NLS-1$
+			return type.split(":")[0]; //$NON-NLS-1$
 		}
 		return type;
 	}
@@ -390,7 +390,7 @@ public class ModelDecorator {
 
 		EClassifier eClassifier = getEClassifier(owningtype);
 		if (eClassifier==null) {
-			eClassifier = createEClassifier(owningtype + ":EEnum");
+			eClassifier = createEClassifier(owningtype + ":EEnum"); //$NON-NLS-1$
 		}
 		if (!(eClassifier instanceof EEnum))
 			return null;
@@ -449,13 +449,13 @@ public class ModelDecorator {
 		ePackage.getEClassifiers().add(eDataType);
 		// make this look like a DocumentRoot so that it can be added
 		// to the containing object's "anyType" feature.
-		ExtendedMetaData.INSTANCE.setName(eDataType, "");
+		ExtendedMetaData.INSTANCE.setName(eDataType, ""); //$NON-NLS-1$
 		EAnnotation ea = theCoreFactory.createEAnnotation();
 		ea.setEModelElement(eDataType);
 		ea.setSource(EDataTypeConversionFactory.DATATYPE_CONVERSION_FACTORY_URI);
 		ConversionDelegate cd = EDataTypeConversionFactory.INSTANCE.createConversionDelegate(eDataType);
 		if (cd!=null) {
-			Object value = cd.createFromString("");
+			Object value = cd.createFromString(""); //$NON-NLS-1$
 			eDataType.setInstanceClass(value.getClass());
 		}
 		eDataType.getEAnnotations().add(ea);
@@ -503,7 +503,7 @@ public class ModelDecorator {
 		
 		// make this class look like a DocumentRoot so that it can be added
 		// to the containing object's "anyType" feature.
-		ExtendedMetaData.INSTANCE.setName(eClass, "");
+		ExtendedMetaData.INSTANCE.setName(eClass, ""); //$NON-NLS-1$
 		eClass.setInstanceClass(AnyType.class);
 
 		return eClass;
@@ -595,7 +595,7 @@ public class ModelDecorator {
 			return eAttribute;
 
 		if (type==null)
-			type = "EString";
+			type = "EString"; //$NON-NLS-1$
 
 		// if the class type does not exist, create it in this package
 		EClassifier eClassifier = findEClassifier(type);
@@ -631,7 +631,7 @@ public class ModelDecorator {
 		if (eClassifier instanceof EEnum) {
 			if (defaultValue!=null) {
 				boolean setDefault = true;
-				for (String v : defaultValue.split(" ")) {
+				for (String v : defaultValue.split(" ")) { //$NON-NLS-1$
 					if (setDefault) {
 						eAttribute.setDefaultValue(v);
 						setDefault = false;
@@ -774,7 +774,7 @@ public class ModelDecorator {
 				ea.setEModelElement(element);
 				ea.setSource(DECORATOR_URI);
 			}
-			ea.getDetails().put("label", label);
+			ea.getDetails().put("label", label); //$NON-NLS-1$
 		}
 		else {
 			if (ea!=null) {
@@ -793,7 +793,7 @@ public class ModelDecorator {
 	public static String getLabel(EModelElement element) {
 		EAnnotation ea = element.getEAnnotation(DECORATOR_URI);
 		if (ea!=null) {
-			String label = ea.getDetails().get("label");
+			String label = ea.getDetails().get("label"); //$NON-NLS-1$
 			return label;
 		}
 		return null;
@@ -982,7 +982,7 @@ public class ModelDecorator {
 				eclass = (EClass)object;
 			else
 				eclass = object.eClass();
-			anyAttribute = eclass.getEStructuralFeature("anyAttribute");
+			anyAttribute = eclass.getEStructuralFeature("anyAttribute"); //$NON-NLS-1$
 		}
 		return anyAttribute;
 	}

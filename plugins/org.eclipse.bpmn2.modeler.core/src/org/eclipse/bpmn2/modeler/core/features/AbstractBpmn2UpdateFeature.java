@@ -41,10 +41,10 @@ public abstract class AbstractBpmn2UpdateFeature extends AbstractUpdateFeature {
 		if (context.getProperty(ContextConstants.BUSINESS_OBJECT) instanceof EObject) {
 			// if the UpdateContext has a "businessObject" property, then this update is needed
 			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
-			return Reason.createTrueReason("Initial update");
+			return Reason.createTrueReason("Initial update"); //$NON-NLS-1$
 		}
 		if (context.getProperty(DIImport.IMPORT_PROPERTY) != null) {
-			return Reason.createTrueReason("Initial update");
+			return Reason.createTrueReason("Initial update"); //$NON-NLS-1$
 		}
 		return Reason.createFalseReason();
 	}

@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.EObject;
  */
 public class PropertyExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	
-	public final static String EXTENSION_NAME = "propertyExtension";
+	public final static String EXTENSION_NAME = "propertyExtension"; //$NON-NLS-1$
 
     protected String type;
     protected String adapterClassName;

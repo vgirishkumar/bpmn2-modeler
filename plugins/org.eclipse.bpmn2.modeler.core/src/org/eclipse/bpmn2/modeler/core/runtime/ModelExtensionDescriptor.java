@@ -49,7 +49,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 @SuppressWarnings("rawtypes")
 public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "modelExtension";
+	public final static String EXTENSION_NAME = "modelExtension"; //$NON-NLS-1$
 	
 	/**
 	 * Container class for name/value pairs.
@@ -79,9 +79,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 		
 		public void setType(String t) {
-			if (t!=null && t.contains("*")) {
+			if (t!=null && t.contains("*")) { //$NON-NLS-1$
 				isMany = true;
-				t = t.replaceAll("\\*", "");
+				t = t.replaceAll("\\*", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			type = t;
 		}
@@ -391,7 +391,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 				// using the Target Runtime's targetNamespace
 				nsURI = getRuntime().
 						getRuntimeExtension().
-						getTargetNamespace(Bpmn2DiagramType.NONE) + "/ext";
+						getTargetNamespace(Bpmn2DiagramType.NONE) + "/ext"; //$NON-NLS-1$
 			}
 			else if (uri!=null) {
 				// This <modelExtension> extension point element defines an EPackage URI.
@@ -719,7 +719,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	private int recursionCounter;
 	public boolean isDefined(String className, String featureName) {
 		if (++recursionCounter>100) {
-			Activator.logError(new Exception("Possible infinite recursion in "+this.getClass().getName()+"#isDefined()"));
+			Activator.logError(new Exception("Possible infinite recursion in "+this.getClass().getName()+"#isDefined()")); //$NON-NLS-1$ //$NON-NLS-2$
 			--recursionCounter;
 			return false;
 		}

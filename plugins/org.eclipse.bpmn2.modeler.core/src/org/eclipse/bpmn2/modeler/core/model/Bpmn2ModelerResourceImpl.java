@@ -816,7 +816,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			Definitions definitions = ModelUtil.getDefinitions(helper.getResource());
 			String typeLanguage = definitions.getTypeLanguage();
 			if (!map.containsValue(typeLanguage)) {
-				String prefix = "tl";
+				String prefix = "tl"; //$NON-NLS-1$
 				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 				TypeLanguageDescriptor tld = rt.getTypeLanguageDescriptor(typeLanguage);
 				if (tld!=null)
@@ -1350,7 +1350,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				return xmlHelper.getPathForPrefix(prefix).appendFragment(fragment).toString();
 			}
 			else {
-				return URI.createURI("").appendFragment(fragment).toString();
+				return URI.createURI("").appendFragment(fragment).toString(); //$NON-NLS-1$
 			}
 		}
 	}

@@ -281,7 +281,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		Text text = getToolkit().createText(parent, "", style | SWT.BORDER); //$NON-NLS-1$
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
 		text.setLayoutData(data);
-		text.setText(value==null ? "" : value);
+		text.setText(value==null ? "" : value); //$NON-NLS-1$
 		text.setEditable(false);
 		text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 		text.setForeground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
@@ -341,7 +341,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 
 		final String prefKey = (getBusinessObject()==null) ?
 				null :
-				"section."+getBusinessObject().eClass().getName()+"."+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"section."+getBusinessObject().eClass().getName()+"."+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 		if (prefKey!=null && preferenceStore.contains(prefKey))
 			expanded = preferenceStore.getBoolean(prefKey);

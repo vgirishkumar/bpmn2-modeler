@@ -90,7 +90,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 				ExtendedPropertiesProvider.setMultiLineText(documentation, f, true);
 				Composite container = createSectionComposite(this, Messages.DefaultDetailComposite_Documentation);
 				TextObjectEditor documentationEditor = new TextObjectEditor(this,documentation,f);
-				documentationEditor.createControl(container,"");
+				documentationEditor.createControl(container,""); //$NON-NLS-1$
 				return null;
 			}
 		}

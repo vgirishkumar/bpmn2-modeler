@@ -55,7 +55,7 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 					new FeatureDescriptor<T>(this,object,feature) {
 						@Override
 						public String getLabel() {
-							return "Completion Condition";
+							return Messages.ActivityPropertiesAdapter_CompletionCondition_Label;
 						}
 					}
 				);

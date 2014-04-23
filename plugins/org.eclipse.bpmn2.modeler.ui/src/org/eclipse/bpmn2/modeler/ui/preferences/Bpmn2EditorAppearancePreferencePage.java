@@ -208,19 +208,19 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 		// Grid
 		snapToGrid = new Button(styleEditors, SWT.CHECK);
-		snapToGrid.setText("Snap to Grid");
+		snapToGrid.setText(Messages.Bpmn2EditorAppearancePreferencePage_SnapToGrid);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		snapToGrid.setLayoutData(gd);
 
-		gridWidth = new IntegerTextControl("Grid Width", styleEditors);
+		gridWidth = new IntegerTextControl(Messages.Bpmn2EditorAppearancePreferencePage_GridWidth, styleEditors);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		gridWidth.setLayoutData(gd);
 
-		gridHeight = new IntegerTextControl("Grid Height", styleEditors);
+		gridHeight = new IntegerTextControl(Messages.Bpmn2EditorAppearancePreferencePage_GridHeight, styleEditors);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
@@ -318,13 +318,13 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			}
 			
 			Class c = FigureCanvas.class;
-			labelProvider.setText(c, "Canvas");
+			labelProvider.setText(c, Messages.Bpmn2EditorAppearancePreferencePage_Canvas);
 			ShapeStyle ss = preferences.getShapeStyle(c);
 			diagramShapeStyles.put(c, ss);
 			allShapeStyles.put(c, ss);
 
 			c = GridLayer.class;
-			labelProvider.setText(c, "Grid");
+			labelProvider.setText(c, Messages.Bpmn2EditorAppearancePreferencePage_Grid);
 			ss = preferences.getShapeStyle(c);
 			diagramShapeStyles.put(c, ss);
 			allShapeStyles.put(c, ss);

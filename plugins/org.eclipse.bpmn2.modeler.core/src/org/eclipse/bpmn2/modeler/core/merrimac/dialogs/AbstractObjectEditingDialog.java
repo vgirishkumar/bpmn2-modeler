@@ -62,7 +62,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	// If this property is set on a Control, then don't try to
 	// adapt the Control's colors/fonts/etc. to dialog defaults
     // This is used by the Description Styled Text widget.
-	public final static String DO_NOT_ADAPT = "do_not_adapt";
+	public final static String DO_NOT_ADAPT = "do_not_adapt"; //$NON-NLS-1$
     
 	public AbstractObjectEditingDialog(DiagramEditor editor, EObject object) {
 		super(editor.getEditorSite().getShell());

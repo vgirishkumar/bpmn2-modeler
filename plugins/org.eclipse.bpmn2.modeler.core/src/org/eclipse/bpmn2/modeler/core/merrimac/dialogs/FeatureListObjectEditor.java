@@ -248,7 +248,7 @@ public class FeatureListObjectEditor extends MultivalueObjectEditor {
 		String listText = ""; //$NON-NLS-1$
 		if (references != null) {
 			for (int i = 0; i < references.size() - 1; i++) {
-				listText += ExtendedPropertiesProvider.getTextValue(references.get(i)) + ", ";
+				listText += ExtendedPropertiesProvider.getTextValue(references.get(i)) + ", "; //$NON-NLS-1$
 			}
 			if (references.size() > 0) {
 				listText += ExtendedPropertiesProvider.getTextValue(references.get(references.size() - 1));

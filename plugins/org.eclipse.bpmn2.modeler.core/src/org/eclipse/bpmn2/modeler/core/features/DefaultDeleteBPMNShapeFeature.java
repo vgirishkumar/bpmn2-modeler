@@ -75,7 +75,7 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 	 */
 	@Override
 	protected void deleteBusinessObject(Object bo) {
-		EStructuralFeature reference = ((EObject)bo).eClass().getEStructuralFeature("categoryValueRef");
+		EStructuralFeature reference = ((EObject)bo).eClass().getEStructuralFeature("categoryValueRef"); //$NON-NLS-1$
 		if (reference!=null) {
 			Object v = ((EObject)bo).eGet(reference);
 			if (v instanceof EList) {

@@ -36,7 +36,7 @@ public class ErrorDialog {
 	
 	public ErrorDialog(String title, String message, Exception e) {
 		this.title = title;
-		this.message = (message==null ? "" : message+"\n");
+		this.message = (message==null ? "" : message+"\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		Throwable t = e;
 		while (t!=null) {
 			String msg = t.getMessage();
@@ -45,7 +45,7 @@ public class ErrorDialog {
 			this.message += msg;
 			t = t.getCause();
 			if (t!=null) {
-				this.message += "\nCaused by ";
+				this.message += "\nCaused by "; //$NON-NLS-1$
 			}
 		}
 	}
@@ -55,7 +55,7 @@ public class ErrorDialog {
 			@Override
 			public void run() {
 				String me = Activator.getDefault().getDescriptor().getLabel();
-				MessageDialog.openError(Display.getDefault().getActiveShell(), me + " - " + title, message);
+				MessageDialog.openError(Display.getDefault().getActiveShell(), me + " - " + title, message); //$NON-NLS-1$
 			}
 		});
 

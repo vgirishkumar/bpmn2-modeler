@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
 
 /**
  *
@@ -61,5 +62,10 @@ public class MessageStartEventFeatureContainer extends CustomShapeFeatureContain
 			return startEvent;
 		}
 		
+	}
+
+	@Override
+	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
+		return new ICustomFeature[0];
 	}
 }

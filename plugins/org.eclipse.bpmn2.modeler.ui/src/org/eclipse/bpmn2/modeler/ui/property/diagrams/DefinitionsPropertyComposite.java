@@ -128,7 +128,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 
 	@Override
 	protected Composite bindProperty(EObject be, String property) {
-		if ("namespaces".equals(property)) {
+		if ("namespaces".equals(property)) { //$NON-NLS-1$
 			namespacesTable = new NamespaceListComposite(getPropertySection());
 			DefinitionsImpl definitions = (DefinitionsImpl)getBusinessObject();
 			DocumentRoot root = (DocumentRoot) definitions.eContainer();

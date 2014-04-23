@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 
 public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "customTask";
+	public final static String EXTENSION_NAME = "customTask"; //$NON-NLS-1$
 
 	protected ICustomElementFeatureContainer featureContainer;
 	protected String category;
@@ -36,7 +36,7 @@ public class CustomTaskDescriptor extends ModelExtensionDescriptor {
 			propertyTabs = tabs.split(" "); //$NON-NLS-1$
 		}
 		try {
-			featureContainer = (ICustomElementFeatureContainer) e.createExecutableExtension("featureContainer");
+			featureContainer = (ICustomElementFeatureContainer) e.createExecutableExtension("featureContainer"); //$NON-NLS-1$
 			featureContainer.setCustomTaskDescriptor(this);
 			featureContainer.setId(id);
 		} catch (CoreException e1) {

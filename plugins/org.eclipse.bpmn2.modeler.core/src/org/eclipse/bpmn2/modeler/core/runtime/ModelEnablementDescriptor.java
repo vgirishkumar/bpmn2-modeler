@@ -32,7 +32,7 @@ import org.eclipse.graphiti.features.IFeature;
  */
 public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "modelEnablement";
+	public final static String EXTENSION_NAME = "modelEnablement"; //$NON-NLS-1$
 
 	// Model Types that are enabled
 	private ModelEnablements modelEnablements;

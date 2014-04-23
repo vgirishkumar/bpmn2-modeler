@@ -191,7 +191,7 @@ public class DIGenerator {
 		}
 		boolean missing = (elements.get(be) == null && diagnostics.get(be) == null);
 		if (missing)
-			GraphicsUtil.dump("Missing DI element for: "+be.eClass().getName()+" '"+ExtendedPropertiesProvider.getTextValue(be)+"'");
+			GraphicsUtil.dump("Missing DI element for: "+be.eClass().getName()+" '"+ExtendedPropertiesProvider.getTextValue(be)+"'"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return missing;
 	}
 	

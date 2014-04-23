@@ -445,16 +445,16 @@ public class LifecycleEvent {
 	
 	@Override
 	public String toString() {
-		String s = "Event: "+eventType;
+		String s = Messages.LifecycleEvent_Event_Prefix+eventType;
 		if (target instanceof PictogramElement) {
 			EObject o = BusinessObjectUtil.getBusinessObjectForPictogramElement((PictogramElement)target);
 			if (o!=null) {
-				s += " " +o.eClass().getName();
+				s += " " +o.eClass().getName(); //$NON-NLS-1$
 			}
 		}
 		else if (target instanceof EObject) {
 			EObject o = (EObject) target;
-			s += " " +o.eClass().getName();
+			s += " " +o.eClass().getName(); //$NON-NLS-1$
 		}
 		return s;
 	}

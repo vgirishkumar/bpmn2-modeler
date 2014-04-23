@@ -290,7 +290,7 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 					}
 					
 					if (wsdlFactory==null) {
-						wsdlFactory = WSDLResourceFactoryRegistry.INSTANCE.getExtensionToFactoryMap().get("wsdl"); 
+						wsdlFactory = WSDLResourceFactoryRegistry.INSTANCE.getExtensionToFactoryMap().get("wsdl");  //$NON-NLS-1$
 					}
 					contentTypeToFactoryMap.put("wsdl", wsdlFactory); //$NON-NLS-1$
 					

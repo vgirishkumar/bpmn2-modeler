@@ -35,12 +35,12 @@ public class TargetRuntimeConfigurationException extends IllegalArgumentExceptio
 		if (targetRuntime==null) {
 			if (cause instanceof TargetRuntimeConfigurationException) {
 				String msg = ((TargetRuntimeConfigurationException)cause).getMessage();
-				if (!msg.contains("Unknown"))
+				if (!msg.contains("Unknown")) //$NON-NLS-1$
 					return msg;
 			}
 		}
-		return "Configuration Error for Target Runtime "+
-				(targetRuntime==null ? "Unknown" :targetRuntime.getName());
+		return Messages.TargetRuntimeConfigurationException_Config_Error+
+				(targetRuntime==null ? "Unknown" :targetRuntime.getName()); //$NON-NLS-1$
 	}
 
 	@Override

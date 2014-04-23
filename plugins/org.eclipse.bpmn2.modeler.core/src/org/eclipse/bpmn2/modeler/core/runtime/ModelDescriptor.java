@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
  */
 public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 	
-	public final static String EXTENSION_NAME = "model";
+	public final static String EXTENSION_NAME = "model"; //$NON-NLS-1$
 
 	protected String uri;
 	protected EPackage ePackage;
@@ -41,7 +41,7 @@ public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 			setEPackage(pkg);
 			setEFactory(getEPackage().getEFactoryInstance());
 			if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
-				setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory"));
+				setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory")); //$NON-NLS-1$
 			}
 		}
 		catch (Exception e1) {

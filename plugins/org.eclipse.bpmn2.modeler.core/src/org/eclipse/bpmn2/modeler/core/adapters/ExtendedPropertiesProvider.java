@@ -40,7 +40,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link ObjectDescriptor#getLabel()}
 	 */
 	public static String getLabel(EObject object) {
-		String label = "";
+		String label = ""; //$NON-NLS-1$
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null)
 			label = adapter.getObjectDescriptor().getLabel();
@@ -122,7 +122,7 @@ public class ExtendedPropertiesProvider {
 			return value.toString();
 		} catch (Exception e) {
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	/**

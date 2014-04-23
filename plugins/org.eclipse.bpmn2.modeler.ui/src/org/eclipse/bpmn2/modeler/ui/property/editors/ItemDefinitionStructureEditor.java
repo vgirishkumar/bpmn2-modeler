@@ -55,7 +55,7 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 		// data structure name part (the localpart) if the original structureRef contained
 		// a namespace prefix.
 		String text = getText();
-		int index = text.indexOf(":");
+		int index = text.indexOf(":"); //$NON-NLS-1$
 		prefix = null;
 		if (index>0) {
 			prefix = text.substring(0,index);
@@ -74,12 +74,12 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 			@Override
 			public String isValid(String newText) {
 				if (newText==null || newText.isEmpty())
-					return "Data structure may not be empty";
-				if (newText.contains(":") && prefix!=null) {
-					return "Data structure name may not contain ':'";
+					return Messages.ItemDefinitionStructureEditor_DataStructureEmpty_Error;
+				if (newText.contains(":") && prefix!=null) { //$NON-NLS-1$
+					return Messages.ItemDefinitionStructureEditor_DataStructureInvalid_Error;
 				}
 				String thisText = (prefix!=null) ?
-						prefix + ":" + newText :
+						prefix + ":" + newText : //$NON-NLS-1$
 						newText;
 				for (ItemDefinition that : ModelUtil.getAllRootElements(definitions, ItemDefinition.class)) {
 					String thatText = ModelUtil.getStringWrapperTextValue(that.getStructureRef());
@@ -89,7 +89,7 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 							that.isIsCollection() == thisIsCollection &&
 							that.getImport() == thisImport 
 					) {
-						return "An Item Definition with this data structure name already exists";
+						return Messages.ItemDefinitionStructureEditor_DuplicateItemDefinition_Error;
 					}
 				}
 				return null;
@@ -98,15 +98,15 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 
 		InputDialog dialog = new InputDialog(
 				parent.getShell(),
-				"Edit Structure",
-				"Enter data structure name:",
+				Messages.ItemDefinitionStructureEditor_EditDataStructure_Title,
+				Messages.ItemDefinitionStructureEditor_EditDataStructure_Prompt,
 				text,
 				validator);
 		
 		if (dialog.open()==Window.OK){
 			text = dialog.getValue();
 			if (prefix!=null)
-				text = prefix + ":" + text;
+				text = prefix + ":" + text; //$NON-NLS-1$
 			if (!text.equals( getText() )) {
 				setValue(text);
 			}

@@ -27,7 +27,7 @@ import org.eclipse.emf.ecore.resource.Resource;
  */
 public class TypeLanguageDescriptor extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "typeLanguage";
+	public final static String EXTENSION_NAME = "typeLanguage"; //$NON-NLS-1$
 
 	protected String name;
 	protected String uri;
@@ -56,9 +56,9 @@ public class TypeLanguageDescriptor extends BaseRuntimeExtensionDescriptor {
 				// the given Definitions object.
 				String prefix = NamespaceUtil.getPrefixForNamespace(resource, typeLanguage.getUri());
 				if (prefix!=null && !prefix.isEmpty())
-					return prefix + ":" + name;
+					return prefix + ":" + name; //$NON-NLS-1$
 				if (typeLanguage.prefix!=null)
-					return typeLanguage.prefix + ":" + name;
+					return typeLanguage.prefix + ":" + name; //$NON-NLS-1$
 				return name;
 			}
 			return qname;

@@ -74,7 +74,7 @@ public class SyntaxCheckerUtils {
 
 	public static final String toXMLString(String string) {
 		if (string==null || string.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		
 		StringBuffer xmlString = new StringBuffer();
 		int stringLength = string.length();
@@ -82,15 +82,15 @@ public class SyntaxCheckerUtils {
 		for (int i = 0; i < stringLength; i++) {
 			char c = string.charAt(i);
 			if (c == '"')
-				xmlString.append("&quot;");
+				xmlString.append("&quot;"); //$NON-NLS-1$
 			else if (c == '&')
-				xmlString.append("&amp;");
+				xmlString.append("&amp;"); //$NON-NLS-1$
 			else if (c == '\'')
-				xmlString.append("&apos;");
+				xmlString.append("&apos;"); //$NON-NLS-1$
 			else if (c == '<')
-				xmlString.append("&lt;");
+				xmlString.append("&lt;"); //$NON-NLS-1$
 			else if (c == '>')
-				xmlString.append("&gt;");
+				xmlString.append("&gt;"); //$NON-NLS-1$
 			else
 				xmlString.append(c);
 		}
@@ -99,7 +99,7 @@ public class SyntaxCheckerUtils {
 
 	public static final String fromXMLString(String xmlString) {
 		if (xmlString==null || xmlString.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		
 		StringBuffer string = new StringBuffer();
 		int stringLength = xmlString.length();
@@ -110,15 +110,15 @@ public class SyntaxCheckerUtils {
 				int si = xmlString.indexOf(';', i);
 				if (si>0) {
 					String ss = xmlString.substring(i, si);
-					if ("&quot".equals(ss))
+					if ("&quot".equals(ss)) //$NON-NLS-1$
 						c = '"';
-					else if ("&amp".equals(ss))
+					else if ("&amp".equals(ss)) //$NON-NLS-1$
 						c = '&';
-					else if ("&apos".equals(ss))
+					else if ("&apos".equals(ss)) //$NON-NLS-1$
 						c = '\'';
-					else if ("&lt".equals(ss))
+					else if ("&lt".equals(ss)) //$NON-NLS-1$
 						c = '<';
-					else if ("&gt".equals(ss))
+					else if ("&gt".equals(ss)) //$NON-NLS-1$
 						c = '>';
 					else
 						si = -1;

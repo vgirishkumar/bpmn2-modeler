@@ -146,7 +146,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 							cd.getContentType().getId());
 	    		}
 	    		String ext = file.getFileExtension();
-	    		if ("bpmn".equals(ext) || "bpmn2".equals(ext))
+	    		if ("bpmn".equals(ext) || "bpmn2".equals(ext)) //$NON-NLS-1$ //$NON-NLS-2$
 	    			return true;
 	    		
 			} catch (Exception e) {

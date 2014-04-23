@@ -148,7 +148,7 @@ public class ObjectDescriptor<T extends EObject> {
 			EStructuralFeature f = null;
 			f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (f==null) {
-				f = ModelDecorator.getAnyAttribute(object, "name");
+				f = ModelDecorator.getAnyAttribute(object, "name"); //$NON-NLS-1$
 			}
 			if (f!=null) {
 				value = object.eGet(f);

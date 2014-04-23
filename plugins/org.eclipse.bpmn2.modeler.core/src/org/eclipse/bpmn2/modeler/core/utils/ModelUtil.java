@@ -167,7 +167,7 @@ public class ModelUtil {
 		Assert.isTrue(res!=null);
 		// we may have more than one Bpmn2Resource in our ResourceSet asking for IDs
 		String key = Integer.toString(res.getResourceSet().hashCode());
-		key += "-" + res.getResourceSet().getResources().indexOf(res);
+		key += "-" + res.getResourceSet().getResources().indexOf(res); //$NON-NLS-1$
 		return key;
 	}
 	
@@ -416,7 +416,7 @@ public class ModelUtil {
 	 */
 	public static String toCanonicalString(EObject object) {
 		if (object==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		
 		String objName = null;
 		if (object instanceof BPMNDiagram) {
@@ -687,7 +687,7 @@ public class ModelUtil {
 			
 			@Override
 			public String toString() {
-				EStructuralFeature feature = this.eClass().getEStructuralFeature("value");
+				EStructuralFeature feature = this.eClass().getEStructuralFeature("value"); //$NON-NLS-1$
 				if (feature!=null) {
 					return (String)eGet(feature);
 				}
@@ -700,24 +700,24 @@ public class ModelUtil {
 			stringWrapperClass = EcoreFactory.eINSTANCE.createEClass();
 			myPackage.getEClassifiers().add(stringWrapperClass);
 			
-			stringWrapperClass.setName("StringWrapper");
+			stringWrapperClass.setName("StringWrapper"); //$NON-NLS-1$
 			stringWrapperClass.getESuperTypes().add(XMLTypePackage.eINSTANCE.getAnyType());
-			ExtendedMetaData.INSTANCE.setName(stringWrapperClass, "");
+			ExtendedMetaData.INSTANCE.setName(stringWrapperClass, ""); //$NON-NLS-1$
 			stringWrapperClass.setInstanceClass(AnyType.class);
 
 			EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
-			eAttribute.setName("value");
+			eAttribute.setName("value"); //$NON-NLS-1$
 			eAttribute.setChangeable(true);
 			eAttribute.setUnsettable(true);
-			eAttribute.setEType(EcorePackage.eINSTANCE.getEClassifier("EString"));
+			eAttribute.setEType(EcorePackage.eINSTANCE.getEClassifier("EString")); //$NON-NLS-1$
 			stringWrapperClass.getEStructuralFeatures().add(eAttribute);
 
 //			ExtendedMetaData.INSTANCE.setNamespace(eAttribute, ePackage.getNsURI());
 			ExtendedMetaData.INSTANCE.setFeatureKind(eAttribute, ExtendedMetaData.ATTRIBUTE_FEATURE);
-			ExtendedMetaData.INSTANCE.setName(eAttribute, "value");
+			ExtendedMetaData.INSTANCE.setName(eAttribute, "value"); //$NON-NLS-1$
 		}
 		de.eSetClass(stringWrapperClass);
-		de.eSet(stringWrapperClass.getEStructuralFeature("value"), value);
+		de.eSet(stringWrapperClass.getEStructuralFeature("value"), value); //$NON-NLS-1$
 		
 		return de;
 	}
@@ -740,7 +740,7 @@ public class ModelUtil {
 	public static boolean setStringWrapperValue(Object wrapper, String value) {
 		if (isStringWrapper(wrapper)) {
 			DynamicEObjectImpl de = (DynamicEObjectImpl)wrapper;
-			EStructuralFeature feature = de.eClass().getEStructuralFeature("value");
+			EStructuralFeature feature = de.eClass().getEStructuralFeature("value"); //$NON-NLS-1$
 			de.eSet(feature, value);
 			return true;
 		}
@@ -749,7 +749,7 @@ public class ModelUtil {
 	
 	public static boolean isStringWrapper(Object wrapper) {
 		if (wrapper instanceof DynamicEObjectImpl) {
-			EStructuralFeature feature = ((DynamicEObjectImpl)wrapper).eClass().getEStructuralFeature("value");
+			EStructuralFeature feature = ((DynamicEObjectImpl)wrapper).eClass().getEStructuralFeature("value"); //$NON-NLS-1$
 			return feature!=null;
 
 		}

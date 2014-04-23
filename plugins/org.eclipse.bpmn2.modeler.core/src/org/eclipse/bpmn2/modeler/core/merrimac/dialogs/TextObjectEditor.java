@@ -186,7 +186,7 @@ public class TextObjectEditor extends ObjectEditor {
 			useActualValue = ((Boolean)result);
 		if (useActualValue) {
 			Object value = getBusinessObjectDelegate().getValue(object, feature);
-			return value==null ? "" : value.toString();
+			return value==null ? "" : value.toString(); //$NON-NLS-1$
 		}
 		return getBusinessObjectDelegate().getTextValue(object, feature);
 	}

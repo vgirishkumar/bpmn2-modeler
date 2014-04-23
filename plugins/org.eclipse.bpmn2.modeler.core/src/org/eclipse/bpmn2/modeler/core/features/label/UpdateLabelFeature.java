@@ -134,7 +134,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (element instanceof ItemAwareElement) {
 			DataState state = ((ItemAwareElement)element).getDataState();
 			if (state!=null && state.getName()!=null) {
-				return label + "\n[" + state.getName() + "]";
+				return label + "\n[" + state.getName() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		return label;

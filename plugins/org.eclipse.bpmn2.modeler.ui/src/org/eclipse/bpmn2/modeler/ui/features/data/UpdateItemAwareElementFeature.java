@@ -52,19 +52,19 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 		ContainerShape container = (ContainerShape) context.getPictogramElement();
 		ItemAwareElement element = (ItemAwareElement) getBusinessObjectForPictogramElement(container);
 		
-		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection");
+		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 		if (isCollection!=null) {
 			boolean newIsCollection = (boolean) element.eGet(isCollection);
 			boolean oldIsCollection = Boolean.parseBoolean(peService.getPropertyValue(container, Properties.COLLECTION_PROPERTY));
 			if (newIsCollection != oldIsCollection)
-				return Reason.createTrueReason("Cardinality Changed");
+				return Reason.createTrueReason("Cardinality Changed"); //$NON-NLS-1$
 		}
 		
 		String newDataState = getDataStateAsString(element);
 		Object oldDataState = peService.getPropertyValue(container,Properties.DATASTATE_PROPERTY);
 
 		if (!newDataState.equals(oldDataState))
-			return Reason.createTrueReason("Data State Changed");
+			return Reason.createTrueReason("Data State Changed"); //$NON-NLS-1$
 
 		return Reason.createFalseReason();
 	}
@@ -76,7 +76,7 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 		ItemAwareElement element = (ItemAwareElement) getBusinessObjectForPictogramElement(container);
 
 		// Update the "is collection" feature if the ItemAwareElement has one
-		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection");
+		EStructuralFeature isCollection = element.eClass().getEStructuralFeature("isCollection"); //$NON-NLS-1$
 		if (isCollection!=null) {
 			boolean newIsCollection = (boolean) element.eGet(isCollection);
 	
@@ -104,13 +104,13 @@ public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends A
 	private String getDataStateAsString(ItemAwareElement element) {
 		DataState dataState = element.getDataState();
 		if (dataState==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		String name = dataState.getName();
 		if (name==null || name.isEmpty())
-			name = "no_name";
+			name = "no_name"; //$NON-NLS-1$
 		String id = dataState.getId();
 		if (id==null || id.isEmpty())
-			id = "no_id";
-		return name + " - " + id;
+			id = "no_id"; //$NON-NLS-1$
+		return name + " - " + id; //$NON-NLS-1$
 	}
 }

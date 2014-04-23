@@ -64,8 +64,8 @@ public class GroupPropertiesAdapter extends ExtendedPropertiesAdapter<Group> {
 				else {
 					category = categories.get(0);
 				}
-				String title = "Create Category";
-				InputDialog dialog = new InputDialog(null, title, "Enter Category", "", null);
+				String title = Messages.GroupPropertiesAdapter_CreateCategory_Title;
+				InputDialog dialog = new InputDialog(null, title, Messages.GroupPropertiesAdapter_CreateCategory_Prompt, "", null); //$NON-NLS-2$
 				if (dialog.open() == Window.OK) {
 					String name = dialog.getValue();
 					if (!name.isEmpty()) {

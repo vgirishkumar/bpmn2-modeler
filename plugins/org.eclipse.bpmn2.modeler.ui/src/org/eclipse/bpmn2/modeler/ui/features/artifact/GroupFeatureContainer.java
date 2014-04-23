@@ -189,12 +189,12 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, Group businessObject) {
 			Shape textShape = peService.createShape(containerShape, false);
-			String name = "";
+			String name = ""; //$NON-NLS-1$
 			if (businessObject.getCategoryValueRef()!=null)
 				name = ExtendedPropertiesProvider.getTextValue(businessObject.getCategoryValueRef());
 			MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
 			StyleUtil.applyStyle(text, businessObject);
-			IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize("My", text.getFont());
+			IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize("My", text.getFont()); //$NON-NLS-1$
 			gaService.setLocationAndSize(text, 0, 0, context.getWidth(), size.getHeight()+4);
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 			text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);

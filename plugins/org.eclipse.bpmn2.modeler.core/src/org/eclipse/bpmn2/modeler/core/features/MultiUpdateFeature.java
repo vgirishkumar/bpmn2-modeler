@@ -29,7 +29,7 @@ import org.eclipse.graphiti.features.impl.Reason;
 public class MultiUpdateFeature extends AbstractUpdateFeature {
 
 	/** The Constant FORCE_UPDATE_ALL. */
-	public final static String FORCE_UPDATE_ALL = "force.update.all";
+	public final static String FORCE_UPDATE_ALL = "force.update.all"; //$NON-NLS-1$
 	
 	/** The features. */
 	protected List<IUpdateFeature> features = new ArrayList<IUpdateFeature>();

@@ -52,7 +52,7 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 	}
 	
 	protected EObject basicCreate(EClass eClass) {
-		return eClass.getInstanceClassName() == "java.util.Map$Entry" ?
+		return eClass.getInstanceClassName() == "java.util.Map$Entry" ? //$NON-NLS-1$
 				new DynamicEObjectImpl.BasicEMapEntry<String, String>(eClass) :
 				XMLTypeFactory.eINSTANCE.createAnyType();
 	}

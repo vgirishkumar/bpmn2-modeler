@@ -232,8 +232,8 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		 * @return true, if is connection valid
 		 */
 		boolean isConnectionValid(BaseElement flow) {
-			EStructuralFeature sourceRef = flow.eClass().getEStructuralFeature("sourceRef");
-			EStructuralFeature targetRef = flow.eClass().getEStructuralFeature("targetRef");
+			EStructuralFeature sourceRef = flow.eClass().getEStructuralFeature("sourceRef"); //$NON-NLS-1$
+			EStructuralFeature targetRef = flow.eClass().getEStructuralFeature("targetRef"); //$NON-NLS-1$
 			BaseElement source = (BaseElement) flow.eGet(sourceRef);
 			BaseElement target = (BaseElement) flow.eGet(targetRef);
 			EObject sourceContainer = source.eContainer();

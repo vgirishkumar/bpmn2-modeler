@@ -69,7 +69,7 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		}
 		T activity = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());
 		boolean changed = isPropertyChanged(activity, property);
-		return changed ? Reason.createTrueReason("Marker changed") : Reason.createFalseReason();
+		return changed ? Reason.createTrueReason("Marker changed") : Reason.createFalseReason(); //$NON-NLS-1$
     }
 
 	/* (non-Javadoc)

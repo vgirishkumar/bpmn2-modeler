@@ -105,7 +105,7 @@ public class NamespaceUtil {
 		String prefix = null;
 		Map<String,String> map = getXMLNSPrefixMap(resource);
 		if (map!=null) {
-			prefix = createUniquePrefix(map, "ns");
+			prefix = createUniquePrefix(map, "ns"); //$NON-NLS-1$
 			addNamespace(resource, prefix, namespace);
 		}
 		return prefix;
@@ -127,7 +127,7 @@ public class NamespaceUtil {
 		final Map<String,String> map = getXMLNSPrefixMap(resource);
 		if (map!=null) {
 			if (prefix==null) {
-				prefix = "ns";
+				prefix = "ns"; //$NON-NLS-1$
 			}
 			final String pfx = createUniquePrefix(map, prefix);
 			TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);

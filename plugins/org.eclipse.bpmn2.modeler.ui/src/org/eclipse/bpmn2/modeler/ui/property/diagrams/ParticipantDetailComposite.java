@@ -84,11 +84,11 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 				parent = getAttributesParent();
 
 			Participant participant = (Participant) object;
-			if ("participantMultiplicity".equals(reference.getName())) {
+			if ("participantMultiplicity".equals(reference.getName())) { //$NON-NLS-1$
 				Composite composite = getToolkit().createComposite(parent);
 				composite.setLayout(new GridLayout(7,true));
 				composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-				createLabel(composite,"Multiplicity");
+				createLabel(composite,Messages.ParticipantDetailComposite_Multiplicity_Label);
 				
 				ParticipantMultiplicity pm =
 						participant.getParticipantMultiplicity() != null ?
@@ -98,14 +98,14 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 				InsertionAdapter.add(object, Bpmn2Package.eINSTANCE.getParticipant_ParticipantMultiplicity(), pm);
 				
 				MyIntObjectEditor minEditor = new MyIntObjectEditor(this, pm, Bpmn2Package.eINSTANCE.getParticipantMultiplicity_Minimum());
-				minEditor.createControl(composite, "Minimum");
+				minEditor.createControl(composite, Messages.ParticipantDetailComposite_Mimimum_Label);
 				
 				MyIntObjectEditor maxEditor = new MyIntObjectEditor(this, pm, Bpmn2Package.eINSTANCE.getParticipantMultiplicity_Maximum());
-				maxEditor.createControl(composite, "Maximum");
+				maxEditor.createControl(composite, Messages.ParticipantDetailComposite_Maximum_Label);
 				
 				minEditor.updateText();
 			}
-			else if ("interfaceRefs".equals(reference.getName())) {
+			else if ("interfaceRefs".equals(reference.getName())) { //$NON-NLS-1$
 				providedInterfacesTable = new ProvidedInterfaceListComposite(this);
 				providedInterfacesTable.bindList(object, getFeature(object, "interfaceRefs")); //$NON-NLS-1$
 			}
@@ -126,7 +126,7 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 			super.updateText();
 			ParticipantMultiplicity pm = (ParticipantMultiplicity) object;
 			if (pm.getMinimum() >= pm.getMaximum()) {
-				ErrorUtils.showErrorMessage("Minimum must be less than Maximum");
+				ErrorUtils.showErrorMessage(Messages.ParticipantDetailComposite_MinMax_Error);
 			}
 		}
 	}

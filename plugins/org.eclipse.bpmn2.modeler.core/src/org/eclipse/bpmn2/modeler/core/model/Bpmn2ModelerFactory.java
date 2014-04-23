@@ -304,8 +304,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		if (nsURI==null || nsURI.isEmpty())
 			return true;
 		
-		if (!nsURI.endsWith("-XMI"))
-			nsURI += "-XMI";
+		if (!nsURI.endsWith("-XMI")) //$NON-NLS-1$
+			nsURI += "-XMI"; //$NON-NLS-1$
 		return	Bpmn2Package.eINSTANCE.getNsURI().equals(nsURI) ||
 				BpmnDiPackage.eINSTANCE.getNsURI().equals(nsURI) ||
 				DcPackage.eINSTANCE.getNsURI().equals(nsURI) ||

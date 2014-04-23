@@ -39,7 +39,7 @@ import org.eclipse.swt.graphics.RGB;
  */
 public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
-	public final static String EXTENSION_NAME = "style";
+	public final static String EXTENSION_NAME = "style"; //$NON-NLS-1$
 	
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-"; //$NON-NLS-1$
@@ -87,8 +87,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public ShapeStyle(Class c) {
 		this();
 		if (c==GridLayer.class || c==FigureCanvas.class) {
-			shapeForeground = stringToColor("E3EEF9");
-			shapeBackground = stringToColor("FFFFFF");
+			shapeForeground = stringToColor("E3EEF9"); //$NON-NLS-1$
+			shapeBackground = stringToColor("FFFFFF"); //$NON-NLS-1$
 			snapToGrid = true;
 			gridWidth = 10;
 			gridHeight = 10;
@@ -395,7 +395,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				colorToString(sp.textColor) + ";" + //$NON-NLS-1$
 				booleanToString(sp.defaultSize) + ";" + //$NON-NLS-1$
 				sp.routingStyle.name() + ";" + //$NON-NLS-1$
-				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$
+				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				sp.gridWidth + ";" + //$NON-NLS-1$
 				sp.gridHeight
 				);

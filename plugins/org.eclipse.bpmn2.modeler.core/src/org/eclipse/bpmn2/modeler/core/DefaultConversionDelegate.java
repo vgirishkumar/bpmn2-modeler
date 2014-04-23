@@ -49,7 +49,7 @@ public class DefaultConversionDelegate implements ConversionDelegate, EditContro
 	@Override
 	public String convertToString(Object value) {
 		if (value == null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return value.toString();
 	}
 
@@ -105,7 +105,7 @@ public class DefaultConversionDelegate implements ConversionDelegate, EditContro
 		 */
 		@Override
 		public boolean setValue(Object value) {
-			String s = value == null ? "" : value.toString();
+			String s = value == null ? "" : value.toString(); //$NON-NLS-1$
 			text.setText(s);
 			return true;
 		}

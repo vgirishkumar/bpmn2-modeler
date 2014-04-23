@@ -601,7 +601,7 @@ public class FeatureSupport {
 			Group g = (Group) o;
 			if (g.getCategoryValueRef()!=null)
 				return ExtendedPropertiesProvider.getTextValue(g.getCategoryValueRef());
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		return null;
 	}

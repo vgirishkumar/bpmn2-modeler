@@ -119,7 +119,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		}
 		description = e.getAttribute("description"); //$NON-NLS-1$
 		try {
-			setRuntimeExtension((IBpmn2RuntimeExtension) e.createExecutableExtension("class"));
+			setRuntimeExtension((IBpmn2RuntimeExtension) e.createExecutableExtension("class")); //$NON-NLS-1$
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		} //$NON-NLS-1$
@@ -373,7 +373,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 				loadExtensions(null, elements, null);
 			}
 			catch (Exception e) {
-				ErrorDialog dlg = new ErrorDialog("Error in Configuration File", e);
+				ErrorDialog dlg = new ErrorDialog(org.eclipse.bpmn2.modeler.core.runtime.Messages.TargetRuntime_Config_Error, e);
 				dlg.show();
 			}
 
@@ -815,7 +815,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		List<IRuntimeExtensionDescriptor> result = new ArrayList<IRuntimeExtensionDescriptor>();
 		try {
 			Class c = getClassForExtensionName(name);
-			Method m = TargetRuntime.class.getMethod("get"+c.getSimpleName()+"s");
+			Method m = TargetRuntime.class.getMethod("get"+c.getSimpleName()+"s"); //$NON-NLS-1$ //$NON-NLS-2$
 			result = (List<IRuntimeExtensionDescriptor>) m.invoke(this);
 		}
 		catch (Exception ex) {
@@ -829,7 +829,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			Class clazz = null;
 			for (int i=0; i<extensionDescriptorClasses.length; ++i) {
 				Class c = extensionDescriptorClasses[i];
-				Field field = c.getField("EXTENSION_NAME");
+				Field field = c.getField("EXTENSION_NAME"); //$NON-NLS-1$
 				String n = (String) field.get(null);
 				if (name.equals(n)) {
 					return c;
@@ -844,7 +844,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	
 	public static String getExtensionNameForClass(Class clazz) {
 		try {
-			Field field = clazz.getField("EXTENSION_NAME");
+			Field field = clazz.getField("EXTENSION_NAME"); //$NON-NLS-1$
 			return (String) field.get(null);
 		}
 		catch (Exception ex) {
@@ -963,7 +963,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 						Class clazz = null;
 						for (int i=0; i<extensionDescriptorClasses.length; ++i) {
 							Class c = extensionDescriptorClasses[i];
-							Field field = c.getField("EXTENSION_NAME");
+							Field field = c.getField("EXTENSION_NAME"); //$NON-NLS-1$
 							String n = (String) field.get(null);
 							if (name.equals(n)) {
 								rank = extensionDescriptorClasses.length - i;

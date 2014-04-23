@@ -17,6 +17,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.messages"; //$NON-NLS-1$
+	public static String LifecycleEvent_Event_Prefix;
 	public static String ModelHandler_20;
 	public static String ModelHandler_21;
 	public static String ModelHandler_Choreography;
