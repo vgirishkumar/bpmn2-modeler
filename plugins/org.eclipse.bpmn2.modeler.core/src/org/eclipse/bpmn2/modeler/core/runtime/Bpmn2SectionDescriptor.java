@@ -52,8 +52,14 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				if ("default".equals(className)) { //$NON-NLS-1$
 					sectionClass = new DefaultPropertySection();
 					if (e.getAttribute("features")!=null) { //$NON-NLS-1$
-						String[] properties = e.getAttribute("features").split(" "); //$NON-NLS-1$ //$NON-NLS-2$
-						((DefaultPropertySection)sectionClass).setProperties(properties);
+						String value = e.getAttribute("features");
+						if (value==null || value.isEmpty()) {
+							((DefaultPropertySection)sectionClass).setProperties(new String[0]);
+						}
+						else {
+							String[] properties = value.split(" "); //$NON-NLS-1$ //$NON-NLS-2$
+							((DefaultPropertySection)sectionClass).setProperties(properties);
+						}
 					}
 				}
 				else {

@@ -83,6 +83,11 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (propertiesProvider!=null &&
+				propertiesProvider.getProperties()!=null &&
+				propertiesProvider.getProperties().length==0)
+			return false;
+		
 		if (super.appliesTo(part, selection)) {
 			if (appliesToClasses.isEmpty()) {
 				return true;
