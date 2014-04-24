@@ -279,7 +279,7 @@ This feature is not currently implemented, but is planned for a future version.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="label" type="string" use="required">
+         <attribute name="label" type="string">
             <annotation>
                <documentation>
                   A label to be displayed on the tab.

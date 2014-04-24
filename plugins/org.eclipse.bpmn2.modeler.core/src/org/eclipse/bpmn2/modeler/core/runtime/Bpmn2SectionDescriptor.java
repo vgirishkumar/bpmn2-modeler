@@ -62,6 +62,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 						}
 					}
 				}
+				else if ("empty".equals(className)) { //$NON-NLS-1$
+					// this tab is to be hidden
+					sectionClass = null;
+				}
 				else {
 					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class"); //$NON-NLS-1$
 				}
@@ -137,6 +141,9 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		@Override
 		public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 
+			if (sectionClass==null)
+				return false;
+			
 			EObject businessObject = null;
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
 			if (pe != null) {
@@ -265,6 +272,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			if (sectionClass instanceof IBpmn2PropertySection) {
 				return ((IBpmn2PropertySection)sectionClass).doReplaceTab(replacedId, part, selection);
 			}
+			// If no "class" was specified in plugin.xml (e.g. class="empty") then do the replacement,
+			// but don't show the property tab. In other words, this tab is to be hidden.
+			if (sectionClass==null)
+				return true;
 			return appliesTo(part,selection);
 		}
 		
