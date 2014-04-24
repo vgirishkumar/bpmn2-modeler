@@ -30,6 +30,7 @@ import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -187,6 +188,13 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
 			id = Graphiti.getPeService().getPropertyValue(pe,CUSTOM_ELEMENT_ID); 
+		}
+		else if (context instanceof ICustomContext) {
+			for (PictogramElement pe : ((ICustomContext)context).getPictogramElements()) {
+				id = Graphiti.getPeService().getPropertyValue(pe,CUSTOM_ELEMENT_ID);
+				if (id!=null)
+					break;
+			}
 		}
 		else {
 			id = context.getProperty(CUSTOM_ELEMENT_ID);

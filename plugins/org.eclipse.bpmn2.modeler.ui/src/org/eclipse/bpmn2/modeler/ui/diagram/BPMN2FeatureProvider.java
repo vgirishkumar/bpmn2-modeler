@@ -75,6 +75,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeat
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultCopyBPMNElementFeature;
@@ -572,13 +573,37 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
-		for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
-			ICustomElementFeatureContainer ctf = ct.getFeatureContainer();
-			if (ctf!=null) {
-				ICustomFeature[] cfa = ctf.getCustomFeatures(this);
-				if (cfa!=null) {
-					for (ICustomFeature cf : cfa) {
-						if (cf.isAvailable(context)) {
+		String id = CustomElementFeatureContainer.getId(context);
+		if (id!=null) {
+			for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
+				ICustomElementFeatureContainer ctf = ct.getFeatureContainer();
+				if (ctf!=null && id.equals(ctf.getId())) {
+					ICustomFeature[] cfa = ctf.getCustomFeatures(this);
+					if (cfa!=null) {
+						for (ICustomFeature cf : cfa) {
+							if (cf.isAvailable(context)) {
+								boolean found = false;
+								for (ICustomFeature cfl : list) {
+									if (cfl.getClass() == cf.getClass()) {
+										found = true;
+										break;
+									}
+								}
+								if (!found)
+									list.add(cf);
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			for (IFeatureContainer fc : containers.values()) {
+				Object o = fc.getApplyObject(context);
+				if (o!=null && fc.canApplyTo(o)) {
+					ICustomFeature[] cfa = fc.getCustomFeatures(this);
+					if (cfa!=null) {
+						for (ICustomFeature cf : cfa) {
 							boolean found = false;
 							for (ICustomFeature cfl : list) {
 								if (cfl.getClass() == cf.getClass()) {
@@ -589,25 +614,6 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 							if (!found)
 								list.add(cf);
 						}
-					}
-				}
-			}
-		}
-		for (IFeatureContainer fc : containers.values()) {
-			Object o = fc.getApplyObject(context);
-			if (o!=null && fc.canApplyTo(o)) {
-				ICustomFeature[] cfa = fc.getCustomFeatures(this);
-				if (cfa!=null) {
-					for (ICustomFeature cf : cfa) {
-						boolean found = false;
-						for (ICustomFeature cfl : list) {
-							if (cfl.getClass() == cf.getClass()) {
-								found = true;
-								break;
-							}
-						}
-						if (!found)
-							list.add(cf);
 					}
 				}
 			}

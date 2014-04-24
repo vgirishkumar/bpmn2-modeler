@@ -580,7 +580,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
                 childObject = createObject((EClass) reftype);
                 if (property.label!=null) {
                 	ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(childObject);
-                	adapter.getObjectDescriptor().setLabel(property.label);
+                	if (adapter!=null)
+                		adapter.getObjectDescriptor().setLabel(property.label);
                 }
                 adaptFeature(object, feature, childObject, property);
                 populateObjectFromValues(childObject, property.getValues());

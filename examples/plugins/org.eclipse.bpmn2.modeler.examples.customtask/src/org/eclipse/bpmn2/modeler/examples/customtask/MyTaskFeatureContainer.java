@@ -11,6 +11,7 @@
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -47,6 +48,6 @@ public class MyTaskFeatureContainer extends CustomShapeFeatureContainer {
 
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-		return new ICustomFeature[0];
+		return new ICustomFeature[] {new ShowPropertiesFeature(fp)};
 	}
 }

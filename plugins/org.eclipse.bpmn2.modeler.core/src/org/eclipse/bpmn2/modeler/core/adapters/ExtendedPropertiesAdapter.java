@@ -623,10 +623,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 				catch (Exception e) {
 		    		try {
 		    			// if a description is not found for this EClass, try "Any"
-			    		fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-			    		field = messages.getField(fieldName);
-			    		description += (String)field.get(null);
-			    		found = true;
+		    			if (feature!=null) {
+		    				fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
+				    		field = messages.getField(fieldName);
+				    		description += (String)field.get(null);
+				    		found = true;
+		    			}
 		    		}
 		    		catch (Exception e2) {
 		    		}
