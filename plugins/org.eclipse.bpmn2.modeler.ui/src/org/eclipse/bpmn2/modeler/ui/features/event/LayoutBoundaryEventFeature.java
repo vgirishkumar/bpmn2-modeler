@@ -16,7 +16,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
-import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine.*;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine.LocationType;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -42,7 +42,7 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 	public boolean layout(ILayoutContext context) {
 		boolean layout = false;
 
-		PictogramElement element = context.getPictogramElement();
+		final PictogramElement element = context.getPictogramElement();
 		GraphicsAlgorithm eventGa = element.getGraphicsAlgorithm();
 		BoundaryEvent event = BusinessObjectUtil.getFirstElementOfType(element, BoundaryEvent.class);
 
@@ -85,6 +85,21 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 			        (Shape) element, (Shape) activityContainer);
 			BoundaryEventPositionHelper.assignPositionOnLineProperty(element, newPos);
 		}
+
+		// There's some weird stuff going on here that I can't explain...See bug 433417
+		// When a Boundary Event is DND'ed onto an Activity that is contained in the Diagram,
+		// the Boundary Event is always drawn BELOW the Activity.
+		// I've tried forcing a refresh by changing the Z-order of the Boundary Event
+		// (which should be the top-most Figure anyway) but that didn't work. I've tried
+		// changing the Z-order of the Activity so it's at the bottom and that worked but,
+		// and undo-redo of the add action draws the Boundary Event BELOW the Activity again!
+		// The only thing that appears to work (without causing additional problems) is
+		// to use an EList.move() on the Diagram's children which, apparently, does not get
+		// recorded by the ChangeRecorder adapter and undo-redo works as expected.
+		if (activityContainer.eContainer()==getDiagram()) {
+			getDiagram().getChildren().move(0, (Shape)activityContainer);
+		}
+
 		return layout;
 	}
 
