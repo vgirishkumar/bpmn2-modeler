@@ -26,7 +26,6 @@ public class JbpmMultiInstanceDetailComposite extends
 
 	public JbpmMultiInstanceDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

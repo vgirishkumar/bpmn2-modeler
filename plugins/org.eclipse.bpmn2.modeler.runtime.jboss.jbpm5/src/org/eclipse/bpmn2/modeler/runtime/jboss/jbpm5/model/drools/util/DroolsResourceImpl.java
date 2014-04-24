@@ -515,7 +515,8 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 					// since these are (theoretically) supposed to be unique; but it is what it is...
 					if (childObject instanceof Property ||
 							childObject instanceof DataObject ||
-							childObject instanceof Message) {
+							childObject instanceof Message ||
+							(childObject instanceof DataInput && childObject.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
 						if (nameFeature!=null) {
 							Object value = childObject.eGet(nameFeature);

@@ -92,7 +92,7 @@ public class LayoutBoundaryEventFeature extends AbstractLayoutFeature {
 		// I've tried forcing a refresh by changing the Z-order of the Boundary Event
 		// (which should be the top-most Figure anyway) but that didn't work. I've tried
 		// changing the Z-order of the Activity so it's at the bottom and that worked but,
-		// and undo-redo of the add action draws the Boundary Event BELOW the Activity again!
+		// an undo-redo of the add action draws the Boundary Event BELOW the Activity again!
 		// The only thing that appears to work (without causing additional problems) is
 		// to use an EList.move() on the Diagram's children which, apparently, does not get
 		// recorded by the ChangeRecorder adapter and undo-redo works as expected.
