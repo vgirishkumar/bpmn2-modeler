@@ -435,6 +435,15 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             		importHandler.addImportObjects(imp, importObject);
             	}
             }
+			
+			// Fix up the descriptions for BPMNDiagrams
+			for (BPMNDiagram d : definitions.getDiagrams()) {
+	            // Set the diagram's description AFTER it has been completely populated
+				ExtendedPropertiesAdapter epa = ExtendedPropertiesAdapter.adapt(d);
+				if (epa!=null) {
+					epa.setProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION, epa.getDescription(d));
+				}
+			}
 			Bpmn2ModelerFactory.setEnableModelExtensions(true);
 		}
 

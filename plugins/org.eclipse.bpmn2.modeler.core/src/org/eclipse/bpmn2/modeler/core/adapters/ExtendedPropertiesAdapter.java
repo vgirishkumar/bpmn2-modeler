@@ -498,6 +498,10 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 		return false;
 	}
 
+	public String getDescription(EObject object) {
+		return getDescription(adapterFactory,object);
+	}
+
 	/**
 	 * Get the verbose description for a given object. If the object is a
 	 * {@code org.eclipse.bpmn2.di.BPMNDiagram} instance, the DiagramType name
