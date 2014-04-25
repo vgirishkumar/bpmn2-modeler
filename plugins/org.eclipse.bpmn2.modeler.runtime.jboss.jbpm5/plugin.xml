@@ -286,14 +286,6 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter">
 		</propertyExtension>
 
-<!-- This needs to go into the SwitchYard extension for the jBPM Target Runtime extension
-		<propertyExtension
-			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.serviceTask"
-			runtimeId="org.jboss.runtime.jbpm5"
-			type="org.eclipse.bpmn2.ServiceTask"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmServiceTaskPropertiesAdapter">
-		</propertyExtension>
--->
 		<propertyExtension
 			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.exclusiveGateway"
 			runtimeId="org.jboss.runtime.jbpm5"
@@ -1211,15 +1203,20 @@
 		</toolPalette>
 		
 		<typeLanguage name="Java Types" uri="http://www.java.com/javaTypes" prefix="java">
-			<type name="Boolean" qname="java.lang.Boolean"/>
-			<type name="Float" qname="java.lang.Float"/>
-			<type name="Integer" qname="java.lang.Integer"/>
-			<type name="String" qname="java.lang.String"/>
-			<type name="Object" qname="java.lang.Object"/>
+			<type name="Boolean" qname="Boolean"/>
+			<type name="Float" qname="Float"/>
+			<type name="Integer" qname="Integer"/>
+			<type name="String" qname="String"/>
+			<type name="Object" qname="Object"/>
 		</typeLanguage>
 		<expressionLanguage name="mvel" uri="http://www.mvel.org/2.0"/>
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
 		<expressionLanguage name="Rule" uri="http://www.jboss.org/drools/rule"/>
+
+		<serviceImplementation name="Java" uri="Java"/>
+		<serviceImplementation name="SwitchYard Service" uri="##SwitchYard"/>
+		<serviceImplementation name="Web Service" uri="##WebService"/>
+		<serviceImplementation name="Unspecified" uri="##unspecified"/>
 		
 	</extension>
 

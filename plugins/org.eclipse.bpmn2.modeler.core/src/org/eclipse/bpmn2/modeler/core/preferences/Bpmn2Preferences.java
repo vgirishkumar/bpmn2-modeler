@@ -1574,23 +1574,28 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	}
 
-	public List<String> getServiceImplementations() {
+	public Hashtable<String,String> getServiceImplementations() {
 		String value = get(PREF_SERVICE_IMPLEMENTATIONS, ""); //$NON-NLS-1$
-		List<String> impls = new ArrayList<String>();
+		Hashtable<String,String> impls = new Hashtable<String,String>();
 		for (String s : value.split("\t")) { //$NON-NLS-1$
-			if (!s.isEmpty())
-				impls.add(s);
+			if (!s.isEmpty()) {
+				String a[] = s.split(";");
+				if (a.length>1)
+					impls.put(a[0], a[1]);
+				else
+					impls.put(a[0], a[0]);
+			}
 		}
 		return impls;
 	}
 	
-	private void putServiceImplementations(List<String> impls) {
+	private void putServiceImplementations(Hashtable<String,String> impls) {
 		String value = ""; //$NON-NLS-1$
-		Iterator<String> iter = impls.iterator();
+		Iterator<Entry<String, String>> iter = impls.entrySet().iterator();
 		while (iter.hasNext()) {
-			String s = iter.next();
-			if (!s.isEmpty()) {
-				value += s;
+			Entry<String, String> entry = iter.next();
+			if (!entry.getKey().isEmpty()) {
+				value += entry.getKey() + ";" + entry.getValue();
 				if (iter.hasNext())
 					value += "\t"; //$NON-NLS-1$
 			}
@@ -1598,18 +1603,18 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		put(PREF_SERVICE_IMPLEMENTATIONS, value);
 	}
 	
-	public void addServiceImplementation(String impl) {
-		List<String> impls = getServiceImplementations();
-		if (!impls.contains(impl)) {
-			impls.add(impl);
+	public void addServiceImplementation(String name, String uri) {
+		Hashtable<String,String> impls = getServiceImplementations();
+		if (!impls.contains(name)) {
+			impls.put(name, uri);
 			putServiceImplementations(impls);
 		}
 	}
 	
-	public void removeServiceImplementation(String impl) {
-		List<String> impls = getServiceImplementations();
-		if (impls.contains(impl)) {
-			impls.remove(impl);
+	public void removeServiceImplementation(String name) {
+		Hashtable<String,String> impls = getServiceImplementations();
+		if (impls.containsKey(name)) {
+			impls.remove(name);
 			putServiceImplementations(impls);
 		}
 	}

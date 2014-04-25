@@ -86,6 +86,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	protected List<DataTypeDescriptor> dataTypeDescriptors;
 	protected List<TypeLanguageDescriptor> typeLanguageDescriptors;
 	protected List<ExpressionLanguageDescriptor> expressionLanguageDescriptors;
+	protected List<ServiceImplementationDescriptor> serviceImplementationDescriptors;
 
 	// all of the extension descriptor classes in the order in which they need to be processed
 	static Class extensionDescriptorClasses[] = {
@@ -101,6 +102,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		FeatureContainerDescriptor.class,
 		TypeLanguageDescriptor.class,
 		ExpressionLanguageDescriptor.class,
+		ServiceImplementationDescriptor.class,
 		ShapeStyle.class,
 	};
 
@@ -946,6 +948,12 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		if (expressionLanguageDescriptors==null)
 			expressionLanguageDescriptors = new ArrayList<ExpressionLanguageDescriptor>();
 		return expressionLanguageDescriptors;
+	}
+	
+	public List<ServiceImplementationDescriptor> getServiceImplementationDescriptors() {
+		if (serviceImplementationDescriptors==null)
+			serviceImplementationDescriptors = new ArrayList<ServiceImplementationDescriptor>();
+		return serviceImplementationDescriptors;
 	}
 	
 	public static class ConfigurationElementSorter {

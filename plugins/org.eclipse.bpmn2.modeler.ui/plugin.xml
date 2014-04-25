@@ -1143,6 +1143,9 @@
 		
 		<expressionLanguage name="XPath" uri="http://www.w3.org/1999/XPath"/>
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
+
+		<serviceImplementation name="Web Service" uri="##WebService"/>
+		<serviceImplementation name="Unspecified" uri="##unspecified"/>
 		
 	</extension>
 	

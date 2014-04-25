@@ -140,6 +140,7 @@ A final note: these configuration files are intended to be used primarily by plu
             <element ref="dataType" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="typeLanguage" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="expressionLanguage" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="serviceImplementation"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -1380,6 +1381,42 @@ The Default Target Runtime provides support for XPath and Java only.
             <annotation>
                <documentation>
                   A URI that identifies a specific expression language.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="serviceImplementation">
+      <annotation>
+         <documentation>
+            This extension element identifies a Service Task implementation supported by the Target Runtime. A Target Runtime may define any number of these implementations. The definition element that appears first is used as the default.
+
+The Default Target Runtime provides support for ##WebService and ##Unspecified only.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="runtimeId" type="string">
+            <annotation>
+               <documentation>
+                  Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;serviceImplementation&lt;/b&gt; definition will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Descriptive text label that will be displayed in the UI.
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="uri" type="string">
+            <annotation>
+               <documentation>
+                  A URI that identifies a specific service implementation.
                </documentation>
             </annotation>
          </attribute>

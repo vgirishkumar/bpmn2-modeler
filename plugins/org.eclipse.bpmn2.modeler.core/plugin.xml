@@ -122,11 +122,11 @@
 					lang="Java"
 					mode="Live"
 					name="%constraint.name.5"
-					severity="INFO"
+					severity="ERROR"
 					statusCode="1">
 				<message>%constraint.message.5</message>
 				<description>%constraint.description.5</description>
-				<target class="Definitions"/>
+				<target class="Process"/>
 				<target class="BaseElement"/>
 			</constraint>
 		    <constraint

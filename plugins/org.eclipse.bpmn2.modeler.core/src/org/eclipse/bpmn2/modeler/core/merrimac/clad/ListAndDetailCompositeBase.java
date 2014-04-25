@@ -263,8 +263,7 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		addChangeListener(businessObject);
 
 		// Do initial validation to force display of error message if any
-    	Notification n = new ENotificationImpl((InternalEObject) businessObject, 0, null, null, null, false);
-    	validate(n);
+		validate();
 	}
 	
 	protected void addChangeListener(EObject object) {
@@ -438,6 +437,11 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		this.isPopupDialog = isPopupDialog;
 	}
 
+	public void validate() {
+    	Notification n = new ENotificationImpl((InternalEObject) businessObject, 0, null, null, null, false);
+    	validate(n);
+	}
+	
 	protected void validate(Notification notification) {
 		IValidator<Notification> validator = ModelValidationService.getInstance().newValidator(EvaluationMode.LIVE);
 		validator.validate(notification);
