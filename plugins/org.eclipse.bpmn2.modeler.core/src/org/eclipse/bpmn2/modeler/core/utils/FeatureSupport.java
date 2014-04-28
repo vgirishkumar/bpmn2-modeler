@@ -967,9 +967,12 @@ public class FeatureSupport {
 		return result;
 	}
 	
-	public static List<EClass> getAllowedEventDefinitions(Event event) {
+	public static List<EClass> getAllowedEventDefinitions(Event event, Object parentContainer) {
 		BaseElement eventOwner = null;
-		if (event instanceof BoundaryEvent) {
+		if (parentContainer instanceof BaseElement)
+			eventOwner = (BaseElement) parentContainer;
+		
+		if (event instanceof BoundaryEvent && ((BoundaryEvent)event).getAttachedToRef()!=null) {
 			eventOwner = ((BoundaryEvent)event).getAttachedToRef();
 		}
 		else {

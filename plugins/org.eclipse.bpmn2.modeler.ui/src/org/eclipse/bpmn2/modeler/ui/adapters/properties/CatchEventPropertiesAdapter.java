@@ -17,7 +17,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.OutputSet;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -57,5 +57,16 @@ public class CatchEventPropertiesAdapter extends EventPropertiesAdapter<CatchEve
 				return dataOutput;
 			}
     	});
+    	
+    	if (object instanceof StartEvent) {
+	    	feature = Bpmn2Package.eINSTANCE.getStartEvent_IsInterrupting();
+	    	setFeatureDescriptor(feature, new FeatureDescriptor<CatchEvent>(this, object, feature) {
+
+				@Override
+				public String getLabel() {
+					return "Cancel Activity";
+				}
+	    	});
+    	}
 	}
 }

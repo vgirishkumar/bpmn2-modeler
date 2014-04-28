@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.core.features.event;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.CatchEvent;
@@ -22,12 +21,10 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;

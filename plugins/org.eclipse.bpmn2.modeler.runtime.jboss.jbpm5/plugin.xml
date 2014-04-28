@@ -894,6 +894,7 @@
 			<enable object="Signal" feature="name"/>
 			<enable object="SignalEventDefinition" feature="signalRef"/>
 			<enable object="StartEvent" feature="name"/>
+			<enable object="StartEvent" feature="isInterrupting"/>
 			<enable object="StartEvent" feature="eventDefinitions"/>
 			<enable object="SubProcess" feature="flowElements"/>
 			<enable object="SubProcess" feature="isForCompensation"/>
@@ -1057,16 +1058,18 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Simple">
 			
-			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Activities" name="%category.name">
-				<tool name="%tool.name" object="AdHocSubProcess"/>
-				<tool name="%tool.name.0" object="SubProcess"/>
-				<tool name="%tool.name.1" object="CallActivity"/>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Tasks" name="%category.name">
 				<tool name="%tool.name.2" object="ManualTask"/>
 				<tool name="%tool.name.3" object="UserTask"/>
 				<tool name="%tool.name.4" object="ScriptTask"/>
 				<tool name="%tool.name.5" object="BusinessRuleTask"/>
 				<tool name="%tool.name.6" object="SendTask"/>
 				<tool name="%tool.name.7" object="ReceiveTask"/>
+			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.SubProcesses" name="%category.name.0.1">
+				<tool name="%tool.name" object="AdHocSubProcess"/>
+				<tool name="%tool.name.0" object="SubProcess"/>
+				<tool name="%tool.name.1" object="CallActivity"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.BoundaryEvents" name="%category.name.0">
 				<tool name="%tool.name.8" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
@@ -1096,7 +1099,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="RuleFlow">
 			
-			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Activities" name="%category.name.5">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Tasks" name="%category.name.5">
 				<tool name="%tool.name.19" object="BusinessRuleTask"/>
 				<tool name="%tool.name.20" object="CallActivity"/>
 				<tool name="%tool.name.21" object="ScriptTask"/>
@@ -1120,10 +1123,7 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="Process" profile="Full">
 			
-			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Activities" name="%category.name.9">
-				<tool name="%tool.name.28" object="AdHocSubProcess"/>
-				<tool name="%tool.name.29" object="SubProcess"/>
-				<tool name="%tool.name.30" object="CallActivity"/>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Tasks" name="%category.name.9">
 				<tool name="%tool.name.31" object="Task"/>
 				<tool name="%tool.name.32" object="ManualTask"/>
 				<tool name="%tool.name.33" object="UserTask"/>
@@ -1133,12 +1133,18 @@
 				<tool name="%tool.name.37" object="SendTask"/>
 				<tool name="%tool.name.38" object="ReceiveTask"/>
 			</category>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.SubProcesses" name="%category.name.9.1">
+				<tool name="%tool.name.28" object="AdHocSubProcess"/>
+				<tool name="%tool.name.29" object="SubProcess"/>
+				<tool name="%tool.name.30" object="CallActivity"/>
+			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Artifacts" name="%category.name.10">
 				<tool name="%tool.name.39" object="Group"/>
 				<tool name="%tool.name.40" object="TextAnnotation"/>
 			</category>
-			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.BoundaryEvents" name="%category.name.11">
-				<tool name="%tool.name.41" object="BoundaryEvent" icon="IntermediateEvent.png"/>
+			<category id="org.jboss.runtime.jbpm5.toolpalette.full.BoundaryEvents" name="%category.name.11">
+				<tool name="%tool.name.41" object="BoundaryEvent+CancelEventDefinition" icon="CancelEndEvent.png"/>
+				<tool name="%tool.name.41.1" object="BoundaryEvent+CompensateEventDefinition" icon="CompensationStartEvent.png"/>
 				<tool name="%tool.name.42" object="BoundaryEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
 				<tool name="%tool.name.43" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
 				<tool name="%tool.name.44" object="BoundaryEvent+EscalationEventDefinition" icon="EscalationCatchEvent.png"/>

@@ -52,11 +52,17 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 		if (size==1) {
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
 			link(addedShape, eventDefinitions.get(0));
+			Graphiti.getPeService().setPropertyValue(addedShape,
+					AbstractEventDefinitionFeatureContainer.EVENT_DEFINITION_SHAPE,
+					Boolean.toString(true));
 		}
 		else if (size > 1) {
 			Shape multipleShape = Graphiti.getPeService().createShape(container, false);
 			drawForEvent(event, multipleShape);
 			link(multipleShape, eventDefinitions.toArray(new EventDefinition[size]));
+			Graphiti.getPeService().setPropertyValue(multipleShape,
+					AbstractEventDefinitionFeatureContainer.EVENT_DEFINITION_SHAPE,
+					Boolean.toString(true));
 		}
 	}
 

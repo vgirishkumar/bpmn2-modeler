@@ -349,6 +349,12 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		if (eClass!=null) {
 			parentFeature = featureProvider.getCreateFeatureForBusinessObject(eClass.getInstanceClass());
 		}
+		else {
+			Activator.logError(new IllegalArgumentException(
+					"The object type '"+name+"' referenced by the tool '"+root.getName()+"'is undefined"
+					));
+		}
+		
 		if (root!=null) {
 			if (node!=null) {
 				CompoundCreateFeaturePart n = node.addChild(parentFeature);

@@ -130,9 +130,9 @@ public class DefaultBusinessObjectDelegate implements IBusinessObjectDelegate {
 
 	@Override
 	public String getLabel(EObject object, EStructuralFeature feature) {
-		if (feature.getEType().getEPackage() != Bpmn2Package.eINSTANCE)
-			return ExtendedPropertiesProvider.getLabel(object, feature);
-		return ExtendedPropertiesProvider.getLabel(feature.getEType());
+//		if (feature.getEType().getEPackage() != Bpmn2Package.eINSTANCE)
+		return ExtendedPropertiesProvider.getLabel(object, feature);
+//		return ExtendedPropertiesProvider.getLabel(feature);
 	}
 	
 	@Override

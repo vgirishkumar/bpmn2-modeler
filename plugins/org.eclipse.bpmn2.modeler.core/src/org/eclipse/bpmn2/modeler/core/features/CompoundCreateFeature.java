@@ -55,6 +55,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	
 	/** The ToolDescriptor that defined this {@code CompoundCreateFeature}. */
 	protected ToolDescriptor tool;
+
+	public final static String PARENT_CONTAINER = "parent.container";
 	
 	/**
 	 * Instantiates a new compound create feature.

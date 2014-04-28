@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -24,9 +25,6 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -46,6 +44,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.PictogramLink;
+import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -84,6 +84,44 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		if (feature instanceof ICreateFeature && context instanceof ICreateContext) {
 			if (!((ICreateFeature)feature).canCreate((ICreateContext)context))
 				return false;
+			if (children.size()>0) {
+				/*
+				 * Some types of objects have constraints on the target
+				 * container e.g. a StartEvent with a CompensateEventDefinition
+				 * MAY NOT be created within a Process, but MAY be created in a
+				 * SubProcess. The restriction here is not imposed by the
+				 * StartEvent, but by the CompensateEventDefinition which is a
+				 * child of the StartEvent CompoundCreateFeaturePart. This bit
+				 * of code ensures that this constraint is checked correctly.
+				 */
+				
+				PictogramElement parentContainer = ((ICreateContext)context).getTargetContainer();
+				// create a throw-away CreateContext for this child feature part
+				CreateContext childContext = new CreateContext();
+				// make the target container this feature part (e.g. the StartEvent)
+				ContainerShape targetContainer = PictogramsFactory.eINSTANCE.createContainerShape();
+				childContext.setTargetContainer(targetContainer);
+				// create a throw-away BPMN2 object so we can link it to the container shape
+				EClass eClass = ((AbstractBpmn2CreateFeature)feature).getBusinessObjectClass();
+				EObject businessObject = Bpmn2Factory.eINSTANCE.create(eClass);
+				// do the linking
+				PictogramLink link = PictogramsFactory.eINSTANCE.createPictogramLink();
+				link.setPictogramElement(targetContainer);
+				link.getBusinessObjects().add(businessObject);
+				targetContainer.setLink(link);
+				
+				// Set the parent business object. This is required by {@link
+				// org.eclipse.bpmn2.modeler.core.utils.FeatureSupport#getAllowedEventDefinitions()}
+				// when doing validation for target Events & Event Definitions.
+				childContext.putProperty(CompoundCreateFeature.PARENT_CONTAINER,
+						BusinessObjectUtil.getBusinessObjectForPictogramElement(parentContainer));
+				
+				// test the children feature parts
+				for (CompoundCreateFeaturePart<CONTEXT> child : children) {
+					if (!child.canCreate(childContext))
+						return false;
+				}
+			}
 		}
 		else if (feature instanceof ICreateConnectionFeature && context instanceof ICreateConnectionContext) {
 			if (!((ICreateConnectionFeature)feature).canCreate((ICreateConnectionContext)context))

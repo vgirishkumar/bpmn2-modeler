@@ -154,10 +154,10 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
 						currentParts.add(toolPart);
-						currentParts = toolPart.children;
-						if (result==null)
-							result = toolPart;
 					}
+					currentParts = toolPart.children;
+					if (result==null)
+						result = toolPart;
 					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c=='-') {

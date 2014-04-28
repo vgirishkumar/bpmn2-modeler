@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
@@ -34,7 +35,9 @@ public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefini
 	public boolean canCreate(ICreateContext context) {
 		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
 		if (bo instanceof Event) {
-			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions((Event) bo);
+			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(
+					(Event) bo,
+					context.getProperty(CompoundCreateFeature.PARENT_CONTAINER));
 			if (allowedItems.contains(getBusinessObjectClass()))
 				return true;
 		}

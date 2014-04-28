@@ -16,14 +16,18 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 import java.util.List;
 
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite;
+import org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite.EventDefinitionsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite.MapType;
 import org.eclipse.emf.ecore.EClass;
@@ -61,6 +65,12 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 
 					@Override
 					public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+						if (eClass==TimerEventDefinition.class) {
+							return new TimerEventDefinitionDetailComposite(parent, style);
+						}
+						if (eClass==ConditionalEventDefinition.class){
+							return new ConditionalEventDefinitionDetailComposite(parent, style);
+						}
 						EventDefinitionsDetailComposite details = new EventDefinitionsDetailComposite(parent, (Event)getBusinessObject()) {
 							@Override
 							public void createBindings(EObject be) {

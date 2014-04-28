@@ -736,7 +736,7 @@
 					<object type="SequenceFlow[source='arbitrary.cycles.xor5',target='arbitrary.cycles.taskG']"/>
 					<object type="SequenceFlow[source='arbitrary.cycles.xor5',target='arbitrary.cycles.xor2']" />
 				</tool>
-				
+
 				<tool name="%tool.name.0" id="org.bpmn2.modeler.tool.deferred.choice">
 					<object type="Task[$name='Task A',y=50]" id="deferred.choice.taskA" optional="true"/>
 					<object type="Task[$name='Task B',x=300]" id="deferred.choice.taskB"/>

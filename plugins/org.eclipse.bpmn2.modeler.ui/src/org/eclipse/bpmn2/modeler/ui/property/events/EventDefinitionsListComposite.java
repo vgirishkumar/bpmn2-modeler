@@ -61,11 +61,18 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 public class EventDefinitionsListComposite extends DefaultListComposite {
 	
@@ -84,7 +91,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 	
 	@Override
-	protected EObject addListItem(EObject object, EStructuralFeature feature) {
+	protected EObject addListItem(final EObject object, EStructuralFeature feature) {
 		EObject newItem = super.addListItem(object, feature);
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=417207
 		// the Cancel Activity checkbox should always be TRUE
@@ -107,11 +114,29 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 			param.getFirst().setId(null);
 			ModelUtil.setID(param.getFirst(), object.eResource());
 		}
+		
+//		Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+//		IFeatureProvider fp = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
+//		PictogramElement pe = Graphiti.getLinkService().getPictogramElements(diagram, object).get(0);
+//		AddContext context = new AddContext();
+//		context.setTargetContainer((ContainerShape) pe);
+//		context.setNewObject(newItem);
+//		fp.addIfPossible(context);
+
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (getPropertySection()!=null)
+					getPropertySection().getSectionRoot().setBusinessObject(object);
+			}
+			
+		});
 		return newItem;
 	}
 
 	@Override
-	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
+	protected Object removeListItem(final EObject object, EStructuralFeature feature, int index) {
 		Object oldItem = getListItem(object,feature,index);
 		if (hasItemDefinition((EventDefinition)oldItem)) {
 			// remove this DataInput or DataOutput
@@ -131,6 +156,15 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				((AbstractDetailComposite)getParent()).refresh();
 			}
 		}
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (getPropertySection()!=null)
+					getPropertySection().getSectionRoot().setBusinessObject(object);
+			}
+			
+		});
 		return newItem;
 	}
 
@@ -269,7 +303,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 			@Override
 			protected void filterList(List<EClass> items) {
 				List<EClass> filteredItems = new ArrayList<EClass>();
-				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event);
+				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event, null);
 				for (EClass eclass : items) {
 					if (allowedItems.contains(eclass))
 						filteredItems.add(eclass);

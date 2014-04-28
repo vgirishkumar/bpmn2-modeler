@@ -34,6 +34,7 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
@@ -125,7 +126,21 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
-
+	
+	@Override
+	protected Object getBusinessObjectForPictogramElement(PictogramElement pe) {
+		// the Graphiti {@link
+		// org.eclipse.graphiti.features.impl.AbstractFeature#getBusinessObjectForPictogramElement()}
+		// will return null if the pictogram element is not "active". In some
+		// cases we also want to check
+		// the business object if the PE has not yet been realized {@see
+		// org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart#canCreate(IContext)}
+		Object bo = super.getBusinessObjectForPictogramElement(pe);
+		if (bo!=null)
+			return bo;
+		return BusinessObjectUtil.getFirstBaseElement(pe);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#postExecute(org.eclipse.graphiti.IExecutionInfo)
 	 * Invoked after the graphic has been created to display an optional configuration dialog.
