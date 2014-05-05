@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -98,10 +98,10 @@ public class UpdateExpandableActivityFeature extends AbstractBpmn2UpdateFeature 
 
 		if(!isExpanded){
 			FeatureSupport.setContainerChildrenVisible(container, false);
-			GraphicsUtil.showActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}else{
 			FeatureSupport.setContainerChildrenVisible(container, true);
-			GraphicsUtil.hideActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		
 		return true;

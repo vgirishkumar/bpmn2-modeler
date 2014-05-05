@@ -23,7 +23,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -305,7 +305,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		createContext.setTargetContainer(oldShape.getContainer());
 		createContext.setLocation(x, y);
 		createContext.setSize(w, h);
-		createContext.putProperty(DIImport.IMPORT_PROPERTY, Boolean.TRUE);
+		createContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
 
 		Object[] created = createFeature.create(createContext);
 		FlowElement newObject = (FlowElement) created[0];

@@ -17,7 +17,7 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.participant.ResizeParticipantFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -32,8 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
 public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
-
-	public static final String LANE_RESIZE_PROPERTY = "lane.resize"; //$NON-NLS-1$
 
 	public ResizeLaneFeature(IFeatureProvider fp) {
 		super(fp);
@@ -101,7 +99,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 			ContainerShape rootContainer = FeatureSupport.getRootContainer(laneContainerShape);
 			
 			boolean fetchFirstProp = false;
-			Object fetchFirstProperty = context.getProperty(ResizeParticipantFeature.RESIZE_FIRST_LANE);
+			Object fetchFirstProperty = context.getProperty(GraphitiConstants.RESIZE_FIRST_LANE);
 			if (fetchFirstProperty != null && ((Boolean) fetchFirstProperty).booleanValue()) {
 				fetchFirstProp = true;
 			} else {
@@ -165,7 +163,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 				dHeight = context.getHeight() - ga.getHeight();
 			}
 			
-			Object poolResizeProperty = context.getProperty(ResizeParticipantFeature.POOL_RESIZE_PROPERTY);
+			Object poolResizeProperty = context.getProperty(GraphitiConstants.POOL_RESIZE_PROPERTY);
 			if (poolResizeProperty != null && ((Boolean) poolResizeProperty).booleanValue()) {
 				if (isHorizontal) {
 					Graphiti.getGaService().setWidth(ga, context.getWidth());
@@ -185,7 +183,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 						newContext.setWidth(currentGA.getWidth() + dWidth);
 						
 						
-						newContext.putProperty(ResizeParticipantFeature.POOL_RESIZE_PROPERTY, true);
+						newContext.putProperty(GraphitiConstants.POOL_RESIZE_PROPERTY, true);
 						
 						resizeShape(newContext);
 					}
@@ -208,7 +206,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 					}
 				} else {
 					ContainerShape container = null;
-					Object rootIsLaneProperty = context.getProperty(LANE_RESIZE_PROPERTY);
+					Object rootIsLaneProperty = context.getProperty(GraphitiConstants.LANE_RESIZE_PROPERTY);
 					if (rootIsLaneProperty != null && ((Boolean) rootIsLaneProperty).booleanValue()) {
 						Graphiti.getGaService().setWidth(ga, context.getWidth());
 						Graphiti.getGaService().setHeight(ga, context.getHeight());
@@ -236,7 +234,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 							newContext.setWidth(currentGA.getWidth() + dWidth);
 							newContext.setHeight(currentGA.getHeight() + dHeight);
 
-							newContext.putProperty(LANE_RESIZE_PROPERTY, true);
+							newContext.putProperty(GraphitiConstants.LANE_RESIZE_PROPERTY, true);
 
 							resizeShape(newContext);
 						}

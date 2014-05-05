@@ -154,10 +154,10 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-			Graphiti.getPeService().setPropertyValue(pe,CUSTOM_ELEMENT_ID,id); 
+			Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,id); 
 		}
 		else {
-			context.putProperty(CUSTOM_ELEMENT_ID, id);
+			context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 		}
 	}
 	
@@ -179,7 +179,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
 				id = ctd.getFeatureContainer().getId(object);
 				if (ctd.getId().equals(id)) {
-					context.putProperty(CUSTOM_ELEMENT_ID, id);
+					context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 					return (String)id;
 				}
 			}
@@ -187,17 +187,17 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 		
 		if (context instanceof IPictogramElementContext) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-			id = Graphiti.getPeService().getPropertyValue(pe,CUSTOM_ELEMENT_ID); 
+			id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID); 
 		}
 		else if (context instanceof ICustomContext) {
 			for (PictogramElement pe : ((ICustomContext)context).getPictogramElements()) {
-				id = Graphiti.getPeService().getPropertyValue(pe,CUSTOM_ELEMENT_ID);
+				id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
 				if (id!=null)
 					break;
 			}
 		}
 		else {
-			id = context.getProperty(CUSTOM_ELEMENT_ID);
+			id = context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
 		}
 		return (String)id;
 	}
@@ -260,7 +260,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			if (pe!=null)
-				Graphiti.getPeService().setPropertyValue(pe,CUSTOM_ELEMENT_ID,getId());
+				Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
 			
 			// add an icon to the top-left corner if applicable, and if the implementing
 			// addFeatureDelegate hasn't already done so.

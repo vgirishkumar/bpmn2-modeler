@@ -69,7 +69,7 @@ import org.eclipse.bpmn2.UserTask;
 
 @SuppressWarnings("rawtypes")
 public class Bpmn2FeatureMap {
-	public static final List<Class> CONNECTORS;
+	public static final List<Class> CONNECTIONS;
 	public static final List<Class> EVENT_DEFINITIONS;
 	public static final List<Class> EVENTS;
 	public static final List<Class> GATEWAYS;
@@ -83,7 +83,7 @@ public class Bpmn2FeatureMap {
 		features.add(Association.class);
 		features.add(DataAssociation.class);
 		features.add(ConversationLink.class);
-		CONNECTORS = Collections.unmodifiableList(features);
+		CONNECTIONS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
 		features.add(ConditionalEventDefinition.class);
@@ -133,6 +133,7 @@ public class Bpmn2FeatureMap {
 		features.add(DataStoreReference.class);
 		features.add(DataInput.class);
 		features.add(DataOutput.class);
+		features.add(Message.class);
 		DATA = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
@@ -144,7 +145,6 @@ public class Bpmn2FeatureMap {
 		features.add(Group.class);
 		features.add(AdHocSubProcess.class);
 		features.add(CallActivity.class);
-		features.add(Message.class);
 		features.add(Conversation.class);
 		features.add(SubChoreography.class);
 		features.add(CallChoreography.class);

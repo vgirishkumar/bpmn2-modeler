@@ -34,7 +34,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  * @param <T> the generic type, a subclass of {@link BaseElement}
  */
 public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
-	extends AbstractAddPictogramElementFeature
+	extends AbstractBpmn2AddPictogramElementFeature
 	implements IBpmn2AddFeature<T> {
 	
 	/**

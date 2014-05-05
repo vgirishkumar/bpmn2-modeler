@@ -41,7 +41,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -382,7 +382,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				else {
 					ac = new AddConnectionContext(peAnchor, ownerAnchor);
 				}
-				ac.putProperty(ContextConstants.BUSINESS_OBJECT, association);
+				ac.putProperty(GraphitiConstants.BUSINESS_OBJECT, association);
 				ac.setNewObject(association);
 				IAddFeature af = fp.getAddFeature(ac);
 				if (af.canAdd(ac)) {

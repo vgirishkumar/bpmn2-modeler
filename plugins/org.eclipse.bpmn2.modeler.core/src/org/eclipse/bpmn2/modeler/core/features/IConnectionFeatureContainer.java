@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 
 // TODO: Auto-generated Javadoc
@@ -37,4 +38,13 @@ public interface IConnectionFeatureContainer extends IFeatureContainer {
 	 * @return the reconnection feature
 	 */
 	IReconnectionFeature getReconnectionFeature(IFeatureProvider fp);
+	
+	/**
+	 * Gets the Connection Decorator move feature. This is used to move labels
+	 * attached as Decorators on a Connection.
+	 * 
+	 * @param fp
+	 * @return
+	 */
+	IMoveConnectionDecoratorFeature getMoveConnectionDecoratorFeature(IFeatureProvider fp);
 }

@@ -158,7 +158,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.DescriptionPropertySection"
 			image="icons/20/Thumbnail.png"
 			popup="true"
-			label="%propertyTab.label">
+			label="%propertyTab.label.General">
 		</propertyTab>
 
 		<!-- ============  Diagrams ============ -->
@@ -1115,6 +1115,8 @@
 		<style object="TextAnnotation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="Transaction" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="UserTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
+		<style object="CANVAS" background="FFFFFF"/>
+		<style object="GRID" foreground="E3EEF9"/>
 		
 		<typeLanguage name="XSD Schema" uri="http://www.w3.org/2001/XMLSchema" prefix="xs">
 			<type name="string"/>

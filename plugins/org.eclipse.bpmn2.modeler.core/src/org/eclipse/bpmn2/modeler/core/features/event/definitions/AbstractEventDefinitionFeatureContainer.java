@@ -41,7 +41,6 @@ import org.eclipse.graphiti.util.IColorConstant;
 
 public abstract class AbstractEventDefinitionFeatureContainer extends BaseElementFeatureContainer {
 
-	public final static String EVENT_DEFINITION_SHAPE = "event.definition.shape";
 	@Override
 	public Object getApplyObject(IContext context) {
 		if (context instanceof IAddContext) {

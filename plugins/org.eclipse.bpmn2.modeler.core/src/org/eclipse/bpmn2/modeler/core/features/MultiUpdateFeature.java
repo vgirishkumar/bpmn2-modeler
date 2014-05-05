@@ -28,9 +28,6 @@ import org.eclipse.graphiti.features.impl.Reason;
  */
 public class MultiUpdateFeature extends AbstractUpdateFeature {
 
-	/** The Constant FORCE_UPDATE_ALL. */
-	public final static String FORCE_UPDATE_ALL = "force.update.all"; //$NON-NLS-1$
-	
 	/** The features. */
 	protected List<IUpdateFeature> features = new ArrayList<IUpdateFeature>();
 
@@ -83,7 +80,7 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	@Override
 	public boolean update(IUpdateContext context) {
 		boolean updated = false;
-		boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(FORCE_UPDATE_ALL));
+		boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
 			
 		for (IUpdateFeature p : features) {
 			if ((p.updateNeeded(context).toBoolean() || forceUpdate) && p.update(context)) {

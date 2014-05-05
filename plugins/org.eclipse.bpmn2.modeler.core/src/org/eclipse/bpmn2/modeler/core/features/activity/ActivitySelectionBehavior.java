@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -36,7 +37,7 @@ public class ActivitySelectionBehavior {
 	 * @return true, if successful
 	 */
 	public static boolean canApplyTo(PictogramElement element) {
-		if (element.getLink() == null || !(element instanceof ContainerShape)) {
+		if (element.getLink() == null || !(element instanceof ContainerShape) || FeatureSupport.isLabelShape(element)) {
 			return false;
 		}
 

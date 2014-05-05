@@ -14,7 +14,8 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddPictogramElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -30,7 +31,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddLabelFeature extends AbstractAddShapeFeature {
+public class AddLabelFeature extends AbstractBpmn2AddPictogramElementFeature {
 
 	public AddLabelFeature(IFeatureProvider fp) {
 		super(fp);
@@ -46,21 +47,22 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
 		
-		int width = (Integer) context.getProperty(ContextConstants.WIDTH);
-		int height = (Integer) context.getProperty(ContextConstants.HEIGHT);
+		boolean isImporting = DIImport.isImporting(context);
+		int width = (Integer) context.getProperty(GraphitiConstants.WIDTH);
+		int height = (Integer) context.getProperty(GraphitiConstants.HEIGHT);
 		
 		int x = context.getX();
 		int y = context.getY();
 		
-		BaseElement baseElement = (BaseElement) context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		BaseElement baseElement = (BaseElement) context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
 		
 		ContainerShape targetContainer = getTargetContainer(context);
-		PictogramElement labelOwner = (PictogramElement) context.getProperty(ContextConstants.LABEL_OWNER);
+		PictogramElement labelOwner = LabelFeatureContainer.getLabelOwner(context);
 		final ContainerShape textContainerShape = peService.createContainerShape(targetContainer, true);
 		gaService.createInvisibleRectangle(textContainerShape);
 		
 		Shape textShape = peService.createShape(textContainerShape, false);
-		peService.setPropertyValue(textShape, UpdateLabelFeature.TEXT_ELEMENT, Boolean.toString(true));
+		peService.setPropertyValue(textShape, GraphitiConstants.TEXT_ELEMENT, Boolean.toString(true));
 		String name = ExtendedPropertiesProvider.getTextValue(baseElement);
 		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
 		StyleUtil.applyStyle(text, baseElement);
@@ -68,13 +70,13 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 		link(textShape, baseElement);
 		
-		// Boundary events get a different add context, so use the context coodinates relative
-		if ( (baseElement instanceof BoundaryEvent) && !isImport(context) ){
+		// Boundary events get a different add context, so use the context coordinates relative
+		if ( (baseElement instanceof BoundaryEvent) && !isImporting ){
 			x = context.getTargetContainer().getGraphicsAlgorithm().getX() + context.getX()-width/2;
 			y = context.getTargetContainer().getGraphicsAlgorithm().getY() + context.getY()-height/2;
 		}
 		
-		GraphicsUtil.alignWithShape(text, textContainerShape, width, height, x, y, 0, 0);
+//		GraphicsUtil.alignWithShape(targetContainer);//text, textContainerShape, width, height, x, y, 0, 0);
 		
 		// if this label has an owner, link the two to each other
 		if (labelOwner!=null) {
@@ -85,16 +87,15 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 			link(textContainerShape, baseElement);
 		}
 		
-		Graphiti.getPeService().setPropertyValue(textContainerShape, GraphicsUtil.LABEL_PROPERTY, "true"); //$NON-NLS-1$
+		Graphiti.getPeService().setPropertyValue(textContainerShape, GraphitiConstants.LABEL_PROPERTY, "true"); //$NON-NLS-1$
 		
-		updatePictogramElement(textContainerShape);
-		layoutPictogramElement(textContainerShape);
+		updatePictogramElement(context, textContainerShape);
+		layoutPictogramElement(context, textContainerShape);
 		
+		LabelFeatureContainer.adjustLabelLocation(labelOwner, isImporting,
+				GraphicsUtil.createPoint(context.getX(), context.getY()));
+
 		return textContainerShape;
-	}
-	
-	private boolean isImport(IAddContext context) {
-		return context.getProperty(DIImport.IMPORT_PROPERTY) == null ? false : (Boolean) context.getProperty(DIImport.IMPORT_PROPERTY);
 	}
 	
 	/**
@@ -105,9 +106,9 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 	 * @return the target control for the current context
 	 */
 	ContainerShape getTargetContainer(IAddContext context) {
-		boolean isBoundary = context.getProperty(ContextConstants.BUSINESS_OBJECT) instanceof BoundaryEvent;
+		boolean isBoundary = context.getProperty(GraphitiConstants.BUSINESS_OBJECT) instanceof BoundaryEvent;
 		
-		if ( isBoundary && !isImport(context) ){
+		if ( isBoundary && !DIImport.isImporting(context) ){
 			if (context.getTargetContainer()!=null){
 				return context.getTargetContainer().getContainer();
 			}

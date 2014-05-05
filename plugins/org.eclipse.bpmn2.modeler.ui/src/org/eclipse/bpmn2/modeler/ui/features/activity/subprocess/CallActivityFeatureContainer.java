@@ -26,7 +26,7 @@ import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
@@ -270,14 +270,14 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 			Shape globalTaskShape = GraphicsUtil.getContainedShape(container, GLOBAL_TASK_SHAPE_PROPERTY);
 
 			if (callActivity.getCalledElementRef() == null) {
-				GraphicsUtil.hideActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+				GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 				if (globalTaskShape != null) {
 					peService.deletePictogramElement(globalTaskShape);
 				}
 			}
 
 			else if (callActivity.getCalledElementRef() instanceof GlobalTask) {
-				GraphicsUtil.hideActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+				GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 				GlobalTask t = (GlobalTask) callActivity.getCalledElementRef();
 				if (globalTaskShape == null) {
 					globalTaskShape = peService.createShape(container, false);
@@ -294,7 +294,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 				if (globalTaskShape != null) {
 					peService.deletePictogramElement(globalTaskShape);
 				}
-				GraphicsUtil.showActivityMarker(container, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+				GraphicsUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 			}
 
 			peService.setPropertyValue(container, CALL_ACTIVITY_REF_PROPERTY,

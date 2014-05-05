@@ -153,7 +153,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			
 			// create the PE and copy our ID into its properties.
 			PictogramElement pe = getFeatureProvider().addIfPossible(addContext);
-			Graphiti.getPeService().setPropertyValue(pe,CUSTOM_ELEMENT_ID,id);
+			Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,id);
 			
 			return pe;
 		}
@@ -271,7 +271,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			if (pe!=null)
-				Graphiti.getPeService().setPropertyValue(pe,CUSTOM_ELEMENT_ID,getId());
+				Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
 			
 			// add an icon to the top-left corner if applicable, and if the implementing
 			// addFeatureDelegate hasn't already done so.

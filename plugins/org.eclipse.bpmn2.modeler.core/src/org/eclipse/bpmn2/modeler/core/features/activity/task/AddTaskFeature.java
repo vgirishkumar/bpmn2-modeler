@@ -39,14 +39,14 @@ public class AddTaskFeature<T extends Task> extends AbstractAddActivityFeature<T
 
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
-		Shape textShape = peService.createShape(containerShape, false);
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getName());
-		gaService.setLocationAndSize(text, 0, 0, context.getWidth(), context.getHeight());
-		StyleUtil.applyStyle(text, businessObject);
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-//		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
-		link(textShape, businessObject);
+//		Shape textShape = peService.createShape(containerShape, false);
+//		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getName());
+//		gaService.setLocationAndSize(text, 0, 0, context.getWidth(), context.getHeight());
+//		StyleUtil.applyStyle(text, businessObject);
+//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+//		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+////		text.setFont(gaService.manageFont(getDiagram(), GaServiceImpl.DEFAULT_FONT, 8, false, true));
+//		link(textShape, businessObject);
 	}
 
 	@Override

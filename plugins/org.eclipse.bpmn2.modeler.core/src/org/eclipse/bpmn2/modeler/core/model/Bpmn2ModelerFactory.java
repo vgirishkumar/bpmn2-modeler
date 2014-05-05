@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
-import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -133,8 +133,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	    		if (adapter!=null) {
 	    			resource = adapter.getResource();
 	    			adapter.setResource(null);
-	    			customElementId = (String)adapter.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-	    			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
+	    			customElementId = (String)adapter.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+	    			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, null);
 	    		}
 	    		
 				String className = eClass.getName();
@@ -174,7 +174,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 		finally {
 			if (adapter!=null) {
     			adapter.setResource(null);
-    			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, null);
+    			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, null);
 			}
 		}
     	return object;

@@ -135,4 +135,22 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 		}
 		return text;
 	}
+
+	@Override
+	public void refresh() {
+		try {
+			super.refresh();
+		}
+		catch (Exception e) {
+			/*
+			 * This handles cases where the BPMN2 file is corrupt. Some of the
+			 * blueprint examples from here:
+			 * http://www.omg.org/spec/BPMN/20100602/2010-06-03/ are invalid,
+			 * for example in CorrelationExampleSeller.bpmn the
+			 * "Seller Service Interface" defines an Operation which references
+			 * a Message in its errorRef reference list instead of an Error.
+			 */
+			e.printStackTrace();
+		}
+	}
 }

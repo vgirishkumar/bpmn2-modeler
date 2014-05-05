@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.utils;
 
-import static org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature.ACTIVITY_DECORATOR;
-
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +60,8 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -99,9 +99,6 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public class FeatureSupport {
-	public static final String IS_HORIZONTAL_PROPERTY = "isHorizontal"; //$NON-NLS-1$
-	public static final String TOOLTIP_PROPERTY = "tooltip"; //$NON-NLS-1$
-
 	public static boolean isValidFlowElementTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
 		boolean intoLane = isTargetLane(context) && isTargetLaneOnTop(context);
@@ -247,7 +244,7 @@ public class FeatureSupport {
 			if (BusinessObjectUtil.getFirstElementOfType((PictogramElement)parent, ChoreographyTask.class) != null)
 				return false;
 		}
-		String v = Graphiti.getPeService().getPropertyValue(container, IS_HORIZONTAL_PROPERTY);
+		String v = Graphiti.getPeService().getPropertyValue(container, GraphitiConstants.IS_HORIZONTAL_PROPERTY);
 		if (v==null) {
 			return Bpmn2Preferences.getInstance(container).isHorizontalDefault();
 		}
@@ -255,14 +252,14 @@ public class FeatureSupport {
 	}
 	
 	public static void setHorizontal(ContainerShape container, boolean isHorizontal) {
-		Graphiti.getPeService().setPropertyValue(container, IS_HORIZONTAL_PROPERTY, Boolean.toString(isHorizontal));
+		Graphiti.getPeService().setPropertyValue(container, GraphitiConstants.IS_HORIZONTAL_PROPERTY, Boolean.toString(isHorizontal));
 		BPMNShape bs = BusinessObjectUtil.getFirstElementOfType(container, BPMNShape.class);
 		if (bs!=null)
 			bs.setIsHorizontal(isHorizontal);
 	}
 	
 	public static boolean isHorizontal(IContext context) {
-		Object v = context.getProperty(IS_HORIZONTAL_PROPERTY);
+		Object v = context.getProperty(GraphitiConstants.IS_HORIZONTAL_PROPERTY);
 		if (v==null) {
 			// TODO: get default orientation from preferences
 			return true;
@@ -271,13 +268,13 @@ public class FeatureSupport {
 	}
 	
 	public static void setHorizontal(IContext context, boolean isHorizontal) {
-		context.putProperty(IS_HORIZONTAL_PROPERTY, isHorizontal);
+		context.putProperty(GraphitiConstants.IS_HORIZONTAL_PROPERTY, isHorizontal);
 	}
 	
 	public static List<PictogramElement> getContainerChildren(ContainerShape container) {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
-			String value = Graphiti.getPeService().getPropertyValue(pe, ACTIVITY_DECORATOR);
+			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
 			if (value!=null && "true".equals(value)) //$NON-NLS-1$
 				continue;
 			list.add(pe);
@@ -288,7 +285,7 @@ public class FeatureSupport {
 	public static List<PictogramElement> getContainerDecorators(ContainerShape container) {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
-			String value = Graphiti.getPeService().getPropertyValue(pe, ACTIVITY_DECORATOR);
+			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
 			if (value!=null && "true".equals(value)) //$NON-NLS-1$
 				list.add(pe);
 		}
@@ -567,7 +564,22 @@ public class FeatureSupport {
 		DIUtils.updateDIShape(root);
 	}
 
-	public static String getShapeValue(IPictogramElementContext context) {
+	public static Shape getTextShape(IPictogramElementContext context) {
+		Shape value = null;
+
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			ContainerShape cs = (ContainerShape) pe;
+			for (Shape shape : cs.getChildren()) {
+				if (shape.getGraphicsAlgorithm() instanceof AbstractText) {
+					value = shape;
+				}
+			}
+		}
+		return value;
+	}
+
+	public static String getShapeTextValue(IPictogramElementContext context) {
 		String value = null;
 
 		PictogramElement pe = context.getPictogramElement();
@@ -583,7 +595,7 @@ public class FeatureSupport {
 		return value;
 	}
 
-	public static String getBusinessValue(IPictogramElementContext context) {
+	public static String getBusinessObjectTextValue(IPictogramElementContext context) {
 		Object o = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BaseElement.class);
 		if (o instanceof FlowElement) {
 			FlowElement e = (FlowElement) o;
@@ -905,14 +917,14 @@ public class FeatureSupport {
 		return list;
 	}
 
-	public static boolean isGroupShape(Shape shape) {
+	public static boolean isGroupShape(PictogramElement shape) {
 		return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
 	}
 
-	public static boolean isLabelShape(Shape shape) {
+	public static boolean isLabelShape(PictogramElement shape) {
 		if (shape==null)
 			return false;
-		return Graphiti.getPeService().getPropertyValue(shape, GraphicsUtil.LABEL_PROPERTY) != null;
+		return Graphiti.getPeService().getPropertyValue(shape, GraphitiConstants.LABEL_PROPERTY) != null;
 	}
 
 	public static List<EObject> findMessageReferences(Diagram diagram, Message message) {
@@ -1066,6 +1078,9 @@ public class FeatureSupport {
 			updateChanged = updateFeature.hasDoneChanges();
 		}
 		
+		if (layoutChanged)
+			LabelFeatureContainer.adjustLabelLocation(connection, false, null);
+		
 		return layoutChanged || updateChanged;
 	}
 
@@ -1183,7 +1198,7 @@ public class FeatureSupport {
 	public static void setToolTip(GraphicsAlgorithm ga, String text) {
 		if (ga!=null) {
 			Property prop = MmFactory.eINSTANCE.createProperty();
-			prop.setKey(TOOLTIP_PROPERTY);
+			prop.setKey(GraphitiConstants.TOOLTIP_PROPERTY);
 			prop.setValue(text);
 			ga.getProperties().add(prop);
 		}
@@ -1192,7 +1207,7 @@ public class FeatureSupport {
 	public static String getToolTip(GraphicsAlgorithm ga) {
 		if (ga!=null) {
 			for (Property prop : ga.getProperties()) {
-				if (TOOLTIP_PROPERTY.equals(prop.getKey()))
+				if (GraphitiConstants.TOOLTIP_PROPERTY.equals(prop.getKey()))
 					return prop.getValue();
 			}
 		}

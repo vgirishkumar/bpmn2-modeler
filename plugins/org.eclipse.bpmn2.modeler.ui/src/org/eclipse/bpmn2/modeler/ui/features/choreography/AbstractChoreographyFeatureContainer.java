@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.LayoutChoreographyFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
@@ -29,7 +30,7 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateChoreographyNameFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		multiUpdate.addUpdateFeature(new UpdateChoreographyParticipantRefsFeature(fp));
 		multiUpdate.addUpdateFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
 		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when prop editor supports enums

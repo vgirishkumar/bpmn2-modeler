@@ -23,12 +23,12 @@ import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.features.command.CustomKeyCommandFeature;
-import org.eclipse.bpmn2.modeler.core.features.command.ICustomCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -87,6 +87,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -448,7 +449,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	private void createConnectors(List<IPaletteCompartmentEntry> palette) {
 		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label, null);
 
-		createEntries(Bpmn2FeatureMap.CONNECTORS, compartmentEntry);
+		createEntries(Bpmn2FeatureMap.CONNECTIONS, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
@@ -644,12 +645,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		PictogramElement pe = context.getPictogramElement();
 		final IFeatureProvider fp = getFeatureProvider();
 
-		if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
-			// labels don't have a buttonpad
-			setGenericContextButtons(data, pe, 0);
-			return data;
-		}
-
 		if( pe.getGraphicsAlgorithm()!= null && pe.getGraphicsAlgorithm().getWidth() < 40 ){
 		    ILocation origin = getAbsoluteLocation(pe.getGraphicsAlgorithm());
 		    data.getPadLocation().setRectangle(origin.getX(), origin.getY(), 40, 40);
@@ -660,6 +655,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		int genericButtons = CONTEXT_BUTTON_DELETE;
 		if (ChoreographyUtil.isChoreographyParticipantBand(pe)) {
 			genericButtons |= CONTEXT_BUTTON_REMOVE;
+		}
+
+		if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+			genericButtons = 0;
 		}
 		setGenericContextButtons(data, pe, genericButtons);
 
@@ -729,7 +728,14 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		return data;
 	}
-
+	
+	protected ILocation getAbsoluteLocation(GraphicsAlgorithm ga) {
+		if (ga.eContainer() instanceof ConnectionDecorator) {
+			return Graphiti.getPeService().getLocationRelativeToDiagram((ConnectionDecorator)ga.eContainer());
+		}
+		return super.getAbsoluteLocation(ga);
+	}
+	
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
@@ -810,7 +816,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
         List<IDecorator> decorators = new ArrayList<IDecorator>();
 
         // labels should not be decorated
-		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphicsUtil.LABEL_PROPERTY);
+		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_PROPERTY);
 		if (!Boolean.parseBoolean(labelProperty)) {
 	        IFeatureProvider featureProvider = getFeatureProvider();
 	        Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
@@ -857,7 +863,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			commandFeature = new CustomKeyCommandFeature(getFeatureProvider());
 		
 		if (commandFeature.isAvailable(hint)) {
-			context.putProperty(ICustomCommandFeature.COMMAND_HINT, hint);
+			context.putProperty(GraphitiConstants.COMMAND_HINT, hint);
 			return commandFeature;
 		}
 		return super.getCommandFeature(context, hint);

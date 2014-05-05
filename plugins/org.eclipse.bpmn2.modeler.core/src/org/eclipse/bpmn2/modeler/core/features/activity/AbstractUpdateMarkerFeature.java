@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features.activity;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;

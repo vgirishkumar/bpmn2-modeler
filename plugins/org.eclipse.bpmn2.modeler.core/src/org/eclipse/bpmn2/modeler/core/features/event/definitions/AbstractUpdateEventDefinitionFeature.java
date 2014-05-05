@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -53,7 +54,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
 			link(addedShape, eventDefinitions.get(0));
 			Graphiti.getPeService().setPropertyValue(addedShape,
-					AbstractEventDefinitionFeatureContainer.EVENT_DEFINITION_SHAPE,
+					GraphitiConstants.EVENT_DEFINITION_SHAPE,
 					Boolean.toString(true));
 		}
 		else if (size > 1) {
@@ -61,7 +62,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 			drawForEvent(event, multipleShape);
 			link(multipleShape, eventDefinitions.toArray(new EventDefinition[size]));
 			Graphiti.getPeService().setPropertyValue(multipleShape,
-					AbstractEventDefinitionFeatureContainer.EVENT_DEFINITION_SHAPE,
+					GraphitiConstants.EVENT_DEFINITION_SHAPE,
 					Boolean.toString(true));
 		}
 	}

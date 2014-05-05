@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -26,25 +27,15 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
  */
 public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpdateMarkerFeature<Activity> {
 
-	/** The is loop or multi instance. */
-	public static String IS_LOOP_OR_MULTI_INSTANCE = "marker.loop.or.multi"; //$NON-NLS-1$
-
 	/**
 	 * The Enum LoopCharacteristicType.
 	 */
 	enum LoopCharacteristicType {
 		
-		/** The null. */
 		NULL("null"),  //$NON-NLS-1$
-		
-		/** The loop. */
-  LOOP(StandardLoopCharacteristics.class.getSimpleName()), 
-		
-		/** The multi parallel. */
+		LOOP(StandardLoopCharacteristics.class.getSimpleName()), 
 		MULTI_PARALLEL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":parallel"),  //$NON-NLS-1$
-		
-		/** The multi sequential. */
-  MULTI_SEQUENTIAL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":sequential"); //$NON-NLS-1$
+		MULTI_SEQUENTIAL(MultiInstanceLoopCharacteristics.class.getSimpleName() + ":sequential"); //$NON-NLS-1$
 
 		private String name;
 
@@ -52,11 +43,6 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 			this.name = name;
 		}
 
-		/**
-		 * Gets the name.
-		 *
-		 * @return the name
-		 */
 		String getName() {
 			return name;
 		}
@@ -76,7 +62,7 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 	 */
 	@Override
 	protected String getPropertyKey() {
-		return IS_LOOP_OR_MULTI_INSTANCE;
+		return GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE;
 	}
 
 	/* (non-Javadoc)
@@ -94,24 +80,24 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 	protected void doUpdate(Activity activity, ContainerShape markerContainer) {
 		switch (getLoopCharacteristicsValue(activity)) {
 		case LOOP:
-			GraphicsUtil.showActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		case MULTI_PARALLEL:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.showActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		case MULTI_SEQUENTIAL:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.showActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		default:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 		}
 	}
 

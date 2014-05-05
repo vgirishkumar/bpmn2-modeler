@@ -28,14 +28,13 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
@@ -57,12 +56,11 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 
 public class GraphicsUtil {
 
-	private static final IGaService gaService = Graphiti.getGaService();
+	static final IGaService gaService = Graphiti.getGaService();
 	static final IPeService peService = Graphiti.getPeService();
 	private static Map<Diagram, SizeTemplate> diagramSizeMap;
 
@@ -73,13 +71,6 @@ public class GraphicsUtil {
 	public static final int CHOREOGRAPHY_WIDTH = 150;
 	public static final int CHOREOGRAPHY_HEIGHT = 150;
 	public static final int PARTICIPANT_BAND_HEIGHT = 20;
-
-	public static final int SHAPE_PADDING = 6;
-	public static final int TEXT_PADDING = 5;
-	public static final String LABEL_PROPERTY = "label"; //$NON-NLS-1$
-	
-	// TODO: Determine all cases to make a line break! The following implementation are the easy once.
-	private static final String LINE_BREAK = "\n"; //$NON-NLS-1$
 
 	public static class SizeTemplate{
 		
@@ -275,67 +266,6 @@ public class GraphicsUtil {
 
 	private static int generateRatioPointValue(float originalPointValue, float ratioValue) {
 		return Math.round(Float.valueOf(originalPointValue * ratioValue));
-	}
-	
-	// TODO: Think about line break in the ui...
-	public static int getLabelHeight(AbstractText text) {
-		if (text.getValue() != null && !text.getValue().isEmpty()) {
-			int height = 14;
-			String[] strings = text.getValue().split(LINE_BREAK);
-			if (strings.length>0) {
-				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(strings[0], text.getFont());
-				height = dim.getHeight();
-			}
-			return strings.length * height;
-		}
-		return 0;
-	}
-
-	// TODO: Think about a maximum-width...
-	public static int getLabelWidth(AbstractText text) {
-		if (text.getValue() != null && !text.getValue().isEmpty()) {
-			String[] strings = text.getValue().split(LINE_BREAK);
-			int result = 0;
-			for (String string : strings) {
-				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(string, text.getFont());
-				if (dim.getWidth() > result) {
-					result = dim.getWidth();
-				}
-			}
-			return result;
-		}
-		return 0;
-	}
-	
-	public static void alignWithShape(AbstractText text, ContainerShape labelContainer, 
-			int width,
-			int height,
-			int shapeX,
-			int shapeY, 
-			int preShapeX, 
-			int preShapeY){
-		final int textHeight = getLabelHeight(text);
-		final int textWidth = getLabelWidth(text);
-		
-		int currentLabelX = labelContainer.getGraphicsAlgorithm().getX();
-		int currentLabelY = labelContainer.getGraphicsAlgorithm().getY();
-		
-		int newShapeX = shapeX - ((textWidth + SHAPE_PADDING) / 2) + width / 2;
-		int newShapeY = shapeY + height + 2;
-
-		if (currentLabelX > 0 && preShapeX > 0){
-			newShapeX = currentLabelX + (shapeX - preShapeX);
-			newShapeY = currentLabelY + (shapeY - preShapeY);
-		}
-		
-		IGaService gaService = Graphiti.getGaService();
-		
-		gaService.setLocationAndSize(labelContainer.getGraphicsAlgorithm(), 
-				newShapeX , newShapeY ,
-				textWidth + SHAPE_PADDING, textHeight + SHAPE_PADDING);
-		gaService.setLocationAndSize(text, 
-				0, 0,
-				textWidth + TEXT_PADDING, textHeight + TEXT_PADDING);
 	}
 	
 	private static float calculateRatio(float x, float y) {
@@ -896,7 +826,7 @@ public class GraphicsUtil {
 
 	public static void deleteEventShape(ContainerShape containerShape) {
 		for (PictogramElement shape : containerShape.getChildren()) {
-			String property = peService.getPropertyValue(shape, AbstractEventDefinitionFeatureContainer.EVENT_DEFINITION_SHAPE);
+			String property = peService.getPropertyValue(shape, GraphitiConstants.EVENT_DEFINITION_SHAPE);
 			if (property != null) {
 				peService.deletePictogramElement(shape);
 				break;
@@ -939,19 +869,9 @@ public class GraphicsUtil {
 	public static final int MARKER_WIDTH = 10;
 	public static final int MARKER_HEIGHT = 10;
 
-	private static final String ACTIVITY_MARKER_CONTAINER = "activity.marker.container"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_COMPENSATE = "activity.marker.compensate"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_LC_STANDARD = "activity.marker.lc.standard"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL = "activity.marker.lc.multi.sequential"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_LC_MULTI_PARALLEL = "activity.marker.lc.multi.parallel"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_AD_HOC = "activity.marker.adhoc"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_EXPAND = "activity.marker.expand"; //$NON-NLS-1$
-	public static final String ACTIVITY_MARKER_OFFSET = "activity.marker.offset"; //$NON-NLS-1$
-	public static final String EVENT_MARKER_CONTAINER = "event.marker.container"; //$NON-NLS-1$
-
 	private static GraphicsAlgorithmContainer createActivityMarkerCompensate(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-		        ACTIVITY_MARKER_COMPENSATE);
+		        GraphitiConstants.ACTIVITY_MARKER_COMPENSATE);
 		Compensation compensation = createCompensation(algorithmContainer, MARKER_WIDTH, MARKER_HEIGHT);
 		compensation.arrow1.setForeground(manageColor(markerContainer, StyleUtil.CLASS_FOREGROUND));
 		compensation.arrow2.setForeground(manageColor(markerContainer, StyleUtil.CLASS_FOREGROUND));
@@ -960,7 +880,7 @@ public class GraphicsUtil {
 
 	private static GraphicsAlgorithmContainer createActivityMarkerStandardLoop(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-				ACTIVITY_MARKER_LC_STANDARD);
+				GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
 
 		int[] xy = { 8, 10, 10, 5, 5, 0, 0, 5, 3, 10 };
 		int[] bend = { 0, 0, 3, 4, 4, 4, 4, 3, 3, 0 };
@@ -976,7 +896,7 @@ public class GraphicsUtil {
 
 	private static GraphicsAlgorithmContainer createActivityMarkerMultiParallel(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-				ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+				GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
 		MultiInstance multiInstance = new MultiInstance();
 		multiInstance.line1 = gaService.createPolyline(algorithmContainer, new int[] { 2, 0, 2, MARKER_HEIGHT });
 		multiInstance.line2 = gaService.createPolyline(algorithmContainer, new int[] { 5, 0, 5, MARKER_HEIGHT });
@@ -989,7 +909,7 @@ public class GraphicsUtil {
 
 	private static GraphicsAlgorithmContainer createActivityMarkerMultiSequential(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-		        ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+		        GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 		MultiInstance multiInstance = new MultiInstance();
 		multiInstance.line1 = gaService.createPolyline(algorithmContainer, new int[] { 0, 2, MARKER_WIDTH, 2 });
 		multiInstance.line2 = gaService.createPolyline(algorithmContainer, new int[] { 0, 5, MARKER_WIDTH, 5 });
@@ -1002,7 +922,7 @@ public class GraphicsUtil {
 
 	private static GraphicsAlgorithmContainer createActivityMarkerAdHoc(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-		        ACTIVITY_MARKER_AD_HOC);
+		        GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
 		int[] xy = { 0, 8, 3, 2, 7, 8, 10, 2 };
 		int[] bend = { 0, 3, 3, 3, 3, 3, 3, 0 };
 		Polyline tilde = gaService.createPolyline(algorithmContainer, xy, bend);
@@ -1012,7 +932,7 @@ public class GraphicsUtil {
 
 	private static GraphicsAlgorithmContainer createActivityMarkerExpand(ContainerShape markerContainer) {
 		GraphicsAlgorithmContainer algorithmContainer = createActivityMarkerGaContainer(markerContainer,
-		        ACTIVITY_MARKER_EXPAND);
+		        GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 
 		Rectangle rect = gaService.createRectangle(algorithmContainer);
 		rect.setFilled(false);
@@ -1030,11 +950,11 @@ public class GraphicsUtil {
 
 	
 	private static ContainerShape getActivityMarkerContainer(ContainerShape container) {
-		String property = peService.getPropertyValue(container, ACTIVITY_MARKER_CONTAINER);
+		String property = peService.getPropertyValue(container, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
 		if (property != null && new Boolean(property)) {
 			return container;
 		}
-		return (ContainerShape) getContainedShape(container, ACTIVITY_MARKER_CONTAINER);
+		return (ContainerShape) getContainedShape(container, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
 	}
 
 	private static ContainerShape createActivityMarkerContainer(ContainerShape container) {
@@ -1050,7 +970,7 @@ public class GraphicsUtil {
 			int w = 50;
 			int h = 10;
 			gaService.setLocationAndSize(markerInvisibleRect, x, y, w, h);
-			peService.setPropertyValue(markerContainer, GraphicsUtil.ACTIVITY_MARKER_CONTAINER, Boolean.toString(true));
+			peService.setPropertyValue(markerContainer, GraphitiConstants.ACTIVITY_MARKER_CONTAINER, Boolean.toString(true));
 
 			createActivityMarkerCompensate(markerContainer);
 			createActivityMarkerStandardLoop(markerContainer);
@@ -1070,12 +990,12 @@ public class GraphicsUtil {
 	}
 
 	public static void setActivityMarkerOffest(ContainerShape container, int offset) {
-		peService.setPropertyValue(container, GraphicsUtil.ACTIVITY_MARKER_OFFSET, Integer.toString(offset));
+		peService.setPropertyValue(container, GraphitiConstants.ACTIVITY_MARKER_OFFSET, Integer.toString(offset));
 	}
 
 	public static int getActivityMarkerOffest(ContainerShape container) {
 		int offset = 0;
-		String s = peService.getPropertyValue(container, GraphicsUtil.ACTIVITY_MARKER_OFFSET);
+		String s = peService.getPropertyValue(container, GraphitiConstants.ACTIVITY_MARKER_OFFSET);
 		if (s!=null) {
 			try {
 				offset = Integer.parseInt(s);
@@ -1659,7 +1579,7 @@ public class GraphicsUtil {
 		return m;
 	}
 
-	public static IDimension calculateSize(AnchorContainer shape) {
+	public static IDimension calculateSize(PictogramElement shape) {
 		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 		if (ga!=null)
 			return gaService.calculateSize(ga);
@@ -1706,7 +1626,7 @@ public class GraphicsUtil {
 			dump(" parent=", (ContainerShape)anchor.getParent()); //$NON-NLS-1$
 			if (AnchorUtil.isBoundaryAnchor(anchor)) {
 				String property = Graphiti.getPeService().getPropertyValue(
-						anchor, AnchorUtil.BOUNDARY_FIXPOINT_ANCHOR);
+						anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
 				if (property != null && anchor instanceof FixPointAnchor) {
 					System.out.println(" location="+AnchorLocation.getLocation(property)); //$NON-NLS-1$
 				}

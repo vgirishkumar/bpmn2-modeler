@@ -12,18 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -33,12 +28,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.dc.Bounds;
-import org.eclipse.dd.dc.DcFactory;
-import org.eclipse.dd.dc.Point;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -113,33 +103,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @return the BPMNShape
 	 */
 	protected BPMNShape createDIShape(Shape shape, BaseElement elem, boolean applyDefaults) {
-		return createDIShape(shape, elem, findDIShape(elem), applyDefaults);
-	}
-
-	/**
-	 * Creates a BPMNShape if it does not already exist, and then links it to
-	 * the given {@code BaseElement}.
-	 *
-	 * @param shape the Container Shape
-	 * @param elem the BaseElement
-	 * @param bpmnShape the BPMNShape object. If null, a new one is created and
-	 *            inserted into the BPMNDiagram.
-	 * @param applyDefaults if true, apply User Preference defaults for certain
-	 *            BPMN DI attributes, e.g. isHorizontal, isExpanded, etc.
-	 * @return the BPMNShape
-	 */
-	protected BPMNShape createDIShape(Shape shape, BaseElement elem, BPMNShape bpmnShape, boolean applyDefaults) {
-		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(shape);
-		if (bpmnShape == null) {
-			int x = loc.getX();
-			int y = loc.getY();
-			int w = shape.getGraphicsAlgorithm().getWidth();
-			int h = shape.getGraphicsAlgorithm().getHeight();
-			bpmnShape = DIUtils.createDIShape(shape, elem, x, y, w, h, getFeatureProvider(), getDiagram());
-		}
-		else {
-			link(shape, new Object[] { elem, bpmnShape });
-		}
+		BPMNShape bpmnShape = DIUtils.createDIShape(shape, elem, findDIShape(elem), getFeatureProvider());
 		if (applyDefaults && bpmnShape!=null)
 			Bpmn2Preferences.getInstance(bpmnShape.eResource()).applyBPMNDIDefaults(bpmnShape, null);
 		return bpmnShape;
@@ -155,72 +119,9 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 */
 	protected BPMNEdge createDIEdge(Connection connection, BaseElement elem) {
 		BPMNEdge edge = DIUtils.findBPMNEdge(elem);
-		return createDIEdge(connection, elem, edge);
+		return DIUtils.createDIEdge(connection, elem, edge, getFeatureProvider());
 	}
 
-	/**
-	 * Creates a BPMNEdge if it does not already exist, and then links it to
-	 * the given {@code BaseElement}.
-	 *
-	 * @param connection the connection
-	 * @param elem the BaseElement
-	 * @param bpmnEdge the BPMNEdge object. If null, a new one is created and
-	 *            inserted into the BPMNDiagram.
-	 * @return the BPMNEdge
-	 */
-	protected BPMNEdge createDIEdge(Connection connection, BaseElement elem, BPMNEdge bpmnEdge) {
-		if (bpmnEdge == null) {
-			EList<EObject> businessObjects = Graphiti.getLinkService().getLinkForPictogramElement(getDiagram())
-					.getBusinessObjects();
-			for (EObject eObject : businessObjects) {
-				if (eObject instanceof BPMNDiagram) {
-					BPMNDiagram bpmnDiagram = (BPMNDiagram) eObject;
-
-					bpmnEdge = BpmnDiFactory.eINSTANCE.createBPMNEdge();
-//					edge.setId(EcoreUtil.generateUUID());
-					bpmnEdge.setBpmnElement(elem);
-
-					if (elem instanceof Association) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								((Association) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								((Association) elem).getTargetRef()));
-					} else if (elem instanceof MessageFlow) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								(BaseElement) ((MessageFlow) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								(BaseElement) ((MessageFlow) elem).getTargetRef()));
-					} else if (elem instanceof SequenceFlow) {
-						bpmnEdge.setSourceElement(DIUtils.findDiagramElement(
-								((SequenceFlow) elem).getSourceRef()));
-						bpmnEdge.setTargetElement(DIUtils.findDiagramElement(
-								((SequenceFlow) elem).getTargetRef()));
-					}
-
-					ILocation sourceLoc = Graphiti.getPeService().getLocationRelativeToDiagram(connection.getStart());
-					ILocation targetLoc = Graphiti.getPeService().getLocationRelativeToDiagram(connection.getEnd());
-
-					Point point = DcFactory.eINSTANCE.createPoint();
-					point.setX(sourceLoc.getX());
-					point.setY(sourceLoc.getY());
-					bpmnEdge.getWaypoint().add(point);
-
-					point = DcFactory.eINSTANCE.createPoint();
-					point.setX(targetLoc.getX());
-					point.setY(targetLoc.getY());
-					bpmnEdge.getWaypoint().add(point);
-
-					DIUtils.addShape(bpmnEdge, bpmnDiagram);
-					ModelUtil.setID(bpmnEdge);
-				}
-			}
-		}
-		link(connection, new Object[] { elem, bpmnEdge });
-		return bpmnEdge;
-	}
-
-	// TODO: This needs to be replaced with addDILabel() and createDILabel()
-	// functionality similar to the methods above.
 	/**
 	 * Prepare the given AddContext for adding a text label to the
 	 * ContainerShape that has already been constructed.
@@ -231,11 +132,11 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @param height the labelOwner's height
 	 */
 	protected void prepareAddContext(IAddContext context, PictogramElement labelOwner, int width, int height) {
-		context.putProperty(ContextConstants.LABEL_CONTEXT, true);
-		context.putProperty(ContextConstants.WIDTH, width);
-		context.putProperty(ContextConstants.HEIGHT, height);
-		context.putProperty(ContextConstants.BUSINESS_OBJECT, getBusinessObject(context));
-		context.putProperty(ContextConstants.LABEL_OWNER, labelOwner);
+		context.putProperty(GraphitiConstants.LABEL_CONTEXT, true);
+		context.putProperty(GraphitiConstants.WIDTH, width);
+		context.putProperty(GraphitiConstants.HEIGHT, height);
+		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, getBusinessObject(context));
+		context.putProperty(GraphitiConstants.LABEL_OWNER, labelOwner);
 	}
 	
 	/**
@@ -247,7 +148,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @param height the new shape's height
 	 */
 	protected void adjustLocation(IAddContext context, int width, int height) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) != null) {
+		if (DIImport.isImporting(context)) {
 			return;
 		}
 		
@@ -274,7 +175,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 *            connection
 	 */
 	protected void splitConnection(IAddContext context, ContainerShape containerShape) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) != null) {
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null) {
 			return;
 		}
 		
@@ -365,7 +266,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @return the height
 	 */
 	protected int getHeight(IAddContext context) {
-		Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null)
@@ -383,7 +284,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @return the width
 	 */
 	protected int getWidth(IAddContext context) {
-		Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null)
@@ -400,9 +301,9 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @return true, if is horizontal
 	 */
 	protected boolean isHorizontal(ITargetContext context) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null) {
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
 			// not importing - set isHorizontal to be the same as copied element or parent
-			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {
 				return ((BPMNShape)copiedBpmnShape).isIsHorizontal();
 			}
@@ -442,7 +343,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 */
 	@Override
 	public T getBusinessObject(IAddContext context) {
-		Object businessObject = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		Object businessObject = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
 		if (businessObject instanceof BaseElement)
 			return (T)businessObject;
 		return (T)context.getNewObject();
@@ -453,44 +354,11 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 */
 	@Override
 	public void putBusinessObject(IAddContext context, T businessObject) {
-		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
+		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, businessObject);
 	}
 
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
 	}
 	
-	/**
-	 * Update the given PictogramElement. A Graphiti UpdateContext is constructed by copying
-	 * the properties from the given AddContext.
-	 * 
-	 * @param addContext the Graphiti AddContext that was used to add the PE to the Diagram
-	 * @param pe the PictogramElement
-	 * @return a reason code indicating whether or not an update is needed.
-	 */
-	protected IReason updatePictogramElement(IAddContext addContext, PictogramElement pe) {
-		UpdateContext updateContext = new UpdateContext(pe);
-		for (Object key : addContext.getPropertyKeys()) {
-			Object value = addContext.getProperty(key);
-			updateContext.putProperty(key, value);
-		}
-		return getFeatureProvider().updateIfPossible(updateContext);
-	}
-
-	/**
-	 * Layout the given PictogramElement. A Graphiti LayoutContext is constructed by copying
-	 * the properties from the given AddContext.
-	 * 
-	 * @param addContext the Graphiti AddContext that was used to add the PE to the Diagram
-	 * @param pe the PictogramElement
-	 * @return a reason code indicating whether or not a layout is needed.
-	 */
-	protected IReason layoutPictogramElement(IAddContext addContext, PictogramElement pe) {
-		LayoutContext layoutContext = new LayoutContext(pe);
-		for (Object key : addContext.getPropertyKeys()) {
-			Object value = addContext.getProperty(key);
-			layoutContext.putProperty(key, value);
-		}
-		return getFeatureProvider().layoutIfPossible(layoutContext);
-	}
 }

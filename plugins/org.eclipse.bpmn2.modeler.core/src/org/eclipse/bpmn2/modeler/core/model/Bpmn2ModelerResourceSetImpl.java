@@ -393,12 +393,14 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 		try {
 			String taskName = NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Title, resource.getURI());
 			monitor.beginTask(taskName, IProgressMonitor.UNKNOWN);
+			resource.eSetDeliver(false);
 			Bpmn2ModelerResourceSetImpl.super.demandLoadHelper(resource);
 			if (!resource.isLoaded()) {
 				throw new Exception(Messages.Bpmn2ModelerResourceSetImpl_Loading_Resource_Not_Found);
 			}
 		}
 		catch (final Exception e) {
+			Activator.logError(e);
 			String msg = NLS.bind(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error_Message,resource.getURI());
 			ErrorDialog dlg = new ErrorDialog(Messages.Bpmn2ModelerResourceSetImpl_Loading_Error, msg, e);
 			dlg.show();

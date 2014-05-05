@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -475,7 +475,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 		cc.setTargetContainer((ContainerShape)container);
 		
 		// set the IMPORT flag so that the new shape's location is not adjusted during creation
-		cc.putProperty(DIImport.IMPORT_PROPERTY, Boolean.TRUE);
+		cc.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
 		return cc;
 	}
 }

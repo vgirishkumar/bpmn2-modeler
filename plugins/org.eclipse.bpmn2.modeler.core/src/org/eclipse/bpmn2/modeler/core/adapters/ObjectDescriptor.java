@@ -13,7 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
@@ -349,9 +349,9 @@ public class ObjectDescriptor<T extends EObject> {
 		// object construction and initialization (@see ModelExtensionDescriptor)
 		EFactory factory = eClass.getEPackage().getEFactoryInstance();
 		ObjectPropertyProvider adapter = ObjectPropertyProvider.adapt(factory, resource);
-		Object value = owner.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+		Object value = owner.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
 		if (value!=null)
-			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
+			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, value);
 		T newObject = null;
 		synchronized(factory) {
 			newObject = (T) factory.create(eClass);

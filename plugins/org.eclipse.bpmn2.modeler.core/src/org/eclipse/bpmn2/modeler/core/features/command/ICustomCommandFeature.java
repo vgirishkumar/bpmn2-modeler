@@ -12,6 +12,5 @@ package org.eclipse.bpmn2.modeler.core.features.command;
 
 public interface ICustomCommandFeature {
 
-	public final static String COMMAND_HINT = "command.hint";  //$NON-NLS-1$
 	boolean isAvailable(String hint);
 }

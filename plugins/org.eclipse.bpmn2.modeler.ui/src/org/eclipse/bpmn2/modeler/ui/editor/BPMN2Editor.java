@@ -177,7 +177,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
-import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.common.command.BasicCommandStack;
@@ -199,7 +198,6 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
-import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -1361,11 +1359,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			});
 		}
 		
-		if (event.getKey().contains("GridLayer")) { //$NON-NLS-1$
+		if (event.getKey().contains(ShapeStyle.Category.GRID.name())) { //$NON-NLS-1$
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
-					ShapeStyle ss = getPreferences().getShapeStyle(GridLayer.class);
+					ShapeStyle ss = getPreferences().getShapeStyle(ShapeStyle.Category.GRID);
 					Diagram diagram = getDiagramTypeProvider().getDiagram();
 					diagram.setGridUnit(ss.getGridWidth());
 					diagram.setVerticalGridUnit(ss.getGridHeight());
@@ -1378,11 +1376,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			});
 		}
 		
-		if (event.getKey().contains("FigureCanvas")) { //$NON-NLS-1$
+		if (event.getKey().contains(ShapeStyle.Category.CANVAS.name())) { //$NON-NLS-1$
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
-					ShapeStyle ss = getPreferences().getShapeStyle(FigureCanvas.class);
+					ShapeStyle ss = getPreferences().getShapeStyle(ShapeStyle.Category.CANVAS);
 					Diagram diagram = getDiagramTypeProvider().getDiagram();
 					GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
 					IGaService gaService = Graphiti.getGaService();

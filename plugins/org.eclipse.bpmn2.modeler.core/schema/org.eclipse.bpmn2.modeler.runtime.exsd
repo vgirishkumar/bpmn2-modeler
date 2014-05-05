@@ -905,7 +905,7 @@ Colors are a string of six hexadecimal digits representing the red, green and bl
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="background" type="string" use="required">
+         <attribute name="background" type="string">
             <annotation>
                <documentation>
                   The background or fill color of the graphical element. Connection lines do not use a background color.

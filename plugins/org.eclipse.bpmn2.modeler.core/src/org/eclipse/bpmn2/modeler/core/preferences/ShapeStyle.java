@@ -13,15 +13,11 @@
 
 package org.eclipse.bpmn2.modeler.core.preferences;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
@@ -44,8 +40,20 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-"; //$NON-NLS-1$
 	public static enum RoutingStyle { ManualBendpoint, AutomaticBendpoint, Manhattan};
+	public final static int SS_SHAPE_BACKGROUND = 1 << 0;
+	public final static int SS_SHAPE_FOREGROUND = 1 << 1;
+	public final static int SS_SHAPE_PRIMARY_SELECTION = 1 << 2;
+	public final static int SS_SHAPE_SECONDARY_SELECTION = 1 << 3;
+	public final static int SS_TEXT_FONT = 1 << 4;
+	public final static int SS_TEXT_COLOR = 1 << 5;
+	public final static int SS_ROUTING_STYLE = 1 << 6;
+	public final static int SS_SNAP_TO_GRID = 1 << 7;
+	public final static int SS_GRID_WIDTH = 1 << 8;
+	public final static int SS_GRID_HEIGHT = 1 << 9;
+	public final static int SS_LABEL_LOCATION = 1 << 10;
+	public final static int SS_ALL = -1;
+
 	String object;
-	EClass eclass;
 	IColorConstant shapeBackground;
 	IColorConstant shapePrimarySelectedColor;
 	IColorConstant shapeSecondarySelectedColor;
@@ -54,25 +62,52 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	IColorConstant textColor;
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
 	boolean defaultSize;
-	boolean snapToGrid;
-	int gridWidth;
-	int gridHeight;
-	boolean dirty;
+	boolean snapToGrid = true;
+	int gridWidth = 10;
+	int gridHeight = 10;
+	LabelLocation labelLocation = LabelLocation.BOTTOM;
+	int changeMask;
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
+	
+	public static enum Category {
+		CONNECTIONS(Messages.ShapeStyle_Category_Connections),
+		SHAPES(Messages.ShapeStyle_Category_Shapes),
+		EVENTS(Messages.ShapeStyle_Category_Events),
+		GATEWAYS(Messages.ShapeStyle_Category_Gateways),
+		TASKS(Messages.ShapeStyle_Category_Tasks),
+		DATA(Messages.ShapeStyle_Category_Data),
+		OTHER(Messages.ShapeStyle_Category_Other),
+		CANVAS(Messages.ShapeStyle_Category_Canvas),
+		GRID(Messages.ShapeStyle_Category_Grid),
+		NONE("");
+		
+		private String label;
+		private Category(String label) {
+			this.label = label;
+		}
+		public String getLabel() {
+			return label;
+		}
+	}
+
+	public enum LabelLocation {
+		BOTTOM, // this is the default value, ordinal=0
+		TOP,
+		LEFT,
+		RIGHT,
+		CENTER,
+		MOVABLE,
+	};
 
 	public ShapeStyle() {
 		setDefaultColors(DEFAULT_COLOR);
 		textFont = stringToFont(DEFAULT_FONT_STRING);
-		snapToGrid = true;
-		gridWidth = 10;
-		gridHeight = 10;
 	}
 
 	public ShapeStyle(IConfigurationElement e) {
 		super(e);
 		object = e.getAttribute("object"); //$NON-NLS-1$
-		eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(object);
 		String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
 		String background = e.getAttribute("background"); //$NON-NLS-1$
 		String textColor = e.getAttribute("textColor"); //$NON-NLS-1$
@@ -84,19 +119,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		this(encode(other));
 	}
 
-	public ShapeStyle(Class c) {
-		this();
-		if (c==GridLayer.class || c==FigureCanvas.class) {
-			shapeForeground = stringToColor("E3EEF9"); //$NON-NLS-1$
-			shapeBackground = stringToColor("FFFFFF"); //$NON-NLS-1$
-			snapToGrid = true;
-			gridWidth = 10;
-			gridHeight = 10;
-		}
-	}
-
 	public void initialize(String foreground, String background, String textColor, String font) {
 		// only background color is required to set up default color scheme
+		if (background==null || background.isEmpty())
+			background = "FFFFFF";
 		shapeBackground = stringToColor(background);
 		setDefaultColors(shapeBackground);
 		
@@ -157,6 +183,12 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 		else
 			gridHeight = 10;
+		
+		if (a.length>11) {
+			labelLocation = LabelLocation.values()[Integer.parseInt(a[11])];
+		}
+		else
+			labelLocation = LabelLocation.BOTTOM;
 	}
 	
 	@Override
@@ -164,8 +196,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		return EXTENSION_NAME;
 	}
 
-	public EClass getEClass() {
-		return eclass;
+	public String getObjectName() {
+		return object;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {
@@ -177,11 +209,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 	
 	public boolean isDirty() {
-		return dirty;
+		return changeMask!=0;
 	}
 	
 	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
+		this.changeMask = SS_ALL;
 	}
 	
 	public IColorConstant getShapeBackground() {
@@ -191,7 +223,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setShapeBackground(IColorConstant shapeDefaultColor) {
 		if (!compare(this.shapeBackground, shapeDefaultColor)) {
 			this.shapeBackground = shapeDefaultColor;
-			setDirty(true);
+			changeMask |= SS_SHAPE_BACKGROUND;
 		}
 	}
 
@@ -202,7 +234,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setShapePrimarySelectedColor(IColorConstant shapePrimarySelectedColor) {
 		if (!compare(this.shapePrimarySelectedColor, shapePrimarySelectedColor)) {
 			this.shapePrimarySelectedColor = shapePrimarySelectedColor;
-			setDirty(true);
+			changeMask |= SS_SHAPE_PRIMARY_SELECTION;
 		}
 	}
 
@@ -213,7 +245,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setShapeSecondarySelectedColor(IColorConstant shapeSecondarySelectedColor) {
 		if (!compare(this.shapeSecondarySelectedColor, shapeSecondarySelectedColor)) {
 			this.shapeSecondarySelectedColor = shapeSecondarySelectedColor;
-			setDirty(true);
+			changeMask |= SS_SHAPE_SECONDARY_SELECTION;
 		}
 	}
 
@@ -224,7 +256,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setShapeForeground(IColorConstant shapeBorderColor) {
 		if (!compare(this.shapeForeground, shapeBorderColor)) {
 			this.shapeForeground = shapeBorderColor;
-			setDirty(true);
+			changeMask |= SS_SHAPE_FOREGROUND;
 		}
 	}
 
@@ -235,7 +267,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setTextFont(Font textFont) {
 		if (!compare(this.textFont, textFont)) {
 			this.textFont = textFont;
-			setDirty(true);
+			changeMask |= SS_TEXT_FONT;
 		}
 	}
 
@@ -246,7 +278,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setTextColor(IColorConstant textColor) {
 		if (!compare(this.textColor, textColor)) {
 			this.textColor = textColor;
-			setDirty(true);
+			changeMask |= SS_TEXT_COLOR;
 		}
 	}
 
@@ -257,7 +289,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setRoutingStyle(RoutingStyle routingStyle) {
 		if (this.routingStyle != routingStyle) {
 			this.routingStyle = routingStyle;
-			setDirty(true);
+			changeMask |= SS_ROUTING_STYLE;
 		}
 	}
 
@@ -268,7 +300,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setSnapToGrid(boolean value) {
 		if (snapToGrid!=value) {
 			snapToGrid = value;
-			setDirty(true);
+			changeMask |= SS_SNAP_TO_GRID;
 		}
 	}
 	
@@ -279,7 +311,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setGridWidth(int gridWidth) {
 		if (this.gridWidth!=gridWidth) {
 			this.gridWidth = gridWidth;
-			setDirty(true);
+			changeMask |= SS_GRID_WIDTH;
 		}
 	}
 	
@@ -290,10 +322,21 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setGridHeight(int gridHeight) {
 		if (this.gridHeight!=gridHeight) {
 			this.gridHeight = gridHeight;
-			setDirty(true);
+			changeMask |= SS_GRID_HEIGHT;
 		}
 	}
 
+	public LabelLocation getLabelLocation() {
+		return labelLocation;
+	}
+
+	public void setLabelLocation(LabelLocation labelLocation) {
+		if (this.labelLocation!=labelLocation) {
+			this.labelLocation = labelLocation;
+			changeMask |= SS_LABEL_LOCATION;
+		}
+	}
+	
 	public boolean isDefaultSize() {
 		return defaultSize;
 	}
@@ -397,16 +440,68 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				sp.routingStyle.name() + ";" + //$NON-NLS-1$
 				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				sp.gridWidth + ";" + //$NON-NLS-1$
-				sp.gridHeight
+				sp.gridHeight + ";" + //$NON-NLS-1$
+				sp.labelLocation.ordinal()
 				);
 	}
 	
 	public static ShapeStyle decode(String s) {
-		if (s==null || s.trim().split(";").length<6) //$NON-NLS-1$
+		if (s==null || s.trim().split(";").length<11) //$NON-NLS-1$
 			return new ShapeStyle();
 		return new ShapeStyle(s);
 	}
-	
+
+	public void applyChanges(ShapeStyle other) {
+		int m = other.changeMask;
+		if ((m & SS_SHAPE_BACKGROUND) != 0)
+			this.setShapeBackground(other.getShapeBackground());
+		if ((m & SS_SHAPE_FOREGROUND) != 0)
+			this.setShapeForeground(other.getShapeForeground());
+		if ((m & SS_SHAPE_PRIMARY_SELECTION) != 0)
+			this.setShapePrimarySelectedColor(other.getShapePrimarySelectedColor());
+		if ((m & SS_SHAPE_SECONDARY_SELECTION) != 0)
+			this.setShapeSecondarySelectedColor(other.getShapeSecondarySelectedColor());
+		if ((m & SS_TEXT_FONT) != 0)
+			this.setTextFont(other.getTextFont());
+		if ((m & SS_TEXT_COLOR) != 0)
+			this.setTextColor(other.getTextColor());
+		if ((m & SS_ROUTING_STYLE) != 0)
+			this.setRoutingStyle(other.getRoutingStyle());
+		if ((m & SS_SNAP_TO_GRID) != 0)
+			this.setSnapToGrid(other.getSnapToGrid());
+		if ((m & SS_GRID_WIDTH) != 0)
+			this.setGridWidth(other.getGridWidth());
+		if ((m & SS_GRID_HEIGHT) != 0)
+			this.setGridHeight(other.getGridHeight());
+		if ((m & SS_LABEL_LOCATION) != 0)
+			this.setLabelLocation(other.getLabelLocation());
+	}
+
+	public void setValue(int m, Object value) {
+		if (m == SS_SHAPE_BACKGROUND)
+			this.setShapeBackground((IColorConstant)value);
+		if (m == SS_SHAPE_FOREGROUND)
+			this.setShapeForeground((IColorConstant)value);
+		if (m == SS_SHAPE_PRIMARY_SELECTION)
+			this.setShapePrimarySelectedColor((IColorConstant)value);
+		if (m == SS_SHAPE_SECONDARY_SELECTION)
+			this.setShapeSecondarySelectedColor((IColorConstant)value);
+		if (m == SS_TEXT_FONT)
+			this.setTextFont((Font)value);
+		if (m == SS_TEXT_COLOR)
+			this.setTextColor((IColorConstant)value);
+		if (m == SS_ROUTING_STYLE)
+			this.setRoutingStyle((RoutingStyle)value);
+		if (m == SS_SNAP_TO_GRID)
+			this.setSnapToGrid((Boolean)value);
+		if (m == SS_GRID_WIDTH)
+			this.setGridWidth((Integer)value);
+		if (m == SS_GRID_HEIGHT)
+			this.setGridHeight((Integer)value);
+		if (m == SS_LABEL_LOCATION)
+			this.setLabelLocation((LabelLocation)value);
+	}
+
 	public static boolean compare(IColorConstant c1, IColorConstant c2) {
 		if (c1==c2)
 			return true;
@@ -431,7 +526,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				compare(s1.shapeForeground, s2.shapeForeground) ||
 				compare(s1.textFont, s2.textFont) ||
 				compare(s1.textColor, s2.textColor) ||
-				(s1.defaultSize != s2.defaultSize);
+				(s1.defaultSize != s2.defaultSize) ||
+				s1.labelLocation != s2.labelLocation;
 	}
 	
 	public static IColorConstant lighter(IColorConstant c) {
@@ -452,5 +548,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (g<0) g = 0;
 		if (b<0) b = 0;
 		return new ColorConstant(r, g, b);
+	}
+
+	@Override
+	public String toString() {
+		return encode(this);
 	}
 }

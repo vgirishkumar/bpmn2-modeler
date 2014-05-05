@@ -14,18 +14,22 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
  * This is the Graphiti FeatureContainer class for all BPMN2 model connection
@@ -49,6 +53,11 @@ public abstract class BaseElementConnectionFeatureContainer implements IConnecti
 			IReconnectionContext rc = (IReconnectionContext)context;
 			return BusinessObjectUtil.getFirstElementOfType(rc.getConnection(), BaseElement.class);
 		}		
+		else if (context instanceof ICustomContext) {
+			PictogramElement[] pes = ((ICustomContext) context).getPictogramElements();
+			if (pes.length==1)
+				return BusinessObjectUtil.getFirstElementOfType(pes[0], BaseElement.class);
+		}
 		return null;
 	}
 
@@ -113,7 +122,10 @@ public abstract class BaseElementConnectionFeatureContainer implements IConnecti
 	 */
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-		return new ICustomFeature[0];
+		return new ICustomFeature[] {
+				new ShowDocumentationFeature(fp),
+				new ShowPropertiesFeature(fp)
+			};
 	}
 
 	/* (non-Javadoc)
@@ -122,5 +134,11 @@ public abstract class BaseElementConnectionFeatureContainer implements IConnecti
 	@Override
 	public IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp) {
 		return new DirectEditBaseElementFeature(fp);
+	}
+
+	@Override
+	public IMoveConnectionDecoratorFeature getMoveConnectionDecoratorFeature(IFeatureProvider fp) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

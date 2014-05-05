@@ -38,14 +38,17 @@ import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.IMoveConnectionDecoratorContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractMoveShapeFeature;
+import org.eclipse.graphiti.features.impl.DefaultMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -120,6 +123,22 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 			public boolean canMoveShape(IMoveShapeContext context) {
 				return false;
 			}
+		};
+	}
+
+	@Override
+	public IMoveConnectionDecoratorFeature getMoveConnectionDecoratorFeature(IFeatureProvider fp) {
+		return new DefaultMoveConnectionDecoratorFeature(fp) {
+
+			@Override
+			public boolean canMoveConnectionDecorator(IMoveConnectionDecoratorContext context) {
+				return false;
+			}
+
+			@Override
+			public void moveConnectionDecorator(IMoveConnectionDecoratorContext context) {
+			}
+			
 		};
 	}
 

@@ -82,6 +82,7 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultCopyBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultRemoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2FeatureProvider;
 import org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
@@ -161,6 +162,7 @@ import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveBendpointFeature;
+import org.eclipse.graphiti.features.IMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IPasteFeature;
 import org.eclipse.graphiti.features.IReason;
@@ -178,6 +180,7 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IMoveBendpointContext;
+import org.eclipse.graphiti.features.context.IMoveConnectionDecoratorContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
@@ -390,7 +393,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
 		if (lfc.getApplyObject(context)!=null)
 			return lfc;
-//		Object property = context.getProperty(ContextConstants.LABEL_CONTEXT);
+//		Object property = context.getProperty(GraphitiConstants.LABEL_CONTEXT);
 //		if ( property!=null && (Boolean)property )
 //			return containers.get(LabelFeatureContainer.class);
 		
@@ -504,6 +507,17 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	}
 
 	@Override
+	public IMoveConnectionDecoratorFeature getMoveConnectionDecoratorFeature(IMoveConnectionDecoratorContext context) {
+		IFeatureContainer container = getFeatureContainer(context);
+		if (container instanceof IConnectionFeatureContainer) {
+			IMoveConnectionDecoratorFeature feature = ((IConnectionFeatureContainer)container).getMoveConnectionDecoratorFeature(this);
+			if (feature != null)
+				return feature;
+		}
+		return super.getMoveConnectionDecoratorFeature(context);
+	}
+
+	@Override
 	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
 		IFeatureContainer container = getFeatureContainer(context);
 		if (container instanceof IShapeFeatureContainer) {
@@ -598,6 +612,11 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			}
 		}
 		else {
+			// first test for Label shapes
+			LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
+			if (lfc.getApplyObject(context)!=null)
+				return lfc.getCustomFeatures(this);
+			
 			for (IFeatureContainer fc : containers.values()) {
 				Object o = fc.getApplyObject(context);
 				if (o!=null && fc.canApplyTo(o)) {
@@ -626,7 +645,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	// TODO: move this to the adapter registry
 	public IFeature getCreateFeatureForPictogramElement(PictogramElement pe) {
 		if (pe!=null) {
-			String id = Graphiti.getPeService().getPropertyValue(pe,ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+			String id = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID);
 			if (id!=null) {
 				for (IFeatureContainer container : containers.values()) {
 					if (container instanceof ICustomElementFeatureContainer) {

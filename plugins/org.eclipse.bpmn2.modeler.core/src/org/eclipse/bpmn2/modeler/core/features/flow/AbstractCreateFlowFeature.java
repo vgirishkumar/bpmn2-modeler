@@ -28,7 +28,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -95,7 +95,7 @@ public abstract class AbstractCreateFlowFeature<
 			Point p = gaService.createPoint(
 					loc.getX() - shapeLoc.getX(),
 					loc.getY() - shapeLoc.getY());
-			addContext.putProperty(AnchorUtil.CONNECTION_SOURCE_LOCATION, p);
+			addContext.putProperty(GraphitiConstants.CONNECTION_SOURCE_LOCATION, p);
 			
 			loc = context.getTargetLocation();
 			if (loc==null)
@@ -104,8 +104,8 @@ public abstract class AbstractCreateFlowFeature<
 			p = gaService.createPoint(
 					loc.getX() - shapeLoc.getX(),
 					loc.getY() - shapeLoc.getY());
-			addContext.putProperty(AnchorUtil.CONNECTION_TARGET_LOCATION, p);
-			addContext.putProperty(AnchorUtil.CONNECTION_CREATED, Boolean.TRUE);
+			addContext.putProperty(GraphitiConstants.CONNECTION_TARGET_LOCATION, p);
+			addContext.putProperty(GraphitiConstants.CONNECTION_CREATED, Boolean.TRUE);
 	
 			connection = (Connection) getFeatureProvider().addIfPossible(addContext);
 			ModelUtil.setID(businessObject);

@@ -23,6 +23,7 @@ import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -172,7 +173,7 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 
 			// create the PE and copy our ID into its properties.
 			PictogramElement pe = getFeatureProvider().addIfPossible(addContext);
-			Graphiti.getPeService().setPropertyValue(pe, CUSTOM_ELEMENT_ID, id);
+			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 
 			return pe;
 		}
@@ -354,7 +355,7 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			if (pe != null)
-				Graphiti.getPeService().setPropertyValue(pe, CUSTOM_ELEMENT_ID, getId());
+				Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.CUSTOM_ELEMENT_ID, getId());
 
 			return pe;
 		}
@@ -490,6 +491,15 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 	public IReconnectionFeature getReconnectionFeature(IFeatureProvider fp) {
 		IConnectionFeatureContainer fc = (IConnectionFeatureContainer) getFeatureContainer(fp);
 		return fc.getReconnectionFeature(fp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionFeatureContainer#getMoveConnectionDecoratorFeature(org.eclipse.graphiti.features.context.IMoveConnectionDecoratorContext)
+	 */
+	@Override
+	public IMoveConnectionDecoratorFeature getMoveConnectionDecoratorFeature(IFeatureProvider fp) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

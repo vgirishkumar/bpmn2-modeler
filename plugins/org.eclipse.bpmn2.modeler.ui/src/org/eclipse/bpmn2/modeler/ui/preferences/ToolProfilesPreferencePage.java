@@ -807,7 +807,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Connectors_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.CONNECTORS) {
+			for (Class c : Bpmn2FeatureMap.CONNECTIONS) {
 				loadCategory(cd,c);
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Tasks_Category,null,null);

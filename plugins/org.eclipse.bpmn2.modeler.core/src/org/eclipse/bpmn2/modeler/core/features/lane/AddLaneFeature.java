@@ -23,9 +23,8 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -82,7 +81,7 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 		Rectangle rect = gaService.createRectangle(containerShape);
 		StyleUtil.applyStyle(rect, businessObject);
 		
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
@@ -146,7 +145,7 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 		}
 		link(textShape, businessObject);
 
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null
 				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
 			FeatureSupport.redraw(context.getTargetContainer());
 		}
@@ -228,11 +227,11 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 	
 	@Override
 	protected int getHeight(IAddContext context) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null){
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
 			if (context.getTargetContainer() instanceof Diagram) {
 				return super.getHeight(context);
 			}
-			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {
 				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 				if (b!=null)
@@ -251,11 +250,11 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 	
 	@Override
 	public int getWidth(IAddContext context) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null){
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
 			if (context.getTargetContainer() instanceof Diagram) {
 				return super.getWidth(context);
 			}
-			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {
 				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 				if (b!=null)

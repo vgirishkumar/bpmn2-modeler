@@ -28,7 +28,7 @@
 			id="bpmn2.jbpm.description.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDescriptionPropertySection"
-			label="%propertyTab.label">
+			label="%propertyTab.label.General">
 		</propertyTab>
 
 		<propertyTab
@@ -37,7 +37,7 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmProcessDiagramPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			label="%propertyTab.label.0">
+			label="%propertyTab.label.Process">
 		</propertyTab>
 
 		<propertyTab
@@ -898,6 +898,7 @@
 			<enable object="StartEvent" feature="eventDefinitions"/>
 			<enable object="SubProcess" feature="flowElements"/>
 			<enable object="SubProcess" feature="isForCompensation"/>
+			<enable object="SubProcess" feature="triggeredByEvent"/>
 			<enable object="SubProcess" feature="loopCharacteristics"/>
 			<enable object="SubProcess" feature="name"/>
 			<enable object="SubProcess" feature="properties"/>
@@ -963,6 +964,7 @@
 			<disable object="ScriptTask" feature="isForCompensation"/>
 			<disable object="SendTask"/>
 			<disable object="SubProcess" feature="isForCompensation"/>
+			<disable object="SubProcess" feature="triggeredByEvent"/>
 			<disable object="Task" feature="extensionValues"/>
 			<disable object="UserTask" feature="extensionValues"/>
 			<disable object="Process" feature="adHoc"/>

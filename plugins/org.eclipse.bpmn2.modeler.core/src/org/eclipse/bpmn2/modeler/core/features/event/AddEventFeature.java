@@ -15,8 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.event;
 import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape;
 
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -36,9 +36,6 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AddEventFeature<T extends Event>
 	extends AbstractBpmn2AddElementFeature<T> {
-
-	public static final String EVENT_ELEMENT = "event.graphics.element"; //$NON-NLS-1$
-	public static final String EVENT_CIRCLE = "event.graphics.element.circle"; //$NON-NLS-1$
 
 	public AddEventFeature(IFeatureProvider fp) {
 		super(fp);
@@ -74,11 +71,11 @@ public class AddEventFeature<T extends Event>
 		gaService.setLocationAndSize(invisibleRect, x, y, width, height);
 
 		Shape ellipseShape = peService.createShape(containerShape, false);
-		peService.setPropertyValue(ellipseShape, EVENT_ELEMENT, EVENT_CIRCLE);
-		peService.setPropertyValue(containerShape, GraphicsUtil.EVENT_MARKER_CONTAINER, Boolean.toString(true));
+		peService.setPropertyValue(ellipseShape, GraphitiConstants.EVENT_ELEMENT, GraphitiConstants.EVENT_CIRCLE);
+		peService.setPropertyValue(containerShape, GraphitiConstants.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
 		StyleUtil.applyStyle(ellipse, businessObject);
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 		
 		decorateShape(context, containerShape, businessObject);
@@ -88,14 +85,14 @@ public class AddEventFeature<T extends Event>
 
 		splitConnection(context, containerShape);
 		
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
-		
 		// prepare the AddContext to create a Label
 		prepareAddContext(context, containerShape, width, height);
 		IFeatureContainer fc = new LabelFeatureContainer();
 		fc.getAddFeature(getFeatureProvider()).add(context);
 		
+		updatePictogramElement(context, containerShape);
+		layoutPictogramElement(context, containerShape);
+
 		return containerShape;
 	}
 

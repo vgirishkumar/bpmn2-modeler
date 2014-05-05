@@ -82,19 +82,6 @@ import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
  */
 public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
-	/**
-	 * The key used to store the copied shape in the Paste Context.
-	 * This is copied to the AddContext and picked up by the AddFeature
-	 * which duplicates the copied shape's size and other attributes.
-	 */
-	public static final String COPIED_BPMN_SHAPE = "copied.bpmn.shape"; //$NON-NLS-1$
-	
-	/** The key used to store the copied business object in the Paste Context. */
-	public static final String COPIED_BPMN_OBJECT = "copied.bpmn.object"; //$NON-NLS-1$
-	
-	/** The Constant COPY_FROM_CONTEXT. */
-	public static final String COPY_FROM_CONTEXT = "copy.from.context"; //$NON-NLS-1$
-	
 	/** The EMF Resource. */
 	protected Resource resource;
 	
@@ -145,7 +132,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			return false;
 
 		Object[] pasteObjects;
-		if (context.getProperty(COPY_FROM_CONTEXT) != null) {
+		if (context.getProperty(GraphitiConstants.COPY_FROM_CONTEXT) != null) {
 			// Get objects to paste from the context. This can be used to test if
 			// objects can be pasted before they have been copied to the clipboard.
 			pasteObjects = context.getPictogramElements();
@@ -492,9 +479,9 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		BPMNShape oldBpmnShape = null;
 		if (oldObject instanceof BaseElement) {
 			oldBpmnShape = DIUtils.findBPMNShape((BaseElement)oldObject);
-			ac.putProperty(COPIED_BPMN_SHAPE, oldBpmnShape);
+			ac.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, oldBpmnShape);
 		}
-		ac.putProperty(COPIED_BPMN_OBJECT, oldObject);
+		ac.putProperty(GraphitiConstants.COPIED_BPMN_OBJECT, oldObject);
 		
 		IAddFeature af = getFeatureProvider().getAddFeature(ac);
 		ContainerShape newShape = (ContainerShape) af.add(ac);
@@ -574,7 +561,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		UpdateContext uc = new UpdateContext(newShape);
 		IUpdateFeature uf = getFeatureProvider().getUpdateFeature(uc);
 		// force an update to cause the newly created ContainerShape to be rendered properly
-		uc.putProperty(MultiUpdateFeature.FORCE_UPDATE_ALL, Boolean.TRUE);
+		uc.putProperty(GraphitiConstants.FORCE_UPDATE_ALL, Boolean.TRUE);
 		uf.update(uc);
 		
 		if (newObject instanceof Activity) {

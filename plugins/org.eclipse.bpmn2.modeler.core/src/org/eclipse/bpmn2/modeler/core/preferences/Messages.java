@@ -34,6 +34,7 @@ public class Messages extends NLS {
 	public static String Bpmn2Preferences_Horizontal;
 	public static String Bpmn2Preferences_Marker_Visible;
 	public static String Bpmn2Preferences_Message_Visible;
+	public static String Bpmn2Preferences_Save_BPMNLabels;
 	public static String Bpmn2Preferences_No_Runtime_Plugin_Message;
 	public static String Bpmn2Preferences_None;
 	public static String Bpmn2Preferences_Show_Advanced_Properties;
@@ -45,6 +46,17 @@ public class Messages extends NLS {
 	public static String Bpmn2Preferences_True_if_not_set;
 	public static String ToolEnablementPreferences_BPMN_Extensions;
 	public static String ToolEnablementPreferences_Target_Extensions;
+	
+	public static String ShapeStyle_Category_Connections;
+	public static String ShapeStyle_Category_Shapes;
+	public static String ShapeStyle_Category_Events;
+	public static String ShapeStyle_Category_Gateways;
+	public static String ShapeStyle_Category_Tasks;
+	public static String ShapeStyle_Category_Data;
+	public static String ShapeStyle_Category_Other;
+	public static String ShapeStyle_Category_Canvas;
+	public static String ShapeStyle_Category_Grid;
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

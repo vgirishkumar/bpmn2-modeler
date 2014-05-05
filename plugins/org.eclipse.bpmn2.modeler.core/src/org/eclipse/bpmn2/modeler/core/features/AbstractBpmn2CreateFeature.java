@@ -17,7 +17,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -96,9 +95,9 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		Resource resource = container.eResource();
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
-		String id = (String)context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
+		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
 		if (id!=null) {
-			adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
+			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 		}
 		T businessObject = (T)adapter.getObjectDescriptor().createObject(resource,eclass);
 		putBusinessObject(context, businessObject);
@@ -112,7 +111,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@SuppressWarnings("unchecked")
 	public T getBusinessObject(ICreateContext context) {
-		return (T) context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		return (T) context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
 	}
 	
 	/* (non-Javadoc)
@@ -121,7 +120,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 * If the object is a Custom Element, it is initialized as defined in the extension plugin's plugin.xml
 	 */
 	public void putBusinessObject(ICreateContext context, T businessObject) {
-		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
+		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, businessObject);
 		
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
@@ -173,12 +172,12 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		AddContext newContext = new AddContext(context, newObject);
 		
 		// copy properties into the new context
-		Object value = context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
-		newContext.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
-		value = context.getProperty(DIImport.IMPORT_PROPERTY);
-		newContext.putProperty(DIImport.IMPORT_PROPERTY, value);
-		value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		newContext.putProperty(ContextConstants.BUSINESS_OBJECT, value);
+		Object value = context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+		newContext.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, value);
+		value = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
+		newContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, value);
+		value = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
+		newContext.putProperty(GraphitiConstants.BUSINESS_OBJECT, value);
 		return newContext;
 	}
 	

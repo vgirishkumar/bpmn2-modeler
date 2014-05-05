@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.Messages;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -26,6 +27,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 
@@ -81,6 +84,10 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(object,"id"); //$NON-NLS-1$
 			bindAttribute(object,"name"); //$NON-NLS-1$
 			bindList(object, "documentation"); //$NON-NLS-1$
+			Composite container = createSectionComposite(this, "Appearance");
+			Button push = new Button(container, SWT.PUSH);
+			push.setText("Push me!");
+
 			if (!(object instanceof Group)) {
 				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef"); //$NON-NLS-1$
 				if (reference!=null) {

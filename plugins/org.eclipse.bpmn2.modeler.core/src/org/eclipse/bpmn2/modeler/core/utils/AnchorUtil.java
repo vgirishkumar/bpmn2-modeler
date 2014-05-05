@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.dd.di.DiagramElement;
@@ -67,15 +68,6 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AnchorUtil {
 
-	public static final String BOUNDARY_FIXPOINT_ANCHOR = "boundary.fixpoint.anchor"; //$NON-NLS-1$
-	public static final String BOUNDARY_ADHOC_ANCHOR = "boundary.adhoc.anchor"; //$NON-NLS-1$
-	public static final String CONNECTION_SOURCE_LOCATION = "connection.source.location"; //$NON-NLS-1$
-	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location"; //$NON-NLS-1$
-	public static final String CONNECTION_CREATED = "connection.created"; //$NON-NLS-1$
-
-	// values for connection points
-	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
-	public static final String CONNECTION_POINT_KEY = "connection.point.key"; //$NON-NLS-1$
 	public static final int CONNECTION_POINT_SIZE = 4;
 
 	private static final IPeService peService = Graphiti.getPeService();
@@ -138,7 +130,7 @@ public class AnchorUtil {
 		IPeService peService = Graphiti.getPeService();
 
 		FixPointAnchor anchor = peService.createFixPointAnchor(ac);
-		peService.setPropertyValue(anchor, BOUNDARY_FIXPOINT_ANCHOR, loc.getKey());
+		peService.setPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR, loc.getKey());
 		anchor.setLocation(gaService.createPoint(x, y));
 		gaService.createInvisibleRectangle(anchor);
 
@@ -146,7 +138,7 @@ public class AnchorUtil {
 	}
 	
 	public static AnchorLocation getBoundaryAnchorLocation(Anchor anchor) {
-		String property = Graphiti.getPeService().getPropertyValue(anchor, BOUNDARY_FIXPOINT_ANCHOR);
+		String property = Graphiti.getPeService().getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
 		if (property != null && anchor instanceof FixPointAnchor) {
 			return AnchorLocation.getLocation(property);
 		}
@@ -162,7 +154,7 @@ public class AnchorUtil {
 		IPeService peService = Graphiti.getPeService();
 
 		FixPointAnchor anchor = peService.createFixPointAnchor(ac);
-		peService.setPropertyValue(anchor, BOUNDARY_ADHOC_ANCHOR, "true"); //$NON-NLS-1$
+		peService.setPropertyValue(anchor, GraphitiConstants.BOUNDARY_ADHOC_ANCHOR, "true"); //$NON-NLS-1$
 		anchor.setLocation(p);
 		gaService.createInvisibleRectangle(anchor);
 
@@ -200,7 +192,7 @@ public class AnchorUtil {
 			Iterator<Anchor> iterator = ac.getAnchors().iterator();
 			while (iterator.hasNext()) {
 				Anchor anchor = iterator.next();
-				String property = Graphiti.getPeService().getPropertyValue(anchor, BOUNDARY_FIXPOINT_ANCHOR);
+				String property = Graphiti.getPeService().getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
 				if (property != null && anchor instanceof FixPointAnchor) {
 					BoundaryAnchor a = new BoundaryAnchor();
 					a.anchor = (FixPointAnchor) anchor;
@@ -256,8 +248,8 @@ public class AnchorUtil {
 		}
 		
 		// Get source and target locations at the time the connection was created.
-		Point targetLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_TARGET_LOCATION));
-		Point sourceLoc = stringToPoint(peService.getPropertyValue(connection, CONNECTION_SOURCE_LOCATION));
+		Point targetLoc = stringToPoint(peService.getPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION));
+		Point sourceLoc = stringToPoint(peService.getPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION));
 		if (targetLoc!=null) {
 			// These are relative to the source and target shapes, so we
 			// need to translate them to diagram-relative coordinates.
@@ -280,7 +272,7 @@ public class AnchorUtil {
 				// if the calculated boundary of the source and target figures are above/below or
 				// left/right of each other, align the source location so that the connection line
 				// is vertical/horizontal
-				if (peService.getPropertyValue(connection, CONNECTION_CREATED)!=null && sourceLoc!=null) {
+				if (peService.getPropertyValue(connection, GraphitiConstants.CONNECTION_CREATED)!=null && sourceLoc!=null) {
 					FixPointAnchor sourceAnchor = (FixPointAnchor) newStartAnchor;
 					if ((newEndAnchor == targetTop.anchor && sourceAnchor == sourceBottom.anchor) ||
 						(newEndAnchor == targetBottom.anchor && sourceAnchor == sourceTop.anchor)) {
@@ -292,9 +284,9 @@ public class AnchorUtil {
 						// ensure a horizontal line
 						sourceLoc.setY(targetLoc.getY());
 					}
-					peService.removeProperty(connection, CONNECTION_CREATED);
+					peService.removeProperty(connection, GraphitiConstants.CONNECTION_CREATED);
 				}
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
 						AnchorUtil.pointToString(targetLoc));
 
 				newEndAnchor = createAdHocAnchor(target, targetLoc);
@@ -330,7 +322,7 @@ public class AnchorUtil {
 				newStartAnchor = createAdHocAnchor(source, sourceLoc);
 				
 				peService.setPropertyValue(connection,
-						AnchorUtil.CONNECTION_SOURCE_LOCATION,
+						GraphitiConstants.CONNECTION_SOURCE_LOCATION,
 						AnchorUtil.pointToString(sourceLoc));
 			}
 			else
@@ -371,7 +363,7 @@ public class AnchorUtil {
 		// If the shape is a BoundaryEvent, only look at the BoundaryAnchors that are outside
 		// of the parent shape.
 		String boundaryEventPos = peService.getPropertyValue(
-				ac, BoundaryEventPositionHelper.BOUNDARY_EVENT_RELATIVE_POS);
+				ac, GraphitiConstants.BOUNDARY_EVENT_RELATIVE_POS);
 		if (boundaryEventPos!=null) {
 			PositionOnLine pol = PositionOnLine.fromString(boundaryEventPos);
 			switch (pol.getLocationType()) {
@@ -565,7 +557,7 @@ public class AnchorUtil {
 				continue;
 			}
 
-			if (peService.getProperty(a, BOUNDARY_FIXPOINT_ANCHOR) == null && a.getIncomingConnections().isEmpty()
+			if (peService.getProperty(a, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR) == null && a.getIncomingConnections().isEmpty()
 					&& a.getOutgoingConnections().isEmpty()) {
 				indexes.add(i);
 			}
@@ -578,7 +570,7 @@ public class AnchorUtil {
 
 	public static boolean isBoundaryAnchor(Anchor anchor) {
 		if (anchor instanceof FixPointAnchor) {
-			if (peService.getProperty(anchor, BOUNDARY_FIXPOINT_ANCHOR) != null)
+			if (peService.getProperty(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR) != null)
 				return true;
 		}
 		return false;
@@ -586,7 +578,7 @@ public class AnchorUtil {
 
 	public static boolean isAdHocAnchor(Anchor anchor) {
 		if (anchor instanceof FixPointAnchor) {
-			if (peService.getProperty(anchor, BOUNDARY_ADHOC_ANCHOR) != null)
+			if (peService.getProperty(anchor, GraphitiConstants.BOUNDARY_ADHOC_ANCHOR) != null)
 				return true;
 		}
 		return false;
@@ -698,7 +690,7 @@ public class AnchorUtil {
 		
 		// create a circle for the connection point shape
 		Shape connectionPointShape = createService.createShape(cs, true);
-		peService.setPropertyValue(connectionPointShape, CONNECTION_POINT_KEY, CONNECTION_POINT);
+		peService.setPropertyValue(connectionPointShape, GraphitiConstants.CONNECTION_POINT_KEY, GraphitiConstants.CONNECTION_POINT);
 		Ellipse ellipse = createService.createEllipse(connectionPointShape);
 		int x = 0, y = 0;
 		if (location != null) {
@@ -750,7 +742,7 @@ public class AnchorUtil {
 	public static FixPointAnchor getConnectionPointAnchor(Shape connectionPointShape) {
 		if (connectionPointShape.getAnchors().size()==0) {
 			FixPointAnchor anchor = createService.createFixPointAnchor(connectionPointShape);
-			peService.setPropertyValue(anchor, CONNECTION_POINT_KEY, CONNECTION_POINT);
+			peService.setPropertyValue(anchor, GraphitiConstants.CONNECTION_POINT_KEY, GraphitiConstants.CONNECTION_POINT);
 			
 			// if the anchor doesn't have a GraphicsAlgorithm, GEF will throw a fit
 			// so create an invisible rectangle for it
@@ -818,8 +810,8 @@ public class AnchorUtil {
 
 
 	public static boolean isConnectionPoint(PictogramElement pe) {
-		String value = Graphiti.getPeService().getPropertyValue(pe, CONNECTION_POINT_KEY);
-		return CONNECTION_POINT.equals(value);
+		String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.CONNECTION_POINT_KEY);
+		return GraphitiConstants.CONNECTION_POINT.equals(value);
 	}
 
 	public static boolean isConnectionPointNear(PictogramElement pe, ILocation loc, int dist) {

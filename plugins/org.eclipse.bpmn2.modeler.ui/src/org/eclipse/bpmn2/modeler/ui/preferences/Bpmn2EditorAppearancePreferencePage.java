@@ -22,18 +22,19 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.Category;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelLocation;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
-import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -46,6 +47,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -59,6 +62,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -72,31 +77,51 @@ import org.osgi.service.prefs.BackingStoreException;
 @SuppressWarnings("nls")
 public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	class ShapeStyleCategoryList extends LinkedHashMap<String, ShapeStyleList> {
+	class ShapeStyleCategoryList extends LinkedHashMap<String, Object> {
+		public Category key;
+		
+		public ShapeStyleCategoryList(Category key) {
+			this.key = key;
+		}
 	}
 	class ShapeStyleList extends LinkedHashMap<Class, ShapeStyle> {
+		public Category key;
+		
+		public ShapeStyleList(Category key) {
+			this.key = key;
+		}
 	}
 
 	Bpmn2Preferences preferences;
 	TreeViewer elementsTreeViewer;
 	List<Class> allElements;
-	Composite styleEditors;
+	Group colorGroup;
+	Group labelGroup;
+	Composite colorEditors;
 	Composite container;
-	ShapeStyleList allShapeStyles;
+	Hashtable<Object, ShapeStyle> allShapeStyles;
 	ShapeStyleCategoryList categories;
-	Class currentSelection;
-	ColorControl shapeBackground;
-	ColorControl shapePrimarySelectedColor;
-	ColorControl shapeSecondarySelectedColor;
-	ColorControl shapeForeground;
-	Button defaultSize;
+	ShapeStyleCategoryList shapesList = new ShapeStyleCategoryList(Category.SHAPES);
+	ShapeStyleList connectionShapeStyles = new ShapeStyleList(Category.CONNECTIONS);
+	ShapeStyleList eventShapeStyles = new ShapeStyleList(Category.EVENTS);
+	ShapeStyleList gatewayShapeStyles = new ShapeStyleList(Category.GATEWAYS);
+	ShapeStyleList taskShapeStyles = new ShapeStyleList(Category.TASKS);
+	ShapeStyleList dataShapeStyles = new ShapeStyleList(Category.DATA);
+	ShapeStyleList otherShapeStyles = new ShapeStyleList(Category.OTHER);
+	Object currentSelection;
+	ColorShapeStyleEditor shapeBackground;
+	ColorShapeStyleEditor shapePrimarySelectedColor;
+	ColorShapeStyleEditor shapeSecondarySelectedColor;
+	ColorShapeStyleEditor shapeForeground;
+//	Button defaultSize;
 	Button snapToGrid;
-	IntegerTextControl gridWidth;
-	IntegerTextControl gridHeight;
-	FontControl textFont;
-	ColorControl textColor;
-	Label routingStyleLabel;
-	Combo routingStyle;
+	Button applyToAllChildren;
+	IntegerShapeStyleEditor gridWidth;
+	IntegerShapeStyleEditor gridHeight;
+	FontShapeStyleEditor textFont;
+	ColorShapeStyleEditor textColor;
+	RoutingStyleShapeStyleEditor routingStyleViewer;
+	LabelLocationShapeStyleEditor labelLocationViewer;
 	BEListLabelProvider labelProvider;
 	
 	public Bpmn2EditorAppearancePreferencePage() {
@@ -110,7 +135,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	@Override
 	public void init(IWorkbench workbench) {
 		allElements = new ArrayList<Class>();
-		allElements.addAll(Bpmn2FeatureMap.CONNECTORS);
+		allElements.addAll(Bpmn2FeatureMap.CONNECTIONS);
 		allElements.addAll(Bpmn2FeatureMap.EVENTS);
 		allElements.addAll(Bpmn2FeatureMap.GATEWAYS);
 		allElements.addAll(Bpmn2FeatureMap.TASKS);
@@ -130,169 +155,224 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	protected Control createContents(Composite parent) {
 		
 		GridLayout layout = (GridLayout)parent.getLayout();
-		GridData data;
+		GridData gd;
 		
 		container = new Composite(parent, SWT.NONE);
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		container.setLayout(new GridLayout(2, false));
+		container.setLayout(new GridLayout(2, true));
         
 		final Group elementsGroup = new Group(container, SWT.NONE);
-		elementsGroup.setText(Messages.Bpmn2EditorAppearancePreferencePage_GraphicalElements_Group);
-        data = new GridData(SWT.FILL,SWT.TOP,true,true,1,1);
-		data.heightHint = 50;
-		elementsGroup.setLayoutData(data);
+		elementsGroup.setText(Messages.Bpmn2EditorPreferencePage_GraphicalElements_Group);
+        gd = new GridData(SWT.FILL,SWT.FILL,true,true,1,1);
+		elementsGroup.setLayoutData(gd);
 		elementsGroup.setLayout(new GridLayout(1,false));
         
         elementsTreeViewer = new TreeViewer(elementsGroup, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-        Tree elementsTree = elementsTreeViewer.getTree();
-        data = new GridData(SWT.FILL,SWT.TOP,true,true,1,1);
-		data.heightHint = 50;
-        elementsTree.setLayoutData(data);
+        final Tree elementsTree = elementsTreeViewer.getTree();
+        gd = new GridData(SWT.FILL,SWT.TOP,true,true,1,1);
+        elementsTree.setLayoutData(gd);
         
         elementsTreeViewer.setContentProvider(new BEListContentProvider());
         labelProvider = new BEListLabelProvider();
         elementsTreeViewer.setLabelProvider(labelProvider);
-        elementsTreeViewer.addSelectionChangedListener(new BEListSelectionChangedListener());
 		parent.addControlListener(new ControlAdapter() {
 			@Override
 			public void controlResized(ControlEvent e) {
 				GridData gd = (GridData) elementsGroup.getLayoutData();
-				gd.heightHint = 1000;
+				gd.heightHint = 500;
 				gd = (GridData) elementsTreeViewer.getTree().getLayoutData();
-				gd.heightHint = 1000;
+				gd.heightHint = 500;
 				container.layout();
 			}
 		});
         
-		Group styleGroup = new Group(container, SWT.NONE);
-		styleGroup.setText(Messages.Bpmn2EditorAppearancePreferencePage_Colors_Group);
-		styleGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
-		styleGroup.setLayout(new GridLayout(1,false));
+		Composite colorAndLabelComposite = new Composite(container, SWT.NONE);
+		colorAndLabelComposite.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
+		colorAndLabelComposite.setLayout(new GridLayout(1,false));
+		
+		colorGroup = new Group(colorAndLabelComposite, SWT.NONE);
+		colorGroup.setText(Messages.Bpmn2EditorPreferencePage_Colors_Group);
+		colorGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
+		colorGroup.setLayout(new GridLayout(1,false));
 
-        styleEditors = new Composite(styleGroup, SWT.NONE);
-        styleEditors.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
+        colorEditors = new Composite(colorGroup, SWT.NONE);
+        colorEditors.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
         layout = new GridLayout(1,false);
         layout.verticalSpacing = 0;
-        styleEditors.setLayout(layout);
-        styleEditors.setFont(parent.getFont());
-        styleEditors.setVisible(false);
+        colorEditors.setLayout(layout);
+        colorEditors.setFont(parent.getFont());
+//        colorEditors.setVisible(false);
 
-		shapeBackground = new ColorControl(Messages.Bpmn2EditorPreferencePage_Fill_Color_Label,styleEditors);
+		shapeBackground = new ColorShapeStyleEditor(colorEditors, ShapeStyle.SS_SHAPE_BACKGROUND,
+				Messages.Bpmn2EditorPreferencePage_Fill_Color_Label);
 		shapeBackground.addSelectionListener( new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				IColorConstant c = shapeBackground.getValue();
 				ShapeStyle ss = allShapeStyles.get(currentSelection);
-				IColorConstant c = shapeBackground.getSelectedColor();
-				if (!ShapeStyle.compare(ss.getShapeBackground(),c)) {
+				if (currentSelection instanceof Class) {
 					// update secondary colors
 					ss.setDefaultColors(c);
-					shapePrimarySelectedColor.setSelectedColor(ss.getShapePrimarySelectedColor());
-					shapeSecondarySelectedColor.setSelectedColor(ss.getShapeSecondarySelectedColor());
-					shapeForeground.setSelectedColor(ss.getShapeForeground());
-					textColor.setSelectedColor(ss.getTextColor());
+					shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
+					shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
+					shapeForeground.setValue(ss.getShapeForeground());
+					textColor.setValue(ss.getTextColor());
 				}
 			}
     	});
-		shapeForeground = new ColorControl(Messages.Bpmn2EditorPreferencePage_Foreground_Color_Label,styleEditors);
-		shapePrimarySelectedColor = new ColorControl(Messages.Bpmn2EditorPreferencePage_Selected_Color_Label,styleEditors);
-		shapeSecondarySelectedColor = new ColorControl(Messages.Bpmn2EditorPreferencePage_MultiSelected_Color_Label,styleEditors);
-		textColor = new ColorControl(Messages.Bpmn2EditorPreferencePage_Label_Color_Label,styleEditors);
-		textFont = new FontControl(Messages.Bpmn2EditorPreferencePage_Label_Font_Label,styleEditors);
-		defaultSize = new Button(styleEditors, SWT.CHECK);
-		defaultSize.setText(Messages.Bpmn2EditorPreferencePage_Override_Size_Label);
-		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-		gd.horizontalIndent = 5;
-		gd.verticalIndent = 10;
-		defaultSize.setLayoutData(gd);
+		
+		shapeForeground = new ColorShapeStyleEditor(colorEditors, ShapeStyle.SS_SHAPE_FOREGROUND,
+				Messages.Bpmn2EditorPreferencePage_Foreground_Color_Label);
+
+		shapePrimarySelectedColor = new ColorShapeStyleEditor(colorEditors, ShapeStyle.SS_SHAPE_PRIMARY_SELECTION,
+				Messages.Bpmn2EditorPreferencePage_Selected_Color_Label);
+
+		shapeSecondarySelectedColor = new ColorShapeStyleEditor(colorEditors, ShapeStyle.SS_SHAPE_SECONDARY_SELECTION,
+				Messages.Bpmn2EditorPreferencePage_MultiSelected_Color_Label);
+
+
+//		defaultSize = new Button(colorEditors, SWT.CHECK);
+//		defaultSize.setText(Messages.Bpmn2EditorPreferencePage_Override_Size_Label);
+//		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+//		gd.horizontalIndent = 5;
+//		gd.verticalIndent = 10;
+//		defaultSize.setLayoutData(gd);
 
 		// Grid
-		snapToGrid = new Button(styleEditors, SWT.CHECK);
-		snapToGrid.setText(Messages.Bpmn2EditorAppearancePreferencePage_SnapToGrid);
+		snapToGrid = new Button(colorEditors, SWT.CHECK);
+		snapToGrid.setText(Messages.Bpmn2EditorPreferencePage_SnapToGrid);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		snapToGrid.setLayoutData(gd);
 
-		gridWidth = new IntegerTextControl(Messages.Bpmn2EditorAppearancePreferencePage_GridWidth, styleEditors);
+		gridWidth = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_GRID_WIDTH,
+				Messages.Bpmn2EditorPreferencePage_GridWidth);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		gridWidth.setLayoutData(gd);
 
-		gridHeight = new IntegerTextControl(Messages.Bpmn2EditorAppearancePreferencePage_GridHeight, styleEditors);
+		gridHeight = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_GRID_WIDTH,
+				Messages.Bpmn2EditorPreferencePage_GridHeight);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		gridHeight.setLayoutData(gd);
 		
-        Composite routingStyleComposite = new Composite(styleEditors, SWT.NONE);
+        Composite routingStyleComposite = new Composite(colorEditors, SWT.NONE);
         routingStyleComposite.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false,1,1));
         layout = new GridLayout(2,false);
         routingStyleComposite.setLayout(layout);
 
-        routingStyleLabel = new Label(routingStyleComposite, SWT.LEFT);
-		routingStyleLabel.setText(Messages.Bpmn2EditorPreferencePage_Routing_Style_Label);
-		routingStyleLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		routingStyle = new Combo(routingStyleComposite, SWT.READ_ONLY);
-		routingStyle.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		routingStyleViewer = new RoutingStyleShapeStyleEditor(colorEditors,
+				Messages.Bpmn2EditorPreferencePage_Routing_Style_Label);
+		routingStyleViewer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+
+		labelGroup = new Group(colorAndLabelComposite, SWT.NONE);
+		labelGroup.setText("Labels");
+		labelGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
+		labelGroup.setLayout(new GridLayout(1,false));
+		textColor = new ColorShapeStyleEditor(labelGroup, ShapeStyle.SS_TEXT_COLOR,
+				Messages.Bpmn2EditorPreferencePage_Label_Color_Label);
+		showControl(textColor, false);
+		textFont = new FontShapeStyleEditor(labelGroup, ShapeStyle.SS_TEXT_FONT,
+				Messages.Bpmn2EditorPreferencePage_Label_Font_Label);
+		showControl(textFont, false);
+
+		labelLocationViewer = new LabelLocationShapeStyleEditor(labelGroup,
+				Messages.Bpmn2EditorPreferencePage_Label_Location_Label);
+		labelLocationViewer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		
+		applyToAllChildren = new Button(colorAndLabelComposite, SWT.CHECK);
+		applyToAllChildren.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
+		applyToAllChildren.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				configureAll();
+			}
+		});
+		showControl(applyToAllChildren, false);
 
 		loadStyleEditors();
 
+		configureForShapes(null);
+		configureAll();
+
+        elementsTreeViewer.addSelectionChangedListener(new BEListSelectionChangedListener());
+
         return container;
 	}
-
-	private void saveStyleEditors() {
-		if (currentSelection!=null) {
-			ShapeStyle ss = allShapeStyles.get(currentSelection);
-			ss.setShapeBackground(shapeBackground.getSelectedColor());
-			ss.setShapePrimarySelectedColor(shapePrimarySelectedColor.getSelectedColor());
-			ss.setShapeSecondarySelectedColor(shapeSecondarySelectedColor.getSelectedColor());
-			ss.setShapeForeground(shapeForeground.getSelectedColor());
-			ss.setDefaultSize(defaultSize.getSelection());
-			ss.setTextFont(textFont.getSelectedFont());
-			ss.setTextColor(textColor.getSelectedColor());
-			RoutingStyle rs = ss.getRoutingStyle();
-			int i = routingStyle.getSelectionIndex();
-			if (i>=0) {
-				rs = RoutingStyle.values()[i];
+	
+	private void applyToAll(ShapeStyle theShapeStyle) {
+		if (currentSelection instanceof Category) {
+			List<ShapeStyle> ssl = new ArrayList<ShapeStyle>();
+			switch ((Category)currentSelection) {
+			case CONNECTIONS:
+				ssl.addAll(connectionShapeStyles.values());
+				break;
+			case SHAPES:
+				ssl.addAll(eventShapeStyles.values());
+				ssl.addAll(gatewayShapeStyles.values());
+				ssl.addAll(taskShapeStyles.values());
+				ssl.addAll(dataShapeStyles.values());
+				ssl.addAll(otherShapeStyles.values());
+				ssl.add(allShapeStyles.get(Category.EVENTS));
+				ssl.add(allShapeStyles.get(Category.GATEWAYS));
+				ssl.add(allShapeStyles.get(Category.TASKS));
+				ssl.add(allShapeStyles.get(Category.DATA));
+				ssl.add(allShapeStyles.get(Category.OTHER));
+				break;
+			case CANVAS:
+				break;
+			case DATA:
+				ssl.addAll(dataShapeStyles.values());
+				break;
+			case EVENTS:
+				ssl.addAll(eventShapeStyles.values());
+				break;
+			case GATEWAYS:
+				ssl.addAll(gatewayShapeStyles.values());
+				break;
+			case GRID:
+				break;
+			case OTHER:
+				ssl.addAll(otherShapeStyles.values());
+				break;
+			case TASKS:
+				ssl.addAll(taskShapeStyles.values());
+				break;
+			case NONE:
+				break;
 			}
-			ss.setRoutingStyle(rs);
-			ss.setSnapToGrid(snapToGrid.getSelection());
-			ss.setGridWidth(gridWidth.getValue());
-			ss.setGridHeight(gridHeight.getValue());
+			
+			for (ShapeStyle ss : ssl) {
+				ss.applyChanges(theShapeStyle);
+			}
 		}
 	}
 	
 	private void loadStyleEditors() {
 		if (allShapeStyles == null) {
-			categories = new ShapeStyleCategoryList();
-			ShapeStyleList connectorShapeStyles = new ShapeStyleList();
-			ShapeStyleList eventShapeStyles = new ShapeStyleList();
-			ShapeStyleList gatewayShapeStyles = new ShapeStyleList();
-			ShapeStyleList taskShapeStyles = new ShapeStyleList();
-			ShapeStyleList dataShapeStyles = new ShapeStyleList();
-			ShapeStyleList otherShapeStyles = new ShapeStyleList();
-			ShapeStyleList diagramShapeStyles = new ShapeStyleList();
-			categories.put(Messages.Bpmn2EditorPreferencePage_Connections, connectorShapeStyles);
-			categories.put(Messages.Bpmn2EditorPreferencePage_Events, eventShapeStyles);
-			categories.put(Messages.Bpmn2EditorPreferencePage_Gateways, gatewayShapeStyles);
-			categories.put(Messages.Bpmn2EditorPreferencePage_Activities, taskShapeStyles);
-			categories.put(Messages.Bpmn2EditorPreferencePage_Data_Elements, dataShapeStyles);
-			categories.put(Messages.Bpmn2EditorPreferencePage_Containers, otherShapeStyles);
+			allShapeStyles = new Hashtable<Object, ShapeStyle>();
+			
+			shapesList.put(Category.EVENTS.getLabel(), eventShapeStyles);
+			shapesList.put(Category.GATEWAYS.getLabel(), gatewayShapeStyles);
+			shapesList.put(Category.TASKS.getLabel(), taskShapeStyles);
+			shapesList.put(Category.DATA.getLabel(), dataShapeStyles);
+			shapesList.put(Category.OTHER.getLabel(), otherShapeStyles);
 
-			// TODO: this is for Bug 417392 (Grid size & color)
-			// but we can't finish this until Graphiti exposes some methods to allow clients to
-			// override the default grid appearance, specifically the major/minor line colors.
-//			categories.put("Diagram", diagramShapeStyles);
+			categories = new ShapeStyleCategoryList(Category.NONE);
+			categories.put(Category.CONNECTIONS.getLabel(), connectionShapeStyles);
+			categories.put(Category.SHAPES.getLabel(), shapesList);
 
-			allShapeStyles = new ShapeStyleList();
+			ShapeStyle ss;
 			for (Class c : allElements) {
-				ShapeStyle ss = preferences.getShapeStyle(c);
+				ss = preferences.getShapeStyle(c);
 				allShapeStyles.put(c, ss);
 				
-				if (Bpmn2FeatureMap.CONNECTORS.contains(c))
-					connectorShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.CONNECTIONS.contains(c))
+					connectionShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.EVENTS.contains(c))
 					eventShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.GATEWAYS.contains(c))
@@ -316,115 +396,192 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 							+ "\"/>"); //$NON-NLS-1$
 				}
 			}
+			for (Category key : Category.values()) {
+				ss = preferences.getShapeStyle(key);
+				allShapeStyles.put(key, ss);
+			}
 			
-			Class c = FigureCanvas.class;
-			labelProvider.setText(c, Messages.Bpmn2EditorAppearancePreferencePage_Canvas);
-			ShapeStyle ss = preferences.getShapeStyle(c);
-			diagramShapeStyles.put(c, ss);
-			allShapeStyles.put(c, ss);
+			ss = preferences.getShapeStyle(Category.CANVAS);
+			categories.put(Category.CANVAS.getLabel(), Category.CANVAS);
 
-			c = GridLayer.class;
-			labelProvider.setText(c, Messages.Bpmn2EditorAppearancePreferencePage_Grid);
-			ss = preferences.getShapeStyle(c);
-			diagramShapeStyles.put(c, ss);
-			allShapeStyles.put(c, ss);
+			ss = preferences.getShapeStyle(Category.GRID);
 			snapToGrid.setSelection(ss.getSnapToGrid());
 			gridWidth.setValue(ss.getGridWidth());
 			gridHeight.setValue(ss.getGridHeight());
+			categories.put(Category.GRID.getLabel(), Category.GRID);
 
 			currentSelection = null;
 			elementsTreeViewer.setInput(categories);
 			elementsTreeViewer.setSelection(null);
-//			styleEditors.setVisible(false);
 		}
 
+		Object key = null;
+		ShapeStyle ss = null;
 		if (currentSelection instanceof Class) {
-			Class c = (Class)currentSelection;
-			ShapeStyle ss = allShapeStyles.get(c);
+			key = currentSelection;
+			ss = allShapeStyles.get((Class)key);
+		}
+		else if (currentSelection instanceof Category) {
+			key = currentSelection;
+			ss = allShapeStyles.get((Category)key);
+		}			
 
-			shapeForeground.setSelectedColor(ss.getShapeForeground());
-			shapeBackground.setSelectedColor(ss.getShapeBackground());
-			shapePrimarySelectedColor.setSelectedColor(ss.getShapePrimarySelectedColor());
-			shapeSecondarySelectedColor.setSelectedColor(ss.getShapeSecondarySelectedColor());
-			defaultSize.setSelection(ss.isDefaultSize());
-			textFont.setSelectedFont(ss.getTextFont());
-			textColor.setSelectedColor(ss.getTextColor());
+		if (ss!=null) {
+			shapeForeground.setValue(ss.getShapeForeground());
+			shapeBackground.setValue(ss.getShapeBackground());
+			shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
+			shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
+//			defaultSize.setSelection(ss.isDefaultSize());
+			textFont.setValue(ss.getTextFont());
+			textColor.setValue(ss.getTextColor());
+			labelLocationViewer.setValue(ss.getLabelLocation());
 
-			if (Bpmn2FeatureMap.CONNECTORS.contains(c)) {
-				showControl(shapeForeground,true);
-				showControl(shapeBackground,false);
-				showControl(shapePrimarySelectedColor,false);
-				showControl(shapeSecondarySelectedColor,false);
-				showControl(defaultSize,false);
-				showControl(routingStyle,true);
-				showControl(routingStyleLabel,true);
-				showControl(textFont,true);
-				showControl(textColor,true);
-				routingStyle.removeAll();
-				int i = 0;
-				for (RoutingStyle rs : RoutingStyle.values()) {
-					routingStyle.add(rs.name());
-					if (ss.getRoutingStyle() == rs)
-						routingStyle.select(i);
-					++i;
-				}
-				
-				showControl(snapToGrid,false);
-				showControl(gridWidth,false);
-				showControl(gridHeight,false);
+			if (Bpmn2FeatureMap.CONNECTIONS.contains(key) || key == Category.CONNECTIONS) {
+				configureForConnections(ss);
 			}
-			else if (c==FigureCanvas.class) {
-				showControl(shapeForeground,false);
-				showControl(shapeBackground,true);
-				showControl(shapePrimarySelectedColor,false);
-				showControl(shapeSecondarySelectedColor,false);
-				showControl(defaultSize,false);
-				showControl(routingStyle,false);
-				showControl(routingStyleLabel,false);
-				showControl(textFont,false);
-				showControl(textColor,false);
-				
-				showControl(snapToGrid,false);
-				showControl(gridWidth,false);
-				showControl(gridHeight,false);
+			else if (key == Category.CANVAS) {
+				configureForCanvas(ss);
 			}
-			else if (c==GridLayer.class) {
-				showControl(shapeForeground,true);
-				showControl(shapeBackground,false);
-				showControl(shapePrimarySelectedColor,false);
-				showControl(shapeSecondarySelectedColor,false);
-				showControl(defaultSize,false);
-				showControl(routingStyle,false);
-				showControl(routingStyleLabel,false);
-				showControl(textFont,false);
-				showControl(textColor,false);
-				
-				showControl(snapToGrid,true);
-				showControl(gridWidth,true);
-				showControl(gridHeight,true);
+			else if (key == Category.GRID) {
+				configureForGrid(ss);
 			}
 			else {
-				showControl(shapeForeground,true);
-				showControl(shapeBackground,true);
-				showControl(shapePrimarySelectedColor,true);
-				showControl(shapeSecondarySelectedColor,true);
-				showControl(defaultSize,true);
-				showControl(routingStyle,false);
-				showControl(routingStyleLabel,false);
-				showControl(textFont,true);
-				showControl(textColor,true);
-				
-				showControl(snapToGrid,false);
-				showControl(gridWidth,false);
-				showControl(gridHeight,false);
+				configureForShapes(ss);
 			}
 			container.layout();
 		}
+		else {
+			showControl(textFont,false);
+			showControl(textColor,false);
+		}
+	}
+
+	private void configureAll() {
+		boolean enabled = (currentSelection != null);
+		if (	currentSelection instanceof Category &&
+				currentSelection!=Category.CANVAS &&
+				currentSelection!=Category.GRID) { 
+			showControl(applyToAllChildren, true);
+			applyToAllChildren.setText("Apply changes to all "+((Category)currentSelection).getLabel());
+			enabled = applyToAllChildren.getSelection();
+		}
+		else
+			showControl(applyToAllChildren, false);
+
+		enableComposite(colorGroup, enabled);
+		enableComposite(labelGroup, enabled);
+		showControl(labelLocationViewer, hasLabel());
+	}
+	
+	private boolean hasLabel() {
+		if (currentSelection instanceof Class) {
+			Class c = (Class) currentSelection;
+			if (
+					Bpmn2FeatureMap.TASKS.contains(c) ||
+					Bpmn2FeatureMap.OTHER.contains(c))
+				return false;
+		}
+		else if (currentSelection instanceof Category) {
+			Category k = (Category) currentSelection;
+			if (	k==Category.TASKS ||
+					k==Category.OTHER ||
+					k==Category.CANVAS ||
+					k==Category.GRID) 
+				return false;
+		}
+
+		return true;
+	}
+	
+	private void configureForConnections(ShapeStyle ss) {
+		showControl(shapeForeground,true);
+		showControl(shapeBackground,false);
+		showControl(shapePrimarySelectedColor,false);
+		showControl(shapeSecondarySelectedColor,false);
+//		showControl(defaultSize,false);
+		showControl(routingStyleViewer,true);
+		routingStyleViewer.setValue(ss.getRoutingStyle());
+		showControl(labelGroup,true);
+		showControl(textFont,true);
+		showControl(textColor,true);
+		
+		showControl(snapToGrid,false);
+		showControl(gridWidth,false);
+		showControl(gridHeight,false);
+
+		configureAll();
+	}
+	
+	private void configureForShapes(ShapeStyle ss) {
+		showControl(shapeForeground,true);
+		showControl(shapeBackground,true);
+		showControl(shapePrimarySelectedColor,true);
+		showControl(shapeSecondarySelectedColor,true);
+//		showControl(defaultSize,true);
+		showControl(routingStyleViewer,false);
+		showControl(labelGroup,true);
+		showControl(textFont,true);
+		showControl(textColor,true);
+		
+		showControl(snapToGrid,false);
+		showControl(gridWidth,false);
+		showControl(gridHeight,false);
+		
+		configureAll();
+	}
+	
+	private void configureForCanvas(ShapeStyle ss) {
+		showControl(shapeForeground,false);
+		showControl(shapeBackground,true);
+		showControl(shapePrimarySelectedColor,false);
+		showControl(shapeSecondarySelectedColor,false);
+//		showControl(defaultSize,false);
+		showControl(routingStyleViewer,false);
+		showControl(labelGroup,false);
+		showControl(textFont,false);
+		showControl(textColor,false);
+		
+		showControl(snapToGrid,false);
+		showControl(gridWidth,false);
+		showControl(gridHeight,false);
+		
+		configureAll();
+	}
+	
+	private void configureForGrid(ShapeStyle ss) {
+		showControl(shapeForeground,true);
+		showControl(shapeBackground,false);
+		showControl(shapePrimarySelectedColor,false);
+		showControl(shapeSecondarySelectedColor,false);
+//		showControl(defaultSize,false);
+		showControl(routingStyleViewer,false);
+		showControl(labelGroup,false);
+		showControl(textFont,false);
+		showControl(textColor,false);
+		
+		showControl(snapToGrid,true);
+		showControl(gridWidth,true);
+		showControl(gridHeight,true);
+		
+		configureAll();
 	}
 	
 	private void showControl(Control control, boolean visible) {
-		control.setVisible(visible);
-		((GridData)control.getLayoutData()).exclude = !visible;
+		if (control!=null && !control.isDisposed()) {
+			control.setVisible(visible);
+			((GridData)control.getLayoutData()).exclude = !visible;
+		}
+	}
+	
+	private void enableComposite(Composite composite, boolean enabled) {
+		if (composite!=null && !composite.isDisposed()) {
+			for (Control c : composite.getChildren()) {
+				c.setEnabled(enabled);
+				if (c instanceof Composite) {
+					enableComposite((Composite)c, enabled);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -442,9 +599,11 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 	@Override
 	public boolean performOk() {
-		saveStyleEditors();
-		for (Entry<Class, ShapeStyle> entry : allShapeStyles.entrySet()) {
-			preferences.setShapeStyle(entry.getKey(), entry.getValue());
+		for (Entry<Object, ShapeStyle> entry : allShapeStyles.entrySet()) {
+			Object key = entry.getKey();
+			if (key instanceof Class)
+				key = ((Class)key).getSimpleName();
+			preferences.setShapeStyle(key.toString(), entry.getValue());
 		}
 		try {
 			preferences.flush();
@@ -457,6 +616,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	private class BEListContentProvider implements ITreeContentProvider {
 
 		ShapeStyleCategoryList categories;
+		
 		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 		 */
@@ -481,7 +641,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		public Object[] getElements(Object inputElement) {
 			if (inputElement instanceof Entry) {
 				Entry entry = (Entry)inputElement;
-				if (entry.getKey() instanceof String) {
+				if (entry.getKey() instanceof Category) {
 					
 				}
 			}
@@ -499,14 +659,20 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		@Override
 		public Object[] getChildren(Object parentElement) {
 			if (parentElement instanceof Entry) {
-				Entry entry = (Entry)parentElement;
-				if (entry.getKey() instanceof String) {
-					String key = (String)entry.getKey();
-					return categories.get(key).entrySet().toArray();
+				Entry entry = (Entry) parentElement;
+				Object value = entry.getValue();
+				if (value instanceof ShapeStyleCategoryList) {
+					return ((ShapeStyleCategoryList)value).entrySet().toArray();
+				}
+				else if (value instanceof ShapeStyleList) {
+					return ((ShapeStyleList)value).entrySet().toArray();
 				}
 			}
-			return null;
+			else if (parentElement instanceof ShapeStyleCategoryList) {
+				return ((ShapeStyleCategoryList)parentElement).entrySet().toArray();
 			}
+			return null;
+		}
 
 		@Override
 		public Object getParent(Object element) {
@@ -515,19 +681,14 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		
 		@Override
 		public boolean hasChildren(Object element) {
-			if (element instanceof Entry) {
-				Entry entry = (Entry)element;
-				if (entry.getKey() instanceof String)
-					return true;
-			}
-			return false;
+			return getChildren(element) != null;
 		}
 		
 	}
 
 	private class BEListLabelProvider extends LabelProvider {
 
-		private Hashtable<Class,String> classNameMap = new Hashtable<Class,String>();
+		private Hashtable<Object,String> classNameMap = new Hashtable<Object,String>();
 		
 		@Override
 		public String getText(Object element) {
@@ -545,7 +706,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			return element.toString();
 		}
 		
-		public void setText(Class c, String t) {
+		public void setText(Object c, String t) {
 			classNameMap.put(c, t);
 		}
 	}
@@ -557,92 +718,86 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		 */
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			IStructuredSelection sel = (IStructuredSelection)elementsTreeViewer.getSelection();
-			if (currentSelection!=null) {
-				saveStyleEditors();
-			}
-			
-			Object element = sel.getFirstElement();
-			if (sel!=null && element!=null) {
-				if (element instanceof Entry) {
-					Entry entry = (Entry)element;
-					element = entry.getKey();
-					if (element instanceof String) {
-						styleEditors.setVisible(false);
-						currentSelection = null;
-					}
-					else if (element instanceof Class) {
-				styleEditors.setVisible(true);
-						currentSelection = (Class)element;
-					}
-				}
-			}
-			else
-				styleEditors.setVisible(false);
-
-			loadStyleEditors();
-		}
-		
-	}
-
-	public class IntegerTextControl extends Composite {
-		private Label label;
-		private Text text;
-		
-		public IntegerTextControl(String labelText, Composite parent) {
-	    	super(parent, SWT.NONE);
-	    	this.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-	    	this.setLayout(new GridLayout(2, true));
-
-	    	label = new Label(this, SWT.LEFT);
-	    	label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-	    	label.setFont(parent.getFont());
-	    	label.addDisposeListener(new DisposeListener() {
-                public void widgetDisposed(DisposeEvent event) {
-                	label = null;
-                }
-            });
-	    	label.setText(labelText);
-	    	
-	    	text = new Text(this, SWT.BORDER);
-	    	text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-			text.addVerifyListener(new VerifyListener() {
-				@Override
-				public void verifyText(VerifyEvent e) {
-					String string = e.text;
-					char[] chars = new char[string.length()];
-					string.getChars(0, chars.length, chars, 0);
-					for (int i = 0; i < chars.length; i++) {
-						if (!('0' <= chars[i] && chars[i] <= '9')) {
-							e.doit = false;
-							return;
+			IStructuredSelection sel = (IStructuredSelection) elementsTreeViewer.getSelection();
+			if (sel != null) {
+				Object element = sel.getFirstElement();
+				if (element != null) {
+					if (element instanceof Entry) {
+						Entry entry = (Entry) element;
+						Object key = entry.getKey();
+						Object value = entry.getValue();
+						if (value instanceof ShapeStyleCategoryList) {
+							colorEditors.setVisible(true);
+							currentSelection = ((ShapeStyleCategoryList)value).key;
+						}
+						else if (value instanceof ShapeStyleList) {
+							colorEditors.setVisible(true);
+							currentSelection = ((ShapeStyleList)value).key;
+						}
+						else if (value instanceof Category) {
+							colorEditors.setVisible(true);
+							currentSelection = (Category)value;
+						}
+						else if (key instanceof Class) {
+							colorEditors.setVisible(true);
+							currentSelection = key;
+						}
+						else {
+							colorEditors.setVisible(false);
+							currentSelection = null;
 						}
 					}
 				}
-			});
-		}
-		
-		public void setValue(int value) {
-			if (text!=null) {
-				text.setText(Integer.toString(value, 10));
+				else {
+//					colorEditors.setVisible(true);
+					configureAll();
+				}
+
+				loadStyleEditors();
 			}
 		}
 		
-		public int getValue() {
-			if (text!=null) {
-				return Integer.parseInt(text.getText());
-			}
-			return -1;
-		}
 	}
 	
-	public class ColorControl extends Composite {
+	////////////////////////////////////////////////////////////////////////////////
+	// ShapeStyle Editors
+	////////////////////////////////////////////////////////////////////////////////
+	
+	private abstract class ShapeStyleEditor extends Composite {
+
+		public ShapeStyleEditor(Composite parent, int style, final int ssMask) {
+	    	super(parent, style);
+	    	
+	    	Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+			    	addSelectionListener( new SelectionAdapter() {
+						public void widgetSelected(SelectionEvent e) {
+							if (currentSelection!=null) {
+								Object value = getValue();
+								ShapeStyle ss = allShapeStyles.get(currentSelection);
+								ss.setValue(ssMask, value);
+								if (currentSelection instanceof Category) {
+									applyToAll(ss);
+								}
+							}
+						}
+			    	});
+				}
+	    	});
+	    }
+		
+	    public abstract void addSelectionListener (SelectionListener listener);
+	    public abstract Object getValue();
+	}
+	
+	private class ColorShapeStyleEditor extends ShapeStyleEditor {
 		private ColorSelector colorSelector;
 	    private Label selectorLabel;
 	    private List<SelectionListener> listeners;
 	    
-	    public ColorControl(String labelText, Composite parent) {
-	    	super(parent, SWT.NONE);
+	    public ColorShapeStyleEditor(Composite parent, int ssMask, String labelText) {
+	    	super(parent, SWT.NONE, ssMask);
 	    	this.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	    	this.setLayout(new GridLayout(2, false));
 
@@ -658,51 +813,35 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	    	
 	    	colorSelector = new ColorSelector(this);
 	    	colorSelector.getButton().setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-	    	colorSelector.getButton().addSelectionListener( new SelectionListener() {
-
+	    }
+	    
+	    @Override
+	    public void addSelectionListener(final SelectionListener listener) {
+	    	colorSelector.addListener(new IPropertyChangeListener() {
 				@Override
-				public void widgetSelected(SelectionEvent e) {
-					if (listeners!=null) {
-						for (SelectionListener listener : listeners)
-							listener.widgetSelected(e);
-					}
+				public void propertyChange(PropertyChangeEvent e) {
+					Event event = new Event();
+					event.widget = colorSelector.getButton();
+					SelectionEvent se = new SelectionEvent(event);
+					se.data = getValue();
+					listener.widgetSelected(se);
 				}
-
-				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-	    		
 	    	});
+//	    	colorSelector.getButton().addSelectionListener(listener);
 	    }
 	    
-	    public void addSelectionListener(SelectionListener listener) {
-	    	if (listeners==null)
-	    		listeners = new ArrayList<SelectionListener>();
-	    	listeners.add(listener);
-	    }
-	    
-	    public void removeSelectionListener(SelectionListener listener) {
-	    	if (listeners==null)
-	    		return;
-	    	listeners.remove(listener);
-	    	if (listeners.size()==0)
-	    		listeners = null;
-	    }
-
-		/**
-		 * @return
-		 */
-		public IColorConstant getSelectedColor() {
+	    @Override
+		public IColorConstant getValue() {
 			return ShapeStyle.RGBToColor(colorSelector.getColorValue());
 		}
 		
-		public void setSelectedColor(IColorConstant c) {
+		public void setValue(IColorConstant c) {
 			RGB rgb = ShapeStyle.colorToRGB(c);
 			colorSelector.setColorValue(rgb);
 		}
 	}
 	
-	public class FontControl extends Composite {
+	private class FontShapeStyleEditor extends ShapeStyleEditor {
 
 	    /**
 	     * The change font button, or <code>null</code> if none
@@ -721,8 +860,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	    private Label previewLabel;
 	    private Label selectorLabel;
 
-	    public FontControl(String labelText, Composite parent) {
-	    	super(parent, SWT.NONE);
+	    public FontShapeStyleEditor(Composite parent, int ssMask, String labelText) {
+	    	super(parent, SWT.NONE, ssMask);
 	    	this.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 	    	this.setLayout(new GridLayout(3, false));
 
@@ -776,17 +915,23 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 	    }
 
-	    public Font getSelectedFont() {
+		@Override
+		public void addSelectionListener(SelectionListener listener) {
+			changeFontButton.addSelectionListener(listener);
+		}
+
+		@Override
+	    public Font getValue() {
 	    	if (selectedFont!=null && selectedFont.length>0)
 	    		return ShapeStyle.fontDataToFont(selectedFont[0]);
 	    	return null;
 	    }
 
-	    public void setSelectedFont(Font f) {
+	    public void setValue(Font f) {
 	    	setSelectedFont(ShapeStyle.fontToFontData(f));
 	    }
 	    
-	    public void setSelectedFont(FontData fd) {
+	    private void setSelectedFont(FontData fd) {
 
 	        FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
 	        		new FontData[]{fd}, previewLabel.getDisplay());
@@ -811,5 +956,157 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	    private FontData[] getDefaultFontData() {
 	        return previewLabel.getDisplay().getSystemFont().getFontData();
 	    }
+	}
+
+	private class IntegerShapeStyleEditor extends ShapeStyleEditor {
+		private Label label;
+		private Text text;
+		
+		public IntegerShapeStyleEditor(Composite parent, final int ssMask, String labelText) {
+	    	super(parent, SWT.NONE, ssMask);
+	    	this.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+	    	this.setLayout(new GridLayout(2, true));
+
+	    	label = new Label(this, SWT.LEFT);
+	    	label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+	    	label.setFont(parent.getFont());
+	    	label.addDisposeListener(new DisposeListener() {
+                public void widgetDisposed(DisposeEvent event) {
+                	label = null;
+                }
+            });
+	    	label.setText(labelText);
+	    	
+	    	text = new Text(this, SWT.BORDER);
+	    	text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+			text.addVerifyListener(new VerifyListener() {
+				@Override
+				public void verifyText(VerifyEvent e) {
+					String string = e.text;
+					char[] chars = new char[string.length()];
+					string.getChars(0, chars.length, chars, 0);
+					for (int i = 0; i < chars.length; i++) {
+						if (!('0' <= chars[i] && chars[i] <= '9')) {
+							e.doit = false;
+							return;
+						}
+					}
+				}
+			});
+		}
+
+		@Override
+		public void addSelectionListener(final SelectionListener listener) {
+			text.addModifyListener(new ModifyListener() {
+				@Override
+				public void modifyText(ModifyEvent e) {
+					Event event = new Event();
+					event.widget = text;
+					SelectionEvent se = new SelectionEvent(event);
+					se.data = getValue();
+					listener.widgetSelected(se);
+				}
+			});
+		}
+
+		@Override
+		public Integer getValue() {
+			if (text!=null) {
+				return Integer.parseInt(text.getText());
+			}
+			return -1;
+		}
+
+		public void setValue(int value) {
+			if (text!=null) {
+				text.setText(Integer.toString(value, 10));
+			}
+		}
+	}
+	
+	private class LabeledComboShapeStyleEditor extends ShapeStyleEditor {
+		protected Label label;
+		protected Combo combo;
+
+		public LabeledComboShapeStyleEditor (Composite parent, int ssMask, String text) {
+			super(parent, SWT.NONE, ssMask);
+			setLayout(new GridLayout(2,false));
+			
+	        label = new Label(this, SWT.LEFT);
+			label.setText(text);
+			label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+
+			combo = new Combo(this, SWT.READ_ONLY);
+			combo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+		}
+
+		public void add(String text, Object value) {
+			combo.add(text);
+			combo.setData(text, value);
+		}
+		
+		@Override
+		public void addSelectionListener(SelectionListener listener) {
+			combo.addSelectionListener(listener);
+		}
+		
+		@Override
+		public Object getValue() {
+			int index = combo.getSelectionIndex();
+			if ( index>=0) {
+				return combo.getData(combo.getItem(index));
+			}
+			return null;
+		}
+		
+		public void setValue(Object value) {
+			int index = 0;
+			for (String s : combo.getItems()) {
+				Object data = combo.getData(s);
+				if (data.equals(value)) {
+					combo.select(index);
+					break;
+				}
+				++index;
+			}
+
+		}
+	}
+
+	private class LabelLocationShapeStyleEditor extends LabeledComboShapeStyleEditor {
+
+		public LabelLocationShapeStyleEditor(Composite parent, String text) {
+			super(parent, ShapeStyle.SS_LABEL_LOCATION, text);
+			add(Messages.Bpmn2EditorPreferencePage_LabelTop, LabelLocation.TOP);
+			add(Messages.Bpmn2EditorPreferencePage_LabelBottom, LabelLocation.BOTTOM);
+			add(Messages.Bpmn2EditorPreferencePage_LabelLeft, LabelLocation.LEFT);
+			add(Messages.Bpmn2EditorPreferencePage_LabelRight, LabelLocation.RIGHT);
+			add(Messages.Bpmn2EditorPreferencePage_LabelCenter, LabelLocation.CENTER);
+			add(Messages.Bpmn2EditorPreferencePage_LabelMovable, LabelLocation.MOVABLE);
+		}
+
+		public LabelLocation getValue() {
+			LabelLocation value = (LabelLocation) super.getValue();
+			if (value==null)
+				value = LabelLocation.BOTTOM;
+			return value;
+		}
+	}
+
+	private class RoutingStyleShapeStyleEditor extends LabeledComboShapeStyleEditor {
+		
+		public RoutingStyleShapeStyleEditor(Composite parent, String text) {
+			super(parent, ShapeStyle.SS_ROUTING_STYLE, text);
+			add(Messages.Bpmn2EditorPreferencePage_RoutingManual, RoutingStyle.ManualBendpoint);
+			add(Messages.Bpmn2EditorPreferencePage_RoutingDirect, RoutingStyle.AutomaticBendpoint);
+			add(Messages.Bpmn2EditorPreferencePage_RoutingManhattan, RoutingStyle.Manhattan);
+		}
+
+		public RoutingStyle getValue() {
+			RoutingStyle value = (RoutingStyle) super.getValue();
+			if (value==null)
+				value = RoutingStyle.Manhattan;
+			return value;
+		}
 	}
 }

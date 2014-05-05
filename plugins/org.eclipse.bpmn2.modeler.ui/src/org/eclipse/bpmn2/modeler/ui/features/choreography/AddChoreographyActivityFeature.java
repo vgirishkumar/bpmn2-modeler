@@ -29,9 +29,12 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -77,21 +80,21 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		gaService.setLocationAndSize(containerRect, context.getX(), context.getY(), width, height);
 		StyleUtil.applyStyle(containerRect, businessObject);
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		if (isImport) {
 			addedFromImport(businessObject, containerShape, context);
 		}
 
-		Shape nameShape = peService.createShape(containerShape, false);
-
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), nameShape);
-		text.setValue(businessObject.getName());
-		StyleUtil.applyStyle(text, businessObject);
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-		setTextLocation(containerShape, text, width, height);
-		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
-		GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+//		Shape nameShape = peService.createShape(containerShape, false);
+//
+//		MultiText text = gaService.createDefaultMultiText(getDiagram(), nameShape);
+//		text.setValue(businessObject.getName());
+//		StyleUtil.applyStyle(text, businessObject);
+//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+//		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+//		setTextLocation(containerShape, text, width, height);
+//		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
+		GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 
 		if (businessObject instanceof ChoreographyTask) {
 			peService.setPropertyValue(containerShape, MESSAGE_REF_IDS,
@@ -106,6 +109,11 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
 		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 		
+		// prepare the AddContext to create a Label
+		prepareAddContext(context, containerShape, width, height);
+		IFeatureContainer fc = new LabelFeatureContainer();
+		fc.getAddFeature(getFeatureProvider()).add(context);
+
 		return containerShape;
 	}
 
@@ -135,7 +143,7 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
 			ContainerShape createdShape = ChoreographyUtil.createParticipantBandContainerShape(bandKind,
 					containerShape, bpmnShape, isShowNames());
-			createDIShape(createdShape, bpmnShape.getBpmnElement(), bpmnShape, false);
+			DIUtils.createDIShape(createdShape, bpmnShape.getBpmnElement(), bpmnShape, getFeatureProvider());
 			Participant p = (Participant) bpmnShape.getBpmnElement();
 			if (p.getParticipantMultiplicity() != null && p.getParticipantMultiplicity().getMaximum() > 1) {
 				drawMultiplicityMarkers(createdShape);
@@ -149,9 +157,9 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		peService.setPropertyValue(containerShape, INITIATING_PARTICIPANT_REF, id);
 	}
 
-	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
-		gaService.setLocationAndSize(text, 5, 5, w - 5, h);
-	}
+//	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
+//		gaService.setLocationAndSize(text, 5, 5, w - 5, h);
+//	}
 
 	protected boolean isShowNames() {
 		return true;

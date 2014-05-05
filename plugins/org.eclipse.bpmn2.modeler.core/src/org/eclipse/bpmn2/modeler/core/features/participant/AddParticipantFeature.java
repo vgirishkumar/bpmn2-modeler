@@ -15,9 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.participant;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -38,7 +37,6 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Participant> {
 
-	public static final String MULTIPLICITY = "multiplicity"; //$NON-NLS-1$
 	public static final int DEFAULT_POOL_WIDTH = 600;
 	public static final int DEFAULT_POOL_HEIGHT = 150;
 
@@ -70,10 +68,10 @@ public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Partic
 		StyleUtil.applyStyle(rect, businessObject);
 		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		boolean horz = bpmnShape.isIsHorizontal();
-		Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
+		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			horz = ((BPMNShape) copiedBpmnShape).isIsHorizontal();
 		}
@@ -96,7 +94,7 @@ public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Partic
 
 		// the decorator for Participant Multiplicity will be added by the update feature
 		// if necessary. Set this property to "false" here, to force an update.
-		peService.setPropertyValue(containerShape, MULTIPLICITY, Boolean.toString(false));
+		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(false));
 		
 		decorateShape(context, containerShape, businessObject);
 		

@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EObject;
@@ -33,9 +34,6 @@ import org.eclipse.graphiti.services.Graphiti;
 
 public class ResizeParticipantFeature extends DefaultResizeShapeFeature {
 
-	public static final String POOL_RESIZE_PROPERTY = "pool.resize"; //$NON-NLS-1$
-	public static final String RESIZE_FIRST_LANE = "resize.first.lane"; //$NON-NLS-1$
-	
 	public ResizeParticipantFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -104,8 +102,8 @@ public class ResizeParticipantFeature extends DefaultResizeShapeFeature {
 			newContext.setHeight(height);
 			newContext.setWidth(width);
 			
-			newContext.putProperty(POOL_RESIZE_PROPERTY, true);
-			newContext.putProperty(RESIZE_FIRST_LANE, resizeFirstLane);
+			newContext.putProperty(GraphitiConstants.POOL_RESIZE_PROPERTY, true);
+			newContext.putProperty(GraphitiConstants.RESIZE_FIRST_LANE, resizeFirstLane);
 			
 			IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(newContext);
 			if (resizeFeature.canResizeShape(newContext)) {
@@ -145,7 +143,7 @@ public class ResizeParticipantFeature extends DefaultResizeShapeFeature {
 						newContext.setWidth(laneGA.getWidth());
 					}
 					
-					newContext.putProperty(POOL_RESIZE_PROPERTY, true);
+					newContext.putProperty(GraphitiConstants.POOL_RESIZE_PROPERTY, true);
 					
 					IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(newContext);
 					if (resizeFeature.canResizeShape(newContext)) {

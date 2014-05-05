@@ -113,7 +113,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				// Set the parent business object. This is required by {@link
 				// org.eclipse.bpmn2.modeler.core.utils.FeatureSupport#getAllowedEventDefinitions()}
 				// when doing validation for target Events & Event Definitions.
-				childContext.putProperty(CompoundCreateFeature.PARENT_CONTAINER,
+				childContext.putProperty(GraphitiConstants.PARENT_CONTAINER,
 						BusinessObjectUtil.getBusinessObjectForPictogramElement(parentContainer));
 				
 				// test the children feature parts

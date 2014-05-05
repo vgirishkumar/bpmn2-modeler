@@ -13,8 +13,8 @@
 package org.eclipse.bpmn2.modeler.core.features.conversation;
 
 import org.eclipse.bpmn2.Conversation;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -60,7 +60,7 @@ public class AddConversationFeature extends AbstractBpmn2AddElementFeature<Conve
 
 		link(containerShape, businessObject);
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 
 		createDIShape(containerShape, businessObject, !isImport);
 		

@@ -26,8 +26,8 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -172,7 +172,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 						newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
 					}
-					else if (Graphiti.getPeService().getPropertyValue(pe, GraphicsUtil.LABEL_PROPERTY) != null) {
+					else if (Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_PROPERTY) != null) {
 						newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
 					}

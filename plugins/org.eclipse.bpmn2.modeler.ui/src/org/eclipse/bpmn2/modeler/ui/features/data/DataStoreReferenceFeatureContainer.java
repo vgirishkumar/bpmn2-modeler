@@ -19,10 +19,10 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.DataStoreReference;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.MoveDataFeature;
@@ -163,7 +163,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			xy = new int[] { 0, 11, whalf, 0, width, 11 };
 			Polyline lineTop = gaService.createPolyline(invisibleRect, xy, bend);
 			lineTop.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-			boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+			boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
 			
 			// hook for subclasses to inject extra code

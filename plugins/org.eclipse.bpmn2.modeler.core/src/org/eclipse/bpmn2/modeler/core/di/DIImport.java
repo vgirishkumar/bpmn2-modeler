@@ -51,6 +51,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
@@ -76,6 +77,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
@@ -98,8 +100,6 @@ import org.eclipse.swt.widgets.Display;
 
 @SuppressWarnings("restriction")
 public class DIImport {
-
-	public static final String IMPORT_PROPERTY = DIImport.class.getSimpleName().concat(".import"); //$NON-NLS-1$
 
 	private DiagramEditor editor;
 //	private Diagram diagram;
@@ -129,68 +129,76 @@ public class DIImport {
 		diagnostics = new ImportDiagnostics(modelHandler.getResource());
 		preferences = (Bpmn2Preferences) editor.getAdapter(Bpmn2Preferences.class);		
 		elements = new LinkedHashMap<BaseElement, PictogramElement>();
-		domain.getCommandStack().execute(new RecordingCommand(domain) {
-			@Override
-			protected void doExecute() {
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(modelHandler.getResource());
+		prefs.setEnableConnectionRouting(false);
 
-				Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
-				Definitions definitions = modelHandler.getDefinitions();
-				
-				if (bpmnDiagrams.size() == 0) {
-					BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
-					plane.setBpmnElement(ModelUtil.getDefaultBPMNPlaneReference(definitions));
-
-					BPMNDiagram d = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
-					d.setPlane(plane);
-
-					modelHandler.getDefinitions().getDiagrams().add(d);
+		try {
+			domain.getCommandStack().execute(new RecordingCommand(domain) {
+				@Override
+				protected void doExecute() {
+	
+					Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
+					Definitions definitions = modelHandler.getDefinitions();
 					
-					// don't forget to add the new Diagram to our list for processing
-					bpmnDiagrams.add(d);
-				}
-				featureProvider.link(diagram, bpmnDiagrams.get(0));
-				
-				// First: add all IDs to our ID mapping table
-				TreeIterator<EObject> iter = definitions.eAllContents();
-				while (iter.hasNext()) {
-					ModelUtil.addID( iter.next() );
-				}
-				
-				// do the import
-				for (BPMNDiagram d : bpmnDiagrams) {
-					diagram = DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(),d);
-				}
-				for (BPMNDiagram d : bpmnDiagrams) {
-					
-					diagram = DIUtils.findDiagram(editor.getDiagramBehavior(),d);
-					editor.getDiagramTypeProvider().init(diagram, editor);
-
-					BPMNPlane plane = d.getPlane();
-					if (plane.getBpmnElement() == null) {
-						// Set the actual bpmnElement reference to the default if it is null.
-						// The editor relies on this to determine whether the BaseElement has
-						// its own diagram page or not.
+					if (bpmnDiagrams.size() == 0) {
+						BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
 						plane.setBpmnElement(ModelUtil.getDefaultBPMNPlaneReference(definitions));
+	
+						BPMNDiagram d = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
+						d.setPlane(plane);
+	
+						modelHandler.getDefinitions().getDiagrams().add(d);
+						
+						// don't forget to add the new Diagram to our list for processing
+						bpmnDiagrams.add(d);
 					}
-					elements.put(plane.getBpmnElement(), diagram);
-					List<DiagramElement> ownedElement = plane.getPlaneElement();
-
-					importShapes(ownedElement);
-					importConnections(ownedElement);
-
-//					relayoutLanes(ownedElement);
+					featureProvider.link(diagram, bpmnDiagrams.get(0));
 					
-					// search for BPMN elements that do not have the DI elements
-					// needed to render them in the editor
+					// First: add all IDs to our ID mapping table
+					TreeIterator<EObject> iter = definitions.eAllContents();
+					while (iter.hasNext()) {
+						ModelUtil.addID( iter.next() );
+					}
+					
+					// do the import
+					for (BPMNDiagram d : bpmnDiagrams) {
+						diagram = DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(),d);
+					}
+					for (BPMNDiagram d : bpmnDiagrams) {
+						
+						diagram = DIUtils.findDiagram(editor.getDiagramBehavior(),d);
+						editor.getDiagramTypeProvider().init(diagram, editor);
+	
+						BPMNPlane plane = d.getPlane();
+						if (plane.getBpmnElement() == null) {
+							// Set the actual bpmnElement reference to the default if it is null.
+							// The editor relies on this to determine whether the BaseElement has
+							// its own diagram page or not.
+							plane.setBpmnElement(ModelUtil.getDefaultBPMNPlaneReference(definitions));
+						}
+						elements.put(plane.getBpmnElement(), diagram);
+						List<DiagramElement> ownedElement = plane.getPlaneElement();
+	
+						importShapes(ownedElement);
+						importConnections(ownedElement);
+	
+	//					relayoutLanes(ownedElement);
+						
+						// search for BPMN elements that do not have the DI elements
+						// needed to render them in the editor
+					}
+					DIGenerator generator = new DIGenerator(DIImport.this);
+					generator.generateMissingDIElements();
+					
+					layoutAll();
 				}
-				DIGenerator generator = new DIGenerator(DIImport.this);
-				generator.generateMissingDIElements();
-				
-				layoutAll();
-			}
+	
+			});
+		}
+		finally {
+			prefs.setEnableConnectionRouting(true);
+		}
 
-		});
-		
 		diagnostics.report();
 	}
 	
@@ -426,7 +434,7 @@ public class DIImport {
 				context.setY(yMin-10);
 				context.setWidth(width+20);
 				context.setHeight(height+20);
-				context.putProperty(IMPORT_PROPERTY, true);
+				context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 				// determine the container into which to place the new Lane
 				handleLane(lane, context, null);
 				ContainerShape newContainer = (ContainerShape)featureProvider.addIfPossible(context);
@@ -500,7 +508,7 @@ public class DIImport {
 		}
 
 		Diagram diagram = getDiagram(shape);
-		context.putProperty(IMPORT_PROPERTY, true);
+		context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 		context.setNewObject(bpmnElement);
 		boolean defaultSize = false;
 		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
@@ -865,14 +873,14 @@ public class DIImport {
 
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
 		if (canAdd(addFeature,context)) {
-			context.putProperty(IMPORT_PROPERTY, true);
+			context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 			Connection connection = (Connection) featureProvider.addIfPossible(context);
 			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION,
 						AnchorUtil.pointToString(sourceAnchor.getLocation()));
 			}
 			if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
 						AnchorUtil.pointToString(targetAnchor.getLocation()));
 			}
 
@@ -987,5 +995,12 @@ public class DIImport {
 				featureProvider.getDiagramTypeProvider().init(diagram, editor);
 		}
 		return addFeature.canAdd(context);
+	}
+	
+	public static boolean isImporting(IContext context) {
+		Object o = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
+		if (o instanceof Boolean)
+			return (Boolean)o;
+		return false;
 	}
 }

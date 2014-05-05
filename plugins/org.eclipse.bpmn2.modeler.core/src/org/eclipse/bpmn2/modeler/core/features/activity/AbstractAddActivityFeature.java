@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
-import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature.IS_COMPENSATE_PROPERTY;
-import static org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.IS_LOOP_OR_MULTI_INSTANCE;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -45,12 +45,6 @@ import org.eclipse.graphiti.services.IPeService;
  */
 public abstract class AbstractAddActivityFeature<T extends Activity>
 	extends AbstractBpmn2AddElementFeature<T> {
-
-	/** The Constant ACTIVITY_DECORATOR. */
-	public static final String ACTIVITY_DECORATOR = "activity-decorator"; //$NON-NLS-1$
-	
-	/** The Constant IS_ACTIVITY. */
-	public static final String IS_ACTIVITY = "activity"; //$NON-NLS-1$
 
 	/** The ga service. */
 	protected final IGaService gaService = Graphiti.getGaService();
@@ -130,17 +124,17 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		gaService.setLocationAndSize(rect, 0, 0, width, height);
 		link(rectShape, businessObject);
 		
-		peService.setPropertyValue(rectShape, IS_ACTIVITY, Boolean.toString(true));
+		peService.setPropertyValue(rectShape, GraphitiConstants.IS_ACTIVITY, Boolean.toString(true));
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
-		Graphiti.getPeService().setPropertyValue(containerShape, IS_COMPENSATE_PROPERTY, Boolean.toString(false));
-		Graphiti.getPeService().setPropertyValue(containerShape, IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
+		Graphiti.getPeService().setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
+		Graphiti.getPeService().setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
 
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
+			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
 
 		// hook for subclasses to inject extra code
@@ -153,10 +147,16 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 
 		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
 		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
+			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
 
 		splitConnection(context, containerShape);
+		
+		// prepare the AddContext to create a Label
+		prepareAddContext(context, containerShape, width, height);
+		IFeatureContainer fc = new LabelFeatureContainer();
+		fc.getAddFeature(getFeatureProvider()).add(context);
+		
 		updatePictogramElement(context, containerShape);
 		layoutPictogramElement(context, containerShape);
 		

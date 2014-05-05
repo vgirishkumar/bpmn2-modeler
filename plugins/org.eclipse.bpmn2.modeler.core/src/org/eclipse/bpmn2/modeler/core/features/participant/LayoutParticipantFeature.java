@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -90,7 +91,7 @@ public class LayoutParticipantFeature extends DefaultLayoutBPMNShapeFeature {
 			}
 		}
 
-		Shape shape = FeatureSupport.getShape(containerShape, UpdateParticipantMultiplicityFeature.MULTIPLICITY_MARKER,
+		Shape shape = FeatureSupport.getShape(containerShape, GraphitiConstants.MULTIPLICITY_MARKER,
 				Boolean.toString(true));
 		if (shape != null) {
 			GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();

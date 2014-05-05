@@ -33,6 +33,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -108,6 +109,12 @@ public class Bpmn2HomePreferencePage
 				group);
 		addField(isMarkerVisible);
 		
+		BooleanFieldEditor saveBPMNLabels = new BooleanFieldEditor(
+				Bpmn2Preferences.PREF_SAVE_BPMNLABELS,
+				Bpmn2Preferences.PREF_SAVE_BPMNLABELS_LABEL,
+				getFieldEditorParent());
+		addField(saveBPMNLabels);
+		
 		IntegerFieldEditor connectionTimeout = new IntegerFieldEditor(
 				Bpmn2Preferences.PREF_CONNECTION_TIMEOUT,
 				Bpmn2Preferences.PREF_CONNECTION_TIMEOUT_LABEL,
@@ -128,6 +135,7 @@ public class Bpmn2HomePreferencePage
 		preferences.setToDefault(Bpmn2Preferences.PREF_IS_MESSAGE_VISIBLE);
 		preferences.setToDefault(Bpmn2Preferences.PREF_IS_MARKER_VISIBLE);
 		preferences.setToDefault(Bpmn2Preferences.PREF_CONNECTION_TIMEOUT);
+		preferences.setToDefault(Bpmn2Preferences.PREF_SAVE_BPMNLABELS);
 		super.performDefaults();
 	}
 	

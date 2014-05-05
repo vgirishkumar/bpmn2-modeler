@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -129,16 +130,8 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			if (o instanceof Shape && FeatureSupport.isLabelShape((Shape)o)) {
 				// this is it!
 				ContainerShape textContainerShape = (ContainerShape)o;
-				GraphicsUtil.alignWithShape(
-						(AbstractText) textContainerShape.getChildren().get(0).getGraphicsAlgorithm(), 
-						textContainerShape,
-						shape.getGraphicsAlgorithm().getWidth(),
-						shape.getGraphicsAlgorithm().getHeight(),
-						shape.getGraphicsAlgorithm().getX(),
-						shape.getGraphicsAlgorithm().getY(),
-						preShapeX,
-						preShapeY
-				);
+				LabelFeatureContainer.adjustLabelLocation(shape, false,
+						GraphicsUtil.createPoint(context.getDeltaX(), context.getDeltaY()));
 				// make sure the text label is moved to its new parent container as well
 				if (context.getSourceContainer() != context.getTargetContainer()) {
 					context.getTargetContainer().getChildren().add(textContainerShape);

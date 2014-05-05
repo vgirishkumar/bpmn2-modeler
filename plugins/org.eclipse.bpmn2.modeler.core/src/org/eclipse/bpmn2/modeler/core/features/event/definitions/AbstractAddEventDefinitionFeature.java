@@ -21,8 +21,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
-import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
-import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -58,7 +57,7 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 		if (bo instanceof Event && ed instanceof EventDefinition) {
 			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(
 					(Event) bo,
-					(BaseElement) context.getProperty(CompoundCreateFeature.PARENT_CONTAINER));
+					(BaseElement) context.getProperty(GraphitiConstants.PARENT_CONTAINER));
 			if (allowedItems.contains(((EventDefinition)ed).eClass()))
 				return true;
 		}
@@ -79,7 +78,7 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 
 	@Override
 	public T getBusinessObject(IAddContext context) {
-		Object businessObject = context.getProperty(ContextConstants.BUSINESS_OBJECT);
+		Object businessObject = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
 		if (businessObject instanceof EventDefinition)
 			return (T)businessObject;
 		return (T)context.getNewObject();
@@ -87,7 +86,7 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 
 	@Override
 	public void putBusinessObject(IAddContext context, T businessObject) {
-		context.putProperty(ContextConstants.BUSINESS_OBJECT, businessObject);
+		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, businessObject);
 	}
 
 	@Override

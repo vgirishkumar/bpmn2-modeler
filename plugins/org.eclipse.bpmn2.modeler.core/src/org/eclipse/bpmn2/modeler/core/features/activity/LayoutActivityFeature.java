@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
-import static org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature.IS_ACTIVITY;
 
 import java.util.Iterator;
 
@@ -21,6 +20,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -88,7 +88,7 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 //				continue;
 //			}
 
-			Shape rectShape = FeatureSupport.getShape(containerShape, IS_ACTIVITY, Boolean.toString(true));
+			Shape rectShape = FeatureSupport.getShape(containerShape, GraphitiConstants.IS_ACTIVITY, Boolean.toString(true));
 			gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 			layoutInRectangle((RoundedRectangle) rectShape.getGraphicsAlgorithm());
 

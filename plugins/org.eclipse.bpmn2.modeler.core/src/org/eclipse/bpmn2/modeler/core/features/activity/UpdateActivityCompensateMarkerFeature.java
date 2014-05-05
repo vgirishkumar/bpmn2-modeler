@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Compensation;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -24,9 +25,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
  * The Class UpdateActivityCompensateMarkerFeature.
  */
 public class UpdateActivityCompensateMarkerFeature extends AbstractUpdateMarkerFeature<Activity> {
-	
-	/** The is compensate property. */
-	public static String IS_COMPENSATE_PROPERTY = "marker.compensate"; //$NON-NLS-1$
 	
 	/**
 	 * Instantiates a new update activity compensate marker feature.
@@ -42,7 +40,7 @@ public class UpdateActivityCompensateMarkerFeature extends AbstractUpdateMarkerF
 	 */
 	@Override
 	protected String getPropertyKey() {
-	    return IS_COMPENSATE_PROPERTY;
+	    return GraphitiConstants.IS_COMPENSATE_PROPERTY;
     }
 
 	/* (non-Javadoc)
@@ -59,9 +57,9 @@ public class UpdateActivityCompensateMarkerFeature extends AbstractUpdateMarkerF
 	@Override
 	protected void doUpdate(Activity activity, ContainerShape markerContainer) {
 		if (activity.isIsForCompensation()) {
-			GraphicsUtil.showActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_COMPENSATE);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_COMPENSATE);
 		} else {
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphicsUtil.ACTIVITY_MARKER_COMPENSATE);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_COMPENSATE);
 		}
 	}
 	

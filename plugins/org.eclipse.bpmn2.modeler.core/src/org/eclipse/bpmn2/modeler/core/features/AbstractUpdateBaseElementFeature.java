@@ -53,10 +53,10 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2Upda
 
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
-			String shapeValue = FeatureSupport.getShapeValue(context);
+			String shapeValue = FeatureSupport.getShapeTextValue(context);
 			if (shapeValue==null)
 				shapeValue = ""; //$NON-NLS-1$
-			String businessValue = FeatureSupport.getBusinessValue(context);
+			String businessValue = FeatureSupport.getBusinessObjectTextValue(context);
 			if (businessValue==null)
 				businessValue = ""; //$NON-NLS-1$
 	
@@ -91,7 +91,7 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2Upda
 			for (Shape shape : cs.getChildren()) {
 				if (shape.getGraphicsAlgorithm() instanceof AbstractText) {
 					AbstractText text = (AbstractText) shape.getGraphicsAlgorithm();
-					String value = FeatureSupport.getBusinessValue(context);
+					String value = FeatureSupport.getBusinessObjectTextValue(context);
 					if (value == null) {
 						value = ""; //$NON-NLS-1$
 					}

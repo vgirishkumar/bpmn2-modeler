@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.ChoreographyLoopType;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyNameFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -46,7 +47,7 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateChoreographyNameFeature(fp));
+		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
 		multiUpdate.addUpdateFeature(new UpdateChoreographyParticipantRefsFeature(fp) {
 			@Override
 			protected boolean isShowNames() {

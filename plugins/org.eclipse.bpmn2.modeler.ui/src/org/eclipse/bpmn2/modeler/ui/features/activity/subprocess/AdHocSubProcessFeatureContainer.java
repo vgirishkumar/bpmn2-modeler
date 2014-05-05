@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -44,7 +45,7 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, AdHocSubProcess businessObject) {
 				super.decorateShape(context, containerShape, businessObject);
-				GraphicsUtil.showActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_AD_HOC);
+				GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
 			}
 		};
 	}

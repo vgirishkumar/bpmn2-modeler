@@ -13,8 +13,8 @@
 package org.eclipse.bpmn2.modeler.core.features.gateway;
 
 import org.eclipse.bpmn2.Gateway;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -72,7 +72,7 @@ public class AddGatewayFeature<T extends Gateway>
 		StyleUtil.applyStyle(gatewayPolygon, businessObject);
 		gaService.setLocationAndSize(gatewayPolygon, 0, 0, width, height);
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 		
 		// hook for subclasses to inject extra code

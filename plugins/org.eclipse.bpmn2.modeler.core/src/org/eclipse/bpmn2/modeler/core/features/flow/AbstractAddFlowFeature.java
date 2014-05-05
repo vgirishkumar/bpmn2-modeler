@@ -20,10 +20,10 @@ import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
@@ -80,6 +80,8 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		IPeService peService = Graphiti.getPeService();
 		IGaService gaService = Graphiti.getGaService();
  
+		boolean isImporting = DIImport.isImporting(context);
+
 		T businessObject = getBusinessObject(context);
 		IAddConnectionContext addContext = (IAddConnectionContext) context;
 		AnchorContainer sourceContainer = addContext.getSourceAnchor().getParent();
@@ -88,9 +90,9 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		Connection connection = peService.createFreeFormConnection(getDiagram());
 		
 		if (AnchorUtil.useAdHocAnchors(sourceContainer, connection)) {
-			Point p = (Point)addContext.getProperty(AnchorUtil.CONNECTION_SOURCE_LOCATION);
+			Point p = (Point)addContext.getProperty(GraphitiConstants.CONNECTION_SOURCE_LOCATION);
 			if (p!=null) {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION,
 						AnchorUtil.pointToString(p));
 			}
 		}
@@ -99,21 +101,20 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 			// Fetch the source and target locations of the connection copied from the
 			// CreateConnectionContext and copy them as String properties to the Connection
 			// @see AbstractCreateFlowFeature.create()
-			Point p = (Point)addContext.getProperty(AnchorUtil.CONNECTION_TARGET_LOCATION);
+			Point p = (Point)addContext.getProperty(GraphitiConstants.CONNECTION_TARGET_LOCATION);
 			if (p!=null) {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
 						AnchorUtil.pointToString(p));
 			}
 		}
 		
-		if (addContext.getProperty(AnchorUtil.CONNECTION_CREATED)!=null) {
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_CREATED, "true"); //$NON-NLS-1$
+		if (addContext.getProperty(GraphitiConstants.CONNECTION_CREATED)!=null) {
+			peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_CREATED, "true"); //$NON-NLS-1$
 		}
 		
 		Anchor sourceAnchor = addContext.getSourceAnchor();
 		Anchor targetAnchor = addContext.getTargetAnchor();
-		Object importProp = context.getProperty(DIImport.IMPORT_PROPERTY);
-		if (importProp != null && (Boolean) importProp) {
+		if (isImporting) {
 			connection.setStart(sourceAnchor);
 			connection.setEnd(targetAnchor);
 		} else {
@@ -137,9 +138,9 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		if (ModelUtil.hasName(businessObject)) {
 			ConnectionDecorator labelDecorator = Graphiti.getPeService().createConnectionDecorator(connection, true, 0.5, true);
 			Text text = gaService.createText(labelDecorator, ModelUtil.getName(businessObject));
-			peService.setPropertyValue(labelDecorator, UpdateLabelFeature.TEXT_ELEMENT, Boolean.toString(true));
+			peService.setPropertyValue(labelDecorator, GraphitiConstants.TEXT_ELEMENT, Boolean.toString(true));
 			StyleUtil.applyStyle(text, businessObject);
-			peService.setPropertyValue(labelDecorator, GraphicsUtil.LABEL_PROPERTY, Boolean.toString(true));
+			peService.setPropertyValue(labelDecorator, GraphitiConstants.LABEL_PROPERTY, Boolean.toString(true));
 			link(labelDecorator, businessObject);
 		}
 
@@ -147,6 +148,8 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		createConnectionLine(connection);
 		
 		decorateConnection(addContext, connection, businessObject);
+
+		LabelFeatureContainer.adjustLabelLocation(connection, isImporting, null);
 
 		return connection;
 	}

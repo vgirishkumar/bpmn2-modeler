@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features.activity;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -34,12 +35,6 @@ import org.eclipse.graphiti.services.IPeLayoutService;
  * The Class MoveActivityFeature.
  */
 public class MoveActivityFeature extends MoveFlowNodeFeature {
-
-	/** The Constant ACTIVITY_MOVE_PROPERTY. */
-	public static final String ACTIVITY_MOVE_PROPERTY = "activity.move"; //$NON-NLS-1$
-	
-	/** The Constant SELECTION_MOVE_PROPERTY. */
-	public static final String SELECTION_MOVE_PROPERTY = "selection.move"; //$NON-NLS-1$
 
 	/**
 	 * Instantiates a new move activity feature.
@@ -131,7 +126,7 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 				newContext.setTargetContainer(context.getTargetContainer());
 				newContext.setTargetConnection(context.getTargetConnection());
 				newContext.setLocation(ga.getX(), ga.getY());
-				newContext.putProperty(ACTIVITY_MOVE_PROPERTY, true);
+				newContext.putProperty(GraphitiConstants.ACTIVITY_MOVE_PROPERTY, true);
 
 				IMoveShapeFeature moveFeature = getFeatureProvider().getMoveShapeFeature(newContext);
 				if (moveFeature.canMoveShape(newContext)) {

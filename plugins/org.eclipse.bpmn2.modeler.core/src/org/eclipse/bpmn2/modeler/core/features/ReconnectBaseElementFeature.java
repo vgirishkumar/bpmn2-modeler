@@ -100,15 +100,15 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				ILocation targetLoc = context.getTargetLocation();
 				ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)target);
 				Point p = gaService.createPoint(targetLoc.getX() - shapeLoc.getX(), targetLoc.getY() - shapeLoc.getY());
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION,
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
 						AnchorUtil.pointToString(p));
 			}
 			else {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
 			}
 			BendpointConnectionRouter.setMovedBendpoint(connection, Integer.MAX_VALUE);
 
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
+			peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
 			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 			newAnchor = anchors.getSecond();
 		}
@@ -120,13 +120,13 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 				ILocation sourceLoc = context.getTargetLocation();
 				ILocation shapeLoc = peService.getLocationRelativeToDiagram((Shape)source);
 				Point p = gaService.createPoint(sourceLoc.getX() - shapeLoc.getX(), sourceLoc.getY() - shapeLoc.getY());
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION, AnchorUtil.pointToString(p));
 			}
 			else {
-				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
+				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION, ""); //$NON-NLS-1$
 			}
 			BendpointConnectionRouter.setMovedBendpoint(connection, 0);
-			peService.setPropertyValue(connection, AnchorUtil.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
+			peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION, ""); //$NON-NLS-1$
 			anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(source, target, connection);
 			newAnchor = anchors.getFirst();
 		}

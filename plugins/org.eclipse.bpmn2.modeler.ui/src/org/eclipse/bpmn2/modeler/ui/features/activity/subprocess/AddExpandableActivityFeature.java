@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -63,10 +64,10 @@ public class AddExpandableActivityFeature<T extends Activity>
 		link(textShape, businessObject);
 		
 		if (!isExpanded){
-			GraphicsUtil.showActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		else {
-			GraphicsUtil.hideActivityMarker(containerShape, GraphicsUtil.ACTIVITY_MARKER_EXPAND);
+			GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 	}
 

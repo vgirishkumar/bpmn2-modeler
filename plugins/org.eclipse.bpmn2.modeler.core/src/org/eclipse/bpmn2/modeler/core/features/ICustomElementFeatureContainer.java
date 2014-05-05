@@ -23,9 +23,6 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
  */
 public interface ICustomElementFeatureContainer extends IFeatureContainer {
 
-	/** The Constant CUSTOM_ELEMENT_ID. */
-	public final static String CUSTOM_ELEMENT_ID = "custom.element.id"; //$NON-NLS-1$
-
 	/**
 	 * Gets the description.
 	 *

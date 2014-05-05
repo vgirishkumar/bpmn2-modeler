@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -28,8 +29,6 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class BoundaryEventPositionHelper {
 
-	public static final String BOUNDARY_EVENT_RELATIVE_POS = "boundary.event.relative.pos"; //$NON-NLS-1$
-	
 	public static class PositionOnLine {
 
 		public enum LineType {
@@ -244,12 +243,12 @@ public class BoundaryEventPositionHelper {
 
 	public static void assignPositionOnLineProperty(PropertyContainer propertyContainer, PositionOnLine pos) {
 		IPeService peService = Graphiti.getPeService();
-		peService.setPropertyValue(propertyContainer, BOUNDARY_EVENT_RELATIVE_POS, pos.toString());
+		peService.setPropertyValue(propertyContainer, GraphitiConstants.BOUNDARY_EVENT_RELATIVE_POS, pos.toString());
 	}
 
 	public static PositionOnLine getPositionOnLineProperty(PropertyContainer propertyContainer) {
 		IPeService peService = Graphiti.getPeService();
-		String value = peService.getPropertyValue(propertyContainer, BOUNDARY_EVENT_RELATIVE_POS);
+		String value = peService.getPropertyValue(propertyContainer, GraphitiConstants.BOUNDARY_EVENT_RELATIVE_POS);
 		return PositionOnLine.fromString(value);
 	}
 }

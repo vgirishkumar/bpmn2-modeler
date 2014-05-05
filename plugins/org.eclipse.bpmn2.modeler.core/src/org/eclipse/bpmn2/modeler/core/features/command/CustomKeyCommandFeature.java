@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.command;
 
-import org.eclipse.bpmn2.modeler.core.features.DefaultPasteBPMNElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -48,7 +48,7 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 	
 	@Override
 	public boolean canExecute(ICustomContext context) {
-		String command = (String) context.getProperty(COMMAND_HINT);
+		String command = (String) context.getProperty(GraphitiConstants.COMMAND_HINT);
 		if (command!=null) {
 			if (command.startsWith("move")) //$NON-NLS-1$
 				return canExecuteMove(context);
@@ -94,7 +94,7 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 		Point point = GraphicsUtil.createPoint(p.x, p.y);
 		
 		PasteContext pasteContext = new PasteContext(pes, point.getX(), point.getY());
-		pasteContext.putProperty(DefaultPasteBPMNElementFeature.COPY_FROM_CONTEXT, Boolean.TRUE);
+		pasteContext.putProperty(GraphitiConstants.COPY_FROM_CONTEXT, Boolean.TRUE);
 		IPasteFeature pasteFeature = getFeatureProvider().getPasteFeature(pasteContext);
 		if (pasteFeature==null || !pasteFeature.canPaste(pasteContext))
 			return false;
@@ -104,7 +104,7 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 
 	@Override
 	public void execute(ICustomContext context) {
-		String command = (String) context.getProperty(COMMAND_HINT);
+		String command = (String) context.getProperty(GraphitiConstants.COMMAND_HINT);
 		if (command.startsWith("move")) //$NON-NLS-1$
 			executeMove(context);
 		else if (command.startsWith("duplicate")) { //$NON-NLS-1$
@@ -116,7 +116,7 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 		int dx = 0;
 		int dy = 0;
 		int mult = 1;
-		String command = (String) context.getProperty(COMMAND_HINT);
+		String command = (String) context.getProperty(GraphitiConstants.COMMAND_HINT);
 		if (command.endsWith("10")) { //$NON-NLS-1$
 			mult = 10;
 			command = command.replace("10", ""); //$NON-NLS-1$ //$NON-NLS-2$

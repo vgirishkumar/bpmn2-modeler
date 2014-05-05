@@ -29,21 +29,21 @@ public class AddSubChoreographyFeature extends AddChoreographyActivityFeature<Su
 		super(fp);
 	}
 
-	@Override
-	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
-		List<ContainerShape> bandContainers = ChoreographyUtil.getParticipantBandContainerShapes(choreographyContainer);
-		Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = ChoreographyUtil
-				.getTopAndBottomBands(bandContainers);
-		List<ContainerShape> topBands = topAndBottomBands.getFirst();
-
-		int y = 3;
-		if (!topBands.isEmpty()) {
-			ContainerShape containerShape = topBands.get(topBands.size() - 1);
-			GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
-			y = ga.getY() + ga.getHeight() + 3;
-		}
-
-		gaService.setLocationAndSize(text, 0, y, w, h);
-	}
+//	@Override
+//	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
+//		List<ContainerShape> bandContainers = ChoreographyUtil.getParticipantBandContainerShapes(choreographyContainer);
+//		Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = ChoreographyUtil
+//				.getTopAndBottomBands(bandContainers);
+//		List<ContainerShape> topBands = topAndBottomBands.getFirst();
+//
+//		int y = 3;
+//		if (!topBands.isEmpty()) {
+//			ContainerShape containerShape = topBands.get(topBands.size() - 1);
+//			GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
+//			y = ga.getY() + ga.getHeight() + 3;
+//		}
+//
+//		gaService.setLocationAndSize(text, 0, y, w, h);
+//	}
 
 }

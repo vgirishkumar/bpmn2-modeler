@@ -46,7 +46,7 @@ import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
-import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -505,7 +505,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						types.pop();
 						EcoreUtil.delete(newObject);
 						// set up the BPMN2 object factory to construct this CustomElement
-						adapter.setProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, id);
+						adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
 						newObject = super.createObjectFromFeatureType(peekObject, feature);
 					}
 					catch (Exception e) {

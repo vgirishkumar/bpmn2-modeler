@@ -106,6 +106,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_IS_MESSAGE_VISIBLE_LABEL = Messages.Bpmn2Preferences_Message_Visible;
 	public final static String PREF_IS_MARKER_VISIBLE = "is.marker.visible"; //$NON-NLS-1$
 	public final static String PREF_IS_MARKER_VISIBLE_LABEL = Messages.Bpmn2Preferences_Marker_Visible;
+	public final static String PREF_SAVE_BPMNLABELS = "save.bpmnlabels"; //$NON-NLS-1$
+	public final static String PREF_SAVE_BPMNLABELS_LABEL = Messages.Bpmn2Preferences_Save_BPMNLabels;
 	
 	public final static String PREF_SHAPE_STYLE = "shape.style"; //$NON-NLS-1$
 
@@ -180,11 +182,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private BPMNDIAttributeDefault isExpanded;
 	private BPMNDIAttributeDefault isMessageVisible;
 	private BPMNDIAttributeDefault isMarkerVisible;
+	private boolean saveBPMNLabels;
 	private int connectionTimeout;
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
 
-	private HashMap<Class, ShapeStyle> shapeStyles = new HashMap<Class, ShapeStyle>();
+	private static HashMap<String, ShapeStyle> shapeStyles = new HashMap<String, ShapeStyle>();
 
 	private Bpmn2Preferences(IProject project) {
 		this.project = project;
@@ -341,6 +344,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.put(PREF_IS_EXPANDED, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
 			defaultPreferences.put(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.ALWAYS_TRUE.name());
 			defaultPreferences.put(PREF_IS_MARKER_VISIBLE, BPMNDIAttributeDefault.DEFAULT_TRUE.name());
+			defaultPreferences.putBoolean(PREF_SAVE_BPMNLABELS, true);
 
 			defaultPreferences.putInt(PREF_POPUP_CONFIG_DIALOG, 0); // tri-state checkbox
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, false);
@@ -400,12 +404,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				if (rt!=TargetRuntime.getDefaultRuntime()) {
 					for (ShapeStyle ss : defaultShapeStyles) {
 						String value = ShapeStyle.encode(ss);
-						prefs.put(ss.getEClass().getName(), value);
+						prefs.put(ss.getObjectName(), value);
 					}
 				}
 				for (ShapeStyle ss : rt.getShapeStyles()) {
 					String value = ShapeStyle.encode(ss);
-					prefs.put(ss.getEClass().getName(), value);
+					prefs.put(ss.getObjectName(), value);
 				}
 			}
 		}
@@ -452,6 +456,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			isExpanded = getBPMNDIAttributeDefault(PREF_IS_EXPANDED, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMessageVisible = getBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			isMarkerVisible = getBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
+			saveBPMNLabels = getBoolean(PREF_SAVE_BPMNLABELS, true);
 			connectionTimeout = getInt(PREF_CONNECTION_TIMEOUT, 60000); //$NON-NLS-1$
 			
 			popupConfigDialog = getInt(PREF_POPUP_CONFIG_DIALOG, 0); // tri-state checkbox
@@ -490,6 +495,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				setBPMNDIAttributeDefault(PREF_IS_EXPANDED, isExpanded);
 				setBPMNDIAttributeDefault(PREF_IS_MESSAGE_VISIBLE, isMessageVisible);
 				setBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, isMarkerVisible);
+				putBoolean(PREF_SAVE_BPMNLABELS, saveBPMNLabels);
 				
 				putInt(PREF_CONNECTION_TIMEOUT, connectionTimeout);
 	
@@ -506,7 +512,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			}
 		}
 		
-		for (Entry<Class, ShapeStyle> entry : shapeStyles.entrySet()) {
+		for (Entry<String, ShapeStyle> entry : shapeStyles.entrySet()) {
 			setShapeStyle(entry.getKey(), entry.getValue());
 		}
 		
@@ -533,7 +539,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public static String getShapeStyleKey(TargetRuntime rt, Class clazz) {
-		return getShapeStylePath(rt) + "/" + clazz.getSimpleName(); //$NON-NLS-1$
+		return getShapeStyleKey(rt, clazz.getSimpleName());
+	}
+	
+	public static String getShapeStyleKey(TargetRuntime rt, String name) {
+		return getShapeStylePath(rt) + "/" + name; //$NON-NLS-1$
 	}
 	
 	public static String getShapeStylePath(TargetRuntime rt) {
@@ -551,25 +561,38 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public ShapeStyle getShapeStyle(Class clazz) {
-		ShapeStyle ss = shapeStyles.get(clazz);
+		return getShapeStyle(clazz.getSimpleName());
+	}
+	
+	public ShapeStyle getShapeStyle(ShapeStyle.Category category) {
+		return getShapeStyle(category.name());
+	}
+	
+	public ShapeStyle getShapeStyle(String name) {
+		ShapeStyle ss = shapeStyles.get(name);
 		if (ss==null) {
-			String key = getShapeStyleKey(getRuntime(), clazz);
+			String key = getShapeStyleKey(getRuntime(), name);
 			String value = get(key, ""); //$NON-NLS-1$
 			if (value.isEmpty())
-				ss = new ShapeStyle(clazz);
+				ss = new ShapeStyle();
 			else
 				ss = ShapeStyle.decode(value);
-			shapeStyles.put(clazz, ss);
+			shapeStyles.put(name, ss);
 		}
-		return ss;
+		// make a copy for client
+		return new ShapeStyle(ss);
 	}
 	
 	public void setShapeStyle(Class clazz, ShapeStyle style) {
+		setShapeStyle(clazz.getSimpleName(), style);
+	}
+	
+	public void setShapeStyle(String name, ShapeStyle style) {
 		if (style.isDirty()) {
-			String key = getShapeStyleKey(getRuntime(), clazz);
+			shapeStyles.put(name, style);
+			String key = getShapeStyleKey(getRuntime(), name);
 			String value = ShapeStyle.encode(style);
 			put(key, value);
-			shapeStyles.put(clazz, style);
 			style.setDirty(false);
 		}
 	}
@@ -981,7 +1004,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				|| context instanceof CallChoreography) {
 			return true;
 		}
-		return false;
+		// TODO: figure out a better way: does everything have configurable attributes now?
+		return true;
 	}
 	
 	public void setShowPopupConfigDialog(Object context, boolean value) {
@@ -1060,6 +1084,15 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public void setIsMarkerVisible(BPMNDIAttributeDefault value) {
 		setBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, value);
 		this.isMarkerVisible = value;
+	}
+	
+	public boolean getSaveBPMNLabels() {
+		return saveBPMNLabels;
+	}
+	
+	public void setSaveBPMNLabels(boolean enable) {
+		putBoolean(PREF_SAVE_BPMNLABELS,enable);
+		saveBPMNLabels = enable;
 	}
 
 	public int getConnectionTimeout() {
