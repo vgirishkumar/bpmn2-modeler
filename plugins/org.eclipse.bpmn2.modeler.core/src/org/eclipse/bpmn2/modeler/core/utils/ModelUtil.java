@@ -375,8 +375,9 @@ public class ModelUtil {
 			EStructuralFeature feature = element.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (feature==null)
 				feature = ModelDecorator.getAnyAttribute(element,"name"); //$NON-NLS-1$
-			if (feature!=null && element.eGet(feature) instanceof String)
-				return (String) element.eGet(feature);
+			Object value;
+			if (feature!=null && (value = element.eGet(feature)) instanceof String)
+				return (String) value;
 		}
 		return null;
 	}

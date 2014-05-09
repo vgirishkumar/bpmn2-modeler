@@ -85,15 +85,6 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 			addedFromImport(businessObject, containerShape, context);
 		}
 
-//		Shape nameShape = peService.createShape(containerShape, false);
-//
-//		MultiText text = gaService.createDefaultMultiText(getDiagram(), nameShape);
-//		text.setValue(businessObject.getName());
-//		StyleUtil.applyStyle(text, businessObject);
-//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-//		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-//		setTextLocation(containerShape, text, width, height);
-//		peService.setPropertyValue(nameShape, ChoreographyProperties.CHOREOGRAPHY_NAME, Boolean.toString(true));
 		GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 
 		if (businessObject instanceof ChoreographyTask) {
@@ -108,11 +99,6 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		
 		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
 		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
-		
-		// prepare the AddContext to create a Label
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
 
 		return containerShape;
 	}

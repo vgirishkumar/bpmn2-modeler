@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features.lane;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
@@ -25,6 +26,8 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -35,6 +38,8 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
@@ -131,19 +136,19 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 			containerShape.setContainer(context.getTargetContainer());
 		}
 		
-		Shape textShape = peCreateService.createShape(containerShape, false);
-		Text text = gaService.createText(textShape, businessObject.getName());
-		StyleUtil.applyStyle(text, businessObject);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		if (horz) {
-			text.setAngle(-90);
-			gaService.setLocationAndSize(text, 0, 0, 15, height);
-		}
-		else {
-			gaService.setLocationAndSize(text, 0, 0, width, 15);
-		}
-		link(textShape, businessObject);
+//		Shape textShape = peCreateService.createShape(containerShape, false);
+//		Text text = gaService.createText(textShape, businessObject.getName());
+//		StyleUtil.applyStyle(text, businessObject);
+//		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+//		if (horz) {
+//			text.setAngle(-90);
+//			gaService.setLocationAndSize(text, 0, 0, 15, height);
+//		}
+//		else {
+//			gaService.setLocationAndSize(text, 0, 0, width, 15);
+//		}
+//		link(textShape, businessObject);
 
 		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null
 				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
@@ -164,7 +169,17 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 
 		return containerShape;
 	}
-
+//
+//	public void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
+//		if (ga instanceof AbstractText) {
+//			PictogramElement pe = LabelFeatureContainer.getLabelOwner(ga);
+//			if (FeatureSupport.isHorizontal((ContainerShape)pe))
+//				((AbstractText) ga).setAngle(-90);
+//		}
+//		else
+//			super.applyStyle(ga,be);
+//	}
+	
 	private void moveFlowNodes(Process targetProcess, Lane lane) {
 		for (FlowElement element : targetProcess.getFlowElements()) {
 			if (element instanceof FlowNode) {

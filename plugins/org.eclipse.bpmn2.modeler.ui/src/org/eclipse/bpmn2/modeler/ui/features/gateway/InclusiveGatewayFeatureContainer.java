@@ -17,12 +17,15 @@ import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AbstractCreateGatewayFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AddGatewayFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -41,7 +44,10 @@ public class InclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddInclusiveGatewayFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddInclusiveGatewayFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override

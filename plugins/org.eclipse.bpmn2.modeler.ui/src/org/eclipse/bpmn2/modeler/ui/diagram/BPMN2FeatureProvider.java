@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.diagram;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
@@ -204,8 +205,8 @@ import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
 @SuppressWarnings("rawtypes")
 public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpmn2FeatureProvider {
 
-	private Hashtable<Class,IFeatureContainer> containers;
-	private Hashtable<String,ICustomElementFeatureContainer> customTaskContainers;
+	private LinkedHashMap<Class,IFeatureContainer> containers;
+	private LinkedHashMap<String,ICustomElementFeatureContainer> customTaskContainers;
 	private ICreateFeature[] createFeatures;
 	private ICreateConnectionFeature[] createConnectionFeatures;
 	private HashMap<Class,IFeature> mapBusinessObjectClassToCreateFeature = new HashMap<Class,IFeature>();
@@ -218,8 +219,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	}
 	
 	private void initializeFeatureContainers() {
-		containers = new Hashtable<Class,IFeatureContainer>();
-		containers.put(LabelFeatureContainer.class,new LabelFeatureContainer());
+		containers = new LinkedHashMap<Class,IFeatureContainer>();
 		containers.put(Group.class,new GroupFeatureContainer());
 		containers.put(DataObject.class,new DataObjectFeatureContainer());
 		containers.put(DataObjectReference.class,new DataObjectReferenceFeatureContainer());
@@ -280,7 +280,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	public void addFeatureContainer(String id, ICustomElementFeatureContainer fc) throws Exception {
 		
 		if (customTaskContainers==null) {
-			customTaskContainers = new Hashtable<String,ICustomElementFeatureContainer>();
+			customTaskContainers = new LinkedHashMap<String,ICustomElementFeatureContainer>();
 		}
 		customTaskContainers.put(id,fc);
 		updateFeatureLists();
@@ -295,18 +295,18 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		BPMN2Editor editor = BPMN2Editor.getActiveEditor(); //(BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
 		TargetRuntime rt = editor.getTargetRuntime();
 		for (FeatureContainerDescriptor fcd : rt.getFeatureContainerDescriptors()) {
-			IFeatureContainer container = fcd.getFeatureContainer();
-			if (container instanceof IConnectionFeatureContainer) {
-				ICreateConnectionFeature createConnectionFeature = ((IConnectionFeatureContainer)container)
+			IFeatureContainer fc = fcd.getFeatureContainer();
+			if (fc instanceof IConnectionFeatureContainer) {
+				ICreateConnectionFeature createConnectionFeature = ((IConnectionFeatureContainer)fc)
 						.getCreateConnectionFeature(this);
 				if (createConnectionFeature!=null) {
-					containers.put(fcd.getType(), container);
+					containers.put(fcd.getType(), fc);
 				}
 			}
-			else {
-				ICreateFeature createFeature = ((IShapeFeatureContainer)container).getCreateFeature(this);
+			if (fc instanceof IShapeFeatureContainer) {
+				ICreateFeature createFeature = ((IShapeFeatureContainer)fc).getCreateFeature(this);
 				if (createFeature != null) {
-					containers.put(fcd.getType(), container);
+					containers.put(fcd.getType(), fc);
 				}
 			}
 		}
@@ -323,7 +323,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 					createConnectionFeatureList.add(createConnectionFeature);
 				}
 			}
-			else {
+			if (fc instanceof IShapeFeatureContainer) {
 				ICreateFeature createFeature = ((IShapeFeatureContainer) fc).getCreateFeature(this);
 				if (createFeature != null) {
 					createFeaturesList.add(createFeature);
@@ -339,7 +339,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 						createConnectionFeatureList.add(createConnectionFeature);
 					}
 				}
-				else {
+				if (fc instanceof IShapeFeatureContainer) {
 					ICreateFeature createFeature = ((IShapeFeatureContainer) fc).getCreateFeature(this);
 					if (createFeature != null) {
 						createFeaturesList.add(createFeature);
@@ -390,12 +390,9 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		
 		// The special LabelFeatureContainer is used to add labels to figures that were
 		// added within the given IContext
-		LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
-		if (lfc.getApplyObject(context)!=null)
-			return lfc;
-//		Object property = context.getProperty(GraphitiConstants.LABEL_CONTEXT);
-//		if ( property!=null && (Boolean)property )
-//			return containers.get(LabelFeatureContainer.class);
+//		LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
+//		if (lfc.getApplyObject(context)!=null)
+//			return lfc;
 		
 		EObject object = getApplyObject(context);
 		if (object!=null) {
@@ -612,11 +609,6 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			}
 		}
 		else {
-			// first test for Label shapes
-			LabelFeatureContainer lfc = (LabelFeatureContainer) containers.get(LabelFeatureContainer.class);
-			if (lfc.getApplyObject(context)!=null)
-				return lfc.getCustomFeatures(this);
-			
 			for (IFeatureContainer fc : containers.values()) {
 				Object o = fc.getApplyObject(context);
 				if (o!=null && fc.canApplyTo(o)) {

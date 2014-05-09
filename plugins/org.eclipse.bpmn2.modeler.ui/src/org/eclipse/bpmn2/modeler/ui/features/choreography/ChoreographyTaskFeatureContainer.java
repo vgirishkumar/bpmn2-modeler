@@ -23,7 +23,10 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -65,13 +68,16 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddChoreographyTaskFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddChoreographyTaskFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyMessageFlowFeature(fp));
 		return multiUpdate;
 	}
 

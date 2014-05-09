@@ -61,10 +61,14 @@ import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -75,6 +79,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
@@ -244,8 +249,12 @@ public class FeatureSupport {
 			if (BusinessObjectUtil.getFirstElementOfType((PictogramElement)parent, ChoreographyTask.class) != null)
 				return false;
 		}
+
 		String v = Graphiti.getPeService().getPropertyValue(container, GraphitiConstants.IS_HORIZONTAL_PROPERTY);
 		if (v==null) {
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(BusinessObjectUtil.getFirstBaseElement(container));
+			if (bpmnShape!=null)
+				return bpmnShape.isIsHorizontal();
 			return Bpmn2Preferences.getInstance(container).isHorizontalDefault();
 		}
 		return Boolean.parseBoolean(v);
@@ -660,6 +669,10 @@ public class FeatureSupport {
 		// also search the linked objects
 		PictogramElement pe = BusinessObjectUtil.getFirstElementOfType(container, PictogramElement.class);
 		if (pe!=null) {
+			String value = peService.getPropertyValue(pe, property);
+			if (value != null && value.equals(expectedValue) && clazz.isInstance(pe)) {
+				return (T) pe;
+			}
 			return getChildElementOfType(pe, property, expectedValue, clazz);
 		}
 		return null;
@@ -890,7 +903,8 @@ public class FeatureSupport {
 				EObject child = iter.next();
 				if (child instanceof ContainerShape
 						&& child!=groupShape
-						&& !list.contains(child)) {
+						&& !list.contains(child)
+						&& !isLabelShape((ContainerShape)child)) {
 					ContainerShape shape = (ContainerShape)child;
 					if (isGroupShape(shape)) {
 						if (GraphicsUtil.contains(groupShape, shape)) {
@@ -919,12 +933,6 @@ public class FeatureSupport {
 
 	public static boolean isGroupShape(PictogramElement shape) {
 		return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
-	}
-
-	public static boolean isLabelShape(PictogramElement shape) {
-		if (shape==null)
-			return false;
-		return Graphiti.getPeService().getPropertyValue(shape, GraphitiConstants.LABEL_PROPERTY) != null;
 	}
 
 	public static List<EObject> findMessageReferences(Diagram diagram, Message message) {
@@ -1079,7 +1087,7 @@ public class FeatureSupport {
 		}
 		
 		if (layoutChanged)
-			LabelFeatureContainer.adjustLabelLocation(connection, false, null);
+			FeatureSupport.adjustLabelLocation(fp, connection, null);
 		
 		return layoutChanged || updateChanged;
 	}
@@ -1212,5 +1220,160 @@ public class FeatureSupport {
 			}
 		}
 		return null;
+	}
+
+	/*
+	 * Label support methods
+	 */
+	public static PictogramElement getPictogramElement(IContext context) {
+		if (context instanceof IPictogramElementContext) {
+			return ((IPictogramElementContext) context).getPictogramElement();
+		}
+		else if (context instanceof ICustomContext) {
+			PictogramElement[] pes = ((ICustomContext) context).getPictogramElements();
+			if (pes.length==1)
+				return pes[0];
+		}
+		return null;
+	}
+	/**
+	 * Checks the given PictogramElement to see if it is a Label shape. Label
+	 * shapes are identified by the LABEL_SHAPE property equal to "true".
+	 * 
+	 * @param shape the shape to test
+	 * @return true if the shape is a Label
+	 */
+	public static boolean isLabelShape(PictogramElement shape) {
+		if (shape==null)
+			return false;
+		return Graphiti.getPeService().getPropertyValue(shape, GraphitiConstants.LABEL_SHAPE) != null;
+	}
+
+	/**
+	 * Gets the owner {@link PictogramElement} of a Label from a given IContext
+	 * object. Label shapes are added by Feature Containers using a
+	 * {@link org.eclipse.bpmn2.modeler.core.features.MultiAddFeature} - the
+	 * first Add Feature in the Multi Add creates the graphical element that
+	 * represents the shape or connection, and a subsequent Add Feature
+	 * contributes the Label.
+	 * <p>
+	 * A Label and its owning PictogramElement are ultimately linked to each
+	 * other by way of the PictogramElement link list; the owner has a link to
+	 * the ContainerShape of the Label and the Label has a link to the owning
+	 * shape or connection.
+	 * 
+	 * @param context a Graphiti context object
+	 * @return the PictogramElement that owns a Label if it has one, or null.
+	 */
+	public static PictogramElement getLabelOwner(IContext context) {
+		List<PictogramElement> pes = (List<PictogramElement>) context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENTS);
+		if (pes!=null && pes.size()>0)
+			return pes.get( pes.size()-1 );
+		if (context instanceof IPictogramElementContext)
+			return FeatureSupport.getLabelOwner(((IPictogramElementContext)context).getPictogramElement());
+		return null;
+	}
+
+	/**
+	 * Gets the owner {@link PictogramElement} of a Label from a given
+	 * PictogramElement. The given PE may already be the owner of the Label, in
+	 * which case the given value is returned. See also
+	 * {@link FeatureSupport#getLabelOwner(IContext)}
+	 * 
+	 * @param pe a PictogramElement that represents the Label shape. This may be
+	 *            either the Label shape or its owner.
+	 * @return the PictogramElement that is the owner of a Label shape.
+	 */
+	public static PictogramElement getLabelOwner(PictogramElement pe) {
+		DiagramElement de = BusinessObjectUtil.getFirstElementOfType(pe, DiagramElement.class);
+		if (de!=null)
+			return pe;
+		ContainerShape cs = BusinessObjectUtil.getFirstElementOfType(pe, ContainerShape.class);
+		de = BusinessObjectUtil.getFirstElementOfType(cs, DiagramElement.class);
+		if (de!=null)
+			return cs;
+		Connection c = BusinessObjectUtil.getFirstElementOfType(pe, Connection.class);
+		de = BusinessObjectUtil.getFirstElementOfType(c, DiagramElement.class);
+		if (de!=null)
+			return c;
+		return null;
+	}
+
+	/**
+	 * Gets the owner {@link PictogramElement} of a Label from a given
+	 * Text {@link GraphicsAlgorithm}.
+	 * 
+	 * @param text a GraphicsAlgorithm that contains the Label text.
+	 * @return the PictogramElement that is the owner of the Label shape.
+	 */
+	public static PictogramElement getLabelOwner(GraphicsAlgorithm text) {
+		PictogramElement pe = text.getPictogramElement();
+		if (isLabelShape(pe))
+			return getLabelOwner(pe);
+		return null;
+	}
+
+	/**
+	 * Gets the Label shape for the given PictogramElement. This method is the opposite of
+	 * {@link FeatureSupport#getLabelOwner(PictogramElement)} .
+	 * 
+	 * @param pe a PictogramElement that represents the owner of the Label. This may be
+	 *            either the owner of the Label, or the Label shape itself.
+	 * @return the PictogramElement that represents the Label.
+	 */
+	public static Shape getLabelShape(PictogramElement pe) {
+		pe = getLabelOwner(pe);
+		if (pe instanceof Connection) {
+			for (ConnectionDecorator d : ((Connection)pe).getConnectionDecorators()) {
+				if (isLabelShape(d))
+					return d;
+			}
+		}
+		Shape cs = BusinessObjectUtil.getFirstElementOfType(pe, Shape.class);
+		if (isLabelShape(cs) ) {
+			return cs;
+		}
+		return null;
+	}
+
+	/**
+	 * Updates the contents of, and relocates a Label according to User
+	 * Preferences for the associated BPMN2 object.
+	 * 
+	 * @param fp the Feature Provider
+	 * @param pe the PictogramElement that may be either the Label shape or its
+	 *            owner.
+	 * @param offset an optional offset if the owning shape was moved. This is
+	 *            used to relocate Labels that are "movable", that is they can
+	 *            be manually positioned independently of their owners.
+	 */
+	public static void adjustLabelLocation(IFeatureProvider fp, PictogramElement pe, Point offset) {
+		UpdateContext context = new UpdateContext(getLabelOwner(pe));
+		// Offset is only used if the label is MOVABLE - we need to keep the label's
+		// relative position to its owning shape the same.
+		context.putProperty(GraphitiConstants.LABEL_OFFSET, offset);
+		IUpdateFeature feature = fp.getUpdateFeature(context);
+		if (feature instanceof MultiUpdateFeature) {
+			MultiUpdateFeature mf = (MultiUpdateFeature) feature;
+			for (IUpdateFeature uf : mf.getFeatures())
+				if (uf instanceof UpdateLabelFeature) {
+					feature = uf;
+				}
+		}
+		feature.update(context);
+	}
+	
+	/**
+	 * Get the position of the label relative to its owning figure for the given
+	 * BaseElement as defined in the User Preferences.
+	 * 
+	 * @param element the BaseElement that is represented by the graphical figure.
+	 * @return a ShapeStyle LabelPosition relative location indicator. 
+	 */
+	public static LabelPosition getLabelPosition(PictogramElement pe) {
+		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
+		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);		
+		ShapeStyle ss = preferences.getShapeStyle(element);
+		return ss.getLabelPosition();
 	}
 }

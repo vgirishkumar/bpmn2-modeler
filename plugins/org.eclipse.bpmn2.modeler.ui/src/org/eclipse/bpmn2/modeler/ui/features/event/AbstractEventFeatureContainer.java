@@ -13,8 +13,6 @@
 package org.eclipse.bpmn2.modeler.ui.features.event;
 
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.DirectEditBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -23,13 +21,11 @@ import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.AppendGatewayFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;

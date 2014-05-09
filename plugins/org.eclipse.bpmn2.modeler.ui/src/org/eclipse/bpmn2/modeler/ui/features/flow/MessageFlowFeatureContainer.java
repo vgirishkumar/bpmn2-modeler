@@ -26,11 +26,19 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddConnectionLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -102,7 +110,10 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddMessageFlowFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddMessageFlowFeature(fp));
+		multiAdd.addFeature(new AddConnectionLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
@@ -117,7 +128,10 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateMessageFlowFeature(fp);
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateMessageFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
+		return multiUpdate;
 	}
 	
 	@Override

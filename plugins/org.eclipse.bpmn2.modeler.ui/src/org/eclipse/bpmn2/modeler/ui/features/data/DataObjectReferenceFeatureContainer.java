@@ -15,10 +15,13 @@ package org.eclipse.bpmn2.modeler.ui.features.data;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -40,13 +43,16 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddDataObjectReferenceFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddDataObjectReferenceFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateItemAwareElementFeature<DataObjectReference>(fp) {
+		multiUpdate.addFeature(new UpdateItemAwareElementFeature<DataObjectReference>(fp) {
 			@Override
 			protected Object getBusinessObjectForPictogramElement(PictogramElement pe) {
 				DataObjectReference object = (DataObjectReference)super.getBusinessObjectForPictogramElement(pe);
@@ -54,7 +60,7 @@ public class DataObjectReferenceFeatureContainer extends AbstractDataFeatureCont
 			}
 			
 		});
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 

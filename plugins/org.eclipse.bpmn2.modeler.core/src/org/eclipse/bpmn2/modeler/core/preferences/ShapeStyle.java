@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.ColorUtil;
 import org.eclipse.graphiti.util.IColorConstant;
@@ -61,11 +63,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	Font textFont;
 	IColorConstant textColor;
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
-	boolean defaultSize;
+	boolean useDefaultSize;
 	boolean snapToGrid = true;
-	int gridWidth = 10;
-	int gridHeight = 10;
-	LabelLocation labelLocation = LabelLocation.BOTTOM;
+	int defaultWidth = 10;
+	int defaultHeight = 10;
+	LabelPosition labelPosition = LabelPosition.BELOW;
 	int changeMask;
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
@@ -91,12 +93,14 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 
-	public enum LabelLocation {
-		BOTTOM, // this is the default value, ordinal=0
-		TOP,
+	public enum LabelPosition {
+		BELOW, // this is the default value, ordinal=0
+		ABOVE,
 		LEFT,
 		RIGHT,
+		TOP,
 		CENTER,
+		BOTTOM,
 		MOVABLE,
 	};
 
@@ -112,14 +116,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		String background = e.getAttribute("background"); //$NON-NLS-1$
 		String textColor = e.getAttribute("textColor"); //$NON-NLS-1$
 		String font = e.getAttribute("font"); //$NON-NLS-1$
-		this.initialize(foreground, background, textColor, font);
-	}
+		// TODO: parse these
+		String labelPosition = e.getAttribute("labelPosition"); //$NON-NLS-1$
+		String routing = e.getAttribute("routing"); //$NON-NLS-1$
 
-	public ShapeStyle(ShapeStyle other) {
-		this(encode(other));
-	}
-
-	public void initialize(String foreground, String background, String textColor, String font) {
 		// only background color is required to set up default color scheme
 		if (background==null || background.isEmpty())
 			background = "FFFFFF";
@@ -134,7 +134,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (font==null || font.isEmpty())
 			font = DEFAULT_FONT_STRING;
 		textFont = stringToFont(font);
-		defaultSize = false;
+		useDefaultSize = false;
+	}
+
+	public ShapeStyle(ShapeStyle other) {
+		this(encode(other));
 	}
 	
 	private ShapeStyle(String s) {
@@ -152,9 +156,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (a.length>5)
 			textColor = stringToColor(a[5]);
 		if (a.length>6)
-			defaultSize = stringToBoolean(a[6]);
+			useDefaultSize = stringToBoolean(a[6]);
 		else
-			defaultSize = false;
+			useDefaultSize = false;
 		if (a.length>7) {
 			try {
 				routingStyle = RoutingStyle.valueOf(a[7]);
@@ -173,22 +177,22 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			snapToGrid = true;
 		
 		if (a.length>9) {
-			gridWidth = Integer.parseInt(a[9]);
+			defaultWidth = Integer.parseInt(a[9]);
 		}
 		else
-			gridWidth = 10;
+			defaultWidth = 10;
 		
 		if (a.length>10) {
-			gridHeight= Integer.parseInt(a[10]);
+			defaultHeight= Integer.parseInt(a[10]);
 		}
 		else
-			gridHeight = 10;
+			defaultHeight = 10;
 		
 		if (a.length>11) {
-			labelLocation = LabelLocation.values()[Integer.parseInt(a[11])];
+			labelPosition = LabelPosition.values()[Integer.parseInt(a[11])];
 		}
 		else
-			labelLocation = LabelLocation.BOTTOM;
+			labelPosition = LabelPosition.BELOW;
 	}
 	
 	@Override
@@ -304,46 +308,46 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 	
-	public int getGridWidth() {
-		return gridWidth;
+	public int getDefaultWidth() {
+		return defaultWidth;
 	}
 
-	public void setGridWidth(int gridWidth) {
-		if (this.gridWidth!=gridWidth) {
-			this.gridWidth = gridWidth;
+	public void setDefaultWidth(int defaultWidth) {
+		if (this.defaultWidth!=defaultWidth) {
+			this.defaultWidth = defaultWidth;
 			changeMask |= SS_GRID_WIDTH;
 		}
 	}
 	
-	public int getGridHeight() {
-		return gridHeight;
+	public int getDefaultHeight() {
+		return defaultHeight;
 	}
 
-	public void setGridHeight(int gridHeight) {
-		if (this.gridHeight!=gridHeight) {
-			this.gridHeight = gridHeight;
+	public void setDefaultHeight(int defaultHeight) {
+		if (this.defaultHeight!=defaultHeight) {
+			this.defaultHeight = defaultHeight;
 			changeMask |= SS_GRID_HEIGHT;
 		}
 	}
 
-	public LabelLocation getLabelLocation() {
-		return labelLocation;
+	public LabelPosition getLabelPosition() {
+		return labelPosition;
 	}
 
-	public void setLabelLocation(LabelLocation labelLocation) {
-		if (this.labelLocation!=labelLocation) {
-			this.labelLocation = labelLocation;
+	public void setLabelPosition(LabelPosition labelPosition) {
+		if (this.labelPosition!=labelPosition) {
+			this.labelPosition = labelPosition;
 			changeMask |= SS_LABEL_LOCATION;
 		}
 	}
 	
-	public boolean isDefaultSize() {
-		return defaultSize;
+	public boolean getUseDefaultSize() {
+		return useDefaultSize;
 	}
 	
-	public void setDefaultSize(boolean b) {
-		if (defaultSize != b) {
-			defaultSize = b;
+	public void setUseDefaultSize(boolean b) {
+		if (useDefaultSize != b) {
+			useDefaultSize = b;
 			setDirty(true);
 		}
 	}
@@ -425,7 +429,74 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		f.eSet(StylesPackage.eINSTANCE.getFont_Bold(), (fd.getStyle() & SWT.BOLD)!=0);
 		return f;
 	}
-	
+
+	/**
+	 * @param swtFont
+	 * @return
+	 */
+	public static Font toGraphitiFont(Diagram diagram, org.eclipse.swt.graphics.Font swtFont) {
+		Font ret;
+
+		FontData fontData = swtFont.getFontData()[0];
+		ret = toGraphitiFont(diagram, fontData);
+
+		return ret;
+	}
+
+	/**
+	 * @param fontData
+	 * @return
+	 */
+	public static Font toGraphitiFont(Diagram diagram, FontData fontData) {
+		if (fontData == null) {
+			return null;
+		}
+		Font ret;
+		String name = fontData.getName();
+		int height = fontData.getHeight();
+		boolean italic = (fontData.getStyle() & SWT.ITALIC) != 0;
+		boolean bold = (fontData.getStyle() & SWT.BOLD) != 0;
+		ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
+		return ret;
+	}
+
+	/**
+	 * Returns a <b>new</b> SWT {@link org.eclipse.swt.graphics.Font} for the
+	 * given Graphiti {@link Font}. <b>Users of this method are responsible for
+	 * disposing the font again!</b>
+	 * 
+	 * @param pictogramFont
+	 * @return
+	 */
+	public static org.eclipse.swt.graphics.Font toSwtFont(Font pictogramFont) {
+		FontData fontData;
+		fontData = toFontData(pictogramFont);
+		return new org.eclipse.swt.graphics.Font(null, new FontData[] { fontData });
+	}
+
+	/**
+	 * @param pictogramFont
+	 * @return
+	 */
+	public static FontData toFontData(Font pictogramFont) {
+		FontData fontData;
+		if (pictogramFont != null) {
+			int style = SWT.NORMAL;
+			if (pictogramFont.isItalic()) {
+				style |= SWT.ITALIC;
+			}
+			if (pictogramFont.isBold()) {
+				style |= SWT.BOLD;
+			}
+			int size = pictogramFont.getSize();
+			String name = pictogramFont.getName();
+			fontData = new FontData(name, size, style);
+		} else {
+			fontData = new FontData();
+		}
+		return fontData;
+	}
+
 	public static String encode(ShapeStyle sp) {
 		if (sp==null)
 			return encode(new ShapeStyle());
@@ -436,12 +507,12 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				colorToString(sp.shapeForeground) + ";" + //$NON-NLS-1$
 				fontToString(sp.textFont) + ";" + //$NON-NLS-1$
 				colorToString(sp.textColor) + ";" + //$NON-NLS-1$
-				booleanToString(sp.defaultSize) + ";" + //$NON-NLS-1$
+				booleanToString(sp.useDefaultSize) + ";" + //$NON-NLS-1$
 				sp.routingStyle.name() + ";" + //$NON-NLS-1$
 				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				sp.gridWidth + ";" + //$NON-NLS-1$
-				sp.gridHeight + ";" + //$NON-NLS-1$
-				sp.labelLocation.ordinal()
+				sp.defaultWidth + ";" + //$NON-NLS-1$
+				sp.defaultHeight + ";" + //$NON-NLS-1$
+				sp.labelPosition.ordinal()
 				);
 	}
 	
@@ -470,11 +541,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if ((m & SS_SNAP_TO_GRID) != 0)
 			this.setSnapToGrid(other.getSnapToGrid());
 		if ((m & SS_GRID_WIDTH) != 0)
-			this.setGridWidth(other.getGridWidth());
+			this.setDefaultWidth(other.getDefaultWidth());
 		if ((m & SS_GRID_HEIGHT) != 0)
-			this.setGridHeight(other.getGridHeight());
+			this.setDefaultHeight(other.getDefaultHeight());
 		if ((m & SS_LABEL_LOCATION) != 0)
-			this.setLabelLocation(other.getLabelLocation());
+			this.setLabelPosition(other.getLabelPosition());
 	}
 
 	public void setValue(int m, Object value) {
@@ -495,11 +566,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (m == SS_SNAP_TO_GRID)
 			this.setSnapToGrid((Boolean)value);
 		if (m == SS_GRID_WIDTH)
-			this.setGridWidth((Integer)value);
+			this.setDefaultWidth((Integer)value);
 		if (m == SS_GRID_HEIGHT)
-			this.setGridHeight((Integer)value);
+			this.setDefaultHeight((Integer)value);
 		if (m == SS_LABEL_LOCATION)
-			this.setLabelLocation((LabelLocation)value);
+			this.setLabelPosition((LabelPosition)value);
 	}
 
 	public static boolean compare(IColorConstant c1, IColorConstant c2) {
@@ -526,8 +597,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				compare(s1.shapeForeground, s2.shapeForeground) ||
 				compare(s1.textFont, s2.textFont) ||
 				compare(s1.textColor, s2.textColor) ||
-				(s1.defaultSize != s2.defaultSize) ||
-				s1.labelLocation != s2.labelLocation;
+				(s1.useDefaultSize != s2.useDefaultSize) ||
+				s1.labelPosition != s2.labelPosition;
 	}
 	
 	public static IColorConstant lighter(IColorConstant c) {

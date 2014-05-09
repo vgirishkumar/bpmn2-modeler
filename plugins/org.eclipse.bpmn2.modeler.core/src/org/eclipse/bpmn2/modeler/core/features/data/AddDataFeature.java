@@ -97,14 +97,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
-
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
-
-		// prepare the AddContext to create a Label
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
 		
 		return containerShape;
 	}

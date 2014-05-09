@@ -24,8 +24,10 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.MoveDataFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -35,6 +37,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -81,14 +84,17 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddDataStoreReferenceFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddDataStoreReferenceFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateItemAwareElementFeature<DataStoreReference>(fp));
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateItemAwareElementFeature<DataStoreReference>(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 
@@ -173,13 +179,6 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 
 			peService.createChopboxAnchor(containerShape);
 			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
-
-			layoutPictogramElement(containerShape);
-			
-			// change the AddContext and prepare it to add a label below the figure
-			prepareAddContext(context, containerShape, width, height);
-			IFeatureContainer fc = new LabelFeatureContainer();
-			fc.getAddFeature(getFeatureProvider()).add(context);
 			
 			return containerShape;
 		}

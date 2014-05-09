@@ -13,6 +13,9 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
@@ -21,6 +24,9 @@ import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer.
 import org.eclipse.bpmn2.modeler.core.features.activity.MoveActivityFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.event.AppendEventFeature;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.AppendGatewayFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -36,22 +42,22 @@ public abstract class AbstractActivityFeatureContainer extends BaseElementFeatur
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		UpdateActivityCompensateMarkerFeature compensateMarkerUpdateFeature = new UpdateActivityCompensateMarkerFeature(
-				fp);
-		UpdateActivityLoopAndMultiInstanceMarkerFeature loopAndMultiInstanceUpdateFeature = new UpdateActivityLoopAndMultiInstanceMarkerFeature(
-				fp);
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(compensateMarkerUpdateFeature);
-		multiUpdate.addUpdateFeature(loopAndMultiInstanceUpdateFeature);
-		AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
+		multiUpdate.addFeature(new UpdateActivityCompensateMarkerFeature(fp));
+		multiUpdate.addFeature(new UpdateActivityLoopAndMultiInstanceMarkerFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
 			
 			@Override
 			public boolean canUpdate(IUpdateContext context) {
 				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
 			}
-		};
-		multiUpdate.addUpdateFeature(nameUpdateFeature);
+
+			@Override
+			protected LabelPosition getLabelPosition(BaseElement element) {
+				return LabelPosition.CENTER;
+			}
+		});
 		return multiUpdate;
 	}
 

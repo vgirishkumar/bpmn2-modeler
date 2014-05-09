@@ -106,17 +106,20 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 	 */
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
-		try {
-			ModelHandler handler = ModelHandler.getInstance(getDiagram());
-			Object[] nodes = getAllBusinessObjectsForPictogramElement(context.getShape());
-			for (Object object : nodes) {
-				if (object instanceof FlowNode && algorithmContainer!=null && !algorithmContainer.isEmpty()) {
-					algorithmContainer.move(((FlowNode) object), getSourceBo(context, handler),
-							getTargetBo(context, handler));
+		Shape shape = context.getShape();
+		if (!FeatureSupport.isLabelShape(shape)) {
+			try {
+				ModelHandler handler = ModelHandler.getInstance(getDiagram());
+				Object[] nodes = getAllBusinessObjectsForPictogramElement(shape);
+				for (Object object : nodes) {
+					if (object instanceof FlowNode && algorithmContainer!=null && !algorithmContainer.isEmpty()) {
+						algorithmContainer.move(((FlowNode) object), getSourceBo(context, handler),
+								getTargetBo(context, handler));
+					}
 				}
+			} catch (Exception e) {
+				Activator.logError(e);
 			}
-		} catch (Exception e) {
-			Activator.logError(e);
 		}
 		super.postMoveShape(context);
 	}

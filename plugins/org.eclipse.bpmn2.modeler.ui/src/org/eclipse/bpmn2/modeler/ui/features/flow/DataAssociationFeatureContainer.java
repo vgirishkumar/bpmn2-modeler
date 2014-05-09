@@ -485,7 +485,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		protected BaseElement getSourceBo(ICreateConnectionContext context) {
-			Anchor anchor = context.getSourceAnchor();
+			Anchor anchor = getSourceAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
 				Connection conn = AnchorUtil.getConnectionPointOwner(shape);
@@ -499,7 +499,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		protected BaseElement getTargetBo(ICreateConnectionContext context) {
-			Anchor anchor = context.getTargetAnchor();
+			Anchor anchor = getTargetAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
 				Connection conn = AnchorUtil.getConnectionPointOwner(shape);

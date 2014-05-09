@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -42,7 +43,7 @@ public abstract class AbstractBpmn2UpdateFeature extends AbstractUpdateFeature {
 			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
 			return Reason.createTrueReason("Initial update"); //$NON-NLS-1$
 		}
-		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null) {
+		if (DIImport.isImporting(context)) {
 			return Reason.createTrueReason("Initial update"); //$NON-NLS-1$
 		}
 		return Reason.createFalseReason();

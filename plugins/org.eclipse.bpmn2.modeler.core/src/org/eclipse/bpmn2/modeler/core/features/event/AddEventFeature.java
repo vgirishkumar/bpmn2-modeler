@@ -84,14 +84,6 @@ public class AddEventFeature<T extends Event>
 		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
 		splitConnection(context, containerShape);
-		
-		// prepare the AddContext to create a Label
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
-		
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
 
 		return containerShape;
 	}

@@ -15,8 +15,11 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -48,19 +51,16 @@ public class BusinessRuleTaskFeatureContainer extends AbstractTaskFeatureContain
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddBusinessRuleTask(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddBusinessRuleTask(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	public static class AddBusinessRuleTask extends AbstractAddDecoratedTaskFeature<BusinessRuleTask> {
 
 		public AddBusinessRuleTask(IFeatureProvider fp) {
 			super(fp);
-		}
-
-		@Override
-		public int getWidth() {
-			return GraphicsUtil.getActivitySize(getDiagram()).getWidth();
-//			return GraphicsUtil.TASK_DEFAULT_WIDTH + 50;
 		}
 
 		@Override

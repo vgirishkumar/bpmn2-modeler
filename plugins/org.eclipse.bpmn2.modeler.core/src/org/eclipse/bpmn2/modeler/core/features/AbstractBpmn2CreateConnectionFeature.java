@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -42,12 +43,15 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
+import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
 
@@ -369,10 +373,23 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @return true if the source is valid, false if not.
 	 */
 	protected SOURCE getSourceBo(ICreateConnectionContext context) {
-		if (context.getSourceAnchor() != null) {
-			return BusinessObjectUtil.getFirstElementOfType(context.getSourceAnchor().getParent(), getSourceClass());
+		Anchor a = getSourceAnchor(context);
+		if (a != null) {
+			return BusinessObjectUtil.getFirstElementOfType(a.getParent(), getSourceClass());
 		}
 		return null;
+	}
+
+	protected Anchor getSourceAnchor(ICreateConnectionContext context) {
+		Anchor a = context.getSourceAnchor();
+		PictogramElement pe = context.getSourcePictogramElement();
+		if (a==null && FeatureSupport.isLabelShape(pe)) {
+			pe = FeatureSupport.getLabelOwner(pe);
+			((CreateConnectionContext)context).setSourcePictogramElement(pe);
+			a = Graphiti.getPeService().getChopboxAnchor((AnchorContainer) pe);
+			((CreateConnectionContext)context).setSourceAnchor(a);
+		}
+		return a;
 	}
 
 	/**
@@ -383,12 +400,31 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @return true if the target is valid, false if not.
 	 */
 	protected TARGET getTargetBo(ICreateConnectionContext context) {
-		if (context.getTargetAnchor() != null) {
-			return BusinessObjectUtil.getFirstElementOfType(context.getTargetAnchor().getParent(), getTargetClass());
+		Anchor a = getTargetAnchor(context);
+		if (a != null) {
+			return BusinessObjectUtil.getFirstElementOfType(a.getParent(), getTargetClass());
 		}
 		return null;
 	}
 
+	/**
+	 * Gets the Target Anchor. This does the translation from a Label shape to its owner.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	protected Anchor getTargetAnchor(ICreateConnectionContext context) {
+		Anchor a = context.getTargetAnchor();
+		PictogramElement pe = context.getTargetPictogramElement();
+		if (a==null && FeatureSupport.isLabelShape(pe)) {
+			pe = FeatureSupport.getLabelOwner(pe);
+			((CreateConnectionContext)context).setTargetPictogramElement(pe);
+			a = Graphiti.getPeService().getChopboxAnchor((AnchorContainer) pe);
+			((CreateConnectionContext)context).setTargetAnchor(a);
+		}
+		return a;
+	}
+	
 	/**
 	 * Gets the source object type.
 	 * Implementation classes must override this method to provide the BPMN2

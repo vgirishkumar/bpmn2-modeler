@@ -30,7 +30,7 @@ public class RemoveLabelFeature extends DefaultRemoveFeature {
 	public void preRemove(IRemoveContext context) {
 		PictogramElement removedElement = context.getPictogramElement();
 		ContainerShape labelShape = BusinessObjectUtil.getFirstElementOfType(removedElement, ContainerShape.class);
-		if (labelShape!=null && Graphiti.getPeService().getPropertyValue(labelShape, GraphitiConstants.LABEL_PROPERTY) != null) {
+		if (labelShape!=null && Graphiti.getPeService().getPropertyValue(labelShape, GraphitiConstants.LABEL_SHAPE) != null) {
 			// this is the label ContainerShape that belongs to the PE being removed
 			RemoveContext removeContext = new RemoveContext(labelShape);
 			super.remove(removeContext);

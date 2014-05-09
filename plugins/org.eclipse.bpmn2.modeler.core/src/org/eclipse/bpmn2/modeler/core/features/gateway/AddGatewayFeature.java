@@ -82,13 +82,6 @@ public class AddGatewayFeature<T extends Gateway>
 		
 		splitConnection(context, containerShape);
 		
-		layoutPictogramElement(containerShape);
-		
-		// Use context for labeling! 
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
-		
 		return containerShape;
 	}
 

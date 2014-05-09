@@ -27,6 +27,7 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeLayoutService;
 
@@ -109,10 +110,10 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 	 */
 	@Override
 	protected void postMoveShape(final IMoveShapeContext context) {
+		Shape containerShape = context.getShape();
+		GraphicsUtil.sendToFront(containerShape);
 		super.postMoveShape(context);
-		PictogramElement containerShape = context.getPictogramElement();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
-		GraphicsUtil.sendToFront(context.getShape());
 		
 		new AbstractBoundaryEventOperation() {
 			@Override

@@ -25,6 +25,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.GradientColoredArea;
 import org.eclipse.graphiti.mm.algorithms.styles.GradientColoredAreas;
 import org.eclipse.graphiti.mm.algorithms.styles.LocationType;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.algorithms.styles.Style;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
@@ -121,6 +122,9 @@ public class StyleUtil {
 				if (ga instanceof AbstractText) {
 					Font f = ss.getTextFont();
 					((AbstractText)ga).setFont(gaService.manageFont(diagram, f.getName(), f.getSize(), f.isItalic(), f.isBold()));
+					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+
 				}
 				else
 					ga.setLineWidth(2);
@@ -143,6 +147,8 @@ public class StyleUtil {
 					Font f = ss.getTextFont();
 					((AbstractText)ga).setFont(gaService.manageFont(diagram, f.getName(), f.getSize(), f.isItalic(), f.isBold()));
 					ga.setForeground(gaService.manageColor(diagram, foreground));
+					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 					// Text does not have a fill style (yet)
 					return;
 				}

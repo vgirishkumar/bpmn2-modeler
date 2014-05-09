@@ -14,8 +14,11 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ManualTask;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -35,7 +38,10 @@ public class ManualTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddManualTaskFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddManualTaskFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 	
 	public static class AddManualTaskFeature extends AbstractAddDecoratedTaskFeature<ManualTask> {

@@ -1365,8 +1365,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				protected void doExecute() {
 					ShapeStyle ss = getPreferences().getShapeStyle(ShapeStyle.Category.GRID);
 					Diagram diagram = getDiagramTypeProvider().getDiagram();
-					diagram.setGridUnit(ss.getGridWidth());
-					diagram.setVerticalGridUnit(ss.getGridHeight());
+					diagram.setGridUnit(ss.getDefaultWidth());
+					diagram.setVerticalGridUnit(ss.getDefaultHeight());
 					diagram.setSnapToGrid(ss.getSnapToGrid());
 					GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
 					IGaService gaService = Graphiti.getGaService();

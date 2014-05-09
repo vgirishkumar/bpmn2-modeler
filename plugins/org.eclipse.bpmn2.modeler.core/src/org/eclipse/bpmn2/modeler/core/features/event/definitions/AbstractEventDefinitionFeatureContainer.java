@@ -75,7 +75,7 @@ public abstract class AbstractEventDefinitionFeatureContainer extends BaseElemen
 
 	protected abstract Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape);
 
-	public class AddEventDefinitionFeature extends AbstractAddEventDefinitionFeature<EventDefinition> {
+	public static class AddEventDefinitionFeature extends AbstractAddEventDefinitionFeature<EventDefinition> {
 
 		public AddEventDefinitionFeature(IFeatureProvider fp) {
 			super(fp);

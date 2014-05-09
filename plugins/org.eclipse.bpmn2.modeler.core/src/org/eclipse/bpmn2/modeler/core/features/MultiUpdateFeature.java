@@ -96,9 +96,18 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	 *
 	 * @param feature the feature
 	 */
-	public void addUpdateFeature(IUpdateFeature feature) {
+	public void addFeature(IUpdateFeature feature) {
 		if (feature != null) {
 			features.add(feature);
 		}
+	}
+	
+	/**
+	 * Get the list of individual UpdateFeatures that will be evaluated.
+	 * 
+	 * @return
+	 */
+	public List<IUpdateFeature> getFeatures() {
+		return features;
 	}
 }

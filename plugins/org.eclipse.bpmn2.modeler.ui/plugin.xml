@@ -150,6 +150,30 @@
 		</model>
 		
 		<!-- ======================================== -->
+		<!-- ===========  Model Extensions ========== -->
+		<!-- ======================================== -->
+		
+		<dataType name="EColor" class="org.eclipse.bpmn2.modeler.ui.property.EColorConversionDelegate"/>
+		<dataType name="EFont" class="org.eclipse.bpmn2.modeler.ui.property.EFontConversionDelegate"/>
+
+		<modelExtension
+			id="org.eclipse.bpmn2.modeler.runtime.none.modelExtension.BaseElement"
+			uri="http://org.eclipse.bpmn2/ext"
+			name="BaseElement Appearance"
+			type="BaseElement">
+			<property name="style" type="ShapeStyle" label="%appearance">
+				<value>
+					<property name="foreground" type="EColor" label="%border.color" />
+					<property name="background" type="EColor" label="%fill.color" />
+					<property name="textColor" type="EColor" label="%label.color" />
+					<property name="font" type="EFont" label="%label.font" />
+					<property name="labelPosition" type="LabelPosition:EEnum" value="%label.position.values" label="%label.position" />
+					<property name="routing" type="RoutingStyle:EEnum" value="%routing.style.values" label="%routing.style" />
+				</value>
+			</property>
+		</modelExtension>
+
+		<!-- ======================================== -->
 		<!-- ============  Property Tabs ============ -->
 		<!-- ======================================== -->
 

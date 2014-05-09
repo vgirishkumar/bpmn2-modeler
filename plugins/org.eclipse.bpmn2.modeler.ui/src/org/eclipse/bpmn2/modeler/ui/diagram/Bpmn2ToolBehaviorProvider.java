@@ -30,7 +30,9 @@ import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.features.command.CustomKeyCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
+import org.eclipse.bpmn2.modeler.core.features.gateway.GatewaySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -59,6 +61,7 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.datatypes.IRectangle;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.FeatureCheckerAdapter;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -588,11 +591,12 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			return EventSelectionBehavior.getClickArea(pe);
 		} else if (ChoreographySelectionBehavior.canApplyTo(pe)) {
 			return ChoreographySelectionBehavior.getClickArea(pe);
+		} else if (GatewaySelectionBehavior.canApplyTo(pe)) {
+			return GatewaySelectionBehavior.getClickArea(pe);
+		} else if (FeatureSupport.isLabelShape(pe)) {
+			return getClickArea(FeatureSupport.getLabelOwner(pe));
 		}
 		else {
-			if (pe instanceof ContainerShape) {
-				BaseElement be = BusinessObjectUtil.getFirstBaseElement((ContainerShape)pe);
-			}
 		}
 		return super.getClickArea(pe);
 	}
@@ -613,6 +617,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			return EventSelectionBehavior.getSelectionBorder(pe);
 		} else if (ChoreographySelectionBehavior.canApplyTo(pe)) {
 			return ChoreographySelectionBehavior.getSelectionBorder(pe);
+		} else if (GatewaySelectionBehavior.canApplyTo(pe)) {
+			return GatewaySelectionBehavior.getSelectionBorder(pe);
+		} else if (FeatureSupport.isLabelShape(pe)) {
+			return getSelectionBorder(FeatureSupport.getLabelOwner(pe));
 		}
 		else if (pe instanceof ContainerShape) {
 			if (((ContainerShape)pe).getChildren().size()>0) {
@@ -625,10 +633,16 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 				return ga;
 			}
 		}
-		else if (pe instanceof Shape) {
-			return ((Shape)pe).getGraphicsAlgorithm();
-		}
 		return super.getSelectionBorder(pe);
+	}
+
+	@Override
+	public PictogramElement getSelection(PictogramElement originalPe, PictogramElement[] oldSelection) {
+		if (FeatureSupport.isLabelShape(originalPe) &&
+				FeatureSupport.getLabelPosition(originalPe)!=LabelPosition.MOVABLE) {
+			return FeatureSupport.getLabelOwner(originalPe);
+		}
+		return null;
 	}
 
 	public static Point getMouseLocation(IFeatureProvider fp) {
@@ -643,6 +657,9 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	public IContextButtonPadData getContextButtonPad(final IPictogramElementContext context) {
 		IContextButtonPadData data = super.getContextButtonPad(context);
 		PictogramElement pe = context.getPictogramElement();
+		if (FeatureSupport.isLabelShape(pe)) {
+			pe = FeatureSupport.getLabelOwner(pe);
+		}
 		final IFeatureProvider fp = getFeatureProvider();
 
 		if( pe.getGraphicsAlgorithm()!= null && pe.getGraphicsAlgorithm().getWidth() < 40 ){
@@ -657,8 +674,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			genericButtons |= CONTEXT_BUTTON_REMOVE;
 		}
 
-		if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
-			genericButtons = 0;
+		if (FeatureSupport.isLabelShape(pe)) {
+//			setGenericContextButtons(data, pe, 0);
+//			return data;
+//			genericButtons = 0;
 		}
 		setGenericContextButtons(data, pe, genericButtons);
 
@@ -680,6 +699,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		// 3.a. create new CreateConnectionContext
 		CreateConnectionContext ccc = new CreateConnectionContext();
+		if (FeatureSupport.isLabelShape(pe))
+			pe = FeatureSupport.getLabelOwner(pe);
 		ccc.setSourcePictogramElement(pe);
 		Anchor anchor = null;
 		if (pe instanceof Anchor) {
@@ -816,7 +837,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
         List<IDecorator> decorators = new ArrayList<IDecorator>();
 
         // labels should not be decorated
-		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_PROPERTY);
+		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_SHAPE);
 		if (!Boolean.parseBoolean(labelProperty)) {
 	        IFeatureProvider featureProvider = getFeatureProvider();
 	        Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);

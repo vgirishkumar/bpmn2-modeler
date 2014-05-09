@@ -16,15 +16,18 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractCreateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AddEventFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -52,14 +55,17 @@ public class IntermediateCatchEventFeatureContainer extends AbstractEventFeature
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(super.getUpdateFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateIntermediateCatchEventFeature(fp));
+		multiUpdate.addFeature(super.getUpdateFeature(fp));
+		multiUpdate.addFeature(new UpdateIntermediateCatchEventFeature(fp));
 		return multiUpdate;
 	}
 	
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddIntermediateCatchEventFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddIntermediateCatchEventFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	public class AddIntermediateCatchEventFeature extends AddEventFeature<IntermediateCatchEvent> {

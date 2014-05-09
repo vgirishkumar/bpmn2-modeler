@@ -20,10 +20,17 @@ import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XNIException;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.ui.property.StyleChangeAdapter;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
@@ -70,8 +77,12 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#notify(org.eclipse.bpmn2.modeler.core.LifecycleEvent)
 	 */
+
 	@Override
 	public void notify(LifecycleEvent event) {
+		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED) && event.target instanceof ContainerShape) {
+			StyleChangeAdapter.adapt((ContainerShape) event.target);
+		}
 	}
 
 	/**

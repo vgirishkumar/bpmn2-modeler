@@ -46,6 +46,9 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 	 */
 	@Override
 	public boolean canResizeShape(IResizeShapeContext context) {
+		if (FeatureSupport.isLabelShape(context.getPictogramElement()))
+			return false;
+		
 		boolean doit = super.canResizeShape(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_RESIZE,
 				getFeatureProvider(), context, context.getPictogramElement());
@@ -59,10 +62,7 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 	 */
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
-		Shape shape = null;
-		if (context.getPictogramElement() instanceof Shape) {
-			shape = (Shape) context.getPictogramElement();
-		}
+		Shape shape = context.getShape();
 		
 		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
@@ -73,8 +73,10 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		if (shape!=null) {
 			AnchorUtil.relocateFixPointAnchors(shape, context.getWidth(), context.getHeight());
 		}
-		DIUtils.updateDIShape(context.getPictogramElement());
 		
+		DIUtils.updateDIShape(context.getPictogramElement());
+		FeatureSupport.adjustLabelLocation(getFeatureProvider(), shape, null);
+
 		FeatureSupport.updateConnections(getFeatureProvider(), shape);
 		
 		for (Connection connection : getDiagram().getConnections()) {

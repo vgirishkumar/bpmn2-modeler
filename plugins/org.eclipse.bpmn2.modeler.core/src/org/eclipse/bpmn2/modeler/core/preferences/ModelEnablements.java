@@ -404,6 +404,8 @@ public class ModelEnablements {
 						}
 					}
 				}
+				if (isEnabled(targetRuntime, className, featureName))
+					return true;
 				return false;
 			}
 			return true;

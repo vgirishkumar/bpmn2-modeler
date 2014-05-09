@@ -172,7 +172,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 						newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
 					}
-					else if (Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_PROPERTY) != null) {
+					else if (Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_SHAPE) != null) {
 						newDiagram.getChildren().add((Shape)pe);
 						pictogramElement = pe;
 					}

@@ -59,11 +59,9 @@ public class ActivitySelectionBehavior {
 	 * @return the click area
 	 */
 	public static GraphicsAlgorithm[] getClickArea(PictogramElement element) {
-		Iterator<PictogramElement> iterator = Graphiti.getPeService().getPictogramElementChildren(element).iterator();
-		GraphicsAlgorithm[] algorithms = new GraphicsAlgorithm[2];
-		algorithms[0] = iterator.next().getGraphicsAlgorithm();
-		algorithms[1] = iterator.next().getGraphicsAlgorithm();
-		return algorithms;
+		Collection<PictogramElement> children = Graphiti.getPeService().getPictogramElementChildren(element);
+		PictogramElement first = children.iterator().next();
+		return new GraphicsAlgorithm[] { first.getGraphicsAlgorithm() };
 	}
 
 	/**

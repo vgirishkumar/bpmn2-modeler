@@ -39,11 +39,9 @@ public class ChoreographySelectionBehavior {
 	}
 
 	public static GraphicsAlgorithm[] getClickArea(PictogramElement element) {
-		Iterator<Shape> iterator = Graphiti.getPeService().getAllContainedShapes((ContainerShape) element).iterator();
-		GraphicsAlgorithm[] algorithms = new GraphicsAlgorithm[2];
-		algorithms[0] = iterator.next().getGraphicsAlgorithm();
-		algorithms[1] = iterator.next().getGraphicsAlgorithm();
-		return algorithms;
+		Collection<PictogramElement> children = Graphiti.getPeService().getPictogramElementChildren(element);
+		PictogramElement first = children.iterator().next();
+		return new GraphicsAlgorithm[] { first.getGraphicsAlgorithm() };
 	}
 
 	public static GraphicsAlgorithm getSelectionBorder(PictogramElement element) {

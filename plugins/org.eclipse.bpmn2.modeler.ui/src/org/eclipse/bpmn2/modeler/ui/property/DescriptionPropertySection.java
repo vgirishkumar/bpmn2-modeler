@@ -13,20 +13,36 @@
 
 package org.eclipse.bpmn2.modeler.ui.property;
 
+import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
+import org.eclipse.bpmn2.modeler.core.EditControlProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.Messages;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
+import org.eclipse.bpmn2.modeler.ui.property.Messages;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.DelegatingObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -84,9 +100,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			bindAttribute(object,"id"); //$NON-NLS-1$
 			bindAttribute(object,"name"); //$NON-NLS-1$
 			bindList(object, "documentation"); //$NON-NLS-1$
-			Composite container = createSectionComposite(this, "Appearance");
-			Button push = new Button(container, SWT.PUSH);
-			push.setText("Push me!");
+			bindAppearance(object);
 
 			if (!(object instanceof Group)) {
 				EStructuralFeature reference = object.eClass().getEStructuralFeature("categoryValueRef"); //$NON-NLS-1$
@@ -135,6 +149,59 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 				description = ExtendedPropertiesAdapter.getDescription(getDiagramEditor(), object);
 			}
 			return description;
+		}
+		
+		protected void bindAppearance(EObject be) {
+			try {
+				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
+				ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(be);
+				ModelDecorator md = med.getModelDecorator();
+				EStructuralFeature styleFeature = md.getEStructuralFeature(be, "style");
+				EObject style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+				if (style==null) {
+					// this object does not have a <style> extension element yet so create one
+					style = med.createObject((EClass)styleFeature.getEType());
+					// initialize the style editors from User Preferences
+					StyleChangeAdapter.initStyle(be, style);
+					InsertionAdapter.add(be, styleFeature, style);
+				}
+				else
+					StyleChangeAdapter.initStyle(be, style);
+				Composite container = createSectionComposite(this, Messages.DescriptionPropertySection_Appearance_Label);
+				
+				if (Bpmn2FeatureMap.CONNECTIONS.contains(be.eClass().getInstanceClass())) {
+					bindAttribute(container, style, "routing");
+					bindAttribute(container, style, "foreground");
+					bindAttribute(container, style, "textColor");
+					bindAttribute(container, style, "font");
+					bindAttribute(container, style, "labelPosition");
+				}
+				else if (be instanceof TextAnnotation) {
+					bindAttribute(container, style, "foreground");
+					bindAttribute(container, style, "textColor");
+					bindAttribute(container, style, "font");
+				}
+				else if (Bpmn2FeatureMap.EVENTS.contains(be.eClass().getInstanceClass()) ||
+						Bpmn2FeatureMap.GATEWAYS.contains(be.eClass().getInstanceClass()) ||
+						Bpmn2FeatureMap.DATA.contains(be.eClass().getInstanceClass())) {
+					bindAttribute(container, style, "background");
+					bindAttribute(container, style, "foreground");
+					bindAttribute(container, style, "textColor");
+					bindAttribute(container, style, "font");
+					bindAttribute(container, style, "labelPosition");
+				}
+				else {
+					// Tasks
+					bindAttribute(container, style, "background");
+					bindAttribute(container, style, "foreground");
+					bindAttribute(container, style, "textColor");
+					bindAttribute(container, style, "font");
+				}
+			}
+			catch (Exception e) {
+				// ignore exceptions caused by missing features
+//				e.printStackTrace();
+			}
 		}
 	}
 }

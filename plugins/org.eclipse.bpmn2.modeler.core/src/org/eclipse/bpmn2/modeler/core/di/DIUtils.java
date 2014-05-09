@@ -276,10 +276,6 @@ public class DIUtils {
 		}
 	}
 
-	public static void addBendPoint(FreeFormConnection freeForm, Point point) {
-		freeForm.getBendpoints().add(Graphiti.getGaService().createPoint((int) point.getX(), (int) point.getY()));
-	}
-
 	/**
 	 * Add a DiagramElement to a BPMNDiagram container.
 	 * 
@@ -299,14 +295,6 @@ public class DIUtils {
 			if (bpmnLabel==null) {
 				bpmnLabel = BpmnDiFactory.eINSTANCE.createBPMNLabel();
 				de.eSet(feature, bpmnLabel);
-			}
-			else {
-				/*
-				 * set a property in the PictogramElement that tells the
-				 * UpdateFeature this thing already had a Label. This affects
-				 * how the Label is laid out according to User Preferences.
-				 */
-				Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.DI_ELEMENT_HAS_LABEL, Boolean.toString(true));
 			}
 		}
 		return bpmnLabel;
@@ -397,8 +385,8 @@ public class DIUtils {
 		final Diagram diagram = Graphiti.getPeCreateService().createDiagram("BPMN2", diagramName, true); //$NON-NLS-1$
 		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
 		ShapeStyle ss = prefs.getShapeStyle(ShapeStyle.Category.GRID);
-		diagram.setGridUnit(ss.getGridWidth());
-		diagram.setVerticalGridUnit(ss.getGridHeight());
+		diagram.setGridUnit(ss.getDefaultWidth());
+		diagram.setVerticalGridUnit(ss.getDefaultHeight());
 		diagram.setSnapToGrid(ss.getSnapToGrid());
 		GraphicsAlgorithm ga = diagram.getGraphicsAlgorithm();
 		IGaService gaService = Graphiti.getGaService();

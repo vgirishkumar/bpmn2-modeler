@@ -23,7 +23,7 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.Category;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelLocation;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
@@ -113,7 +113,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	ColorShapeStyleEditor shapePrimarySelectedColor;
 	ColorShapeStyleEditor shapeSecondarySelectedColor;
 	ColorShapeStyleEditor shapeForeground;
-//	Button defaultSize;
+//	Button useDefaultSize;
 	Button snapToGrid;
 	Button applyToAllChildren;
 	IntegerShapeStyleEditor gridWidth;
@@ -231,12 +231,12 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				Messages.Bpmn2EditorPreferencePage_MultiSelected_Color_Label);
 
 
-//		defaultSize = new Button(colorEditors, SWT.CHECK);
-//		defaultSize.setText(Messages.Bpmn2EditorPreferencePage_Override_Size_Label);
+//		useDefaultSize = new Button(colorEditors, SWT.CHECK);
+//		useDefaultSize.setText(Messages.Bpmn2EditorPreferencePage_Override_Size_Label);
 //		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 //		gd.horizontalIndent = 5;
 //		gd.verticalIndent = 10;
-//		defaultSize.setLayoutData(gd);
+//		useDefaultSize.setLayoutData(gd);
 
 		// Grid
 		snapToGrid = new Button(colorEditors, SWT.CHECK);
@@ -406,8 +406,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 			ss = preferences.getShapeStyle(Category.GRID);
 			snapToGrid.setSelection(ss.getSnapToGrid());
-			gridWidth.setValue(ss.getGridWidth());
-			gridHeight.setValue(ss.getGridHeight());
+			gridWidth.setValue(ss.getDefaultWidth());
+			gridHeight.setValue(ss.getDefaultHeight());
 			categories.put(Category.GRID.getLabel(), Category.GRID);
 
 			currentSelection = null;
@@ -431,10 +431,10 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			shapeBackground.setValue(ss.getShapeBackground());
 			shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
 			shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
-//			defaultSize.setSelection(ss.isDefaultSize());
+//			useDefaultSize.setSelection(ss.isDefaultSize());
 			textFont.setValue(ss.getTextFont());
 			textColor.setValue(ss.getTextColor());
-			labelLocationViewer.setValue(ss.getLabelLocation());
+			labelLocationViewer.setValue(ss.getLabelPosition());
 
 			if (Bpmn2FeatureMap.CONNECTIONS.contains(key) || key == Category.CONNECTIONS) {
 				configureForConnections(ss);
@@ -498,7 +498,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		showControl(shapeBackground,false);
 		showControl(shapePrimarySelectedColor,false);
 		showControl(shapeSecondarySelectedColor,false);
-//		showControl(defaultSize,false);
+//		showControl(useDefaultSize,false);
 		showControl(routingStyleViewer,true);
 		routingStyleViewer.setValue(ss.getRoutingStyle());
 		showControl(labelGroup,true);
@@ -517,7 +517,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		showControl(shapeBackground,true);
 		showControl(shapePrimarySelectedColor,true);
 		showControl(shapeSecondarySelectedColor,true);
-//		showControl(defaultSize,true);
+//		showControl(useDefaultSize,true);
 		showControl(routingStyleViewer,false);
 		showControl(labelGroup,true);
 		showControl(textFont,true);
@@ -535,7 +535,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		showControl(shapeBackground,true);
 		showControl(shapePrimarySelectedColor,false);
 		showControl(shapeSecondarySelectedColor,false);
-//		showControl(defaultSize,false);
+//		showControl(useDefaultSize,false);
 		showControl(routingStyleViewer,false);
 		showControl(labelGroup,false);
 		showControl(textFont,false);
@@ -553,7 +553,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		showControl(shapeBackground,false);
 		showControl(shapePrimarySelectedColor,false);
 		showControl(shapeSecondarySelectedColor,false);
-//		showControl(defaultSize,false);
+//		showControl(useDefaultSize,false);
 		showControl(routingStyleViewer,false);
 		showControl(labelGroup,false);
 		showControl(textFont,false);
@@ -1077,18 +1077,20 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 		public LabelLocationShapeStyleEditor(Composite parent, String text) {
 			super(parent, ShapeStyle.SS_LABEL_LOCATION, text);
-			add(Messages.Bpmn2EditorPreferencePage_LabelTop, LabelLocation.TOP);
-			add(Messages.Bpmn2EditorPreferencePage_LabelBottom, LabelLocation.BOTTOM);
-			add(Messages.Bpmn2EditorPreferencePage_LabelLeft, LabelLocation.LEFT);
-			add(Messages.Bpmn2EditorPreferencePage_LabelRight, LabelLocation.RIGHT);
-			add(Messages.Bpmn2EditorPreferencePage_LabelCenter, LabelLocation.CENTER);
-			add(Messages.Bpmn2EditorPreferencePage_LabelMovable, LabelLocation.MOVABLE);
+			add(Messages.Bpmn2EditorPreferencePage_LabelAbove, LabelPosition.ABOVE);
+			add(Messages.Bpmn2EditorPreferencePage_LabelBelow, LabelPosition.BELOW);
+			add(Messages.Bpmn2EditorPreferencePage_LabelLeft, LabelPosition.LEFT);
+			add(Messages.Bpmn2EditorPreferencePage_LabelRight, LabelPosition.RIGHT);
+			add(Messages.Bpmn2EditorPreferencePage_LabelTop, LabelPosition.TOP);
+			add(Messages.Bpmn2EditorPreferencePage_LabelCenter, LabelPosition.CENTER);
+			add(Messages.Bpmn2EditorPreferencePage_LabelBottom, LabelPosition.BOTTOM);
+			add(Messages.Bpmn2EditorPreferencePage_LabelMovable, LabelPosition.MOVABLE);
 		}
 
-		public LabelLocation getValue() {
-			LabelLocation value = (LabelLocation) super.getValue();
+		public LabelPosition getValue() {
+			LabelPosition value = (LabelPosition) super.getValue();
 			if (value==null)
-				value = LabelLocation.BOTTOM;
+				value = LabelPosition.BELOW;
 			return value;
 		}
 	}

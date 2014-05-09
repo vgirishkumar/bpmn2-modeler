@@ -14,13 +14,16 @@ package org.eclipse.bpmn2.modeler.ui.features.data;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateDataInputOutputFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -44,14 +47,17 @@ public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddDataOutputFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddDataOutputFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateItemAwareElementFeature<DataOutput>(fp));
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateItemAwareElementFeature<DataOutput>(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 

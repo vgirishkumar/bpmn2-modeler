@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
@@ -64,8 +65,8 @@ public class DirectEditBaseElementFeature extends AbstractDirectEditingFeature {
 		EStructuralFeature feature = be.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null) {
 			be.eSet(feature, value);
-			PictogramElement e = context.getPictogramElement();
-			updatePictogramElement(((Shape) e).getContainer());
+			PictogramElement pe = context.getPictogramElement();
+			FeatureSupport.adjustLabelLocation(getFeatureProvider(), ((Shape) pe).getContainer(), null);
 		}
 	}
 

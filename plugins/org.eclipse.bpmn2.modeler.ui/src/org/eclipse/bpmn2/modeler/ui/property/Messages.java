@@ -19,6 +19,7 @@ public class Messages extends NLS {
 	public static String AdvancedDetailComposite_Details_Title;
 	public static String AdvancedDetailComposite_Properties_Title;
 	public static String AdvancedDetailComposite_Remove_Action;
+	public static String DescriptionPropertySection_Appearance_Label;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

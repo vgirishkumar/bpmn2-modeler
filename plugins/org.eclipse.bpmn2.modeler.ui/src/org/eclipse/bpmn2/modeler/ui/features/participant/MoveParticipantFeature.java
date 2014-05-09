@@ -77,7 +77,7 @@ public class MoveParticipantFeature extends DefaultMoveBPMNShapeFeature {
 				bottom.add(0,shape);
 			}
 			
-			// reassign TOP/MIDDLE/BOTTOM bandKinds
+			// reassign ABOVE/MIDDLE/BELOW bandKinds
 			for (int i=0; i<bottom.size(); ++i) {
 				bpmnShape = BusinessObjectUtil.getFirstElementOfType(bottom.get(i), BPMNShape.class);
 				ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();

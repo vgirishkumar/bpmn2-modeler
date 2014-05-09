@@ -117,14 +117,6 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<Boun
 		ChopboxAnchor anchor = peService.createChopboxAnchor(containerShape);
 		anchor.setReferencedGraphicsAlgorithm(ellipse);
 		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
-
-		// prepare the AddContext to create a Label
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
-		
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
 		
 		return containerShape;
 	}

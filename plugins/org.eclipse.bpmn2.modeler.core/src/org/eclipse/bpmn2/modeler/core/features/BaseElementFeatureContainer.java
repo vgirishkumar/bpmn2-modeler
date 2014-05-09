@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.features.label.RemoveLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IRemoveFeature;
@@ -24,6 +25,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.features.context.impl.DirectEditingContext;
 
 /**
  * This is the Graphiti FeatureContainer class for all BPMN2 model shape
@@ -36,19 +38,7 @@ public abstract class BaseElementFeatureContainer implements IShapeFeatureContai
 	 */
 	@Override
 	public Object getApplyObject(IContext context) {
-		if (context instanceof IAddContext) {
-			return ((IAddContext) context).getNewObject();
-		}
-		else if (context instanceof IPictogramElementContext) {
-			return BusinessObjectUtil.getFirstElementOfType(
-					(((IPictogramElementContext) context).getPictogramElement()), BaseElement.class);
-		}
-		else if (context instanceof ICustomContext) {
-			PictogramElement[] pes = ((ICustomContext) context).getPictogramElements();
-			if (pes.length==1)
-				return BusinessObjectUtil.getFirstElementOfType(pes[0], BaseElement.class);
-		}
-		return null;
+		return BusinessObjectUtil.getBusinessObject(context, BaseElement.class);
 	}
 
 	/* (non-Javadoc)

@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.features.label;
 
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveConnectionDecoratorContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveConnectionDecoratorFeature;
@@ -37,9 +38,9 @@ public class MoveConnectionLabelFeature extends DefaultMoveConnectionDecoratorFe
 	@Override
 	public void moveConnectionDecorator(IMoveConnectionDecoratorContext context) {
 		super.moveConnectionDecorator(context);
-		LabelFeatureContainer.adjustLabelLocation(
+		FeatureSupport.adjustLabelLocation(
+				getFeatureProvider(),
 				context.getConnectionDecorator().getConnection(),
-				false,
 				null);
 	}
 

@@ -30,6 +30,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
+import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -196,6 +200,25 @@ public class BusinessObjectUtil {
 			if (be instanceof EObject)
 				return (EObject) be;
 		}
+		return null;
+	}
+	
+	public static <T extends BaseElement> T getBusinessObject(IContext context, Class<T> clazz) {
+		Object o = null;
+		if (context instanceof IAddContext) {
+			o = ((IAddContext) context).getNewObject();
+		}
+		else if (context instanceof IPictogramElementContext) {
+			return BusinessObjectUtil.getFirstElementOfType(
+					(((IPictogramElementContext) context).getPictogramElement()), clazz);
+		}
+		else if (context instanceof ICustomContext) {
+			PictogramElement[] pes = ((ICustomContext) context).getPictogramElements();
+			if (pes.length==1)
+				o = BusinessObjectUtil.getFirstElementOfType(pes[0], clazz);
+		}
+		if (clazz.isInstance(o))
+			return (T)o;
 		return null;
 	}
 

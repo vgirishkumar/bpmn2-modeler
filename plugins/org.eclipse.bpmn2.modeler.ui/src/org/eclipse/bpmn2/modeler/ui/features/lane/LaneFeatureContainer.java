@@ -12,16 +12,26 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.lane;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.AddLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.DirectEditLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.LayoutLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.MoveLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.ResizeLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.UpdateLaneFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.participant.RotatePoolFeature;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -34,6 +44,13 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 
 public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
@@ -49,12 +66,51 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddLaneFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddLaneFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateLaneFeature(fp);
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateLaneFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+			
+			@Override
+			protected int getLabelWidth(AbstractText text) {
+				PictogramElement pe = FeatureSupport.getLabelOwner(text);
+				if (FeatureSupport.isHorizontal((ContainerShape)pe))
+					return text.getHeight();
+				return text.getWidth();
+			}
+
+			@Override
+			protected int getLabelHeight(AbstractText text) {
+				PictogramElement pe = FeatureSupport.getLabelOwner(text);
+				if (FeatureSupport.isHorizontal((ContainerShape)pe))
+					return text.getWidth();
+				return text.getHeight();
+			}
+
+			@Override
+			protected LabelPosition getLabelPosition(BaseElement element) {
+				return LabelPosition.TOP;
+			}
+			
+			@Override
+			protected void adjustLabelLocation(PictogramElement pe, boolean isImporting, Point offset) {
+				Shape labelShape = FeatureSupport.getLabelShape(pe);
+				if (labelShape != null) {
+					AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
+					textGA.setHorizontalAlignment(Orientation.ALIGNMENT_TOP);
+					Graphiti.getPeService().sendToFront((Shape)FeatureSupport.getLabelOwner(pe));
+				}
+				super.adjustLabelLocation(pe, isImporting, offset);
+			}			
+		});
+		return multiUpdate;
 	}
 
 	@Override

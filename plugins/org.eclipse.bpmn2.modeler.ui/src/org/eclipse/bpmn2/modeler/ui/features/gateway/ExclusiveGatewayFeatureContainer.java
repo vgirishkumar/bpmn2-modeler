@@ -15,11 +15,14 @@ package org.eclipse.bpmn2.modeler.ui.features.gateway;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AbstractCreateGatewayFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AddGatewayFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -36,7 +39,10 @@ public class ExclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddExclusiveGatewayFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddExclusiveGatewayFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override

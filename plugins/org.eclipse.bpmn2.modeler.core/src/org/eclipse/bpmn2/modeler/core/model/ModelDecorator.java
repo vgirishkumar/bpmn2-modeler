@@ -631,7 +631,12 @@ public class ModelDecorator {
 		if (eClassifier instanceof EEnum) {
 			if (defaultValue!=null) {
 				boolean setDefault = true;
-				for (String v : defaultValue.split(" ")) { //$NON-NLS-1$
+				String values[];
+				if (defaultValue.contains(","))
+					values = defaultValue.split(",");
+				else
+					values = defaultValue.split(" ");
+				for (String v : values) {
 					if (setDefault) {
 						eAttribute.setDefaultValue(v);
 						setDefault = false;

@@ -12,15 +12,20 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.artifact;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -66,15 +71,8 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddElementFeature<Tex
 		line.setLineWidth(2);
 		gaService.setLocationAndSize(line, 0, 0, commentEdge, height);
 
-		Shape textShape = peCreateService.createShape(containerShape, false);
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, businessObject.getText());
-		StyleUtil.applyStyle(text, businessObject);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-		gaService.setLocationAndSize(text, 5, 5, width - 5, height - 5);
-
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
-		link(textShape, businessObject);
 		
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);
@@ -83,8 +81,15 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddElementFeature<Tex
 
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
-		
-		layoutPictogramElement(containerShape);
+
+		// prepare the AddContext to create a Label
+//		prepareAddContext(context, containerShape, width, height);
+//		IFeatureContainer fc = new LabelFeatureContainer();
+//		fc.getAddFeature(getFeatureProvider()).add(context);
+//		
+//		updatePictogramElement(context, containerShape);
+//		layoutPictogramElement(containerShape);
+
 		return containerShape;
 	}
 

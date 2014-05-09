@@ -22,5 +22,7 @@ public class Messages extends NLS {
 	private Messages() {
 	}
 
-	public static String UpdateLabelFeature_Label;
+	public static String UpdateLabelFeature_TextChanged;
+	public static String UpdateLabelFeature_LocationChanged;
+	public static String UpdateLabelFeature_LabelChanged;
 }

@@ -29,15 +29,19 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddConnectionLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer.AddMessageFlowFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -84,7 +88,10 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddSequenceFlowFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddSequenceFlowFeature(fp));
+		multiAdd.addFeature(new AddConnectionLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
@@ -100,9 +107,9 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateDefaultSequenceFlowFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateConditionalSequenceFlowFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateDefaultSequenceFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateConditionalSequenceFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 

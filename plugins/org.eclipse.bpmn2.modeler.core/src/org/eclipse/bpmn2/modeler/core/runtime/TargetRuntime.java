@@ -881,6 +881,25 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return list;
 	}
 
+	public ModelExtensionDescriptor getModelExtensionDescriptor(EObject object) {
+		EClass eClass = (EClass) ((object instanceof EClass) ? object : object.eClass());
+		
+		for (ModelExtensionDescriptor md : getModelExtensionDescriptors()) {
+			String type = eClass.getName();
+			if (md.getType().equals(type))
+				return md;
+			for (EClass ec : eClass.getESuperTypes()) {
+				type = ec.getName();
+				if (md.getType().equals(type))
+					return md;
+				md = getModelExtensionDescriptor(ec);
+				if (md!=null)
+					return md;
+			}
+		}
+		return null;
+	}
+	
 	public List<PropertyExtensionDescriptor> getPropertyExtensionDescriptors()
 	{
 		if (propertyExtensionDescriptors==null) {

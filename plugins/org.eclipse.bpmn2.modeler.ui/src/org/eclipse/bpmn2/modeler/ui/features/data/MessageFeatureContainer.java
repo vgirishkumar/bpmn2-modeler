@@ -25,7 +25,9 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -38,6 +40,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
@@ -130,7 +133,10 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddMessageFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddMessageFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 	
 	@Override
@@ -217,13 +223,6 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 			peService.createChopboxAnchor(containerShape);
 			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
-			
-			layoutPictogramElement(containerShape);
-			
-			// change the AddContext and prepare it to add a label below the figure
-			prepareAddContext(context, containerShape, width, height);
-			IFeatureContainer fc = new LabelFeatureContainer();
-			fc.getAddFeature(getFeatureProvider()).add(context);
 			
 			return containerShape;
 		}

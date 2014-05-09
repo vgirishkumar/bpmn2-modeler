@@ -22,6 +22,8 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
@@ -44,24 +46,31 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 		return new LayoutExpandableActivityFeature(fp);
 	}
 
-	@Override
-	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
-		MultiUpdateFeature multiUpdate;
-		if (updateFeature instanceof MultiUpdateFeature)
-			multiUpdate = (MultiUpdateFeature)updateFeature;
-		else
-			multiUpdate = new MultiUpdateFeature(fp);
-		AbstractUpdateBaseElementFeature nameUpdateFeature = new AbstractUpdateBaseElementFeature(fp) {
-			@Override
-			public boolean canUpdate(IUpdateContext context) {
-				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-			}
-		};
-		multiUpdate.addUpdateFeature(nameUpdateFeature);
-		return multiUpdate;
-	}
+//	@Override
+//	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+//		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
+//		MultiUpdateFeature multiUpdate;
+//		if (updateFeature instanceof MultiUpdateFeature)
+//			multiUpdate = (MultiUpdateFeature)updateFeature;
+//		else
+//			multiUpdate = new MultiUpdateFeature(fp);
+//		
+//		UpdateLabelFeature updateLabelFeature = new UpdateLabelFeature(fp) {
+//			
+//			@Override
+//			public boolean canUpdate(IUpdateContext context) {
+//				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+//				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
+//			}
+//			
+//			@Override
+//			protected LabelPosition getLabelPosition(BaseElement element) {
+//				return LabelPosition.TOP;
+//			}
+//		};
+//		multiUpdate.addUpdateFeature(updateLabelFeature);
+//		return multiUpdate;
+//	}
 
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {

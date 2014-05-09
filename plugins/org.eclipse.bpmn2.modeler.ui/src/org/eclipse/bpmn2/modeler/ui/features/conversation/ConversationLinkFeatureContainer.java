@@ -12,42 +12,33 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
-import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.EventDefinition;
-import org.eclipse.bpmn2.InteractionNode;
-import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.features.label.AddConnectionLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReconnectionFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
-import org.eclipse.graphiti.features.context.ICreateConnectionContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
 public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatureContainer {
@@ -59,7 +50,10 @@ public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatu
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddConversationLinkFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddConversationLinkFeature(fp));
+		multiAdd.addFeature(new AddConnectionLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
@@ -70,6 +64,11 @@ public class ConversationLinkFeatureContainer extends BaseElementConnectionFeatu
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IFeatureProvider fp) {
 		return new ReconnectConversationLinkFeature(fp);
+	}
+
+	@Override
+	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		return new UpdateLabelFeature(fp);
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 public interface IFeatureContainer {
 	
 	/**
-	 * Checks if is available.
+	 * Checks if any of the Features provided by this Feature Container are available.
 	 *
 	 * @param fp the fp
 	 * @return true, if is available
@@ -35,7 +35,8 @@ public interface IFeatureContainer {
 	boolean isAvailable(IFeatureProvider fp);
 	
 	/**
-	 * Gets the apply object.
+	 * Gets the Business Object on which the Feature operates. The Feature
+	 * Container must extract the correct Business Object from the IContext.
 	 *
 	 * @param context the context
 	 * @return the apply object
@@ -43,7 +44,8 @@ public interface IFeatureContainer {
 	Object getApplyObject(IContext context);
 	
 	/**
-	 * Can apply to.
+	 * Checks if the given Business Object is applicable to the Features
+	 * provided by the Feature Container.
 	 *
 	 * @param o the o
 	 * @return true, if successful
@@ -51,17 +53,17 @@ public interface IFeatureContainer {
 	boolean canApplyTo(Object o);
 	
 	/**
-	 * Gets the adds the feature.
+	 * Gets the add feature.
 	 *
-	 * @param fp the fp
-	 * @return the adds the feature
+	 * @param fp the Feature Provider
+	 * @return the add feature
 	 */
 	IAddFeature getAddFeature(IFeatureProvider fp);
 	
 	/**
 	 * Gets the update feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the update feature
 	 */
 	IUpdateFeature getUpdateFeature(IFeatureProvider fp);
@@ -69,7 +71,7 @@ public interface IFeatureContainer {
 	/**
 	 * Gets the direct editing feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the direct editing feature
 	 */
 	IDirectEditingFeature getDirectEditingFeature(IFeatureProvider fp);
@@ -77,15 +79,15 @@ public interface IFeatureContainer {
 	/**
 	 * Gets the layout feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the layout feature
 	 */
 	ILayoutFeature getLayoutFeature(IFeatureProvider fp);
 	
 	/**
-	 * Gets the removes the feature.
+	 * Gets the remove feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the removes the feature
 	 */
 	IRemoveFeature getRemoveFeature(IFeatureProvider fp);
@@ -93,7 +95,7 @@ public interface IFeatureContainer {
 	/**
 	 * Gets the delete feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the delete feature
 	 */
 	IDeleteFeature getDeleteFeature(IFeatureProvider fp);
@@ -101,7 +103,7 @@ public interface IFeatureContainer {
 	/**
 	 * Gets the custom features.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 * @return the custom features
 	 */
 	ICustomFeature[] getCustomFeatures(IFeatureProvider fp);

@@ -13,20 +13,29 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 
 public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatureContainer {
@@ -47,19 +56,35 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddExpandableActivityFeature<SubProcess>(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddExpandableActivityFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		IUpdateFeature updateFeature = super.getUpdateFeature(fp);
-		MultiUpdateFeature multiUpdate;
-		if (updateFeature instanceof MultiUpdateFeature)
-			multiUpdate = (MultiUpdateFeature)updateFeature;
-		else
-			multiUpdate = new MultiUpdateFeature(fp);
-		UpdateExpandableActivityFeature ueaf = new UpdateExpandableActivityFeature(fp);
-		multiUpdate.addUpdateFeature(ueaf);
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateActivityCompensateMarkerFeature(fp));
+		multiUpdate.addFeature(new UpdateActivityLoopAndMultiInstanceMarkerFeature(fp));
+		multiUpdate.addFeature(new UpdateExpandableActivityFeature(fp));
+		UpdateLabelFeature updateLabelFeature = new UpdateLabelFeature(fp) {
+			
+			@Override
+			public boolean canUpdate(IUpdateContext context) {
+				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
+			}
+
+			@Override
+			protected LabelPosition getLabelPosition(BaseElement element) {
+				if (isElementExpanded(element)) {
+					return LabelPosition.TOP;
+				}
+				return LabelPosition.CENTER;
+			}
+		};
+		multiUpdate.addFeature(updateLabelFeature);
 		return multiUpdate;
 	}
 

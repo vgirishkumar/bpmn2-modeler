@@ -131,13 +131,12 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	 * @param width the labelOwner's width
 	 * @param height the labelOwner's height
 	 */
-	protected void prepareAddContext(IAddContext context, PictogramElement labelOwner, int width, int height) {
-		context.putProperty(GraphitiConstants.LABEL_CONTEXT, true);
-		context.putProperty(GraphitiConstants.WIDTH, width);
-		context.putProperty(GraphitiConstants.HEIGHT, height);
-		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, getBusinessObject(context));
-		context.putProperty(GraphitiConstants.LABEL_OWNER, labelOwner);
-	}
+//	protected void prepareAddContext(IAddContext context, PictogramElement labelOwner, int width, int height) {
+//		context.putProperty(GraphitiConstants.ADD_LABEL_CONTEXT, labelOwner);
+//		context.putProperty(GraphitiConstants.WIDTH, width);
+//		context.putProperty(GraphitiConstants.HEIGHT, height);
+//		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, getBusinessObject(context));
+//	}
 	
 	/**
 	 * Adjust the location of a newly constructed shape so that its center is at

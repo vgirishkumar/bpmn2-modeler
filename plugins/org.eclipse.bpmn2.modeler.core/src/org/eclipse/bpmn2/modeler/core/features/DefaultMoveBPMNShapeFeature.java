@@ -16,7 +16,6 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -28,6 +27,7 @@ import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -63,6 +63,8 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		if (Graphiti.getPeService().getProperty(context.getShape(), RoutingNet.LANE)!=null) {
 			return false;
 		}
+		if (FeatureSupport.isLabelShape(context.getPictogramElement()))
+			return false;
 		ContainerShape targetContainer = context.getTargetContainer();
 		if (FeatureSupport.isLabelShape(targetContainer))
 			return false; // can't move a shape into a label
@@ -122,23 +124,20 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	 */
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
-		DIUtils.updateDIShape(context.getPictogramElement());
-
 		Shape shape = context.getShape();
-		// if this shape has a label, align the label so that it is centered below its owner
-		for (EObject o : shape.getLink().getBusinessObjects()) {
-			if (o instanceof Shape && FeatureSupport.isLabelShape((Shape)o)) {
-				// this is it!
-				ContainerShape textContainerShape = (ContainerShape)o;
-				LabelFeatureContainer.adjustLabelLocation(shape, false,
-						GraphicsUtil.createPoint(context.getDeltaX(), context.getDeltaY()));
-				// make sure the text label is moved to its new parent container as well
-				if (context.getSourceContainer() != context.getTargetContainer()) {
-					context.getTargetContainer().getChildren().add(textContainerShape);
-				}
-				break;
-			}
+		Point p = null;
+		
+		/*
+		 * If the shape being moved has a Label and the Label is
+		 * {@link org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition.MOVABLE}
+		 * then adjust the Label position by the move offset.
+		 */
+		if (!FeatureSupport.isLabelShape(shape)) {
+			p = GraphicsUtil.createPoint(context.getDeltaX(), context.getDeltaY());
+			DIUtils.updateDIShape(shape);
+			FeatureSupport.adjustLabelLocation(getFeatureProvider(), shape, p);
 		}
+		
 		
 		if (shape instanceof ContainerShape) {
 			PictogramElement pe = (PictogramElement) ((ContainerShape)shape).eContainer();
@@ -167,6 +166,5 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
 			}
 		}
-
 	}
 }

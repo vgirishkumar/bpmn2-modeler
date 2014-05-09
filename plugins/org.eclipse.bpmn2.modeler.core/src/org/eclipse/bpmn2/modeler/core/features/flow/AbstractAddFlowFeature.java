@@ -18,29 +18,27 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
-import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public abstract class AbstractAddFlowFeature<T extends BaseElement>
@@ -78,7 +76,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 	@Override
 	public PictogramElement add(IAddContext context) {
 		IPeService peService = Graphiti.getPeService();
-		IGaService gaService = Graphiti.getGaService();
  
 		boolean isImporting = DIImport.isImporting(context);
 
@@ -87,7 +84,7 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		AnchorContainer sourceContainer = addContext.getSourceAnchor().getParent();
 		AnchorContainer targetContainer = addContext.getTargetAnchor().getParent();
 
-		Connection connection = peService.createFreeFormConnection(getDiagram());
+		FreeFormConnection connection = peService.createFreeFormConnection(getDiagram());
 		
 		if (AnchorUtil.useAdHocAnchors(sourceContainer, connection)) {
 			Point p = (Point)addContext.getProperty(GraphitiConstants.CONNECTION_SOURCE_LOCATION);
@@ -134,22 +131,19 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 			connection.setStart(sourceAnchor);
 			connection.setEnd(targetAnchor);
 		}
-		
-		if (ModelUtil.hasName(businessObject)) {
-			ConnectionDecorator labelDecorator = Graphiti.getPeService().createConnectionDecorator(connection, true, 0.5, true);
-			Text text = gaService.createText(labelDecorator, ModelUtil.getName(businessObject));
-			peService.setPropertyValue(labelDecorator, GraphitiConstants.TEXT_ELEMENT, Boolean.toString(true));
-			StyleUtil.applyStyle(text, businessObject);
-			peService.setPropertyValue(labelDecorator, GraphitiConstants.LABEL_PROPERTY, Boolean.toString(true));
-			link(labelDecorator, businessObject);
-		}
 
 		createDIEdge(connection, businessObject);
 		createConnectionLine(connection);
 		
+		// create the bendpoints {@see org.eclipse.bpmn2.modeler.core.di.DIImport#createConnectionAndSetBendpoints(BPMNEdge,PictogramElement,PictogramElement)}
+		if (isImporting) {
+			List<Point> bendpoints = (List<Point>) context.getProperty(GraphitiConstants.CONNECTION_BENDPOINTS);
+			if (bendpoints!=null && bendpoints.size()>0) {
+				connection.getBendpoints().addAll(bendpoints);
+			}
+		}
+		
 		decorateConnection(addContext, connection, businessObject);
-
-		LabelFeatureContainer.adjustLabelLocation(connection, isImporting, null);
 
 		return connection;
 	}

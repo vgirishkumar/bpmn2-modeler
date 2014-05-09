@@ -16,21 +16,36 @@ import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyP
 
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ChoreographyLoopType;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.LayoutChoreographyFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.UpdateExpandableActivityFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -49,7 +64,29 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddSubChoreographyFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddSubChoreographyFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
+	}
+
+	@Override
+	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+			
+			@Override
+			public boolean canUpdate(IUpdateContext context) {
+				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
+			}
+
+			@Override
+			protected LabelPosition getLabelPosition(BaseElement element) {
+				return LabelPosition.CENTER;
+			}
+		});
+		return multiUpdate;
 	}
 
 	@Override

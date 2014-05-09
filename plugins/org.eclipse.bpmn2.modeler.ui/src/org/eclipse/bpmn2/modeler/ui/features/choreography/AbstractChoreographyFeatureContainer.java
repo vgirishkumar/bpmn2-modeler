@@ -30,9 +30,9 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateChoreographyParticipantRefsFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyParticipantRefsFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when prop editor supports enums
 		return multiUpdate;
 	}

@@ -14,7 +14,10 @@ package org.eclipse.bpmn2.modeler.ui.features.participant;
 
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.DirectEditParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.LayoutParticipantFeature;
@@ -24,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.features.participant.UpdateParticipantMult
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PullupFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PushdownFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyParticipantFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.BlackboxFeature;
@@ -60,15 +64,19 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddParticipantFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddParticipantFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateParticipantFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateParticipantMultiplicityFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageLinkFeature(fp));
+		multiUpdate.addFeature(new UpdateParticipantFeature(fp));
+		multiUpdate.addFeature(new UpdateParticipantMultiplicityFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyMessageLinkFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
 	}
 

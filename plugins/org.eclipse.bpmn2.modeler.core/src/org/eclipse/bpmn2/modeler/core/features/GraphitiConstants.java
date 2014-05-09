@@ -11,6 +11,9 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
  * Keys used to store Graphiti Shape and Context properties.
@@ -24,27 +27,38 @@ import org.eclipse.graphiti.features.context.IContext;
  */
 public interface GraphitiConstants {
 
-	/** The Constant LABEL_CONTEXT. */
-	public static final String LABEL_CONTEXT = "labelContext"; //$NON-NLS-1$
-	
 	/** The Constant WIDTH. */
 	public static final String WIDTH = "width"; //$NON-NLS-1$
 	
 	/** The Constant HEIGHT. */
 	public static final String HEIGHT = "height"; //$NON-NLS-1$
 	
-	/** The Constant BUSINESS_OBJECT. */
+	/** The {@link IContext} key that holds a reference to a BPMN2 model object. */
 	public static final String BUSINESS_OBJECT = "businessObject"; //$NON-NLS-1$
-	
-	/** The Constant LABEL_OWNER. */
-	public static final String LABEL_OWNER = "labelOwner"; //$NON-NLS-1$
-
-	public static final String LABEL_PROPERTY = "label"; //$NON-NLS-1$
-	public static final String LABEL_LOCATION = "label.location"; //$NON-NLS-1$
-
+	/** The {@link Shape} property key that identifies a Shape as a Label **/
+	public static final String LABEL_SHAPE = "label.shape"; //$NON-NLS-1$
+	/**
+	 * The {@link Shape}  property key that indicates if a Label has changed and
+	 * its Shape needs to be updated
+	 **/
+	public static final String LABEL_CHANGED = "label.changed"; //$NON-NLS-1$
+	/**
+	 * The {@link IContext} property key that holds a reference to a
+	 * {@link Point} object, which represents an offset (x,y) distance a Label
+	 * should be moved when its {@link Shape} is updated.
+	 **/
+	public static final String LABEL_OFFSET = "label.offset"; //$NON-NLS-1$
+	/**
+	 * The {@link IContext} property key that holds a reference to a List of
+	 * {@link PictogramElement} objects that were created during a MultiAddFeature
+	 **/
+	public static final String PICTOGRAM_ELEMENTS = "pictogram.elements"; //$NON-NLS-1$
+	/**
+	 * The {@link IContext} property key that indicates the editor is importing
+	 * objects and that the {@llink PictogramElement} Create and Add Features
+	 * should populate the object from BPMN DI values instead of providing defaults.
+	 **/
 	public static final String IMPORT_PROPERTY = "is.importing"; //$NON-NLS-1$
-
-	public final static String DI_ELEMENT_HAS_LABEL = "di.element.has.label";
 
 	/** The Constant ACTIVITY_DECORATOR. */
 	public static final String ACTIVITY_DECORATOR = "activity-decorator"; //$NON-NLS-1$
@@ -100,7 +114,6 @@ public interface GraphitiConstants {
 
 	public static final String EVENT_MARKER_CONTAINER = "event.marker.container"; //$NON-NLS-1$
 
-	public static final String TEXT_ELEMENT = "baseelement.text"; //$NON-NLS-1$
 
 	public static final String LANE_RESIZE_PROPERTY = "lane.resize"; //$NON-NLS-1$
 
@@ -142,6 +155,7 @@ public interface GraphitiConstants {
 	public static final String CONNECTION_SOURCE_LOCATION = "connection.source.location"; //$NON-NLS-1$
 
 	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location"; //$NON-NLS-1$
+	public static final String CONNECTION_BENDPOINTS = "connection.bendpoints"; //$NON-NLS-1$
 
 	public static final String CONNECTION_CREATED = "connection.created"; //$NON-NLS-1$
 

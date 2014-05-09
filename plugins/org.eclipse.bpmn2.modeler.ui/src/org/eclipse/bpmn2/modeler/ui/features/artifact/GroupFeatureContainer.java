@@ -15,21 +15,36 @@ package org.eclipse.bpmn2.modeler.ui.features.artifact;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -84,7 +99,10 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddGroupFeature(fp);
+		MultiAddFeature multiAdd = new MultiAddFeature(fp);
+		multiAdd.addFeature(new AddGroupFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		return multiAdd;
 	}
 
 	@Override
@@ -94,7 +112,31 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		return new UpdateGroupFeature(fp);
+		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateGroupFeature(fp));
+		UpdateLabelFeature updateLabelFeature = new UpdateLabelFeature(fp) {
+			
+			@Override
+			protected boolean hasLabel(BaseElement element) {
+				return element instanceof Group;
+			}
+
+			@Override
+			protected String getLabelString(BaseElement element) {
+				String name = ""; //$NON-NLS-1$
+				Group group = (Group) element;
+				if (group.getCategoryValueRef()!=null)
+					name = ExtendedPropertiesProvider.getTextValue(group.getCategoryValueRef());
+				return name;
+			}
+
+			@Override
+			protected LabelPosition getLabelPosition(BaseElement element) {
+				return LabelPosition.TOP;
+			}
+		};
+		multiUpdate.addFeature(updateLabelFeature);
+		return multiUpdate;
 	}
 
 	@Override
@@ -166,7 +208,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 //			AnchorUtil.addFixedPointAnchors(containerShape, rect);
 			int xy[] = new int[] {0, 0, width, 0, width, height, 0, height, 0, 0};
 			Polyline rect = gaService.createPolyline(containerShape, xy);
-			rect.setLineWidth(2);
+			rect.setLineWidth(3);
 			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			rect.setLineStyle(LineStyle.DASHDOT);
 			gaService.setLocationAndSize(rect, x, y, width, height);
@@ -182,23 +224,11 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			((AddContext)context).setHeight(height);
 			decorateShape(context, containerShape, businessObject);
 
-
 			return containerShape;
 		}
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, Group businessObject) {
-			Shape textShape = peService.createShape(containerShape, false);
-			String name = ""; //$NON-NLS-1$
-			if (businessObject.getCategoryValueRef()!=null)
-				name = ExtendedPropertiesProvider.getTextValue(businessObject.getCategoryValueRef());
-			MultiText text = gaService.createDefaultMultiText(getDiagram(), textShape, name);
-			StyleUtil.applyStyle(text, businessObject);
-			IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize("My", text.getFont()); //$NON-NLS-1$
-			gaService.setLocationAndSize(text, 0, 0, context.getWidth(), size.getHeight()+4);
-			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-			text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-			link(textShape, businessObject);
 		}
 
 		@Override
@@ -232,7 +262,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		}
 	}
 	
-	public static class UpdateGroupFeature extends AbstractUpdateBaseElementFeature {
+	public static class UpdateGroupFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateGroupFeature(IFeatureProvider fp) {
 			super(fp);
@@ -245,15 +275,11 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public boolean update(IUpdateContext context) {
-			super.update(context);
-			
 			ContainerShape groupShape = (ContainerShape)context.getPictogramElement();
 			List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes(groupShape);
 			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
-
 			return true;
 		}
-		
 	}
 	
 	public static class MoveGroupFeature extends DefaultMoveBPMNShapeFeature {
@@ -350,7 +376,8 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 				}
 			}
 
-			DIUtils.updateDIShape(context.getPictogramElement());
+			DIUtils.updateDIShape(groupShape);
+			FeatureSupport.adjustLabelLocation(getFeatureProvider(), groupShape, null);
 
 			List<ContainerShape> containedShapesAfterResize = FeatureSupport.findGroupedShapes(groupShape);
 			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapesBeforeResize);

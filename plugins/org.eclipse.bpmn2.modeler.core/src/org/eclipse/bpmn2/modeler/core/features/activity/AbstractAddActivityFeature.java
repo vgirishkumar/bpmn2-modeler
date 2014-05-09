@@ -149,16 +149,7 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		for (PictogramElement pe : containerShape.getChildren()) {
 			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
 		}
-
 		splitConnection(context, containerShape);
-		
-		// prepare the AddContext to create a Label
-		prepareAddContext(context, containerShape, width, height);
-		IFeatureContainer fc = new LabelFeatureContainer();
-		fc.getAddFeature(getFeatureProvider()).add(context);
-		
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
 		
 		return containerShape;
 	}

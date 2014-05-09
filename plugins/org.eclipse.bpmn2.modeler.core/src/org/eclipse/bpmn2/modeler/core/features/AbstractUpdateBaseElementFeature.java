@@ -31,6 +31,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  * This is the Graphiti UpdateFeature class for all BPMN2 model elements that
  * subclass {@link BaseElement}.
  */
+// FIXME: Delete this class from the hierarchy.
 public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2UpdateFeature {
 
 	/**
@@ -64,15 +65,15 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2Upda
 			
 			if (updateNeeded) {
 				// try to update immediately
-				final boolean result[] = new boolean[1];
-				TransactionalEditingDomain domain = getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
-				domain.getCommandStack().execute(new RecordingCommand(domain) {
-					@Override
-					protected void doExecute() {
-						result[0] = update(context);
-					}
-				});
-				if (result[0]==false)
+//				final boolean result[] = new boolean[1];
+//				TransactionalEditingDomain domain = getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
+//				domain.getCommandStack().execute(new RecordingCommand(domain) {
+//					@Override
+//					protected void doExecute() {
+//						result[0] = update(context);
+//					}
+//				});
+//				if (result[0]==false)
 					return Reason.createTrueReason(Messages.AbstractUpdateBaseElementFeature_Name);
 			}
 		}

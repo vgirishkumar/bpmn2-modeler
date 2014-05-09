@@ -83,6 +83,7 @@ import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.algorithms.styles.impl.PointImpl;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -513,7 +514,7 @@ public class DIImport {
 		boolean defaultSize = false;
 		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
 		if (ss!=null)
-			defaultSize = ss.isDefaultSize();
+			defaultSize = ss.getUseDefaultSize();
 		
 		if (defaultSize) {
 			Size size = GraphicsUtil.getShapeSize(bpmnElement,diagram);
@@ -874,7 +875,24 @@ public class DIImport {
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
 		if (canAdd(addFeature,context)) {
 			context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
+			// we'll have to pass the bendpoints along to the Add Feature because the
+			// label position depends on the midpoint of a connection - the label shape
+			// is actually a ConnectionDecorator which is the only way we can attach
+			// a label to a connection.
+			// Translate the BPMN2 WayPoint coordinates to Graphiti Points
+			List<org.eclipse.graphiti.mm.algorithms.styles.Point> bendpoints =
+					new ArrayList<org.eclipse.graphiti.mm.algorithms.styles.Point>();
+			List<Point> waypoints = bpmnEdge.getWaypoint();
+			// Note that the first and last waypoint terminate at the source and target
+			// shape's boundary somewhere, so skip these two points.
+			for (int i=1; i<waypoints.size()-1; ++i) {
+				Point p = waypoints.get(i);
+				bendpoints.add(Graphiti.getCreateService().createPoint((int)p.getX(), (int)p.getY()));
+			}
+			// attach this bendpoint list to the Add Context where the Add Feature can pick it up
+			context.putProperty(GraphitiConstants.CONNECTION_BENDPOINTS, bendpoints);
 			Connection connection = (Connection) featureProvider.addIfPossible(context);
+			
 			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
 				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION,
 						AnchorUtil.pointToString(sourceAnchor.getLocation()));
@@ -882,13 +900,6 @@ public class DIImport {
 			if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
 				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
 						AnchorUtil.pointToString(targetAnchor.getLocation()));
-			}
-
-			if (connection instanceof FreeFormConnectionImpl) {
-				List<Point> waypoints = bpmnEdge.getWaypoint();
-				for (int i=1; i<waypoints.size()-1; ++i) {
-					DIUtils.addBendPoint((FreeFormConnection)connection, waypoints.get(i));
-				}
 			}
 			
 			featureProvider.link(connection, new Object[] { bpmnElement, bpmnEdge });

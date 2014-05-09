@@ -96,8 +96,8 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addUpdateFeature(new UpdateLabelFeature(fp));
-		multiUpdate.addUpdateFeature(new UpdateChoreographyMessageFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyMessageFlowFeature(fp));
 		return multiUpdate;
 	}
 
