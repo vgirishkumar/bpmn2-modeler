@@ -13,7 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.core.model;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -48,6 +51,8 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 			object = super.create(eClass);
 		}
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
 		return object;
 	}
 	

@@ -582,6 +582,16 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		// make a copy for client
 		return new ShapeStyle(ss);
 	}
+
+	public void setShapeStyle(EObject object, ShapeStyle ss) {
+		Class clazz;
+		try {
+			clazz = Class.forName(object.eClass().getInstanceClassName());
+			setShapeStyle(clazz, ss);
+		} catch (ClassNotFoundException e) {
+			setShapeStyle(object.getClass(), ss);
+		}
+	}
 	
 	public void setShapeStyle(Class clazz, ShapeStyle style) {
 		setShapeStyle(clazz.getSimpleName(), style);

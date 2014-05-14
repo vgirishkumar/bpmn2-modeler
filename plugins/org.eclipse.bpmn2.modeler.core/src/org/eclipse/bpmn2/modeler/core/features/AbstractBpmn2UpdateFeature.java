@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -26,11 +27,26 @@ import org.eclipse.graphiti.features.impl.Reason;
  */
 public abstract class AbstractBpmn2UpdateFeature extends AbstractUpdateFeature {
 
+	String name = null;
+	
 	/**
 	 * @param fp
 	 */
 	public AbstractBpmn2UpdateFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractUpdateFeature#getName()
+	 * 
+	 * Generate a feature name from the implementing class name.
+	 */
+	@Override
+	public String getName() {
+		if (name==null) {
+			name = ModelUtil.toCanonicalString(this.getClass().getSimpleName());
+		}
+		return name;
 	}
 
 	/* (non-Javadoc)

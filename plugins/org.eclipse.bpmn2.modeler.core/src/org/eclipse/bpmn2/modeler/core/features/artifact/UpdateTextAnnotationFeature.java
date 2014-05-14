@@ -18,22 +18,16 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 
-public class UpdateTextAnnotationFeature extends AbstractUpdateBaseElementFeature {
+public class UpdateTextAnnotationFeature extends AbstractUpdateBaseElementFeature<TextAnnotation> {
 
 	public UpdateTextAnnotationFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		return getBusinessObjectForPictogramElement(context.getPictogramElement()) instanceof TextAnnotation;
-	}
-
-	@Override
 	public boolean update(IUpdateContext context) {
-		boolean ret = super.update(context);
 		DIUtils.updateDIShape(context.getPictogramElement());
-		return ret;
+		return true;
 	}
 
 }

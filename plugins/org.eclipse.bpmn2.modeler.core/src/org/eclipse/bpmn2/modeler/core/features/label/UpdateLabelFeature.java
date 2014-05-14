@@ -12,18 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.label;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -31,6 +28,8 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.dc.Bounds;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -38,13 +37,9 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
-import org.eclipse.graphiti.internal.datatypes.impl.LocationImpl;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -58,12 +53,11 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-				BaseElement.class);
-		if (element == null) {
-			return false;
+		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+		if (bo instanceof BaseElement) {
+			return hasLabel((BaseElement)bo);
 		}
-		return hasLabel(element);
+		return false;
 	}
 
 	@Override
@@ -72,7 +66,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (reason.toBoolean())
 			return reason;
 
-		PictogramElement ownerPE = context.getPictogramElement();
+		PictogramElement ownerPE = FeatureSupport.getLabelOwner(context);
 
 		BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(ownerPE, BaseElement.class);
 
@@ -80,7 +74,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (labelShape != null) {
 
 			if (Graphiti.getPeService().getPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED) != null) {
-//				return Reason.createTrueReason(Messages.UpdateLabelFeature_LabelChanged);
+				return Reason.createTrueReason(Messages.UpdateLabelFeature_LabelChanged);
 			}
 
 			String newLabel = getLabelString(element);
@@ -102,7 +96,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 	public boolean update(IUpdateContext context) {
 		PictogramElement pe = FeatureSupport.getLabelOwner(context);
 		Point offset = (Point) context.getProperty(GraphitiConstants.LABEL_OFFSET);
-		adjustLabelLocation(pe, isAddingLabel(context), offset);
+		boolean isAdding = isAddingLabel(context);
+		adjustLabelLocation(pe, isAdding, offset);
 		return true;
 	}
 
@@ -134,12 +129,12 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		return label;
 	}
 
-	protected ILocation getLabelLocation(PictogramElement pe, boolean isAddingLabel, Point offset) {
+	protected Rectangle getLabelBounds(PictogramElement pe, boolean isAddingLabel, Point offset) {
 
 		PictogramElement ownerPE = FeatureSupport.getLabelOwner(pe);
 		Shape labelShape = FeatureSupport.getLabelShape(pe);
 		if (labelShape != null) {
-			AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
+			AbstractText labelGA = (AbstractText) labelShape.getGraphicsAlgorithm();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(ownerPE, BaseElement.class);
 			String text = getLabelString(element);
 			if (text == null) {
@@ -154,9 +149,9 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			ILocation labelLoc = Graphiti.getPeService().getLocationRelativeToDiagram(labelShape);
 			int x = 0;
 			int y = 0;
-			int w = getLabelWidth(textGA);
-			int h = getLabelHeight(textGA);
-			LabelPosition pos = getLabelPosition(element);
+			int w = getLabelWidth(labelGA);
+			int h = getLabelHeight(labelGA);
+			LabelPosition pos = getLabelPosition(labelGA);
 
 			if (isAddingLabel) {
 				BPMNLabel bpmnLabel = null;
@@ -180,105 +175,109 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 					 */
 					isAddingLabel = false;
 					if (pos == LabelPosition.MOVABLE)
-						pos = LabelPosition.BELOW;
+						pos = LabelPosition.SOUTH;
 				} else {
-					if (ownerPE instanceof Connection) {
-						x = (int) bounds.getX() - ownerLoc.getX();
-						y = (int) bounds.getY() - ownerLoc.getY();
-					} else {
-						x = (int) bounds.getX();
-						y = (int) bounds.getY();
-					}
+					x = (int) bounds.getX();
+					y = (int) bounds.getY();
+					w = (int) bounds.getWidth();
+					h = (int) bounds.getHeight();
 				}
 			}
 
 			if (!isAddingLabel && !text.isEmpty()) {
 				switch (pos) {
-				case ABOVE:
-					x = ownerLoc.getX() + (ownerSize.getWidth() - w - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					y = ownerLoc.getY() - (h + LabelFeatureContainer.SHAPE_PADDING);
-					break;
-				case BELOW:
-					x = ownerLoc.getX() + (ownerSize.getWidth() - w - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					y = ownerLoc.getY() + ownerSize.getHeight();
-					break;
-				case LEFT:
-					x = ownerLoc.getX() - w - LabelFeatureContainer.SHAPE_PADDING;
-					y = ownerLoc.getY() + (ownerSize.getHeight() - h - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					break;
-				case RIGHT:
-					x = ownerLoc.getX() + ownerSize.getWidth() + LabelFeatureContainer.SHAPE_PADDING
-							- LabelFeatureContainer.SHAPE_PADDING;
-					y = ownerLoc.getY() + (ownerSize.getHeight() - h - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					break;
+				case NORTH:
+				case SOUTH:
 				case TOP:
-					x = ownerLoc.getX() + (ownerSize.getWidth() - w - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					y = ownerLoc.getY() + LabelFeatureContainer.SHAPE_PADDING / 2;
-					break;
 				case CENTER:
-					x = ownerLoc.getX() + (ownerSize.getWidth() - w - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					y = ownerLoc.getY() + (ownerSize.getHeight() - h - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					break;
 				case BOTTOM:
-					x = ownerLoc.getX() + (ownerSize.getWidth() - w - LabelFeatureContainer.SHAPE_PADDING) / 2;
-					y = ownerLoc.getY() + ownerSize.getHeight() - h - LabelFeatureContainer.SHAPE_PADDING / 2;
+					// X coordinate for these positions are all the same
+					x = ownerLoc.getX() + (ownerSize.getWidth() - w)/2;
+					break;
+				case WEST:
+				case EAST:
+				case LEFT:
+				case RIGHT:
+					// Y coordinate for these positions are all the same
+					y = ownerLoc.getY() + (ownerSize.getHeight() - h)/2;
 					break;
 				case MOVABLE:
-					if (ownerPE instanceof Connection) {
-						x = (int) labelLoc.getX() - ownerLoc.getX();
-						y = (int) labelLoc.getY() - ownerLoc.getY();
-					} else {
-						x = (int) labelLoc.getX();
-						y = (int) labelLoc.getY();
-					}
+					x = (int) labelLoc.getX();
+					y = (int) labelLoc.getY();
 					if (offset != null) {
 						x += offset.getX();
 						y += offset.getY();
 					}
 					break;
 				}
-			}
-			if (textGA.getAngle() == -90) {
-				// FIXME: translate x/y according to angle
-				int temp = x;
-				x = y;
-				y = temp;
-			}
 
-			labelLoc.setX(x);
-			labelLoc.setY(y);
-			return labelLoc;
+				// calculate X or Y coordinate
+				switch (pos) {
+				case NORTH:
+					y = ownerLoc.getY() - h - LabelFeatureContainer.LABEL_MARGIN/2;
+					break;
+				case SOUTH:
+					y = ownerLoc.getY() + ownerSize.getHeight();
+					break;
+				case TOP:
+					y = ownerLoc.getY() + LabelFeatureContainer.LABEL_MARGIN / 2;
+					break;
+				case CENTER:
+					y = ownerLoc.getY() + (ownerSize.getHeight() - h)/2;
+					break;
+				case BOTTOM:
+					y = ownerLoc.getY() + ownerSize.getHeight() - h - LabelFeatureContainer.LABEL_MARGIN / 2;
+					break;
+				case WEST:
+					x = ownerLoc.getX() - w - LabelFeatureContainer.LABEL_MARGIN;
+					break;
+				case EAST:
+					x = ownerLoc.getX() + ownerSize.getWidth() + LabelFeatureContainer.LABEL_MARGIN;
+					break;
+				case LEFT:
+					x = ownerLoc.getX() + LabelFeatureContainer.LABEL_MARGIN;
+					break;
+				case RIGHT:
+					x = ownerLoc.getX() + ownerSize.getWidth() - w - LabelFeatureContainer.LABEL_MARGIN;
+					break;
+				case MOVABLE:
+					break;
+				}
+			}
+			if (ownerPE instanceof Connection) {
+				x -= ownerLoc.getX();
+				y -= ownerLoc.getY();
+			}
+			
+			return new Rectangle(x,y,w,h);
 		}
 
 		return null;
 	}
-
+	
 	protected void adjustLabelLocation(PictogramElement pe, boolean isAddingLabel, Point offset) {
 
 		PictogramElement ownerPE = FeatureSupport.getLabelOwner(pe);
 		Shape labelShape = FeatureSupport.getLabelShape(pe);
 		if (labelShape != null) {
-			AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
+			AbstractText labelGA = (AbstractText) labelShape.getGraphicsAlgorithm();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 			String text = getLabelString(element);
 			if (text == null) {
 				text = ""; //$NON-NLS-1$
 			}
-			if (!text.equals(textGA.getValue()))
-				textGA.setValue(text);
+			if (!text.equals(labelGA.getValue()))
+				labelGA.setValue(text);
 
-			GraphicsAlgorithm labelGA = labelShape.getGraphicsAlgorithm();
-
-			ILocation loc = getLabelLocation(labelShape, isAddingLabel, offset);
-			int x = loc.getX();
-			int y = loc.getY();
-			int w = getLabelWidth(textGA);
-			int h = getLabelHeight(textGA);
+			Rectangle bounds = getLabelBounds(labelShape, isAddingLabel, offset);
+			int x = bounds.x;
+			int y = bounds.y;
+			int w = bounds.width;
+			int h = bounds.height;
 
 			// move and resize the label container and set the new size of the
 			// Text GA
 			Graphiti.getGaService().setLocationAndSize(labelGA, x, y, w, h);
-			Graphiti.getGaService().setSize(textGA, w, h);
 			if (ownerPE instanceof Shape)
 				Graphiti.getPeService().sendToFront(labelShape);
 
@@ -290,51 +289,59 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			ILocation absloc = Graphiti.getPeService().getLocationRelativeToDiagram(labelShape);
 			DIUtils.updateDILabel(ownerPE, absloc.getX(), absloc.getY(), w, h);
 			labelShape.setVisible(!text.isEmpty());
+			Graphiti.getPeService().removeProperty(labelShape, GraphitiConstants.LABEL_CHANGED);
 		}
 	}
 
 	protected int getLabelWidth(AbstractText text) {
-		if (text.getValue() != null && !text.getValue().isEmpty()) {
-			String[] strings = text.getValue().split(LabelFeatureContainer.LINE_BREAK);
-			int result = 0;
-			for (String string : strings) {
-				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(string, text.getFont());
-				if (dim.getWidth() > result) {
-					result = dim.getWidth();
-				}
-			}
-			return result;
-		}
-		return 0;
+		return getLabelSize(text).width;
 	}
 
 	protected int getLabelHeight(AbstractText text) {
-		if (text.getValue() != null && !text.getValue().isEmpty()) {
-			int height = 14;
-			String[] strings = text.getValue().split(LabelFeatureContainer.LINE_BREAK);
-			if (strings.length > 0) {
-				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(strings[0], text.getFont());
-				height = dim.getHeight();
-			}
-			return strings.length * height;
-		}
-		return 0;
+		return getLabelSize(text).height;
 	}
 
+	protected Dimension getLabelSize(AbstractText text) {
+		int width = 0;
+		int height = 0;
+		if (text.getValue() != null && !text.getValue().isEmpty()) {
+			String[] strings = text.getValue().split(LabelFeatureContainer.LINE_BREAK);
+			for (String string : strings) {
+				IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(string, text.getFont());
+				if (dim.getWidth() > width) {
+					width = dim.getWidth();
+				}
+				height += dim.getHeight();
+			}
+		}
+		// TODO: the zoom level influences the effective font size which determines the text extents.
+		// Need to figure this stuff out because labels are truncated at high zoom levels.
+		// The org.eclipse.graphiti.ui.internal.parts.directedit.GFDirectEditManager#updateScaledFont()
+		// does this for SWT Text widgets.
+//		GraphicalViewer viewer = (GraphicalViewer) ((IAdaptable)getDiagramEditor()).getAdapter(GraphicalViewer.class);
+//		ZoomManager zoomMgr = (ZoomManager) viewer.getProperty(ZoomManager.class.toString());
+//		if (zoomMgr!=null) {
+//			width = (int)(width * zoomMgr.getZoom());
+//			height = (int)(height * zoomMgr.getZoom());
+//		}
+		return new Dimension(width, height);
+	}
+	
 	/**
 	 * Get the position of the label relative to its owning figure for the given
 	 * BaseElement as defined in the User Preferences.
 	 * 
 	 * Overrides will provide their own relative positions for, e.g. Tasks and
 	 * TextAnnotations.
-	 * 
-	 * @param element the BaseElement that is represented by the graphical
+	 * @param text the BaseElement that is represented by the graphical
 	 *            figure.
+	 * 
 	 * @return a ShapeStyle LabelPosition relative location indicator.
 	 */
-	protected LabelPosition getLabelPosition(BaseElement element) {
-		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
-		ShapeStyle ss = preferences.getShapeStyle(element);
+	protected LabelPosition getLabelPosition(AbstractText text) {
+		PictogramElement pe = FeatureSupport.getLabelOwner(text);
+		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
+		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
 		return ss.getLabelPosition();
 	}
 }

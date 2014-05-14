@@ -31,8 +31,8 @@ import org.eclipse.bpmn2.modeler.core.features.activity.ActivitySelectionBehavio
 import org.eclipse.bpmn2.modeler.core.features.command.CustomKeyCommandFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.EventSelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.features.gateway.GatewaySelectionBehavior;
-import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -638,9 +638,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 	@Override
 	public PictogramElement getSelection(PictogramElement originalPe, PictogramElement[] oldSelection) {
-		if (FeatureSupport.isLabelShape(originalPe) &&
-				FeatureSupport.getLabelPosition(originalPe)!=LabelPosition.MOVABLE) {
-			return FeatureSupport.getLabelOwner(originalPe);
+		if (FeatureSupport.isLabelShape(originalPe)) {
+			if (FeatureSupport.getLabelPosition(originalPe)!=LabelPosition.MOVABLE) {
+				return FeatureSupport.getLabelOwner(originalPe);
+			}
 		}
 		return null;
 	}

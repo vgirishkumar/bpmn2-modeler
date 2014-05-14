@@ -25,10 +25,11 @@ import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.GradientColoredArea;
 import org.eclipse.graphiti.mm.algorithms.styles.GradientColoredAreas;
 import org.eclipse.graphiti.mm.algorithms.styles.LocationType;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.algorithms.styles.Style;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -42,6 +43,8 @@ public class StyleUtil {
 	
 	private static final String CLASS_ID = "E-CLASS"; //$NON-NLS-1$
 	private static final String FILL_STYLE = "fill.style"; //$NON-NLS-1$
+	private static final IGaService gaService = Graphiti.getGaService();
+	private static final IPeService peService = Graphiti.getPeService();
 	
 	public enum FillStyle {
 		FILL_STYLE_NONE,
@@ -57,7 +60,6 @@ public class StyleUtil {
 		Style s = findStyle(diagram, CLASS_ID);
 		
 		if(s == null) {
-			IGaService gaService = Graphiti.getGaService();
 			s = gaService.createStyle(diagram, CLASS_ID);
 			s.setForeground(gaService.manageColor(diagram, CLASS_FOREGROUND));
 			s.setBackground(gaService.manageColor(diagram, CLASS_BACKGROUND));
@@ -78,8 +80,8 @@ public class StyleUtil {
 		return null;
 	}
 
-	public static Diagram findDiagram(GraphicsAlgorithm shape) {
-		EObject container = shape.eContainer();
+	public static Diagram findDiagram(GraphicsAlgorithm ga) {
+		EObject container = ga.eContainer();
 		while (container!=null && !(container instanceof Diagram)) {
 			container = container.eContainer();
 		}
@@ -87,7 +89,7 @@ public class StyleUtil {
 	}
 	
 	public static void setFillStyle(GraphicsAlgorithm ga, FillStyle fillStyle) {
-		Graphiti.getPeService().setPropertyValue(ga, FILL_STYLE, fillStyle.toString());
+		peService.setPropertyValue(ga, FILL_STYLE, fillStyle.toString());
 	}
 	
 	public static void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
@@ -96,59 +98,61 @@ public class StyleUtil {
 	
 	public static void applyStyle(GraphicsAlgorithm ga, BaseElement be, ShapeStyle ss) {
 		if (be!=null) {
-			IGaService gaService = Graphiti.getGaService();
-			IPeService peService = Graphiti.getPeService();
-
 			Diagram diagram = findDiagram(ga);
-			String id = null;
-			
+
 			if (ss==null) {
-				Bpmn2Preferences pref = Bpmn2Preferences.getInstance(be);
-				ss = pref.getShapeStyle(be);
-				id = pref.getShapeStyleId(be);
-			}
-			else {
-				id = ss.toString();
+				// fetch ShapeStyle for this BaseElement from the User Preferences
+				ss = Bpmn2Preferences.getInstance(be).getShapeStyle(be);
 			}
 			
-			IColorConstant foreground = ga instanceof AbstractText ? ss.getTextColor() : ss.getShapeForeground();
+			IColorConstant foreground = ga instanceof AbstractText ? ss.getLabelForeground() : ss.getShapeForeground();
 			IColorConstant background = ss.getShapeBackground();
 
-			if (peService.getPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE)==null) {
-				peService.setPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE, Boolean.toString(true));
-			}
-
 			if (BusinessObjectUtil.isConnection(be.eClass().getInstanceClass())) {
+				ga.setForeground(gaService.manageColor(diagram, foreground));
 				if (ga instanceof AbstractText) {
-					Font f = ss.getTextFont();
+					Font f = ss.getLabelFont();
 					((AbstractText)ga).setFont(gaService.manageFont(diagram, f.getName(), f.getSize(), f.isItalic(), f.isBold()));
-					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+					// NB: this is now done in the AbstractAddLabelFeature, not here!
+//					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+//					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 
 				}
-				else
-					ga.setLineWidth(2);
-
-				if (ga.getForeground()==null)
-					ga.setForeground(gaService.manageColor(diagram, foreground));
-				// by default the fill color for connection decorators is the
-				// connection line foreground color
-				if (ga.getBackground()==null)
+				else if (ga.eContainer() instanceof ConnectionDecorator) {
+					// this is a connection arrow or tail, set its fill color
+					// the same as the line color
 					ga.setBackground(gaService.manageColor(diagram, foreground));
+				}
+				else if (ga.eContainer() instanceof Connection) {
+					// TODO: add a Line Width attribute to ShapeStyle
+					ga.setLineWidth(2);
+					// this is the connection line itself, set its color to
+					// foreground and make sure all of the connection decorators
+					// are set to the same
+					Connection c = (Connection) ga.eContainer();
+					for (ConnectionDecorator cd : c.getConnectionDecorators()) {
+						if (!FeatureSupport.isLabelShape(cd)) {
+							cd.getGraphicsAlgorithm().setForeground(gaService.manageColor(diagram, foreground));
+							cd.getGraphicsAlgorithm().setBackground(gaService.manageColor(diagram, foreground));
+						}
+					}
+				}
 			}
 			else {
 				// Style only used for drawing gradients
+				String id = ss.toString();
 				Style s = findStyle(diagram, id);
 				if(s == null) {
 					s = gaService.createStyle(diagram, id);
 				}
 				
 				if (ga instanceof AbstractText) {
-					Font f = ss.getTextFont();
+					Font f = ss.getLabelFont();
 					((AbstractText)ga).setFont(gaService.manageFont(diagram, f.getName(), f.getSize(), f.isItalic(), f.isBold()));
 					ga.setForeground(gaService.manageColor(diagram, foreground));
-					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+					// NB: this is now done in the AbstractAddLabelFeature, not here!
+//					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+//					((AbstractText)ga).setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 					// Text does not have a fill style (yet)
 					return;
 				}

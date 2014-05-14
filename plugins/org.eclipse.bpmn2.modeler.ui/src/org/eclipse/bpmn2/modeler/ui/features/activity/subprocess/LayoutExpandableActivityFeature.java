@@ -102,13 +102,13 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 					resizeFeature.resizeShape(resizeContext);
 				}
 				
-				FeatureSupport.setContainerChildrenVisible(containerShape, true);
+				FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), containerShape, true);
 			}
 			else {
 				
 				// SubProcess is collapsed
 				
-				FeatureSupport.setContainerChildrenVisible(containerShape, false);
+				FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), containerShape, false);
 			}
 			
 		} catch (Exception e) {

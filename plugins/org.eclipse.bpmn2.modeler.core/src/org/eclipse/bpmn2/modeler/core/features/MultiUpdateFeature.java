@@ -30,6 +30,9 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 
 	/** The features. */
 	protected List<IUpdateFeature> features = new ArrayList<IUpdateFeature>();
+	protected boolean[] updateNeeded;
+	protected boolean[] canUpdate;
+	IReason reason = null;
 
 	/**
 	 * Instantiates a new multi update feature.
@@ -45,12 +48,29 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	 */
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		for (IUpdateFeature p : features) {
-			if (p.canUpdate(context)) {
-				return true;
+		// keep track of which features can update so we don't have to waste time
+		// asking each feature again during @{link #updateNeeded(IUpdateContext)}
+		boolean result = false;
+		if (canUpdate==null) {
+			canUpdate = new boolean[features.size()];
+			int i = 0;
+			for (IUpdateFeature f : features) {
+				if (f.canUpdate(context)) {
+					canUpdate[i] = true;
+					result = true;
+				}
+				++i;
 			}
 		}
-		return false;
+		else {
+			for (int i=0; i<canUpdate.length; ++i) {
+				if (canUpdate[i]) {
+					result = true;
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	/* (non-Javadoc)
@@ -58,20 +78,37 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	 */
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		String text = null;
-		for (IUpdateFeature p : features) {
-			IReason reason = p.updateNeeded(context);
-			if (reason.toBoolean()) {
-				if (text==null) {
-					text = reason.getText();
+		if (reason==null) {
+			String text = null;
+			canUpdate(context);
+			// keep track of which features need updating so we don't have to waste time
+			// asking each feature again during @{link #update(IUpdateContext)}
+			updateNeeded = new boolean[features.size()];
+			int i = 0;
+			for (IUpdateFeature f : features) {
+				// This MultiUpdateFeature will be called for PictogramElement
+				// children but not all Features in our list may apply to all
+				// children of the parent PE, so we need to ask the Feature
+				// again if it applies this PE.
+				if (canUpdate[i]) {
+					IReason reason = f.updateNeeded(context);
+					if (reason.toBoolean()) {
+						updateNeeded[i] = true;
+						if (text==null) {
+							text = f.getName() + ": " + reason.getText();
+						}
+						else
+							text += "\n" + f.getName() + ": " + reason.getText(); //$NON-NLS-1$
+					}
 				}
-				else
-					text += "\n" + reason.getText(); //$NON-NLS-1$
+				++i;
 			}
+			if (text!=null)
+				reason = Reason.createTrueReason(text);
+			else
+				reason = Reason.createFalseReason();
 		}
-		if (text!=null)
-			return Reason.createTrueReason(text);
-		return Reason.createFalseReason();
+		return reason;
 	}
 
 	/* (non-Javadoc)
@@ -81,11 +118,15 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	public boolean update(IUpdateContext context) {
 		boolean updated = false;
 		boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
-			
-		for (IUpdateFeature p : features) {
-			if ((p.updateNeeded(context).toBoolean() || forceUpdate) && p.update(context)) {
+		
+		updateNeeded(context);
+		
+		int i = 0;
+		for (IUpdateFeature f : features) {
+			if ((updateNeeded[i] || forceUpdate) && f.update(context)) {
 				updated = true;
 			}
+			++i;
 		}
 
 		return updated;

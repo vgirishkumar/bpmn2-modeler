@@ -82,7 +82,7 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 			}
 
 			@Override
-			protected LabelPosition getLabelPosition(BaseElement element) {
+			protected LabelPosition getLabelPosition(AbstractText text) {
 				return LabelPosition.CENTER;
 			}
 		});

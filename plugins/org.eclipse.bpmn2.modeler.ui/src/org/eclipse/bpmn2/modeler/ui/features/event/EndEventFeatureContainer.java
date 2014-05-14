@@ -108,7 +108,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 		}
 	}
 
-	protected static class UpdateEndEventFeature extends AbstractUpdateEventFeature {
+	protected static class UpdateEndEventFeature extends AbstractUpdateEventFeature<EndEvent> {
 
 		public static String END_EVENT_MARKER = "marker.end.event"; //$NON-NLS-1$
 

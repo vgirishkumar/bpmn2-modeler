@@ -38,6 +38,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * This is a Graphiti CreateFeature class that can be used to create multiple objects.
@@ -107,10 +109,26 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	 */
 	@Override
 	public void execute(IContext context) {
-		if (context instanceof ICreateContext)
-			create((ICreateContext) context);
-		else if (context instanceof ICreateConnectionContext)
-			create((ICreateConnectionContext)context);
+		// disable the Property Sheet page during creation - this would
+		// only slow things down...
+		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
+		page.getControl().setEnabled(false);
+		
+		// create a list for PEs that are created during execution
+		List<PictogramElement> pes = new ArrayList<PictogramElement>();
+		context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENTS, pes);
+		try {
+			if (context instanceof ICreateContext)
+				create((ICreateContext) context);
+			else if (context instanceof ICreateConnectionContext)
+				create((ICreateConnectionContext)context);
+		}
+		finally {
+			// re-enable the Property Sheet page and...
+			page.getControl().setEnabled(true);
+			// ...select all of the PEs that were created
+			getDiagramEditor().setPictogramElementsForSelection(pes.toArray(new PictogramElement[pes.size()]));
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -150,8 +168,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		
 		PictogramElement[] selection = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
 		int index = 0;
-		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
-			String optional = ft.getProperty(ToolPaletteDescriptor.TOOLPART_OPTIONAL);
+		for (CompoundCreateFeaturePart<CONTEXT> fp : children) {
+			String optional = fp.getProperty(ToolPaletteDescriptor.TOOLPART_OPTIONAL);
 			if ("true".equals(optional)) { //$NON-NLS-1$
 				if (index<selection.length) {
 					boolean replace = true;
@@ -159,11 +177,11 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 					if (pe instanceof Diagram) {
 						replace = false;
 					}
-					else if (ft.feature instanceof ICreateFeature) {
+					else if (fp.feature instanceof ICreateFeature) {
 						if (!(pe instanceof ContainerShape))
 							replace = false;
 					}
-					else if (ft.feature instanceof ICreateConnectionFeature) {
+					else if (fp.feature instanceof ICreateConnectionFeature) {
 						if (!(pe instanceof Connection))
 							replace = false;
 					}
@@ -172,7 +190,7 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 						Object bo = BusinessObjectUtil.getFirstBaseElement(pe);
 						pictogramElements.add(pe);
 						businessObjects.add(bo);
-						String id = ft.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
+						String id = fp.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
 						if (id!=null) {
 							Graphiti.getPeService().setPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID, id);
 						}
@@ -180,7 +198,7 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 					}
 				}
 			}
-			ft.create(context, targetContainer, pictogramElements, businessObjects);
+			fp.create(context, targetContainer, pictogramElements, businessObjects);
 		}
 		return businessObjects.toArray();
 	}

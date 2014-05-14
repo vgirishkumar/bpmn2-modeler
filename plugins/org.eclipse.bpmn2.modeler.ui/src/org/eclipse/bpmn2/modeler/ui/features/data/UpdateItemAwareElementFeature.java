@@ -18,6 +18,7 @@ import java.util.Iterator;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -30,16 +31,10 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends AbstractBpmn2UpdateFeature {
+public class UpdateItemAwareElementFeature<T extends ItemAwareElement> extends AbstractUpdateBaseElementFeature<ItemAwareElement> {
 
 	public UpdateItemAwareElementFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		Object o = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		return o instanceof ItemAwareElement;
 	}
 
 	@Override

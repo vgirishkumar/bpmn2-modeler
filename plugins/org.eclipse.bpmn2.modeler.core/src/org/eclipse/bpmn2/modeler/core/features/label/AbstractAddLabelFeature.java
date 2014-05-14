@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -50,8 +51,8 @@ abstract public class AbstractAddLabelFeature extends AbstractBpmn2AddPictogramE
 
 	abstract public PictogramElement add(IAddContext context);
 
-	protected MultiText createText(PictogramElement labelOwner, Shape labelShape, BaseElement businessObject) {
-		MultiText text = gaService.createDefaultMultiText(getDiagram(), labelShape, getLabelString(businessObject));
+	protected AbstractText createText(PictogramElement labelOwner, Shape labelShape, BaseElement businessObject) {
+		AbstractText text = createText(labelShape, getLabelString(businessObject));
 		applyStyle(text, businessObject);
 		peService.setPropertyValue(labelShape, GraphitiConstants.LABEL_SHAPE, Boolean.toString(true));
 		
@@ -61,11 +62,15 @@ abstract public class AbstractAddLabelFeature extends AbstractBpmn2AddPictogramE
 		return text;
 	}
 	
+	protected AbstractText createText(Shape labelShape, String labelText) {
+		return gaService.createDefaultMultiText(getDiagram(), labelShape, labelText);
+	}
+
 	public String getLabelString(BaseElement element) {
 		return ModelUtil.getName(element);
 	}
 
-	public void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
-		StyleUtil.applyStyle(ga, be);
+	public void applyStyle(AbstractText text, BaseElement be) {
+		StyleUtil.applyStyle(text, be);
 	}
 }

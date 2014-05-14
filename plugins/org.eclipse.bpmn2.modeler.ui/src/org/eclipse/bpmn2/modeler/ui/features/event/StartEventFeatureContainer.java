@@ -107,7 +107,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 		}
 	}
 
-	protected static class UpdateStartEventFeature extends AbstractUpdateEventFeature {
+	protected static class UpdateStartEventFeature extends AbstractUpdateEventFeature<StartEvent> {
 
 		public static String START_EVENT_MARKER = "marker.start.event"; //$NON-NLS-1$
 

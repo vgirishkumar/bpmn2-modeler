@@ -15,16 +15,20 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.IS_EXPANDED;
 import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.TRIGGERED_BY_EVENT;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
@@ -37,7 +41,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.osgi.util.NLS;
 
-public class UpdateExpandableActivityFeature extends AbstractBpmn2UpdateFeature {
+public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFeature<BaseElement> {
 
 	public UpdateExpandableActivityFeature(IFeatureProvider fp) {
 		super(fp);
@@ -45,10 +49,13 @@ public class UpdateExpandableActivityFeature extends AbstractBpmn2UpdateFeature 
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		return AbstractExpandableActivityFeatureContainer.isExpandableElement(bo);
+		if (super.canUpdate(context)) {
+			Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+			return AbstractExpandableActivityFeatureContainer.isExpandableElement(bo);
+		}
+		return false;
 	}
-
+	
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		IReason reason = super.updateNeeded(context);
@@ -97,10 +104,10 @@ public class UpdateExpandableActivityFeature extends AbstractBpmn2UpdateFeature 
 		rectangle.setLineStyle(lineStyle);
 
 		if(!isExpanded){
-			FeatureSupport.setContainerChildrenVisible(container, false);
+			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), container, false);
 			GraphicsUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}else{
-			FeatureSupport.setContainerChildrenVisible(container, true);
+			FeatureSupport.setContainerChildrenVisible(getFeatureProvider(), container, true);
 			GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		

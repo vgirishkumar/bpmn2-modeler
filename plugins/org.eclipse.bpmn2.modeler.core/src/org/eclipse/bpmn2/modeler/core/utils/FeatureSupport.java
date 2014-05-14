@@ -66,8 +66,8 @@ import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -301,14 +301,18 @@ public class FeatureSupport {
 		return list;
 	}
 	
-	public static void setContainerChildrenVisible(ContainerShape container, boolean visible) {
+	public static void setContainerChildrenVisible(IFeatureProvider fp, ContainerShape container, boolean visible) {
 		for (PictogramElement pe : getContainerChildren(container)) {
 			pe.setVisible(visible);
+			if (visible)
+				FeatureSupport.adjustLabelLocation(fp, pe, null);
 			if (pe instanceof AnchorContainer) {
 				AnchorContainer ac = (AnchorContainer)pe;
 				for (Anchor a : ac.getAnchors()) {
 					for (Connection c : a.getOutgoingConnections()) {
 						c.setVisible(visible);
+						if (visible)
+							FeatureSupport.adjustLabelLocation(fp, c, null);
 						for (ConnectionDecorator decorator : c.getConnectionDecorators()) {
 							decorator.setVisible(visible);
 						}
@@ -586,45 +590,6 @@ public class FeatureSupport {
 			}
 		}
 		return value;
-	}
-
-	public static String getShapeTextValue(IPictogramElementContext context) {
-		String value = null;
-
-		PictogramElement pe = context.getPictogramElement();
-		if (pe instanceof ContainerShape) {
-			ContainerShape cs = (ContainerShape) pe;
-			for (Shape shape : cs.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof AbstractText) {
-					AbstractText text = (AbstractText) shape.getGraphicsAlgorithm();
-					value = text.getValue();
-				}
-			}
-		}
-		return value;
-	}
-
-	public static String getBusinessObjectTextValue(IPictogramElementContext context) {
-		Object o = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BaseElement.class);
-		if (o instanceof FlowElement) {
-			FlowElement e = (FlowElement) o;
-			return e.getName();
-		} else if (o instanceof TextAnnotation) {
-			TextAnnotation a = (TextAnnotation) o;
-			return a.getText();
-		} else if (o instanceof Participant) {
-			Participant p = (Participant) o;
-			return p.getName();
-		} else if (o instanceof Lane) {
-			Lane l = (Lane) o;
-			return l.getName();
-		} else if (o instanceof Group) {
-			Group g = (Group) o;
-			if (g.getCategoryValueRef()!=null)
-				return ExtendedPropertiesProvider.getTextValue(g.getCategoryValueRef());
-			return ""; //$NON-NLS-1$
-		}
-		return null;
 	}
 
 	public static Participant getTargetParticipant(ITargetContext context, ModelHandler handler) {
@@ -1372,8 +1337,7 @@ public class FeatureSupport {
 	 */
 	public static LabelPosition getLabelPosition(PictogramElement pe) {
 		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
-		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);		
-		ShapeStyle ss = preferences.getShapeStyle(element);
+		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
 		return ss.getLabelPosition();
 	}
 }

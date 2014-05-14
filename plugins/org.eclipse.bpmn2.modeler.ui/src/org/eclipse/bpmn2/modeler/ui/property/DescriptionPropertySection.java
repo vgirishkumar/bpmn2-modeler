@@ -13,37 +13,28 @@
 
 package org.eclipse.bpmn2.modeler.ui.property;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.TextAnnotation;
-import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
-import org.eclipse.bpmn2.modeler.core.EditControlProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
-import org.eclipse.bpmn2.modeler.ui.property.Messages;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.DelegatingObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
-import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate;
+import org.eclipse.emf.transaction.RecordingCommand;
+import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
@@ -152,55 +143,59 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		}
 		
 		protected void bindAppearance(EObject be) {
-			try {
-				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
-				ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(be);
-				ModelDecorator md = med.getModelDecorator();
-				EStructuralFeature styleFeature = md.getEStructuralFeature(be, "style");
-				EObject style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
-				if (style==null) {
-					// this object does not have a <style> extension element yet so create one
-					style = med.createObject((EClass)styleFeature.getEType());
-					// initialize the style editors from User Preferences
-					StyleChangeAdapter.initStyle(be, style);
-					InsertionAdapter.add(be, styleFeature, style);
-				}
-				else
-					StyleChangeAdapter.initStyle(be, style);
+			if (be instanceof BaseElement && ShapeStyle.hasStyle((BaseElement)be)) {
+				final BaseElement element = (BaseElement) be;
+				EObject style = ShapeStyle.getStyleObject(element);
+				if (style==null)
+					style = ShapeStyle.createStyleObject(element);
+				final EObject styleObject = style;
+				
 				Composite container = createSectionComposite(this, Messages.DescriptionPropertySection_Appearance_Label);
 				
 				if (Bpmn2FeatureMap.CONNECTIONS.contains(be.eClass().getInstanceClass())) {
-					bindAttribute(container, style, "routing");
-					bindAttribute(container, style, "foreground");
-					bindAttribute(container, style, "textColor");
-					bindAttribute(container, style, "font");
-					bindAttribute(container, style, "labelPosition");
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_POSITION);
+					bindAttribute(container, style, ShapeStyle.STYLE_ROUTING_STYLE);
 				}
 				else if (be instanceof TextAnnotation) {
-					bindAttribute(container, style, "foreground");
-					bindAttribute(container, style, "textColor");
-					bindAttribute(container, style, "font");
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);
 				}
 				else if (Bpmn2FeatureMap.EVENTS.contains(be.eClass().getInstanceClass()) ||
 						Bpmn2FeatureMap.GATEWAYS.contains(be.eClass().getInstanceClass()) ||
 						Bpmn2FeatureMap.DATA.contains(be.eClass().getInstanceClass())) {
-					bindAttribute(container, style, "background");
-					bindAttribute(container, style, "foreground");
-					bindAttribute(container, style, "textColor");
-					bindAttribute(container, style, "font");
-					bindAttribute(container, style, "labelPosition");
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_BACKGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_POSITION);
 				}
 				else {
 					// Tasks
-					bindAttribute(container, style, "background");
-					bindAttribute(container, style, "foreground");
-					bindAttribute(container, style, "textColor");
-					bindAttribute(container, style, "font");
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_BACKGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FOREGROUND);
+					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);
 				}
-			}
-			catch (Exception e) {
-				// ignore exceptions caused by missing features
-//				e.printStackTrace();
+				Button reset = new Button(container, SWT.PUSH);
+				reset.setText("Restore Defaults");
+				reset.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
+						final ShapeStyle ss = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								ShapeStyle.setShapeStyle(element, styleObject, ss);
+							}
+						});
+					}
+				});
 			}
 		}
 	}

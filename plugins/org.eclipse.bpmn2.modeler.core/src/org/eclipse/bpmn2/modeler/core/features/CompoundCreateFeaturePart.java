@@ -338,6 +338,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		// "Undo" can be used to delete all pictogram elements without having
 		// to cycle through each transaction created by an Update.
 		if (updatePE!=null) {
+			addPictogramElementToContext(context, updatePE);
 			UpdateContext updateContext = new UpdateContext(updatePE);
 			IUpdateFeature updateFeature = feature.getFeatureProvider().getUpdateFeature(updateContext);
 			if ( updateFeature.updateNeeded(updateContext).toBoolean() )
@@ -345,6 +346,13 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		}
 		
 		businessObjects.add(result);
+	}
+	
+	private void addPictogramElementToContext(IContext context, PictogramElement pe) {
+		List<PictogramElement> pes = (List<PictogramElement>) context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENTS);
+		if (pes!=null) {
+			pes.add(pe);
+		}
 	}
 	
 	private void applyBusinessObjectProperties(BaseElement be) {

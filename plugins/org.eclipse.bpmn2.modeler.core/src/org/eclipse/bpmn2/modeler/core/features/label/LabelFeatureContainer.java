@@ -45,7 +45,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 public class LabelFeatureContainer implements IShapeFeatureContainer, IConnectionFeatureContainer {
 
 	public static final String LINE_BREAK = "\n"; //$NON-NLS-1$
-	public static final int SHAPE_PADDING = 6;
+	public static final int LABEL_MARGIN = 6;
 	public static final int TEXT_PADDING = 5;
 	
 	@Override

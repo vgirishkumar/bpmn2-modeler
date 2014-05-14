@@ -32,17 +32,23 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage implem
 	}
 	
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		currentSelection = selection;
-		// Ignore selections from Source Viewer for now.
-		// When there is better synchronization between Source Viewer and Design Editor
-		// we can navigate from the selected IDOMNode to the BPMN2 model element and
-		// modify the selection here...
-		if (selection instanceof IStructuredSelection) {
-			// ugly hack to disable selection while source viewer is active
-			if (diagramEditor.getAdapter(StructuredTextEditor.class)!=null) {
-				selection = new StructuredSelection(""); //$NON-NLS-1$
+		// Ignore the selection if the Control is not enabled.
+		// This allows the editor to create multiple graphical elements
+		// without needless refresh of the Property Page after each one
+		// is created.
+		if (getControl().isEnabled()) {
+			currentSelection = selection;
+			// Ignore selections from Source Viewer for now.
+			// When there is better synchronization between Source Viewer and Design Editor
+			// we can navigate from the selected IDOMNode to the BPMN2 model element and
+			// modify the selection here...
+			if (selection instanceof IStructuredSelection) {
+				// ugly hack to disable selection while source viewer is active
+				if (diagramEditor.getAdapter(StructuredTextEditor.class)!=null) {
+					selection = new StructuredSelection(""); //$NON-NLS-1$
+				}
+				super.selectionChanged(part, selection);
 			}
-			super.selectionChanged(part, selection);
 		}
 	}
 	

@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.gateway;
 import org.eclipse.bpmn2.EventBasedGateway;
 import org.eclipse.bpmn2.EventBasedGatewayType;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -28,16 +29,10 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateEventBasedGatewayFeature extends AbstractBpmn2UpdateFeature {
+public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFeature<EventBasedGateway> {
 
 	public UpdateEventBasedGatewayFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		Object o = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		return o != null && o instanceof EventBasedGateway;
 	}
 
 	@Override

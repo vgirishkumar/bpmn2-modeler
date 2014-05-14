@@ -17,6 +17,7 @@ import java.util.Collection;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -29,10 +30,12 @@ public abstract class AbstractBoundaryEventOperation {
 		IPeService peService = Graphiti.getPeService();
 		Collection<PictogramElement> elements = peService.getAllContainedPictogramElements(diagram);
 		for (PictogramElement e : elements) {
-			BoundaryEvent boundaryEvent = BusinessObjectUtil.getFirstElementOfType(e, BoundaryEvent.class);
-			if (boundaryEvent != null && activity.getBoundaryEventRefs().contains(boundaryEvent)) {
-				ContainerShape container = (ContainerShape) e;
-				doWorkInternal(container);
+			if (!FeatureSupport.isLabelShape(e)) {
+				BoundaryEvent boundaryEvent = BusinessObjectUtil.getFirstElementOfType(e, BoundaryEvent.class);
+				if (boundaryEvent != null && activity.getBoundaryEventRefs().contains(boundaryEvent)) {
+					ContainerShape container = (ContainerShape) e;
+					doWorkInternal(container);
+				}
 			}
 		}
 	}

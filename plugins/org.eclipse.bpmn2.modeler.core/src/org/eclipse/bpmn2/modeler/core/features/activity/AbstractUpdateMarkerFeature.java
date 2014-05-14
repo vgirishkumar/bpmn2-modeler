@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features.activity;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -32,7 +33,7 @@ import org.eclipse.graphiti.services.IPeService;
  *
  * @param <T> the generic type
  */
-public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractBpmn2UpdateFeature {
+public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractUpdateBaseElementFeature<Activity> {
 
 	/**
 	 * Instantiates a new abstract update marker feature.
@@ -41,15 +42,6 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 	 */
 	public AbstractUpdateMarkerFeature(IFeatureProvider fp) {
 	    super(fp);
-    }
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.IUpdate#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
-	 */
-	@Override
-    public boolean canUpdate(IUpdateContext context) {
-		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-		return bo != null && bo instanceof Activity && context.getPictogramElement() instanceof ContainerShape;
     }
 
 	/* (non-Javadoc)

@@ -18,6 +18,7 @@ import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.QName;
 import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XNIException;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
@@ -25,10 +26,13 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.property.StyleChangeAdapter;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
@@ -80,8 +84,13 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	@Override
 	public void notify(LifecycleEvent event) {
-		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED) && event.target instanceof ContainerShape) {
-			StyleChangeAdapter.adapt((ContainerShape) event.target);
+		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED)) {
+			StyleChangeAdapter.adapt((PictogramElement) event.target);
+		}
+		else if (event.eventType.equals(EventType.BUSINESSOBJECT_CREATED) && event.target instanceof BaseElement) {
+			BaseElement object = (BaseElement) event.target;
+			if (Bpmn2FeatureMap.ALL_SHAPES.contains(object.getClass()) && ShapeStyle.hasStyle(object))
+				ShapeStyle.createStyleObject(object);
 		}
 	}
 

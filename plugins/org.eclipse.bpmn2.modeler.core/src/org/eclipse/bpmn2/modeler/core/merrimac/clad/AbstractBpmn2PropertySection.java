@@ -201,20 +201,22 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	@Override
 	public void refresh() {
-		EObject be = getBusinessObjectForSelection(getSelection());
-		
-		if (be!=null) {
-			AbstractDetailComposite sectionRoot = getSectionRoot();
-			if (sectionRoot!=null) {
-				if (sectionRoot.getBusinessObject() != be) {
-					sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
-					if (!parent.isLayoutDeferred())
-						parent.setLayoutDeferred(true);
-					sectionRoot.setBusinessObject(be);
-					if (parent.isLayoutDeferred())
-						parent.setLayoutDeferred(false);
+		if (tabbedPropertySheetPage.getControl().isEnabled()) {
+			EObject be = getBusinessObjectForSelection(getSelection());
+			
+			if (be!=null) {
+				AbstractDetailComposite sectionRoot = getSectionRoot();
+				if (sectionRoot!=null) {
+					if (sectionRoot.getBusinessObject() != be) {
+						sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
+						if (!parent.isLayoutDeferred())
+							parent.setLayoutDeferred(true);
+						sectionRoot.setBusinessObject(be);
+						if (parent.isLayoutDeferred())
+							parent.setLayoutDeferred(false);
+					}
+					sectionRoot.refresh();
 				}
-				sectionRoot.refresh();
 			}
 		}
 	}

@@ -11,9 +11,8 @@
 package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -54,8 +53,7 @@ public class MoveShapeLabelFeature extends DefaultMoveShapeFeature {
 		// then move the owning shape so that it follows the label's move. 
 		ContainerShape elementShape = BusinessObjectUtil.getFirstElementOfType(labelShape, ContainerShape.class);
 		BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(elementShape, BaseElement.class);
-		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);		
-		ShapeStyle ss = preferences.getShapeStyle(element);
+		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
 		if (ss.getLabelPosition() != LabelPosition.MOVABLE) {
 			GraphicsAlgorithm elementGA = elementShape.getGraphicsAlgorithm();
 			MoveShapeContext newContext = new MoveShapeContext(elementShape);

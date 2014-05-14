@@ -169,16 +169,6 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 
 		return containerShape;
 	}
-//
-//	public void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
-//		if (ga instanceof AbstractText) {
-//			PictogramElement pe = LabelFeatureContainer.getLabelOwner(ga);
-//			if (FeatureSupport.isHorizontal((ContainerShape)pe))
-//				((AbstractText) ga).setAngle(-90);
-//		}
-//		else
-//			super.applyStyle(ga,be);
-//	}
 	
 	private void moveFlowNodes(Process targetProcess, Lane lane) {
 		for (FlowElement element : targetProcess.getFlowElements()) {

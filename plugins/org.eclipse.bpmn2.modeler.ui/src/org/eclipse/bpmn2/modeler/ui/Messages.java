@@ -82,17 +82,6 @@ public class Messages extends NLS {
 	public static String Bpmn2EditorPreferencePage_GridHeight;
 	public static String Bpmn2EditorPreferencePage_GridWidth;
 	public static String Bpmn2EditorPreferencePage_SnapToGrid;
-	public static String Bpmn2EditorPreferencePage_LabelAbove;
-	public static String Bpmn2EditorPreferencePage_LabelBelow;
-	public static String Bpmn2EditorPreferencePage_LabelLeft;
-	public static String Bpmn2EditorPreferencePage_LabelRight;
-	public static String Bpmn2EditorPreferencePage_LabelTop;
-	public static String Bpmn2EditorPreferencePage_LabelCenter;
-	public static String Bpmn2EditorPreferencePage_LabelBottom;
-	public static String Bpmn2EditorPreferencePage_LabelMovable;
-	public static String Bpmn2EditorPreferencePage_RoutingManual;
-	public static String Bpmn2EditorPreferencePage_RoutingDirect;
-	public static String Bpmn2EditorPreferencePage_RoutingManhattan;
 	
 	public static String Bpmn2EditorPreferencePage_Change_Button;
 	public static String Bpmn2EditorPreferencePage_Fill_Color_Label;

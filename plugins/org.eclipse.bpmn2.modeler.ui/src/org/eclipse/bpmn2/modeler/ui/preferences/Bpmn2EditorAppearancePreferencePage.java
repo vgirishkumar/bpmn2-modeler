@@ -21,9 +21,9 @@ import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.Category;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
@@ -216,7 +216,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
 					shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
 					shapeForeground.setValue(ss.getShapeForeground());
-					textColor.setValue(ss.getTextColor());
+					textColor.setValue(ss.getLabelForeground());
 				}
 			}
     	});
@@ -273,10 +273,10 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		labelGroup.setText("Labels");
 		labelGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
 		labelGroup.setLayout(new GridLayout(1,false));
-		textColor = new ColorShapeStyleEditor(labelGroup, ShapeStyle.SS_TEXT_COLOR,
+		textColor = new ColorShapeStyleEditor(labelGroup, ShapeStyle.SS_LABEL_FOREGROUND,
 				Messages.Bpmn2EditorPreferencePage_Label_Color_Label);
 		showControl(textColor, false);
-		textFont = new FontShapeStyleEditor(labelGroup, ShapeStyle.SS_TEXT_FONT,
+		textFont = new FontShapeStyleEditor(labelGroup, ShapeStyle.SS_LABEL_FONT,
 				Messages.Bpmn2EditorPreferencePage_Label_Font_Label);
 		showControl(textFont, false);
 
@@ -356,15 +356,15 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		if (allShapeStyles == null) {
 			allShapeStyles = new Hashtable<Object, ShapeStyle>();
 			
-			shapesList.put(Category.EVENTS.getLabel(), eventShapeStyles);
-			shapesList.put(Category.GATEWAYS.getLabel(), gatewayShapeStyles);
-			shapesList.put(Category.TASKS.getLabel(), taskShapeStyles);
-			shapesList.put(Category.DATA.getLabel(), dataShapeStyles);
-			shapesList.put(Category.OTHER.getLabel(), otherShapeStyles);
+			shapesList.put(Category.EVENTS.toString(), eventShapeStyles);
+			shapesList.put(Category.GATEWAYS.toString(), gatewayShapeStyles);
+			shapesList.put(Category.TASKS.toString(), taskShapeStyles);
+			shapesList.put(Category.DATA.toString(), dataShapeStyles);
+			shapesList.put(Category.OTHER.toString(), otherShapeStyles);
 
 			categories = new ShapeStyleCategoryList(Category.NONE);
-			categories.put(Category.CONNECTIONS.getLabel(), connectionShapeStyles);
-			categories.put(Category.SHAPES.getLabel(), shapesList);
+			categories.put(Category.CONNECTIONS.toString(), connectionShapeStyles);
+			categories.put(Category.SHAPES.toString(), shapesList);
 
 			ShapeStyle ss;
 			for (Class c : allElements) {
@@ -387,11 +387,11 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				if (Activator.getDefault().isDebugging()) {
 					IColorConstant foreground = ss.getShapeForeground();
 					IColorConstant background = ss.getShapeBackground();
-					IColorConstant textColor = ss.getTextColor();
-					Font font = ss.getTextFont();
+					IColorConstant textColor = ss.getLabelForeground();
+					Font font = ss.getLabelFont();
 					System.out.println("\t\t<style object=\"" + c.getSimpleName() + "\"" + " foreground=\"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 							+ ShapeStyle.colorToString(foreground) + "\"" + " background=\"" //$NON-NLS-1$ //$NON-NLS-2$
-							+ ShapeStyle.colorToString(background) + "\"" + " textColor=\"" //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.colorToString(background) + "\"" + " labelForeground=\"" //$NON-NLS-1$ //$NON-NLS-2$
 							+ ShapeStyle.colorToString(textColor) + "\"" + " font=\"" + ShapeStyle.fontToString(font) //$NON-NLS-1$ //$NON-NLS-2$
 							+ "\"/>"); //$NON-NLS-1$
 				}
@@ -402,13 +402,13 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			}
 			
 			ss = preferences.getShapeStyle(Category.CANVAS);
-			categories.put(Category.CANVAS.getLabel(), Category.CANVAS);
+			categories.put(Category.CANVAS.toString(), Category.CANVAS);
 
 			ss = preferences.getShapeStyle(Category.GRID);
 			snapToGrid.setSelection(ss.getSnapToGrid());
 			gridWidth.setValue(ss.getDefaultWidth());
 			gridHeight.setValue(ss.getDefaultHeight());
-			categories.put(Category.GRID.getLabel(), Category.GRID);
+			categories.put(Category.GRID.toString(), Category.GRID);
 
 			currentSelection = null;
 			elementsTreeViewer.setInput(categories);
@@ -432,8 +432,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
 			shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
 //			useDefaultSize.setSelection(ss.isDefaultSize());
-			textFont.setValue(ss.getTextFont());
-			textColor.setValue(ss.getTextColor());
+			textFont.setValue(ss.getLabelFont());
+			textColor.setValue(ss.getLabelForeground());
 			labelLocationViewer.setValue(ss.getLabelPosition());
 
 			if (Bpmn2FeatureMap.CONNECTIONS.contains(key) || key == Category.CONNECTIONS) {
@@ -462,7 +462,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				currentSelection!=Category.CANVAS &&
 				currentSelection!=Category.GRID) { 
 			showControl(applyToAllChildren, true);
-			applyToAllChildren.setText("Apply changes to all "+((Category)currentSelection).getLabel());
+			applyToAllChildren.setText("Apply changes to all "+((Category)currentSelection).toString());
 			enabled = applyToAllChildren.getSelection();
 		}
 		else
@@ -1077,20 +1077,14 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 		public LabelLocationShapeStyleEditor(Composite parent, String text) {
 			super(parent, ShapeStyle.SS_LABEL_LOCATION, text);
-			add(Messages.Bpmn2EditorPreferencePage_LabelAbove, LabelPosition.ABOVE);
-			add(Messages.Bpmn2EditorPreferencePage_LabelBelow, LabelPosition.BELOW);
-			add(Messages.Bpmn2EditorPreferencePage_LabelLeft, LabelPosition.LEFT);
-			add(Messages.Bpmn2EditorPreferencePage_LabelRight, LabelPosition.RIGHT);
-			add(Messages.Bpmn2EditorPreferencePage_LabelTop, LabelPosition.TOP);
-			add(Messages.Bpmn2EditorPreferencePage_LabelCenter, LabelPosition.CENTER);
-			add(Messages.Bpmn2EditorPreferencePage_LabelBottom, LabelPosition.BOTTOM);
-			add(Messages.Bpmn2EditorPreferencePage_LabelMovable, LabelPosition.MOVABLE);
+			for (LabelPosition p : LabelPosition.values())
+				add(p.toString(), p);
 		}
 
 		public LabelPosition getValue() {
 			LabelPosition value = (LabelPosition) super.getValue();
 			if (value==null)
-				value = LabelPosition.BELOW;
+				value = LabelPosition.SOUTH;
 			return value;
 		}
 	}
@@ -1099,9 +1093,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		
 		public RoutingStyleShapeStyleEditor(Composite parent, String text) {
 			super(parent, ShapeStyle.SS_ROUTING_STYLE, text);
-			add(Messages.Bpmn2EditorPreferencePage_RoutingManual, RoutingStyle.ManualBendpoint);
-			add(Messages.Bpmn2EditorPreferencePage_RoutingDirect, RoutingStyle.AutomaticBendpoint);
-			add(Messages.Bpmn2EditorPreferencePage_RoutingManhattan, RoutingStyle.Manhattan);
+			for (RoutingStyle p : RoutingStyle.values())
+				add(p.toString(), p);
 		}
 
 		public RoutingStyle getValue() {

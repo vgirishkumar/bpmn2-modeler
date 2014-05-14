@@ -892,9 +892,9 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 				type = ec.getName();
 				if (md.getType().equals(type))
 					return md;
-				md = getModelExtensionDescriptor(ec);
-				if (md!=null)
-					return md;
+				ModelExtensionDescriptor md2 = getModelExtensionDescriptor(ec);
+				if (md2!=null)
+					return md2;
 			}
 		}
 		return null;

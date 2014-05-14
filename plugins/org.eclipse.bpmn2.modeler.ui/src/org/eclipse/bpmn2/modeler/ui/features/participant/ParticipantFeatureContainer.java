@@ -12,11 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.participant;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.DirectEditParticipantFeature;
@@ -24,6 +26,8 @@ import org.eclipse.bpmn2.modeler.core.features.participant.LayoutParticipantFeat
 import org.eclipse.bpmn2.modeler.core.features.participant.ResizeParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.UpdateParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.participant.UpdateParticipantMultiplicityFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PullupFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PushdownFeature;
@@ -49,6 +53,12 @@ import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 
 public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
@@ -66,7 +76,24 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		MultiAddFeature multiAdd = new MultiAddFeature(fp);
 		multiAdd.addFeature(new AddParticipantFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
+			
+			@Override
+			protected AbstractText createText(Shape labelShape, String labelText) {
+				// need to override the default MultiText created by super
+				// because the Graphiti layout algorithm doesn't work as
+				// expected when text angle is -90
+				return gaService.createText(labelShape, labelText);
+			}
+
+			@Override
+			public void applyStyle(AbstractText text, BaseElement be) {
+				super.applyStyle(text, be);
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+			}
+
+		});
 		return multiAdd;
 	}
 
@@ -76,7 +103,43 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		multiUpdate.addFeature(new UpdateParticipantFeature(fp));
 		multiUpdate.addFeature(new UpdateParticipantMultiplicityFeature(fp));
 		multiUpdate.addFeature(new UpdateChoreographyMessageLinkFeature(fp));
-		multiUpdate.addFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+
+			@Override
+			protected LabelPosition getLabelPosition(AbstractText text) {
+				if (text.getAngle() == -90)
+					return LabelPosition.LEFT;
+				return LabelPosition.TOP;
+			}
+
+			protected int getLabelWidth(AbstractText text) {
+				if (text.getAngle() == -90)
+					return getLabelSize(text).height;
+				return getLabelSize(text).width;
+			}
+
+			protected int getLabelHeight(AbstractText text) {
+				if (text.getAngle() == -90)
+					return getLabelSize(text).width;
+				return getLabelSize(text).height + 2*LabelFeatureContainer.LABEL_MARGIN;
+			}
+
+			@Override
+			protected void adjustLabelLocation(PictogramElement pe, boolean isAdding, Point offset) {
+				Shape labelShape = FeatureSupport.getLabelShape(pe);
+				if (labelShape != null) {
+					AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
+					pe = FeatureSupport.getLabelOwner(pe);
+					if (FeatureSupport.isHorizontal((ContainerShape) pe)) {
+						textGA.setAngle(-90);
+					}
+					else {
+						textGA.setAngle(0);
+					}
+				}
+				super.adjustLabelLocation(pe, isAdding, offset);
+			}			
+		});
 		return multiUpdate;
 	}
 

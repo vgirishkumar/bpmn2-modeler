@@ -47,22 +47,19 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 	 */
 	@Override
 	public String convertToString(Object value) {
-		if (value instanceof Font) {
-			Font font = (Font) value;
-			FontData f = font.getFontData()[0];
-			int style = f.getStyle();
+		if (value instanceof FontData) {
+			FontData fd = (FontData) value;
+			int style = fd.getStyle();
 			boolean isItalic = (style & SWT.ITALIC) != 0;
 			boolean isBold = (style & SWT.BOLD) != 0;
 			return new String(
-					f.getName() + "," + //$NON-NLS-1$
-					f.height + "," + //$NON-NLS-1$
+					fd.getName() + "," + //$NON-NLS-1$
+					fd.height + "," + //$NON-NLS-1$
 					(isItalic ? "I" : "-") + "," + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					(isBold ? "B" : "-") //$NON-NLS-1$ //$NON-NLS-2$
 			);
 		}
-		if (value==null)
-			return "";
-		return value.toString();
+		return Display.getDefault().getSystemFont().getFontData()[0].toString();
 	}
 
 	/* (non-Javadoc)
@@ -83,14 +80,13 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 					style |= SWT.ITALIC;
 				if ("B".equals(a[3]))
 					style |= SWT.BOLD;
-				FontData fd = new FontData(name, height, style);
-				return new Font(Display.getDefault(), fd);
+				return new FontData(name, height, style);
 			}
 		}
 		catch (Exception e) {
 			Activator.logError(e);
 		}
-		return Display.getDefault().getSystemFont();
+		return Display.getDefault().getSystemFont().getFontData()[0];
 	}
 
 	/* (non-Javadoc)
@@ -128,8 +124,10 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
             previewLabel.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent event) {
                     previewLabel = null;
-    	            if (previewLabelFont!=null)
+    	            if (previewLabelFont!=null) {
     	            	previewLabelFont.dispose();
+    	            	previewLabelFont = null;
+    	            }
                 }
             });
 	    	
@@ -168,7 +166,7 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 		@Override
 		public Object getValue() {
 	    	if (selectedFont!=null && selectedFont.length>0) {
-				return new Font(Display.getDefault(), selectedFont[0]);
+				return selectedFont[0];
 	    	}
 			return null;
 		}
@@ -178,8 +176,8 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 		 */
 		@Override
 		public boolean setValue(Object value) {
-			if (value instanceof Font) {
-				setSelectedFont(((Font)value).getFontData()[0]);
+			if (value instanceof FontData) {
+				setSelectedFont((FontData)value);
 			}
 			else
 				setSelectedFont(getDefaultFontData()[0]);

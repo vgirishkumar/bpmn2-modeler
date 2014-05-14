@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -81,13 +82,13 @@ public class TextAnnotationFeatureContainer extends LabelFeatureContainer {
 		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
 
 			@Override
-			public void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
-				super.applyStyle(ga, be);
-				if (ga instanceof AbstractText) {
-					((AbstractText)ga).setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-				}
+			public void applyStyle(AbstractText text, BaseElement be) {
+				super.applyStyle(text, be);
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
 			}
 
+			@Override
 			public String getLabelString(BaseElement element) {
 				if (element instanceof TextAnnotation)
 					return ((TextAnnotation)element).getText();
@@ -116,27 +117,27 @@ public class TextAnnotationFeatureContainer extends LabelFeatureContainer {
 				return "";
 			}
 			@Override
-			protected ILocation getLabelLocation(PictogramElement pe, boolean isAddingLabel, Point offset) {
-				ILocation loc = super.getLabelLocation(pe, isAddingLabel, offset);
-				if (loc!=null && !isAddingLabel)
-					loc.setY( loc.getY() - LabelFeatureContainer.SHAPE_PADDING/2);
-				return loc;
+			protected Rectangle getLabelBounds(PictogramElement pe, boolean isAddingLabel, Point offset) {
+				Rectangle bounds = super.getLabelBounds(pe, isAddingLabel, offset);
+				if (bounds!=null && !isAddingLabel)
+					bounds.setY( bounds.y - LabelFeatureContainer.LABEL_MARGIN/2);
+				return bounds;
 			}
 
 			@Override
 			protected int getLabelWidth(AbstractText text) {
 				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				return pe.getGraphicsAlgorithm().getWidth() - LabelFeatureContainer.SHAPE_PADDING;
+				return pe.getGraphicsAlgorithm().getWidth() - 2*LabelFeatureContainer.LABEL_MARGIN;
 			}
 
 			@Override
 			protected int getLabelHeight(AbstractText text) {
 				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				return pe.getGraphicsAlgorithm().getHeight() - LabelFeatureContainer.SHAPE_PADDING;
+				return pe.getGraphicsAlgorithm().getHeight() - LabelFeatureContainer.LABEL_MARGIN;
 			}
 
 			@Override
-			protected LabelPosition getLabelPosition(BaseElement element) {
+			protected LabelPosition getLabelPosition(AbstractText text) {
 				return LabelPosition.TOP;
 			}
 		});

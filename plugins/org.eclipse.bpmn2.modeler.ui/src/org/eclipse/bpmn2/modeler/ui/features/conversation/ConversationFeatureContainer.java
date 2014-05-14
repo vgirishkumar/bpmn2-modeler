@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
@@ -40,6 +39,7 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 
 public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 
@@ -67,8 +67,8 @@ public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
 
 			@Override
-			protected LabelPosition getLabelPosition(BaseElement element) {
-				return LabelPosition.BELOW;
+			protected LabelPosition getLabelPosition(AbstractText text) {
+				return LabelPosition.SOUTH;
 			}
 		});
 		return multiUpdate;

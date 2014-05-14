@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -33,17 +34,12 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.util.IColorConstant;
 
-public class UpdateChoreographyInitiatingParticipantFeature extends AbstractBpmn2UpdateFeature {
+public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpdateBaseElementFeature<ChoreographyActivity> {
 
 	private final IPeService peService = Graphiti.getPeService();
 
 	public UpdateChoreographyInitiatingParticipantFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		return BusinessObjectUtil.containsElementOfType(context.getPictogramElement(), ChoreographyActivity.class);
 	}
 
 	@Override

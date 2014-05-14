@@ -24,7 +24,7 @@ import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.services.Graphiti;
 
-public class UpdateBoundaryEventFeature extends AbstractUpdateEventFeature {
+public class UpdateBoundaryEventFeature extends AbstractUpdateEventFeature<BoundaryEvent> {
 
 	public static String BOUNDARY_EVENT_MARKER = "marker.boundary.event"; //$NON-NLS-1$
 
@@ -34,14 +34,14 @@ public class UpdateBoundaryEventFeature extends AbstractUpdateEventFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		if (super.updateNeeded(context).toBoolean())
-			return Reason.createTrueReason();
-		
-		String cancelProperty = Graphiti.getPeService().getPropertyValue(context.getPictogramElement(),
-		        BOUNDARY_EVENT_CANCEL);
-		BoundaryEvent event = (BoundaryEvent) getBusinessObjectForPictogramElement(context.getPictogramElement());
-		boolean changed = Boolean.parseBoolean(cancelProperty) != event.isCancelActivity();
-		IReason reason = changed ? Reason.createTrueReason(Messages.UpdateBoundaryEventFeature_Description_Changed) : Reason.createFalseReason();
+		IReason reason = super.updateNeeded(context);
+		if (!reason.toBoolean()) {
+			String cancelProperty = Graphiti.getPeService().getPropertyValue(context.getPictogramElement(),
+			        BOUNDARY_EVENT_CANCEL);
+			BoundaryEvent event = (BoundaryEvent) getBusinessObjectForPictogramElement(context.getPictogramElement());
+			boolean changed = Boolean.parseBoolean(cancelProperty) != event.isCancelActivity();
+			reason = changed ? Reason.createTrueReason(Messages.UpdateBoundaryEventFeature_Description_Changed) : Reason.createFalseReason();
+		}
 		return reason;
 	}
 
@@ -62,11 +62,6 @@ public class UpdateBoundaryEventFeature extends AbstractUpdateEventFeature {
 		innerEllipse.setLineStyle(lineStyle);
 
 		return true;
-	}
-
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		return getBusinessObjectForPictogramElement(context.getPictogramElement()) instanceof BoundaryEvent;
 	}
 
 	/* (non-Javadoc)

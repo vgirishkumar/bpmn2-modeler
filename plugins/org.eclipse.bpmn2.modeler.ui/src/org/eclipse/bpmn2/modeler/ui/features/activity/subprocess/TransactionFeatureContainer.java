@@ -38,6 +38,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.GraphicsAlgorithmContainer;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -86,10 +87,8 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addFeature(new UpdateActivityCompensateMarkerFeature(fp));
-		multiUpdate.addFeature(new UpdateActivityLoopAndMultiInstanceMarkerFeature(fp));
-		multiUpdate.addFeature(new UpdateExpandableActivityFeature(fp));
-		UpdateLabelFeature updateLabelFeature = new UpdateLabelFeature(fp) {
+		multiUpdate.addFeature(super.getUpdateFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
 			
 			@Override
 			public boolean canUpdate(IUpdateContext context) {
@@ -98,14 +97,13 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 			}
 
 			@Override
-			protected LabelPosition getLabelPosition(BaseElement element) {
-				if (isElementExpanded(element)) {
+			protected LabelPosition getLabelPosition(AbstractText text) {
+				if (isElementExpanded(text)) {
 					return LabelPosition.TOP;
 				}
 				return LabelPosition.CENTER;
 			}
-		};
-		multiUpdate.addFeature(updateLabelFeature);
+		});
 		return multiUpdate;
 	}
 

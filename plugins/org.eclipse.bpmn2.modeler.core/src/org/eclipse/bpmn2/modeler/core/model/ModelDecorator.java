@@ -410,6 +410,7 @@ public class ModelDecorator {
 		EEnumLiteral literal = theCoreFactory.createEEnumLiteral();
 		literal.setLiteral(name);
 		literal.setName(name.toUpperCase());
+		literal.setValue(eEnum.getELiterals().size());
 
 		eEnum.getELiterals().add(literal);
 

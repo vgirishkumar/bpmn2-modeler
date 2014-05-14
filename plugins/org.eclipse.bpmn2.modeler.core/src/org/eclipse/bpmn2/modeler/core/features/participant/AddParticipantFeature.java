@@ -85,13 +85,6 @@ public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Partic
 			line = gaService.createPolyline(lineShape, new int[] { 0, 30, width, 30 });
 		StyleUtil.applyStyle(line, businessObject);
 
-		Shape textShape = peCreateService.createShape(containerShape, false);
-		Text text = gaService.createText(textShape, businessObject.getName());
-		StyleUtil.applyStyle(text, businessObject);
-		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		link(textShape, businessObject);
-
 		// the decorator for Participant Multiplicity will be added by the update feature
 		// if necessary. Set this property to "false" here, to force an update.
 		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(false));
@@ -101,8 +94,6 @@ public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Partic
 		peCreateService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
-		updatePictogramElement(context, containerShape);
-		layoutPictogramElement(context, containerShape);
 		return containerShape;
 	}
 

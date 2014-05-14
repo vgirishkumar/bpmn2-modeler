@@ -35,6 +35,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -67,6 +68,7 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 /**
  * This is a base class for all Property Sheet Sections. The Composite is used to render
@@ -398,12 +400,14 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	protected void bindAttribute(Composite parent, EObject object, String name, String label) {
 		EStructuralFeature feature = getFeature(object,name);
 		if (isAttribute(object,feature)) {
+			if (label==null)
+				label = getBusinessObjectDelegate().getLabel(object, feature);
 			bindAttribute(parent, object,(EAttribute)feature,label);
 		}
 	}
 
 	protected void bindAttribute(EObject object, EAttribute attribute) {
-		bindAttribute(null,object,attribute,null);
+		bindAttribute(null,object,attribute,getBusinessObjectDelegate().getLabel(object, attribute));
 	}
 	
 	protected void bindAttribute(EObject object, EAttribute attribute, String label) {
@@ -411,7 +415,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute) {
-		bindAttribute(parent,object,attribute,null);
+		bindAttribute(parent,object,attribute,getBusinessObjectDelegate().getLabel(object, attribute));
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
@@ -583,6 +587,9 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 
 	public void refresh() {
+		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
+		if (!page.getControl().isEnabled())
+			return;
 		Display.getDefault().asyncExec( new Runnable() {
 			public void run() {
 				List<Control>kids = new ArrayList<Control>();

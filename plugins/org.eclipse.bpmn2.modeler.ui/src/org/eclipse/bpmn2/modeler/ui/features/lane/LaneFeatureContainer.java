@@ -17,8 +17,6 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.AddLaneFeature;
@@ -29,11 +27,6 @@ import org.eclipse.bpmn2.modeler.core.features.lane.ResizeLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.lane.UpdateLaneFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.BusinessRuleTaskFeatureContainer.AddBusinessRuleTask;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
-import org.eclipse.bpmn2.modeler.ui.features.participant.RotatePoolFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -50,7 +43,6 @@ import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
 
 public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
@@ -68,7 +60,24 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		MultiAddFeature multiAdd = new MultiAddFeature(fp);
 		multiAdd.addFeature(new AddLaneFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
+		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
+			
+			@Override
+			protected AbstractText createText(Shape labelShape, String labelText) {
+				// need to override the default MultiText created by super
+				// because the Graphiti layout algorithm doesn't work as
+				// expected when text angle is -90
+				return gaService.createText(labelShape, labelText);
+			}
+
+			@Override
+			public void applyStyle(AbstractText text, BaseElement be) {
+				super.applyStyle(text, be);
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+			}
+
+		});
 		return multiAdd;
 	}
 
@@ -77,37 +86,40 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateLaneFeature(fp));
 		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-			
-			@Override
-			protected int getLabelWidth(AbstractText text) {
-				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				if (FeatureSupport.isHorizontal((ContainerShape)pe))
-					return text.getHeight();
-				return text.getWidth();
-			}
 
 			@Override
-			protected int getLabelHeight(AbstractText text) {
-				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				if (FeatureSupport.isHorizontal((ContainerShape)pe))
-					return text.getWidth();
-				return text.getHeight();
-			}
-
-			@Override
-			protected LabelPosition getLabelPosition(BaseElement element) {
+			protected LabelPosition getLabelPosition(AbstractText text) {
+				if (text.getAngle() == -90)
+					return LabelPosition.LEFT;
 				return LabelPosition.TOP;
 			}
-			
+
+			protected int getLabelWidth(AbstractText text) {
+				if (text.getAngle() == -90)
+					return getLabelSize(text).height;
+				return getLabelSize(text).width;
+			}
+
+			protected int getLabelHeight(AbstractText text) {
+				if (text.getAngle() == -90)
+					return getLabelSize(text).width;
+				return getLabelSize(text).height;
+			}
+
 			@Override
-			protected void adjustLabelLocation(PictogramElement pe, boolean isImporting, Point offset) {
+			protected void adjustLabelLocation(PictogramElement pe, boolean isAdding, Point offset) {
 				Shape labelShape = FeatureSupport.getLabelShape(pe);
 				if (labelShape != null) {
 					AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
-					textGA.setHorizontalAlignment(Orientation.ALIGNMENT_TOP);
-					Graphiti.getPeService().sendToFront((Shape)FeatureSupport.getLabelOwner(pe));
+					pe = FeatureSupport.getLabelOwner(pe);
+					if (FeatureSupport.isHorizontal((ContainerShape) pe)) {
+						textGA.setAngle(-90);
+					}
+					else {
+						textGA.setAngle(0);
+					}
 				}
-				super.adjustLabelLocation(pe, isImporting, offset);
+				super.adjustLabelLocation(pe, isAdding, offset);
 			}			
 		});
 		return multiUpdate;

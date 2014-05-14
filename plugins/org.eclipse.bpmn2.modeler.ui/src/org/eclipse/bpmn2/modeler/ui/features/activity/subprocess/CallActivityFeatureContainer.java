@@ -25,9 +25,9 @@ import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
@@ -39,7 +39,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.DeleteActivityFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.UserTaskFeatureContainer.AddUserTaskFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -232,17 +231,10 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		}
 	}
 
-	private class UpdateCallActivityFeature extends AbstractBpmn2UpdateFeature {
+	private class UpdateCallActivityFeature extends AbstractUpdateBaseElementFeature<CallActivity> {
 
 		public UpdateCallActivityFeature(IFeatureProvider fp) {
 			super(fp);
-		}
-
-		@Override
-		public boolean canUpdate(IUpdateContext context) {
-			CallActivity callActivity = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-					CallActivity.class);
-			return callActivity != null && context.getPictogramElement() instanceof ContainerShape;
 		}
 
 		@Override

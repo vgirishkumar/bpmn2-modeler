@@ -13,18 +13,23 @@
 package org.eclipse.bpmn2.modeler.core.features.lane;
 
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 
-public class UpdateLaneFeature extends AbstractUpdateBaseElementFeature {
+public class UpdateLaneFeature extends AbstractUpdateBaseElementFeature<Lane> {
 
 	public UpdateLaneFeature(IFeatureProvider fp) {
 	    super(fp);
     }
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
+	 */
 	@Override
-    public boolean canUpdate(IUpdateContext context) {
-		return getBusinessObjectForPictogramElement(context.getPictogramElement()) instanceof Lane;
-    }
+	public boolean update(IUpdateContext context) {
+		DIUtils.updateDIShape(context.getPictogramElement());
+		return false;
+	}
 }

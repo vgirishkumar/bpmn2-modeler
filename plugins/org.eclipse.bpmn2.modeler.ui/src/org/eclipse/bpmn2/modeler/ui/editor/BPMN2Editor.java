@@ -892,6 +892,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			else
 				return null;
 		}
+		if (required==GraphicalViewer.class) {
+			return getGraphicalViewer();
+		}
 		
 		return super.getAdapter(required);
 	}

@@ -14,25 +14,17 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
-import org.eclipse.graphiti.features.impl.Reason;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 
 /**
  * This is the Graphiti UpdateFeature class for all BPMN2 model elements that
- * subclass {@link BaseElement}.
+ * subclass {@link BaseElement}. This includes pretty much everything, except
+ * Label shapes. This is to prevent a BaseElement shape from trying to update
+ * its Label - this will be handled separately by the {@link UpdateLabelFeature}
+ * as part of a {@link MultiUpdateFeature}.
  */
-// FIXME: Delete this class from the hierarchy.
-public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2UpdateFeature {
+public abstract class AbstractUpdateBaseElementFeature<T extends BaseElement> extends AbstractBpmn2UpdateFeature {
 
 	/**
 	 * Instantiates a new UpdateFeature.
@@ -43,65 +35,17 @@ public abstract class AbstractUpdateBaseElementFeature extends AbstractBpmn2Upda
 		super(fp);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.IUpdate#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
-	 */
 	@Override
-	public IReason updateNeeded(final IUpdateContext context) {
-		IReason reason = super.updateNeeded(context);
-		if (reason.toBoolean())
-			return reason;
-
-		PictogramElement pe = context.getPictogramElement();
-		if (pe instanceof ContainerShape) {
-			String shapeValue = FeatureSupport.getShapeTextValue(context);
-			if (shapeValue==null)
-				shapeValue = ""; //$NON-NLS-1$
-			String businessValue = FeatureSupport.getBusinessObjectTextValue(context);
-			if (businessValue==null)
-				businessValue = ""; //$NON-NLS-1$
-	
-			boolean updateNeeded = !shapeValue.equals(businessValue);
-			
-			if (updateNeeded) {
-				// try to update immediately
-//				final boolean result[] = new boolean[1];
-//				TransactionalEditingDomain domain = getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getEditingDomain();
-//				domain.getCommandStack().execute(new RecordingCommand(domain) {
-//					@Override
-//					protected void doExecute() {
-//						result[0] = update(context);
-//					}
-//				});
-//				if (result[0]==false)
-					return Reason.createTrueReason(Messages.AbstractUpdateBaseElementFeature_Name);
+	public boolean canUpdate(IUpdateContext context) {
+		if (!FeatureSupport.isLabelShape(context.getPictogramElement())) {
+			Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+			try {
+				return ((T)bo) != null;
 			}
-		}
-		
-		return Reason.createFalseReason();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)
-	 */
-	@Override
-	public boolean update(IUpdateContext context) {
-		PictogramElement pe = context.getPictogramElement();
-		if (pe instanceof ContainerShape) {
-			ContainerShape cs = (ContainerShape) pe;
-			for (Shape shape : cs.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof AbstractText) {
-					AbstractText text = (AbstractText) shape.getGraphicsAlgorithm();
-					String value = FeatureSupport.getBusinessObjectTextValue(context);
-					if (value == null) {
-						value = ""; //$NON-NLS-1$
-					}
-					text.setValue(value);
-					return true;
-				}
+			catch (ClassCastException e) {
+				return false;
 			}
 		}
 		return false;
 	}
-
 }

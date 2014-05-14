@@ -105,7 +105,7 @@ public class IntermediateThrowEventFeatureContainer extends AbstractEventFeature
 		}
 	}
 	
-	public static class UpdateIntermediateThrowEventFeature extends AbstractUpdateEventFeature {
+	public static class UpdateIntermediateThrowEventFeature extends AbstractUpdateEventFeature<IntermediateThrowEvent> {
 
 		public static String INTERMEDIATE_THROW_EVENT_MARKER = "marker.intermediate.throw.event"; //$NON-NLS-1$
 

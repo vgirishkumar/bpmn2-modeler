@@ -13,15 +13,30 @@
 
 package org.eclipse.bpmn2.modeler.core.preferences;
 
+import java.util.List;
+
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.BaseRuntimeExtensionDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.ColorUtil;
@@ -33,7 +48,7 @@ import org.eclipse.swt.graphics.RGB;
 /**
  * Target Runtime Extension Descriptor class that defines color and font settings for graphical elements.
  * Instances of this class correspond to <style> extension elements in the extension's plugin.xml
- * See the description of the "style" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ * See the description of the STYLE_OBJECT element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
@@ -41,33 +56,46 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
 	public static String DEFAULT_FONT_STRING = "arial,10,-,-"; //$NON-NLS-1$
-	public static enum RoutingStyle { ManualBendpoint, AutomaticBendpoint, Manhattan};
 	public final static int SS_SHAPE_BACKGROUND = 1 << 0;
 	public final static int SS_SHAPE_FOREGROUND = 1 << 1;
 	public final static int SS_SHAPE_PRIMARY_SELECTION = 1 << 2;
 	public final static int SS_SHAPE_SECONDARY_SELECTION = 1 << 3;
-	public final static int SS_TEXT_FONT = 1 << 4;
-	public final static int SS_TEXT_COLOR = 1 << 5;
-	public final static int SS_ROUTING_STYLE = 1 << 6;
-	public final static int SS_SNAP_TO_GRID = 1 << 7;
-	public final static int SS_GRID_WIDTH = 1 << 8;
-	public final static int SS_GRID_HEIGHT = 1 << 9;
-	public final static int SS_LABEL_LOCATION = 1 << 10;
+	public final static int SS_LABEL_FONT = 1 << 4;
+	public final static int SS_LABEL_FOREGROUND = 1 << 5;
+	public final static int SS_LABEL_BACKGROUND = 1 << 6;
+	public final static int SS_ROUTING_STYLE = 1 << 7;
+	public final static int SS_SNAP_TO_GRID = 1 << 8;
+	public final static int SS_GRID_WIDTH = 1 << 9;
+	public final static int SS_GRID_HEIGHT = 1 << 10;
+	public final static int SS_LABEL_LOCATION = 1 << 11;
 	public final static int SS_ALL = -1;
 
+	/** Attribute names of the ShapeStyle components in the style object in BaseElement extension values **/
+	public final static String STYLE_OBJECT = "style";
+	public final static String STYLE_ECLASS = "ShapeStyle";
+	public final static String STYLE_SHAPE_FOREGROUND = "shapeForeground";
+	public final static String STYLE_SHAPE_BACKGROUND = "shapeBackground";
+	public final static String STYLE_LABEL_FOREGROUND = "labelForeground";
+	public final static String STYLE_LABEL_BACKGROUND = "labelBackground";
+	public final static String STYLE_LABEL_FONT = "labelFont";
+	public final static String STYLE_LABEL_POSITION = "labelPosition";
+	public final static String STYLE_ROUTING_STYLE = "routingStyle";
+	
 	String object;
 	IColorConstant shapeBackground;
 	IColorConstant shapePrimarySelectedColor;
 	IColorConstant shapeSecondarySelectedColor;
 	IColorConstant shapeForeground;
-	Font textFont;
-	IColorConstant textColor;
+	Font labelFont;
+	IColorConstant labelForeground;
+	IColorConstant labelBackground;
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
 	boolean useDefaultSize;
 	boolean snapToGrid = true;
+	// TODO: use this as Line Width for Connections and as Figure Width for Shapes
 	int defaultWidth = 10;
 	int defaultHeight = 10;
-	LabelPosition labelPosition = LabelPosition.BELOW;
+	LabelPosition labelPosition = LabelPosition.SOUTH;
 	int changeMask;
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
@@ -84,29 +112,59 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		GRID(Messages.ShapeStyle_Category_Grid),
 		NONE("");
 		
-		private String label;
-		private Category(String label) {
-			this.label = label;
+		private String string;
+		private Category(String string) {
+			this.string = string;
 		}
-		public String getLabel() {
-			return label;
+		
+		@Override
+		public String toString() {
+			return string;
+		}
+	};
+	
+	public static enum RoutingStyle {
+		ManualBendpoint(Messages.ShapeStyle_RoutingStyle_Direct),
+		AutomaticBendpoint(Messages.ShapeStyle_RoutingStyle_Automatic),
+		Manhattan(Messages.ShapeStyle_RoutingStyle_Manhattan);
+		
+		private String string;
+		private RoutingStyle(String string) {
+			this.string = string;
+		}
+		
+		@Override
+		public String toString() {
+			return string;
+		}
+	};
+	
+	public static enum LabelPosition {
+		SOUTH(Messages.ShapeStyle_LabelPosition_South), // this is the default value, ordinal=0
+		NORTH(Messages.ShapeStyle_LabelPosition_North),
+		WEST(Messages.ShapeStyle_LabelPosition_West),
+		EAST(Messages.ShapeStyle_LabelPosition_East),
+		TOP(Messages.ShapeStyle_LabelPosition_Top),
+		CENTER(Messages.ShapeStyle_LabelPosition_Center),
+		BOTTOM(Messages.ShapeStyle_LabelPosition_Bottom),
+		LEFT(Messages.ShapeStyle_LabelPosition_Left),
+		RIGHT(Messages.ShapeStyle_LabelPosition_Right),
+		MOVABLE(Messages.ShapeStyle_LabelPosition_Movable);
+		
+		private String string;
+		private LabelPosition(String string) {
+			this.string = string;
+		}
+		
+		@Override
+		public String toString() {
+			return string;
 		}
 	}
-
-	public enum LabelPosition {
-		BELOW, // this is the default value, ordinal=0
-		ABOVE,
-		LEFT,
-		RIGHT,
-		TOP,
-		CENTER,
-		BOTTOM,
-		MOVABLE,
-	};
-
+	
 	public ShapeStyle() {
 		setDefaultColors(DEFAULT_COLOR);
-		textFont = stringToFont(DEFAULT_FONT_STRING);
+		labelFont = stringToFont(DEFAULT_FONT_STRING);
 	}
 
 	public ShapeStyle(IConfigurationElement e) {
@@ -114,7 +172,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		object = e.getAttribute("object"); //$NON-NLS-1$
 		String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
 		String background = e.getAttribute("background"); //$NON-NLS-1$
-		String textColor = e.getAttribute("textColor"); //$NON-NLS-1$
+		String textColor = e.getAttribute("labelForeground"); //$NON-NLS-1$
 		String font = e.getAttribute("font"); //$NON-NLS-1$
 		// TODO: parse these
 		String labelPosition = e.getAttribute("labelPosition"); //$NON-NLS-1$
@@ -130,10 +188,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (foreground!=null && !foreground.isEmpty())
 			shapeForeground = stringToColor(foreground);
 		if (textColor!=null && !textColor.isEmpty())
-			this.textColor = stringToColor(textColor);
+			this.labelForeground = stringToColor(textColor);
 		if (font==null || font.isEmpty())
 			font = DEFAULT_FONT_STRING;
-		textFont = stringToFont(font);
+		labelFont = stringToFont(font);
 		useDefaultSize = false;
 	}
 
@@ -152,16 +210,16 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (a.length>3)
 			shapeForeground = stringToColor(a[3]);
 		if (a.length>4)
-			textFont = stringToFont(a[4]);
+			labelFont = stringToFont(a[4]);
 		if (a.length>5)
-			textColor = stringToColor(a[5]);
+			labelForeground = stringToColor(a[5]);
 		if (a.length>6)
 			useDefaultSize = stringToBoolean(a[6]);
 		else
 			useDefaultSize = false;
 		if (a.length>7) {
 			try {
-				routingStyle = RoutingStyle.valueOf(a[7]);
+				routingStyle = RoutingStyle.values()[Integer.parseInt(a[7])];
 			}
 			catch (Exception e) {
 				routingStyle = RoutingStyle.ManualBendpoint;
@@ -192,7 +250,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			labelPosition = LabelPosition.values()[Integer.parseInt(a[11])];
 		}
 		else
-			labelPosition = LabelPosition.BELOW;
+			labelPosition = LabelPosition.SOUTH;
 	}
 	
 	@Override
@@ -209,7 +267,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		setShapePrimarySelectedColor(StyleUtil.shiftColor(defaultColor, 32));
 		setShapeSecondarySelectedColor(StyleUtil.shiftColor(defaultColor, -32));
 		setShapeForeground(StyleUtil.shiftColor(defaultColor, -128));
-		setTextColor(StyleUtil.shiftColor(defaultColor, -128));
+		setLabelForeground(StyleUtil.shiftColor(defaultColor, -128));
 	}
 	
 	public boolean isDirty() {
@@ -225,7 +283,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public void setShapeBackground(IColorConstant shapeDefaultColor) {
-		if (!compare(this.shapeBackground, shapeDefaultColor)) {
+		if (!equals(this.shapeBackground, shapeDefaultColor)) {
 			this.shapeBackground = shapeDefaultColor;
 			changeMask |= SS_SHAPE_BACKGROUND;
 		}
@@ -236,7 +294,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public void setShapePrimarySelectedColor(IColorConstant shapePrimarySelectedColor) {
-		if (!compare(this.shapePrimarySelectedColor, shapePrimarySelectedColor)) {
+		if (!equals(this.shapePrimarySelectedColor, shapePrimarySelectedColor)) {
 			this.shapePrimarySelectedColor = shapePrimarySelectedColor;
 			changeMask |= SS_SHAPE_PRIMARY_SELECTION;
 		}
@@ -247,7 +305,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public void setShapeSecondarySelectedColor(IColorConstant shapeSecondarySelectedColor) {
-		if (!compare(this.shapeSecondarySelectedColor, shapeSecondarySelectedColor)) {
+		if (!equals(this.shapeSecondarySelectedColor, shapeSecondarySelectedColor)) {
 			this.shapeSecondarySelectedColor = shapeSecondarySelectedColor;
 			changeMask |= SS_SHAPE_SECONDARY_SELECTION;
 		}
@@ -258,31 +316,31 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public void setShapeForeground(IColorConstant shapeBorderColor) {
-		if (!compare(this.shapeForeground, shapeBorderColor)) {
+		if (!equals(this.shapeForeground, shapeBorderColor)) {
 			this.shapeForeground = shapeBorderColor;
 			changeMask |= SS_SHAPE_FOREGROUND;
 		}
 	}
 
-	public Font getTextFont() {
-		return textFont;
+	public Font getLabelFont() {
+		return labelFont;
 	}
 
-	public void setTextFont(Font textFont) {
-		if (!compare(this.textFont, textFont)) {
-			this.textFont = textFont;
-			changeMask |= SS_TEXT_FONT;
+	public void setLabelFont(Font labelFont) {
+		if (!equals(this.labelFont, labelFont)) {
+			this.labelFont = labelFont;
+			changeMask |= SS_LABEL_FONT;
 		}
 	}
 
-	public IColorConstant getTextColor() {
-		return textColor;
+	public IColorConstant getLabelForeground() {
+		return labelForeground;
 	}
 
-	public void setTextColor(IColorConstant textColor) {
-		if (!compare(this.textColor, textColor)) {
-			this.textColor = textColor;
-			changeMask |= SS_TEXT_COLOR;
+	public void setLabelForeground(IColorConstant labelForeground) {
+		if (!equals(this.labelForeground, labelForeground)) {
+			this.labelForeground = labelForeground;
+			changeMask |= SS_LABEL_FOREGROUND;
 		}
 	}
 
@@ -431,19 +489,6 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	/**
-	 * @param swtFont
-	 * @return
-	 */
-	public static Font toGraphitiFont(Diagram diagram, org.eclipse.swt.graphics.Font swtFont) {
-		Font ret;
-
-		FontData fontData = swtFont.getFontData()[0];
-		ret = toGraphitiFont(diagram, fontData);
-
-		return ret;
-	}
-
-	/**
 	 * @param fontData
 	 * @return
 	 */
@@ -458,20 +503,6 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		boolean bold = (fontData.getStyle() & SWT.BOLD) != 0;
 		ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
 		return ret;
-	}
-
-	/**
-	 * Returns a <b>new</b> SWT {@link org.eclipse.swt.graphics.Font} for the
-	 * given Graphiti {@link Font}. <b>Users of this method are responsible for
-	 * disposing the font again!</b>
-	 * 
-	 * @param pictogramFont
-	 * @return
-	 */
-	public static org.eclipse.swt.graphics.Font toSwtFont(Font pictogramFont) {
-		FontData fontData;
-		fontData = toFontData(pictogramFont);
-		return new org.eclipse.swt.graphics.Font(null, new FontData[] { fontData });
 	}
 
 	/**
@@ -505,10 +536,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				colorToString(sp.shapePrimarySelectedColor) + ";" + //$NON-NLS-1$
 				colorToString(sp.shapeSecondarySelectedColor) + ";" + //$NON-NLS-1$
 				colorToString(sp.shapeForeground) + ";" + //$NON-NLS-1$
-				fontToString(sp.textFont) + ";" + //$NON-NLS-1$
-				colorToString(sp.textColor) + ";" + //$NON-NLS-1$
+				fontToString(sp.labelFont) + ";" + //$NON-NLS-1$
+				colorToString(sp.labelForeground) + ";" + //$NON-NLS-1$
 				booleanToString(sp.useDefaultSize) + ";" + //$NON-NLS-1$
-				sp.routingStyle.name() + ";" + //$NON-NLS-1$
+				sp.routingStyle.ordinal() + ";" + //$NON-NLS-1$
 				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				sp.defaultWidth + ";" + //$NON-NLS-1$
 				sp.defaultHeight + ";" + //$NON-NLS-1$
@@ -532,10 +563,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			this.setShapePrimarySelectedColor(other.getShapePrimarySelectedColor());
 		if ((m & SS_SHAPE_SECONDARY_SELECTION) != 0)
 			this.setShapeSecondarySelectedColor(other.getShapeSecondarySelectedColor());
-		if ((m & SS_TEXT_FONT) != 0)
-			this.setTextFont(other.getTextFont());
-		if ((m & SS_TEXT_COLOR) != 0)
-			this.setTextColor(other.getTextColor());
+		if ((m & SS_LABEL_FONT) != 0)
+			this.setLabelFont(other.getLabelFont());
+		if ((m & SS_LABEL_FOREGROUND) != 0)
+			this.setLabelForeground(other.getLabelForeground());
 		if ((m & SS_ROUTING_STYLE) != 0)
 			this.setRoutingStyle(other.getRoutingStyle());
 		if ((m & SS_SNAP_TO_GRID) != 0)
@@ -557,10 +588,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			this.setShapePrimarySelectedColor((IColorConstant)value);
 		if (m == SS_SHAPE_SECONDARY_SELECTION)
 			this.setShapeSecondarySelectedColor((IColorConstant)value);
-		if (m == SS_TEXT_FONT)
-			this.setTextFont((Font)value);
-		if (m == SS_TEXT_COLOR)
-			this.setTextColor((IColorConstant)value);
+		if (m == SS_LABEL_FONT)
+			this.setLabelFont((Font)value);
+		if (m == SS_LABEL_FOREGROUND)
+			this.setLabelForeground((IColorConstant)value);
 		if (m == SS_ROUTING_STYLE)
 			this.setRoutingStyle((RoutingStyle)value);
 		if (m == SS_SNAP_TO_GRID)
@@ -573,7 +604,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			this.setLabelPosition((LabelPosition)value);
 	}
 
-	public static boolean compare(IColorConstant c1, IColorConstant c2) {
+	private static boolean equals(IColorConstant c1, IColorConstant c2) {
 		if (c1==c2)
 			return true;
 		if (c1==null || c2==null)
@@ -583,22 +614,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				c1.getBlue() == c2.getBlue();
 	}
 	
-	public static boolean compare(Font f1, Font f2) {
+	private static boolean equals(Font f1, Font f2) {
 		String s1 = fontToString(f1);
 		String s2 = fontToString(f2);
 		return s1.equals(s2);
-	}
-
-	public static boolean compare(ShapeStyle s1, ShapeStyle s2) {
-		return
-				compare(s1.shapeBackground, s2.shapeBackground) ||
-				compare(s1.shapePrimarySelectedColor, s2.shapePrimarySelectedColor) ||
-				compare(s1.shapeSecondarySelectedColor, s2.shapeSecondarySelectedColor) ||
-				compare(s1.shapeForeground, s2.shapeForeground) ||
-				compare(s1.textFont, s2.textFont) ||
-				compare(s1.textColor, s2.textColor) ||
-				(s1.useDefaultSize != s2.useDefaultSize) ||
-				s1.labelPosition != s2.labelPosition;
 	}
 	
 	public static IColorConstant lighter(IColorConstant c) {
@@ -624,5 +643,213 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	@Override
 	public String toString() {
 		return encode(this);
+	}
+	
+	public static boolean hasStyle(BaseElement businessObject) {
+		ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(businessObject);
+		if (med!=null) {
+			ModelDecorator md = med.getModelDecorator();
+			EStructuralFeature styleFeature = md.getEStructuralFeature(businessObject, STYLE_OBJECT);
+			if (styleFeature!=null)
+				return true;
+		}
+		return false;
+	}
+
+	public static EObject createStyleObject(BaseElement element) {
+		EObject style = null;
+		try {
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
+			ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(element);
+			ModelDecorator md = med.getModelDecorator();
+			EStructuralFeature styleFeature = md.getEStructuralFeature(element, STYLE_OBJECT);
+			ShapeStyle ss = getShapeStyle(element);
+			style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+			if (style==null) {
+				// this object does not have a <style> extension element yet so create one
+				// and initialize it from the User Preference store
+				style = med.createObject((EClass)styleFeature.getEType());
+				setShapeStyle(element, style, ss);
+				// add it to the BaseElement extension values
+				InsertionAdapter.add(element, styleFeature, style);
+			}
+			else {
+				setShapeStyle(element, style, ss);
+			}
+		}
+		catch (Exception e) {
+			// ignore exceptions - the BaseElement doesn't have a <style> extension element
+			e.printStackTrace();
+		}
+		return style;
+	}
+	
+	public static EObject getStyleObject(BaseElement element) {
+		EObject style = null;
+		try {
+			ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(element);
+			ModelDecorator md = med.getModelDecorator();
+			EStructuralFeature styleFeature = md.getEStructuralFeature(element, STYLE_OBJECT);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
+	
+			style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+		}
+		catch (Exception e) {
+			// ignore exceptions - the BaseElement doesn't have a <style> extension element
+		}
+		return style;
+	}
+
+	public static Object getStyleValue(EObject style, String feature) {
+		EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
+		if (f!=null && style.eIsSet(f))
+			return style.eGet(f);
+		return null;
+	}
+	
+	public Object getStyleValue(BaseElement element, String feature) {
+		if (STYLE_SHAPE_FOREGROUND.equals(feature))
+			return colorToRGB(getShapeForeground());
+		if (STYLE_SHAPE_BACKGROUND.equals(feature))
+			return colorToRGB(getShapeBackground());
+		if (STYLE_LABEL_FOREGROUND.equals(feature))
+			return colorToRGB(getLabelForeground());
+		if (STYLE_LABEL_BACKGROUND.equals(feature))
+			return null;
+		if (STYLE_LABEL_FONT.equals(feature))
+			return ShapeStyle.toFontData(getLabelFont());
+		if (STYLE_LABEL_POSITION.equals(feature))
+			return ShapeStyle.toEENumLiteral(element, getLabelPosition());
+		if (STYLE_ROUTING_STYLE.equals(feature))
+			return ShapeStyle.toEENumLiteral(element, getRoutingStyle());
+		return null;
+	}
+	
+	private static void setStyleValue(EObject style, String feature, Object value) {
+		EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
+		Object oldValue = style.eGet(f);
+		if (value!=null && !value.equals(oldValue))
+			style.eSet(f, value);
+	}
+
+	public static boolean isStyleObject(Object object) {
+		if (object instanceof AnyType) {
+			AnyType at = (AnyType)object;
+			EClass ec = at.eClass();
+			String name = ec.getName();
+			return STYLE_ECLASS.equals(name);
+		}
+		return false;
+	}
+
+	public static ShapeStyle getShapeStyle(BaseElement element) {
+		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
+		ShapeStyle ss = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+
+		EObject style = getStyleObject(element);
+		if (style!=null) {
+			RGB shapeForeground = (RGB) getStyleValue(style,STYLE_SHAPE_FOREGROUND);
+			RGB shapeBackground = (RGB) getStyleValue(style,STYLE_SHAPE_BACKGROUND);
+			RGB labelForeground = (RGB) getStyleValue(style,STYLE_LABEL_FOREGROUND);
+			FontData labelFont = (FontData) getStyleValue(style,STYLE_LABEL_FONT);
+			EEnumLiteral labelPosition = (EEnumLiteral) getStyleValue(style,STYLE_LABEL_POSITION);
+			EEnumLiteral routingStyle = (EEnumLiteral) getStyleValue(style,STYLE_ROUTING_STYLE);
+			
+			if (shapeBackground!=null) {
+				IColorConstant cc = ShapeStyle.RGBToColor(shapeBackground);
+				ss.setShapeBackground(cc);
+				ss.setShapePrimarySelectedColor(StyleUtil.shiftColor(cc, 32));
+				ss.setShapeSecondarySelectedColor(StyleUtil.shiftColor(cc, -32));
+			}
+			else
+				setStyleValue(style, STYLE_SHAPE_BACKGROUND, ShapeStyle.colorToRGB(ss.getShapeBackground()));
+
+			if (shapeForeground!=null)
+				ss.setShapeForeground(ShapeStyle.RGBToColor(shapeForeground));
+			else
+				setStyleValue(style, STYLE_SHAPE_FOREGROUND, ShapeStyle.colorToRGB(ss.getShapeForeground()));
+
+			if (labelForeground!=null)
+				ss.setLabelForeground(ShapeStyle.RGBToColor(labelForeground));
+			else
+				setStyleValue(style, STYLE_LABEL_FOREGROUND, ShapeStyle.colorToRGB(ss.getLabelForeground()));
+
+			if (labelFont!=null) {
+				// roundabout way to get the Diagram for a Business Object:
+				// see {@link DIUtils} for details. 
+				List<PictogramElement> pes = DIUtils.getPictogramElements(element.eResource().getResourceSet(), element);
+				if (pes.size()>0) {
+					Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pes.get(0));
+					ss.setLabelFont(ShapeStyle.toGraphitiFont(diagram, labelFont));
+				}
+			}
+			else
+				setStyleValue(style, STYLE_LABEL_FONT, ShapeStyle.toFontData(ss.getLabelFont()));
+
+			if (labelPosition!=null)
+				ss.setLabelPosition((LabelPosition)fromEENumLiteral(element, labelPosition));
+			else
+				setStyleValue(style, STYLE_LABEL_POSITION, toEENumLiteral(element, ss.getLabelPosition()));
+
+			if (routingStyle!=null)
+				ss.setRoutingStyle( (RoutingStyle)fromEENumLiteral(element, routingStyle) );
+			else
+				setStyleValue(style, STYLE_ROUTING_STYLE, toEENumLiteral(element, ss.getRoutingStyle()));
+
+		}
+		return ss;
+	}
+
+	private static Enum fromEENumLiteral(EObject element, EEnumLiteral el) {
+		try {
+			LabelPosition.values();
+			Class c = Class.forName(ShapeStyle.class.getName() + "$" + el.getEEnum().getName());
+			for (Enum en : (Enum[])c.getEnumConstants()) {
+				if (en.ordinal() == el.getValue())
+					return en;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private static EEnumLiteral toEENumLiteral(EObject element, Enum en) {
+		ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(element);
+		ModelDecorator md = med.getModelDecorator();
+		EEnum lp = (EEnum)md.getEDataType(en.getClass().getSimpleName());
+		EEnumLiteral el = lp.getEEnumLiteral(en.ordinal());
+		fromEENumLiteral(element, el);
+		return el;
+	}
+
+	public static void setShapeStyle(BaseElement element, EObject style, ShapeStyle ss) {
+		if (hasStyle(element)) {
+			if (style==null)
+				style = getStyleObject(element);
+
+			setStyleValue(style, STYLE_SHAPE_FOREGROUND, ShapeStyle.colorToRGB(ss.getShapeForeground()));
+			setStyleValue(style, STYLE_SHAPE_BACKGROUND, ShapeStyle.colorToRGB(ss.getShapeBackground()));
+			setStyleValue(style, STYLE_LABEL_FOREGROUND, ShapeStyle.colorToRGB(ss.getLabelForeground()));
+			setStyleValue(style, STYLE_LABEL_FONT, ShapeStyle.toFontData(ss.getLabelFont()));
+			setStyleValue(style, STYLE_LABEL_POSITION, toEENumLiteral(element, ss.getLabelPosition()));
+			setStyleValue(style, STYLE_ROUTING_STYLE, toEENumLiteral(element, ss.getRoutingStyle()));
+		}
+		else {
+			Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
+			preferences.setShapeStyle(element,ss);
+		}
+	}
+	
+	public static boolean isDirty(BaseElement element) {
+		if (element==null)
+			return false;
+		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
+		ShapeStyle ssDefault = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+		ShapeStyle ssElement = getShapeStyle(element);
+		String defaultString = ssDefault.toString();
+		String elementString = ssElement.toString();
+		return !defaultString.equals(elementString);
 	}
 }

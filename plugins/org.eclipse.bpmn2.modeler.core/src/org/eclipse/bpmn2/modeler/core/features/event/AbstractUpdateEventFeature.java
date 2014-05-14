@@ -34,7 +34,7 @@ import org.eclipse.graphiti.services.Graphiti;
  *
  */
 
-public abstract class AbstractUpdateEventFeature extends AbstractUpdateMarkerFeature<Event> {
+public abstract class AbstractUpdateEventFeature<T extends Event> extends AbstractUpdateMarkerFeature<T> {
 
 	/**
 	 * @param fp

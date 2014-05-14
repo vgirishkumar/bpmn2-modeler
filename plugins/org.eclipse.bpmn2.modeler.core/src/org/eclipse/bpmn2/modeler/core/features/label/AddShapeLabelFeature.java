@@ -26,7 +26,7 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 
 	@Override
 	public boolean canAdd(IAddContext context) {
-		return FeatureSupport.isValidFlowElementTarget(context);
+		return true;
 	}
 
 	@Override

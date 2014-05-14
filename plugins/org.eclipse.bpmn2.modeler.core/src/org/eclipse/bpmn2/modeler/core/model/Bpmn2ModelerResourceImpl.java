@@ -45,6 +45,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory.Bpmn2ModelerDocumentRootImpl;
@@ -67,6 +68,7 @@ import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -83,6 +85,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
@@ -95,6 +98,7 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
@@ -949,9 +953,40 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 				}
 			}
+
+			if (f == Bpmn2Package.eINSTANCE.getBaseElement_ExtensionValues()) {
+				// check if this element is (or should be) empty
+				boolean shouldSave = false;
+				for (ExtensionAttributeValue ev : (EList<ExtensionAttributeValue>)o.eGet(f)) {
+					BasicFeatureMap map = (BasicFeatureMap) ev.getValue();
+					Iterator<FeatureMap.Entry> mi = map.iterator();
+					while (mi.hasNext()) {
+						FeatureMap.Entry entry = mi.next();
+						Object v = entry.getValue();
+						if (v instanceof EObject) {
+							Iterator<Adapter> ai = ((EObject)v).eAdapters().iterator();
+							while (ai.hasNext()) {
+								Adapter a = ai.next();
+								if (a instanceof IExtensionValueAdapter) {
+									if (((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
+										shouldSave = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				return shouldSave;
+			}
 			
-			// FIXME: how do we prevent serialization of extensionValues if the contained elements have only default values?
-			if (o instanceof ExtensionAttributeValue) {
+			Iterator<Adapter> ai = o.eAdapters().iterator();
+			while (ai.hasNext()) {
+				Adapter a = ai.next();
+				if (a instanceof IExtensionValueAdapter) {
+					if (!((IExtensionValueAdapter)a).shouldSaveFeature(o,f))
+						return false;
+				}
 			}
 			
             return super.shouldSaveFeature(o, f);
@@ -1027,6 +1062,15 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
 		protected void saveElement(EObject o, EStructuralFeature f) {
 			
+			Iterator<Adapter> ai = o.eAdapters().iterator();
+			while (ai.hasNext()) {
+				Adapter a = ai.next();
+				if (a instanceof IExtensionValueAdapter) {
+					if (!((IExtensionValueAdapter)a).shouldSaveElement(o))
+						return;
+				}
+			}
+
 			float oldX = 0, oldY = 0;
 			List<Point> oldPoints = null;
 			

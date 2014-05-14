@@ -50,7 +50,8 @@ public interface GraphitiConstants {
 	public static final String LABEL_OFFSET = "label.offset"; //$NON-NLS-1$
 	/**
 	 * The {@link IContext} property key that holds a reference to a List of
-	 * {@link PictogramElement} objects that were created during a MultiAddFeature
+	 * {@link PictogramElement} objects that were created during a {@link MultiAddFeature}
+	 * or {@link CompoundCreateFeature}
 	 **/
 	public static final String PICTOGRAM_ELEMENTS = "pictogram.elements"; //$NON-NLS-1$
 	/**

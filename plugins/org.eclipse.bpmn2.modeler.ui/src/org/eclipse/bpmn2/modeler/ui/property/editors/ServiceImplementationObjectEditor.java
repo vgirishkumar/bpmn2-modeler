@@ -87,6 +87,8 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 	
 	public Object getValue() {
 		Object value = object.eGet(feature);
+		if (value==null)
+			return "";
 		Hashtable<String,Object> choices = getChoiceOfValues(object, feature);
 		for (Entry<String, Object> entry : choices.entrySet()) {
 			if (entry.getValue().equals(value))

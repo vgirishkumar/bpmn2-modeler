@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.diagram;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
@@ -76,6 +77,8 @@ public class Bpmn2FeatureMap {
 	public static final List<Class> TASKS;
 	public static final List<Class> DATA;
 	public static final List<Class> OTHER;
+	public static HashSet<Class> ALL_SHAPES;
+	
 	static {
 		ArrayList<Class> features = new ArrayList<Class>();
 		features.add(SequenceFlow.class);
@@ -150,5 +153,12 @@ public class Bpmn2FeatureMap {
 		features.add(CallChoreography.class);
 		OTHER = Collections.unmodifiableList(features);
 
+		ALL_SHAPES = new HashSet<Class>();
+		ALL_SHAPES.addAll(CONNECTIONS);
+		ALL_SHAPES.addAll(EVENTS);
+		ALL_SHAPES.addAll(GATEWAYS);
+		ALL_SHAPES.addAll(TASKS);
+		ALL_SHAPES.addAll(DATA);
+		ALL_SHAPES.addAll(OTHER);
 	}
 }

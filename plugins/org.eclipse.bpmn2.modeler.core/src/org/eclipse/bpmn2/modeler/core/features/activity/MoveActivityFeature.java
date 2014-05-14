@@ -111,7 +111,7 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 	@Override
 	protected void postMoveShape(final IMoveShapeContext context) {
 		Shape containerShape = context.getShape();
-		GraphicsUtil.sendToFront(containerShape);
+//		GraphicsUtil.sendToFront(containerShape);
 		super.postMoveShape(context);
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		
@@ -136,6 +136,7 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 			}
 		}.doWork(activity, getDiagram());
 		
+		layoutPictogramElement(containerShape);
 		if (containerShape.eContainer() instanceof ContainerShape) {
 			PictogramElement pe = (PictogramElement) containerShape.eContainer();
 			if (BusinessObjectUtil.containsElementOfType(pe, SubProcess.class)) {

@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -41,17 +41,12 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateChoreographyMessageFlowFeature extends AbstractBpmn2UpdateFeature {
+public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElementFeature<ChoreographyTask> {
 
 	private final IPeService peService = Graphiti.getPeService();
 
 	public UpdateChoreographyMessageFlowFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		return BusinessObjectUtil.containsElementOfType(context.getPictogramElement(), ChoreographyTask.class);
 	}
 
 	@Override

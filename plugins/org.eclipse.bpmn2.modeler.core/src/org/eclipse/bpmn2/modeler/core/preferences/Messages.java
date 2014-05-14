@@ -14,6 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.preferences.messages"; //$NON-NLS-1$
+	
 	public static String Bpmn2Preferences_No_Runtime_Plugin_Title;
 	public static String Bpmn2Preferences_Activities;
 	public static String Bpmn2Preferences_Always_False;
@@ -56,6 +57,21 @@ public class Messages extends NLS {
 	public static String ShapeStyle_Category_Other;
 	public static String ShapeStyle_Category_Canvas;
 	public static String ShapeStyle_Category_Grid;
+
+	public static String ShapeStyle_RoutingStyle_Direct;
+	public static String ShapeStyle_RoutingStyle_Automatic;
+	public static String ShapeStyle_RoutingStyle_Manhattan;
+
+	public static String ShapeStyle_LabelPosition_North;
+	public static String ShapeStyle_LabelPosition_South;
+	public static String ShapeStyle_LabelPosition_West;
+	public static String ShapeStyle_LabelPosition_East;
+	public static String ShapeStyle_LabelPosition_Top;
+	public static String ShapeStyle_LabelPosition_Center;
+	public static String ShapeStyle_LabelPosition_Bottom;
+	public static String ShapeStyle_LabelPosition_Left;
+	public static String ShapeStyle_LabelPosition_Right;
+	public static String ShapeStyle_LabelPosition_Movable;
 
 	static {
 		// initialize resource bundle

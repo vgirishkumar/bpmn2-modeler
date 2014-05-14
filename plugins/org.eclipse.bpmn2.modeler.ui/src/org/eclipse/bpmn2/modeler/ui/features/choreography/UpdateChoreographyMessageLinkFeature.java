@@ -14,8 +14,9 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_VISIBLE;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -24,7 +25,7 @@ import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.services.Graphiti;
 
-public class UpdateChoreographyMessageLinkFeature extends AbstractBpmn2UpdateFeature {
+public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElementFeature<BaseElement> {
 
 	public UpdateChoreographyMessageLinkFeature(IFeatureProvider fp) {
 		super(fp);
@@ -32,7 +33,10 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractBpmn2UpdateFea
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		return ChoreographyUtil.isChoreographyParticipantBand(context.getPictogramElement());
+		if (super.canUpdate(context)) {
+			return ChoreographyUtil.isChoreographyParticipantBand(context.getPictogramElement());
+		}
+		return false;
 	}
 
 	@Override
@@ -40,10 +44,6 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractBpmn2UpdateFea
 		IReason reason = super.updateNeeded(context);
 		if (reason.toBoolean())
 			return reason;
-
-		if (!ChoreographyUtil.isChoreographyParticipantBand(context.getPictogramElement())) {
-			return Reason.createFalseReason();
-		}
 
 		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BPMNShape.class);
 		boolean visible = new Boolean(Graphiti.getPeService().getPropertyValue(context.getPictogramElement(),
