@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.bpmn2.Association;
@@ -107,6 +108,32 @@ public class BusinessObjectUtil {
 		return null;
 	}
 
+	/**
+	 * Returns a list of {@link PictogramElement}s which contains an element to the
+	 * assigned businessObjectClazz, i.e. the list contains {@link PictogramElement}s
+	 * which meet the following constraint:<br>
+	 * <code>
+	 * 	foreach child of root:<br>
+	 *  BusinessObjectUtil.containsChildElementOfType(child, businessObjectClazz) == true
+	 * </code>
+	 * @param root
+	 * @param clazz
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static List<PictogramElement> getChildElementsOfType(ContainerShape root, Class clazz) {
+		List<PictogramElement> result = new ArrayList<PictogramElement>();
+		for (Shape currentShape : root.getChildren()) {
+			if (containsElementOfType(currentShape, clazz)) {
+				result.add(currentShape);
+			}
+			if (containsChildElementOfType(currentShape, clazz)) {
+				result.add(currentShape);
+			}
+		}
+		return result;
+	}
+
 	public static BaseElement getFirstBaseElement(PictogramElement pe) {
 		return BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 	}
@@ -127,6 +154,30 @@ public class BusinessObjectUtil {
 		}
 
 		return foundElem;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends PictogramElement> T getPictogramElementForProperty(PictogramElement container, String property, String expectedValue, Class<T> clazz) {
+		IPeService peService = Graphiti.getPeService();
+		Iterator<PictogramElement> iterator = peService.getAllContainedPictogramElements(container).iterator();
+		while (iterator.hasNext()) {
+			PictogramElement pe = iterator.next();
+			String value = peService.getPropertyValue(pe, property);
+			if (value != null && value.equals(expectedValue) && clazz.isInstance(pe)) {
+				return (T) pe;
+			}
+		}
+		
+		// also search the linked objects
+		PictogramElement pe = getFirstElementOfType(container, PictogramElement.class);
+		if (pe!=null) {
+			String value = peService.getPropertyValue(pe, property);
+			if (value != null && value.equals(expectedValue) && clazz.isInstance(pe)) {
+				return (T) pe;
+			}
+			return getPictogramElementForProperty(pe, property, expectedValue, clazz);
+		}
+		return null;
 	}
 	
 	public static PictogramElement getPictogramElementFromDiagram(Diagram diagram, BPMNShape bpmnShape) {

@@ -34,15 +34,6 @@ public abstract class AbstractTaskFeatureContainer extends AbstractActivityFeatu
 
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutActivityFeature(fp) {
-			@Override
-			protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
-				if (bo != null && bo instanceof Task && ga instanceof MultiText) {
-					Graphiti.getGaService().setLocationAndSize(ga, 0, 0, newWidth, newHeight);
-					return true;
-				}
-				return false;
-			}
-		};
+		return new LayoutActivityFeature(fp);
 	}
 }

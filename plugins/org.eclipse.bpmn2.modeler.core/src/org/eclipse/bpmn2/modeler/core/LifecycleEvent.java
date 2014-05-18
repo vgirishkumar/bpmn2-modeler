@@ -177,8 +177,8 @@ public class LifecycleEvent {
 		 */
 		PICTOGRAMELEMENT_CAN_UPDATE,
 		/**
-		 * Sent by the BPMN2 Feature Provider immediately after a Pictogram Element has
-		 * been updated.
+		 * Sent by the BPMN2 Feature Provider immediately before a Pictogram Element is
+		 * updated.
 		 * <p>
 		 * The {@code LifecycleEvent.target} field will contain the Pictogram
 		 * Element.
@@ -210,7 +210,7 @@ public class LifecycleEvent {
 		 */
 		PICTOGRAMELEMENT_CAN_LAYOUT,
 		/**
-		 * Sent by the BPMN2 Feature Provider immediately after a Pictogram Element has
+		 * Sent by the BPMN2 Feature Provider immediately before a Pictogram Element has
 		 * been laid out.
 		 * <p>
 		 * The {@code LifecycleEvent.target} field will contain the Pictogram

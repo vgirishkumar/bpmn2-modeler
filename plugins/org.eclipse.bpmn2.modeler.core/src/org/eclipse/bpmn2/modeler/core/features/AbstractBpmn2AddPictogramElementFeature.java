@@ -13,15 +13,16 @@
 
 package org.eclipse.bpmn2.modeler.core.features;
 
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractAddPictogramElementFeature;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
@@ -42,6 +43,13 @@ public abstract class AbstractBpmn2AddPictogramElementFeature extends AbstractAd
 	@Override
 	public boolean canAdd(IAddContext context) {
 		return false;
+	}
+
+	@Override
+	public void execute(IContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		PictogramElement pe = add((IAddContext)context);
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, getFeatureProvider(), context, pe));
 	}
 
 	/* (non-Javadoc)

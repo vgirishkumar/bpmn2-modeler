@@ -10,19 +10,19 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.participant;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
-import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 
-public class UpdateParticipantFeature extends AbstractUpdateBaseElementFeature<Participant> {
+public class UpdateLaneFeature extends AbstractUpdateBaseElementFeature<Lane> {
 
-	public UpdateParticipantFeature(IFeatureProvider fp) {
-		super(fp);
-	}
+	public UpdateLaneFeature(IFeatureProvider fp) {
+	    super(fp);
+    }
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.graphiti.func.IUpdate#update(org.eclipse.graphiti.features.context.IUpdateContext)

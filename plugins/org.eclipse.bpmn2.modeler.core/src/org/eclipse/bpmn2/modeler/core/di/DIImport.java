@@ -463,20 +463,6 @@ public class DIImport {
 		}
 	}
 
-	private void relayoutLanes(List<DiagramElement> ownedElement) {
-		Diagram diagram = null;
-		for (DiagramElement diagramElement : ownedElement) {
-			if (diagramElement instanceof BPMNShape && ((BPMNShape) diagramElement).getBpmnElement() instanceof Lane) {
-				if (diagram==null) {
-					diagram = getDiagram(diagramElement);
-				}
-				BaseElement lane = ((BPMNShape) diagramElement).getBpmnElement();
-				ContainerShape shape = (ContainerShape) BusinessObjectUtil.getFirstBaseElementFromDiagram(diagram, lane);
-				FeatureSupport.redraw(shape);
-			}
-		}
-	}
-
 	private Diagram getDiagram(EObject object) {
 		while (object!=null && !(object instanceof BPMNDiagram))
 			object = object.eContainer();

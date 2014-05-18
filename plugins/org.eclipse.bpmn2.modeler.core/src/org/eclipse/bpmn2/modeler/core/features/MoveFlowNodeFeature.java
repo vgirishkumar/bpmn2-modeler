@@ -215,7 +215,7 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			for (Connection c : connections) {
 				DeleteContext dc = new DeleteContext(c);
 				IDeleteFeature df = fp.getDeleteFeature(dc);
-				df.delete(dc);
+//				df.delete(dc);
 			}
 		}
 

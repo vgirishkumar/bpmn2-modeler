@@ -33,9 +33,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -47,7 +45,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
@@ -68,7 +65,6 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 /**
  * This is a base class for all Property Sheet Sections. The Composite is used to render
@@ -587,9 +583,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 
 	public void refresh() {
-		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
-		if (!page.getControl().isEnabled())
-			return;
 		Display.getDefault().asyncExec( new Runnable() {
 			public void run() {
 				List<Control>kids = new ArrayList<Control>();

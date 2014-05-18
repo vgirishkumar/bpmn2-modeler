@@ -13,14 +13,19 @@
 
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
  *
@@ -47,6 +52,14 @@ public abstract class AbstractBpmn2UpdateFeature extends AbstractUpdateFeature {
 			name = ModelUtil.toCanonicalString(this.getClass().getSimpleName());
 		}
 		return name;
+	}
+
+	@Override
+	public void execute(IContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		PictogramElement pe = ((IUpdateContext)context).getPictogramElement();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE, getFeatureProvider(), context, pe));
+		super.execute(context);
 	}
 
 	/* (non-Javadoc)

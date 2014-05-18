@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -18,14 +22,14 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 /**
  * Default Graphiti {@code LayoutFeature} class for Shapes.
  */
-public class DefaultLayoutBPMNShapeFeature extends AbstractLayoutFeature {
+public abstract class AbstractLayoutBpmn2ShapeFeature extends AbstractLayoutFeature {
 
 	/**
 	 * Instantiates a new default LayoutFeature
 	 *
 	 * @param fp the Feature Provider
 	 */
-	public DefaultLayoutBPMNShapeFeature(IFeatureProvider fp) {
+	public AbstractLayoutBpmn2ShapeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -37,20 +41,11 @@ public class DefaultLayoutBPMNShapeFeature extends AbstractLayoutFeature {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.func.ILayout#layout(org.eclipse.graphiti.features.context.ILayoutContext)
-	 */
 	@Override
-	public boolean layout(ILayoutContext context) {
-		layoutConnections(context.getPictogramElement());
-		return true;
-	}
-	
-	/**
-	 * Layout connections.
-	 *
-	 * @param shape the shape
-	 */
-	public void layoutConnections(PictogramElement shape) {
+	public void execute(IContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		PictogramElement pe = ((ILayoutContext)context).getPictogramElement();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, getFeatureProvider(), context, pe));
+		super.execute(context);
 	}
 }

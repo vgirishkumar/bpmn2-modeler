@@ -14,21 +14,19 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallChoreography;
-import org.eclipse.bpmn2.ChoreographyLoopType;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyNameFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 
 public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatureContainer {
 
@@ -62,7 +60,17 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 		multiUpdate.addFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
 		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when property editor supports
 		// enums
-		multiUpdate.addFeature(new UpdateLabelFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+
+			@Override
+			protected LabelPosition getLabelPosition(AbstractText text) {
+				if (AbstractExpandableActivityFeatureContainer.isElementExpanded(text)) {
+					return LabelPosition.TOP;
+				}
+				return LabelPosition.CENTER;
+			}
+			
+		});
 		return multiUpdate;
 	}
 

@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
@@ -327,27 +328,32 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	public void resourceSetChanged(ResourceSetChangeEvent event) {
 		final List<Notification> notifications = new ArrayList<Notification>();
 		List<Notification> eventNotifications = event.getNotifications();
+		NotificationFilter filter = getFilter();
 		for (int i=eventNotifications.size()-1; i>=0; --i) {
 			Notification n = eventNotifications.get(i);
-			if (getFilter().matches(n)) {
-				boolean add = true;
-				if (n.getFeature() instanceof EStructuralFeature) {
-					EStructuralFeature f = (EStructuralFeature)n.getFeature();
-					EClass ec = f.getEContainingClass();
-					// Attempt to reduce the number of notifications to process:
-					// notifications for the XMLTypePackage are inconsequential
-					if (ec.getEPackage()==XMLTypePackage.eINSTANCE)
-						add = false;
-				}
-				for (Notification n2 : notifications) {
-					if (n2.getNotifier()==n.getNotifier() && n2.getFeature()==n.getFeature()) {
-						add = false;
-						break;
+			// We are only interested in notifications that affect BaseElements
+			// since the {@link ObjectEditor} children only work with these objects.
+			if (n.getNotifier() instanceof BaseElement) {
+				if (filter.matches(n)) {
+					boolean add = true;
+					if (n.getFeature() instanceof EStructuralFeature) {
+						EStructuralFeature f = (EStructuralFeature)n.getFeature();
+						EClass ec = f.getEContainingClass();
+						// Attempt to reduce the number of notifications to process:
+						// notifications for the XMLTypePackage are inconsequential
+						if (ec.getEPackage()==XMLTypePackage.eINSTANCE)
+							add = false;
 					}
-				}
-				if (add)
-				{
-					notifications.add(n);
+					for (Notification n2 : notifications) {
+						if (n2.getNotifier()==n.getNotifier() && n2.getFeature()==n.getFeature()) {
+							add = false;
+							break;
+						}
+					}
+					if (add)
+					{
+						notifications.add(n);
+					}
 				}
 			}
 		}

@@ -56,7 +56,7 @@ import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Messages;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
-import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;

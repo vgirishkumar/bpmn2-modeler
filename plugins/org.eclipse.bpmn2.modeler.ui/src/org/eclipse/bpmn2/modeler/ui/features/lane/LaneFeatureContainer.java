@@ -17,16 +17,14 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.LayoutContainerFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.UpdateContainerLabelFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.lane.AddLaneFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.lane.DirectEditLaneFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.lane.MoveLaneFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.lane.ResizeLaneFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.lane.UpdateLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.AddLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.DirectEditLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.LayoutLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.MoveLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.ResizeLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.lane.UpdateLaneFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -39,9 +37,6 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
 public class LaneFeatureContainer extends BaseElementFeatureContainer {
@@ -85,43 +80,7 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateLaneFeature(fp));
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (text.getAngle() == -90)
-					return LabelPosition.LEFT;
-				return LabelPosition.TOP;
-			}
-
-			protected int getLabelWidth(AbstractText text) {
-				if (text.getAngle() == -90)
-					return getLabelSize(text).height;
-				return getLabelSize(text).width;
-			}
-
-			protected int getLabelHeight(AbstractText text) {
-				if (text.getAngle() == -90)
-					return getLabelSize(text).width;
-				return getLabelSize(text).height;
-			}
-
-			@Override
-			protected void adjustLabelLocation(PictogramElement pe, boolean isAdding, Point offset) {
-				Shape labelShape = FeatureSupport.getLabelShape(pe);
-				if (labelShape != null) {
-					AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
-					pe = FeatureSupport.getLabelOwner(pe);
-					if (FeatureSupport.isHorizontal((ContainerShape) pe)) {
-						textGA.setAngle(-90);
-					}
-					else {
-						textGA.setAngle(0);
-					}
-				}
-				super.adjustLabelLocation(pe, isAdding, offset);
-			}			
-		});
+		multiUpdate.addFeature(new UpdateContainerLabelFeature(fp));
 		return multiUpdate;
 	}
 
@@ -132,7 +91,7 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutLaneFeature(fp);
+		return new LayoutContainerFeature(fp);
 	}
 
 	@Override

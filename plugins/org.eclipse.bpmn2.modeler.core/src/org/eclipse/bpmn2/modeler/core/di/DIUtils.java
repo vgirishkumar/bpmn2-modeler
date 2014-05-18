@@ -197,7 +197,6 @@ public class DIUtils {
 					BPMNDiagram bpmnDiagram = (BPMNDiagram) eObject;
 
 					bpmnEdge = BpmnDiFactory.eINSTANCE.createBPMNEdge();
-//					edge.setId(EcoreUtil.generateUUID());
 					bpmnEdge.setBpmnElement(elem);
 
 					if (elem instanceof Association) {

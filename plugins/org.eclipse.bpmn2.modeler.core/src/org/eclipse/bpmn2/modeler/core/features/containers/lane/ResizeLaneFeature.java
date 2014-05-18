@@ -10,18 +10,13 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
-import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.features.containers.AbstractResizeContainerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -31,8 +26,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
-public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
-
+public class ResizeLaneFeature extends AbstractResizeContainerFeature {
+	
 	public ResizeLaneFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -61,7 +56,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 					Lane lane = (Lane) BusinessObjectUtil.getFirstElementOfType(
 							context.getPictogramElement(), Lane.class);
 			
-					if (i < 0 && lane.getFlowNodeRefs().size() == 0) {
+					if (i < 0) {// && lane.getFlowNodeRefs().size() == 0) {
 						doit = true;
 					}
 					else if (i > 0) {
@@ -87,32 +82,28 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 		return 0;
 	}
 
-	private void resizeHeight(IResizeShapeContext context) {
-		ContainerShape laneContainerShape = (ContainerShape) context.getShape();
-		GraphicsAlgorithm ga = laneContainerShape.getGraphicsAlgorithm();
-		
-		boolean isHorizontal = FeatureSupport.isHorizontal(laneContainerShape);
+	protected void resizeHeight(IResizeShapeContext context) {
+		ContainerShape laneShape = (ContainerShape) context.getShape();
+		GraphicsAlgorithm ga = laneShape.getGraphicsAlgorithm();
 		
 		if ((isHorizontal && ga.getHeight() != context.getHeight()) 
 				|| (!isHorizontal && ga.getWidth() != context.getWidth())) {
 			
-			ContainerShape rootContainer = FeatureSupport.getRootContainer(laneContainerShape);
-			
-			boolean fetchFirstProp = false;
+			boolean useFirstLane = false;
 			Object fetchFirstProperty = context.getProperty(GraphitiConstants.RESIZE_FIRST_LANE);
 			if (fetchFirstProperty != null && ((Boolean) fetchFirstProperty).booleanValue()) {
-				fetchFirstProp = true;
+				useFirstLane = true;
 			} else {
 				if ((isHorizontal && context.getY() != ga.getY()) ||
 						(!isHorizontal && context.getX() != ga.getX())) {
-					fetchFirstProp = true;
-					if (laneContainerShape.equals(rootContainer)) {
+					useFirstLane = true;
+					if (laneShape.equals(rootContainer)) {
 						Graphiti.getGaService().setLocation(ga, context.getX(), context.getY());
 					}
 				}
 			}
 			
-			ContainerShape lowestContainingLane = getLowestLane(laneContainerShape, fetchFirstProp);
+			ContainerShape lowestContainingLane = getLowestLane(laneShape, useFirstLane);
 			GraphicsAlgorithm lowestLaneGA = lowestContainingLane.getGraphicsAlgorithm();
 			
 			int width = 0;
@@ -140,16 +131,15 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 			newContext.setY(lowestLaneGA.getY());
 			newContext.setHeight(height);
 			newContext.setWidth(width);
-			
+			newContext.setDirection(context.getDirection());
+
 			super.resizeShape(newContext);
 		}
 	}
 
-	private void resizeWidth(IResizeShapeContext context) {
-		ContainerShape laneContainerShape = (ContainerShape) context.getShape();
-		GraphicsAlgorithm ga = laneContainerShape.getGraphicsAlgorithm();
-		
-		boolean isHorizontal = FeatureSupport.isHorizontal(laneContainerShape);
+	protected void resizeWidth(IResizeShapeContext context) {
+		ContainerShape laneShape = (ContainerShape) context.getShape();
+		GraphicsAlgorithm ga = laneShape.getGraphicsAlgorithm();
 		
 		if ((isHorizontal && ga.getWidth() != context.getWidth()) 
 				|| (!isHorizontal && ga.getHeight() != context.getHeight())) {
@@ -170,7 +160,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 				} else {
 					Graphiti.getGaService().setHeight(ga, context.getHeight());
 				}
-				for (PictogramElement currentChild : FeatureSupport.getChildsOfBusinessObjectType(laneContainerShape, Lane.class)) {
+				for (PictogramElement currentChild : BusinessObjectUtil.getChildElementsOfType(laneShape, Lane.class)) {
 					if (currentChild instanceof ContainerShape) {
 						ContainerShape currentContainer = (ContainerShape) currentChild;
 						GraphicsAlgorithm currentGA = currentChild.getGraphicsAlgorithm();
@@ -181,7 +171,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 						newContext.setY(currentGA.getY());
 						newContext.setHeight(currentGA.getHeight() + dHeight);
 						newContext.setWidth(currentGA.getWidth() + dWidth);
-						
+						newContext.setDirection(context.getDirection());
 						
 						newContext.putProperty(GraphitiConstants.POOL_RESIZE_PROPERTY, true);
 						
@@ -189,7 +179,6 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 					}
 				}
 			} else {
-				ContainerShape rootContainer = FeatureSupport.getRootContainer(laneContainerShape);
 				GraphicsAlgorithm rootGA = rootContainer.getGraphicsAlgorithm();
 				
 				if (FeatureSupport.isParticipant(rootContainer)) {
@@ -199,6 +188,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 					newContext.setY(rootGA.getY());
 					newContext.setWidth(rootGA.getWidth() + dWidth);
 					newContext.setHeight(rootGA.getHeight() + dHeight);
+					newContext.setDirection(context.getDirection());
 
 					IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(newContext);
 					if (resizeFeature.canResizeShape(newContext)) {
@@ -210,7 +200,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 					if (rootIsLaneProperty != null && ((Boolean) rootIsLaneProperty).booleanValue()) {
 						Graphiti.getGaService().setWidth(ga, context.getWidth());
 						Graphiti.getGaService().setHeight(ga, context.getHeight());
-						container = laneContainerShape;
+						container = laneShape;
 					} else {
 						container = rootContainer;
 						if (isHorizontal) {
@@ -218,11 +208,11 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 						} else {
 							Graphiti.getGaService().setHeight(rootGA, rootGA.getHeight() + dHeight);
 						}
-						if (laneContainerShape.equals(rootContainer)) {
+						if (laneShape.equals(rootContainer)) {
 							Graphiti.getGaService().setLocation(ga, context.getX(), context.getY());
 						}
 					}
-					for (PictogramElement currentChild : FeatureSupport.getChildsOfBusinessObjectType(container, Lane.class)) {
+					for (PictogramElement currentChild : BusinessObjectUtil.getChildElementsOfType(container, Lane.class)) {
 						if (currentChild instanceof ContainerShape) {
 							ContainerShape currentContainer = (ContainerShape) currentChild;
 							GraphicsAlgorithm currentGA = currentChild.getGraphicsAlgorithm();
@@ -233,7 +223,7 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 							newContext.setY(currentGA.getY());
 							newContext.setWidth(currentGA.getWidth() + dWidth);
 							newContext.setHeight(currentGA.getHeight() + dHeight);
-
+							newContext.setDirection(context.getDirection());
 							newContext.putProperty(GraphitiConstants.LANE_RESIZE_PROPERTY, true);
 
 							resizeShape(newContext);
@@ -243,59 +233,26 @@ public class ResizeLaneFeature extends DefaultResizeBPMNShapeFeature {
 			}
 		}
 	}
-
+	
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
-		ContainerShape laneShape = (ContainerShape) context.getShape();
-		
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
-				getFeatureProvider(), context, laneShape));
-
-		GraphicsAlgorithm laneGa = laneShape.getGraphicsAlgorithm();
-		int preX = laneGa.getX();
-		int preY = laneGa.getY();
+		preResizeShape(context);
 
 		resizeHeight(context);
 		resizeWidth(context);
-
-		int deltaX = preX - context.getX();
-		int deltaY = preY - context.getY();
 		
-		// Adjust location of children so that a resize up or left
-		// leaves them in the same location relative to the diagram.
-		// This allows the user to create (or remove) space between
-		// the Lane's edge and the contained activities.
-		for (PictogramElement pe : laneShape.getChildren()) {
-			if (pe instanceof ContainerShape) {
-				EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
-				if (!(bo instanceof Lane)) {
-					ContainerShape child = (ContainerShape) pe;
-					GraphicsAlgorithm ga = child.getGraphicsAlgorithm();
-					Graphiti.getLayoutService().setLocation(ga, ga.getX() + deltaX, ga.getY() + deltaY);
-				}
-			}
-		}
-		
-		DIUtils.updateDIShape(laneShape);
-		ContainerShape rootContainer = FeatureSupport.getRootContainer(laneShape);
-		if (rootContainer!=laneShape) {
-			DIUtils.updateDIShape(rootContainer);
-		}
-		
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_RESIZE,
-				getFeatureProvider(), context, laneShape));
+		postResizeShape(context);
 	}
 
-	private ContainerShape getLowestLane(ContainerShape root, boolean fetchFirst) {
+	private ContainerShape getLowestLane(ContainerShape root, boolean useFirstLane) {
 		ContainerShape result;
-		if (fetchFirst) {
+		if (useFirstLane) {
 			result = (ContainerShape) FeatureSupport.getFirstLaneInContainer(root);
 		} else {
 			result = (ContainerShape) FeatureSupport.getLastLaneInContainer(root);
 		}
 		if (!result.equals(root)) {
-			return getLowestLane(result, fetchFirst);
+			return getLowestLane(result, useFirstLane);
 		}
 		return result;
 	}

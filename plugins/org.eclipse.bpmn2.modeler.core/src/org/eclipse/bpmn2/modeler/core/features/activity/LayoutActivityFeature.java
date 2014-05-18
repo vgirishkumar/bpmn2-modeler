@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractLayoutBpmn2ShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -39,7 +39,7 @@ import org.eclipse.graphiti.services.IGaService;
 /**
  * The Class LayoutActivityFeature.
  */
-public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
+public class LayoutActivityFeature extends AbstractLayoutBpmn2ShapeFeature {
 
 	/**
 	 * Instantiates a new layout activity feature.
@@ -51,7 +51,7 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractLayoutBpmn2ShapeFeature#canLayout(org.eclipse.graphiti.features.context.ILayoutContext)
 	 */
 	@Override
 	public boolean canLayout(ILayoutContext context) {
@@ -59,45 +59,22 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 		return bo != null && bo instanceof Activity;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNShapeFeature#layout(org.eclipse.graphiti.features.context.ILayoutContext)
-	 */
 	@Override
 	public boolean layout(ILayoutContext context) {
+		IGaService gaService = Graphiti.getGaService();
+	
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 		GraphicsAlgorithm parentGa = containerShape.getGraphicsAlgorithm();
 		int newWidth = parentGa.getWidth();
 		int newHeight = parentGa.getHeight();
-
+	
+		Shape rectShape = containerShape.getChildren().get(0);
+		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
+		layoutInRectangle((RoundedRectangle) rectShape.getGraphicsAlgorithm());
+	
 		GraphicsUtil.setActivityMarkerOffest(containerShape, getMarkerContainerOffset());
 		GraphicsUtil.layoutActivityMarkerContainer(containerShape);
-		
-		Iterator<Shape> iterator = Graphiti.getPeService().getAllContainedShapes(containerShape).iterator();
-		while (iterator.hasNext()) {
-			Shape shape = iterator.next();
-			GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-			IGaService gaService = Graphiti.getGaService();
-
-
-//			String markerProperty = Graphiti.getPeService().getPropertyValue(shape,
-//					GraphicsUtil.ACTIVITY_MARKER_CONTAINER);
-//			if (markerProperty != null && new Boolean(markerProperty)) {
-//				int x = (newWidth / 2) - (ga.getWidth() / 2);
-//				int y = newHeight - ga.getHeight() - 3 - getMarkerContainerOffset();
-//				gaService.setLocation(ga, x, y);
-//				continue;
-//			}
-
-			Shape rectShape = FeatureSupport.getShape(containerShape, GraphitiConstants.IS_ACTIVITY, Boolean.toString(true));
-			gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
-			layoutInRectangle((RoundedRectangle) rectShape.getGraphicsAlgorithm());
-
-			Object[] objects = getAllBusinessObjectsForPictogramElement(shape);
-			for (Object bo : objects) {
-				layoutHook(shape, ga, bo, newWidth, newHeight);
-			}
-		}
-
+	
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		new AbstractBoundaryEventOperation() {
 			@Override
@@ -105,9 +82,8 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 				layoutPictogramElement(container);
 			}
 		}.doWork(activity, getDiagram());
-
+	
 		DIUtils.updateDIShape(containerShape);
-		layoutConnections(containerShape);
 		
 		if (containerShape.eContainer() instanceof ContainerShape) {
 			PictogramElement pe = (PictogramElement) containerShape.eContainer();
@@ -133,19 +109,5 @@ public class LayoutActivityFeature extends DefaultLayoutBPMNShapeFeature {
 	 * @param rect the rect
 	 */
 	protected void layoutInRectangle(RoundedRectangle rect) {
-	}
-
-	/**
-	 * Layout hook.
-	 *
-	 * @param shape the shape
-	 * @param ga the ga
-	 * @param bo the bo
-	 * @param newWidth the new width
-	 * @param newHeight the new height
-	 * @return true, if successful
-	 */
-	protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
-		return false;
 	}
 }

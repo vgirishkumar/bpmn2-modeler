@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -54,8 +55,11 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 		IReason reason = super.updateNeeded(context);
 		if (reason.toBoolean())
 			return reason;
-
+		
 		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape))
+			return Reason.createFalseReason();
+		
 		if (isLinkedMessage(pe)) {
 			Message message = BusinessObjectUtil.getFirstElementOfType(pe, Message.class);
 			TreeIterator<EObject> iter = message.eContainer().eAllContents();

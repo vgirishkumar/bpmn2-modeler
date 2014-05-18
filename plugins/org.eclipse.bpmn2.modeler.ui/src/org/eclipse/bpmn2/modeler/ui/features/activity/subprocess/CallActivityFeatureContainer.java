@@ -164,16 +164,6 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 			protected int getMarkerContainerOffset() {
 				return MARKER_OFFSET;
 			}
-			
-			@Override
-			protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
-				if (bo != null && ga instanceof AbstractText) {
-					Graphiti.getGaService().setLocationAndSize(ga, 5, 5, newWidth - 10, newHeight);
-					return true;
-				}
-				return false;
-			}
-			
 		};
 	}
 

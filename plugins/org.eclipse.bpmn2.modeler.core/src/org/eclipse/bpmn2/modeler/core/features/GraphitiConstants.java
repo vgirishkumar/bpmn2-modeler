@@ -49,6 +49,15 @@ public interface GraphitiConstants {
 	 **/
 	public static final String LABEL_OFFSET = "label.offset"; //$NON-NLS-1$
 	/**
+	 * The {@link IContext} property key that holds a reference to a
+	 * {@link Hashtable}. The Hashtable maps a PictogramElement to a move delta.
+	 * This is used when the orientation of a Lane or Pool is changed - each of
+	 * the contained shapes are transposed by a different x/y delta, depending
+	 * on their location within the Lane or Pool.
+	 */
+	public static final String LABEL_OFFSET_MAP = "label.offset.map"; //$NON-NLS-1$
+	
+	/**
 	 * The {@link IContext} property key that holds a reference to a List of
 	 * {@link PictogramElement} objects that were created during a {@link MultiAddFeature}
 	 * or {@link CompoundCreateFeature}
@@ -63,9 +72,6 @@ public interface GraphitiConstants {
 
 	/** The Constant ACTIVITY_DECORATOR. */
 	public static final String ACTIVITY_DECORATOR = "activity-decorator"; //$NON-NLS-1$
-
-	/** The Constant IS_ACTIVITY. */
-	public static final String IS_ACTIVITY = "activity"; //$NON-NLS-1$
 
 	/** The Constant ACTIVITY_MOVE_PROPERTY. */
 	public static final String ACTIVITY_MOVE_PROPERTY = "activity.move"; //$NON-NLS-1$
@@ -116,17 +122,15 @@ public interface GraphitiConstants {
 	public static final String EVENT_MARKER_CONTAINER = "event.marker.container"; //$NON-NLS-1$
 
 
+	// Lane and Pool move/resize constants
 	public static final String LANE_RESIZE_PROPERTY = "lane.resize"; //$NON-NLS-1$
-
-	public static final String MULTIPLICITY = "multiplicity"; //$NON-NLS-1$
-
 	public static final String POOL_RESIZE_PROPERTY = "pool.resize"; //$NON-NLS-1$
-
 	public static final String RESIZE_FIRST_LANE = "resize.first.lane"; //$NON-NLS-1$
 
-	public static final String MULTIPLICITY_MARKER = "multiplicity.marker"; //$NON-NLS-1$
-
 	public final static String PARENT_CONTAINER = "parent.container";
+	
+	public static final String MULTIPLICITY_MARKER = "multiplicity.marker"; //$NON-NLS-1$
+	public static final String MULTIPLICITY = "multiplicity"; //$NON-NLS-1$
 
 	/**
 	 * The key used to store the copied shape in the Paste Context.

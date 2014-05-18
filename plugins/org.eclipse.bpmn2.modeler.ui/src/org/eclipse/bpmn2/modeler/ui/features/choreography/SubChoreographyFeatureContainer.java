@@ -37,6 +37,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.UpdateExpandableActivityFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -74,15 +75,12 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-			
-			@Override
-			public boolean canUpdate(IUpdateContext context) {
-				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-			}
 
 			@Override
 			protected LabelPosition getLabelPosition(AbstractText text) {
+				if (AbstractExpandableActivityFeatureContainer.isElementExpanded(text)) {
+					return LabelPosition.TOP;
+				}
 				return LabelPosition.CENTER;
 			}
 		});

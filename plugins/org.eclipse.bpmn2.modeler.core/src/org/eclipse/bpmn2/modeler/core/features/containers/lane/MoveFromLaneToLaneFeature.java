@@ -10,14 +10,13 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
@@ -55,14 +54,15 @@ public class MoveFromLaneToLaneFeature extends MoveLaneFeature {
 
 		modifyModelStructure(sourceLane, targetLane, movedLane);
 
-		FeatureSupport.redraw(context.getSourceContainer());
-		FeatureSupport.redraw(context.getTargetContainer());
+		layoutPictogramElement(context.getSourceContainer());
+		layoutPictogramElement(context.getTargetContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
 	}
 
 	private void modifyModelStructure(Lane sourceLane, Lane targetLane, Lane movedLane) {
 		if (targetLane.getChildLaneSet() == null) {
 			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-//			createLaneSet.setId(EcoreUtil.generateUUID());
 			targetLane.setChildLaneSet(createLaneSet);
 			ModelUtil.setID(createLaneSet);
 		}
@@ -70,7 +70,7 @@ public class MoveFromLaneToLaneFeature extends MoveLaneFeature {
 		ModelHandler mh = ModelHandler.getInstance(getDiagram());
 		Participant sourceParticipant = mh.getParticipant(sourceLane);
 		Participant targetParticipant = mh.getParticipant(targetLane);
-		if (!sourceParticipant.equals(targetParticipant)) {
+		if (sourceParticipant!=null && !sourceParticipant.equals(targetParticipant)) {
 			mh.moveLane(movedLane, sourceParticipant, targetParticipant);
 		}
 

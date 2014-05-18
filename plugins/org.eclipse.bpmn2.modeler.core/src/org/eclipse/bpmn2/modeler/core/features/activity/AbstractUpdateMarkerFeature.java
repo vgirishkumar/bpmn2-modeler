@@ -53,9 +53,8 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		if (reason.toBoolean())
 			return reason;
 
-		IPeService peService = Graphiti.getPeService();
 		PictogramElement element = context.getPictogramElement();
-		String property = peService.getPropertyValue(element, getPropertyKey());
+		String property = Graphiti.getPeService().getPropertyValue(element, getPropertyKey());
 		if(property == null) {
 			return Reason.createFalseReason();
 		}

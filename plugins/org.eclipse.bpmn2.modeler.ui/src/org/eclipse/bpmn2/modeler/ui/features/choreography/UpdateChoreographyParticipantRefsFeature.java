@@ -25,6 +25,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
@@ -38,7 +39,8 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		return BusinessObjectUtil.containsElementOfType(context.getPictogramElement(), ChoreographyActivity.class);
+		PictogramElement pe = context.getPictogramElement();
+		return pe instanceof ContainerShape && BusinessObjectUtil.containsElementOfType(pe, ChoreographyActivity.class);
 	}
 
 	@Override

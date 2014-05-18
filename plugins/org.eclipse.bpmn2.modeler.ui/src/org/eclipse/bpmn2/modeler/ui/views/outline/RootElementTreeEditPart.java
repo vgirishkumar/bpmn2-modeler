@@ -57,7 +57,8 @@ public class RootElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		List<Object> retList = new ArrayList<Object>();
 		RootElement elem = getRootElement();
 		if (elem != null && elem.eResource() != null) {
-			if (getParent() instanceof DiagramTreeEditPart) {
+//			if (getParent() instanceof DiagramTreeEditPart)
+			{
 				if (elem instanceof FlowElementsContainer) {
 					FlowElementsContainer container = (FlowElementsContainer)elem;
 					return FlowElementTreeEditPart.getFlowElementsContainerChildren(container);

@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.graphiti.features.IFeatureProvider;

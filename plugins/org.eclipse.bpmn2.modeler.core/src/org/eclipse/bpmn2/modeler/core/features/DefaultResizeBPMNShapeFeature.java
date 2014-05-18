@@ -56,17 +56,32 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		TargetRuntime.getCurrentRuntime().notify(event);
 		return event.doit;
 	}
+	
+	protected void preResizeShape(IResizeShapeContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
+				getFeatureProvider(), context, context.getPictogramElement()));
 
+	}
+	
+	protected void postResizeShape(IResizeShapeContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_RESIZE,
+				getFeatureProvider(), context, context.getPictogramElement()));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature#resizeShape(org.eclipse.graphiti.features.context.IResizeShapeContext)
 	 */
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
+		preResizeShape(context);
+		internalResizeShape(context);
+		postResizeShape(context);
+	}
+	
+	protected void internalResizeShape(IResizeShapeContext context) {
 		Shape shape = context.getShape();
-		
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_RESIZE,
-				getFeatureProvider(), context, context.getPictogramElement()));
 
 		super.resizeShape(context);
 		
@@ -75,7 +90,7 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		}
 		
 		DIUtils.updateDIShape(context.getPictogramElement());
-		FeatureSupport.adjustLabelLocation(getFeatureProvider(), shape, null);
+		FeatureSupport.updateLabel(getFeatureProvider(), shape, null);
 
 		FeatureSupport.updateConnections(getFeatureProvider(), shape);
 		
@@ -84,7 +99,6 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 				FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			}
 		}
-		
 
 		FeatureSupport.updateCategoryValues(getFeatureProvider(), shape);
 		
@@ -96,8 +110,5 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
 			}
 		}
-		
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_RESIZE,
-				getFeatureProvider(), context, context.getPictogramElement()));
 	}
 }

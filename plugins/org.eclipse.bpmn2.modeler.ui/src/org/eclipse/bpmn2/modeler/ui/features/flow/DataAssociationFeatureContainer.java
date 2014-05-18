@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
@@ -710,7 +711,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 	}
 	
-	public static class UpdateDataAssociationFeature extends AbstractUpdateFeature {
+	public static class UpdateDataAssociationFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateDataAssociationFeature(IFeatureProvider fp) {
 			super(fp);

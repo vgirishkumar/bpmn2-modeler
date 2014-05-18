@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.participant;
+package org.eclipse.bpmn2.modeler.core.features.containers.participant;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;

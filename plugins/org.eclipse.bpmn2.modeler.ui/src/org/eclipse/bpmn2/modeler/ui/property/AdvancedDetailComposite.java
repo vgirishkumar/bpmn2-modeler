@@ -411,7 +411,6 @@ public class AdvancedDetailComposite extends AbstractDetailComposite {
 						if (value instanceof BaseElement) {
 							BaseElement e = ((BaseElement) value);
 							if (e.getId() == null) {
-//								e.setId(EcoreUtil.generateUUID());
 								ModelUtil.setID(e,baseElement.eResource());
 							}
 						}

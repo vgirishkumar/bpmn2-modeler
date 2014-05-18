@@ -16,10 +16,8 @@ import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyP
 import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_REF_IDS;
 import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.PARTICIPANT_REF_IDS;
 import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.R;
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.TEXT_H;
 import static org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil.drawMultiplicityMarkers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,24 +26,17 @@ import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.MultiText;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -72,13 +63,20 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 	public PictogramElement add(IAddContext context) {
 		T businessObject = getBusinessObject(context);
 
+		int x = context.getX();
+		int y = context.getY();
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 
 		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
-		RoundedRectangle containerRect = gaService.createRoundedRectangle(containerShape, R, R);
-		gaService.setLocationAndSize(containerRect, context.getX(), context.getY(), width, height);
-		StyleUtil.applyStyle(containerRect, businessObject);
+		Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
+		gaService.setLocationAndSize(invisibleRect, x, y, width, height);
+		
+		Shape rectShape = peService.createShape(containerShape, false);
+		RoundedRectangle rect = gaService.createRoundedRectangle(rectShape, 5, 5);
+		StyleUtil.applyStyle(rect, businessObject);
+		gaService.setLocationAndSize(rect, 0, 0, width, height);
+		link(rectShape, businessObject);
 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		if (isImport) {
@@ -97,7 +95,7 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		
 		decorateShape(context, containerShape, businessObject);
 		
-		AnchorUtil.addFixedPointAnchors(containerShape, containerRect);
+		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 
 		return containerShape;
@@ -142,10 +140,6 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		String id = initiatingParticipant == null ? "null" : initiatingParticipant.getId(); //$NON-NLS-1$
 		peService.setPropertyValue(containerShape, INITIATING_PARTICIPANT_REF, id);
 	}
-
-//	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
-//		gaService.setLocationAndSize(text, 5, 5, w - 5, h);
-//	}
 
 	protected boolean isShowNames() {
 		return true;

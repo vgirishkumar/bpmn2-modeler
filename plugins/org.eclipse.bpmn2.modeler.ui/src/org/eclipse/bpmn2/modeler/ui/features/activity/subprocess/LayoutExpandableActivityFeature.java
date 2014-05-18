@@ -37,29 +37,6 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 	public LayoutExpandableActivityFeature(IFeatureProvider fp) {
 		super(fp);
 	}
-
-	@Override
-	protected boolean layoutHook(Shape shape, GraphicsAlgorithm ga, Object bo, int newWidth, int newHeight) {
-		if (bo != null && ga instanceof AbstractText) {
-			// this hook will be called for all shapes contained by the expandable activity;
-			// make sure we only set size/location for our own text
-			EObject container = shape.eContainer();
-			while (container!=null) {
-				if (container instanceof ContainerShape) {
-					EObject object = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
-					if (object instanceof FlowElementsContainer) {
-						GraphicsAlgorithm parentGa = ((ContainerShape)container).getGraphicsAlgorithm();
-						newWidth = parentGa.getWidth();
-						newHeight = parentGa.getHeight();
-						Graphiti.getGaService().setLocationAndSize(ga, 5, 10, newWidth - 10, newHeight);
-						return true;
-					}
-				}
-				container = container.eContainer();
-			}
-		}
-		return false;
-	}
 	
 	@Override
 	public boolean layout(ILayoutContext context) {

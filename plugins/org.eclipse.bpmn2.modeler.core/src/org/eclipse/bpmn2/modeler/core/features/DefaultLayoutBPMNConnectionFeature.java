@@ -13,14 +13,20 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
  * Default Graphiti {@code LayoutFeature} class for Connections.
@@ -53,6 +59,14 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
 		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(be);
 		return prefs.getEnableConnectionRouting();
+	}
+
+	@Override
+	public void execute(IContext context) {
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		PictogramElement pe = ((IUpdateContext)context).getPictogramElement();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, getFeatureProvider(), context, pe));
+		super.execute(context);
 	}
 
 	/* (non-Javadoc)

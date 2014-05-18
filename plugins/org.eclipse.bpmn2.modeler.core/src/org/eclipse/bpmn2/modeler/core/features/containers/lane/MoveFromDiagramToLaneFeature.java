@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -68,16 +67,17 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 		modifyModelStructure(targetLane, movedLane);
 
 		if (getNumberOfLanes(context) == 1) {
-			gaService.setLocationAndSize(laneGa, 15, 0, tga.getWidth() - 15, tga.getHeight());
+			gaService.setLocationAndSize(laneGa, 15, 0, laneGa.getWidth() - 15, laneGa.getHeight());
 			for (Shape s : shapes) {
 				GraphicsUtil.sendToFront(s);
 				s.setContainer((ContainerShape) context.getShape());
 			}
 		} else {
-			gaService.setLocationAndSize(laneGa, 15, tga.getHeight() - 1, tga.getWidth() - 15, laneGa.getHeight() + 1);
+			gaService.setLocationAndSize(laneGa, 15, laneGa.getHeight() - 1, laneGa.getWidth() - 15, laneGa.getHeight() + 1);
 		}
 
-		FeatureSupport.redraw(context.getTargetContainer());
+		layoutPictogramElement(context.getTargetContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
 	}
 
 	private void modifyModelStructure(Lane targetLane, Lane lane) {
@@ -94,7 +94,6 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 
 		if (targetLane.getChildLaneSet() == null) {
 			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-//			createLaneSet.setId(EcoreUtil.generateUUID());
 			targetLane.setChildLaneSet(createLaneSet);
 			ModelUtil.setID(createLaneSet);
 		}

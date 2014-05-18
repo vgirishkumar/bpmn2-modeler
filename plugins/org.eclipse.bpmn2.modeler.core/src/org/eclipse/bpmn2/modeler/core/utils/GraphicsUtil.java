@@ -29,7 +29,7 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -1241,6 +1241,26 @@ public class GraphicsUtil {
 		return new Size(TASK_DEFAULT_WIDTH,TASK_DEFAULT_HEIGHT);
 	}
 
+	/**
+	 * Set the location of the PE given absolute Diagram coordinates. If the PE
+	 * is a child of a ContainerShape, adjust the coordinates so that they are
+	 * relative to the ContainerShape.
+	 *  
+	 * @param pe the PictogramElement to move
+	 * @param x the absolute Diagram-relative X coordinate
+	 * @param y the absolute Diagram-relative Y coordinate
+	 */
+	public static void setLocationRelativeToDiagram(PictogramElement pe, int x, int y) {
+		GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
+		Object o = pe.eContainer();
+		if (o instanceof ContainerShape && !(o instanceof Diagram)) {
+			ILocation containerLoc = peService.getLocationRelativeToDiagram((Shape)o);
+			x -= containerLoc.getX();
+			y -= containerLoc.getY();
+		}
+		gaService.setLocation(ga, x, y);
+	}
+	
 	public static boolean contains(Shape parent, Shape child) {
 		IDimension size = calculateSize(child);
 		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(child);

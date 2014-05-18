@@ -10,59 +10,63 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
-public class MoveFromParticipantToLaneFeature extends MoveLaneFeature {
+public class MoveFromParticipantToParticipantFeature extends MoveLaneFeature {
 
-	public MoveFromParticipantToLaneFeature(IFeatureProvider fp) {
+	public MoveFromParticipantToParticipantFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public boolean canMoveShape(IMoveShapeContext context) {
-		Lane movedLane = getMovedLane(context);
-		boolean moveableHasFlowNodes = movedLane.getFlowNodeRefs().size() > 0;
+		Participant p1 = (Participant) getBusinessObjectForPictogramElement(context.getSourceContainer());
+		Participant p2 = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
 
-		Lane targetLane = getTargetLane(context);
-		boolean targetHasFlowNodeRefs = targetLane.getFlowNodeRefs().size() > 0;
+		if (p1.equals(p2)) {
+			return false;
+		}
 
-		if (!moveableHasFlowNodes && !targetHasFlowNodeRefs) {
+		if (getMovedLane(context).getFlowNodeRefs().isEmpty()) {
 			return true;
 		}
 
-		return moveableHasFlowNodes ^ targetHasFlowNodeRefs;
+		if (p2.getProcessRef() == null) {
+			return true;
+		}
+
+		if (!p2.getProcessRef().getLaneSets().isEmpty()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
 	protected void internalMove(IMoveShapeContext context) {
 		modifyModelStructure(context);
-		FeatureSupport.redraw(context.getSourceContainer());
-		FeatureSupport.redraw(context.getTargetContainer());
-	}
-
-	private Lane getTargetLane(IMoveShapeContext context) {
-		ContainerShape targetContainer = context.getTargetContainer();
-		return (Lane) getBusinessObjectForPictogramElement(targetContainer);
+		layoutPictogramElement(context.getSourceContainer());
+		layoutPictogramElement(context.getTargetContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
 		Lane movedLane = getMovedLane(context);
-		Lane toLane = getTargetLane(context);
+		Participant targetParticipant = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
 
 		ModelHandler mh = ModelHandler.getInstance(getDiagram());
-		Participant participant = mh.getParticipant(toLane);
-		mh.moveLane(movedLane, participant);
+		mh.moveLane(movedLane, targetParticipant);
 
 		Participant sourceParticipant = (Participant) getBusinessObjectForPictogramElement(context.getSourceContainer());
 
@@ -79,14 +83,14 @@ public class MoveFromParticipantToLaneFeature extends MoveLaneFeature {
 			if (laneSet.getLanes().isEmpty()) {
 				sourceParticipant.getProcessRef().getLaneSets().remove(laneSet);
 			}
-		}
 
-		if (toLane.getChildLaneSet() == null) {
-			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-//			createLaneSet.setId(EcoreUtil.generateUUID());
-			toLane.setChildLaneSet(createLaneSet);
-			ModelUtil.setID(createLaneSet);
+			Process process = targetParticipant.getProcessRef();
+			if (process.getLaneSets().isEmpty()) {
+				LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
+				process.getLaneSets().add(createLaneSet);
+				ModelUtil.setID(createLaneSet);
+			}
+			process.getLaneSets().get(0).getLanes().add(movedLane);
 		}
-		toLane.getChildLaneSet().getLanes().add(movedLane);
 	}
 }

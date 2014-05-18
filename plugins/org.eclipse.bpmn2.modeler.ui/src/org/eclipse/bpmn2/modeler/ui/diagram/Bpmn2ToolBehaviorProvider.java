@@ -17,7 +17,10 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Group;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
@@ -71,9 +74,12 @@ import org.eclipse.graphiti.features.IFeatureAndContext;
 import org.eclipse.graphiti.features.IFeatureChecker;
 import org.eclipse.graphiti.features.IFeatureCheckerHolder;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDoubleClickContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
@@ -623,6 +629,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			return getSelectionBorder(FeatureSupport.getLabelOwner(pe));
 		}
 		else if (pe instanceof ContainerShape) {
+//			if (BusinessObjectUtil.getBusinessObjectForPictogramElement(pe) instanceof ChoreographyActivity)
+//				return ((ContainerShape)pe).getGraphicsAlgorithm();
 			if (((ContainerShape)pe).getChildren().size()>0) {
 				GraphicsAlgorithm ga = ((ContainerShape)pe).getChildren().get(0).getGraphicsAlgorithm();
 				if (!(ga instanceof AbstractText) && !(ga instanceof Polyline))
@@ -757,7 +765,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		}
 		return super.getAbsoluteLocation(ga);
 	}
-	
+
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
 		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();

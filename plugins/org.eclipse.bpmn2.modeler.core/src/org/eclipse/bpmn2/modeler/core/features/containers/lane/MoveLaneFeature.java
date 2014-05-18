@@ -10,18 +10,29 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.containers.MoveContainerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
-public class MoveLaneFeature extends DefaultMoveBPMNShapeFeature {
+/**
+ * Handles the moving of Lanes from one container to another. The source and
+ * target containers may be Pools, other Lanes or the Diagram.
+ * 
+ * TODO: allow reordering of Lanes within their containers. For example, current
+ * behavior when a Lane is dragged from a Diagram and dropped into another Lane
+ * which already contains child Lanes, the dropped Lane is always added to the
+ * bottom or left of existing child Lanes. It would be useful to allow the user
+ * to select the location of the dropped Lane relative to existing child Lanes,
+ * by looking at the mouse cursor position.
+ */
+public class MoveLaneFeature extends MoveContainerFeature {
 
 	private MoveLaneFeature moveStrategy;
-
+	
 	public MoveLaneFeature(IFeatureProvider fp) {
 		super(fp);
 	}

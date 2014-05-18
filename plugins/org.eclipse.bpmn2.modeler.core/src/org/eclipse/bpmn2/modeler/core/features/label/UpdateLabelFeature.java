@@ -40,6 +40,7 @@ import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -274,18 +275,31 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			int y = bounds.y;
 			int w = bounds.width;
 			int h = bounds.height;
-
-			// move and resize the label container and set the new size of the
-			// Text GA
-			Graphiti.getGaService().setLocationAndSize(labelGA, x, y, w, h);
-			if (ownerPE instanceof Shape)
+			// move and resize the label shape and set the new size of the Text GA
+			// make sure the label shape is a child of the same ContainerShape
+			// as its owner.
+			if (!(ownerPE instanceof Connection)) {
+				// this is only valid if the owner is not a Connection;
+				// Connection labels are always contained in the Diagram
+				// just like the Connection itself.
+				if (labelShape.eContainer() != ownerPE.eContainer()) {
+					ContainerShape container = (ContainerShape) ownerPE.eContainer();
+					container.getChildren().add(labelShape);
+				}
+			}
+			GraphicsUtil.setLocationRelativeToDiagram(labelShape, x, y);
+			Graphiti.getGaService().setSize(labelGA, w, h);
+			if (ownerPE instanceof Shape) {
+				// Note that it's not necessary to send Connection Labels
+				// to the front because they are children of Connections
+				// which are in the Connection Layer, which is always on
+				// top of the Figure Layer.
 				Graphiti.getPeService().sendToFront(labelShape);
+			}
 
-			// if the label is owned by a connection, its location will always
-			// be relative
-			// to the connection midpoint so we have to get the absolute
-			// location for the
-			// BPMNLabel coordinates.
+			// if the label is owned by a connection, its location will always be
+			// relative to the connection midpoint so we have to get the absolute
+			// location for the BPMNLabel coordinates.
 			ILocation absloc = Graphiti.getPeService().getLocationRelativeToDiagram(labelShape);
 			DIUtils.updateDILabel(ownerPE, absloc.getX(), absloc.getY(), w, h);
 			labelShape.setVisible(!text.isEmpty());

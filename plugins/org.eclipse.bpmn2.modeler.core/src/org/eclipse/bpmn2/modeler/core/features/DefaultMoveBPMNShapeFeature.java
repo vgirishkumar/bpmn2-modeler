@@ -41,11 +41,8 @@ import org.eclipse.graphiti.services.Graphiti;
  */
 public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
-	/** The shape's x coordinate before the move. */
-	protected int preShapeX;
-	
-	/** The shape's y coordinate before the move. */
-	protected int preShapeY;
+	/** The shape's location before the move. */
+	protected ILocation preMoveLoc;
 	
 	/**
 	 * Instantiates a new default MoveShapeFature.
@@ -109,14 +106,8 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	 */
 	@Override
 	protected void preMoveShape(IMoveShapeContext context) {
+		preMoveLoc = Graphiti.getLayoutService().getLocationRelativeToDiagram(context.getShape());
 		super.preMoveShape(context);
-		preShapeX = 0;
-		preShapeX = 0;
-		
-		if (context.getShape().getGraphicsAlgorithm() != null){
-			preShapeX = context.getShape().getGraphicsAlgorithm().getX();
-			preShapeY = context.getShape().getGraphicsAlgorithm().getY();
-		}
 	}
 
 	/* (non-Javadoc)
@@ -133,9 +124,10 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		 * then adjust the Label position by the move offset.
 		 */
 		if (!FeatureSupport.isLabelShape(shape)) {
-			p = GraphicsUtil.createPoint(context.getDeltaX(), context.getDeltaY());
+			ILocation postMoveLoc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+			p = GraphicsUtil.createPoint(postMoveLoc.getX()-preMoveLoc.getX(), postMoveLoc.getY()-preMoveLoc.getY());
 			DIUtils.updateDIShape(shape);
-			FeatureSupport.adjustLabelLocation(getFeatureProvider(), shape, p);
+			FeatureSupport.updateLabel(getFeatureProvider(), shape, p);
 		}
 		
 		

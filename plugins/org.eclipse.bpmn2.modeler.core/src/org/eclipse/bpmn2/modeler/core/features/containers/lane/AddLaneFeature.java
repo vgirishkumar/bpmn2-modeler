@@ -10,12 +10,11 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
@@ -26,8 +25,6 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -38,11 +35,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.Text;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -136,27 +129,9 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 			containerShape.setContainer(context.getTargetContainer());
 		}
 		
-//		Shape textShape = peCreateService.createShape(containerShape, false);
-//		Text text = gaService.createText(textShape, businessObject.getName());
-//		StyleUtil.applyStyle(text, businessObject);
-//		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-//		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-//		if (horz) {
-//			text.setAngle(-90);
-//			gaService.setLocationAndSize(text, 0, 0, 15, height);
-//		}
-//		else {
-//			gaService.setLocationAndSize(text, 0, 0, width, 15);
-//		}
-//		link(textShape, businessObject);
-
-		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null
-				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
-			FeatureSupport.redraw(context.getTargetContainer());
-		}
-
-//		if (context.getTargetContainer().getContainer() != null) { // only children may be sent back
-//			peService.sendToBack(context.getTargetContainer());
+//		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null
+//				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
+//			FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
 //		}
 
 		// hook for subclasses to inject extra code
@@ -233,8 +208,13 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 	@Override
 	protected int getHeight(IAddContext context) {
 		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
-			if (context.getTargetContainer() instanceof Diagram) {
+			ContainerShape targetContainer = context.getTargetContainer();
+			if (targetContainer instanceof Diagram) {
 				return super.getHeight(context);
+			}
+			if (FeatureSupport.isLane(targetContainer)) {
+				if (FeatureSupport.getPoolOrLaneChildren(targetContainer).size()==0)
+					return super.getHeight(context);
 			}
 			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {
@@ -242,7 +222,8 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 				if (b!=null)
 					return (int) b.getHeight();
 			}
-			int height = context.getTargetContainer().getGraphicsAlgorithm().getHeight();
+			
+			int height = targetContainer.getGraphicsAlgorithm().getHeight();
 			
 			Bounds bounds = getPreviousBounds(context);
 			if (bounds != null) {
@@ -256,8 +237,13 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 	@Override
 	public int getWidth(IAddContext context) {
 		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
-			if (context.getTargetContainer() instanceof Diagram) {
+			ContainerShape targetContainer = context.getTargetContainer();
+			if (targetContainer instanceof Diagram) {
 				return super.getWidth(context);
+			}
+			if (FeatureSupport.isLane(targetContainer)) {
+				if (FeatureSupport.getPoolOrLaneChildren(targetContainer).size()==0)
+					return super.getWidth(context);
 			}
 			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {
@@ -265,7 +251,7 @@ public class AddLaneFeature extends AbstractBpmn2AddElementFeature<Lane> {
 				if (b!=null)
 					return (int) b.getWidth();
 			}
-			int width = context.getTargetContainer().getGraphicsAlgorithm().getWidth();
+			int width = targetContainer.getGraphicsAlgorithm().getWidth();
 			
 			Bounds bounds = getPreviousBounds(context);
 			if (bounds != null) {

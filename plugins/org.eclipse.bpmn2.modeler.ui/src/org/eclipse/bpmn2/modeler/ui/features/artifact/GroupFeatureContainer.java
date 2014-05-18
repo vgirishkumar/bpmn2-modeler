@@ -285,8 +285,8 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 				int y = context.getY() + loc.getY();
 				((MoveShapeContext)context).setX(x);
 				((MoveShapeContext)context).setY(y);
-				((MoveShapeContext)context).setDeltaX(x - preShapeX);
-				((MoveShapeContext)context).setDeltaY(y - preShapeY);
+				((MoveShapeContext)context).setDeltaX(x - preMoveLoc.getX());
+				((MoveShapeContext)context).setDeltaY(y - preMoveLoc.getY());
 				((MoveShapeContext)context).setTargetContainer(getDiagram());
 			}
 
@@ -357,7 +357,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			}
 
 			DIUtils.updateDIShape(groupShape);
-			FeatureSupport.adjustLabelLocation(getFeatureProvider(), groupShape, null);
+			FeatureSupport.updateLabel(getFeatureProvider(), groupShape, null);
 
 			List<ContainerShape> containedShapesAfterResize = FeatureSupport.findGroupedShapes(groupShape);
 			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapesBeforeResize);

@@ -10,11 +10,10 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
@@ -32,7 +31,8 @@ public class MoveFromLaneToDiagramFeature extends MoveLaneFeature {
 	@Override
 	protected void internalMove(IMoveShapeContext context) {
 		modifyModelStructure(context);
-		FeatureSupport.redraw(context.getSourceContainer());
+		layoutPictogramElement(context.getSourceContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {

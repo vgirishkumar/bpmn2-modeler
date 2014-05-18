@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.lane;
 
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -21,6 +23,7 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
@@ -43,9 +46,9 @@ public class DeleteLaneFeature extends AbstractDefaultDeleteFeature {
 		
 		if (parentContainerShape != null) {
 			boolean before = false;
-			ContainerShape neighborContainerShape = FeatureSupport.getLaneAfter(laneContainerShape);
+			ContainerShape neighborContainerShape = getLaneAfter(laneContainerShape);
 			if (neighborContainerShape == null) {
-				neighborContainerShape = FeatureSupport.getLaneBefore(laneContainerShape);
+				neighborContainerShape = getLaneBefore(laneContainerShape);
 				if (neighborContainerShape == null) {
 					super.delete(context);
 					return;
@@ -77,5 +80,101 @@ public class DeleteLaneFeature extends AbstractDefaultDeleteFeature {
 			}
 		}
 		super.delete(context);
+	}
+	
+	private ContainerShape getLaneBefore(ContainerShape container) {
+		if (!BusinessObjectUtil.containsElementOfType(container, Lane.class)) {
+			return null;
+		}
+		
+		ContainerShape parentContainerShape = container.getContainer();
+		if (parentContainerShape == null) {
+			return null;
+		}
+		
+		GraphicsAlgorithm ga = container.getGraphicsAlgorithm();
+		int x = ga.getX();
+		int y = ga.getY();
+		boolean isHorizontal = FeatureSupport.isHorizontal(container);
+		
+		ContainerShape result = null;
+		for (PictogramElement picElem : BusinessObjectUtil.getChildElementsOfType(parentContainerShape, Lane.class)) {
+			if (picElem instanceof ContainerShape && !picElem.equals(container)) {
+				ContainerShape currentContainerShape = (ContainerShape) picElem;
+				GraphicsAlgorithm currentGA = currentContainerShape.getGraphicsAlgorithm();
+				if (isHorizontal) {
+					if (currentGA.getY() < y) {
+						if (result != null) {
+							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
+							if (resultGA.getY() < currentGA.getY()) {
+								result = currentContainerShape;
+							}
+						} else {
+							result = currentContainerShape;
+						}
+					}
+				} else {
+					if (currentGA.getX() < x) {
+						if (result != null) {
+							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
+							if (resultGA.getX() < currentGA.getX()) {
+								result = currentContainerShape;
+							}
+						} else {
+							result = currentContainerShape;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	private ContainerShape getLaneAfter(ContainerShape container) {
+		if (!BusinessObjectUtil.containsElementOfType(container, Lane.class)) {
+			return null;
+		}
+		
+		ContainerShape parentContainerShape = container.getContainer();
+		if (parentContainerShape == null) {
+			return null;
+		}
+		
+		GraphicsAlgorithm ga = container.getGraphicsAlgorithm();
+		int x = ga.getX();
+		int y = ga.getY();
+		boolean isHorizontal = FeatureSupport.isHorizontal(container);
+		
+		ContainerShape result = null;
+		for (PictogramElement picElem : BusinessObjectUtil.getChildElementsOfType(parentContainerShape, Lane.class)) {
+			if (picElem instanceof ContainerShape && !picElem.equals(container)) {
+				ContainerShape currentContainerShape = (ContainerShape) picElem;
+				GraphicsAlgorithm currentGA = currentContainerShape.getGraphicsAlgorithm();
+				if (isHorizontal) {
+					if (currentGA.getY() > y) {
+						if (result != null) {
+							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
+							if (resultGA.getY() > currentGA.getY()) {
+								result = currentContainerShape;
+							}
+						} else {
+							result = currentContainerShape;
+						}
+					}
+				} else {
+					if (currentGA.getX() > x) {
+						if (result != null) {
+							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
+							if (resultGA.getX() > currentGA.getX()) {
+								result = currentContainerShape;
+							}
+						} else {
+							result = currentContainerShape;
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 }

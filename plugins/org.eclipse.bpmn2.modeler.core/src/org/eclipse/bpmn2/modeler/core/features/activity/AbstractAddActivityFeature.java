@@ -124,8 +124,6 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		gaService.setLocationAndSize(rect, 0, 0, width, height);
 		link(rectShape, businessObject);
 		
-		peService.setPropertyValue(rectShape, GraphitiConstants.IS_ACTIVITY, Boolean.toString(true));
-
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 

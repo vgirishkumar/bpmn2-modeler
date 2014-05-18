@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
@@ -776,8 +777,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 			if (labelFont!=null) {
 				// roundabout way to get the Diagram for a Business Object:
-				// see {@link DIUtils} for details. 
-				List<PictogramElement> pes = DIUtils.getPictogramElements(element.eResource().getResourceSet(), element);
+				// see {@link DIUtils} for details.
+				Resource res = ExtendedPropertiesAdapter.getResource(element);
+				List<PictogramElement> pes = DIUtils.getPictogramElements(res.getResourceSet(), element);
 				if (pes.size()>0) {
 					Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pes.get(0));
 					ss.setLabelFont(ShapeStyle.toGraphitiFont(diagram, labelFont));

@@ -10,7 +10,7 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.lane;
+package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
@@ -18,24 +18,23 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
-public class MoveFromDiagramToParticipantFeature extends MoveLaneFeature {
+public class MoveFromLaneToParticipantFeature extends MoveLaneFeature {
 
-	public MoveFromDiagramToParticipantFeature(IFeatureProvider fp) {
+	public MoveFromLaneToParticipantFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public boolean canMoveShape(IMoveShapeContext context) {
-		Participant p = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
-
 		if (getMovedLane(context).getFlowNodeRefs().isEmpty()) {
 			return true;
 		}
+
+		Participant p = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
 
 		if (p.getProcessRef() == null) {
 			return true;
@@ -51,37 +50,31 @@ public class MoveFromDiagramToParticipantFeature extends MoveLaneFeature {
 	@Override
 	protected void internalMove(IMoveShapeContext context) {
 		modifyModelStructure(context);
-		FeatureSupport.redraw(context.getTargetContainer());
+		layoutPictogramElement(context.getTargetContainer());
+		layoutPictogramElement(context.getSourceContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
+//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
-		Participant targetParticipant = (Participant) getBusinessObjectForPictogramElement(context
-				.getTargetContainer());
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
 		Lane movedLane = getMovedLane(context);
-		mh.moveLane(movedLane, targetParticipant);
-		Participant internalParticipant = mh.getParticipant(getDiagram());
-		LaneSet laneSet = null;
-		for (LaneSet set : internalParticipant.getProcessRef().getLaneSets()) {
-			if (set.getLanes().contains(movedLane)) {
-				laneSet = set;
-				break;
-			}
-		}
-		if (laneSet != null) {
-			laneSet.getLanes().remove(movedLane);
-			if (laneSet.getLanes().isEmpty()) {
-				internalParticipant.getProcessRef().getLaneSets().remove(laneSet);
-			}
+		Participant targetParticipant = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
 
-			Process process = targetParticipant.getProcessRef();
-			if (process.getLaneSets().isEmpty()) {
-				LaneSet claneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-//					claneSet.setId(EcoreUtil.generateUUID());
-				process.getLaneSets().add(claneSet);
-				ModelUtil.setID(claneSet);
-			}
-			process.getLaneSets().get(0).getLanes().add(movedLane);
+		ModelHandler mh = ModelHandler.getInstance(getDiagram());
+		mh.moveLane(movedLane, targetParticipant);
+
+		Process process = targetParticipant.getProcessRef();
+		if (process.getLaneSets().isEmpty()) {
+			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
+			process.getLaneSets().add(createLaneSet);
+			ModelUtil.setID(createLaneSet);
+		}
+		process.getLaneSets().get(0).getLanes().add(movedLane);
+
+		Lane fromLane = (Lane) getBusinessObjectForPictogramElement(context.getSourceContainer());
+		fromLane.getChildLaneSet().getLanes().remove(movedLane);
+		if (fromLane.getChildLaneSet().getLanes().isEmpty()) {
+			fromLane.setChildLaneSet(null);
 		}
 	}
 }

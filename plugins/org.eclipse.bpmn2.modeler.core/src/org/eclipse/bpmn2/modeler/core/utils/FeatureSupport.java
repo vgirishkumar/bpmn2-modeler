@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.utils;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,11 +51,10 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
@@ -66,11 +64,9 @@ import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.dd.di.DiagramElement;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -86,9 +82,7 @@ import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.MmFactory;
 import org.eclipse.graphiti.mm.Property;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -100,9 +94,11 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
+/**
+ * This is a hodgepodge of static methods used by various Graphiti Features.
+ */
 public class FeatureSupport {
 	public static boolean isValidFlowElementTarget(ITargetContext context) {
 		boolean intoDiagram = context.getTargetContainer() instanceof Diagram;
@@ -161,7 +157,8 @@ public class FeatureSupport {
 	}
 
 	public static boolean isLane(PictogramElement element) {
-		return BusinessObjectUtil.containsElementOfType(element, Lane.class);
+		return element instanceof ContainerShape &&
+				BusinessObjectUtil.containsElementOfType(element, Lane.class);
 	}
 
 	public static Lane getTargetLane(ITargetContext context) {
@@ -175,12 +172,13 @@ public class FeatureSupport {
 	}
 	
 	public static boolean isTargetParticipant(ITargetContext context) {
-		return isParticipant(context.getTargetContainer()) &&
-				!isChoreographyParticipantBand(context.getTargetContainer());
+		return isParticipant(context.getTargetContainer());
 	}
 
 	public static boolean isParticipant(PictogramElement element) {
-		return BusinessObjectUtil.containsElementOfType(element, Participant.class);
+		return element instanceof ContainerShape &&
+				BusinessObjectUtil.containsElementOfType(element, Participant.class) &&
+				!isChoreographyParticipantBand(element);
 	}
 
 	public static Participant getTargetParticipant(ITargetContext context) {
@@ -305,14 +303,14 @@ public class FeatureSupport {
 		for (PictogramElement pe : getContainerChildren(container)) {
 			pe.setVisible(visible);
 			if (visible)
-				FeatureSupport.adjustLabelLocation(fp, pe, null);
+				FeatureSupport.updateLabel(fp, pe, null);
 			if (pe instanceof AnchorContainer) {
 				AnchorContainer ac = (AnchorContainer)pe;
 				for (Anchor a : ac.getAnchors()) {
 					for (Connection c : a.getOutgoingConnections()) {
 						c.setVisible(visible);
 						if (visible)
-							FeatureSupport.adjustLabelLocation(fp, c, null);
+							FeatureSupport.updateLabel(fp, c, null);
 						for (ConnectionDecorator decorator : c.getConnectionDecorators()) {
 							decorator.setVisible(visible);
 						}
@@ -320,33 +318,6 @@ public class FeatureSupport {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Use ModelHandler.getInstance(diagram) instead
-	 * 
-	 * @param diagram
-	 * @return
-	 * @throws IOException
-	 */
-	@Deprecated
-	public static ModelHandler getModelHanderInstance(Diagram diagram) throws IOException {
-		return ModelHandlerLocator.getModelHandler(diagram.eResource());
-	}
-
-	public static void redraw(ContainerShape container) {
-		ContainerShape root = getRootContainer(container);
-		resizeRecursively(root);
-		postResizeFixLenghts(root);
-		updateDI(root);
-	}
-
-	private static void updateDI(ContainerShape root) {
-		Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(root);
-
-		Class<?> instanceClass = BusinessObjectUtil.getFirstElementOfType(root, BaseElement.class).eClass()
-				.getInstanceClass();
-		DIUtils.updateDIShape(root);
 	}
 
 	public static ContainerShape getRootContainer(ContainerShape container) {
@@ -356,240 +327,6 @@ public class FeatureSupport {
 			return getRootContainer(parent);
 		}
 		return container;
-	}
-
-	private static Dimension resize(ContainerShape container) {
-		EObject elem = BusinessObjectUtil.getFirstElementOfType(container, BaseElement.class);
-		IGaService service = Graphiti.getGaService();
-		int height = 0;
-		int width = container.getGraphicsAlgorithm().getWidth() - 30;
-		boolean horz = isHorizontal(container);
-		if (horz) {
-			height = 0;
-			width = container.getGraphicsAlgorithm().getWidth() - 30;
-		}
-		else {
-			width = 0;
-			height = container.getGraphicsAlgorithm().getHeight() - 30;
-		}
-
-		EList<Shape> children = container.getChildren();
-		ECollections.sort(children, new SiblingLaneComparator());
-		for (Shape s : children) {
-			Object bo = BusinessObjectUtil.getFirstElementOfType(s, BaseElement.class);
-			if (bo != null && (bo instanceof Lane || bo instanceof Participant) && !bo.equals(elem)) {
-				GraphicsAlgorithm ga = s.getGraphicsAlgorithm();
-				if (horz) {
-					service.setLocation(ga, 30, height);
-					height += ga.getHeight() - 1;
-					if (ga.getWidth() >= width) {
-						width = ga.getWidth();
-					} else {
-						service.setSize(ga, width, ga.getHeight());
-					}
-				}
-				else {
-					service.setLocation(ga, width, 30);
-					width += ga.getWidth() - 1;
-					if (ga.getHeight() >= height) {
-						height = ga.getHeight();
-					} else {
-						service.setSize(ga, ga.getWidth(), height);
-					}
-				}
-			}
-		}
-
-		GraphicsAlgorithm ga = container.getGraphicsAlgorithm();
-
-		if (horz) {
-			if (height == 0) {
-				return new Dimension(ga.getWidth(), ga.getHeight());
-			} else {
-				int newWidth = width + 30;
-				int newHeight = height + 1;
-				service.setSize(ga, newWidth, newHeight);
-	
-				for (Shape s : children) {
-					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof AbstractText) {
-						AbstractText text = (AbstractText)childGa;
-						text.setAngle(-90);
-						service.setLocationAndSize(text, 5, 0, 15, newHeight);
-					} else if (childGa instanceof Polyline) {
-						Polyline line = (Polyline) childGa;
-						Point p0 = line.getPoints().get(0);
-						Point p1 = line.getPoints().get(1);
-						p0.setX(30); p0.setY(0);
-						p1.setX(30); p1.setY(newHeight);
-					}
-				}
-	
-				return new Dimension(newWidth, newHeight);
-			}
-		}
-		else {
-			if (width == 0) {
-				return new Dimension(ga.getWidth(), ga.getHeight());
-			} else {
-				int newWidth = width + 1;
-				int newHeight = height + 30;
-				service.setSize(ga, newWidth, newHeight);
-	
-				for (Shape s : children) {
-					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof AbstractText) {
-						AbstractText text = (AbstractText)childGa;
-						text.setAngle(0);
-						service.setLocationAndSize(text, 0, 5, newWidth, 15);
-					} else if (childGa instanceof Polyline) {
-						Polyline line = (Polyline) childGa;
-						Point p0 = line.getPoints().get(0);
-						Point p1 = line.getPoints().get(1);
-						p0.setX(0); p0.setY(30);
-						p1.setX(newWidth); p1.setY(30);
-					}
-				}
-	
-				return new Dimension(newWidth, newHeight);
-			}
-		}
-	}
-	
-	private static Dimension resizeRecursively(ContainerShape root) {
-		BaseElement elem = BusinessObjectUtil.getFirstElementOfType(root, BaseElement.class);
-		List<Dimension> dimensions = new ArrayList<Dimension>();
-		IGaService service = Graphiti.getGaService();
-		int foundContainers = 0;
-		boolean horz = isHorizontal(root);
-
-		for (Shape s : root.getChildren()) {
-			Object bo = BusinessObjectUtil.getFirstElementOfType(s, BaseElement.class);
-			if (checkForResize(elem, s, bo)) {
-				foundContainers += 1;
-				Dimension d = resizeRecursively((ContainerShape) s);
-				if (d != null) {
-					dimensions.add(d);
-				}
-			}
-		}
-
-		if (dimensions.isEmpty()) {
-			GraphicsAlgorithm ga = root.getGraphicsAlgorithm();
-			for (Shape s : root.getChildren()) {
-				GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-				if (childGa instanceof AbstractText) {
-					AbstractText text = (AbstractText)childGa;
-					if (horz) {
-						text.setAngle(-90);
-						service.setLocationAndSize(text, 5, 0, 15, ga.getHeight());
-					}
-					else {
-						text.setAngle(0);
-						service.setLocationAndSize(text, 0, 5, ga.getWidth(), 15);
-					}
-				} else if (childGa instanceof Polyline) {
-					Polyline line = (Polyline) childGa;
-					Point p0 = line.getPoints().get(0);
-					Point p1 = line.getPoints().get(1);
-					if (horz) {
-						p0.setX(30); p0.setY(0);
-						p1.setX(30); p1.setY(ga.getHeight());
-					}
-					else {
-						p0.setX(0); p0.setY(30);
-						p1.setX(ga.getWidth()); p1.setY(30);
-					}
-				}
-			}
-			return new Dimension(ga.getWidth(), ga.getHeight());
-		}
-
-		if (foundContainers > 0) {
-			return resize(root);
-		}
-
-		return getMaxDimension(horz, dimensions);
-	}
-
-	/**
-	 * One can only resize lanes and participants
-	 */
-	private static boolean checkForResize(BaseElement currentBo, Shape s, Object bo) {
-		if (!(s instanceof ContainerShape)) {
-			return false;
-		}
-		if (bo == null) {
-			return false;
-		}
-		if (!(bo instanceof Lane || bo instanceof Participant)) {
-			return false;
-		}
-		return !bo.equals(currentBo);
-	}
-
-	private static Dimension getMaxDimension(boolean horz, List<Dimension> dimensions) {
-		if (dimensions.isEmpty()) {
-			return null;
-		}
-		int height = 0;
-		int width = 0;
-
-		if (horz) {
-			for (Dimension d : dimensions) {
-				height += d.height;
-				if (d.width > width) {
-					width = d.width;
-				}
-			}
-		}
-		else {
-			for (Dimension d : dimensions) {
-				width += d.width;
-				if (d.height > height) {
-					height = d.height;
-				}
-			}
-		}
-		return new Dimension(width, height);
-	}
-
-	private static void postResizeFixLenghts(ContainerShape root) {
-		IGaService service = Graphiti.getGaService();
-		BaseElement elem = BusinessObjectUtil.getFirstElementOfType(root, BaseElement.class);
-		GraphicsAlgorithm ga = root.getGraphicsAlgorithm();
-		int width = ga.getWidth() - 30;
-		int height = ga.getHeight() - 30;
-		boolean horz = isHorizontal(root);
-
-		for (Shape s : root.getChildren()) {
-			Object o = BusinessObjectUtil.getFirstElementOfType(s, BaseElement.class);
-			if (checkForResize(elem, s, o)) {
-				GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-				if (horz)
-					service.setSize(childGa, width, childGa.getHeight());
-				else
-					service.setSize(childGa, childGa.getWidth(), height);
-				DIUtils.updateDIShape(s);
-				postResizeFixLenghts((ContainerShape) s);
-			}
-		}
-		DIUtils.updateDIShape(root);
-	}
-
-	public static Shape getTextShape(IPictogramElementContext context) {
-		Shape value = null;
-
-		PictogramElement pe = context.getPictogramElement();
-		if (pe instanceof ContainerShape) {
-			ContainerShape cs = (ContainerShape) pe;
-			for (Shape shape : cs.getChildren()) {
-				if (shape.getGraphicsAlgorithm() instanceof AbstractText) {
-					value = shape;
-				}
-			}
-		}
-		return value;
 	}
 
 	public static Participant getTargetParticipant(ITargetContext context, ModelHandler handler) {
@@ -619,199 +356,128 @@ public class FeatureSupport {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T extends EObject> T getChildElementOfType(PictogramElement container, String property, String expectedValue, Class<T> clazz) {
-		IPeService peService = Graphiti.getPeService();
-		Iterator<PictogramElement> iterator = peService.getAllContainedPictogramElements(container).iterator();
-		while (iterator.hasNext()) {
-			PictogramElement pe = iterator.next();
-			String value = peService.getPropertyValue(pe, property);
-			if (value != null && value.equals(expectedValue) && clazz.isInstance(pe)) {
-				return (T) pe;
+	public static ContainerShape getFirstLaneInContainer(ContainerShape root) {
+		List<PictogramElement> laneShapes = BusinessObjectUtil.getChildElementsOfType(root, Lane.class);
+		if (!laneShapes.isEmpty()) {
+			Iterator<PictogramElement> iterator = laneShapes.iterator();
+			PictogramElement result = iterator.next();
+			if (result instanceof ContainerShape) {
+				GraphicsAlgorithm ga = result.getGraphicsAlgorithm();
+				if (isHorizontal(root)) {
+					while (iterator.hasNext()) {
+						PictogramElement currentShape = iterator.next();
+						if (currentShape instanceof ContainerShape) {
+							if (currentShape.getGraphicsAlgorithm().getY() < ga.getY()) {
+								result = currentShape;
+							}
+						}
+					}
+				} else {
+					while (iterator.hasNext()) {
+						PictogramElement currentShape = iterator.next();
+						if (currentShape instanceof ContainerShape) {
+							if (currentShape.getGraphicsAlgorithm().getX() < ga.getX()) {
+								result = currentShape;
+							}
+						}
+					}				
+				}
+				return (ContainerShape) result;
 			}
 		}
-		
-		// also search the linked objects
-		PictogramElement pe = BusinessObjectUtil.getFirstElementOfType(container, PictogramElement.class);
-		if (pe!=null) {
-			String value = peService.getPropertyValue(pe, property);
-			if (value != null && value.equals(expectedValue) && clazz.isInstance(pe)) {
-				return (T) pe;
-			}
-			return getChildElementOfType(pe, property, expectedValue, clazz);
-		}
-		return null;
+		return root;
 	}
 	
+	public static ContainerShape getLastLaneInContainer(ContainerShape root) {
+		List<PictogramElement> laneShapes = BusinessObjectUtil.getChildElementsOfType(root, Lane.class);
+		if (!laneShapes.isEmpty()) {
+			Iterator<PictogramElement> iterator = laneShapes.iterator();
+			PictogramElement result = iterator.next();
+			if (result instanceof ContainerShape) {
+				GraphicsAlgorithm ga = result.getGraphicsAlgorithm();
+				if (isHorizontal(root)) {
+					while (iterator.hasNext()) {
+						PictogramElement currentShape = iterator.next();
+						if (currentShape instanceof ContainerShape) {
+							if (currentShape.getGraphicsAlgorithm().getY() > ga.getY()) {
+								result = currentShape;
+							}
+						}
+					}
+				} else {
+					while (iterator.hasNext()) {
+						PictogramElement currentShape = iterator.next();
+						if (currentShape instanceof ContainerShape) {
+							if (currentShape.getGraphicsAlgorithm().getX() > ga.getX()) {
+								result = currentShape;
+							}
+						}
+					}				
+				}
+				return (ContainerShape) result;
+			}
+		}
+		return root;
+	}
+	
+	public static List<PictogramElement> getPoolOrLaneChildren(ContainerShape containerShape) {
+		List<PictogramElement> children = new ArrayList<PictogramElement>();
+		for (PictogramElement pe : containerShape.getChildren()) {
+			BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+			if (pe instanceof ContainerShape && !isLane(pe) && be!=null)
+				children.add(pe);
+		}
+		return children;
+	}
+
 	/**
-	 * Returns a list of {@link PictogramElement}s which contains an element to the
-	 * assigned businessObjectClazz, i.e. the list contains {@link PictogramElement}s
-	 * which meet the following constraint:<br>
-	 * <code>
-	 * 	foreach child of root:<br>
-	 *  BusinessObjectUtil.containsChildElementOfType(child, businessObjectClazz) == true
-	 * </code>
-	 * @param root
-	 * @param businessObjectClazz
-	 * @return
+	 * Returns a list of all Shapes and any Connections attached to them, that
+	 * are children or descendants of the given Lane or Pool container. Only
+	 * Shapes that are NOT Lanes are returned.
+	 * 
+	 * @param containerShape the Lane or Pool container shape.
 	 */
-	@SuppressWarnings("rawtypes")
-	public static List<PictogramElement> getChildsOfBusinessObjectType(ContainerShape root, Class businessObjectClazz) {
-		List<PictogramElement> result = new ArrayList<PictogramElement>();
-		for (Shape currentShape : root.getChildren()) {
-			if (BusinessObjectUtil.containsChildElementOfType(currentShape, businessObjectClazz)) {
-				result.add(currentShape);
-			}
-		}
-		return result;
+	public static List<PictogramElement> getPoolAndLaneDescendants(ContainerShape containerShape) {
+		List<PictogramElement> children = new ArrayList<PictogramElement>();
+		FeatureSupport.collectChildren(containerShape, children);
+		return children;
 	}
-	
-	public static Shape getFirstLaneInContainer(ContainerShape root) {
-		List<PictogramElement> laneShapes = getChildsOfBusinessObjectType(root, Lane.class);
-		if (!laneShapes.isEmpty()) {
-			Iterator<PictogramElement> iterator = laneShapes.iterator();
-			PictogramElement result = iterator.next();
-			GraphicsAlgorithm ga = result.getGraphicsAlgorithm();
-			if (isHorizontal(root)) {
-				while (iterator.hasNext()) {
-					PictogramElement currentShape = iterator.next();
-					if (currentShape.getGraphicsAlgorithm().getY() < ga.getY()) {
-						result = currentShape;
-					}
+
+	/**
+	 * Collects all Shapes and any Connections attached to them, that are
+	 * children or descendants of the given Lane or Pool container. Only Shapes
+	 * that are NOT Lanes are collected.
+	 * 
+	 * @param laneShape the current Lane shape. This method is recursive and is
+	 *            initially invoked for the root container.
+	 * @param descendants the list of descendant Shapes and attached Connections
+	 */
+	public static void collectChildren(ContainerShape laneShape, List<PictogramElement> descendants) {
+		for (PictogramElement pe : laneShape.getChildren()) {
+			if (pe instanceof ContainerShape) {
+				if (isLane(pe)) {
+					collectChildren((ContainerShape) pe, descendants);
 				}
-			} else {
-				while (iterator.hasNext()) {
-					PictogramElement currentShape = iterator.next();
-					if (currentShape.getGraphicsAlgorithm().getX() < ga.getX()) {
-						result = currentShape;
-					}
-				}				
-			}
-			return (Shape) result;
-		}
-		return root;
-	}
-	
-	public static Shape getLastLaneInContainer(ContainerShape root) {
-		List<PictogramElement> laneShapes = getChildsOfBusinessObjectType(root, Lane.class);
-		if (!laneShapes.isEmpty()) {
-			Iterator<PictogramElement> iterator = laneShapes.iterator();
-			PictogramElement result = iterator.next();
-			GraphicsAlgorithm ga = result.getGraphicsAlgorithm();
-			if (isHorizontal(root)) {
-				while (iterator.hasNext()) {
-					PictogramElement currentShape = iterator.next();
-					if (currentShape.getGraphicsAlgorithm().getY() > ga.getY()) {
-						result = currentShape;
-					}
-				}
-			} else {
-				while (iterator.hasNext()) {
-					PictogramElement currentShape = iterator.next();
-					if (currentShape.getGraphicsAlgorithm().getX() > ga.getX()) {
-						result = currentShape;
-					}
-				}				
-			}
-			return (Shape) result;
-		}
-		return root;
-	}
-	
-	public static ContainerShape getLaneBefore(ContainerShape container) {
-		if (!BusinessObjectUtil.containsElementOfType(container, Lane.class)) {
-			return null;
-		}
-		
-		ContainerShape parentContainerShape = container.getContainer();
-		if (parentContainerShape == null) {
-			return null;
-		}
-		
-		GraphicsAlgorithm ga = container.getGraphicsAlgorithm();
-		int x = ga.getX();
-		int y = ga.getY();
-		boolean isHorizontal = isHorizontal(container);
-		
-		ContainerShape result = null;
-		for (PictogramElement picElem : getChildsOfBusinessObjectType(parentContainerShape, Lane.class)) {
-			if (picElem instanceof ContainerShape && !picElem.equals(container)) {
-				ContainerShape currentContainerShape = (ContainerShape) picElem;
-				GraphicsAlgorithm currentGA = currentContainerShape.getGraphicsAlgorithm();
-				if (isHorizontal) {
-					if (currentGA.getY() < y) {
-						if (result != null) {
-							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
-							if (resultGA.getY() < currentGA.getY()) {
-								result = currentContainerShape;
+				else {
+					BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+					if (be!=null) {
+						descendants.add(pe);
+						for (Anchor a :((ContainerShape) pe).getAnchors()) {
+							for (Connection c : a.getIncomingConnections()) {
+								if (c instanceof FreeFormConnection && !descendants.contains(c)) {
+									descendants.add(c);
+								}
 							}
-						} else {
-							result = currentContainerShape;
-						}
-					}
-				} else {
-					if (currentGA.getX() < x) {
-						if (result != null) {
-							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
-							if (resultGA.getX() < currentGA.getX()) {
-								result = currentContainerShape;
+							for (Connection c : a.getOutgoingConnections()) {
+								if (c instanceof FreeFormConnection && !descendants.contains(c)) {
+									descendants.add(c);
+								}
 							}
-						} else {
-							result = currentContainerShape;
 						}
 					}
 				}
 			}
 		}
-		return result;
-	}
-	
-	public static ContainerShape getLaneAfter(ContainerShape container) {
-		if (!BusinessObjectUtil.containsElementOfType(container, Lane.class)) {
-			return null;
-		}
-		
-		ContainerShape parentContainerShape = container.getContainer();
-		if (parentContainerShape == null) {
-			return null;
-		}
-		
-		GraphicsAlgorithm ga = container.getGraphicsAlgorithm();
-		int x = ga.getX();
-		int y = ga.getY();
-		boolean isHorizontal = isHorizontal(container);
-		
-		ContainerShape result = null;
-		for (PictogramElement picElem : getChildsOfBusinessObjectType(parentContainerShape, Lane.class)) {
-			if (picElem instanceof ContainerShape && !picElem.equals(container)) {
-				ContainerShape currentContainerShape = (ContainerShape) picElem;
-				GraphicsAlgorithm currentGA = currentContainerShape.getGraphicsAlgorithm();
-				if (isHorizontal) {
-					if (currentGA.getY() > y) {
-						if (result != null) {
-							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
-							if (resultGA.getY() > currentGA.getY()) {
-								result = currentContainerShape;
-							}
-						} else {
-							result = currentContainerShape;
-						}
-					}
-				} else {
-					if (currentGA.getX() > x) {
-						if (result != null) {
-							GraphicsAlgorithm resultGA = result.getGraphicsAlgorithm();
-							if (resultGA.getX() > currentGA.getX()) {
-								result = currentContainerShape;
-							}
-						} else {
-							result = currentContainerShape;
-						}
-					}
-				}
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -1052,7 +718,7 @@ public class FeatureSupport {
 		}
 		
 		if (layoutChanged)
-			FeatureSupport.adjustLabelLocation(fp, connection, null);
+			FeatureSupport.updateLabel(fp, connection, null);
 		
 		return layoutChanged || updateChanged;
 	}
@@ -1187,6 +853,23 @@ public class FeatureSupport {
 		return null;
 	}
 
+	public static boolean isActivityMarkerContainer(PictogramElement pe) {
+		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
+		return new Boolean(property).booleanValue();
+	}
+
+	public static boolean hasBPMNShape(PictogramElement pe) {
+		return BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) != null;
+	}
+
+	public static boolean hasBPMNEdge(PictogramElement pe) {
+		return BusinessObjectUtil.getFirstElementOfType(pe, BPMNEdge.class) != null;
+	}
+
+	public static boolean hasBPMNElement(PictogramElement pe) {
+		return hasBPMNShape(pe) || hasBPMNEdge(pe);
+	}
+	
 	/*
 	 * Label support methods
 	 */
@@ -1232,8 +915,9 @@ public class FeatureSupport {
 	 */
 	public static PictogramElement getLabelOwner(IContext context) {
 		List<PictogramElement> pes = (List<PictogramElement>) context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENTS);
-		if (pes!=null && pes.size()>0)
-			return pes.get( pes.size()-1 );
+		if (pes!=null && pes.size()>0) {
+			return getLabelOwner(pes.get( pes.size()-1 )); 
+		}
 		if (context instanceof IPictogramElementContext)
 			return FeatureSupport.getLabelOwner(((IPictogramElementContext)context).getPictogramElement());
 		return null;
@@ -1303,16 +987,16 @@ public class FeatureSupport {
 
 	/**
 	 * Updates the contents of, and relocates a Label according to User
-	 * Preferences for the associated BPMN2 object.
+	 * Preferences for the linked BPMN2 object.
 	 * 
 	 * @param fp the Feature Provider
 	 * @param pe the PictogramElement that may be either the Label shape or its
 	 *            owner.
-	 * @param offset an optional offset if the owning shape was moved. This is
+	 * @param offset an optional X/Y offset if the owning shape was moved. This is
 	 *            used to relocate Labels that are "movable", that is they can
 	 *            be manually positioned independently of their owners.
 	 */
-	public static void adjustLabelLocation(IFeatureProvider fp, PictogramElement pe, Point offset) {
+	public static void updateLabel(IFeatureProvider fp, PictogramElement pe, Point offset) {
 		UpdateContext context = new UpdateContext(getLabelOwner(pe));
 		// Offset is only used if the label is MOVABLE - we need to keep the label's
 		// relative position to its owning shape the same.

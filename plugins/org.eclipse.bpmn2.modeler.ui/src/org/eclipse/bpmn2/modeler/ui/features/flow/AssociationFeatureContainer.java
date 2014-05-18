@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
@@ -380,7 +381,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 	}
 	
-	public static class UpdateAssociationFeature extends AbstractUpdateFeature {
+	public static class UpdateAssociationFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateAssociationFeature(IFeatureProvider fp) {
 			super(fp);

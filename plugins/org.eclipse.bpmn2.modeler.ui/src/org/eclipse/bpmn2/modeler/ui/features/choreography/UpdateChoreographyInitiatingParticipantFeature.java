@@ -30,6 +30,7 @@ import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.util.IColorConstant;
@@ -48,7 +49,11 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 		if (reason.toBoolean())
 			return reason;
 
-		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
+		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape))
+			return Reason.createFalseReason();
+			
+		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(pe,
 				ChoreographyActivity.class);
 
 		String id = peService.getPropertyValue(context.getPictogramElement(), INITIATING_PARTICIPANT_REF);

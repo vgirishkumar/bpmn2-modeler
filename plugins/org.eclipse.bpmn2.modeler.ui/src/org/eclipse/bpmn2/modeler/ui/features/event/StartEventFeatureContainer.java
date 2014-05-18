@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.event;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractCreateEventFeature;
@@ -127,7 +128,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 		}
 	}
 
-	private class UpdateSubProcessEventFeature extends AbstractUpdateFeature {
+	private class UpdateSubProcessEventFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateSubProcessEventFeature(IFeatureProvider fp) {
 			super(fp);

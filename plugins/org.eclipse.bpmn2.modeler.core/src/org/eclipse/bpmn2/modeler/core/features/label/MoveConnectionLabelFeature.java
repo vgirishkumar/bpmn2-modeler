@@ -38,7 +38,7 @@ public class MoveConnectionLabelFeature extends DefaultMoveConnectionDecoratorFe
 	@Override
 	public void moveConnectionDecorator(IMoveConnectionDecoratorContext context) {
 		super.moveConnectionDecorator(context);
-		FeatureSupport.adjustLabelLocation(
+		FeatureSupport.updateLabel(
 				getFeatureProvider(),
 				context.getConnectionDecorator().getConnection(),
 				null);

@@ -74,7 +74,7 @@ public abstract class AbstractBpmn2DirectEditingFeature extends AbstractDirectEd
 		if (feature!=null) {
 			be.eSet(feature, value);
 			PictogramElement pe = context.getPictogramElement();
-			FeatureSupport.adjustLabelLocation(getFeatureProvider(), ((Shape) pe).getContainer(), null);
+			FeatureSupport.updateLabel(getFeatureProvider(), ((Shape) pe).getContainer(), null);
 		}
 	}
 
