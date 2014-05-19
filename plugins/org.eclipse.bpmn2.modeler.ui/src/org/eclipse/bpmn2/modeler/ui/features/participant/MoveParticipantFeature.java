@@ -115,8 +115,8 @@ public class MoveParticipantFeature extends MoveContainerFeature {
 				bpmnShape.setParticipantBandKind(bandKind);
 			}
 			
-			ChoreographyUtil.resizePartipantBandContainerShapes(width, height,
-					top, bottom, getDiagram());
+			// adjust Participant Band size and location
+			ChoreographyUtil.updateParticipantBands(context);
 		}
 	}
 

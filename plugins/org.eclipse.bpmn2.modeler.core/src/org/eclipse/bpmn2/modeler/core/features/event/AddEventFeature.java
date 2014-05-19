@@ -15,14 +15,16 @@ package org.eclipse.bpmn2.modeler.core.features.event;
 import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape;
 
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
@@ -35,10 +37,14 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public class AddEventFeature<T extends Event>
-	extends AbstractBpmn2AddElementFeature<T> {
+	extends AbstractBpmn2AddFeature<T> {
 
 	public AddEventFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp);
 	}
 
 	@Override

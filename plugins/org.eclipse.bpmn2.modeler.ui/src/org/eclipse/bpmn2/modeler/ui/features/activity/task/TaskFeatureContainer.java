@@ -15,12 +15,9 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.impl.TaskImpl;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AddTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.ServiceTaskFeatureContainer.AddServiceTaskFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -40,10 +37,7 @@ public class TaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override 
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddTaskFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
-		return multiAdd;
+		return new AddTaskFeature(fp);
 	}
 
 	public static class CreateTaskFeature extends AbstractCreateTaskFeature<Task> {

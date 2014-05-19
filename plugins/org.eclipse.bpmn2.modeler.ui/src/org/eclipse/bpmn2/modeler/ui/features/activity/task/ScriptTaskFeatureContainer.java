@@ -13,20 +13,13 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.task;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ScriptTask;
-import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.AbstractCreateTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.activity.task.ReceiveTaskFeatureContainer.AddReceiveTaskFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
 
 public class ScriptTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
@@ -42,10 +35,7 @@ public class ScriptTaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddScriptTaskFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
-		return multiAdd;
+		return new AddScriptTaskFeature(fp);
 	}
 	
 	public static class AddScriptTaskFeature extends AbstractAddDecoratedTaskFeature<ScriptTask> {

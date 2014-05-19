@@ -20,12 +20,11 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AbstractCreateArtifactFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
@@ -84,10 +83,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddGroupFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
-		return multiAdd;
+		return new AddGroupFeature(fp);
 	}
 
 	@Override
@@ -149,7 +145,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		return new ResizeGroupFeature(fp);
 	}
 
-	public class AddGroupFeature extends AbstractBpmn2AddElementFeature<Group> {
+	public class AddGroupFeature extends AbstractBpmn2AddFeature<Group> {
 		public AddGroupFeature(IFeatureProvider fp) {
 			super(fp);
 		}
@@ -157,6 +153,10 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		@Override
 		public boolean canAdd(IAddContext context) {
 			return true;
+		}
+
+		public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+			return new AddShapeLabelFeature(fp);
 		}
 
 		@Override

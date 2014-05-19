@@ -14,16 +14,18 @@ package org.eclipse.bpmn2.modeler.core.features.activity;
 
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -44,7 +46,7 @@ import org.eclipse.graphiti.services.IPeService;
  * @param <T> the generic type
  */
 public abstract class AbstractAddActivityFeature<T extends Activity>
-	extends AbstractBpmn2AddElementFeature<T> {
+	extends AbstractBpmn2AddFeature<T> {
 
 	/** The ga service. */
 	protected final IGaService gaService = Graphiti.getGaService();
@@ -62,6 +64,10 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	 */
 	public AbstractAddActivityFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp);
 	}
 
 	/* (non-Javadoc)
@@ -162,12 +168,12 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature#getWidth()
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getWidth()
 	 */
 	public abstract int getWidth();
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature#getHeight()
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getHeight()
 	 */
 	public abstract int getHeight();
 }

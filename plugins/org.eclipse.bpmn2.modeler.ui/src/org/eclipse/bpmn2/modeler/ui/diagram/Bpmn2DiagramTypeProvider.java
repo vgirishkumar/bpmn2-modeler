@@ -115,5 +115,15 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 			}
 			return changedAndRelatedBOs.toArray(new PictogramElement[0]);
 		}
+		
+		@Override
+		public void updatePictogramElements(PictogramElement[] dirtyPes) {
+			ArrayList<PictogramElement> updated = new ArrayList<PictogramElement>();
+			for (PictogramElement pe : dirtyPes) {
+				if (!updated.contains(pe))
+					updated.add(pe);
+			}
+			super.updatePictogramElements(updated.toArray(new PictogramElement[updated.size()]));
+		}
 	}
 }

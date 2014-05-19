@@ -6,16 +6,13 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddConnectionLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelFactory;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TemporalDependency;
-import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer.AddMessageFlowFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -61,10 +58,7 @@ public class CustomTemporalDependencyFeatureContainer extends CustomConnectionFe
 
 		@Override
 		public IAddFeature getAddFeature(IFeatureProvider fp) {
-			MultiAddFeature multiAdd = new MultiAddFeature(fp);
-			multiAdd.addFeature(new AddTemporalDependencyFeature(fp));
-			multiAdd.addFeature(new AddConnectionLabelFeature(fp));
-			return multiAdd;
+			return new AddTemporalDependencyFeature(fp);
 		}
 		
 	}

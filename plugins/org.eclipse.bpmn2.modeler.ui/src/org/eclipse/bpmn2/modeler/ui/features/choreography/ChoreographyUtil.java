@@ -33,12 +33,15 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -50,8 +53,15 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.AreaContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -59,8 +69,8 @@ import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -73,6 +83,9 @@ import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.graphiti.util.IColorConstant;
 
+/**
+ * FIXME: Clean this mess up. These should be in their appropriate Features, not a utility class.
+ */
 public class ChoreographyUtil implements ChoreographyProperties {
 
 	private static IGaService gaService = Graphiti.getGaService();
@@ -187,8 +200,22 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		};
 	}
 
-	public static void resizePartipantBandContainerShapes(int w, int h, List<ContainerShape> top,
-			List<ContainerShape> bottom, Diagram diagram) {
+	public static void updateParticipantBands(IPictogramElementContext context) {
+		ContainerShape shape = (ContainerShape) context.getPictogramElement();
+		List<ContainerShape> bands = ChoreographyUtil.getParticipantBandContainerShapes(shape);
+		Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = ChoreographyUtil
+				.getTopAndBottomBands(bands);
+		IDimension size = GraphicsUtil.calculateSize(shape);
+		ChoreographyUtil.resizeParticipantBandContainerShapes(size.getWidth(), size.getHeight(),
+				topAndBottom.getFirst(), topAndBottom.getSecond());
+		
+		IUpdateFeature updateFeature = new UpdateChoreographyParticipantBandsFeature(null);
+		IUpdateContext newContext = new UpdateContext(shape);
+		updateFeature.update(newContext);
+	}
+	
+	public static void resizeParticipantBandContainerShapes(int w, int h, List<ContainerShape> top,
+			List<ContainerShape> bottom) {
 
 		int y = 0;
 		for (ContainerShape container : top) {
@@ -260,8 +287,8 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return sb.toString();
 	}
 
-	public static void updateParticipantReferences(ContainerShape choreographyContainer,
-			List<ContainerShape> currentParticipantContainers, List<Participant> newParticipants, IFeatureProvider fp,
+	public static void updateParticipantReferences(IFeatureProvider fp, ContainerShape choreographyContainer,
+			List<ContainerShape> currentParticipantContainers, List<Participant> newParticipants,
 			boolean showNames) {
 
 		Diagram diagram = peService.getDiagramForShape(choreographyContainer);
@@ -273,13 +300,17 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		for (int i = 0; i < currentParticipantContainers.size(); i++) {
 			ContainerShape container = currentParticipantContainers.get(i);
 			for (Connection c : peService.getOutgoingConnections(container)) {
-				EObject parent = c.getEnd().eContainer();
-				if (parent instanceof PictogramElement) {
-					peService.deletePictogramElement((PictogramElement) parent);
-				}
+				AnchorContainer parent = c.getEnd().getParent();
+				Shape labelShape = FeatureSupport.getLabelShape(parent);
+				if (labelShape!=null)
+					peService.deletePictogramElement(labelShape);
+				peService.deletePictogramElement(parent);
 			}
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(container, BPMNShape.class);
 			diElements.remove(bpmnShape);
+			Shape labelShape = FeatureSupport.getLabelShape(container);
+			if (labelShape!=null)
+				peService.deletePictogramElement(labelShape);
 			peService.deletePictogramElement(container);
 		}
 
@@ -318,7 +349,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			bpmnShape.setIsMarkerVisible(multiple);
 			bpmnShape.setParticipantBandKind(bandKind);
 			bpmnShape.setIsMessageVisible(sources.contains(participant));
-			createParticipantBandContainerShape(bandKind, choreographyContainer, bandShape, bpmnShape, showNames);
+			createParticipantBandContainerShape(fp, bandKind, choreographyContainer, bandShape, bpmnShape, showNames);
 			if (multiple) {
 				drawMultiplicityMarkers(bandShape);
 			}
@@ -329,11 +360,12 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		}
 
 		Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = getTopAndBottomBands(newContainers);
-		resizePartipantBandContainerShapes(size.getWidth(), size.getHeight(), topAndBottom.getFirst(),
-				topAndBottom.getSecond(), diagram);
+		resizeParticipantBandContainerShapes(size.getWidth(), size.getHeight(), topAndBottom.getFirst(),
+				topAndBottom.getSecond());
 	}
 
-	private static ContainerShape createTopShape(ContainerShape parent, ContainerShape bandShape, BPMNShape bpmnShape,
+	private static ContainerShape createTopShape(IFeatureProvider fp,
+			ContainerShape parent, ContainerShape bandShape, BPMNShape bpmnShape,
 			boolean initiating, boolean showNames) {
 
 		if (bandShape == null) {
@@ -351,9 +383,12 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, 0, w, h);
 
-		Participant p = (Participant) bpmnShape.getBpmnElement();
+		Participant participant = (Participant) bpmnShape.getBpmnElement();
+		fp.link(bandShape, participant);
+		fp.link(bandShape, bpmnShape);
+		
 		if (showNames) {
-			addBandLabel(bandShape, p.getName(), w, h);
+			addBandLabel(fp, bandShape, w, h);
 		}
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
 		AnchorUtil.addFixedPointAnchors(bandShape, band);
@@ -363,7 +398,8 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return bandShape;
 	}
 
-	private static ContainerShape createBottomShape(ContainerShape parent, ContainerShape bandShape,
+	private static ContainerShape createBottomShape(IFeatureProvider fp,
+			ContainerShape parent, ContainerShape bandShape,
 			BPMNShape bpmnShape, boolean initiating, boolean showNames) {
 
 		if (bandShape == null) {
@@ -384,9 +420,12 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, y, w, h);
 
-		Participant p = (Participant) bpmnShape.getBpmnElement();
+		Participant participant = (Participant) bpmnShape.getBpmnElement();
+		fp.link(bandShape, participant);
+		fp.link(bandShape, bpmnShape);
+
 		if (showNames) {
-			addBandLabel(bandShape, p.getName(), w, h);
+			addBandLabel(fp, bandShape, w, h);
 		}
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
 		AnchorUtil.addFixedPointAnchors(bandShape, band);
@@ -396,7 +435,8 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return bandShape;
 	}
 
-	private static ContainerShape createMiddleShape(ContainerShape parent, ContainerShape bandShape,
+	private static ContainerShape createMiddleShape(IFeatureProvider fp,
+			ContainerShape parent, ContainerShape bandShape,
 			BPMNShape bpmnShape, boolean initiating, boolean showNames) {
 
 		if (bandShape == null) {
@@ -417,9 +457,12 @@ public class ChoreographyUtil implements ChoreographyProperties {
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, y, w, h);
 
-		Participant p = (Participant) bpmnShape.getBpmnElement();
+		Participant participant = (Participant) bpmnShape.getBpmnElement();
+		fp.link(bandShape, participant);
+		fp.link(bandShape, bpmnShape);
+
 		if (showNames) {
-			addBandLabel(bandShape, p.getName(), w, h);
+			addBandLabel(fp, bandShape, w, h);
 		}
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
 		AnchorUtil.addFixedPointAnchors(bandShape, band);
@@ -429,16 +472,27 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		return bandShape;
 	}
 
-	private static void addBandLabel(ContainerShape container, String name, int w, int h) {
-		Diagram diagram = peService.getDiagramForShape(container);
-		Shape labelShape = peService.createShape(container, false);
-		Text label = gaService.createDefaultText(diagram, labelShape);
-		BaseElement be = BusinessObjectUtil.getFirstBaseElement(container);
-		label.setValue(name);
-		gaService.setLocationAndSize(label, 0, 0, w, h);
-		StyleUtil.applyStyle(label, be);
-		label.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-		label.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+	private static void addBandLabel(IFeatureProvider fp, final ContainerShape bandShape, int w, int h) {
+		Participant participant = (Participant) BusinessObjectUtil.getFirstBaseElement(bandShape);
+		AreaContext ac = new AreaContext();
+		ac.setHeight(h);
+		ac.setWidth(w);
+		AddContext context = new AddContext(ac, bandShape);
+		context.setNewObject(participant);
+		IAddFeature feature = new AddShapeLabelFeature(fp) {
+			@Override
+			protected ContainerShape getTargetContainer(IAddContext context) {
+				return bandShape;
+			}
+			
+			@Override
+			protected PictogramElement getLabelOwner(IAddContext context) {
+				return bandShape;
+			}
+		};
+		PictogramElement labelShape = feature.add(context);
+		// force an update of the label
+		peService.setPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED, "true");
 	}
 
 	private static ParticipantBandKind getNewParticipantBandKind(ChoreographyActivity choreography,
@@ -518,30 +572,31 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		}
 	}
 
-	public static ContainerShape createParticipantBandContainerShape(ParticipantBandKind bandKind,
-			ContainerShape container, ContainerShape bandContainer, BPMNShape bpmnShape, boolean showNames) {
+	public static ContainerShape createParticipantBandContainerShape(IFeatureProvider fp,
+			ParticipantBandKind bandKind, ContainerShape container, ContainerShape bandContainer,
+			BPMNShape bpmnShape, boolean showNames) {
 
 		switch (bandKind) {
 		case TOP_INITIATING:
-			return createTopShape(container, bandContainer, bpmnShape, true, showNames);
+			return createTopShape(fp, container, bandContainer, bpmnShape, true, showNames);
 		case TOP_NON_INITIATING:
-			return createTopShape(container, bandContainer, bpmnShape, false, showNames);
+			return createTopShape(fp, container, bandContainer, bpmnShape, false, showNames);
 		case MIDDLE_INITIATING:
-			return createMiddleShape(container, bandContainer, bpmnShape, true, showNames);
+			return createMiddleShape(fp, container, bandContainer, bpmnShape, true, showNames);
 		case MIDDLE_NON_INITIATING:
-			return createMiddleShape(container, bandContainer, bpmnShape, false, showNames);
+			return createMiddleShape(fp, container, bandContainer, bpmnShape, false, showNames);
 		case BOTTOM_INITIATING:
-			return createBottomShape(container, bandContainer, bpmnShape, true, showNames);
+			return createBottomShape(fp, container, bandContainer, bpmnShape, true, showNames);
 		case BOTTOM_NON_INITIATING:
-			return createBottomShape(container, bandContainer, bpmnShape, false, showNames);
+			return createBottomShape(fp, container, bandContainer, bpmnShape, false, showNames);
 		}
 
 		return bandContainer;
 	}
 
-	public static ContainerShape createParticipantBandContainerShape(ParticipantBandKind bandKind,
-			ContainerShape container, BPMNShape bpmnShape, boolean showNames) {
-		return createParticipantBandContainerShape(bandKind, container, null, bpmnShape, showNames);
+	public static ContainerShape createParticipantBandContainerShape(IFeatureProvider fp,
+			ParticipantBandKind bandKind, ContainerShape container, BPMNShape bpmnShape, boolean showNames) {
+		return createParticipantBandContainerShape(fp, bandKind, container, null, bpmnShape, showNames);
 	}
 
 	public static void drawMessageLinks(IFeatureProvider fp, ContainerShape choreographyContainer) {

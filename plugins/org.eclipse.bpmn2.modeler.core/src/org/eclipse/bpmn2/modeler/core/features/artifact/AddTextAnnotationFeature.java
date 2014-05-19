@@ -14,13 +14,15 @@ package org.eclipse.bpmn2.modeler.core.features.artifact;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.TextAnnotation;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -37,12 +39,33 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 
-public class AddTextAnnotationFeature extends AbstractBpmn2AddElementFeature<TextAnnotation> {
+public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnotation> {
 
 	public AddTextAnnotationFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	@Override
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp) {
+
+			@Override
+			public void applyStyle(AbstractText text, BaseElement be) {
+				super.applyStyle(text, be);
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+			}
+
+			@Override
+			public String getLabelString(BaseElement element) {
+				if (element instanceof TextAnnotation)
+					return ((TextAnnotation)element).getText();
+				return "";
+			}
+
+		};
+	}
+	
 	@Override
 	public boolean canAdd(IAddContext context) {
 		return FeatureSupport.isValidArtifactTarget(context);

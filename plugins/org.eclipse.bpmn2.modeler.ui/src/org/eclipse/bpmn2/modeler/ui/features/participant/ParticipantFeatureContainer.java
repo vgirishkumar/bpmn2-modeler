@@ -12,10 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.participant;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.LayoutContainerFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.UpdateContainerLabelFeature;
@@ -24,7 +22,6 @@ import org.eclipse.bpmn2.modeler.core.features.containers.participant.DirectEdit
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.ResizeParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantMultiplicityFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PullupFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PushdownFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
@@ -45,9 +42,6 @@ import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 
 public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
@@ -63,27 +57,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddParticipantFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
-			
-			@Override
-			protected AbstractText createText(Shape labelShape, String labelText) {
-				// need to override the default MultiText created by super
-				// because the Graphiti layout algorithm doesn't work as
-				// expected when text angle is -90
-				return gaService.createText(labelShape, labelText);
-			}
-
-			@Override
-			public void applyStyle(AbstractText text, BaseElement be) {
-				super.applyStyle(text, be);
-				text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-				text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-			}
-
-		});
-		return multiAdd;
+		return new AddParticipantFeature(fp);
 	}
 
 	@Override

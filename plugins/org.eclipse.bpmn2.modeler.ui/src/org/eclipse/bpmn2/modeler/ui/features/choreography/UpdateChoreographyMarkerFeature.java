@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -25,7 +26,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateChoreographyMarkerFeature extends AbstractUpdateFeature {
+public class UpdateChoreographyMarkerFeature extends AbstractBpmn2UpdateFeature {
 
 	private final IPeService peService = Graphiti.getPeService();
 
@@ -40,6 +41,10 @@ public class UpdateChoreographyMarkerFeature extends AbstractUpdateFeature {
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
+		IReason reason = super.updateNeeded(context);
+		if (reason.toBoolean())
+			return reason;
+		
 		ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
 		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(choreographyContainer,
 				ChoreographyActivity.class);

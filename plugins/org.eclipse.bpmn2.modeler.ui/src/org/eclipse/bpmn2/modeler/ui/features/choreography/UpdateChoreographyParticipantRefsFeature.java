@@ -57,20 +57,19 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 
 	@Override
 	public boolean update(IUpdateContext context) {
-		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-				ChoreographyActivity.class);
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
+		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(containerShape,
+				ChoreographyActivity.class);
 		List<Participant> participants = choreography.getParticipantRefs();
-		List<ContainerShape> bandContainerShapes = ChoreographyUtil
-				.getParticipantBandContainerShapes((ContainerShape) context.getPictogramElement());
+		List<ContainerShape> bandShapes = ChoreographyUtil.getParticipantBandContainerShapes(containerShape);
 
-		ChoreographyUtil.updateParticipantReferences(containerShape, bandContainerShapes, participants,
-				getFeatureProvider(), isShowNames());
+		ChoreographyUtil.updateParticipantReferences(
+				getFeatureProvider(), containerShape, bandShapes, participants, isShowNames());
 
-		peService.setPropertyValue(context.getPictogramElement(), PARTICIPANT_REF_IDS,
+		peService.setPropertyValue(containerShape, PARTICIPANT_REF_IDS,
 				ChoreographyUtil.getParticipantRefIds(choreography));
 
-		ChoreographyUtil.drawMessageLinks(getFeatureProvider(), (ContainerShape) context.getPictogramElement());
+		ChoreographyUtil.drawMessageLinks(getFeatureProvider(), containerShape);
 		return true;
 	}
 

@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -52,18 +51,12 @@ public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 
 	@Override
 	public void resizeShape(IResizeShapeContext context) {
-		try {
-			List<ContainerShape> bands = ChoreographyUtil.getParticipantBandContainerShapes((ContainerShape) context
-					.getPictogramElement());
-			Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = ChoreographyUtil
-					.getTopAndBottomBands(bands);
-			ChoreographyUtil.resizePartipantBandContainerShapes(context.getWidth(), context.getHeight(),
-					topAndBottom.getFirst(), topAndBottom.getSecond(), getDiagram());
-		} catch (Exception e) {
-			Activator.logError(e);
-		}
-		ChoreographyUtil.updateChoreographyMessageLinks(context);
 		super.resizeShape(context);
+
+		// adjust Participant Band size and location
+		ChoreographyUtil.updateParticipantBands(context);
+		// adjust Messages and MessageLinks
+		ChoreographyUtil.updateChoreographyMessageLinks(context);
 	}
 
 }

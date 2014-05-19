@@ -14,15 +14,14 @@
 package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddPictogramElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.impl.AbstractAddPictogramElementFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -32,7 +31,7 @@ import org.eclipse.graphiti.services.IPeService;
 /**
  *
  */
-abstract public class AbstractAddLabelFeature extends AbstractBpmn2AddPictogramElementFeature {
+abstract public class AbstractAddLabelFeature extends AbstractAddPictogramElementFeature {
 
 	protected final IGaService gaService = Graphiti.getGaService();
 	protected final IPeService peService = Graphiti.getPeService();
@@ -72,5 +71,9 @@ abstract public class AbstractAddLabelFeature extends AbstractBpmn2AddPictogramE
 
 	public void applyStyle(AbstractText text, BaseElement be) {
 		StyleUtil.applyStyle(text, be);
+	}
+	
+	protected PictogramElement getLabelOwner(IAddContext context) {
+		return FeatureSupport.getLabelOwner(context);
 	}
 }

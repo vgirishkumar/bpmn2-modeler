@@ -727,10 +727,14 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 	
 	private static void setStyleValue(EObject style, String feature, Object value) {
-		EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
-		Object oldValue = style.eGet(f);
-		if (value!=null && !value.equals(oldValue))
-			style.eSet(f, value);
+		try {
+			EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
+			Object oldValue = style.eGet(f);
+			if (value!=null && !value.equals(oldValue))
+				style.eSet(f, value);
+		}
+		catch (Exception e) {
+		}
 	}
 
 	public static boolean isStyleObject(Object object) {

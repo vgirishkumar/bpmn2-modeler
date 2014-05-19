@@ -407,6 +407,31 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		public boolean canAdd(IAddContext context) {
 			return addFeatureDelegate.canAdd(context);
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getAddLabelFeature(org.eclipse.graphiti.features.IFeatureProvider)
+		 */
+		@Override
+		public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+			// TODO Auto-generated method stub
+			return addFeatureDelegate.getAddLabelFeature(fp);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getHeight()
+		 */
+		@Override
+		public int getHeight() {
+			return addFeatureDelegate.getHeight();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getWidth()
+		 */
+		@Override
+		public int getWidth() {
+			return addFeatureDelegate.getWidth();
+		}
 	}
 
 	/*

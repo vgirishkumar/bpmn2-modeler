@@ -58,6 +58,12 @@ public interface GraphitiConstants {
 	public static final String LABEL_OFFSET_MAP = "label.offset.map"; //$NON-NLS-1$
 	
 	/**
+	 * The {@link IContext} property key that holds a reference to a single
+	 * {@link PictogramElement} object. The PE is used to identify the owner
+	 * of a Label Shape.
+	 **/
+	public static final String PICTOGRAM_ELEMENT = "pictogram.element"; //$NON-NLS-1$
+	/**
 	 * The {@link IContext} property key that holds a reference to a List of
 	 * {@link PictogramElement} objects that were created during a {@link MultiAddFeature}
 	 * or {@link CompoundCreateFeature}

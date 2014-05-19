@@ -27,12 +27,14 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -45,13 +47,17 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
 public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
-	extends AbstractBpmn2AddElementFeature<T> {
+	extends AbstractBpmn2AddFeature<T> {
 
 	protected final IGaService gaService = Graphiti.getGaService();
 	protected final IPeService peService = Graphiti.getPeService();
 
 	public AddChoreographyActivityFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp);
 	}
 
 	@Override
@@ -125,8 +131,8 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 
 		for (BPMNShape bpmnShape : participantBandShapes) {
 			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
-			ContainerShape createdShape = ChoreographyUtil.createParticipantBandContainerShape(bandKind,
-					containerShape, bpmnShape, isShowNames());
+			ContainerShape createdShape = ChoreographyUtil.createParticipantBandContainerShape(
+					getFeatureProvider(), bandKind, containerShape, bpmnShape, isShowNames());
 			DIUtils.createDIShape(createdShape, bpmnShape.getBpmnElement(), bpmnShape, getFeatureProvider());
 			Participant p = (Participant) bpmnShape.getBpmnElement();
 			if (p.getParticipantMultiplicity() != null && p.getParticipantMultiplicity().getMaximum() > 1) {

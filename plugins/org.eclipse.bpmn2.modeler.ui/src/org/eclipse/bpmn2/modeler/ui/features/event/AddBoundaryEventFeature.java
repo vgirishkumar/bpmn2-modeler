@@ -16,10 +16,11 @@ import static org.eclipse.bpmn2.modeler.ui.features.event.BoundaryEventFeatureCo
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
@@ -28,6 +29,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
@@ -39,7 +41,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<BoundaryEvent> {
+public class AddBoundaryEventFeature extends AbstractBpmn2AddFeature<BoundaryEvent> {
 
 	public static final String BOUNDARY_EVENT_RELATIVE_Y = "boundary.event.relative.y"; //$NON-NLS-1$
 
@@ -48,6 +50,10 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<Boun
 
 	public AddBoundaryEventFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp);
 	}
 
 	@Override

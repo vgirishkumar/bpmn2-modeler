@@ -28,11 +28,9 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -58,8 +56,6 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.Reason;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -87,8 +83,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddExpandableActivityFeature<CallActivity>(fp) {
+		return new AddExpandableActivityFeature<CallActivity>(fp) {
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, CallActivity businessObject) {
 				super.decorateShape(context, containerShape, businessObject);
@@ -112,9 +107,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 			public int getHeight() {
 				return GraphicsUtil.getActivitySize(getDiagram()).getHeight();
 			}
-		});
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
-		return multiAdd;
+		};
 	}
 
 	@Override

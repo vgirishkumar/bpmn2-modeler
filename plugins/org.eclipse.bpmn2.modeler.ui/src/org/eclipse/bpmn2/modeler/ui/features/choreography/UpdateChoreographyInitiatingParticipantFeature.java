@@ -18,15 +18,11 @@ import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.styles.Color;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -45,10 +41,6 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 
 	@Override
 	public IReason updateNeeded(IUpdateContext context) {
-		IReason reason = super.updateNeeded(context);
-		if (reason.toBoolean())
-			return reason;
-
 		PictogramElement pe = context.getPictogramElement();
 		if (!(pe instanceof ContainerShape))
 			return Reason.createFalseReason();

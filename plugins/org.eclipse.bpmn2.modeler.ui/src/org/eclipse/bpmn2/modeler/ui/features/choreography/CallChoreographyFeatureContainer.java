@@ -15,9 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -42,10 +40,7 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddCallChoreographyFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp));
-		return multiAdd;
+		return new AddCallChoreographyFeature(fp);
 	}
 
 	@Override

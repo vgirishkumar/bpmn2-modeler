@@ -35,7 +35,7 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 
 		BaseElement businessObject = (BaseElement) context.getNewObject();
 		ContainerShape targetContainer = getTargetContainer(context);
-		PictogramElement labelOwner = FeatureSupport.getLabelOwner(context);
+		PictogramElement labelOwner = getLabelOwner(context);
 		if (labelOwner instanceof ContainerShape) {
 			labelShape = peService.createShape(targetContainer, true);
 			createText(labelOwner, labelShape, businessObject);
@@ -51,15 +51,7 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 	 * @param context
 	 * @return the target control for the current context
 	 */
-	ContainerShape getTargetContainer(IAddContext context) {
+	protected ContainerShape getTargetContainer(IAddContext context) {
 		return getFeatureProvider().getDiagramTypeProvider().getDiagram();
-//		boolean isBoundary = context.getProperty(GraphitiConstants.BUSINESS_OBJECT) instanceof BoundaryEvent;
-//		
-//		if ( isBoundary && !DIImport.isImporting(context) ){
-//			if (context.getTargetContainer()!=null){
-//				return context.getTargetContainer().getContainer();
-//			}
-//		}
-//		return context.getTargetContainer();
 	}
 }

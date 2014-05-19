@@ -29,8 +29,9 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateChoreographyParticipantRefsFeature(fp));
 		multiUpdate.addFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyParticipantBandsFeature(fp));
 //		multiUpdate.addFeature(new UpdateLabelFeature(fp));
-		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when prop editor supports enums
+//		multiUpdate.addFeature(new UpdateChoreographyMarkerFeature(fp));
 		return multiUpdate;
 	}
 

@@ -12,17 +12,22 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.containers.participant;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -32,13 +37,33 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddParticipantFeature extends AbstractBpmn2AddElementFeature<Participant> {
+public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> {
 
 	public static final int DEFAULT_POOL_WIDTH = 600;
 	public static final int DEFAULT_POOL_HEIGHT = 150;
 
 	public AddParticipantFeature(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public IAddFeature getAddLabelFeature(IFeatureProvider fp) {
+		return new AddShapeLabelFeature(fp) {
+			
+			@Override
+			protected AbstractText createText(Shape labelShape, String labelText) {
+				// need to override the default MultiText created by super
+				// because the Graphiti layout algorithm doesn't work as
+				// expected when text angle is -90
+				return gaService.createText(labelShape, labelText);
+			}
+
+			@Override
+			public void applyStyle(AbstractText text, BaseElement be) {
+				super.applyStyle(text, be);
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
+			}
+		};
 	}
 
 	@Override

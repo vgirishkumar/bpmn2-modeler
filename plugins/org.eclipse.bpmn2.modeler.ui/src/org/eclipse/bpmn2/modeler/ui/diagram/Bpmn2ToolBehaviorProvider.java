@@ -589,6 +589,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		};
 	}
 
+	private boolean isLabelShape(PictogramElement pe) {
+		return FeatureSupport.isLabelShape(pe)  && FeatureSupport.getLabelOwner(pe)!=null;
+	}
+	
 	@Override
 	public GraphicsAlgorithm[] getClickArea(PictogramElement pe) {
 		if (ActivitySelectionBehavior.canApplyTo(pe)) {
@@ -599,7 +603,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			return ChoreographySelectionBehavior.getClickArea(pe);
 		} else if (GatewaySelectionBehavior.canApplyTo(pe)) {
 			return GatewaySelectionBehavior.getClickArea(pe);
-		} else if (FeatureSupport.isLabelShape(pe)) {
+		} else if (isLabelShape(pe)) {
 			return getClickArea(FeatureSupport.getLabelOwner(pe));
 		}
 		else {
@@ -625,12 +629,10 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			return ChoreographySelectionBehavior.getSelectionBorder(pe);
 		} else if (GatewaySelectionBehavior.canApplyTo(pe)) {
 			return GatewaySelectionBehavior.getSelectionBorder(pe);
-		} else if (FeatureSupport.isLabelShape(pe)) {
+		} else if (isLabelShape(pe)) {
 			return getSelectionBorder(FeatureSupport.getLabelOwner(pe));
 		}
 		else if (pe instanceof ContainerShape) {
-//			if (BusinessObjectUtil.getBusinessObjectForPictogramElement(pe) instanceof ChoreographyActivity)
-//				return ((ContainerShape)pe).getGraphicsAlgorithm();
 			if (((ContainerShape)pe).getChildren().size()>0) {
 				GraphicsAlgorithm ga = ((ContainerShape)pe).getChildren().get(0).getGraphicsAlgorithm();
 				if (!(ga instanceof AbstractText) && !(ga instanceof Polyline))
@@ -646,7 +648,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 	@Override
 	public PictogramElement getSelection(PictogramElement originalPe, PictogramElement[] oldSelection) {
-		if (FeatureSupport.isLabelShape(originalPe)) {
+		if (isLabelShape(originalPe)) {
 			if (FeatureSupport.getLabelPosition(originalPe)!=LabelPosition.MOVABLE) {
 				return FeatureSupport.getLabelOwner(originalPe);
 			}
@@ -666,7 +668,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	public IContextButtonPadData getContextButtonPad(final IPictogramElementContext context) {
 		IContextButtonPadData data = super.getContextButtonPad(context);
 		PictogramElement pe = context.getPictogramElement();
-		if (FeatureSupport.isLabelShape(pe)) {
+		if (isLabelShape(pe)) {
 			pe = FeatureSupport.getLabelOwner(pe);
 		}
 		final IFeatureProvider fp = getFeatureProvider();
@@ -683,11 +685,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			genericButtons |= CONTEXT_BUTTON_REMOVE;
 		}
 
-		if (FeatureSupport.isLabelShape(pe)) {
-//			setGenericContextButtons(data, pe, 0);
-//			return data;
-//			genericButtons = 0;
-		}
 		setGenericContextButtons(data, pe, genericButtons);
 
 		// 2. set the expand & collapse buttons
@@ -708,8 +705,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		// 3.a. create new CreateConnectionContext
 		CreateConnectionContext ccc = new CreateConnectionContext();
-		if (FeatureSupport.isLabelShape(pe))
-			pe = FeatureSupport.getLabelOwner(pe);
 		ccc.setSourcePictogramElement(pe);
 		Anchor anchor = null;
 		if (pe instanceof Anchor) {

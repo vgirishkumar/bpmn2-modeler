@@ -146,6 +146,10 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		return bo != null && bo instanceof Lane;
 	}
 
+	protected boolean checkConnectionAfterMove(Connection c) {
+		return true;
+	}
+	
 	/**
 	 * The Class AlgorithmContainer.
 	 */
@@ -198,24 +202,18 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			Shape shape = context.getShape();
 			for (Anchor a : shape.getAnchors()) {
 				for (Connection c : a.getIncomingConnections()) {
-					BaseElement cbo = BusinessObjectUtil.getFirstBaseElement(c);
-					if (cbo instanceof SequenceFlow || cbo instanceof MessageFlow) {
-						if (!isConnectionValid(cbo))
-							connections.add(c);
-					}
+					if (!isConnectionValid(c))
+						connections.add(c);
 				}
 				for (Connection c : a.getOutgoingConnections()) {
-					BaseElement cbo = BusinessObjectUtil.getFirstBaseElement(c);
-					if (cbo instanceof SequenceFlow || cbo instanceof MessageFlow) {
-						if (!isConnectionValid(cbo))
-							connections.add(c);
-					}
+					if (!isConnectionValid(c))
+						connections.add(c);
 				}
 			}
 			for (Connection c : connections) {
 				DeleteContext dc = new DeleteContext(c);
 				IDeleteFeature df = fp.getDeleteFeature(dc);
-//				df.delete(dc);
+				df.delete(dc);
 			}
 		}
 
@@ -234,7 +232,14 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		 * @param flow the flow
 		 * @return true, if is connection valid
 		 */
-		boolean isConnectionValid(BaseElement flow) {
+		boolean isConnectionValid(Connection c) {
+			if (!MoveFlowNodeFeature.this.checkConnectionAfterMove(c))
+				return true;
+
+			BaseElement flow = BusinessObjectUtil.getFirstBaseElement(c);
+			if (!(flow instanceof SequenceFlow || flow instanceof MessageFlow))
+				return true;
+			
 			EStructuralFeature sourceRef = flow.eClass().getEStructuralFeature("sourceRef"); //$NON-NLS-1$
 			EStructuralFeature targetRef = flow.eClass().getEStructuralFeature("targetRef"); //$NON-NLS-1$
 			BaseElement source = (BaseElement) flow.eGet(sourceRef);

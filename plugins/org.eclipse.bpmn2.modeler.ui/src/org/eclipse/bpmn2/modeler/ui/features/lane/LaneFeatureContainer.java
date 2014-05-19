@@ -12,10 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.lane;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.LayoutContainerFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.UpdateContainerLabelFeature;
@@ -24,7 +22,6 @@ import org.eclipse.bpmn2.modeler.core.features.containers.lane.DirectEditLaneFea
 import org.eclipse.bpmn2.modeler.core.features.containers.lane.MoveLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.lane.ResizeLaneFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.lane.UpdateLaneFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -35,9 +32,6 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 
 public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
@@ -53,27 +47,7 @@ public class LaneFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddLaneFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
-			
-			@Override
-			protected AbstractText createText(Shape labelShape, String labelText) {
-				// need to override the default MultiText created by super
-				// because the Graphiti layout algorithm doesn't work as
-				// expected when text angle is -90
-				return gaService.createText(labelShape, labelText);
-			}
-
-			@Override
-			public void applyStyle(AbstractText text, BaseElement be) {
-				super.applyStyle(text, be);
-				text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
-				text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-			}
-
-		});
-		return multiAdd;
+		return new AddLaneFeature(fp);
 	}
 
 	@Override

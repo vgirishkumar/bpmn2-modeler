@@ -72,8 +72,10 @@ import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.CustomElementFeatureContainer;
@@ -744,5 +746,29 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		if (event.doit != reason.toBoolean())
 			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
 		return reason;
+	}
+	
+	@Override
+	public PictogramElement addIfPossible(IAddContext context) {
+		IAddFeature addElementFeature = getAddFeature(context);
+		PictogramElement pe = super.addIfPossible(context);
+		PictogramElement le = null;
+		if (addElementFeature instanceof AbstractBpmn2AddFeature) {
+			context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, pe);
+			IAddFeature addLabelFeature = ((AbstractBpmn2AddFeature)addElementFeature).getAddLabelFeature(this);
+			if (addLabelFeature!=null && addLabelFeature.canAdd(context)) {
+				le = addLabelFeature.add(context);
+			}
+		}
+		
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		List<PictogramElement> pes = new ArrayList<PictogramElement>();
+		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
+		
+		if (le!=null) {
+			((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);
+		}
+		
+		return pe;
 	}
 }

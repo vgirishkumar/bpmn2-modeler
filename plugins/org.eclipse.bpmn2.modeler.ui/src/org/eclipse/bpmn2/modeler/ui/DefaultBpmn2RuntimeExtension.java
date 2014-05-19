@@ -84,7 +84,8 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 
 	@Override
 	public void notify(LifecycleEvent event) {
-		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_UPDATE)) {
+//		System.out.println(event.eventType+ ": " + event.target);
+		if (event.eventType.equals(EventType.PICTOGRAMELEMENT_ADDED)) {
 			StyleChangeAdapter.adapt((PictogramElement) event.target);
 		}
 		else if (event.eventType.equals(EventType.BUSINESSOBJECT_CREATED) && event.target instanceof BaseElement) {

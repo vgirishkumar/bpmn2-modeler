@@ -918,6 +918,9 @@ public class FeatureSupport {
 		if (pes!=null && pes.size()>0) {
 			return getLabelOwner(pes.get( pes.size()-1 )); 
 		}
+		PictogramElement pe = (PictogramElement) context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENT);
+		if (pe!=null)
+			return pe;
 		if (context instanceof IPictogramElementContext)
 			return FeatureSupport.getLabelOwner(((IPictogramElementContext)context).getPictogramElement());
 		return null;

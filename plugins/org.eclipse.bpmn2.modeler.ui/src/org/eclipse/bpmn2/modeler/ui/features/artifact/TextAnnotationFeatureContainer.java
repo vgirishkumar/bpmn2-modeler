@@ -16,17 +16,13 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.MultiAddFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowDocumentationFeature;
 import org.eclipse.bpmn2.modeler.core.features.ShowPropertiesFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityCompensateMarkerFeature;
-import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.DirectEditTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.LayoutTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
@@ -34,7 +30,6 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -47,13 +42,10 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
-import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -77,26 +69,7 @@ public class TextAnnotationFeatureContainer extends LabelFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		MultiAddFeature multiAdd = new MultiAddFeature(fp);
-		multiAdd.addFeature(new AddTextAnnotationFeature(fp));
-		multiAdd.addFeature(new AddShapeLabelFeature(fp) {
-
-			@Override
-			public void applyStyle(AbstractText text, BaseElement be) {
-				super.applyStyle(text, be);
-				text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
-				text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-			}
-
-			@Override
-			public String getLabelString(BaseElement element) {
-				if (element instanceof TextAnnotation)
-					return ((TextAnnotation)element).getText();
-				return "";
-			}
-
-		});
-		return multiAdd;
+		return new AddTextAnnotationFeature(fp);
 	}
 
 	@Override
