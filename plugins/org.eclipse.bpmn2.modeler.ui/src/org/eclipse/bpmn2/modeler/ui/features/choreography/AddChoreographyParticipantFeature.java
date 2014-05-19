@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Choreography;
-import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -104,7 +104,7 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
-			if (bo instanceof ChoreographyTask) {
+			if (bo instanceof ChoreographyActivity) {
 				return true;
 			}
 		}
@@ -120,9 +120,8 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
-			if (pe instanceof ContainerShape && bo instanceof ChoreographyTask) {
-				ContainerShape containerShape = (ContainerShape)pe;
-				ChoreographyTask task = (ChoreographyTask)bo;
+			if (pe instanceof ContainerShape && bo instanceof ChoreographyActivity) {
+				ChoreographyActivity task = (ChoreographyActivity)bo;
 				
 				Participant participant = null;
 				List<Participant> participantList = new ArrayList<Participant>();

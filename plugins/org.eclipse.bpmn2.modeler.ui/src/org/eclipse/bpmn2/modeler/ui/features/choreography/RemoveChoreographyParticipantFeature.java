@@ -13,14 +13,16 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.impl.DefaultRemoveFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * @author Bob Brodt
@@ -37,7 +39,7 @@ public class RemoveChoreographyParticipantFeature extends DefaultRemoveFeature {
 
 	@Override
 	public boolean canRemove(IRemoveContext context) {
-		// participant bands in a ChoreographyTask CAN be "removed" (from the modelObject's
+		// participant bands in a ChoreographyActivity CAN be "removed" (from the modelObject's
 		// participantRef list) but not "deleted" (from the model)
 		if (ChoreographyUtil.isChoreographyParticipantBand(context.getPictogramElement())) {
 			return true;
@@ -50,11 +52,14 @@ public class RemoveChoreographyParticipantFeature extends DefaultRemoveFeature {
 		IRemoveContext dc = (IRemoveContext)context;
 		if (ChoreographyUtil.isChoreographyParticipantBand(dc.getPictogramElement())) {
 			PictogramElement pe = dc.getPictogramElement();
+			PictogramElement labelShape = FeatureSupport.getLabelShape(pe);
+			if (labelShape!=null)
+				Graphiti.getPeService().deletePictogramElement(labelShape);
 			Participant participant = (Participant)getBusinessObjectForPictogramElement(pe);
 			ContainerShape container = (ContainerShape)pe.eContainer();
 			Object bo = getBusinessObjectForPictogramElement(container); 
-			if (bo instanceof ChoreographyTask) {
-				ChoreographyTask task = (ChoreographyTask)bo;
+			if (bo instanceof ChoreographyActivity) {
+				ChoreographyActivity task = (ChoreographyActivity)bo;
 				task.getParticipantRefs().remove(participant);
 				if (task.getInitiatingParticipantRef() == participant) {
 					task.setInitiatingParticipantRef(null);

@@ -45,14 +45,7 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addFeature(new UpdateChoreographyParticipantRefsFeature(fp) {
-			@Override
-			protected boolean isShowNames() {
-				return false;
-			}
-		});
-		multiUpdate.addFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
+		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
 		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when property editor supports
 		// enums
 		multiUpdate.addFeature(new UpdateLabelFeature(fp) {

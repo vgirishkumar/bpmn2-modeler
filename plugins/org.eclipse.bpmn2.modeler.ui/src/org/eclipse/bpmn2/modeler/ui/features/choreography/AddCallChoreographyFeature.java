@@ -40,7 +40,7 @@ public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<C
 
 	@Override
 	protected boolean isShowNames() {
-		return false;
+		return true;
 	}
 
 }

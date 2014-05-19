@@ -21,6 +21,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
 
 public abstract class AbstractChoreographyFeatureContainer extends BaseElementFeatureContainer {
 
@@ -31,7 +32,7 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 		multiUpdate.addFeature(new UpdateChoreographyInitiatingParticipantFeature(fp));
 		multiUpdate.addFeature(new UpdateChoreographyParticipantBandsFeature(fp));
 //		multiUpdate.addFeature(new UpdateLabelFeature(fp));
-//		multiUpdate.addFeature(new UpdateChoreographyMarkerFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyMarkerFeature(fp));
 		return multiUpdate;
 	}
 
@@ -53,5 +54,16 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return new AbstractDefaultDeleteFeature(fp);
+	}
+	
+	@Override
+	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
+		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
+		ICustomFeature[] thisFeatures = new ICustomFeature[1 + superFeatures.length];
+		int i;
+		for (i=0; i<superFeatures.length; ++i)
+			thisFeatures[i] = superFeatures[i];
+		thisFeatures[i++] = new AddChoreographyParticipantFeature(fp);
+		return thisFeatures;
 	}
 }

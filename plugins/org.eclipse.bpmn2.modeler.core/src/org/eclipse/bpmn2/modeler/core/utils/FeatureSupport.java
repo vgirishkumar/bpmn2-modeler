@@ -25,7 +25,6 @@ import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CategoryValue;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
-import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
 import org.eclipse.bpmn2.Definitions;
@@ -244,7 +243,7 @@ public class FeatureSupport {
 		if (parent instanceof PictogramElement) {
 			// participant bands are always "vertical" so that
 			// the label is drawn horizontally by the LayoutFeature
-			if (BusinessObjectUtil.getFirstElementOfType((PictogramElement)parent, ChoreographyTask.class) != null)
+			if (BusinessObjectUtil.getFirstElementOfType((PictogramElement)parent, ChoreographyActivity.class) != null)
 				return false;
 		}
 

@@ -52,7 +52,7 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 
 	@Override
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
 
 			@Override

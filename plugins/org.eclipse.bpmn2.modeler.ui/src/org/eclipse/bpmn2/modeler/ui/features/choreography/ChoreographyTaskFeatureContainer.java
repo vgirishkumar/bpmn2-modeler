@@ -131,17 +131,6 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 			}
 		};
 	}
-	
-	@Override
-	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
-		ICustomFeature[] thisFeatures = new ICustomFeature[1 + superFeatures.length];
-		int i;
-		for (i=0; i<superFeatures.length; ++i)
-			thisFeatures[i] = superFeatures[i];
-		thisFeatures[i++] = new AddChoreographyParticipantFeature(fp);
-		return thisFeatures;
-	}
 
 	public static class CreateChoreographyTaskFeature extends AbstractCreateFlowElementFeature<ChoreographyTask> {
 

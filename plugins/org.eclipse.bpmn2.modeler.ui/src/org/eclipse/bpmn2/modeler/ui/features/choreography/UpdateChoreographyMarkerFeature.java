@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -44,19 +45,19 @@ public class UpdateChoreographyMarkerFeature extends AbstractBpmn2UpdateFeature 
 		IReason reason = super.updateNeeded(context);
 		if (reason.toBoolean())
 			return reason;
-		
-		ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
-		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(choreographyContainer,
-				ChoreographyActivity.class);
-
-		String loopType = choreography.getLoopType() == null ? "null" : choreography.getLoopType().getName(); //$NON-NLS-1$
-		String property = peService.getPropertyValue(choreographyContainer, ChoreographyProperties.CHOREOGRAPHY_MARKER);
-
-		if (!loopType.equals(property)) {
-			return Reason.createTrueReason();
-		} else {
-			return Reason.createFalseReason();
+		if (context.getPictogramElement() instanceof ContainerShape) {
+			ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
+			ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(choreographyContainer,
+					ChoreographyActivity.class);
+	
+			String loopType = choreography.getLoopType() == null ? "null" : choreography.getLoopType().getName(); //$NON-NLS-1$
+			String property = peService.getPropertyValue(choreographyContainer, ChoreographyProperties.CHOREOGRAPHY_MARKER);
+	
+			if (!loopType.equals(property)) {
+				return Reason.createTrueReason();
+			}
 		}
+		return Reason.createFalseReason();
 	}
 
 	@Override
@@ -66,7 +67,8 @@ public class UpdateChoreographyMarkerFeature extends AbstractBpmn2UpdateFeature 
 				ChoreographyActivity.class);
 
 		for (Shape s : peService.getAllContainedShapes(choreographyContainer)) {
-			String property = peService.getPropertyValue(s, ChoreographyProperties.CHOREOGRAPHY_MARKER_SHAPE);
+//			String property = peService.getPropertyValue(s, ChoreographyProperties.CHOREOGRAPHY_MARKER_SHAPE);
+			String property = peService.getPropertyValue(s, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
 			if (property != null && new Boolean(property)) {
 				ChoreographyUtil.drawChoreographyLoopType((ContainerShape) s, choreography.getLoopType());
 			}

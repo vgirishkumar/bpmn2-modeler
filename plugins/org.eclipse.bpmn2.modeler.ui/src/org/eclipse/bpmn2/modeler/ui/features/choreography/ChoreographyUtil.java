@@ -130,9 +130,9 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		if (o instanceof MessageFlow && pe instanceof Connection) {
 			Connection c = (Connection)pe;
-			if (peService.getPropertyValue(c.getStart().getParent(),MESSAGE_LINK) != null)
+			if (c.getStart()!=null && peService.getPropertyValue(c.getStart().getParent(),MESSAGE_LINK) != null)
 				return true;
-			if (peService.getPropertyValue(c.getEnd().getParent(),MESSAGE_LINK) != null)
+			if (c.getEnd()!=null && peService.getPropertyValue(c.getEnd().getParent(),MESSAGE_LINK) != null)
 				return true;
 		}
 		return false;
