@@ -24,11 +24,13 @@ import org.eclipse.bpmn2.modeler.core.features.DirectEditBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.PropertyBasedFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -188,10 +190,10 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 					}
 					MessageFlow mf = (MessageFlow)BusinessObjectUtil.getBusinessObjectForPictogramElement(connection);
 
-					List<ContainerShape> bands = ChoreographyUtil
+					List<ContainerShape> bands = FeatureSupport
 							.getParticipantBandContainerShapes((ContainerShape) start);
 
-					Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = ChoreographyUtil
+					Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = FeatureSupport
 							.getTopAndBottomBands(bands);
 
 					List<ContainerShape> affectedBands = anchor.locationType == AnchorLocation.BOTTOM ? topAndBottomBands

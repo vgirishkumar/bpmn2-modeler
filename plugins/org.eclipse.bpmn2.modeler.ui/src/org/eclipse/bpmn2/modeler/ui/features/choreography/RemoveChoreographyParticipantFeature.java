@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
@@ -50,23 +51,27 @@ public class RemoveChoreographyParticipantFeature extends DefaultRemoveFeature {
 	@Override
 	public void execute(IContext context) {
 		IRemoveContext dc = (IRemoveContext)context;
-		if (ChoreographyUtil.isChoreographyParticipantBand(dc.getPictogramElement())) {
-			PictogramElement pe = dc.getPictogramElement();
+		PictogramElement pe = dc.getPictogramElement();
+		ContainerShape choreographyActivityContainer = null;
+		if (ChoreographyUtil.isChoreographyParticipantBand(pe)) {
 			PictogramElement labelShape = FeatureSupport.getLabelShape(pe);
 			if (labelShape!=null)
 				Graphiti.getPeService().deletePictogramElement(labelShape);
 			Participant participant = (Participant)getBusinessObjectForPictogramElement(pe);
-			ContainerShape container = (ContainerShape)pe.eContainer();
-			Object bo = getBusinessObjectForPictogramElement(container); 
+			choreographyActivityContainer = (ContainerShape)pe.eContainer();
+			Object bo = getBusinessObjectForPictogramElement(choreographyActivityContainer); 
 			if (bo instanceof ChoreographyActivity) {
-				ChoreographyActivity task = (ChoreographyActivity)bo;
-				task.getParticipantRefs().remove(participant);
-				if (task.getInitiatingParticipantRef() == participant) {
-					task.setInitiatingParticipantRef(null);
+				ChoreographyActivity choreographyActivity = (ChoreographyActivity)bo;
+				choreographyActivity.getParticipantRefs().remove(participant);
+				if (choreographyActivity.getInitiatingParticipantRef() == participant) {
+					choreographyActivity.setInitiatingParticipantRef(null);
 				}
 			}
+			
+			super.execute(context);
+
+			ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityContainer);
 		}
-		super.execute(context);
 	}
 
 }

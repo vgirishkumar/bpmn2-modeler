@@ -12,13 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.CallActivity;
-import org.eclipse.bpmn2.CallChoreography;
-import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
@@ -71,27 +64,5 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 		for (int i=0; i<superFeatures.length; ++i)
 			thisFeatures[4+i] = superFeatures[i];
 		return thisFeatures;
-	}
-	
-	public static boolean isExpandableElement(Object object) {
-		return object instanceof FlowElementsContainer
-				|| object instanceof CallActivity
-				|| object instanceof CallChoreography;
-	}
-	
-	public static boolean isElementExpanded(Object object) {
-		if (isExpandableElement(object)) {
-			BaseElement be = (BaseElement)object;
-			// if the BaseElement has its own BPMNDiagram page it should be considered
-			// to be collapsed and should be represented as such.
-			// TODO: this condition should be removed once we implement Link events as
-			// "off page" connectors.
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be);
-			// otherwise check the "isExpanded" state of the BPMNShape element.
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(be);
-			if (bpmnShape!=null && bpmnShape.isIsExpanded() && bpmnDiagram==null)
-				return true;
-		}
-		return false;
 	}
 }

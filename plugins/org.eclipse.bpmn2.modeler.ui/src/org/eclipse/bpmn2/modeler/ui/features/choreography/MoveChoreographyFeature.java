@@ -13,9 +13,11 @@
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 
 public class MoveChoreographyFeature extends MoveFlowNodeFeature {
 
@@ -26,12 +28,30 @@ public class MoveChoreographyFeature extends MoveFlowNodeFeature {
 	@Override
 	protected void postMoveShape(final IMoveShapeContext context) {
 		super.postMoveShape(context);
-		
+		DiagramBehavior db = (DiagramBehavior) getDiagramBehavior();
+		db.getUpdateBehavior().setAdapterActive(false);
+
+		ChoreographyUtil.updateParticipantBands(getFeatureProvider(), context.getPictogramElement());
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		// adjust Participant Band size and location
-		ChoreographyUtil.updateParticipantBands(context);
+		ChoreographyUtil.updateParticipantBands(getFeatureProvider(), context.getPictogramElement());
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		// adjust Messages and MessageLinks
-		ChoreographyUtil.updateChoreographyMessageLinks(context);
+		ChoreographyUtil.updateChoreographyMessageLinks(getFeatureProvider(), context.getPictogramElement());
+		
+		db.getUpdateBehavior().setAdapterActive(true);
 	}
 
 	@Override

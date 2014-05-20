@@ -51,7 +51,7 @@ public class UpdateExpandableActivityFeature extends AbstractUpdateBaseElementFe
 	public boolean canUpdate(IUpdateContext context) {
 		if (super.canUpdate(context)) {
 			Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-			return AbstractExpandableActivityFeatureContainer.isExpandableElement(bo);
+			return FeatureSupport.isExpandableElement(bo);
 		}
 		return false;
 	}

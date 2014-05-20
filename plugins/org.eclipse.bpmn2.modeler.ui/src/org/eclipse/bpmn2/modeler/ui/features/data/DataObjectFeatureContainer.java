@@ -211,6 +211,9 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 					EcoreUtil.delete(dataObjectReference);
 				}
 			}
+			else
+				changesDone = true;
+			
 			if (changesDone) {
 				if (result == dataObject) { // the new one
 					mh.addFlowElement(targetBusinessObject,dataObject);

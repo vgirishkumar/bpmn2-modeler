@@ -27,11 +27,12 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -221,7 +222,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 //		oldDiagram.getStyles().removeAll(moved);
 
 		// collapse the sub process
-		if (AbstractExpandableActivityFeatureContainer.isExpandableElement(container)) {
+		if (FeatureSupport.isExpandableElement(container)) {
 			bpmnShape.setIsExpanded(true);
 			CollapseFlowNodeFeature collapseFeature = new CollapseFlowNodeFeature(getFeatureProvider());
 			collapseFeature.execute(context);

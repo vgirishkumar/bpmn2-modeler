@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -45,8 +46,9 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 		if (!(pe instanceof ContainerShape))
 			return Reason.createFalseReason();
 			
-		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(pe,
-				ChoreographyActivity.class);
+		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(pe, ChoreographyActivity.class);
+		if (choreography==null)
+			return Reason.createFalseReason();
 
 		String id = peService.getPropertyValue(context.getPictogramElement(), INITIATING_PARTICIPANT_REF);
 		Participant participant = choreography.getInitiatingParticipantRef();
@@ -59,7 +61,7 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 			return Reason.createFalseReason();
 		}
 
-		return Reason.createTrueReason();
+		return Reason.createTrueReason("Initiating Participant");
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 
 		boolean hasInitiatingParticipant = choreography.getInitiatingParticipantRef() != null;
 
-		for (ContainerShape band : ChoreographyUtil.getParticipantBandContainerShapes(container)) {
+		for (ContainerShape band : FeatureSupport.getParticipantBandContainerShapes(container)) {
 			Participant participant = BusinessObjectUtil.getFirstElementOfType(band, Participant.class);
 			boolean isInitiating = hasInitiatingParticipant
 					&& participant.equals(choreography.getInitiatingParticipantRef());

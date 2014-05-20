@@ -236,7 +236,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 					CallActivity.class);
 			String value = getCallableElementStringValue(callActivity.getCalledElementRef());
 			boolean changed = !value.equals(property);
-			return changed ? Reason.createTrueReason() : Reason.createFalseReason();
+			return changed ? Reason.createTrueReason("Called Activity") : Reason.createFalseReason();
 		}
 
 		@Override

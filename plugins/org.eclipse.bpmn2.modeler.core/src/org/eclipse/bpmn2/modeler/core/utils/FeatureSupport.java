@@ -12,8 +12,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CategoryValue;
 import org.eclipse.bpmn2.Choreography;
@@ -54,17 +57,19 @@ import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -281,7 +286,7 @@ public class FeatureSupport {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
 			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
-			if (value!=null && "true".equals(value)) //$NON-NLS-1$
+			if (new Boolean(value))
 				continue;
 			list.add(pe);
 		}
@@ -292,7 +297,7 @@ public class FeatureSupport {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
 			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
-			if (value!=null && "true".equals(value)) //$NON-NLS-1$
+			if (new Boolean(value))
 				list.add(pe);
 		}
 		return list;
@@ -883,6 +888,7 @@ public class FeatureSupport {
 		}
 		return null;
 	}
+	
 	/**
 	 * Checks the given PictogramElement to see if it is a Label shape. Label
 	 * shapes are identified by the LABEL_SHAPE property equal to "true".
@@ -1026,4 +1032,78 @@ public class FeatureSupport {
 		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
 		return ss.getLabelPosition();
 	}
+	
+	/*
+	 * Choreography support methods
+	 */
+
+	public static Tuple<List<ContainerShape>, List<ContainerShape>> getTopAndBottomBands(List<ContainerShape> bandShapes) {
+		List<ContainerShape> top = new ArrayList<ContainerShape>();
+		List<ContainerShape> bottom = new ArrayList<ContainerShape>();
+	
+		if (bandShapes.size() == 1) {
+			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(bandShapes.get(0), BPMNShape.class);
+			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
+			if (bandKind == ParticipantBandKind.TOP_INITIATING || bandKind == ParticipantBandKind.TOP_NON_INITIATING) {
+				top.add(bandShapes.get(0));
+			} else if (bandKind == ParticipantBandKind.BOTTOM_INITIATING
+					|| bandKind == ParticipantBandKind.BOTTOM_NON_INITIATING) {
+				bottom.add(bandShapes.get(0));
+			} else {
+				top.add(bandShapes.get(0));
+			}
+		} else {
+			Collections.sort(bandShapes, new Comparator<ContainerShape>() {
+				@Override
+				public int compare(ContainerShape c1, ContainerShape c2) {
+					BPMNShape bpmnShape1 = BusinessObjectUtil.getFirstElementOfType(c1, BPMNShape.class);
+					Bounds bounds1 = bpmnShape1.getBounds();
+					BPMNShape bpmnShape2 = BusinessObjectUtil.getFirstElementOfType(c2, BPMNShape.class);
+					Bounds bounds2 = bpmnShape2.getBounds();
+					return new Float(bounds1.getY()).compareTo(new Float(bounds2.getY()));
+				}
+			});
+			int n = bandShapes.size();
+			int divider = n / 2;
+			top.addAll(bandShapes.subList(0, divider));
+			bottom.addAll(bandShapes.subList(divider, n));
+		}
+		return new Tuple<List<ContainerShape>, List<ContainerShape>>(top, bottom);
+	}
+
+	public static List<ContainerShape> getParticipantBandContainerShapes(ContainerShape containerShape) {
+		IPeService peService = Graphiti.getPeService();
+		List<ContainerShape> bandShapes = new ArrayList<ContainerShape>();
+		Collection<Shape> shapes = peService.getAllContainedShapes(containerShape);
+		for (Shape s : shapes) {
+			String property = peService.getPropertyValue(s, ChoreographyProperties.BAND);
+			if (new Boolean(property)) {
+				bandShapes.add((ContainerShape) s);
+			}
+		}
+		return bandShapes;
+	}
+
+	public static boolean isElementExpanded(Object object) {
+		if (isExpandableElement(object)) {
+			BaseElement be = (BaseElement)object;
+			// if the BaseElement has its own BPMNDiagram page it should be considered
+			// to be collapsed and should be represented as such.
+			// TODO: this condition should be removed once we implement Link events as
+			// "off page" connectors.
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be);
+			// otherwise check the "isExpanded" state of the BPMNShape element.
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(be);
+			if (bpmnShape!=null && bpmnShape.isIsExpanded() && bpmnDiagram==null)
+				return true;
+		}
+		return false;
+	}
+
+	public static boolean isExpandableElement(Object object) {
+		return object instanceof FlowElementsContainer
+				|| object instanceof CallActivity
+				|| object instanceof CallChoreography;
+	}
+	
 }

@@ -14,13 +14,16 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 
@@ -30,23 +33,23 @@ public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 
 	@Override
 	public boolean canResizeShape(IResizeShapeContext context) {
-		try {
-			List<BPMNShape> bands = ChoreographyUtil.getParicipantBandBpmnShapes((ContainerShape) context
-					.getPictogramElement());
-			int h = ChoreographyProperties.TEXT_H; // + ChoreographyProperties.MARKER_H;
-
-			for (BPMNShape shape : bands) {
-				h += shape.getBounds().getHeight();
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			if (BusinessObjectUtil.getFirstBaseElement(pe) instanceof ChoreographyActivity) {
+				List<BPMNShape> bands = ChoreographyUtil.getParicipantBandBpmnShapes((ContainerShape)pe);
+				int h = ChoreographyProperties.TEXT_H; // + ChoreographyProperties.MARKER_H;
+	
+				for (BPMNShape shape : bands) {
+					h += shape.getBounds().getHeight();
+				}
+	
+				boolean doit = context.getHeight() > 0 ? context.getHeight() > h : true;
+				if (doit && !super.canResizeShape(context))
+					doit = false;
+				return doit;
 			}
-
-			boolean doit = context.getHeight() > 0 ? context.getHeight() > h : true;
-			if (doit && !super.canResizeShape(context))
-				doit = false;
-			return doit;
-		} catch (Exception e) {
-			Activator.logError(e);
-			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -54,9 +57,9 @@ public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 		super.resizeShape(context);
 
 		// adjust Participant Band size and location
-		ChoreographyUtil.updateParticipantBands(context);
+		ChoreographyUtil.updateParticipantBands(getFeatureProvider(), context.getPictogramElement());
 		// adjust Messages and MessageLinks
-		ChoreographyUtil.updateChoreographyMessageLinks(context);
+		ChoreographyUtil.updateChoreographyMessageLinks(getFeatureProvider(), context.getPictogramElement());
 	}
 
 }

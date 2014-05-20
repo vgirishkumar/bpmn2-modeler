@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -76,7 +77,7 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 							if (newLabel==null || newLabel.isEmpty())
 								newLabel = ""; //$NON-NLS-1$
 							if (!newLabel.equals(oldLabel))
-								return Reason.createTrueReason();
+								return Reason.createTrueReason("Choreography Message");
 						}
 					}
 				}
@@ -98,7 +99,7 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 			return Reason.createFalseReason();
 		}
 
-		return Reason.createTrueReason();
+		return Reason.createTrueReason("Choreography Message Link");
 	}
 
 	private boolean isLinkedMessage(PictogramElement pe) {
@@ -146,7 +147,7 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 			sources.add(message.getSourceRef());
 		}
 
-		for (ContainerShape band : ChoreographyUtil.getParticipantBandContainerShapes(choreographyContainer)) {
+		for (ContainerShape band : FeatureSupport.getParticipantBandContainerShapes(choreographyContainer)) {
 			Participant participant = BusinessObjectUtil.getFirstElementOfType(band, Participant.class);
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(band, BPMNShape.class);
 			if (!sources.contains(participant) && bpmnShape.isIsMessageVisible()) {

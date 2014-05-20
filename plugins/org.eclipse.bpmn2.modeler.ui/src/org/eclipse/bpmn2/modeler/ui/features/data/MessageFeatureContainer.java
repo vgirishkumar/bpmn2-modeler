@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
@@ -37,7 +38,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -337,6 +337,9 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 					message = null;
 				}
 			}
+			else
+				changesDone = true;
+
 			if (changesDone) {
 				if (result == message) {
 					// the new one

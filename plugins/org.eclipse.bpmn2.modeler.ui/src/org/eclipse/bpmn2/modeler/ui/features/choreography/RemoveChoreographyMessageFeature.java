@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.util.EcoreUtil;

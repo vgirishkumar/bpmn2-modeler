@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -177,6 +178,9 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 							result = (Message) popupMenu.getResult();
 						}
 					}
+					else
+						changesDone = true;
+					
 					if (changesDone) {
 						if (result==message) { // the new one
 							message.setName( ExtendedPropertiesProvider.getTextValue(message)); // ModelUtil.toDisplayName(message.getId()) );

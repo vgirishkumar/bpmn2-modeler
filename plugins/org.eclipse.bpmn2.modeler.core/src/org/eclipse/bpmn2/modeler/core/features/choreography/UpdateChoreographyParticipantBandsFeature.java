@@ -11,13 +11,14 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.ui.features.choreography;
+package org.eclipse.bpmn2.modeler.core.features.choreography;
 
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -26,6 +27,7 @@ import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 /**
  *
@@ -46,6 +48,11 @@ public class UpdateChoreographyParticipantBandsFeature extends AbstractBpmn2Upda
 			protected LabelPosition getLabelPosition(AbstractText text) {
 				return LabelPosition.CENTER;
 			}
+
+			@Override
+			protected ContainerShape getTargetContainer(PictogramElement ownerPE) {
+				return (ContainerShape) ownerPE;
+			}
 		};
 	}
 
@@ -64,7 +71,7 @@ public class UpdateChoreographyParticipantBandsFeature extends AbstractBpmn2Upda
 			return reason;
 		
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
-		List<ContainerShape> bandShapes = ChoreographyUtil.getParticipantBandContainerShapes(containerShape);
+		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(containerShape);
 		for (ContainerShape s : bandShapes) {
 			IUpdateContext newContext = new UpdateContext(s);
 			if (updateFeature.updateNeeded(newContext).toBoolean())
@@ -79,7 +86,7 @@ public class UpdateChoreographyParticipantBandsFeature extends AbstractBpmn2Upda
 	@Override
 	public boolean update(IUpdateContext context) {
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
-		List<ContainerShape> bandShapes = ChoreographyUtil.getParticipantBandContainerShapes(containerShape);
+		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(containerShape);
 		for (ContainerShape s : bandShapes) {
 			IUpdateContext newContext = new UpdateContext(s);
 			updateFeature.update(newContext);

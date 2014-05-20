@@ -26,8 +26,10 @@ import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -35,7 +37,13 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IMoveContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.IResizeContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
@@ -49,7 +57,8 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		return super.canApplyTo(o) && o instanceof ChoreographyTask;
+		return super.canApplyTo(o) &&
+				(o instanceof ChoreographyTask || o instanceof Participant);
 	}
 
 	@Override
@@ -66,14 +75,6 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateChoreographyMessageFlowFeature(fp));
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				return LabelPosition.CENTER;
-			}
-			
-		});
 		return multiUpdate;
 	}
 

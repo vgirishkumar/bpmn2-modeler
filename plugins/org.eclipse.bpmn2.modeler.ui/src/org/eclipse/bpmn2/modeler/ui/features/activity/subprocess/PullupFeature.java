@@ -24,11 +24,12 @@ import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
@@ -180,7 +181,7 @@ public class PullupFeature extends AbstractCustomFeature {
 		DIUtils.deleteDiagram(getDiagramBehavior(), oldBpmnDiagram);
 		
 		// expand the sub process
-		if (AbstractExpandableActivityFeatureContainer.isExpandableElement(container)) {
+		if (FeatureSupport.isExpandableElement(container)) {
 			bpmnShape.setIsExpanded(false);
 			ExpandFlowNodeFeature expandFeature = new ExpandFlowNodeFeature(getFeatureProvider());
 			expandFeature.execute(context);

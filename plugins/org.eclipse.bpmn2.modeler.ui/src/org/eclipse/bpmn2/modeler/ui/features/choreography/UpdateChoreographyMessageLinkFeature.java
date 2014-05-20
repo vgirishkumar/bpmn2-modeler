@@ -17,6 +17,7 @@ import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyP
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -49,7 +50,7 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		boolean visible = new Boolean(Graphiti.getPeService().getPropertyValue(context.getPictogramElement(),
 				MESSAGE_VISIBLE));
 
-		return bpmnShape.isIsMessageVisible() != visible ? Reason.createTrueReason() : Reason.createFalseReason();
+		return bpmnShape.isIsMessageVisible() != visible ? Reason.createTrueReason("Message Link Visible") : Reason.createFalseReason();
 	}
 
 	@Override

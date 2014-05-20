@@ -11,7 +11,7 @@
 package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -41,15 +41,17 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 			createText(labelOwner, labelShape, businessObject);
 		}
 		
+		// force an update of the label
+		updatePictogramElement(labelShape);
+		
 		return labelShape;
 	}
 	
 	/**
-	 * Get the correct target control, boundary events need special handling, because we need to find a parent,
-	 * where the label is visible.
+	 * Get the correct target container for the label shape.
 	 * 
 	 * @param context
-	 * @return the target control for the current context
+	 * @return the target container for the current context
 	 */
 	protected ContainerShape getTargetContainer(IAddContext context) {
 		return getFeatureProvider().getDiagramTypeProvider().getDiagram();

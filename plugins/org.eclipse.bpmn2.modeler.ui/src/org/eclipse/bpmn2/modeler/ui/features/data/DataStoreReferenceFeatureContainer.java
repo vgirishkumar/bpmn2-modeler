@@ -282,6 +282,9 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 					dataStoreRef = null;
 				}
 			}
+			else
+				changesDone = true;
+
 			if (changesDone) {
 				if (result == dataStore) { // the new one
 					mh.addRootElement(dataStore);

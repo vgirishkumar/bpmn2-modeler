@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 

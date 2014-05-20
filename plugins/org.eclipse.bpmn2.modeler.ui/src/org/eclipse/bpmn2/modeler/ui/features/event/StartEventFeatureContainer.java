@@ -146,7 +146,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 			StartEvent event = (StartEvent) getBusinessObjectForPictogramElement(element);
 			boolean interrupting = Boolean.parseBoolean(prop);
 			IReason reason = event.isIsInterrupting() == interrupting ? Reason.createFalseReason() : Reason
-					.createTrueReason();
+					.createTrueReason("Is Interrupting");
 			return reason;
 		}
 

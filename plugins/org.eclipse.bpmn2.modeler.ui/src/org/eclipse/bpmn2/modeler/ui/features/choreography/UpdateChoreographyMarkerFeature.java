@@ -13,71 +13,71 @@
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.IReason;
-import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
-import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IPeService;
 
-public class UpdateChoreographyMarkerFeature extends AbstractBpmn2UpdateFeature {
-
-	private final IPeService peService = Graphiti.getPeService();
+public class UpdateChoreographyMarkerFeature extends AbstractUpdateMarkerFeature<ChoreographyActivity> {
 
 	public UpdateChoreographyMarkerFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#getPropertyKey()
+	 */
 	@Override
-	public boolean canUpdate(IUpdateContext context) {
-		return BusinessObjectUtil.containsElementOfType(context.getPictogramElement(), ChoreographyActivity.class);
+	protected String getPropertyKey() {
+		return GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#isPropertyChanged(org.eclipse.bpmn2.FlowElement, java.lang.String)
+	 */
 	@Override
-	public IReason updateNeeded(IUpdateContext context) {
-		IReason reason = super.updateNeeded(context);
-		if (reason.toBoolean())
-			return reason;
-		if (context.getPictogramElement() instanceof ContainerShape) {
-			ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
-			ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(choreographyContainer,
-					ChoreographyActivity.class);
-	
-			String loopType = choreography.getLoopType() == null ? "null" : choreography.getLoopType().getName(); //$NON-NLS-1$
-			String property = peService.getPropertyValue(choreographyContainer, ChoreographyProperties.CHOREOGRAPHY_MARKER);
-	
-			if (!loopType.equals(property)) {
-				return Reason.createTrueReason();
-			}
-		}
-		return Reason.createFalseReason();
+	protected boolean isPropertyChanged(ChoreographyActivity element, String propertyValue) {
+		return !convertPropertyToString(element).equals(propertyValue);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#doUpdate(org.eclipse.bpmn2.FlowElement, org.eclipse.graphiti.mm.pictograms.ContainerShape)
+	 */
 	@Override
-	public boolean update(IUpdateContext context) {
-		ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
-		ChoreographyActivity choreography = BusinessObjectUtil.getFirstElementOfType(choreographyContainer,
-				ChoreographyActivity.class);
-
-		for (Shape s : peService.getAllContainedShapes(choreographyContainer)) {
-//			String property = peService.getPropertyValue(s, ChoreographyProperties.CHOREOGRAPHY_MARKER_SHAPE);
-			String property = peService.getPropertyValue(s, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
-			if (property != null && new Boolean(property)) {
-				ChoreographyUtil.drawChoreographyLoopType((ContainerShape) s, choreography.getLoopType());
-			}
+	protected void doUpdate(ChoreographyActivity element, ContainerShape markerContainer) {
+		switch (element.getLoopType()) {
+		case STANDARD:
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			break;
+		case MULTI_INSTANCE_PARALLEL:
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			break;
+		case MULTI_INSTANCE_SEQUENTIAL:
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			break;
+		default:
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 		}
+	}
 
-		String loopType = choreography.getLoopType() == null ? "null" : choreography.getLoopType().getName(); //$NON-NLS-1$
-		peService.setPropertyValue(choreographyContainer, ChoreographyProperties.CHOREOGRAPHY_MARKER, loopType);
-
-		return true;
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#convertPropertyToString(org.eclipse.bpmn2.FlowElement)
+	 */
+	@Override
+	protected String convertPropertyToString(ChoreographyActivity element) {
+		String type = element.getLoopType().getName();
+		if (type==null)
+			return "";
+		return type;
 	}
 
 }

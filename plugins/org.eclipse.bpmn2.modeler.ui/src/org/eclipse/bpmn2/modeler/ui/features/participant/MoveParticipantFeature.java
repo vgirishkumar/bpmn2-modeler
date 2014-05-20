@@ -16,10 +16,11 @@ import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.containers.MoveContainerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -48,8 +49,8 @@ public class MoveParticipantFeature extends MoveContainerFeature {
 			ContainerShape container = context.getTargetContainer();
 			ContainerShape shape = (ContainerShape)context.getShape();
 			// collect all participant bands into top, middle and bottom
-			List<ContainerShape> bands = ChoreographyUtil.getParticipantBandContainerShapes(container);
-			Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = ChoreographyUtil.getTopAndBottomBands(bands);
+			List<ContainerShape> bands = FeatureSupport.getParticipantBandContainerShapes(container);
+			Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = FeatureSupport.getTopAndBottomBands(bands);
 			List<ContainerShape> top = topAndBottom.getFirst();
 			List<ContainerShape> bottom = topAndBottom.getSecond();
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
@@ -116,7 +117,7 @@ public class MoveParticipantFeature extends MoveContainerFeature {
 			}
 			
 			// adjust Participant Band size and location
-			ChoreographyUtil.updateParticipantBands(context);
+			ChoreographyUtil.updateParticipantBands(getFeatureProvider(), context.getPictogramElement());
 		}
 	}
 

@@ -115,7 +115,7 @@ public class UpdateActivityLoopAndMultiInstanceMarkerFeature extends AbstractUpd
 	 * @param activity the activity
 	 * @return the loop characteristics value
 	 */
-	public static LoopCharacteristicType getLoopCharacteristicsValue(Activity activity) {
+	private LoopCharacteristicType getLoopCharacteristicsValue(Activity activity) {
 		LoopCharacteristics loopCharacteristics = activity.getLoopCharacteristics();
 		LoopCharacteristicType type = LoopCharacteristicType.NULL;
 

@@ -37,10 +37,4 @@ public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<C
 		RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 		rect.setLineWidth(2);
 	}
-
-	@Override
-	protected boolean isShowNames() {
-		return true;
-	}
-
 }

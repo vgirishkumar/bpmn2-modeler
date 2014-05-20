@@ -12,14 +12,21 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.choreography;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.features.AbstractLayoutBpmn2ShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -42,21 +49,17 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 
 	@Override
 	public boolean layout(ILayoutContext context) {
-		ContainerShape choreographyContainer = (ContainerShape) context.getPictogramElement();
-		GraphicsAlgorithm parentGa = choreographyContainer.getGraphicsAlgorithm();
+		ContainerShape choreographyActivityContainer = (ContainerShape) context.getPictogramElement();
+		GraphicsAlgorithm parentGa = choreographyActivityContainer.getGraphicsAlgorithm();
 
 		int newWidth = parentGa.getWidth();
 		int newHeight = parentGa.getHeight();
 
-		Shape rectShape = choreographyContainer.getChildren().get(0);
+		Shape rectShape = choreographyActivityContainer.getChildren().get(0);
 		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 		
-		for (Shape s : peService.getAllContainedShapes(choreographyContainer)) {
-			String property = peService.getPropertyValue(s, ChoreographyProperties.CHOREOGRAPHY_NAME);
-			if (property != null && new Boolean(property)) {
-				GraphicsAlgorithm ga = s.getGraphicsAlgorithm();
-				setTextLocation(choreographyContainer, (AbstractText) ga, newWidth, newHeight);
-			}
+		for (Shape s : peService.getAllContainedShapes(choreographyActivityContainer)) {
+			String property;
 			property = peService.getPropertyValue(s, ChoreographyProperties.CALL_CHOREO_BORDER);
 			if (property != null && new Boolean(property)) {
 				GraphicsAlgorithm ga = s.getGraphicsAlgorithm();
@@ -64,11 +67,27 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 				GraphicsUtil.sendToFront(s);
 			}
 		}
+		
+		int height = choreographyActivityContainer.getGraphicsAlgorithm().getHeight();
+		int minY = height;
+		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityContainer);
+		for (ContainerShape b : bandShapes) {
+			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(b, BPMNShape.class);
+			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
+			if (bandKind == ParticipantBandKind.BOTTOM_INITIATING ||
+					bandKind == ParticipantBandKind.BOTTOM_NON_INITIATING ||
+					bandKind == ParticipantBandKind.MIDDLE_NON_INITIATING) {
+				int y = b.getGraphicsAlgorithm().getY();
+				if (y<minY)
+					minY = y;
+			}
+		}
+		GraphicsUtil.setActivityMarkerOffest(choreographyActivityContainer, height - minY);
+		GraphicsUtil.layoutActivityMarkerContainer(choreographyActivityContainer);
 
+		IUpdateFeature feature = new UpdateChoreographyLabelFeature(getFeatureProvider());
+		IUpdateContext updateContext = new UpdateContext(choreographyActivityContainer);
+		feature.update(updateContext);
 		return true;
-	}
-
-	protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
-		gaService.setLocationAndSize(text, 5, 5, w - 5, h);
 	}
 }

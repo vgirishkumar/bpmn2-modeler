@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.features.containers.participant.DirectEdit
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.ResizeParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.UpdateParticipantMultiplicityFeature;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PullupFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.PushdownFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.AddChoreographyMessageFeature;
@@ -41,9 +42,35 @@ import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IMoveContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.features.context.IResizeContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
+
+	@Override
+	public Object getApplyObject(IContext context) {
+		if (
+				context instanceof IUpdateContext ||
+				context instanceof ILayoutContext ||
+				context instanceof IMoveContext ||
+				context instanceof IResizeContext
+				) {
+			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
+			if (FeatureSupport.isLabelShape(pe))
+				pe = (PictogramElement) pe.eContainer();
+			if (FeatureSupport.isChoreographyParticipantBand(pe))
+				return null;
+		}
+		Object o = super.getApplyObject(context);
+		
+		return o;
+	}
 
 	@Override
 	public boolean canApplyTo(Object o) {

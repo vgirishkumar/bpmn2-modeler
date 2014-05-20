@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -77,7 +78,7 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			return !AbstractExpandableActivityFeatureContainer.isElementExpanded(bo);
+			return !FeatureSupport.isElementExpanded(bo);
 		}
 		return ret;
 	}

@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -119,21 +120,23 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
+			ContainerShape choreographyActivityContainer = null;
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof ChoreographyActivity) {
-				ChoreographyActivity task = (ChoreographyActivity)bo;
+				choreographyActivityContainer = (ContainerShape)pe;
+				ChoreographyActivity choreographyActivity = (ChoreographyActivity)bo;
 				
 				Participant participant = null;
 				List<Participant> participantList = new ArrayList<Participant>();
 				participant = Bpmn2ModelerFactory.create(Participant.class);
 				participant.setName(Messages.AddChoreographyParticipantFeature_New_Participant);
-				ModelUtil.setID(participant, task.eResource());
+				ModelUtil.setID(participant, choreographyActivity.eResource());
 				
 				participantList.add(participant);
-				TreeIterator<EObject> iter = ModelUtil.getDefinitions(task).eAllContents();
+				TreeIterator<EObject> iter = ModelUtil.getDefinitions(choreographyActivity).eAllContents();
 				while (iter.hasNext()) {
 					EObject obj = iter.next();
-					if (obj instanceof Participant && !task.getParticipantRefs().contains(obj))
+					if (obj instanceof Participant && !choreographyActivity.getParticipantRefs().contains(obj))
 						participantList.add((Participant)obj);
 				}
 				Participant result = participant;
@@ -145,10 +148,13 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 						result = (Participant) popupMenu.getResult();
 					}
 				}
+				else
+					changesDone = true;
+				
 				if (changesDone) {
 					if (result==participant) { // the new one
 						participant.setName( ModelUtil.toCanonicalString(participant.getId()) );
-						Choreography choreography = (Choreography)task.eContainer();
+						Choreography choreography = (Choreography)choreographyActivity.eContainer();
 						choreography.getParticipants().add(result);
 						/*
 						 Finish this later after we figure out how to deal with multiple BPMNDiagrams and BPMNPlanes
@@ -161,11 +167,13 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 						*/
 					}
 
-					if (task.getInitiatingParticipantRef() == null) {
-						task.setInitiatingParticipantRef(result);
+					if (choreographyActivity.getInitiatingParticipantRef() == null) {
+						choreographyActivity.setInitiatingParticipantRef(result);
 					}
 
-					task.getParticipantRefs().add(result);
+					choreographyActivity.getParticipantRefs().add(result);
+					
+					ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityContainer);
 				}
 			}
 		}

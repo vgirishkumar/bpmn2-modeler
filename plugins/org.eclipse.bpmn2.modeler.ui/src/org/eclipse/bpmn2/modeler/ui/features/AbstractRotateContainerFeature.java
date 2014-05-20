@@ -21,10 +21,10 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
@@ -139,7 +139,7 @@ public abstract class AbstractRotateContainerFeature extends AbstractCustomFeatu
 				ILocation preLoc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
 				changeOrientation((ContainerShape) shape, horz, offsetMap);
 				if (BusinessObjectUtil.getBusinessObjectForPictogramElement(shape) instanceof ChoreographyTask)
-					ChoreographyUtil.moveChoreographyMessageLinks((ContainerShape) shape);
+					ChoreographyUtil.updateChoreographyMessageLinks(getFeatureProvider(), shape);
 				ILocation postLoc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
 				Point p = Graphiti.getCreateService().createPoint(postLoc.getX() - preLoc.getX(), postLoc.getY() - preLoc.getY());
 				offsetMap.put(shape, p);

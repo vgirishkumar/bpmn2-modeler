@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -69,7 +70,7 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 
 			@Override
 			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (isElementExpanded(text)) {
+				if (FeatureSupport.isElementExpanded(text)) {
 					return LabelPosition.TOP;
 				}
 				return LabelPosition.CENTER;

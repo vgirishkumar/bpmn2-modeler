@@ -12,11 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.INITIATING_PARTICIPANT_REF;
 import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_REF_IDS;
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.PARTICIPANT_REF_IDS;
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.R;
-import static org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyUtil.drawMultiplicityMarkers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +21,9 @@ import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.di.ParticipantBandKind;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -86,7 +81,24 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		if (isImport) {
-			addedFromImport(businessObject, containerShape, context);
+			List<Participant> participants = businessObject.getParticipantRefs();
+			List<BPMNShape> allShapes = ModelUtil.getAllObjectsOfType(businessObject.eResource(), BPMNShape.class);
+			List<BPMNShape> participantBandShapes = new ArrayList<BPMNShape>();
+			BPMNShape choreoBpmnShape = null;
+
+			for (BPMNShape bpmnShape : allShapes) {
+				if (businessObject.equals(bpmnShape.getBpmnElement())) {
+					choreoBpmnShape = bpmnShape;
+					break;
+				}
+			}
+
+			for (BPMNShape bpmnShape : allShapes) {
+				if (participants.contains(bpmnShape.getBpmnElement())
+						&& choreoBpmnShape.equals(bpmnShape.getChoreographyActivityShape())) {
+					participantBandShapes.add(bpmnShape);
+				}
+			}
 		}
 
 		GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
@@ -105,50 +117,6 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 
 		return containerShape;
-	}
-
-	protected void addedFromImport(T choreographyActivity, ContainerShape containerShape,
-			IAddContext context) {
-
-		List<Participant> participants = choreographyActivity.getParticipantRefs();
-		List<BPMNShape> allShapes = ModelUtil.getAllObjectsOfType(choreographyActivity.eResource(), BPMNShape.class);
-		List<BPMNShape> participantBandShapes = new ArrayList<BPMNShape>();
-		BPMNShape choreoBpmnShape = null;
-
-		for (BPMNShape bpmnShape : allShapes) {
-			if (choreographyActivity.equals(bpmnShape.getBpmnElement())) {
-				choreoBpmnShape = bpmnShape;
-				break;
-			}
-		}
-
-		for (BPMNShape bpmnShape : allShapes) {
-			if (participants.contains(bpmnShape.getBpmnElement())
-					&& choreoBpmnShape.equals(bpmnShape.getChoreographyActivityShape())) {
-				participantBandShapes.add(bpmnShape);
-			}
-		}
-
-		for (BPMNShape bpmnShape : participantBandShapes) {
-			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
-			ContainerShape createdShape = ChoreographyUtil.createParticipantBandContainerShape(
-					getFeatureProvider(), bandKind, containerShape, bpmnShape, isShowNames());
-			DIUtils.createDIShape(createdShape, bpmnShape.getBpmnElement(), bpmnShape, getFeatureProvider());
-			Participant p = (Participant) bpmnShape.getBpmnElement();
-			if (p.getParticipantMultiplicity() != null && p.getParticipantMultiplicity().getMaximum() > 1) {
-				drawMultiplicityMarkers(createdShape);
-			}
-		}
-
-		peService.setPropertyValue(containerShape, PARTICIPANT_REF_IDS,
-				ChoreographyUtil.getParticipantRefIds(choreographyActivity));
-		Participant initiatingParticipant = choreographyActivity.getInitiatingParticipantRef();
-		String id = initiatingParticipant == null ? "null" : initiatingParticipant.getId(); //$NON-NLS-1$
-		peService.setPropertyValue(containerShape, INITIATING_PARTICIPANT_REF, id);
-	}
-
-	protected boolean isShowNames() {
-		return true;
 	}
 
 	@Override

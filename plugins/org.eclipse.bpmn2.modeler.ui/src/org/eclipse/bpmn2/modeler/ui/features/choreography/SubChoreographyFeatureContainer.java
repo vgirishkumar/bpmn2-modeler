@@ -12,32 +12,22 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SubChoreography;
-import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
-import org.eclipse.bpmn2.modeler.core.features.choreography.LayoutChoreographyFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class SubChoreographyFeatureContainer extends AbstractChoreographyFeatureContainer {
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		return super.canApplyTo(o) && o instanceof SubChoreography;
+		return super.canApplyTo(o) &&
+				(o instanceof SubChoreography || o instanceof Participant);
 	}
 
 	@Override
@@ -50,51 +40,15 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 		return new AddSubChoreographyFeature(fp);
 	}
 
-	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (AbstractExpandableActivityFeatureContainer.isElementExpanded(text)) {
-					return LabelPosition.TOP;
-				}
-				return LabelPosition.CENTER;
-			}
-		});
-		return multiUpdate;
-	}
-
-	@Override
-	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutChoreographyFeature(fp) {
-			@Override
-			protected void setTextLocation(ContainerShape choreographyContainer, AbstractText text, int w, int h) {
-				List<ContainerShape> bandContainers = ChoreographyUtil
-						.getParticipantBandContainerShapes(choreographyContainer);
-				Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = ChoreographyUtil
-						.getTopAndBottomBands(bandContainers);
-				List<ContainerShape> topBands = topAndBottomBands.getFirst();
-
-				int y = 3;
-				if (!topBands.isEmpty()) {
-					ContainerShape containerShape = topBands.get(topBands.size() - 1);
-					GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
-					y = ga.getY() + ga.getHeight() + 3;
-				}
-
-				gaService.setLocationAndSize(text, 0, y, w, h);
-			}
-		};
-	}
-
 	public static class CreateSubChoreographyFeature extends AbstractCreateExpandableFlowNodeFeature<SubChoreography> {
 
 		public CreateSubChoreographyFeature(IFeatureProvider fp) {
 			super(fp, Messages.SubChoreographyFeatureContainer_Name, Messages.SubChoreographyFeatureContainer_Description);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature#getStencilImageId()
+		 */
 		@Override
 		public String getStencilImageId() {
 			return ImageProvider.IMG_16_CHOREOGRAPHY_TASK;

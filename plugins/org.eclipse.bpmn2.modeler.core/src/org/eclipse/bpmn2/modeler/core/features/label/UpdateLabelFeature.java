@@ -35,6 +35,7 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
@@ -283,8 +284,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				// this is only valid if the owner is not a Connection;
 				// Connection labels are always contained in the Diagram
 				// just like the Connection itself.
-				if (labelShape.eContainer() != ownerPE.eContainer()) {
-					ContainerShape container = (ContainerShape) ownerPE.eContainer();
+				ContainerShape container = getTargetContainer(ownerPE);
+				if (labelShape.eContainer() != container) {
 					container.getChildren().add(labelShape);
 				}
 			}
@@ -307,7 +308,11 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			Graphiti.getPeService().removeProperty(labelShape, GraphitiConstants.LABEL_CHANGED);
 		}
 	}
-
+	
+	protected ContainerShape getTargetContainer(PictogramElement ownerPE) {
+		return (ContainerShape) ownerPE.eContainer();
+	}
+	
 	protected int getLabelWidth(AbstractText text) {
 		return getLabelSize(text).width;
 	}

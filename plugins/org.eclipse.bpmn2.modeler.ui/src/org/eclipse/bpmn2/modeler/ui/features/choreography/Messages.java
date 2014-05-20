@@ -25,7 +25,6 @@ public class Messages extends NLS {
 	public static String CallChoreographyFeatureContainer_Name;
 	public static String ChoreographyTaskFeatureContainer_Description;
 	public static String ChoreographyTaskFeatureContainer_Name;
-	public static String ChoreographyUtil_Undefined_Message;
 	public static String RemoveChoreographyMessageFeature_Description;
 	public static String RemoveChoreographyMessageFeature_Name;
 	public static String ShowDiagramPageFeature_Description;

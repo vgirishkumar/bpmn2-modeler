@@ -14,24 +14,21 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 
 public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatureContainer {
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		return super.canApplyTo(o) && o instanceof CallChoreography;
-	}
+		return super.canApplyTo(o) &&
+				(o instanceof CallChoreography || o instanceof Participant);
+ 	}
 
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
@@ -43,36 +40,24 @@ public class CallChoreographyFeatureContainer extends AbstractChoreographyFeatur
 		return new AddCallChoreographyFeature(fp);
 	}
 
-	@Override
-	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
-		// multiUpdate.addUpdateFeature(new UpdateChoreographyMarkerFeature(fp)); use it when property editor supports
-		// enums
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (AbstractExpandableActivityFeatureContainer.isElementExpanded(text)) {
-					return LabelPosition.TOP;
-				}
-				return LabelPosition.CENTER;
-			}
-			
-		});
-		return multiUpdate;
-	}
-
 	public static class CreateCallChoreographyFeature extends AbstractCreateFlowElementFeature<CallChoreography> {
 
 		public CreateCallChoreographyFeature(IFeatureProvider fp) {
 			super(fp, Messages.CallChoreographyFeatureContainer_Name, Messages.CallChoreographyFeatureContainer_Description);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature#getStencilImageId()
+		 */
 		@Override
 		public String getStencilImageId() {
 			return ImageProvider.IMG_16_CHOREOGRAPHY_TASK;
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#getBusinessObjectClass()
+		 */
+		@Override
 		public EClass getBusinessObjectClass() {
 			return Bpmn2Package.eINSTANCE.getCallChoreography();
 		}

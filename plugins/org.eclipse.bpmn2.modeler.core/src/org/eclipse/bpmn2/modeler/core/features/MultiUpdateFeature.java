@@ -15,12 +15,16 @@ package org.eclipse.bpmn2.modeler.core.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.ui.editor.DiagramBehavior;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -116,17 +120,34 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	 */
 	@Override
 	public boolean update(IUpdateContext context) {
+		// disable the Property Sheet page during creation - this would
+		// only slow things down...
+		DiagramBehavior db = (DiagramBehavior) getDiagramBehavior();
+		db.getUpdateBehavior().setAdapterActive(false);
+		
+//		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
+//		if (page!=null && page.getControl()!=null)
+//			page.getControl().setEnabled(false);
+		
 		boolean updated = false;
-		boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
-		
-		updateNeeded(context);
-		
-		int i = 0;
-		for (IUpdateFeature f : features) {
-			if ((updateNeeded[i] || forceUpdate) && f.update(context)) {
-				updated = true;
+		try {
+			boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
+			
+			updateNeeded(context);
+			
+			int i = 0;
+			for (IUpdateFeature f : features) {
+				if ((updateNeeded[i] || forceUpdate) && f.update(context)) {
+					updated = true;
+				}
+				++i;
 			}
-			++i;
+		}
+		finally {
+			// re-enable the Property Sheet page
+//			if (page!=null && page.getControl()!=null)
+//				page.getControl().setEnabled(true);
+			db.getUpdateBehavior().setAdapterActive(true);
 		}
 
 		return updated;
