@@ -58,16 +58,6 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 		Shape rectShape = choreographyActivityContainer.getChildren().get(0);
 		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 		
-		for (Shape s : peService.getAllContainedShapes(choreographyActivityContainer)) {
-			String property;
-			property = peService.getPropertyValue(s, ChoreographyProperties.CALL_CHOREO_BORDER);
-			if (property != null && new Boolean(property)) {
-				GraphicsAlgorithm ga = s.getGraphicsAlgorithm();
-				gaService.setSize(ga, newWidth, newHeight);
-				GraphicsUtil.sendToFront(s);
-			}
-		}
-		
 		int height = choreographyActivityContainer.getGraphicsAlgorithm().getHeight();
 		int minY = height;
 		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityContainer);

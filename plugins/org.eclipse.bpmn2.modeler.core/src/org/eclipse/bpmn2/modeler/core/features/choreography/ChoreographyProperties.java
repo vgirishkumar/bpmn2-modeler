@@ -30,6 +30,5 @@ public interface ChoreographyProperties {
 	final static String BAND = "choreography.activity.band"; //$NON-NLS-1$
 	final static String MESSAGE_LINK = "choreography.messageLink"; //$NON-NLS-1$
 	final static String MESSAGE_NAME = "choreography.messageName"; //$NON-NLS-1$
-	final static String CALL_CHOREO_BORDER = "call.choreography.border"; //$NON-NLS-1$
 	final static String MESSAGE_REF_IDS = "choreography.message.ref.ids"; //$NON-NLS-1$
 }

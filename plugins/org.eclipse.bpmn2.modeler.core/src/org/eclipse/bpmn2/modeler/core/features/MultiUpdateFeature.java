@@ -122,8 +122,8 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	public boolean update(IUpdateContext context) {
 		// disable the Property Sheet page during creation - this would
 		// only slow things down...
-		DiagramBehavior db = (DiagramBehavior) getDiagramBehavior();
-		db.getUpdateBehavior().setAdapterActive(false);
+//		DiagramBehavior db = (DiagramBehavior) getDiagramBehavior();
+//		db.getUpdateBehavior().setAdapterActive(false);
 		
 //		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
 //		if (page!=null && page.getControl()!=null)
@@ -147,7 +147,7 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 			// re-enable the Property Sheet page
 //			if (page!=null && page.getControl()!=null)
 //				page.getControl().setEnabled(true);
-			db.getUpdateBehavior().setAdapterActive(true);
+//			db.getUpdateBehavior().setAdapterActive(true);
 		}
 
 		return updated;

@@ -283,7 +283,8 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 
 		Diagram diagram = peService.getDiagramForPictogramElement(choreographyActivityContainer);
 		RoundedRectangle band = gaService.createRoundedRectangle(bandShape, R, R);
-		band.setForeground(gaService.manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
+		StyleUtil.applyStyle(band, bpmnShape.getBpmnElement());
+		band.setStyle(null);
 		band.setBackground(initiating ? gaService.manageColor(diagram, IColorConstant.WHITE) : gaService.manageColor(
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, 0, w, h);
@@ -318,7 +319,8 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 
 		Diagram diagram = peService.getDiagramForPictogramElement(choreographyActivityContainer);
 		RoundedRectangle band = gaService.createRoundedRectangle(bandShape, R, R);
-		band.setForeground(gaService.manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
+		StyleUtil.applyStyle(band, bpmnShape.getBpmnElement());
+		band.setStyle(null);
 		band.setBackground(initiating ? gaService.manageColor(diagram, IColorConstant.WHITE) : gaService.manageColor(
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, y, w, h);
@@ -353,7 +355,8 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 
 		Diagram diagram = peService.getDiagramForPictogramElement(choreographyActivityContainer);
 		Rectangle band = gaService.createRectangle(bandShape);
-		band.setForeground(gaService.manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
+		StyleUtil.applyStyle(band, bpmnShape.getBpmnElement());
+		band.setStyle(null);
 		band.setBackground(initiating ? gaService.manageColor(diagram, IColorConstant.WHITE) : gaService.manageColor(
 				diagram, IColorConstant.LIGHT_GRAY));
 		gaService.setLocationAndSize(band, 0, y, w, h);
@@ -398,11 +401,11 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractUpdateFeat
 			List<ContainerShape> bottom) {
 
 		boolean shrink = choreographyActivity instanceof CallChoreography;
-		int y = shrink ? 1 : 0;
-		int x = shrink ? 1 : 0;
+		int y = shrink ? 2 : 0;
+		int x = shrink ? 2 : 0;
 		if (shrink) {
-			w -= 2;
-			h -= 1;
+			w -= 4;
+			h -= 2;
 		}
 		
 		for (ContainerShape container : top) {

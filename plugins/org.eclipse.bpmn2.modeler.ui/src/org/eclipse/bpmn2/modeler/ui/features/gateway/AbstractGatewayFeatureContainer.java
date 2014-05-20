@@ -96,35 +96,35 @@ public abstract class AbstractGatewayFeatureContainer extends BaseElementFeature
 
 		public UpdateAbstractGatewayFeature(IFeatureProvider fp) {
 			super(fp);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public boolean canUpdate(IUpdateContext context) {
-			IFeatureProvider featureProvider = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
+			IFeatureProvider featureProvider = getFeatureProvider();
 
-			Shape gatewayShape = (Shape) context.getPictogramElement();
-			for (Anchor anchor : gatewayShape.getAnchors()) {
-				for (Connection connection : anchor.getIncomingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						boolean ret = updateFeature.canUpdate(updateCtx);
-						if (ret)
-							return ret;
+			if (context.getPictogramElement() instanceof ContainerShape) {
+				ContainerShape gatewayShape = (ContainerShape) context.getPictogramElement();
+				for (Anchor anchor : gatewayShape.getAnchors()) {
+					for (Connection connection : anchor.getIncomingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							boolean ret = updateFeature.canUpdate(updateCtx);
+							if (ret)
+								return ret;
+						}
+					}
+					for (Connection connection : anchor.getOutgoingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							boolean ret = updateFeature.canUpdate(updateCtx);
+							if (ret)
+								return ret;
+						}
 					}
 				}
-				for (Connection connection : anchor.getOutgoingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						boolean ret = updateFeature.canUpdate(updateCtx);
-						if (ret)
-							return ret;
-					}
-				}
-			}
-			
+			}			
 			return super.canUpdate(context);
 		}
 
@@ -134,51 +134,54 @@ public abstract class AbstractGatewayFeatureContainer extends BaseElementFeature
 			if (reason.toBoolean())
 				return reason;
 
-			IFeatureProvider featureProvider = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
+			IFeatureProvider featureProvider = getFeatureProvider();
 
-			Shape gatewayShape = (Shape) context.getPictogramElement();
-			for (Anchor anchor : gatewayShape.getAnchors()) {
-				for (Connection connection : anchor.getIncomingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						IReason ret = updateFeature.updateNeeded(updateCtx);
-						if (ret.toBoolean())
-							return ret;
+			if (context.getPictogramElement() instanceof ContainerShape) {
+				ContainerShape gatewayShape = (ContainerShape) context.getPictogramElement();
+				for (Anchor anchor : gatewayShape.getAnchors()) {
+					for (Connection connection : anchor.getIncomingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							IReason ret = updateFeature.updateNeeded(updateCtx);
+							if (ret.toBoolean())
+								return ret;
+						}
+					}
+					for (Connection connection : anchor.getOutgoingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							IReason ret = updateFeature.updateNeeded(updateCtx);
+							if (ret.toBoolean())
+								return ret;
+						}
 					}
 				}
-				for (Connection connection : anchor.getOutgoingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						IReason ret = updateFeature.updateNeeded(updateCtx);
-						if (ret.toBoolean())
-							return ret;
-					}
-				}
-			}
-			
+			}			
 			return super.updateNeeded(context);
 		}
 
 		@Override
 		public boolean update(IUpdateContext context) {
-			IFeatureProvider featureProvider = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
+			IFeatureProvider featureProvider = getFeatureProvider();
 
-			ContainerShape gatewayShape = (ContainerShape) context.getPictogramElement();
-			for (Anchor anchor : gatewayShape.getAnchors()) {
-				for (Connection connection : anchor.getIncomingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						updateFeature.update(updateCtx);
+			if (context.getPictogramElement() instanceof ContainerShape) {
+				ContainerShape gatewayShape = (ContainerShape) context.getPictogramElement();
+				for (Anchor anchor : gatewayShape.getAnchors()) {
+					for (Connection connection : anchor.getIncomingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							updateFeature.update(updateCtx);
+						}
 					}
-				}
-				for (Connection connection : anchor.getOutgoingConnections() ) {
-					IUpdateContext updateCtx = new UpdateContext(connection);
-					IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
-					if (updateFeature != null) {
-						updateFeature.update(updateCtx);
+					for (Connection connection : anchor.getOutgoingConnections() ) {
+						IUpdateContext updateCtx = new UpdateContext(connection);
+						IUpdateFeature updateFeature = featureProvider.getUpdateFeature(updateCtx);
+						if (updateFeature != null) {
+							updateFeature.update(updateCtx);
+						}
 					}
 				}
 			}

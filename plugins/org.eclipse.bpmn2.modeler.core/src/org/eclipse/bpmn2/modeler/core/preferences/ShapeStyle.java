@@ -497,12 +497,16 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (fontData == null) {
 			return null;
 		}
-		Font ret;
-		String name = fontData.getName();
-		int height = fontData.getHeight();
-		boolean italic = (fontData.getStyle() & SWT.ITALIC) != 0;
-		boolean bold = (fontData.getStyle() & SWT.BOLD) != 0;
-		ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
+		Font ret = null;
+		try {
+			String name = fontData.getName();
+			int height = fontData.getHeight();
+			boolean italic = (fontData.getStyle() & SWT.ITALIC) != 0;
+			boolean bold = (fontData.getStyle() & SWT.BOLD) != 0;
+			ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
+		}
+		catch (Exception e) {
+		}
 		return ret;
 	}
 
