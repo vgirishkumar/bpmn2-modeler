@@ -63,7 +63,7 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -305,7 +305,12 @@ public class FeatureSupport {
 	
 	public static void setContainerChildrenVisible(IFeatureProvider fp, ContainerShape container, boolean visible) {
 		for (PictogramElement pe : getContainerChildren(container)) {
-			pe.setVisible(visible);
+			if (isEventSubProcessDecoratorContainer(pe)) {
+				pe.setVisible(!visible);
+			}
+			else
+				pe.setVisible(visible);
+
 			if (visible)
 				FeatureSupport.updateLabel(fp, pe, null);
 			if (pe instanceof AnchorContainer) {
@@ -862,6 +867,13 @@ public class FeatureSupport {
 		return new Boolean(property).booleanValue();
 	}
 
+	public static boolean isEventSubProcessDecoratorContainer(PictogramElement pe) {
+		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER);
+		if (property!=null)
+			return true;
+		return false;
+	}
+
 	public static boolean hasBPMNShape(PictogramElement pe) {
 		return BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) != null;
 	}
@@ -1005,19 +1017,22 @@ public class FeatureSupport {
 	 *            be manually positioned independently of their owners.
 	 */
 	public static void updateLabel(IFeatureProvider fp, PictogramElement pe, Point offset) {
-		UpdateContext context = new UpdateContext(getLabelOwner(pe));
-		// Offset is only used if the label is MOVABLE - we need to keep the label's
-		// relative position to its owning shape the same.
-		context.putProperty(GraphitiConstants.LABEL_OFFSET, offset);
-		IUpdateFeature feature = fp.getUpdateFeature(context);
-		if (feature instanceof MultiUpdateFeature) {
-			MultiUpdateFeature mf = (MultiUpdateFeature) feature;
-			for (IUpdateFeature uf : mf.getFeatures())
-				if (uf instanceof UpdateLabelFeature) {
-					feature = uf;
-				}
+		if (isLabelShape(pe))
+			pe = getLabelOwner(pe);
+		if (pe!=null) {
+			UpdateContext context = new UpdateContext(pe);
+			// Offset is only used if the label is MOVABLE - we need to keep the label's
+			// relative position to its owning shape the same.
+			context.putProperty(GraphitiConstants.LABEL_OFFSET, offset);
+			IUpdateFeature feature = fp.getUpdateFeature(context);
+			if (feature instanceof MultiUpdateFeature) {
+				MultiUpdateFeature mf = (MultiUpdateFeature) feature;
+				for (IUpdateFeature uf : mf.getFeatures())
+					if (uf instanceof UpdateLabelFeature) {
+						uf.update(context);
+					}
+			}
 		}
-		feature.update(context);
 	}
 	
 	/**
@@ -1076,7 +1091,7 @@ public class FeatureSupport {
 		List<ContainerShape> bandShapes = new ArrayList<ContainerShape>();
 		Collection<Shape> shapes = peService.getAllContainedShapes(containerShape);
 		for (Shape s : shapes) {
-			String property = peService.getPropertyValue(s, ChoreographyProperties.BAND);
+			String property = peService.getPropertyValue(s, ChoreographyUtil.PARTICIPANT_BAND);
 			if (new Boolean(property)) {
 				bandShapes.add((ContainerShape) s);
 			}

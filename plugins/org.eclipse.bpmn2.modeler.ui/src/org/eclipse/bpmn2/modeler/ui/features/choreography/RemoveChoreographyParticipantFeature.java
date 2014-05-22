@@ -13,7 +13,12 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.ChoreographyActivity;
+import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -52,25 +57,40 @@ public class RemoveChoreographyParticipantFeature extends DefaultRemoveFeature {
 	public void execute(IContext context) {
 		IRemoveContext dc = (IRemoveContext)context;
 		PictogramElement pe = dc.getPictogramElement();
-		ContainerShape choreographyActivityContainer = null;
+		ContainerShape choreographyActivityShape = null;
 		if (ChoreographyUtil.isChoreographyParticipantBand(pe)) {
 			PictogramElement labelShape = FeatureSupport.getLabelShape(pe);
 			if (labelShape!=null)
 				Graphiti.getPeService().deletePictogramElement(labelShape);
 			Participant participant = (Participant)getBusinessObjectForPictogramElement(pe);
-			choreographyActivityContainer = (ContainerShape)pe.eContainer();
-			Object bo = getBusinessObjectForPictogramElement(choreographyActivityContainer); 
+			choreographyActivityShape = (ContainerShape)pe.eContainer();
+			Object bo = getBusinessObjectForPictogramElement(choreographyActivityShape);
+			// update the Initiating Participant
 			if (bo instanceof ChoreographyActivity) {
 				ChoreographyActivity choreographyActivity = (ChoreographyActivity)bo;
 				choreographyActivity.getParticipantRefs().remove(participant);
 				if (choreographyActivity.getInitiatingParticipantRef() == participant) {
-					choreographyActivity.setInitiatingParticipantRef(null);
+					// select a new Initiating Participant
+					Participant initiatingParticipant = null;
+					if (choreographyActivity.getParticipantRefs().size()>0)
+						initiatingParticipant = choreographyActivity.getParticipantRefs().get(0);
+					choreographyActivity.setInitiatingParticipantRef(initiatingParticipant);
 				}
 			}
-			
+			// update Choreography Task message flows
+			if (bo instanceof ChoreographyTask) {
+				ChoreographyTask choreographyTask = (ChoreographyTask)bo;
+				List<MessageFlow> messageFlows = new ArrayList<MessageFlow>();
+				messageFlows.addAll(choreographyTask.getMessageFlowRef());
+				for (MessageFlow mf : messageFlows) {
+					if (mf.getSourceRef() == participant) {
+						choreographyTask.getMessageFlowRef().remove(mf);
+					}
+				}
+			}
 			super.execute(context);
 
-			ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityContainer);
+			ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityShape);
 		}
 	}
 

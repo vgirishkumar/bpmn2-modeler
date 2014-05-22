@@ -156,6 +156,16 @@ public class ObjectPropertyProvider extends AdapterImpl implements IResourceProv
 					resource = rp.getResource();
 			}
 			
+			if (resource==null) {
+				for (Adapter a : object.eAdapters()) {
+					if (a instanceof IResourceProvider) {
+						resource = ((IResourceProvider)a).getResource();
+						if (resource!=null)
+							break;
+					}
+				}
+			}
+			
 			// make sure we get a BPMN2 Resource
 			if (resource!=null && !(resource instanceof Bpmn2Resource)) {
 				ResourceSet rs = resource.getResourceSet();

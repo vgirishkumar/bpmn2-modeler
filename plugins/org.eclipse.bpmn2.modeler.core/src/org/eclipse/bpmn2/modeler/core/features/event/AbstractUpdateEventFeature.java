@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -120,6 +121,10 @@ public abstract class AbstractUpdateEventFeature<T extends Event> extends Abstra
 		if (element instanceof CatchEvent) {
 			if (((CatchEvent)element).isParallelMultiple())
 				result += "+"; //$NON-NLS-1$
+		}
+		if (element instanceof StartEvent) {
+			if (((StartEvent)element).isIsInterrupting())
+				result += "*"; //$NON-NLS-1$
 		}
 		return result;
 	}

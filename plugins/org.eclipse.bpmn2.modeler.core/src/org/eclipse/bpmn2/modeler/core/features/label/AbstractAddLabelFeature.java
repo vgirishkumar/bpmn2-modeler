@@ -19,9 +19,12 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.impl.AbstractAddPictogramElementFeature;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -73,9 +76,20 @@ abstract public class AbstractAddLabelFeature extends AbstractAddPictogramElemen
 
 	public void applyStyle(AbstractText text, BaseElement be) {
 		StyleUtil.applyStyle(text, be);
+		text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+		text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
 	}
 	
 	protected PictogramElement getLabelOwner(IAddContext context) {
 		return FeatureSupport.getLabelOwner(context);
+	}
+	
+	public IReason updatePictogramElement(IAddContext addContext, PictogramElement pe) {
+		UpdateContext updateContext = new UpdateContext(pe);
+		for (Object key : addContext.getPropertyKeys()) {
+			Object value = addContext.getProperty(key);
+			updateContext.putProperty(key, value);
+		}
+		return getFeatureProvider().updateIfPossible(updateContext);
 	}
 }

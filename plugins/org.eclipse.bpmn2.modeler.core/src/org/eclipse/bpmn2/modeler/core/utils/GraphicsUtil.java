@@ -623,6 +623,7 @@ public class GraphicsUtil {
 		final float widthRatio = calculateRatio(eventWidth, Float.valueOf(EVENT_SIZE));
 		
 		Image image = gaService.createImage(shape, imageId);
+		image.setProportional(true);
 		gaService.setLocationAndSize(image, 
 				generateRatioPointValue(8, widthRatio), generateRatioPointValue(8, heightRatio),
 				generateRatioPointValue(20, widthRatio), generateRatioPointValue(20, heightRatio));
@@ -813,11 +814,28 @@ public class GraphicsUtil {
 	}
 
 	public static Polygon createEventParallelMultiple(Shape shape) {
-		int r = EVENT_SIZE / 2;
-		int a = 3;
-		int b = 11;
-		int[] points = { r - a, r - b, r + a, r - b, r + a, r - a, r + b, r - a, r + b, r + a, r + a, r + a, r + a,
-		        r + b, r - a, r + b, r - a, r + a, r - b, r + a, r - b, r - a, r - a, r - a };
+		final int h = shape.getContainer().getGraphicsAlgorithm().getHeight();
+		final int w = shape.getContainer().getGraphicsAlgorithm().getWidth();
+
+		int w0 = w / 5;
+		int h0 = h / 5;
+		int x = 2*w0;
+		int y = h0;
+		int[] points = {
+				x, y,
+				x+w0, y, 
+				x+w0, y+h0,
+				x+w0+w0, y+h0,
+				x+w0+w0, y+h0+h0,
+				x+w0, y+h0+h0,
+				x+w0, y+h0+h0+h0,
+				x, y+h0+h0+h0,
+				x, y+h0+h0,
+				x-w0, y+h0+h0,
+				x-w0, y+h0,
+				x, y+h0,
+				x, y,
+			};
 		Polygon cross = gaService.createPolygon(shape, points);
 		cross.setFilled(false);
 		cross.setLineWidth(1);

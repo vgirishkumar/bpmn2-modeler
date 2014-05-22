@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -30,7 +30,7 @@ public class ChoreographySelectionBehavior {
 			return false;
 		}
 
-		String property = Graphiti.getPeService().getPropertyValue(pe, ChoreographyProperties.MESSAGE_LINK);
+		String property = Graphiti.getPeService().getPropertyValue(pe, ChoreographyUtil.MESSAGE_LINK);
 		if (property == null) {
 			return false;
 		}

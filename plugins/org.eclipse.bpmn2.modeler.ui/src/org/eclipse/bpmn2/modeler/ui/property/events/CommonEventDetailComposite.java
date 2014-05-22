@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -139,13 +140,32 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 				editor.createControl(getAttributesParent(),label);
 			}
 			else if (object instanceof StartEvent) {
-				for (EventDefinition ed : ((StartEvent)object).getEventDefinitions()) {
-					if (ed instanceof MessageEventDefinition ||
-							ed instanceof TimerEventDefinition ||
-							ed instanceof EscalationEventDefinition ||
-							ed instanceof ConditionalEventDefinition ||
-							ed instanceof ErrorEventDefinition) {
-						return;
+				/*
+				 * OK, this is nuts! According to the BPMN2 spec, a collapsed
+				 * Event SubProcess (i.e. one whose isTriggeredByEvent attribute
+				 * is set) must display an image decorator at the top-left
+				 * corner (similar to decorated Task figures) that illustrates
+				 * the event type of the one-and-only StartEvent contained in
+				 * the SubProcess. This means the StartEvent's isInterrupting
+				 * attribute must be settable, so we need to make sure we don't
+				 * hide these attributes.
+				 */
+				boolean hide = true;
+				if (object.eContainer() instanceof SubProcess) {
+					SubProcess subProcess = (SubProcess) object.eContainer();
+					if (subProcess.isTriggeredByEvent()) {
+						hide = false;
+					}
+				}
+				if (hide) {
+					for (EventDefinition ed : ((StartEvent)object).getEventDefinitions()) {
+						if (ed instanceof MessageEventDefinition ||
+								ed instanceof TimerEventDefinition ||
+								ed instanceof EscalationEventDefinition ||
+								ed instanceof ConditionalEventDefinition ||
+								ed instanceof ErrorEventDefinition) {
+							return;
+						}
 					}
 				}
 				super.bindAttribute(parent, object, attribute, label);

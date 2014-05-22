@@ -58,7 +58,7 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 
 	@Override
 	protected Shape drawForEnd(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
@@ -73,10 +73,10 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 
 	@Override
 	protected Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
-	private Shape draw(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape cancelShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon link = GraphicsUtil.createEventCancel(cancelShape);
@@ -85,7 +85,7 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 		return cancelShape;
 	}
 
-	private Shape drawFilled(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape cancelShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon link = GraphicsUtil.createEventCancel(cancelShape);

@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -26,6 +25,8 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
+
+	final static int TEXT_H = 15;
 
 	public ResizeChoreographyFeature(IFeatureProvider fp) {
 		super(fp);
@@ -36,8 +37,8 @@ public class ResizeChoreographyFeature extends DefaultResizeBPMNShapeFeature {
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
 			if (BusinessObjectUtil.getFirstBaseElement(pe) instanceof ChoreographyActivity) {
-				List<BPMNShape> bands = ChoreographyUtil.getParicipantBandBpmnShapes((ContainerShape)pe);
-				int h = ChoreographyProperties.TEXT_H; // + ChoreographyProperties.MARKER_H;
+				List<BPMNShape> bands = ChoreographyUtil.getParticipantBandBpmnShapes((ContainerShape)pe);
+				int h = TEXT_H;
 	
 				for (BPMNShape shape : bands) {
 					h += shape.getBounds().getHeight();

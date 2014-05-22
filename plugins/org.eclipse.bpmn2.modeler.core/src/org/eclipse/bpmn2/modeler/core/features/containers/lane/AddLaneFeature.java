@@ -48,7 +48,6 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.services.IPeService;
 
 public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 	
@@ -98,7 +97,6 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
  
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
 
 		ContainerShape containerShape = peCreateService.createContainerShape(context.getTargetContainer(), true);
 		Rectangle rect = gaService.createRectangle(containerShape);
@@ -153,11 +151,6 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 			}
 			containerShape.setContainer(context.getTargetContainer());
 		}
-		
-//		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null
-//				&& (FeatureSupport.isTargetLane(context) || FeatureSupport.isTargetParticipant(context))) {
-//			FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
-//		}
 
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);

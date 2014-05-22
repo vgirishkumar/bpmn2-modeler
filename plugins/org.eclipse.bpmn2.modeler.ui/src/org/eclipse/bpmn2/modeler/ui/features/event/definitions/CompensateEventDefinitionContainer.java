@@ -54,17 +54,17 @@ public class CompensateEventDefinitionContainer extends AbstractEventDefinitionF
 
 	@Override
 	protected Shape drawForStart(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
 	@Override
 	protected Shape drawForEnd(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
 	protected Shape drawForThrow(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
@@ -74,10 +74,10 @@ public class CompensateEventDefinitionContainer extends AbstractEventDefinitionF
 
 	@Override
 	protected Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
-	private Shape draw(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape compensateShape = Graphiti.getPeService().createShape(shape, false);
 		Compensation compensation = GraphicsUtil.createEventCompensation(compensateShape);
@@ -88,7 +88,7 @@ public class CompensateEventDefinitionContainer extends AbstractEventDefinitionF
 		return compensateShape;
 	}
 
-	private Shape drawFilled(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape compensateShape = Graphiti.getPeService().createShape(shape, false);
 		Compensation compensation = GraphicsUtil.createEventCompensation(compensateShape);

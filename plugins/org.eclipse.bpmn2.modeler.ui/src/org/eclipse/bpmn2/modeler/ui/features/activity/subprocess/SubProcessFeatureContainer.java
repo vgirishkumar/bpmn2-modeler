@@ -13,29 +13,58 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.EscalationEventDefinition;
+import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.SignalEventDefinition;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
+import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
+import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractUpdateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.CompensateEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.ConditionalEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.ErrorEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.EscalationEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.MessageEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.SignalEventDefinitionContainer;
+import org.eclipse.bpmn2.modeler.ui.features.event.definitions.TimerEventDefinitionContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.algorithms.Ellipse;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.util.IColorConstant;
 
 public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatureContainer {
 
-	public static final String TRIGGERED_BY_EVENT = "triggered-by-event-key"; //$NON-NLS-1$
-	public static final String IS_EXPANDED = "is-expanded-key"; //$NON-NLS-1$
-
+	public static final String TRIGGERED_BY_EVENT = "triggered.by.event"; //$NON-NLS-1$
+	public static final String IS_EXPANDED = "is.expanded"; //$NON-NLS-1$
+	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
+	
 	@Override
 	public boolean canApplyTo(Object o) {
 		return super.canApplyTo(o) && o instanceof SubProcess &&
@@ -54,24 +83,8 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addFeature(super.getUpdateFeature(fp));
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-			
-			@Override
-			public boolean canUpdate(IUpdateContext context) {
-				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-			}
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (FeatureSupport.isElementExpanded(text)) {
-					return LabelPosition.TOP;
-				}
-				return LabelPosition.CENTER;
-			}
-		});
+		MultiUpdateFeature multiUpdate = (MultiUpdateFeature) super.getUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateSubProcessDecoratorFeature(fp));
 		return multiUpdate;
 	}
 
@@ -93,5 +106,185 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 		public EClass getBusinessObjectClass() {
 			return Bpmn2Package.eINSTANCE.getSubProcess();
 		}
+	}
+	
+	public static class UpdateSubProcessDecoratorFeature extends AbstractUpdateMarkerFeature<SubProcess> {
+		
+		/**
+		 * @param fp
+		 */
+		public UpdateSubProcessDecoratorFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+
+		@Override
+		public boolean canUpdate(IUpdateContext context) {
+			PictogramElement pe = context.getPictogramElement();
+			if (pe instanceof ContainerShape) {
+				Object o = getBusinessObjectForPictogramElement(pe);
+				return o instanceof SubProcess;
+			}
+			return false;
+		}
+
+		@Override
+		public IReason updateNeeded(IUpdateContext context) {
+			PictogramElement pe = context.getPictogramElement();
+			if (pe instanceof ContainerShape) {
+				boolean isVisible = false;
+				
+				ContainerShape subProcessShape = (ContainerShape) pe;
+				SubProcess subProcess = (SubProcess) getBusinessObjectForPictogramElement(pe);
+				for (Shape s : subProcessShape.getChildren()) {
+					if (Graphiti.getPeService().getPropertyValue(s, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER)!=null) {
+						isVisible = pe.isVisible();
+					}
+				}
+				EventDefinition eventDefinition = null;
+				for (FlowElement fe : subProcess.getFlowElements()) {
+					if (fe instanceof StartEvent) {
+						StartEvent startEvent = (StartEvent) fe;
+						if (startEvent.getEventDefinitions().size()>0) {
+							eventDefinition = startEvent.getEventDefinitions().get(0);
+						}
+						break;
+					}
+				}
+				
+				if (subProcess.isTriggeredByEvent()) {
+					// check if we need to draw the image decorator if the
+					// SubProcess is collapsed
+					if (!FeatureSupport.isElementExpanded(subProcess)) {
+						if (super.updateNeeded(context).toBoolean()) {
+							return Reason.createTrueReason("SubProcess Decorator Changed");
+						}
+						if (!isVisible && eventDefinition!=null)
+							return Reason.createTrueReason("Show SubProcess Decorator");
+					}
+				}
+				else if (isVisible) {
+					return Reason.createTrueReason("Hide SubProcess Decorator");
+				}
+			}
+			return Reason.createFalseReason();
+		}
+		
+		@Override
+	    public boolean update(IUpdateContext context) {
+			return super.update(context);
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#getPropertyKey()
+		 */
+		@Override
+		protected String getPropertyKey() {
+			return EVENT_SUBPROCESS_DECORATOR;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#isPropertyChanged(org.eclipse.bpmn2.FlowElement, java.lang.String)
+		 */
+		@Override
+		protected boolean isPropertyChanged(SubProcess element, String propertyValue) {
+			return !convertPropertyToString(element).equals(propertyValue);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#doUpdate(org.eclipse.bpmn2.FlowElement, org.eclipse.graphiti.mm.pictograms.ContainerShape)
+		 */
+		@Override
+		protected void doUpdate(SubProcess subProcess, ContainerShape subProcessShape) {
+			EventDefinition eventDefinition = null;
+			boolean isMultiple = false;
+			boolean isParallel = false;
+			StartEvent startEvent = null;
+			for (FlowElement fe : subProcess.getFlowElements()) {
+				if (fe instanceof StartEvent) {
+					startEvent = (StartEvent) fe;
+					if (startEvent.getEventDefinitions().size()>0) {
+						eventDefinition = startEvent.getEventDefinitions().get(0);
+					}
+					if (startEvent.getEventDefinitions().size()>1) {
+						isMultiple = true;
+						isParallel = startEvent.isParallelMultiple();
+					}
+					break;
+				}
+			}
+
+			for (Shape s : subProcessShape.getChildren()) {
+				if (Graphiti.getPeService().getPropertyValue(s, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER)!=null) {
+					Graphiti.getPeService().deletePictogramElement(s);
+					break;
+				}
+			}
+			
+			if (subProcess.isTriggeredByEvent()) {
+				ContainerShape decoratorShape = null;
+				if (eventDefinition!=null) {
+					decoratorShape = Graphiti.getPeCreateService().createContainerShape(subProcessShape, false);
+					Rectangle invisibleRect = Graphiti.getGaCreateService().createInvisibleRectangle(decoratorShape);
+
+					ContainerShape circleShape = Graphiti.getPeCreateService().createContainerShape(decoratorShape, false);
+					Ellipse circle = Graphiti.getGaCreateService().createEllipse(circleShape);
+					Graphiti.getGaService().setLocationAndSize(circle, 0, 0, 20, 20);
+					circle.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
+					circle.setFilled(false);
+					if (!startEvent.isIsInterrupting())
+						circle.setLineStyle(LineStyle.DASH);
+					Graphiti.getPeService().setPropertyValue(decoratorShape, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER, Boolean.TRUE.toString());
+					Graphiti.getGaService().setLocationAndSize(invisibleRect, 1, 1, 20, 20);
+				}
+				
+				if (isMultiple) {
+					// TODO: Why does the Multiple figure require an additional
+					// ContainerShape to get the correct size ratios?
+					Shape s = Graphiti.getPeCreateService().createContainerShape(decoratorShape, false);
+					Rectangle r = Graphiti.getGaCreateService().createInvisibleRectangle(decoratorShape);
+					Graphiti.getGaService().setLocationAndSize(r, 1, 1, 20, 20);
+					if (isParallel)
+						AbstractUpdateEventDefinitionFeature.drawParallelMultiple(startEvent, s);
+					else
+						AbstractUpdateEventDefinitionFeature.drawMultiple(startEvent, s);
+					System.out.println();
+				}
+				else if (eventDefinition instanceof MessageEventDefinition) {
+					MessageEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof TimerEventDefinition) {
+					TimerEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof CompensateEventDefinition) {
+					CompensateEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof ConditionalEventDefinition) {
+					ConditionalEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof ErrorEventDefinition) {
+					ErrorEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof EscalationEventDefinition) {
+					EscalationEventDefinitionContainer.draw(decoratorShape);
+				}
+				else if (eventDefinition instanceof SignalEventDefinition) {
+					SignalEventDefinitionContainer.draw(decoratorShape);
+				}
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature#convertPropertyToString(org.eclipse.bpmn2.FlowElement)
+		 */
+		@Override
+		protected String convertPropertyToString(SubProcess element) {
+			for (FlowElement fe : element.getFlowElements()) {
+				if (fe instanceof StartEvent) {
+					return AbstractUpdateEventFeature.getEventDefinitionsValue((StartEvent)fe);
+				}
+			}
+			return "";
+		}
+		
 	}
 }

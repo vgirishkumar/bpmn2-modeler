@@ -10,9 +10,7 @@
  *
  * @author Innar Made
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.features.choreography;
-
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.INITIATING_PARTICIPANT_REF;
+package org.eclipse.bpmn2.modeler.core.features.choreography;
 
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
@@ -50,7 +48,7 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 		if (choreography==null)
 			return Reason.createFalseReason();
 
-		String id = peService.getPropertyValue(context.getPictogramElement(), INITIATING_PARTICIPANT_REF);
+		String id = peService.getPropertyValue(context.getPictogramElement(), ChoreographyUtil.INITIATING_PARTICIPANT_REF);
 		Participant participant = choreography.getInitiatingParticipantRef();
 
 		if ((id == null || id.equals("null")) && participant == null) { //$NON-NLS-1$
@@ -86,7 +84,7 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 
 		Participant initiatingParticipant = choreography.getInitiatingParticipantRef();
 		String id = initiatingParticipant == null ? "null" : initiatingParticipant.getId(); //$NON-NLS-1$
-		peService.setPropertyValue(context.getPictogramElement(), INITIATING_PARTICIPANT_REF, id);
+		peService.setPropertyValue(context.getPictogramElement(), ChoreographyUtil.INITIATING_PARTICIPANT_REF, id);
 
 		return true;
 	}

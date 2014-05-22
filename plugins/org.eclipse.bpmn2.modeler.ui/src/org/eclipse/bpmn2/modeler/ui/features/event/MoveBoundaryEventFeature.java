@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
-import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -45,6 +44,8 @@ public class MoveBoundaryEventFeature extends MoveFlowNodeFeature {
 
 	@Override
 	protected void preMoveShape(IMoveShapeContext context) {
+		super.preMoveShape(context);
+		
 		ContainerShape targetContainer = context.getTargetContainer();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(targetContainer, Activity.class);
 		Object property = context.getProperty(GraphitiConstants.ACTIVITY_MOVE_PROPERTY);

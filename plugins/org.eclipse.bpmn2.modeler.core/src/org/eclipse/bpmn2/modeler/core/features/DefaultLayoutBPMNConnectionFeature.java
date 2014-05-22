@@ -23,7 +23,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
-import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.impl.AbstractLayoutFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -64,7 +64,7 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 	@Override
 	public void execute(IContext context) {
 		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		PictogramElement pe = ((IUpdateContext)context).getPictogramElement();
+		PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
 		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_LAYOUT, getFeatureProvider(), context, pe));
 		super.execute(context);
 	}

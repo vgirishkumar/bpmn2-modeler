@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_REF_IDS;
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_VISIBLE;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +23,6 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -46,22 +42,31 @@ import org.eclipse.graphiti.services.IPeService;
 public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElementFeature<ChoreographyTask> {
 
 	private final IPeService peService = Graphiti.getPeService();
+	private final ILinkService linkService = Graphiti.getLinkService();
 
 	public UpdateChoreographyMessageFlowFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
+	public boolean canUpdate(IUpdateContext context) {
+		boolean result = false;
+		if (super.canUpdate(context)) {
+			PictogramElement pe = context.getPictogramElement();
+			result = ChoreographyUtil.isChoreographyActivity(pe) || ChoreographyUtil.isChoreographyMessage(pe);
+		}
+		return result;
+	}
+
+	@Override
 	public IReason updateNeeded(IUpdateContext context) {
 		IReason reason = super.updateNeeded(context);
-		if (reason.toBoolean())
+		if (reason.toBoolean()) {
 			return reason;
+		}
 		
 		PictogramElement pe = context.getPictogramElement();
-		if (!(pe instanceof ContainerShape))
-			return Reason.createFalseReason();
-		
-		if (isLinkedMessage(pe)) {
+		if (ChoreographyUtil.isChoreographyMessage(pe)) {
 			Message message = BusinessObjectUtil.getFirstElementOfType(pe, Message.class);
 			TreeIterator<EObject> iter = message.eContainer().eAllContents();
 			while (iter.hasNext()) {
@@ -70,55 +75,52 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 					ChoreographyTask choreographyTask = (ChoreographyTask)eo;
 					for (MessageFlow mf : choreographyTask.getMessageFlowRef()) {
 						if (mf.getMessageRef()==message) {
-							String oldLabel = peService.getPropertyValue(pe, ChoreographyProperties.MESSAGE_NAME);
+							String oldLabel = peService.getPropertyValue(pe, ChoreographyUtil.MESSAGE_NAME);
 							if (oldLabel==null || oldLabel.isEmpty())
 								oldLabel = ""; //$NON-NLS-1$
 							String newLabel = ChoreographyUtil.getMessageFlowName(mf);
 							if (newLabel==null || newLabel.isEmpty())
 								newLabel = ""; //$NON-NLS-1$
-							if (!newLabel.equals(oldLabel))
-								return Reason.createTrueReason("Choreography Message");
+							if (!newLabel.equals(oldLabel)) {
+								reason = Reason.createTrueReason("Choreography Message");
+								break;
+							}
 						}
 					}
 				}
 			}
-			return Reason.createFalseReason();
+		}
+		else {
+			ContainerShape choreographyTaskShape = ChoreographyUtil.getChoreographyActivityShape(pe);
+			ChoreographyTask choreographyTask = BusinessObjectUtil.getFirstElementOfType(
+					choreographyTaskShape, ChoreographyTask.class);
+	
+			String shapeIds = ChoreographyUtil.getMessageRefIds(choreographyTaskShape);
+			String taskIds = ChoreographyUtil.getMessageRefIds(choreographyTask);
+			if (!shapeIds.equals(taskIds))
+				reason = Reason.createTrueReason("Choreography Message Link");
+			else {
+				shapeIds = ChoreographyUtil.getParticipantRefIds(choreographyTaskShape);
+				taskIds = ChoreographyUtil.getParticipantRefIds(choreographyTask);
+				if (!shapeIds.equals(taskIds))
+					reason = Reason.createTrueReason("Participants");
+			}
 		}
 		
-		if (!BusinessObjectUtil.containsElementOfType(pe, ChoreographyTask.class)) {
-			return Reason.createFalseReason();
-		}
-
-		ChoreographyTask choreography = BusinessObjectUtil.getFirstElementOfType(pe,
-				ChoreographyTask.class);
-
-		String ids = peService.getPropertyValue(pe, MESSAGE_REF_IDS);
-		String choreoIds = ChoreographyUtil.getMessageRefIds(choreography);
-
-		if (ids.equals(choreoIds)) {
-			return Reason.createFalseReason();
-		}
-
-		return Reason.createTrueReason("Choreography Message Link");
-	}
-
-	private boolean isLinkedMessage(PictogramElement pe) {
-		BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
-		return be instanceof Message &&
-			Boolean.parseBoolean(peService.getPropertyValue(pe, ChoreographyProperties.MESSAGE_LINK));
+		return reason;
 	}
 	
 	@Override
 	public boolean update(IUpdateContext context) {
+		boolean result = false;
 		PictogramElement pe = context.getPictogramElement();
 		Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe,BaseElement.class);
 		if (be instanceof ChoreographyTask) {
-			return update((ContainerShape)pe, (ChoreographyTask)be);
+			result = update((ContainerShape)pe, (ChoreographyTask)be);
 		}
-		else if (isLinkedMessage(pe)) {
-			ILinkService linkService = Graphiti.getLinkService();
-			int result = 0;
+		else if (ChoreographyUtil.isChoreographyMessage(pe)) {
+			int updates = 0;
 			TreeIterator<EObject> iter = be.eContainer().eAllContents();
 			while (iter.hasNext()) {
 				EObject eo = iter.next();
@@ -129,40 +131,40 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 							for (PictogramElement cs : linkService.getPictogramElements(diagram, choreographyTask)) {
 								if (cs instanceof ContainerShape) {
 									if (update((ContainerShape)cs, choreographyTask))
-										++result;
+										++updates;
 								}
 							}
 						}
 					}
 				}
 			}
-			return result>0;
+			
+			result = updates>0;
 		}
-		return false;
+		
+		return result;
 	}
 	
-	public boolean update(ContainerShape choreographyContainer, ChoreographyTask choreographyTask) {
+	public boolean update(ContainerShape choreographyActivityShape, ChoreographyTask choreographyTask) {
 		List<InteractionNode> sources = new ArrayList<InteractionNode>();
 		for (MessageFlow message : choreographyTask.getMessageFlowRef()) {
 			sources.add(message.getSourceRef());
 		}
 
-		for (ContainerShape band : FeatureSupport.getParticipantBandContainerShapes(choreographyContainer)) {
+		for (ContainerShape band : FeatureSupport.getParticipantBandContainerShapes(choreographyActivityShape)) {
 			Participant participant = BusinessObjectUtil.getFirstElementOfType(band, Participant.class);
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(band, BPMNShape.class);
 			if (!sources.contains(participant) && bpmnShape.isIsMessageVisible()) {
 				bpmnShape.setIsMessageVisible(false);
-				peService.setPropertyValue(choreographyContainer, MESSAGE_VISIBLE, Boolean.toString(false));
+				peService.setPropertyValue(choreographyActivityShape, ChoreographyUtil.MESSAGE_VISIBLE, Boolean.toString(false));
 			} else if (sources.contains(participant) && !bpmnShape.isIsMessageVisible()) {
 				bpmnShape.setIsMessageVisible(true);
-				peService.setPropertyValue(choreographyContainer, MESSAGE_VISIBLE, Boolean.toString(true));
+				peService.setPropertyValue(choreographyActivityShape, ChoreographyUtil.MESSAGE_VISIBLE, Boolean.toString(true));
 			}
 		}
 
-		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),choreographyContainer);
-
 		String choreoIds = ChoreographyUtil.getMessageRefIds(choreographyTask);
-		peService.setPropertyValue(choreographyContainer, MESSAGE_REF_IDS, choreoIds);
-		return false;
+		peService.setPropertyValue(choreographyActivityShape, ChoreographyUtil.MESSAGE_REF_IDS, choreoIds);
+		return true;
 	}
 }

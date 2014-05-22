@@ -66,6 +66,7 @@ public interface IConstants {
 	public final String ICON_BOUNDARYEVENT = "16/BoundaryEvent.png"; //$NON-NLS-1$
 	public final String ICON_BUSINESSRULETASK = "16/BusinessRuleTask.png"; //$NON-NLS-1$
 	public final String ICON_CALLACTIVITY = "16/CallActivity.png"; //$NON-NLS-1$
+	public final String ICON_CALLCHOREOGRAPHY = "16/CallChoreography.png"; //$NON-NLS-1$
 	public final String ICON_CANCEL = "16/Cancel.png"; //$NON-NLS-1$
 	public final String ICON_CANCELEVENTDEFINITION = "16/CancelEventDefinition.png"; //$NON-NLS-1$
 	public final String ICON_CATEGORY = "16/Category.png"; //$NON-NLS-1$
@@ -120,6 +121,7 @@ public interface IConstants {
 	public final String ICON_SIGNAL = "16/Signal.png"; //$NON-NLS-1$
 	public final String ICON_SIGNALEVENTDEFINITION = "16/SignalEventDefinition.png"; //$NON-NLS-1$
 	public final String ICON_STARTEVENT = "16/StartEvent.png"; //$NON-NLS-1$
+	public final String ICON_SUBCHOREOGRAPHY = "16/SubChoreography.png"; //$NON-NLS-1$
 	public final String ICON_SUBPROCESS = "16/SubProcess.png"; //$NON-NLS-1$
 	public final String ICON_TASK = "16/Task.png"; //$NON-NLS-1$
 	public final String ICON_TERMINATEEVENTDEFINITION = "16/TerminateEventDefinition.png"; //$NON-NLS-1$

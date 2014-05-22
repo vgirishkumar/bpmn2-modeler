@@ -75,6 +75,7 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateChoreographyMessageFlowFeature(fp));
+		multiUpdate.addFeature(new UpdateChoreographyMessageLinkFeature(fp));
 		return multiUpdate;
 	}
 

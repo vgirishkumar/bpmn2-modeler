@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -54,7 +55,6 @@ import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -262,7 +262,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 
 	}
 	
-	public static class UpdateDefaultSequenceFlowFeature extends AbstractUpdateFeature {
+	public static class UpdateDefaultSequenceFlowFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateDefaultSequenceFlowFeature(IFeatureProvider fp) {
 			super(fp);
@@ -321,7 +321,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 				Boolean.toString(flow.getConditionExpression() != null));
 	}
 	
-	public static class UpdateConditionalSequenceFlowFeature extends AbstractUpdateFeature {
+	public static class UpdateConditionalSequenceFlowFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateConditionalSequenceFlowFeature(IFeatureProvider fp) {
 			super(fp);

@@ -453,12 +453,14 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	}
 
 	public static String fontToString(Font f) {
-		return new String(
-				f.getName() + "," + //$NON-NLS-1$
-				f.getSize() + "," + //$NON-NLS-1$
-				(f.isItalic() ? "I" : "-") + "," + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				(f.isBold() ? "B" : "-") //$NON-NLS-1$ //$NON-NLS-2$
-				);
+		if (f!=null)
+			return new String(
+					f.getName() + "," + //$NON-NLS-1$
+					f.getSize() + "," + //$NON-NLS-1$
+					(f.isItalic() ? "I" : "-") + "," + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					(f.isBold() ? "B" : "-") //$NON-NLS-1$ //$NON-NLS-2$
+					);
+		return "";
 	}
 	
 	public static Font stringToFont(String s) {

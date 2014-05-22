@@ -229,7 +229,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		if (context!=null) {
 			String s;
 			Definitions definitions = ModelUtil.getDefinitions(context);
-			
+			System.out.println();
 			// add all existing ItemDefinitions
 			List<ItemDefinition> itemDefs = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 			for (ItemDefinition id : itemDefs) {

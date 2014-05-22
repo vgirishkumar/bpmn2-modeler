@@ -54,17 +54,17 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 
 	@Override
 	protected Shape drawForStart(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
 	@Override
 	protected Shape drawForEnd(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
 	protected Shape drawForThrow(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
@@ -74,10 +74,10 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 
 	@Override
 	protected Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
-	private Shape draw(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
 		Shape escalationShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon escalation = GraphicsUtil.createEventEscalation(escalationShape);
@@ -86,7 +86,7 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 		return escalationShape;
 	}
 
-	private Shape drawFilled(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
 		Shape escalationShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon escalation = GraphicsUtil.createEventEscalation(escalationShape);

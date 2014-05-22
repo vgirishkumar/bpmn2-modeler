@@ -62,12 +62,12 @@ public class LinkEventDefinitionContainer extends AbstractEventDefinitionFeature
 
 	@Override
 	protected Shape drawForThrow(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return drawFilled(algorithm, shape);
+		return drawFilled(shape);
 	}
 
 	@Override
 	protected Shape drawForCatch(DecorationAlgorithm algorithm, ContainerShape shape) {
-		return draw(algorithm, shape);
+		return draw(shape);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class LinkEventDefinitionContainer extends AbstractEventDefinitionFeature
 		return null;
 	}
 
-	private Shape draw(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape linkShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon link = GraphicsUtil.createEventLink(linkShape);
@@ -85,7 +85,7 @@ public class LinkEventDefinitionContainer extends AbstractEventDefinitionFeature
 		return linkShape;
 	}
 
-	private Shape drawFilled(DecorationAlgorithm algorithm, ContainerShape shape) {
+	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape linkShape = Graphiti.getPeService().createShape(shape, false);
 		Polygon link = GraphicsUtil.createEventLink(linkShape);

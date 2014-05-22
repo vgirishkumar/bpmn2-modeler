@@ -18,8 +18,6 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
@@ -28,8 +26,6 @@ import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IPeLayoutService;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -40,7 +36,7 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 	/**
 	 * Instantiates a new move activity feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the Feature Provider
 	 */
 	public MoveActivityFeature(IFeatureProvider fp) {
 		super(fp);
@@ -51,57 +47,6 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 	 */
 	@Override
 	protected void preMoveShape(IMoveShapeContext context) {
-		MoveShapeContext msc = (MoveShapeContext)context;
-		ContainerShape oldContainer = context.getSourceContainer();
-		ContainerShape newContainer = context.getTargetContainer();
-		IPeLayoutService peLayoutService = Graphiti.getPeLayoutService();
-//		Shape shape = context.getShape();
-//		ILocation loc = peService.getLocationRelativeToDiagram(shape);
-		ILocation oldLoc = peLayoutService.getLocationRelativeToDiagram(oldContainer);
-		ILocation newLoc = peLayoutService.getLocationRelativeToDiagram(newContainer);
-//		System.out.println(
-//				(oldContainer==newContainer ? "inside:\n" : "outside:\n")+
-//				"oldContainer:\n" +
-//				"  x="+oldLoc.getX()+"\n"+
-//					"  y="+oldLoc.getY()+"\n"+
-//				"newContainer:\n" +
-//				"  x="+newLoc.getX()+"\n"+
-//					"  y="+newLoc.getY()+"\n"+
-//				"shape:\n" +
-//				"  rel x="+shape.getGraphicsAlgorithm().getX()+"\n"+
-//					"  rel y="+shape.getGraphicsAlgorithm().getY()+"\n"+
-//				"  abs x="+loc.getX()+"\n"+
-//					"  abs y="+loc.getY()+"\n"+
-//				"context:\n" +
-//				"  x="+msc.getX()+"\n"+
-//					"  y="+msc.getY()+"\n"+
-//				"  deltaX="+msc.getDeltaX()+"\n"+
-//					"  deltaY="+msc.getDeltaY()+"\n"+
-//				"\n"
-//		);
-		
-		if (oldContainer!=newContainer) {
-			int x = newLoc.getX() + msc.getX() - oldLoc.getX();
-			int y = newLoc.getY() + msc.getY() - oldLoc.getY();
-			int deltaX = newLoc.getX() + msc.getDeltaX() - oldLoc.getX();
-			int deltaY = newLoc.getY() + msc.getDeltaY() - oldLoc.getY();
-			
-//			System.out.println(
-//					"new context:\n"+
-//					"  x="+( newLoc.getX() + msc.getX() - oldLoc.getX() )+"\n"+
-//								"  y="+msc.getY()+"\n"+
-//					"  deltaX="+( newLoc.getX() + msc.getDeltaX() - oldLoc.getX() )+"\n"+
-//								"  deltaY="+msc.getDeltaY()+"\n"+
-//					"\n"
-//			);
-			
-//			msc.setX(x);
-//			msc.setY(y);
-//			msc.setDeltaX(deltaX);
-//			msc.setDeltaY(deltaY);
-//			msc.setTargetContainer(oldContainer);
-		}
-
 		super.preMoveShape(context);
 	}
 
@@ -110,9 +55,9 @@ public class MoveActivityFeature extends MoveFlowNodeFeature {
 	 */
 	@Override
 	protected void postMoveShape(final IMoveShapeContext context) {
-		Shape containerShape = context.getShape();
-//		GraphicsUtil.sendToFront(containerShape);
 		super.postMoveShape(context);
+
+		Shape containerShape = context.getShape();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		
 		new AbstractBoundaryEventOperation() {

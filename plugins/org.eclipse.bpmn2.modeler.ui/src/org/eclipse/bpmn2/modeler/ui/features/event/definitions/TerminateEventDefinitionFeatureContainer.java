@@ -56,12 +56,7 @@ public class TerminateEventDefinitionFeatureContainer extends AbstractEventDefin
 
 	@Override
 	protected Shape drawForEnd(DecorationAlgorithm algorithm, ContainerShape shape) {
-		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
-		Shape terminateShape = Graphiti.getPeService().createShape(shape, false);
-		Ellipse ellispe = GraphicsUtil.createEventTerminate(terminateShape);
-		StyleUtil.setFillStyle(ellispe, FillStyle.FILL_STYLE_FOREGROUND);
-		StyleUtil.applyStyle(ellispe, be);
-		return terminateShape;
+		return draw(shape);
 	}
 
 	@Override
@@ -77,6 +72,15 @@ public class TerminateEventDefinitionFeatureContainer extends AbstractEventDefin
 	@Override
 	protected Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape) {
 		return null; // NOT ALLOWED ACCORDING TO SPEC
+	}
+	
+	public static Shape draw(ContainerShape shape) {
+		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
+		Shape terminateShape = Graphiti.getPeService().createShape(shape, false);
+		Ellipse ellispe = GraphicsUtil.createEventTerminate(terminateShape);
+		StyleUtil.setFillStyle(ellispe, FillStyle.FILL_STYLE_FOREGROUND);
+		StyleUtil.applyStyle(ellispe, be);
+		return terminateShape;
 	}
 
 	public static class CreateTerminateEventDefinition extends AbstractCreateEventDefinitionFeature<TerminateEventDefinition> {

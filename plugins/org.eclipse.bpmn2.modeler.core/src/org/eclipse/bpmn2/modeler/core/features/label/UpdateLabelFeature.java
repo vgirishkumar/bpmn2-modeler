@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.label;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
@@ -34,8 +37,6 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
-import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
@@ -47,6 +48,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.graphiti.ui.services.IUiLayoutService;
 
 public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
@@ -106,6 +108,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 	protected boolean isAddingLabel(IContext context) {
 		return context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENTS) != null
+				|| context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENT) != null
 				|| context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 	}
 
@@ -132,6 +135,44 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		return label;
 	}
 
+	protected int getLabelWrapWidth(PictogramElement ownerPE) {
+		int w = GraphicsUtil.calculateSize(ownerPE).getWidth();
+		return w>=100 ? w : 100; 
+	}
+	
+	protected int[] wrapText(AbstractText ga, String text, int wrapWidth) {
+		IUiLayoutService layoutService = GraphitiUi.getUiLayoutService();
+		List<String> ss = new ArrayList<String>();
+		int start = 0;
+		for (int end=0; end<text.length(); ++end) {
+			if (text.charAt(end)==' ') {
+				ss.add(text.substring(start, end+1));
+				start = end+1;
+			}
+		}
+		String words[] = ss.toArray(new String[ss.size()]);
+		IDimension dim = layoutService.calculateTextSize(text, ga.getFont());
+		int totalHeight = dim.getHeight();
+		int totalWidth = dim.getWidth();
+		int height = 0;
+		int width = 0;
+		String line = "";
+		for (int i=0; i<words.length - 1; ++i) {
+			line += words[i];
+			dim = layoutService.calculateTextSize(line + words[i+1], ga.getFont());
+			if (dim.getWidth()>=wrapWidth) {
+				line = "";
+				height += dim.getHeight();
+				if (dim.getWidth()>width)
+					width = dim.getWidth();
+			}
+		}
+		height += totalHeight;
+		if (width==0)
+			width = totalWidth;
+		return new int[] {height, width};
+	}
+	
 	protected Rectangle getLabelBounds(PictogramElement pe, boolean isAddingLabel, Point offset) {
 
 		PictogramElement ownerPE = FeatureSupport.getLabelOwner(pe);
@@ -154,7 +195,14 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			int y = 0;
 			int w = getLabelWidth(labelGA);
 			int h = getLabelHeight(labelGA);
-			LabelPosition pos = getLabelPosition(labelGA);
+			int wrapWidth = getLabelWrapWidth(ownerPE);
+			if (wrapWidth>0 && w > wrapWidth) {
+				int hw[] = wrapText(labelGA, text, wrapWidth);
+				h = hw[0];
+				w = hw[1];
+			}
+			
+			LabelPosition pos = getHorizontalLabelPosition(labelGA);
 
 			if (isAddingLabel) {
 				BPMNLabel bpmnLabel = null;
@@ -188,6 +236,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			}
 
 			if (!isAddingLabel && !text.isEmpty()) {
+				// calculate X coordinate
 				switch (pos) {
 				case NORTH:
 				case SOUTH:
@@ -198,11 +247,16 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 					x = ownerLoc.getX() + (ownerSize.getWidth() - w)/2;
 					break;
 				case WEST:
+					x = ownerLoc.getX() - w - LabelFeatureContainer.LABEL_MARGIN;
+					break;
 				case EAST:
+					x = ownerLoc.getX() + ownerSize.getWidth() + LabelFeatureContainer.LABEL_MARGIN;
+					break;
 				case LEFT:
+					x = ownerLoc.getX() + LabelFeatureContainer.LABEL_MARGIN;
+					break;
 				case RIGHT:
-					// Y coordinate for these positions are all the same
-					y = ownerLoc.getY() + (ownerSize.getHeight() - h)/2;
+					x = ownerLoc.getX() + ownerSize.getWidth() - w - LabelFeatureContainer.LABEL_MARGIN;
 					break;
 				case MOVABLE:
 					x = (int) labelLoc.getX();
@@ -214,7 +268,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 					break;
 				}
 
-				// calculate X or Y coordinate
+				// calculate Y coordinate
+				pos = getVerticalLabelPosition(labelGA);
 				switch (pos) {
 				case NORTH:
 					y = ownerLoc.getY() - h - LabelFeatureContainer.LABEL_MARGIN/2;
@@ -232,16 +287,11 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 					y = ownerLoc.getY() + ownerSize.getHeight() - h - LabelFeatureContainer.LABEL_MARGIN / 2;
 					break;
 				case WEST:
-					x = ownerLoc.getX() - w - LabelFeatureContainer.LABEL_MARGIN;
-					break;
 				case EAST:
-					x = ownerLoc.getX() + ownerSize.getWidth() + LabelFeatureContainer.LABEL_MARGIN;
-					break;
 				case LEFT:
-					x = ownerLoc.getX() + LabelFeatureContainer.LABEL_MARGIN;
-					break;
 				case RIGHT:
-					x = ownerLoc.getX() + ownerSize.getWidth() - w - LabelFeatureContainer.LABEL_MARGIN;
+					// Y coordinate for these positions are all the same
+					y = ownerLoc.getY() + (ownerSize.getHeight() - h)/2;
 					break;
 				case MOVABLE:
 					break;
@@ -363,5 +413,13 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
 		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
 		return ss.getLabelPosition();
+	}
+	
+	protected LabelPosition getHorizontalLabelPosition(AbstractText text) {
+		return getLabelPosition(text);
+	}
+	
+	protected LabelPosition getVerticalLabelPosition(AbstractText text) {
+		return getLabelPosition(text);
 	}
 }

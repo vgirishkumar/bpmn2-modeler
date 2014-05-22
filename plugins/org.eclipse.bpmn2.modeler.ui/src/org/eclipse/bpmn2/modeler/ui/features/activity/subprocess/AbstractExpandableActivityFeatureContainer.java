@@ -14,6 +14,9 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
@@ -22,6 +25,8 @@ import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractExpandableActivityFeatureContainer extends AbstractActivityFeatureContainer {
 
@@ -32,9 +37,35 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addFeature(super.getUpdateFeature(fp));
+		MultiUpdateFeature multiUpdate = (MultiUpdateFeature) super.getUpdateFeature(fp);
+		// we'll provide our own label update feature so remove the one from super()
+		for (IUpdateFeature feature : multiUpdate.getFeatures()) {
+			if (feature instanceof UpdateLabelFeature) {
+				multiUpdate.getFeatures().remove(feature);
+				break;
+			}
+		}
 		multiUpdate.addFeature(new UpdateExpandableActivityFeature(fp));
+		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+			
+			protected LabelPosition getHorizontalLabelPosition(AbstractText text) {
+				PictogramElement pe = FeatureSupport.getLabelOwner(text);
+				Object bo = getBusinessObjectForPictogramElement(pe);
+				if (FeatureSupport.isElementExpanded(bo)) {
+					return LabelPosition.LEFT;
+				}
+				return LabelPosition.CENTER;
+			}
+			
+			protected LabelPosition getVerticalLabelPosition(AbstractText text) {
+				PictogramElement pe = FeatureSupport.getLabelOwner(text);
+				Object bo = getBusinessObjectForPictogramElement(pe);
+				if (FeatureSupport.isElementExpanded(bo)) {
+					return LabelPosition.TOP;
+				}
+				return LabelPosition.CENTER;
+			}
+		});
 		return multiUpdate;
 	}
 

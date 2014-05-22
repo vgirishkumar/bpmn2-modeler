@@ -11,7 +11,6 @@
 package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -42,7 +41,7 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 		}
 		
 		// force an update of the label
-		updatePictogramElement(labelShape);
+		updatePictogramElement(context, labelShape);
 		
 		return labelShape;
 	}

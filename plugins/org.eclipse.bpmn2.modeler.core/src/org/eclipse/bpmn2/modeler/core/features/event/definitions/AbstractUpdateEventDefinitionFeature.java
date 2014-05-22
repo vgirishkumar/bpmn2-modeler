@@ -77,7 +77,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 		}
 	}
 	
-	private void drawMultiple(Event event, Shape shape) {
+	public static void drawMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Polygon pentagon = GraphicsUtil.createEventPentagon(shape);
 		if (event instanceof ThrowEvent) {
@@ -88,7 +88,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 		StyleUtil.applyStyle(pentagon, be);
 	}
 	
-	private void drawParallelMultiple(Event event, Shape shape) {
+	public static void drawParallelMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Polygon cross = GraphicsUtil.createEventParallelMultiple(shape);
 		StyleUtil.setFillStyle(cross, FillStyle.FILL_STYLE_BACKGROUND);

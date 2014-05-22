@@ -198,7 +198,6 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		String[] properties = provider.getProperties();
 		if (properties!=null) {
 			getAttributesParent();
-			EStructuralFeature feature;
 			for (String property : properties) {
 				bindProperty(be,property);
 			}

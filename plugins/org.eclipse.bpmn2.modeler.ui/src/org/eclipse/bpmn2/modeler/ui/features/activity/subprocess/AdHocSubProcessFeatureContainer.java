@@ -56,28 +56,12 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 		};
 	}
 
-	@Override
-	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-		multiUpdate.addFeature(super.getUpdateFeature(fp));
-		multiUpdate.addFeature(new UpdateLabelFeature(fp) {
-			
-			@Override
-			public boolean canUpdate(IUpdateContext context) {
-				Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
-				return bo != null && bo instanceof BaseElement && canApplyTo((BaseElement) bo);
-			}
-
-			@Override
-			protected LabelPosition getLabelPosition(AbstractText text) {
-				if (FeatureSupport.isElementExpanded(text)) {
-					return LabelPosition.TOP;
-				}
-				return LabelPosition.CENTER;
-			}
-		});
-		return multiUpdate;
-	}
+//	@Override
+//	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+//		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+//		multiUpdate.addFeature(super.getUpdateFeature(fp));
+//		return multiUpdate;
+//	}
 
 	public static class CreateAdHocSubProcessFeature extends AbstractCreateExpandableFlowNodeFeature<AdHocSubProcess> {
 

@@ -120,36 +120,18 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 	 */
 	@Override
 	public boolean update(IUpdateContext context) {
-		// disable the Property Sheet page during creation - this would
-		// only slow things down...
-//		DiagramBehavior db = (DiagramBehavior) getDiagramBehavior();
-//		db.getUpdateBehavior().setAdapterActive(false);
-		
-//		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
-//		if (page!=null && page.getControl()!=null)
-//			page.getControl().setEnabled(false);
-		
 		boolean updated = false;
-		try {
-			boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
-			
-			updateNeeded(context);
-			
-			int i = 0;
-			for (IUpdateFeature f : features) {
-				if ((updateNeeded[i] || forceUpdate) && f.update(context)) {
-					updated = true;
-				}
-				++i;
+		boolean forceUpdate =  Boolean.TRUE.equals(context.getProperty(GraphitiConstants.FORCE_UPDATE_ALL));
+		
+		updateNeeded(context);
+		
+		int i = 0;
+		for (IUpdateFeature f : features) {
+			if ((updateNeeded[i] || forceUpdate) && f.update(context)) {
+				updated = true;
 			}
+			++i;
 		}
-		finally {
-			// re-enable the Property Sheet page
-//			if (page!=null && page.getControl()!=null)
-//				page.getControl().setEnabled(true);
-//			db.getUpdateBehavior().setAdapterActive(true);
-		}
-
 		return updated;
 	}
 

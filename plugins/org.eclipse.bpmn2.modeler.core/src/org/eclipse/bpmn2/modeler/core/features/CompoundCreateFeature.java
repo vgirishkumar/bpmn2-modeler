@@ -109,26 +109,14 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	 */
 	@Override
 	public void execute(IContext context) {
-		// disable the Property Sheet page during creation - this would
-		// only slow things down...
-		IPropertySheetPage page = (IPropertySheetPage) ((IAdaptable)getDiagramEditor()).getAdapter(IPropertySheetPage.class);
-		page.getControl().setEnabled(false);
-		
 		// create a list for PEs that are created during execution
 		List<PictogramElement> pes = new ArrayList<PictogramElement>();
 		context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENTS, pes);
-		try {
-			if (context instanceof ICreateContext)
-				create((ICreateContext) context);
-			else if (context instanceof ICreateConnectionContext)
-				create((ICreateConnectionContext)context);
-		}
-		finally {
-			// re-enable the Property Sheet page and...
-			page.getControl().setEnabled(true);
-			// ...select all of the PEs that were created
-			getDiagramEditor().setPictogramElementsForSelection(pes.toArray(new PictogramElement[pes.size()]));
-		}
+
+		if (context instanceof ICreateContext)
+			create((ICreateContext) context);
+		else if (context instanceof ICreateConnectionContext)
+			create((ICreateConnectionContext)context);
 	}
 	
 	/* (non-Javadoc)

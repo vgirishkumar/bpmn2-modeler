@@ -66,7 +66,7 @@ public class ConditionalEventDefinitionContainer extends AbstractEventDefinition
 		return draw(shape);
 	}
 
-	private Shape draw(ContainerShape shape) {
+	public static Shape draw(ContainerShape shape) {
 		Shape conditionShape = Graphiti.getPeService().createShape(shape, false);
 		GraphicsUtil.createEventImage(conditionShape, ImageProvider.IMG_20_CONDITION);
 		return conditionShape;

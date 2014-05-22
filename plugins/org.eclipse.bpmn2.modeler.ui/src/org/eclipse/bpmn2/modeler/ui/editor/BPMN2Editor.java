@@ -934,6 +934,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		getPreferences().removePreferenceChangeListener(this);
 		
+		// cancel the Property Sheet Page job
+		propertySheetPage.selectionChanged(this, null);
+		
 		// get rid of cached Property Tab Descriptors
 		if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)
 			((PropertyTabDescriptorProvider)tabDescriptorProvider).disposeTabDescriptors(bpmnResource);

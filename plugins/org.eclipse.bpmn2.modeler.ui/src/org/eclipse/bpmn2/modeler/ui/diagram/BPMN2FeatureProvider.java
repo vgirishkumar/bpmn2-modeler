@@ -72,6 +72,7 @@ import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
@@ -502,7 +503,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			if (feature != null)
 				return feature;
 		}
-		return super.getMoveShapeFeature(context);
+		return null; //super.getMoveShapeFeature(context);
 	}
 
 	@Override
@@ -524,7 +525,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			if (feature != null)
 				return feature;
 		}
-		return super.getResizeShapeFeature(context);
+		return null; //super.getResizeShapeFeature(context);
 	}
 
 	@Override
@@ -752,23 +753,26 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	public PictogramElement addIfPossible(IAddContext context) {
 		IAddFeature addElementFeature = getAddFeature(context);
 		PictogramElement pe = super.addIfPossible(context);
-		PictogramElement le = null;
-		if (addElementFeature instanceof AbstractBpmn2AddFeature) {
-			context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, pe);
-			IAddFeature addLabelFeature = ((AbstractBpmn2AddFeature)addElementFeature).getAddLabelFeature(this);
-			if (addLabelFeature!=null && addLabelFeature.canAdd(context)) {
-				le = addLabelFeature.add(context);
+		if (pe!=null) {
+			PictogramElement le = null;
+			if (addElementFeature instanceof AbstractBpmn2AddFeature) {
+				context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENT, pe);
+				IAddFeature addLabelFeature = ((AbstractBpmn2AddFeature)addElementFeature).getAddLabelFeature(this);
+				if (addLabelFeature!=null && addLabelFeature.canAdd(context)) {
+					le = addLabelFeature.add(context);
+				}
 			}
-		}
-		
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		List<PictogramElement> pes = new ArrayList<PictogramElement>();
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
-		
-		if (le!=null) {
-			((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);
-		}
-		
+			
+			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			List<PictogramElement> pes = new ArrayList<PictogramElement>();
+			rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
+			
+			if (le!=null) {
+				((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);
+				if (!DIImport.isImporting(context))
+					((AbstractBpmn2AddFeature)addElementFeature).layoutPictogramElement(context, pe);
+			}
+		}		
 		return pe;
 	}
 }

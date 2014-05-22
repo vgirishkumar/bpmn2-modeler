@@ -92,7 +92,7 @@ public class ParticipantFeatureContainer extends BaseElementFeatureContainer {
 		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
 		multiUpdate.addFeature(new UpdateParticipantFeature(fp));
 		multiUpdate.addFeature(new UpdateParticipantMultiplicityFeature(fp));
-		multiUpdate.addFeature(new UpdateChoreographyMessageLinkFeature(fp));
+//		multiUpdate.addFeature(new UpdateChoreographyMessageLinkFeature(fp));
 		multiUpdate.addFeature(new UpdateContainerLabelFeature(fp));
 		return multiUpdate;
 	}

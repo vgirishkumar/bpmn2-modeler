@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.LayoutChoreographyFeature;
+import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyInitiatingParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyLabelFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyParticipantBandsFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyParticipantRefsFeature;
@@ -47,6 +48,7 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 				context instanceof IResizeContext
 				) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
+			PictogramElement originalpe = pe; 
 			if (FeatureSupport.isLabelShape(pe))
 				pe = (PictogramElement) pe.eContainer();
 			if (FeatureSupport.isChoreographyParticipantBand(pe))

@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.MESSAGE_REF_IDS;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +102,7 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 
 		if (businessObject instanceof ChoreographyTask) {
-			peService.setPropertyValue(containerShape, MESSAGE_REF_IDS,
+			peService.setPropertyValue(containerShape, ChoreographyUtil.MESSAGE_REF_IDS,
 					ChoreographyUtil.getMessageRefIds((ChoreographyTask) businessObject));
 		}
 
@@ -114,7 +112,6 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		decorateShape(context, containerShape, businessObject);
 		
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
-		ChoreographyUtil.drawMessageLinks(getFeatureProvider(),containerShape);
 
 		return containerShape;
 	}

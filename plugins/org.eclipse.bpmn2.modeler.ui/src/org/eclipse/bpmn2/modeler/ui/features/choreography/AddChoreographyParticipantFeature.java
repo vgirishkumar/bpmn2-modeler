@@ -120,10 +120,10 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
 			PictogramElement pe = pes[0];
-			ContainerShape choreographyActivityContainer = null;
+			ContainerShape choreographyActivityShape = null;
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof ChoreographyActivity) {
-				choreographyActivityContainer = (ContainerShape)pe;
+				choreographyActivityShape = (ContainerShape)pe;
 				ChoreographyActivity choreographyActivity = (ChoreographyActivity)bo;
 				
 				Participant participant = null;
@@ -171,9 +171,11 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 						choreographyActivity.setInitiatingParticipantRef(result);
 					}
 
-					choreographyActivity.getParticipantRefs().add(result);
-					
-					ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityContainer);
+					int index = choreographyActivity.getParticipantRefs().size();
+					if (index>1)
+						--index;
+					choreographyActivity.getParticipantRefs().add(index, result);
+					ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityShape);
 				}
 			}
 		}

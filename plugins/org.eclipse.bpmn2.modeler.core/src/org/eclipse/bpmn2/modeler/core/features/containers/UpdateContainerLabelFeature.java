@@ -112,5 +112,11 @@ public class UpdateContainerLabelFeature extends UpdateLabelFeature {
 		}
 		return true;
 	}
+	
+	protected ContainerShape getTargetContainer(PictogramElement ownerPE) {
+		// TODO: fix this so the label is a child of the Lane or Pool.
+		// There's a problem with Resize Feature if the label is a direct child of Lane/Pool.
+		return (ContainerShape) ownerPE.eContainer();
+	}
 
 }

@@ -49,18 +49,18 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 
 	@Override
 	public boolean layout(ILayoutContext context) {
-		ContainerShape choreographyActivityContainer = (ContainerShape) context.getPictogramElement();
-		GraphicsAlgorithm parentGa = choreographyActivityContainer.getGraphicsAlgorithm();
+		ContainerShape choreographyActivityShape = (ContainerShape) context.getPictogramElement();
+		GraphicsAlgorithm parentGa = choreographyActivityShape.getGraphicsAlgorithm();
 
 		int newWidth = parentGa.getWidth();
 		int newHeight = parentGa.getHeight();
 
-		Shape rectShape = choreographyActivityContainer.getChildren().get(0);
+		Shape rectShape = choreographyActivityShape.getChildren().get(0);
 		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 		
-		int height = choreographyActivityContainer.getGraphicsAlgorithm().getHeight();
+		int height = choreographyActivityShape.getGraphicsAlgorithm().getHeight();
 		int minY = height;
-		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityContainer);
+		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityShape);
 		for (ContainerShape b : bandShapes) {
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(b, BPMNShape.class);
 			ParticipantBandKind bandKind = bpmnShape.getParticipantBandKind();
@@ -72,11 +72,11 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 					minY = y;
 			}
 		}
-		GraphicsUtil.setActivityMarkerOffest(choreographyActivityContainer, height - minY);
-		GraphicsUtil.layoutActivityMarkerContainer(choreographyActivityContainer);
+		GraphicsUtil.setActivityMarkerOffest(choreographyActivityShape, height - minY);
+		GraphicsUtil.layoutActivityMarkerContainer(choreographyActivityShape);
 
 		IUpdateFeature feature = new UpdateChoreographyLabelFeature(getFeatureProvider());
-		IUpdateContext updateContext = new UpdateContext(choreographyActivityContainer);
+		IUpdateContext updateContext = new UpdateContext(choreographyActivityShape);
 		feature.update(updateContext);
 		return true;
 	}

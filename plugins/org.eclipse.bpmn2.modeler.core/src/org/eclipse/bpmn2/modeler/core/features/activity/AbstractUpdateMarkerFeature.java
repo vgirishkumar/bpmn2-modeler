@@ -53,14 +53,17 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 		if (reason.toBoolean())
 			return reason;
 
-		PictogramElement element = context.getPictogramElement();
-		String property = Graphiti.getPeService().getPropertyValue(element, getPropertyKey());
-		if(property == null) {
-			return Reason.createFalseReason();
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			String property = Graphiti.getPeService().getPropertyValue(pe, getPropertyKey());
+			if(property == null) {
+				return reason;
+			}
+			T activity = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());
+			if (isPropertyChanged(activity, property))
+				reason = Reason.createTrueReason("Marker changed");
 		}
-		T activity = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());
-		boolean changed = isPropertyChanged(activity, property);
-		return changed ? Reason.createTrueReason("Marker changed") : Reason.createFalseReason(); //$NON-NLS-1$
+		return reason;
     }
 
 	/* (non-Javadoc)
@@ -68,13 +71,15 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 	 */
 	@Override
     public boolean update(IUpdateContext context) {
-		IPeService peService = Graphiti.getPeService();
-		ContainerShape container = (ContainerShape) context.getPictogramElement();
-		T element = (T) getBusinessObjectForPictogramElement(context.getPictogramElement());
-
-		doUpdate(element, container);
-		peService.setPropertyValue(container, getPropertyKey(), convertPropertyToString(element));
-		return true;
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			T element = (T) getBusinessObjectForPictogramElement(pe);
+	
+			doUpdate(element, (ContainerShape) pe);
+			Graphiti.getPeService().setPropertyValue(pe, getPropertyKey(), convertPropertyToString(element));
+			return true;
+		}
+		return false;
     }
 	
 	/**

@@ -127,6 +127,8 @@ public interface GraphitiConstants {
 
 	public static final String EVENT_MARKER_CONTAINER = "event.marker.container"; //$NON-NLS-1$
 
+	public static final String EVENT_SUBPROCESS_DECORATOR_CONTAINER = "event.subprocess.decorator.container"; //$NON-NLS-1$
+
 
 	// Lane and Pool move/resize constants
 	public static final String LANE_RESIZE_PROPERTY = "lane.resize"; //$NON-NLS-1$
