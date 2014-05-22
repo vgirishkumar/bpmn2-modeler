@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.CallConversation;
 import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CompensateEventDefinition;
@@ -40,6 +41,11 @@ import org.eclipse.bpmn2.ErrorEventDefinition;
 import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.EventBasedGateway;
 import org.eclipse.bpmn2.ExclusiveGateway;
+import org.eclipse.bpmn2.GlobalBusinessRuleTask;
+import org.eclipse.bpmn2.GlobalManualTask;
+import org.eclipse.bpmn2.GlobalScriptTask;
+import org.eclipse.bpmn2.GlobalTask;
+import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
@@ -60,6 +66,7 @@ import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubConversation;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.TerminateEventDefinition;
@@ -75,8 +82,13 @@ public class Bpmn2FeatureMap {
 	public static final List<Class> EVENTS;
 	public static final List<Class> GATEWAYS;
 	public static final List<Class> TASKS;
+	public static final List<Class> GLOBAL_TASKS;
+	public static final List<Class> SUBPROCESS;
+	public static final List<Class> CHOREOGRAPHY;
+	public static final List<Class> CONVERSATION;
 	public static final List<Class> DATA;
-	public static final List<Class> OTHER;
+	public static final List<Class> ARTIFACTS;
+	public static final List<Class> SWIMLANES;
 	public static HashSet<Class> ALL_SHAPES;
 	
 	static {
@@ -127,8 +139,22 @@ public class Bpmn2FeatureMap {
 		features.add(ServiceTask.class);
 		features.add(SendTask.class);
 		features.add(ReceiveTask.class);
-		features.add(ChoreographyTask.class);
 		TASKS = Collections.unmodifiableList(features);
+
+		features = new ArrayList<Class>();
+		features.add(CallActivity.class);
+		features.add(GlobalTask.class);
+		features.add(GlobalBusinessRuleTask.class);
+		features.add(GlobalManualTask.class);
+		features.add(GlobalScriptTask.class);
+		features.add(GlobalUserTask.class);
+		GLOBAL_TASKS = Collections.unmodifiableList(features);
+
+		features = new ArrayList<Class>();
+		features.add(AdHocSubProcess.class);
+		features.add(SubProcess.class);
+		features.add(Transaction.class);
+		SUBPROCESS = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
 		features.add(DataObject.class);
@@ -140,25 +166,38 @@ public class Bpmn2FeatureMap {
 		DATA = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
-		features.add(Lane.class);
-		features.add(Participant.class);
-		features.add(TextAnnotation.class);
-		features.add(SubProcess.class);
-		features.add(Transaction.class);
-		features.add(Group.class);
-		features.add(AdHocSubProcess.class);
-		features.add(CallActivity.class);
-		features.add(Conversation.class);
+		features.add(ChoreographyTask.class);
 		features.add(SubChoreography.class);
 		features.add(CallChoreography.class);
-		OTHER = Collections.unmodifiableList(features);
+		CHOREOGRAPHY = Collections.unmodifiableList(features);
+
+		features = new ArrayList<Class>();
+		features.add(Conversation.class);
+		features.add(SubConversation.class);
+		features.add(CallConversation.class);
+		CONVERSATION = Collections.unmodifiableList(features);
+
+		features = new ArrayList<Class>();
+		features.add(Lane.class);
+		features.add(Participant.class);
+		SWIMLANES = Collections.unmodifiableList(features);
+
+		features = new ArrayList<Class>();
+		features.add(TextAnnotation.class);
+		features.add(Group.class);
+		ARTIFACTS = Collections.unmodifiableList(features);
 
 		ALL_SHAPES = new HashSet<Class>();
 		ALL_SHAPES.addAll(CONNECTIONS);
 		ALL_SHAPES.addAll(EVENTS);
 		ALL_SHAPES.addAll(GATEWAYS);
 		ALL_SHAPES.addAll(TASKS);
+		ALL_SHAPES.addAll(GLOBAL_TASKS);
+		ALL_SHAPES.addAll(SUBPROCESS);
+		ALL_SHAPES.addAll(CHOREOGRAPHY);
+		ALL_SHAPES.addAll(CONVERSATION);
 		ALL_SHAPES.addAll(DATA);
-		ALL_SHAPES.addAll(OTHER);
+		ALL_SHAPES.addAll(ARTIFACTS);
+		ALL_SHAPES.addAll(SWIMLANES);
 	}
 }

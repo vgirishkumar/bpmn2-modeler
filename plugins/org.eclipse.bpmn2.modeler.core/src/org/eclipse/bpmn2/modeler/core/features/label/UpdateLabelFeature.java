@@ -202,7 +202,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				w = hw[1];
 			}
 			
-			LabelPosition pos = getHorizontalLabelPosition(labelGA);
+			LabelPosition hpos = getHorizontalLabelPosition(labelGA);
+			LabelPosition vpos = getVerticalLabelPosition(labelGA);
 
 			if (isAddingLabel) {
 				BPMNLabel bpmnLabel = null;
@@ -225,8 +226,9 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 					 * manually.
 					 */
 					isAddingLabel = false;
-					if (pos == LabelPosition.MOVABLE)
-						pos = LabelPosition.SOUTH;
+					if (hpos == LabelPosition.MOVABLE) {
+						vpos = hpos = LabelPosition.SOUTH;
+					}
 				} else {
 					x = (int) bounds.getX();
 					y = (int) bounds.getY();
@@ -237,7 +239,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 			if (!isAddingLabel && !text.isEmpty()) {
 				// calculate X coordinate
-				switch (pos) {
+				switch (hpos) {
 				case NORTH:
 				case SOUTH:
 				case TOP:
@@ -269,8 +271,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				}
 
 				// calculate Y coordinate
-				pos = getVerticalLabelPosition(labelGA);
-				switch (pos) {
+				switch (vpos) {
 				case NORTH:
 					y = ownerLoc.getY() - h - LabelFeatureContainer.LABEL_MARGIN/2;
 					break;

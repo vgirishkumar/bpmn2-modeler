@@ -10,7 +10,7 @@
  *
  * @author Innar Made
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
+package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -37,6 +37,9 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.DeleteActivityFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AddExpandableActivityFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.LayoutExpandableActivityFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.Messages;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -67,13 +70,13 @@ import org.eclipse.graphiti.services.IPeService;
 
 public class CallActivityFeatureContainer extends AbstractActivityFeatureContainer {
 
-	private static final int MARKER_OFFSET = 4;
-	private static final String CALL_ACTIVITY_REF_PROPERTY = "call.activity.ref"; //$NON-NLS-1$
-	private static final String GLOBAL_TASK_SHAPE_PROPERTY = "global.task.shape"; //$NON-NLS-1$
+	protected static final int MARKER_OFFSET = 4;
+	protected static final String CALL_ACTIVITY_REF_PROPERTY = "call.activity.ref"; //$NON-NLS-1$
+	protected static final String GLOBAL_TASK_SHAPE_PROPERTY = "global.task.shape"; //$NON-NLS-1$
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		return super.canApplyTo(o) && o instanceof CallActivity;
+		return super.canApplyTo(o) && (o instanceof CallActivity || o instanceof GlobalTask);
 	}
 
 	@Override
@@ -214,7 +217,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		}
 	}
 
-	private class UpdateCallActivityFeature extends AbstractUpdateBaseElementFeature<CallActivity> {
+	protected class UpdateCallActivityFeature extends AbstractUpdateBaseElementFeature<CallActivity> {
 
 		public UpdateCallActivityFeature(IFeatureProvider fp) {
 			super(fp);
@@ -284,14 +287,14 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		}
 	}
 
-	private String getCallableElementStringValue(CallableElement element) {
+	protected String getCallableElementStringValue(CallableElement element) {
 		if (element == null) {
 			return "null"; //$NON-NLS-1$
 		}
 		return element.getClass().getSimpleName();
 	}
 
-	private String getImageId(GlobalTask task) {
+	protected String getImageId(GlobalTask task) {
 		if (task instanceof GlobalBusinessRuleTask) {
 			return ImageProvider.IMG_16_BUSINESS_RULE_TASK;
 		} else if (task instanceof GlobalManualTask) {

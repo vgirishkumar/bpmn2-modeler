@@ -23,7 +23,12 @@ public class Messages extends NLS {
 	public static String BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Events_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Gateways_Drawer_Label;
-	public static String BPMNToolBehaviorProvider_Other_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_Artifact_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_SubProcess_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_GlobalTasks_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_Choreography_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_Conversation_Drawer_Label;
+	public static String BPMNToolBehaviorProvider_SwimLanes_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Profiles_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Tasks_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Unnamed_Profile;

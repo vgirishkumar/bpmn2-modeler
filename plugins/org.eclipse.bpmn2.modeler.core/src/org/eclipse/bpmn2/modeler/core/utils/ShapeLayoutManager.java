@@ -106,6 +106,9 @@ public class ShapeLayoutManager {
 		List<ContainerShape> middleShapes = new ArrayList<ContainerShape>();
 		List<ContainerShape> endShapes = new ArrayList<ContainerShape>();
 		for (ContainerShape child : childShapes) {
+			if (!child.isActive())
+				continue;
+			
 			BaseElement be = BusinessObjectUtil.getFirstBaseElement(child);
 			if (be instanceof Participant && ModelUtil.isParticipantBand((Participant)be))
 				continue;

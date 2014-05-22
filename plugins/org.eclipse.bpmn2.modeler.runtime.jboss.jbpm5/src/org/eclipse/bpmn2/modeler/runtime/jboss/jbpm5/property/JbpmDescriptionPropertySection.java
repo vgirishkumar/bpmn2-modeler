@@ -105,5 +105,9 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 			}
 		}
 
+		@Override
+		protected void bindAppearance(EObject be) {
+			// TODO: support the color/appearance extensions defined by jBPM Web Designer
+		}
 	}
 }

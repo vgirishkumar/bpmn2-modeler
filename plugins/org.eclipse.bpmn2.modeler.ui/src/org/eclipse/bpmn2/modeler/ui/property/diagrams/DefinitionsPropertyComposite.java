@@ -11,16 +11,11 @@
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
-import org.eclipse.bpmn2.EndPoint;
-import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.impl.DefinitionsImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -32,19 +27,12 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
-import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.NamespacesEditingDialog;
 import org.eclipse.bpmn2.modeler.ui.property.dialogs.SchemaImportDialog;
 import org.eclipse.emf.common.util.EList;
@@ -52,16 +40,12 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.util.EcoreEMap;
-import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
@@ -129,7 +113,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 	@Override
 	protected Composite bindProperty(EObject be, String property) {
 		if ("namespaces".equals(property)) { //$NON-NLS-1$
-			namespacesTable = new NamespaceListComposite(getPropertySection());
+			namespacesTable = new NamespaceListComposite(this);
 			DefinitionsImpl definitions = (DefinitionsImpl)getBusinessObject();
 			DocumentRoot root = (DocumentRoot) definitions.eContainer();
 			namespacesTable.bindList(root, Bpmn2Package.eINSTANCE.getDocumentRoot_XMLNSPrefixMap());
@@ -142,13 +126,13 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 	@Override
 	protected AbstractListComposite bindList(EObject object, EStructuralFeature feature, EClass listItemClass) {
 		if ("imports".equals(feature.getName())) { //$NON-NLS-1$
-			ImportListComposite importsTable = new ImportListComposite(getPropertySection());
+			ImportListComposite importsTable = new ImportListComposite(this);
 			EStructuralFeature importsFeature = object.eClass().getEStructuralFeature("imports"); //$NON-NLS-1$
 			importsTable.bindList(object, importsFeature);
 			return importsTable;
 		}
 		else if ("relationships".equals(feature.getName())) { //$NON-NLS-1$
-			DefaultListComposite table = new DefaultListComposite(getPropertySection());
+			DefaultListComposite table = new DefaultListComposite(this,AbstractListComposite.DEFAULT_STYLE);
 			table.bindList(getBusinessObject(), feature);
 			return table;
 		}
@@ -158,12 +142,11 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 	}
 
 	public class NamespaceListComposite extends DefaultListComposite {
-		
-		public NamespaceListComposite(AbstractBpmn2PropertySection section) {
-			super(section, ADD_BUTTON | REMOVE_BUTTON | EDIT_BUTTON);
+
+		public NamespaceListComposite(Composite parent) {
+			super(parent, ADD_BUTTON | REMOVE_BUTTON | EDIT_BUTTON);
 		}
 
-		
 		@Override
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
 			DocumentRoot root = (DocumentRoot)object;
@@ -332,8 +315,8 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 		 * @param parent
 		 * @param style
 		 */
-		public ImportListComposite(AbstractBpmn2PropertySection section) {
-			super(section);
+		public ImportListComposite(Composite parent) {
+			super(parent, DEFAULT_STYLE);
 		}
 
 		@Override

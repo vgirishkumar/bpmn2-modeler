@@ -140,7 +140,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		allElements.addAll(Bpmn2FeatureMap.GATEWAYS);
 		allElements.addAll(Bpmn2FeatureMap.TASKS);
 		allElements.addAll(Bpmn2FeatureMap.DATA);
-		allElements.addAll(Bpmn2FeatureMap.OTHER);
+		allElements.addAll(Bpmn2FeatureMap.ARTIFACTS);
 		Collections.sort(allElements, new Comparator<Class>() {
 
 			@Override
@@ -381,7 +381,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					taskShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.DATA.contains(c))
 					dataShapeStyles.put(c, ss);
-				if (Bpmn2FeatureMap.OTHER.contains(c))
+				if (Bpmn2FeatureMap.ARTIFACTS.contains(c))
 					otherShapeStyles.put(c, ss);
 				
 				if (Activator.getDefault().isDebugging()) {
@@ -478,7 +478,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			Class c = (Class) currentSelection;
 			if (
 					Bpmn2FeatureMap.TASKS.contains(c) ||
-					Bpmn2FeatureMap.OTHER.contains(c))
+					Bpmn2FeatureMap.ARTIFACTS.contains(c))
 				return false;
 		}
 		else if (currentSelection instanceof Category) {

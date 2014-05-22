@@ -837,7 +837,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			}
 			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Other_Category,null,null);
 			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.OTHER) {
+			for (Class c : Bpmn2FeatureMap.ARTIFACTS) {
 				loadCategory(cd,c);
 			}
 		}

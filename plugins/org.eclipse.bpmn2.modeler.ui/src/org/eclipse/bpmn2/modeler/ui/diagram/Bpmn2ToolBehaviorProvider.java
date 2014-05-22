@@ -293,13 +293,18 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	}
 	
 	private void createDefaultpalette() {
-		createConnectors(palette);
-		createTasksCompartments(palette);
-		createGatewaysCompartments(palette);
-		createEventsCompartments(palette);
-		createEventDefinitionsCompartments(palette);
-		createDataCompartments(palette);
-		createOtherCompartments(palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label,Bpmn2FeatureMap.CONNECTIONS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_SwimLanes_Drawer_Label,Bpmn2FeatureMap.SWIMLANES,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Tasks_Drawer_Label,Bpmn2FeatureMap.TASKS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label,Bpmn2FeatureMap.GATEWAYS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,Bpmn2FeatureMap.EVENTS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label,Bpmn2FeatureMap.EVENT_DEFINITIONS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label,Bpmn2FeatureMap.DATA,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_SubProcess_Drawer_Label,Bpmn2FeatureMap.SUBPROCESS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_GlobalTasks_Drawer_Label,Bpmn2FeatureMap.GLOBAL_TASKS,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Choreography_Drawer_Label,Bpmn2FeatureMap.CHOREOGRAPHY,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Conversation_Drawer_Label,Bpmn2FeatureMap.CONVERSATION,palette);
+		createDrawer(Messages.BPMNToolBehaviorProvider_Artifact_Drawer_Label,Bpmn2FeatureMap.ARTIFACTS,palette);
 		createCustomTasks(palette);
 	}
 	
@@ -388,68 +393,12 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		
 		return parentFeature;
 	}
-	
-	private void createEventsCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label, null);
 
-		createEntries(Bpmn2FeatureMap.EVENTS, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createOtherCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Other_Drawer_Label, null);
+	private void createDrawer(String name, List<Class> items, List<IPaletteCompartmentEntry> palette) {
+		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(name, null);
 		compartmentEntry.setInitiallyOpen(false);
 
-		createEntries(Bpmn2FeatureMap.OTHER, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createDataCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label, null);
-		compartmentEntry.setInitiallyOpen(false);
-
-		createEntries(Bpmn2FeatureMap.DATA, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createEventDefinitionsCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label, null);
-		compartmentEntry.setInitiallyOpen(false);
-
-		createEntries(Bpmn2FeatureMap.EVENT_DEFINITIONS, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createGatewaysCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label, null);
-
-		createEntries(Bpmn2FeatureMap.GATEWAYS, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createTasksCompartments(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Tasks_Drawer_Label, null);
-
-		createEntries(Bpmn2FeatureMap.TASKS, compartmentEntry);
-
-		if (compartmentEntry.getToolEntries().size()>0)
-			palette.add(compartmentEntry);
-	}
-
-	private void createConnectors(List<IPaletteCompartmentEntry> palette) {
-		PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label, null);
-
-		createEntries(Bpmn2FeatureMap.CONNECTIONS, compartmentEntry);
+		createEntries(items, compartmentEntry);
 
 		if (compartmentEntry.getToolEntries().size()>0)
 			palette.add(compartmentEntry);
