@@ -13,27 +13,28 @@
 package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.GlobalTask;
+import org.eclipse.bpmn2.GlobalBusinessRuleTask;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 
 
-public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalTask> {
+public class CallGlobalBusinessRuleTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalBusinessRuleTask> {
 	
+
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		return new CreateCallGlobalTaskFeature(fp);
+		return new CreateCallGlobalBusinessRuleTaskFeature(fp);
 	}
 
-	public class CreateCallGlobalTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalTask> {
+	public class CreateCallGlobalBusinessRuleTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalBusinessRuleTask> {
 
 		/**
 		 * @param fp
 		 */
-		public CreateCallGlobalTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Task", "Call Activity for a Global Task");
+		public CreateCallGlobalBusinessRuleTaskFeature(IFeatureProvider fp) {
+			super(fp, "Call Global Business Rule Task", "Call Activity for a Global Business Rule Task");
 		}
 
 		@Override
@@ -46,7 +47,7 @@ public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatur
 		 */
 		@Override
 		public EClass getFeatureClass() {
-			return Bpmn2Package.eINSTANCE.getGlobalTask();
+			return Bpmn2Package.eINSTANCE.getGlobalBusinessRuleTask();
 		}
 	}
 }

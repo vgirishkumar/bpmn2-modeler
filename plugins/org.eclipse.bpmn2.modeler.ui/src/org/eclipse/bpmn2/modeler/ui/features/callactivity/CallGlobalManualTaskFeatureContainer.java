@@ -13,27 +13,28 @@
 package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.GlobalTask;
+import org.eclipse.bpmn2.GlobalManualTask;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 
 
-public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalTask> {
+public class CallGlobalManualTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalManualTask> {
 	
+
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		return new CreateCallGlobalTaskFeature(fp);
+		return new CreateCallGlobalManualTaskFeature(fp);
 	}
 
-	public class CreateCallGlobalTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalTask> {
+	public class CreateCallGlobalManualTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalManualTask> {
 
 		/**
 		 * @param fp
 		 */
-		public CreateCallGlobalTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Task", "Call Activity for a Global Task");
+		public CreateCallGlobalManualTaskFeature(IFeatureProvider fp) {
+			super(fp, "Call Global Manual Task", "Call Activity for a Global Manual Task");
 		}
 
 		@Override
@@ -46,7 +47,7 @@ public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatur
 		 */
 		@Override
 		public EClass getFeatureClass() {
-			return Bpmn2Package.eINSTANCE.getGlobalTask();
+			return Bpmn2Package.eINSTANCE.getGlobalManualTask();
 		}
 	}
 }

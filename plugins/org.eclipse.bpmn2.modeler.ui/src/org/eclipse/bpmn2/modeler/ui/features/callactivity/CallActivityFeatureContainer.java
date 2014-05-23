@@ -37,9 +37,9 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.DeleteActivityFeature;
-import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AddExpandableActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.LayoutExpandableActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.Messages;
+import org.eclipse.bpmn2.modeler.ui.features.callactivity.AbstractCallGlobalTaskFeatureContainer.AddCallGlobalTaskFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
@@ -54,13 +54,11 @@ import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Image;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -86,33 +84,9 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddExpandableActivityFeature<CallActivity>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, CallActivity businessObject) {
-				super.decorateShape(context, containerShape, businessObject);
-				Graphiti.getPeService().setPropertyValue(containerShape, CALL_ACTIVITY_REF_PROPERTY,
-						getCallableElementStringValue(businessObject.getCalledElementRef()));
-				RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
-				rect.setLineWidth(4);
-			}
-
-			@Override
-			protected int getMarkerContainerOffset() {
-				return MARKER_OFFSET;
-			}
-
-			@Override
-			public int getWidth() {
-				return GraphicsUtil.getActivitySize(getDiagram()).getWidth();
-			}
-
-			@Override
-			public int getHeight() {
-				return GraphicsUtil.getActivitySize(getDiagram()).getHeight();
-			}
-		};
+		return new AddCallGlobalTaskFeature(fp);
 	}
-
+	
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return new DeleteActivityFeature(fp) {
@@ -203,6 +177,10 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 			super(fp, Messages.CallActivityFeatureContainer_Name, Messages.CallActivityFeatureContainer_Description);
 		}
 
+		public CreateCallActivityFeature(IFeatureProvider fp, String name, String description) {
+			super(fp, name, description);
+		}
+
 		@Override
 		public String getStencilImageId() {
 			return ImageProvider.IMG_16_CALL_ACTIVITY;
@@ -287,7 +265,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		}
 	}
 
-	protected String getCallableElementStringValue(CallableElement element) {
+	protected static String getCallableElementStringValue(CallableElement element) {
 		if (element == null) {
 			return "null"; //$NON-NLS-1$
 		}

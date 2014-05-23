@@ -13,27 +13,29 @@
 package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.GlobalTask;
+import org.eclipse.bpmn2.GlobalManualTask;
+import org.eclipse.bpmn2.GlobalUserTask;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 
 
-public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalTask> {
+public class CallGlobalUserTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalUserTask> {
 	
+
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		return new CreateCallGlobalTaskFeature(fp);
+		return new CreateCallGlobalUserTaskFeature(fp);
 	}
 
-	public class CreateCallGlobalTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalTask> {
+	public static class CreateCallGlobalUserTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalUserTask> {
 
 		/**
 		 * @param fp
 		 */
-		public CreateCallGlobalTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Task", "Call Activity for a Global Task");
+		public CreateCallGlobalUserTaskFeature(IFeatureProvider fp) {
+			super(fp, "Call Global User Task", "Call Activity for a Global User Task");
 		}
 
 		@Override
@@ -46,7 +48,7 @@ public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatur
 		 */
 		@Override
 		public EClass getFeatureClass() {
-			return Bpmn2Package.eINSTANCE.getGlobalTask();
+			return Bpmn2Package.eINSTANCE.getGlobalUserTask();
 		}
 	}
 }

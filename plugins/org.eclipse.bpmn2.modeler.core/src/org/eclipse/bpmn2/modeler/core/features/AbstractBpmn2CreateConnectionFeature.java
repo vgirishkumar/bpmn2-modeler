@@ -275,6 +275,10 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
+	
+	public EClass getFeatureClass() {
+		return getBusinessObjectClass();
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#postExecute(org.eclipse.graphiti.IExecutionInfo)

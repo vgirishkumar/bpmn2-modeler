@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.CallConversation;
 import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CompensateEventDefinition;
@@ -66,6 +67,7 @@ import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubConversation;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.TerminateEventDefinition;
@@ -119,7 +121,11 @@ import org.eclipse.bpmn2.modeler.ui.features.activity.task.UserTaskFeatureContai
 import org.eclipse.bpmn2.modeler.ui.features.artifact.GroupFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.TextAnnotationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallActivityFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallGlobalBusinessRuleTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallGlobalManualTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallGlobalScriptTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallGlobalTaskFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallGlobalUserTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.CallChoreographyFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyMessageLinkFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyTaskFeatureContainer;
@@ -254,14 +260,12 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		containers.put(EventBasedGateway.class,new EventBasedGatewayFeatureContainer());
 		containers.put(ComplexGateway.class,new ComplexGatewayFeatureContainer());
 		containers.put(AdHocSubProcess.class,new AdHocSubProcessFeatureContainer());
-		
 		containers.put(CallActivity.class,new CallActivityFeatureContainer());
 		containers.put(GlobalTask.class,new CallGlobalTaskFeatureContainer());
-		containers.put(GlobalBusinessRuleTask.class,new CallActivityFeatureContainer());
-		containers.put(GlobalManualTask.class,new CallActivityFeatureContainer());
-		containers.put(GlobalScriptTask.class,new CallActivityFeatureContainer());
-		containers.put(GlobalUserTask.class,new CallActivityFeatureContainer());
-		
+		containers.put(GlobalBusinessRuleTask.class,new CallGlobalBusinessRuleTaskFeatureContainer());
+		containers.put(GlobalManualTask.class,new CallGlobalManualTaskFeatureContainer());
+		containers.put(GlobalScriptTask.class,new CallGlobalScriptTaskFeatureContainer());
+		containers.put(GlobalUserTask.class,new CallGlobalUserTaskFeatureContainer());
 		containers.put(Transaction.class,new TransactionFeatureContainer());
 		containers.put(SubProcess.class,new SubProcessFeatureContainer());
 		containers.put(ConditionalEventDefinition.class,new ConditionalEventDefinitionContainer());
@@ -278,6 +282,8 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		containers.put(MessageFlow.class,new MessageFlowFeatureContainer());
 		containers.put(Association.class,new AssociationFeatureContainer());
 		containers.put(Conversation.class,new ConversationFeatureContainer());
+		containers.put(SubConversation.class,new ConversationFeatureContainer());
+		containers.put(CallConversation.class,new ConversationFeatureContainer());
 		containers.put(ConversationLink.class,new ConversationLinkFeatureContainer());
 		containers.put(DataAssociation.class,new DataAssociationFeatureContainer());
 		containers.put(SubChoreography.class,new SubChoreographyFeatureContainer());
@@ -373,13 +379,13 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 					continue;
 				}
 				AbstractBpmn2CreateFeature acf = (AbstractBpmn2CreateFeature)cf;
-				mapBusinessObjectClassToCreateFeature.put(acf.getBusinessObjectClass().getInstanceClass(), cf);
+				mapBusinessObjectClassToCreateFeature.put(acf.getFeatureClass().getInstanceClass(), cf);
 			}
 		}
 		for (IFeature cf : createConnectionFeatures) {
 			if (cf instanceof AbstractCreateFlowFeature) {
 				AbstractBpmn2CreateConnectionFeature acf = (AbstractBpmn2CreateConnectionFeature)cf;
-				mapBusinessObjectClassToCreateFeature.put(acf.getBusinessObjectClass().getInstanceClass(), cf);
+				mapBusinessObjectClassToCreateFeature.put(acf.getFeatureClass().getInstanceClass(), cf);
 			}
 		}
 	}

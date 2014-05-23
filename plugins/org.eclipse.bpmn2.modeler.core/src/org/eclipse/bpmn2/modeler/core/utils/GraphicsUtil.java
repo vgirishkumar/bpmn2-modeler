@@ -1790,14 +1790,16 @@ public class GraphicsUtil {
 	
 	public static Shape findShapeAt(ContainerShape containerShape, Point p, IShapeFilter filter) {
 		for (Shape c : containerShape.getChildren()) {
-			if (c instanceof ContainerShape) {
-				Shape cc = findShapeAt((ContainerShape) c, p, filter);
-				if (cc!=null)
-					return cc;
-			}
-			if (GraphicsUtil.contains(c, p)) {
-				if (filter.matches(c)) {
-					return c;
+			if (c.isActive()) {
+				if (c instanceof ContainerShape) {
+					Shape cc = findShapeAt((ContainerShape) c, p, filter);
+					if (cc!=null)
+						return cc;
+				}
+				if (GraphicsUtil.contains(c, p)) {
+					if (filter.matches(c)) {
+						return c;
+					}
 				}
 			}
 		}

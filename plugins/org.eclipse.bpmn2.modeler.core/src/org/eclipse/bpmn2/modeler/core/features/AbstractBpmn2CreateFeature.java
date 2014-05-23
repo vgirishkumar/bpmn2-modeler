@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -126,6 +127,10 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 				getFeatureProvider(), context, businessObject));
 	}
 	
+	public EClass getFeatureClass() {
+		return getBusinessObjectClass();
+	}
+
 	@Override
 	protected Object getBusinessObjectForPictogramElement(PictogramElement pe) {
 		// the Graphiti {@link

@@ -878,8 +878,129 @@
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				type="Process"
 				profile="Default Process">
-				
-			<enable object="all"/>
+			<enable object="Definitions"/>
+
+			<!-- process -->
+			<enable object="Process"/>
+			<enable object="SubProcess"/>
+			<enable object="Transaction"/>
+			<enable object="AdHocSubProcess"/>
+
+			<!-- gateways -->
+			<enable object="ExclusiveGateway"/>
+			<enable object="InclusiveGateway"/>
+			<enable object="ParallelGateway"/>
+			<enable object="EventBasedGateway"/>
+			<enable object="ComplexGateway"/>
+
+			<!-- tasks -->
+			<enable object="BusinessRuleTask"/>
+			<enable object="CallActivity"/>
+			<enable object="ManualTask"/>
+			<enable object="ReceiveTask"/>
+			<enable object="ScriptTask"/>
+			<enable object="SendTask"/>
+			<enable object="ServiceTask"/>
+			<enable object="Task"/>
+			<enable object="UserTask"/>
+
+			<enable object="GlobalTask"/>
+			<enable object="GlobalBusinessRuleTask"/>
+			<enable object="GlobalManualTask"/>
+			<enable object="GlobalScriptTask"/>
+			<enable object="GlobalUserTask"/>
+			<enable object="Task"/>
+
+			<!-- connections -->
+			<enable object="SequenceFlow"/>
+			<enable object="Association"/>
+			<enable object="DataAssociation"/>
+
+			<!-- events -->
+			<enable object="StartEvent"/>
+			<enable object="EndEvent"/>
+			<enable object="IntermediateCatchEvent"/>
+			<enable object="IntermediateThrowEvent"/>
+			<enable object="Escalation"/>
+			<enable object="CatchEvent"/>
+			<enable object="ThrowEvent"/>
+			<enable object="BoundaryEvent"/>
+			<enable object="Signal"/>
+			<enable object="Error"/>
+
+			<!-- event definitions -->
+			<enable object="ConditionalEventDefinition"/>
+			<enable object="TimerEventDefinition"/>
+			<enable object="SignalEventDefinition"/>
+			<enable object="MessageEventDefinition"/>
+			<enable object="EscalationEventDefinition"/>
+			<enable object="CompensateEventDefinition"/>
+			<enable object="LinkEventDefinition" feature="name"/>
+			<enable object="ErrorEventDefinition"/>
+			<enable object="CancelEventDefinition"/>
+			<enable object="TerminateEventDefinition"/>
+			<enable object="ComplexBehaviorDefinition"/>
+			<enable object="ImplicitThrowEvent"/>
+			
+
+			<!-- data definitions -->
+			<enable object="Import"/>
+			<enable object="InputOutputSpecification"/>
+			<enable object="InputSet"/>
+			<enable object="OutputSet"/>
+			<enable object="Operation"/>
+			<enable object="Interface"/>
+			<enable object="ItemDefinition"/>
+			<enable object="Message"/>
+			<enable object="DataInput"/>
+			<enable object="DataInputAssociation"/>
+			<enable object="DataOutput"/>
+			<enable object="DataOutputAssociation"/>
+			<enable object="Property"/>
+			<enable object="ItemAwareElement"/>
+			<enable object="DataState"/>
+			<enable object="DataStore"/>
+			<enable object="DataStoreReference"/>
+			<enable object="DataObjectReference"/>
+			<enable object="DataObject"/>
+			<enable object="Group"/>
+			<enable object="Category"/>
+			<enable object="CategoryValue"/>
+			<enable object="TextAnnotation"/>
+			<enable object="ExtensionAttributeValue"/>
+			<enable object="ExtensionAttributeDefinition"/>
+			<enable object="StandardLoopCharacteristics"/>
+			<enable object="MultiInstanceLoopCharacteristics"/>
+			<enable object="Lane"/>
+			<enable object="LaneSet"/>
+			<enable object="Participant"/>
+			<enable object="Resource"/>
+			<enable object="ResourceAssignmentExpression"/>
+			<enable object="ResourceParameter"/>
+			<enable object="ResourceParameterBinding"/>
+			<enable object="ResourceRole"/>
+			
+			<!-- this is intended to be a baseclass for global tasks and Process and -->
+			<!-- should NOT be a valid selection in ModelSubclassSelectionDialog -->
+			<disable object="CallableElement"/>
+			<enable object="CallActivity" feature="calledElementRef"/>
+			
+			<disable object="MessageFlow"/>
+			<disable object="ConversationLink"/>
+			<disable object="ConversationAssociation"/>
+			<disable object="Collaboration"/>
+			<disable object="Choreography"/>
+			<disable object="ConversationNode"/>
+			<disable object="MessageFlowAssociation"/>
+			<disable object="Participant"/>
+			<disable object="ParticipantAssociation"/>
+			<disable object="ParticipantMultiplicity"/>
+			
+			<enable object="Assignment"/>
+			<enable object="FormalExpression"/>
+			<disable object="FormalExpression" feature="evaluatesToTypeRef"/>
+			<enable object="EndPoint"/>
+			<enable object="Documentation"/>
 		</modelEnablement>
 
 		<modelEnablement

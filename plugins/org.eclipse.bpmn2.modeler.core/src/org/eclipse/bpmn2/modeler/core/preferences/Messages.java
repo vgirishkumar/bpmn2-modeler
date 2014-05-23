@@ -53,6 +53,11 @@ public class Messages extends NLS {
 	public static String ShapeStyle_Category_Events;
 	public static String ShapeStyle_Category_Gateways;
 	public static String ShapeStyle_Category_Tasks;
+	public static String ShapeStyle_Category_GlobalTasks;
+	public static String ShapeStyle_Category_SubProcess;
+	public static String ShapeStyle_Category_Choreography;
+	public static String ShapeStyle_Category_Conversation;
+	public static String ShapeStyle_Category_SwimLanes;
 	public static String ShapeStyle_Category_Data;
 	public static String ShapeStyle_Category_Other;
 	public static String ShapeStyle_Category_Canvas;

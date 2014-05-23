@@ -38,10 +38,12 @@ public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 		try {
 			// Find the EPackage for this URI if it exists.
 			EPackage pkg = EPackage.Registry.INSTANCE.getEPackage(uri);
-			setEPackage(pkg);
-			setEFactory(getEPackage().getEFactoryInstance());
-			if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
-				setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory")); //$NON-NLS-1$
+			if (pkg!=null) {
+				setEPackage(pkg);
+				setEFactory(getEPackage().getEFactoryInstance());
+				if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
+					setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory")); //$NON-NLS-1$
+				}
 			}
 		}
 		catch (Exception e1) {

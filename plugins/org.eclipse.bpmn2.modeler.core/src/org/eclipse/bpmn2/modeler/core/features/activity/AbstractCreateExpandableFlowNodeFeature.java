@@ -35,8 +35,7 @@ public abstract class AbstractCreateExpandableFlowNodeFeature<T extends FlowNode
 	 * @param name the name
 	 * @param description the description
 	 */
-	public AbstractCreateExpandableFlowNodeFeature(IFeatureProvider fp, String name,
-			String description) {
+	public AbstractCreateExpandableFlowNodeFeature(IFeatureProvider fp, String name, String description) {
 		super(fp, name, description);
 	}
 

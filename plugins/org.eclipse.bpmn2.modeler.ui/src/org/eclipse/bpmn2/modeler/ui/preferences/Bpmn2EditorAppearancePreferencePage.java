@@ -106,8 +106,13 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	ShapeStyleList eventShapeStyles = new ShapeStyleList(Category.EVENTS);
 	ShapeStyleList gatewayShapeStyles = new ShapeStyleList(Category.GATEWAYS);
 	ShapeStyleList taskShapeStyles = new ShapeStyleList(Category.TASKS);
+	ShapeStyleList globalTaskShapeStyles = new ShapeStyleList(Category.GLOBAL_TASKS);
+	ShapeStyleList subProcessShapeStyles = new ShapeStyleList(Category.SUBPROCESS);
+	ShapeStyleList choreographyShapeStyles = new ShapeStyleList(Category.CHOREOGRAPHY);
+	ShapeStyleList conversationShapeStyles = new ShapeStyleList(Category.CONVERSATION);
+	ShapeStyleList swimLanesShapeStyles = new ShapeStyleList(Category.SWIMLANES);
 	ShapeStyleList dataShapeStyles = new ShapeStyleList(Category.DATA);
-	ShapeStyleList otherShapeStyles = new ShapeStyleList(Category.OTHER);
+	ShapeStyleList artifactShapeStyles = new ShapeStyleList(Category.ARTIFACTS);
 	Object currentSelection;
 	ColorShapeStyleEditor shapeBackground;
 	ColorShapeStyleEditor shapePrimarySelectedColor;
@@ -139,6 +144,11 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		allElements.addAll(Bpmn2FeatureMap.EVENTS);
 		allElements.addAll(Bpmn2FeatureMap.GATEWAYS);
 		allElements.addAll(Bpmn2FeatureMap.TASKS);
+		allElements.addAll(Bpmn2FeatureMap.GLOBAL_TASKS);
+		allElements.addAll(Bpmn2FeatureMap.SUBPROCESS);
+		allElements.addAll(Bpmn2FeatureMap.CHOREOGRAPHY);
+		allElements.addAll(Bpmn2FeatureMap.CONVERSATION);
+		allElements.addAll(Bpmn2FeatureMap.SWIMLANES);
 		allElements.addAll(Bpmn2FeatureMap.DATA);
 		allElements.addAll(Bpmn2FeatureMap.ARTIFACTS);
 		Collections.sort(allElements, new Comparator<Class>() {
@@ -315,13 +325,24 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				ssl.addAll(eventShapeStyles.values());
 				ssl.addAll(gatewayShapeStyles.values());
 				ssl.addAll(taskShapeStyles.values());
+				ssl.addAll(globalTaskShapeStyles.values());
+				ssl.addAll(subProcessShapeStyles.values());
+				ssl.addAll(choreographyShapeStyles.values());
+				ssl.addAll(conversationShapeStyles.values());
+				ssl.addAll(swimLanesShapeStyles.values());
 				ssl.addAll(dataShapeStyles.values());
-				ssl.addAll(otherShapeStyles.values());
+				ssl.addAll(artifactShapeStyles.values());
+				
 				ssl.add(allShapeStyles.get(Category.EVENTS));
 				ssl.add(allShapeStyles.get(Category.GATEWAYS));
 				ssl.add(allShapeStyles.get(Category.TASKS));
+				ssl.add(allShapeStyles.get(Category.GLOBAL_TASKS));
+				ssl.add(allShapeStyles.get(Category.SUBPROCESS));
+				ssl.add(allShapeStyles.get(Category.CHOREOGRAPHY));
+				ssl.add(allShapeStyles.get(Category.CONVERSATION));
+				ssl.add(allShapeStyles.get(Category.SWIMLANES));
 				ssl.add(allShapeStyles.get(Category.DATA));
-				ssl.add(allShapeStyles.get(Category.OTHER));
+				ssl.add(allShapeStyles.get(Category.ARTIFACTS));
 				break;
 			case CANVAS:
 				break;
@@ -336,11 +357,26 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				break;
 			case GRID:
 				break;
-			case OTHER:
-				ssl.addAll(otherShapeStyles.values());
+			case ARTIFACTS:
+				ssl.addAll(artifactShapeStyles.values());
 				break;
 			case TASKS:
 				ssl.addAll(taskShapeStyles.values());
+				break;
+			case GLOBAL_TASKS:
+				ssl.addAll(globalTaskShapeStyles.values());
+				break;
+			case SUBPROCESS:
+				ssl.addAll(subProcessShapeStyles.values());
+				break;
+			case CHOREOGRAPHY:
+				ssl.addAll(choreographyShapeStyles.values());
+				break;
+			case CONVERSATION:
+				ssl.addAll(conversationShapeStyles.values());
+				break;
+			case SWIMLANES:
+				ssl.addAll(swimLanesShapeStyles.values());
 				break;
 			case NONE:
 				break;
@@ -359,8 +395,13 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			shapesList.put(Category.EVENTS.toString(), eventShapeStyles);
 			shapesList.put(Category.GATEWAYS.toString(), gatewayShapeStyles);
 			shapesList.put(Category.TASKS.toString(), taskShapeStyles);
+			shapesList.put(Category.GLOBAL_TASKS.toString(), globalTaskShapeStyles);
+			shapesList.put(Category.SUBPROCESS.toString(), subProcessShapeStyles);
+			shapesList.put(Category.CHOREOGRAPHY.toString(), choreographyShapeStyles);
+			shapesList.put(Category.CONVERSATION.toString(), conversationShapeStyles);
+			shapesList.put(Category.SWIMLANES.toString(), swimLanesShapeStyles);
 			shapesList.put(Category.DATA.toString(), dataShapeStyles);
-			shapesList.put(Category.OTHER.toString(), otherShapeStyles);
+			shapesList.put(Category.ARTIFACTS.toString(), artifactShapeStyles);
 
 			categories = new ShapeStyleCategoryList(Category.NONE);
 			categories.put(Category.CONNECTIONS.toString(), connectionShapeStyles);
@@ -379,10 +420,20 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					gatewayShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.TASKS.contains(c))
 					taskShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.GLOBAL_TASKS.contains(c))
+					globalTaskShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.SUBPROCESS.contains(c))
+					subProcessShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.CHOREOGRAPHY.contains(c))
+					choreographyShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.CONVERSATION.contains(c))
+					conversationShapeStyles.put(c, ss);
+				if (Bpmn2FeatureMap.SWIMLANES.contains(c))
+					swimLanesShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.DATA.contains(c))
 					dataShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.ARTIFACTS.contains(c))
-					otherShapeStyles.put(c, ss);
+					artifactShapeStyles.put(c, ss);
 				
 				if (Activator.getDefault().isDebugging()) {
 					IColorConstant foreground = ss.getShapeForeground();
@@ -478,13 +529,20 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			Class c = (Class) currentSelection;
 			if (
 					Bpmn2FeatureMap.TASKS.contains(c) ||
+					Bpmn2FeatureMap.GLOBAL_TASKS.contains(c) ||
+					Bpmn2FeatureMap.SUBPROCESS.contains(c) ||
+					Bpmn2FeatureMap.CHOREOGRAPHY.contains(c) ||
+					Bpmn2FeatureMap.SWIMLANES.contains(c) ||
 					Bpmn2FeatureMap.ARTIFACTS.contains(c))
 				return false;
 		}
 		else if (currentSelection instanceof Category) {
 			Category k = (Category) currentSelection;
 			if (	k==Category.TASKS ||
-					k==Category.OTHER ||
+					k==Category.GLOBAL_TASKS ||
+					k==Category.SUBPROCESS ||
+					k==Category.CHOREOGRAPHY ||
+					k==Category.SWIMLANES ||
 					k==Category.CANVAS ||
 					k==Category.GRID) 
 				return false;

@@ -41,19 +41,28 @@ public interface IBpmn2CreateFeature<T extends EObject, C extends IContext> {
 	public T getBusinessObject(C context);
 	
 	/**
-	 * Put business object.
+	 * Set the business object into the Graphiti context.
 	 *
-	 * @param context the context
+	 * @param context the Graphiti context
 	 * @param businessObject the business object
 	 */
 	public void putBusinessObject(C context, T businessObject);
 	
 	/**
-	 * Gets the business object class.
+	 * Gets the business object class. This is the BPMN2 model object EClass.
 	 *
 	 * @return the business object class
 	 */
 	public EClass getBusinessObjectClass();
+	
+	/**
+	 * Gets the BPMN2 model object class that the Feature Provider uses to map
+	 * Feature Containers. This is usually the same as the Business Object class
+	 * (except for example {@see CallGlobalTaskFeatureContainer}).
+	 *
+	 * @return the business object class
+	 */
+	public EClass getFeatureClass();
 	
 	/**
 	 * Post execute.

@@ -13,27 +13,29 @@
 package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.GlobalTask;
+import org.eclipse.bpmn2.GlobalBusinessRuleTask;
+import org.eclipse.bpmn2.GlobalScriptTask;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 
 
-public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalTask> {
+public class CallGlobalScriptTaskFeatureContainer extends AbstractCallGlobalTaskFeatureContainer<GlobalScriptTask> {
 	
+
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
-		return new CreateCallGlobalTaskFeature(fp);
+		return new CreateCallGlobalScriptTaskFeature(fp);
 	}
 
-	public class CreateCallGlobalTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalTask> {
+	public class CreateCallGlobalScriptTaskFeature extends AbstractCreateCallGlobalTaskFeature<GlobalScriptTask> {
 
 		/**
 		 * @param fp
 		 */
-		public CreateCallGlobalTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Task", "Call Activity for a Global Task");
+		public CreateCallGlobalScriptTaskFeature(IFeatureProvider fp) {
+			super(fp, "Call Global Script Task", "Call Activity for a Global Script Task");
 		}
 
 		@Override
@@ -46,7 +48,7 @@ public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatur
 		 */
 		@Override
 		public EClass getFeatureClass() {
-			return Bpmn2Package.eINSTANCE.getGlobalTask();
+			return Bpmn2Package.eINSTANCE.getGlobalScriptTask();
 		}
 	}
 }

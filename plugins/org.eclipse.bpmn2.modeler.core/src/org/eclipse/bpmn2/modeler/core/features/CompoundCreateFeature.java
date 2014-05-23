@@ -38,8 +38,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * This is a Graphiti CreateFeature class that can be used to create multiple objects.
@@ -49,8 +47,7 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public class CompoundCreateFeature<CONTEXT extends IContext>
 		extends AbstractCreateFeature
-		implements IBpmn2CreateFeature<BaseElement, CONTEXT>,
-		ICreateConnectionFeature {
+		implements IBpmn2CreateFeature<BaseElement, CONTEXT>, ICreateConnectionFeature {
 	
 	/** The {@code CompoundCreateFeaturePart} children. */
 	protected List<CompoundCreateFeaturePart<CONTEXT>> children = new ArrayList<CompoundCreateFeaturePart<CONTEXT>>();
@@ -387,5 +384,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 				f.canceledAttaching(context);
 			}
 		}
+	}
+	
+	public EClass getFeatureClass() {
+		return null;
 	}
 }
