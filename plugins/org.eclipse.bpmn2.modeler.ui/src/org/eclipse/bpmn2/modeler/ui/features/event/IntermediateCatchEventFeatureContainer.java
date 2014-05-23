@@ -77,7 +77,7 @@ public class IntermediateCatchEventFeatureContainer extends AbstractEventFeature
 	public static class CreateIntermediateCatchEventFeature extends AbstractCreateEventFeature<IntermediateCatchEvent> {
 
 		public CreateIntermediateCatchEventFeature(IFeatureProvider fp) {
-			super(fp, Messages.IntermediateCatchEventFeatureContainer_0, Messages.IntermediateCatchEventFeatureContainer_1+Messages.IntermediateCatchEventFeatureContainer_2);
+			super(fp);
 		}
 
 		@Override

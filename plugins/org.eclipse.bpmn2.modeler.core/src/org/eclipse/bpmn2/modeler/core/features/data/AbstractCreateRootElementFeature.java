@@ -21,8 +21,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateRootElementFeature<T extends RootElement> extends AbstractBpmn2CreateFeature<T> {
 
-	public AbstractCreateRootElementFeature(IFeatureProvider fp, String name, String description) {
-	    super(fp, name, description);
+	public AbstractCreateRootElementFeature(IFeatureProvider fp) {
+	    super(fp);
     }
 
 	@Override

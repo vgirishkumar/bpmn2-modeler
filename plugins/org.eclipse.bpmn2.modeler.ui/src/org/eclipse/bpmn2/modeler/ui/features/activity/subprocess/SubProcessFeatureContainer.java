@@ -91,7 +91,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 	public static class CreateSubProcessFeature extends AbstractCreateExpandableFlowNodeFeature<SubProcess> {
 
 		public CreateSubProcessFeature(IFeatureProvider fp) {
-			super(fp, Messages.SubProcessFeatureContainer_Name, Messages.SubProcessFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

@@ -13,14 +13,15 @@
 package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.SubConversation;
-import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
+import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -35,11 +36,11 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
-public class ConversationFeatureContainer extends BaseElementFeatureContainer {
+public class SubConversationFeatureContainer extends AbstractExpandableActivityFeatureContainer {
 
 	@Override
 	public boolean canApplyTo(Object o) {
-		return super.canApplyTo(o) && o instanceof Conversation;
+		return super.canApplyTo(o) && o instanceof SubConversation;
 	}
 
 	@Override
@@ -47,16 +48,17 @@ public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 		return new AbstractCreateConversationNodeFeature<SubConversation>(fp) {
 			@Override
 			public EClass getBusinessObjectClass() {
-				return Bpmn2Package.eINSTANCE.getConversation();
+				return Bpmn2Package.eINSTANCE.getSubConversation();
 			}
 		};			
 	}
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddConversationNodeFeature<Conversation>(fp) {
+		return new AbstractAddConversationNodeFeature<SubConversation>(fp) {
 			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, Conversation businessObject) {
+			protected void decorateShape(IAddContext context, ContainerShape containerShape, SubConversation businessObject) {
+				GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 			}
 		};
 	}

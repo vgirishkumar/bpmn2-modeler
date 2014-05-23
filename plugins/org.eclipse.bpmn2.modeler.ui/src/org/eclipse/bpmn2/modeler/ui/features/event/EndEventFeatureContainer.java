@@ -79,7 +79,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 	public static class CreateEndEventFeature extends AbstractCreateEventFeature<EndEvent> {
 
 		public CreateEndEventFeature(IFeatureProvider fp) {
-			super(fp, Messages.EndEventFeatureContainer_0, Messages.EndEventFeatureContainer_1+Messages.EndEventFeatureContainer_2);
+			super(fp);
 		}
 
 		@Override

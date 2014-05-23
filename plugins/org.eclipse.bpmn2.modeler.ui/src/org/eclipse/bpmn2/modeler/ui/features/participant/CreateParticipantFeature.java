@@ -29,7 +29,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Participant> {
 	
 	public CreateParticipantFeature(IFeatureProvider fp) {
-	    super(fp, Messages.CreateParticipantFeature_Name, Messages.CreateParticipantFeature_Description);
+	    super(fp);
     }
 
 	@Override
@@ -42,7 +42,7 @@ public class CreateParticipantFeature extends AbstractBpmn2CreateFeature<Partici
 		Participant participant = createBusinessObject(context);
 		participant.setName(Messages.CreateParticipantFeature_Default_Pool_Name + ModelUtil.getIDNumber(participant.getId()));
 
-		Process process = Bpmn2ModelerFactory.create(participant.eResource(), Process.class);
+		Process process = Bpmn2ModelerFactory.create(getResource(context), Process.class);
 		participant.setProcessRef(process);
 
 		process.setName(participant.getName() + Messages.CreateParticipantFeature_Default_Process_Name);

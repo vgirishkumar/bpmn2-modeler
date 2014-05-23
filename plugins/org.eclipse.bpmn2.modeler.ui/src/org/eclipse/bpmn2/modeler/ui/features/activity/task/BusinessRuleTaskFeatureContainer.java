@@ -53,7 +53,7 @@ public class BusinessRuleTaskFeatureContainer extends AbstractTaskFeatureContain
 	public static class CreateBusinessRuleTaskFeature extends AbstractCreateTaskFeature<BusinessRuleTask> {
 
 		public CreateBusinessRuleTaskFeature(IFeatureProvider fp) {
-			super(fp, Messages.BusinessRuleTaskFeatureContainer_Name, Messages.BusinessRuleTaskFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

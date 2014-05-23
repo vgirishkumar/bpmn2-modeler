@@ -75,7 +75,7 @@ public class ConditionalEventDefinitionContainer extends AbstractEventDefinition
 	public static class CreateConditionalEventDefinition extends AbstractCreateEventDefinitionFeature<ConditionalEventDefinition> {
 
 		public CreateConditionalEventDefinition(IFeatureProvider fp) {
-			super(fp, Messages.ConditionalEventDefinitionContainer_Name, Messages.ConditionalEventDefinitionContainer_Description);
+			super(fp);
 		}
 
 		@Override

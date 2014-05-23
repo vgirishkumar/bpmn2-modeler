@@ -13,19 +13,13 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.bpmn2.Choreography;
-import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
+import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -499,166 +493,9 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	}
 
 	public String getDescription(EObject object) {
-		return getDescription(adapterFactory,object);
+		return ToolTipProvider.INSTANCE.getLongDescription(adapterFactory,object);
 	}
 
-	/**
-	 * Get the verbose description for a given object. If the object is a
-	 * {@code org.eclipse.bpmn2.di.BPMNDiagram} instance, the DiagramType name
-	 * is prepended to the object description. If the object represents a
-	 * {@code org.eclipse.bpmn2.ParticipantBand} the description is prefixed with
-	 * "ParticipantBand".
-	 * 
-	 * 
-	 * @param searchObject any object in the defining plug-in. This object's
-	 *            Class Loader is used to search for a {@code Messages} class
-	 *            which is assumed to contain String fields in the form
-	 * 
-	 * <pre>
-	 * UI_<i>ObjectTypeName</i>_description
-	 * </pre>
-	 * 
-	 *            where <i>ObjectTypeName</i> is the name of the model object's
-	 *            type (the EClass).
-	 * @param object the object to search for.
-	 * @return a verbose description string or an empty string if no description is found.
-	 */
-	public static String getDescription(Object searchObject, EObject object) {
-		String name = ""; //$NON-NLS-1$
-		String description = ""; //$NON-NLS-1$
-		if (object instanceof BPMNDiagram) {
-			switch(ModelUtil.getDiagramType(object)) {
-			case NONE:
-				name = "UnknownDiagram"; //$NON-NLS-1$
-				break;
-			case PROCESS:
-				name = "Process"; //$NON-NLS-1$
-				break;
-			case CHOREOGRAPHY:
-				name = "Choreography"; //$NON-NLS-1$
-				break;
-			case COLLABORATION:
-				name = "Collaboration"; //$NON-NLS-1$
-				break;
-			case CONVERSATION:
-				name = "Conversation"; //$NON-NLS-1$
-				break;
-			default:
-				break;
-			}
-		}
-		else if (object instanceof Participant) {
-			Participant participant = (Participant) object;
-			EObject container = participant.eContainer();
-			if (container instanceof Choreography) {
-				for (FlowElement fe : ((Choreography)container).getFlowElements()) {
-					if (fe instanceof ChoreographyActivity) {
-						ChoreographyActivity ca = (ChoreographyActivity) fe;
-						if (ca.getParticipantRefs().contains(participant)) {
-							name = "ParticipantBand"; //$NON-NLS-1$
-							break;
-						}
-					}
-				}
-			}
-		}
-		// Get the model object's long description from the Messages class.
-		// The field in Messages that contains the description will have the
-		// form: "UI_<objectName>_description".
-		// The Messages class must be contained somewhere in the package hierarchy
-		// that contains the searchObject's class.
-    	try {
-        	String fieldName = "UI_" + name + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-        	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
-			Field field = messages.getField(fieldName);
-			description = (String)field.get(null);
-		} catch (Exception e) {
-			description = getDescription(searchObject,object,null);
-		}
-    	
-    	return description;
-	}
-
-	/**
-	 * Get the verbose description for a given object feature.
-	 * 
-	 * @param searchObject any object in the defining plug-in. This object's
-	 *            Class Loader is used to search for a {@code Messages} class
-	 *            which is assumed to contain String fields in the form
-	 * 
-	 * <pre>
-	 * UI_<i>ObjectTypeName</i>_<i>FeatureName</i>_description
-	 * </pre>
-	 * 
-	 *            where <i>ObjectTypeName</i> is the name of the model object's
-	 *            type (the EClass) and <i>FeatureName</i> is the feature name.
-	 * @param object the object to search for.
-	 * @param feature the object's feature.
-	 * @return a verbose description string or an empty string if no description is found.
-	 */
-	public static String getDescription(Object searchObject, EObject object, EStructuralFeature feature) {
-		String fieldName;
-		Field field;
-		String description = ""; //$NON-NLS-1$
-		
-		// Get the model feature's long description from the Messages class.
-		// The field in Messages that contains the description will have the
-		// form: "UI_<objectName>_<featureName>_description".
-		// If that entry is not found, try looking for something in the form:
-		// "UI_Any_<featureName>_description".
-		// The Messages class must be contained somewhere in the package hierarchy
-		// that contains the searchObject's class.
-    	Class messages = JavaReflectionUtil.findClass(searchObject, "Messages"); //$NON-NLS-1$
-    	if (messages!=null) {
-			ClassLoader classLoader = messages.getClassLoader();
-			boolean found = false;
-    		do {
-				try {
-					// fetch the description for this EClass and feature
-	    			String className = object.eClass().getName().replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
-	    			if (feature==null)
-	    				fieldName = "UI_" + className + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-	    			else
-	    				fieldName = "UI_" + className + "_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		    		field = messages.getField(fieldName);
-		    		description += (String)field.get(null);
-		    		found = true;
-				}
-				catch (Exception e) {
-		    		try {
-		    			// if a description is not found for this EClass, try "Any"
-		    			if (feature!=null) {
-		    				fieldName = "UI_Any_" + feature.getName() + "_description"; //$NON-NLS-1$ //$NON-NLS-2$
-				    		field = messages.getField(fieldName);
-				    		description += (String)field.get(null);
-				    		found = true;
-		    			}
-		    		}
-		    		catch (Exception e2) {
-		    		}
-				}
-				if (!found) {
-					// try looking for a Messages class in the parent package
-					String packageName = messages.getPackage().getName();
-					messages = null;
-					int index;
-					while ((index = packageName.lastIndexOf(".")) != -1) { //$NON-NLS-1$
-						packageName = packageName.substring(0, index);
-						String className = packageName + ".Messages";  //$NON-NLS-1$
-						try {
-							messages = Class.forName(className, true, classLoader);
-							break;
-						}
-						catch (Exception e3) {
-						}
-					}
-				}
-    		}
-    		while (!found && messages!=null);
-    	}
-		return description;
-	}
-	
 	/**
 	 * Compare two EObjects. The default implementation of this method compares the values of
 	 * identical features of both objects. This method recognizes features that are {@code StringWrapper}

@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
@@ -93,19 +94,13 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 			                break;
 			            }
 			        }
+			        if (participant.eContainer()==null) {
+			        	// no Collaboration element found - create one
+			        	Collaboration collaboration = Bpmn2ModelerFactory.create(resource, Collaboration.class);
+			        	definitions.getRootElements().add(collaboration);
+			        	collaboration.getParticipants().add(participant);
+			        }
 				}
-//				
-//		        BPMNDiagram bpmnDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
-//				ModelUtil.setID(bpmnDiagram, resource);
-//		        bpmnDiagram.setName(process.getName());
-//
-//		        definitions.getDiagrams().add(bpmnDiagram);
-//		        
-//				BPMNPlane plane = BpmnDiFactory.eINSTANCE.createBPMNPlane();
-//				ModelUtil.setID(plane, resource);
-//				plane.setBpmnElement(process);
-//
-//				bpmnDiagram.setPlane(plane);
 		        
 				return participant;
 			}

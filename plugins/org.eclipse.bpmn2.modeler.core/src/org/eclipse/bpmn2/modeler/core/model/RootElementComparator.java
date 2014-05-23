@@ -13,6 +13,8 @@ package org.eclipse.bpmn2.modeler.core.model;
 import java.util.Comparator;
 
 import org.eclipse.bpmn2.Category;
+import org.eclipse.bpmn2.Choreography;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.CorrelationProperty;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.EndPoint;
@@ -24,6 +26,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.PartnerEntity;
 import org.eclipse.bpmn2.PartnerRole;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.Signal;
@@ -44,6 +47,9 @@ public final class RootElementComparator implements Comparator<RootElement> {
 		CorrelationProperty.class,
 		PartnerRole.class,
 		PartnerEntity.class,
+		Choreography.class,
+		Collaboration.class,
+		Process.class,
 	};
 	
 	@Override

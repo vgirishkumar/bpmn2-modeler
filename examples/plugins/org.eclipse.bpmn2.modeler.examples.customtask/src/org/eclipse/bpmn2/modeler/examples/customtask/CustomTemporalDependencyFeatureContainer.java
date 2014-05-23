@@ -65,12 +65,8 @@ public class CustomTemporalDependencyFeatureContainer extends CustomConnectionFe
 	
 	public class CreateTemporalDependencyFeature extends AbstractCreateFlowFeature<TemporalDependency, BoundaryEvent, BoundaryEvent> {
 
-		public CreateTemporalDependencyFeature(IFeatureProvider fp, String name, String description) {
-			super(fp, name, description);
-		}
-
 		public CreateTemporalDependencyFeature(IFeatureProvider fp) {
-			this(fp,"Temporal Dependency", "Create Temporal Dependency");
+			super(fp);
 		}
 
 		@Override

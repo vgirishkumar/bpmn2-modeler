@@ -53,7 +53,7 @@ public class ScriptTaskFeatureContainer extends AbstractTaskFeatureContainer {
 	public static class CreateScriptTaskFeature extends AbstractCreateTaskFeature<ScriptTask> {
 
 		public CreateScriptTaskFeature(IFeatureProvider fp) {
-			super(fp, Messages.ScriptTaskFeatureContainer_Name, Messages.ScriptTaskFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

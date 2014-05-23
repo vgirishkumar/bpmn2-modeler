@@ -51,8 +51,8 @@ public abstract class AbstractCreateFlowFeature<
 		TARGET extends EObject>
 	extends AbstractBpmn2CreateConnectionFeature<CONNECTION, SOURCE, TARGET> {
 
-	public AbstractCreateFlowFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateFlowFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	@Override

@@ -37,8 +37,8 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 	 * @param name the type name of the Flow Element
 	 * @param description the description of the Flow Element
 	 */
-	public AbstractCreateFlowElementFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateFlowElementFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	/* (non-Javadoc)

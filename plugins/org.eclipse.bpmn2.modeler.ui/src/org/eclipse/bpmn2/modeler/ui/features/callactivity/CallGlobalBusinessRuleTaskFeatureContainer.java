@@ -34,7 +34,7 @@ public class CallGlobalBusinessRuleTaskFeatureContainer extends AbstractCallGlob
 		 * @param fp
 		 */
 		public CreateCallGlobalBusinessRuleTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Business Rule Task", "Call Activity for a Global Business Rule Task");
+			super(fp);
 		}
 
 		@Override

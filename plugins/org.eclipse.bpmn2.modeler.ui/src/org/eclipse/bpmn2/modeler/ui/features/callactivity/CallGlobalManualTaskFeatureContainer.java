@@ -34,7 +34,7 @@ public class CallGlobalManualTaskFeatureContainer extends AbstractCallGlobalTask
 		 * @param fp
 		 */
 		public CreateCallGlobalManualTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Manual Task", "Call Activity for a Global Manual Task");
+			super(fp);
 		}
 
 		@Override

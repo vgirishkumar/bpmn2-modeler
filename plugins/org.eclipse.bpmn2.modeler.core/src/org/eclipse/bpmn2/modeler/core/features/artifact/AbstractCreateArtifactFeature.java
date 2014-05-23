@@ -30,8 +30,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateArtifactFeature<T extends Artifact> extends AbstractBpmn2CreateFeature<T> {
 
-	public AbstractCreateArtifactFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateArtifactFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	@Override

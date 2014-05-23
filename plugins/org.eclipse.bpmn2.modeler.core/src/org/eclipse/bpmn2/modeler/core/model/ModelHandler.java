@@ -479,6 +479,11 @@ public class ModelHandler {
 
 	public ConversationNode addConversationNode(BPMNDiagram bpmnDiagram, ConversationNode conversationNode) {
 		Collaboration collaboration = getParticipantContainer(bpmnDiagram);
+		if (collaboration==null) {
+			collaboration = getCollaboration();
+			if (collaboration==null)
+				collaboration = createCollaboration();
+		}
 		if (collaboration!=null)
 			collaboration.getConversations().add(conversationNode);
 		return conversationNode;

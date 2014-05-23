@@ -56,17 +56,10 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 		};
 	}
 
-//	@Override
-//	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
-//		MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
-//		multiUpdate.addFeature(super.getUpdateFeature(fp));
-//		return multiUpdate;
-//	}
-
 	public static class CreateAdHocSubProcessFeature extends AbstractCreateExpandableFlowNodeFeature<AdHocSubProcess> {
 
 		public CreateAdHocSubProcessFeature(IFeatureProvider fp) {
-			super(fp, Messages.AdHocSubProcessFeatureContainer_Name, Messages.AdHocSubProcessFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

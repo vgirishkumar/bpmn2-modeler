@@ -18,7 +18,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 
 public abstract class AbstractCreateEventFeature<T extends Event> extends AbstractCreateFlowElementFeature<T> {
 	
-	public AbstractCreateEventFeature(IFeatureProvider fp, String name, String description) {
-	    super(fp, name, description);
+	public AbstractCreateEventFeature(IFeatureProvider fp) {
+	    super(fp);
     }
 }

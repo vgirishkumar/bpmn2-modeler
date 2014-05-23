@@ -25,7 +25,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 public class CreateTextAnnotationFeature extends AbstractCreateArtifactFeature<TextAnnotation> {
 
 	public CreateTextAnnotationFeature(IFeatureProvider fp) {
-		super(fp, Messages.CreateTextAnnotationFeature_Name, Messages.CreateTextAnnotationFeature_Description);
+		super(fp);
 	}
 
 	@Override

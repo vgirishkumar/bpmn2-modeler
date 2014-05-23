@@ -120,18 +120,49 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 		/** The create feature delegate. */
 		protected AbstractBpmn2CreateConnectionFeature createFeatureDelegate;
 
+		/** Our own copies of create name and description because the ones in super are private **/
+		protected String name;
+		protected String description;
+		
 		/**
-		 * Instantiates a new {@code CreateFeature} for custom connections.
+		 * Instantiates a new {@code CreateFeature} for custom connections. If
+		 * the name and/or description are null or empty strings then they are
+		 * fetched from the Create Feature delegate when required.
 		 *
 		 * @param fp the Feature Provider
 		 * @param name the name of the element being created
-		 * @param description the description
+		 * @param description the description of the Create Feature
 		 */
 		public CreateCustomConnectionFeature(IFeatureProvider fp, String name, String description) {
-			super(fp, name, description);
+			super(fp);
 			IConnectionFeatureContainer fc = (IConnectionFeatureContainer) getFeatureContainer(fp);
 			createFeatureDelegate = (AbstractBpmn2CreateConnectionFeature) fc.getCreateConnectionFeature(fp);
 			Assert.isNotNull(createFeatureDelegate);
+			this.name = name;
+			this.description = description;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature#getCreateName()
+		 */
+		@Override
+		public String getCreateName() {
+			if (name!=null && !name.isEmpty())
+				return name;
+			return createFeatureDelegate.getCreateName();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.bpmn2.modeler.core.features.
+		 * AbstractBpmn2CreateConnectionFeature#getCreateDescription()
+		 */
+		@Override
+		public String getCreateDescription() {
+			if (description!=null && !description.isEmpty())
+				return description;
+			return createFeatureDelegate.getCreateDescription();
 		}
 
 		/**
@@ -283,17 +314,6 @@ public class CustomConnectionFeatureContainer extends CustomElementFeatureContai
 					return id;
 			}
 			return createFeatureDelegate.getCreateLargeImageId();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.bpmn2.modeler.core.features.
-		 * AbstractBpmn2CreateConnectionFeature#getCreateDescription()
-		 */
-		@Override
-		public String getCreateDescription() {
-			return createFeatureDelegate.getCreateDescription();
 		}
 
 		/*

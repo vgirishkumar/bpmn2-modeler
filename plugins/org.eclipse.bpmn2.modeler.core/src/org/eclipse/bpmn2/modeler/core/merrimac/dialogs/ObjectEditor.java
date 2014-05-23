@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
@@ -192,7 +193,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected String getToolTipText() {
 		String text = (String) getExtendedProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
 		if (text==null || text.isEmpty())
-			text = ExtendedPropertiesAdapter.getDescription(parent, object, feature);
+			text = ToolTipProvider.INSTANCE.getToolTip(parent, object, feature);
    		if (text==null || text.isEmpty())
    			text = NLS.bind(Messages.ObjectEditor_No_Description, label.getText());
 

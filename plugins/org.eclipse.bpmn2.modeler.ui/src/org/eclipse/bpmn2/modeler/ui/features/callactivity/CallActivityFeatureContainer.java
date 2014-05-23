@@ -170,15 +170,11 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 		// NOTE: Even though the Call Activity is an expandable figure, the contents for its "innards"
 		// are (usually) defined somewhere else, so it doesn't make much sense to be able to expand it in the
 		// same sense that a SubProcess would be expanded and rendered. When the "expand" button is clicked
-		// we should probably locate the process where this thing is defined (if possible) and open an
+		// we will locate the process where this thing is defined (if possible) and open an
 		// editor to display its contents.
 		
 		public CreateCallActivityFeature(IFeatureProvider fp) {
-			super(fp, Messages.CallActivityFeatureContainer_Name, Messages.CallActivityFeatureContainer_Description);
-		}
-
-		public CreateCallActivityFeature(IFeatureProvider fp, String name, String description) {
-			super(fp, name, description);
+			super(fp);
 		}
 
 		@Override

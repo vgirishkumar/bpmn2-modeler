@@ -222,7 +222,7 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 		};
 
 		public CreateDataStoreReferenceFeature(IFeatureProvider fp) {
-			super(fp, Messages.DataStoreReferenceFeatureContainer_Name, Messages.DataStoreReferenceFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

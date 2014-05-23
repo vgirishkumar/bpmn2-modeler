@@ -41,6 +41,7 @@ import org.eclipse.graphiti.features.IFeatureAndContext;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
+import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
@@ -86,9 +87,33 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @param description - description of the object being created
 	 * @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
 	 */
-	public AbstractBpmn2CreateConnectionFeature(IFeatureProvider fp,
-			String name, String description) {
-		super(fp, name, description);
+	public AbstractBpmn2CreateConnectionFeature(IFeatureProvider fp) {
+		super(fp, "", "");
+	}
+
+	public String getCreateName() {
+		// TODO: get name from Messages by generating a field name using the business object class
+		return ModelUtil.toCanonicalString(getFeatureClass().getName());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateDescription()
+	 * This is displayed in the Edit -> Undo/Redo menu 
+	 */
+	@Override
+	public String getCreateDescription() {
+		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
+				ModelUtil.toCanonicalString( getFeatureClass().getName()));
+	}
+
+	@Override
+	public String getName() {
+		return getCreateName();
+	}
+
+	@Override
+	public String getDescription() {
+		return getCreateDescription();
 	}
 
 	/* (non-Javadoc)
@@ -209,16 +234,6 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		return false;
 
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateDescription()
-	 * This is displayed in the Edit -> Undo/Redo menu 
-	 */
-	@Override
-	public String getCreateDescription() {
-		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
-				ModelUtil.toCanonicalString( getBusinessObjectClass().getName()));
-	}
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#createBusinessObject(org.eclipse.graphiti.features.context.IContext)
@@ -226,9 +241,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public CONNECTION createBusinessObject(ICreateConnectionContext context) {
-		PictogramElement sourcePe = context.getSourcePictogramElement();
-		EObject container = BusinessObjectUtil.getBusinessObjectForPictogramElement(sourcePe);
-		Resource resource = container.eResource();
+		Resource resource = getResource(context);
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
 		CONNECTION businessObject = (CONNECTION)adapter.getObjectDescriptor().createObject(resource,eclass);
@@ -247,6 +260,18 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		putBusinessObject(context, businessObject);
 		changesDone = true;
 		return businessObject;
+	}
+	
+	protected Resource getResource(ICreateConnectionContext context) {
+		PictogramElement pe = context.getSourcePictogramElement();
+		if (pe==null)
+			pe = context.getTargetPictogramElement();
+		if (pe==null)
+			pe = context.getSourceAnchor();
+		if (pe==null)
+			pe = context.getTargetAnchor();
+		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
+		return bo.eResource();
 	}
 
 	/* (non-Javadoc)
@@ -269,7 +294,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		if (id!=null) {
 	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
+	    	ctd.populateObject(businessObject, getResource(context), true);
 		}
 		
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,

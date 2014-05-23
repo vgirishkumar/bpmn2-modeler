@@ -293,7 +293,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		};
 
 		public CreateMessageFeature(IFeatureProvider fp) {
-			super(fp, Messages.MessageFeatureContainer_Name, Messages.MessageFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

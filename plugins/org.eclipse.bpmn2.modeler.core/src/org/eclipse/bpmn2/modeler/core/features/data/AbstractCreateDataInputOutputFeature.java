@@ -26,8 +26,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateDataInputOutputFeature<T extends ItemAwareElement> extends AbstractBpmn2CreateFeature<T> {
 
-	public AbstractCreateDataInputOutputFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateDataInputOutputFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	@Override

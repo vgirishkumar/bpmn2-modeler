@@ -31,12 +31,10 @@ public abstract class AbstractCreateExpandableFlowNodeFeature<T extends FlowNode
 	/**
 	 * Instantiates a new abstract create expandable flow node feature.
 	 *
-	 * @param fp the fp
-	 * @param name the name
-	 * @param description the description
+	 * @param fp the Feature Provider
 	 */
-	public AbstractCreateExpandableFlowNodeFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateExpandableFlowNodeFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	/* (non-Javadoc)

@@ -86,7 +86,7 @@ public class TerminateEventDefinitionFeatureContainer extends AbstractEventDefin
 	public static class CreateTerminateEventDefinition extends AbstractCreateEventDefinitionFeature<TerminateEventDefinition> {
 
 		public CreateTerminateEventDefinition(IFeatureProvider fp) {
-			super(fp, Messages.TerminateEventDefinitionFeatureContainer_Name, Messages.TerminateEventDefinitionFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

@@ -200,7 +200,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	public class CreateAssociationFeature extends AbstractCreateFlowFeature<Association, BaseElement, BaseElement> {
 
 		public CreateAssociationFeature(IFeatureProvider fp) {
-			super(fp, Messages.AssociationFeatureContainer_Name, Messages.AssociationFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

@@ -29,8 +29,8 @@ public abstract class AbstractCreateCallGlobalTaskFeature<T extends GlobalTask> 
 	/**
 	 * @param fp
 	 */
-	public AbstractCreateCallGlobalTaskFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateCallGlobalTaskFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	@Override

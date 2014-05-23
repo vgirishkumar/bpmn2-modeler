@@ -63,7 +63,7 @@ public class ExclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 	public static class CreateExclusiveGatewayFeature extends AbstractCreateGatewayFeature<ExclusiveGateway> {
 
 		public CreateExclusiveGatewayFeature(IFeatureProvider fp) {
-			super(fp, Messages.ExclusiveGatewayFeatureContainer_Name, Messages.ExclusiveGatewayFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

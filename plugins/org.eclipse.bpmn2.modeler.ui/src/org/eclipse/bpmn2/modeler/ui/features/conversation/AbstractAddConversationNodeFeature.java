@@ -10,9 +10,9 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.features.conversation;
+package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
-import org.eclipse.bpmn2.Conversation;
+import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
@@ -26,13 +26,14 @@ import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddConversationFeature extends AbstractBpmn2AddFeature<Conversation> {
+public abstract class AbstractAddConversationNodeFeature<T extends ConversationNode> extends AbstractBpmn2AddFeature<T> {
 
-	public AddConversationFeature(IFeatureProvider fp) {
+	public AbstractAddConversationNodeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -49,7 +50,7 @@ public class AddConversationFeature extends AbstractBpmn2AddFeature<Conversation
 	public PictogramElement add(IAddContext context) {
 		IGaService gaService = Graphiti.getGaService();
 		IPeService peService = Graphiti.getPeService();
-		Conversation businessObject = getBusinessObject(context);
+		T businessObject = getBusinessObject(context);
 
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
@@ -58,12 +59,11 @@ public class AddConversationFeature extends AbstractBpmn2AddFeature<Conversation
 		Rectangle rect = gaService.createInvisibleRectangle(containerShape);
 		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 
+		Shape hexShape = peService.createShape(containerShape, false);
 		int w_5th = width / 5;
 		int[] xy = { w_5th, 0, w_5th * 4, 0, width, height / 2, w_5th * 4, height, w_5th, height, 0, height / 2 };
-		Polygon hexagon = gaService.createPolygon(rect, xy);
-
+		Polygon hexagon = gaService.createPolygon(hexShape, xy);
 		StyleUtil.applyStyle(hexagon, businessObject);
-
 		link(containerShape, businessObject);
 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
@@ -81,13 +81,15 @@ public class AddConversationFeature extends AbstractBpmn2AddFeature<Conversation
 		return containerShape;
 	}
 
+	protected abstract void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject);
+
 	@Override
 	public int getHeight() {
-		return 30;
+		return 40;
 	}
 
 	@Override
 	public int getWidth() {
-		return 30;
+		return 40;
 	}
 }

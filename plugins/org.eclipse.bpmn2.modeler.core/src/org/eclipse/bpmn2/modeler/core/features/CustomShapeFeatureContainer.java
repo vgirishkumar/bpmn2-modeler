@@ -115,20 +115,48 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 
 		/** The create feature delegate. */
 		protected AbstractBpmn2CreateFeature<BaseElement> createFeatureDelegate;
-		
+
+		/** Our own copies of create name and description because the ones in super are private **/
+		protected String name;
+		protected String description;
+
 		/**
-		 * Instantiates a new {@code CreateFeature} for custom shapes.
+		 * Instantiates a new {@code CreateFeature} for custom shapes. If the
+		 * name and/or description are null or empty strings then they are
+		 * fetched from the Create Feature delegate when required.
 		 *
 		 * @param fp the Feature Provider
 		 * @param name the name of the element being created
-		 * @param description the description
+		 * @param description the description of the Create Feature
 		 */
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public CreateCustomShapeFeature(IFeatureProvider fp, String name, String description) {
-			super(fp, name, description);
+			super(fp);
 			IShapeFeatureContainer fc = (IShapeFeatureContainer)getFeatureContainer(fp);
 			createFeatureDelegate = (AbstractBpmn2CreateFeature)fc.getCreateFeature(fp);
 			Assert.isNotNull(createFeatureDelegate);
+			this.name = name;
+			this.description = description;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getCreateName()
+		 */
+		@Override
+		public String getCreateName() {
+			if (name!=null && !name.isEmpty())
+				return name;
+			return createFeatureDelegate.getCreateName();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getCreateDescription()
+		 */
+		@Override
+		public String getCreateDescription() {
+			if (description!=null && !description.isEmpty())
+				return description;
+			return createFeatureDelegate.getCreateDescription();
 		}
 
 		/**
@@ -230,14 +258,6 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 					return id;
 			}
 			return createFeatureDelegate.getCreateLargeImageId();
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature#getCreateDescription()
-		 */
-		@Override
-		public String getCreateDescription() {
-			return createFeatureDelegate.getCreateDescription();
 		}
 	}
 

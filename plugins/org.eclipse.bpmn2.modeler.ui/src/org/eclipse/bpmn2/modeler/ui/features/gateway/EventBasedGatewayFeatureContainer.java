@@ -89,7 +89,7 @@ public class EventBasedGatewayFeatureContainer extends AbstractGatewayFeatureCon
 	public static class CreateEventBasedGatewayFeature extends AbstractCreateGatewayFeature<EventBasedGateway> {
 
 		public CreateEventBasedGatewayFeature(IFeatureProvider fp) {
-			super(fp, Messages.EventBasedGatewayFeatureContainer_Name, Messages.EventBasedGatewayFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

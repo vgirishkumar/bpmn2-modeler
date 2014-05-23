@@ -77,7 +77,7 @@ public class DataInputFeatureContainer extends AbstractDataFeatureContainer {
 	public static class CreateDataInputFeature extends AbstractCreateDataInputOutputFeature<DataInput> {
 
 		public CreateDataInputFeature(IFeatureProvider fp) {
-			super(fp, Messages.DataInputFeatureContainer_Name, Messages.DataInputFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

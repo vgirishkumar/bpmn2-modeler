@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.property;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -137,13 +138,13 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 				description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);
 			}
 			if (description==null) {
-				description = ExtendedPropertiesAdapter.getDescription(getDiagramEditor(), object);
+				description = ToolTipProvider.INSTANCE.getLongDescription(getDiagramEditor(), object);
 			}
 			return description;
 		}
 		
 		protected void bindAppearance(EObject be) {
-			if (be instanceof BaseElement && ShapeStyle.hasStyle((BaseElement)be)) {
+			if (Bpmn2FeatureMap.ALL_SHAPES.contains(be.eClass().getInstanceClass())) {
 				final BaseElement element = (BaseElement) be;
 				EObject style = ShapeStyle.getStyleObject(element);
 				if (style==null)

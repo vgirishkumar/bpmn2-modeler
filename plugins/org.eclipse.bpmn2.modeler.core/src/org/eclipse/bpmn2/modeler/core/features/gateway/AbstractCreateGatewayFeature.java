@@ -18,7 +18,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 
 public abstract class AbstractCreateGatewayFeature<T extends Gateway> extends AbstractCreateFlowElementFeature<T> {
 
-	public AbstractCreateGatewayFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateGatewayFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 }

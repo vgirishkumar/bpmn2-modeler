@@ -160,7 +160,8 @@
 			id="org.eclipse.bpmn2.modeler.runtime.none.modelExtension.appearance.BaseElement"
 			uri="http://org.eclipse.bpmn2/ext"
 			name="BaseElement Appearance"
-			type="BaseElement">
+			type="BaseElement"
+			decorator="org.eclipse.bpmn2.modeler.ui.DefaultObjectDecorator">
 			<property name="style" type="ShapeStyle" label="%appearance">
 				<value>
 					<property name="shapeForeground" type="EColor" label="%border.color" />
@@ -191,7 +192,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			label="%propertyTab.label.0">
+			label="%propertyTab.label.Process">
 		</propertyTab>
 
 		<propertyTab
@@ -207,7 +208,25 @@
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
-			label="%propertyTab.label.1">
+			label="%propertyTab.label.Definitions">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.collaboration.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="isClosed correlationKeys"
+			type="org.eclipse.bpmn2.Collaboration"
+			label="Collaboration">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.choreography.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="isClosed correlationKeys"
+			type="org.eclipse.bpmn2.Choreography"
+			label="Choreography">
 		</propertyTab>
 
 		<!-- ============  Connections ============ -->
@@ -715,6 +734,24 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersPropertySection"
 			label="%propertyTab.label.57">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.correlationproperty.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="correlationPropertyRetrievalExpression type"
+			type="org.eclipse.bpmn2.CorrelationProperty"
+			label="Correlation Property">
+		</propertyTab>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.correlationproperty.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="messagePath messageRef"
+			type="org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression"
+			label="Correlation">
 		</propertyTab>
 		
 		<propertyTab

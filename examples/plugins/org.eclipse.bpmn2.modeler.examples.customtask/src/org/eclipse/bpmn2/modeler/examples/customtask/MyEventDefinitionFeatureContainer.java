@@ -105,7 +105,7 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 	public class CreateMyEventDefinitionFeature extends AbstractCreateEventDefinitionFeature<MyEventDefinition> {
 
 		public CreateMyEventDefinitionFeature(IFeatureProvider fp) {
-			super(fp, "My Event Definition", "Create My Event Definition");
+			super(fp);
 		}
 
 		@Override

@@ -22,9 +22,11 @@ import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
+import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -268,6 +270,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	protected String uri;
 	protected String type;
 	protected String description;
+	protected IObjectDecorator objectDecorator;
 	protected List<Property> properties = new ArrayList<Property>();
 	protected ModelDecorator modelDecorator;
 	// these are shared instance variables because this ModelExtensionDescriptor is shared
@@ -284,6 +287,14 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		uri = e.getAttribute("uri"); //$NON-NLS-1$
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		description = e.getAttribute("description"); //$NON-NLS-1$
+		if (e.getAttribute("decorator")!=null) {
+			try {
+				objectDecorator = (IObjectDecorator) e.createExecutableExtension("decorator"); //$NON-NLS-1$
+			} catch (CoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		getModelExtensionProperties(null, this, e);
 	}
 
@@ -418,8 +429,11 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			modelObject = object;
 			if (containingResource==null)
 				containingResource = ObjectPropertyProvider.getResource(object);
-			getModelDecorator(); 
-			populateObject(modelObject, initialize);
+			getModelDecorator();
+			if (objectDecorator!=null && objectDecorator.canApplyTo(modelObject)) {
+				populateObject(modelObject, initialize);
+				objectDecorator.applyTo(modelObject);
+			}
 		}
 		finally {
 			containingResource = null;

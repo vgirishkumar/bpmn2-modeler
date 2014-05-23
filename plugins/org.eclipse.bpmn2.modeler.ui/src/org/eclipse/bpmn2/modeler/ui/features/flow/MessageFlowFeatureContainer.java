@@ -359,7 +359,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 	public static class CreateMessageFlowFeature extends AbstractCreateFlowFeature<MessageFlow, InteractionNode, InteractionNode> {
 
 		public CreateMessageFlowFeature(IFeatureProvider fp) {
-			super(fp, Messages.MessageFlowFeatureContainer_Name, Messages.MessageFlowFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

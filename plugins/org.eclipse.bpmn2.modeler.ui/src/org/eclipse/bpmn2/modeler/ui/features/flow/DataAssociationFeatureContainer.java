@@ -438,7 +438,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 	public class CreateDataAssociationFeature extends AbstractCreateFlowFeature<DataAssociation, BaseElement, BaseElement> {
 
 		public CreateDataAssociationFeature(IFeatureProvider fp) {
-			super(fp, Messages.DataAssociationFeatureContainer_Name, Messages.DataAssociationFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

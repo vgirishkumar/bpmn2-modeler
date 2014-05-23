@@ -157,7 +157,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 	public static class CreateSequenceFlowFeature extends AbstractCreateFlowFeature<SequenceFlow, FlowNode, FlowNode> {
 
 		public CreateSequenceFlowFeature(IFeatureProvider fp) {
-			super(fp, Messages.SequenceFlowFeatureContainer_Name, Messages.SequenceFlowFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

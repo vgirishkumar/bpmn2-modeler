@@ -35,7 +35,7 @@ public class CallGlobalScriptTaskFeatureContainer extends AbstractCallGlobalTask
 		 * @param fp
 		 */
 		public CreateCallGlobalScriptTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Script Task", "Call Activity for a Global Script Task");
+			super(fp);
 		}
 
 		@Override

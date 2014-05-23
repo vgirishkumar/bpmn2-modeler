@@ -68,17 +68,6 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
     		}
     	);
     	
-		setObjectDescriptor(new ObjectDescriptor<Process>(this,object) {
-			@Override
-			public Process createObject(Resource resource, EClass eclass) {
-				ExtendedPropertiesAdapter adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(
-						Bpmn2Package.eINSTANCE.getRootElement(),
-						ExtendedPropertiesAdapter.class);
-				Process process = (Process) adapter.getObjectDescriptor().createObject(resource, object.eClass());
-				return process;
-			}
-		});
-		
 		feature = Bpmn2Package.eINSTANCE.getProcess_Properties();
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<Process>(this,object,feature) {

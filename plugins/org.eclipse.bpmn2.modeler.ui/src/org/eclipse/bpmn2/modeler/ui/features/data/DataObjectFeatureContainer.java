@@ -143,7 +143,7 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 		};
 
 		public CreateDataObjectFeature(IFeatureProvider fp) {
-			super(fp, Messages.DataObjectFeatureContainer_Name, Messages.DataObjectFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

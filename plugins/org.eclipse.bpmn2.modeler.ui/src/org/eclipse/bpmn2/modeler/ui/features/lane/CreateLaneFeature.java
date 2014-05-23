@@ -31,7 +31,7 @@ public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 	private static int index = 1;
 
 	public CreateLaneFeature(IFeatureProvider fp) {
-		super(fp, Messages.CreateLaneFeature_Name, Messages.CreateLaneFeature_Description);
+		super(fp);
 	}
 
 	@Override

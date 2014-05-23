@@ -27,8 +27,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefinition> extends AbstractBpmn2CreateFeature<T> {
 
-	public AbstractCreateEventDefinitionFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+	public AbstractCreateEventDefinitionFeature(IFeatureProvider fp) {
+		super(fp);
 	}
 
 	@Override

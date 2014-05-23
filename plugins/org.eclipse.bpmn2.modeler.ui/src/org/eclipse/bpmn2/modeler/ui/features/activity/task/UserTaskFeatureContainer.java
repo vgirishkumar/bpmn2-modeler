@@ -52,7 +52,7 @@ public class UserTaskFeatureContainer extends AbstractTaskFeatureContainer {
 	public static class CreateUserTaskFeature extends AbstractCreateTaskFeature<UserTask> {
 
 		public CreateUserTaskFeature(IFeatureProvider fp) {
-			super(fp, Messages.UserTaskFeatureContainer_Name, Messages.UserTaskFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

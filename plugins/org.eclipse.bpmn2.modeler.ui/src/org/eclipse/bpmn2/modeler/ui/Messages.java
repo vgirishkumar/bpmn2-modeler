@@ -125,6 +125,13 @@ public class Messages extends NLS {
 	public static String UI_ServiceTask_description;
 	public static String UI_SendTask_description;
 	public static String UI_ReceiveTask_description;
+	public static String UI_Task_tooltip;
+	public static String UI_ManualTask_tooltip;
+	public static String UI_UserTask_tooltip;
+	public static String UI_BusinessRuleTask_tooltip;
+	public static String UI_ServiceTask_tooltip;
+	public static String UI_SendTask_tooltip;
+	public static String UI_ReceiveTask_tooltip;
 	public static String UI_ChoreographyTask_description;
 	public static String UI_ScriptTask_description;
 	public static String UI_StartEvent_description;

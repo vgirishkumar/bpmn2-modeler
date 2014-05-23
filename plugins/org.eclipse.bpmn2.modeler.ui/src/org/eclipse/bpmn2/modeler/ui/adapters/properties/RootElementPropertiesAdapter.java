@@ -18,8 +18,10 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.model.RootElementComparator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -73,8 +75,10 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 				definitions = (Definitions) resource.getContents().get(0).eContents().get(0);
 			else
 				definitions = ModelUtil.getDefinitions(rootElement);
-			if (definitions!=null)
+			if (definitions!=null) {
 				definitions.getRootElements().add(rootElement);
+				ECollections.sort((EList<RootElement>)definitions.getRootElements(), new RootElementComparator());
+			}
 			return rootElement;
 		}
 	}

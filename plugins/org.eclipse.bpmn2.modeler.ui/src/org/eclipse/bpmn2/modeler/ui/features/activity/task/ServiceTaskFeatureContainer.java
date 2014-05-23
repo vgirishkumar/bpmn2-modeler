@@ -54,7 +54,7 @@ public class ServiceTaskFeatureContainer extends AbstractTaskFeatureContainer {
 	public static class CreateServiceTaskFeature extends AbstractCreateTaskFeature<ServiceTask> {
 
 		public CreateServiceTaskFeature(IFeatureProvider fp) {
-			super(fp, Messages.ServiceTaskFeatureContainer_Name, Messages.ServiceTaskFeatureContainer_Description);
+			super(fp);
 		}
 
 		@Override

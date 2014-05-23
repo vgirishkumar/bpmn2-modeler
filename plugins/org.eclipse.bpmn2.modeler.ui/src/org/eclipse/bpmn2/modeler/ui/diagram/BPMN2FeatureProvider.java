@@ -130,8 +130,10 @@ import org.eclipse.bpmn2.modeler.ui.features.choreography.CallChoreographyFeatur
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyMessageLinkFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographyTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.SubChoreographyFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.conversation.CallConversationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.conversation.ConversationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.conversation.ConversationLinkFeatureContainer;
+import org.eclipse.bpmn2.modeler.ui.features.conversation.SubConversationFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.data.DataInputFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.data.DataObjectFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.data.DataObjectReferenceFeatureContainer;
@@ -282,8 +284,8 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		containers.put(MessageFlow.class,new MessageFlowFeatureContainer());
 		containers.put(Association.class,new AssociationFeatureContainer());
 		containers.put(Conversation.class,new ConversationFeatureContainer());
-		containers.put(SubConversation.class,new ConversationFeatureContainer());
-		containers.put(CallConversation.class,new ConversationFeatureContainer());
+		containers.put(SubConversation.class,new SubConversationFeatureContainer());
+		containers.put(CallConversation.class,new CallConversationFeatureContainer());
 		containers.put(ConversationLink.class,new ConversationLinkFeatureContainer());
 		containers.put(DataAssociation.class,new DataAssociationFeatureContainer());
 		containers.put(SubChoreography.class,new SubChoreographyFeatureContainer());

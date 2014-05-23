@@ -117,7 +117,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 			// make sure the ioSpecification has both a default InputSet and OutputSet
 			InputOutputSpecification ioSpecification = task.getIoSpecification();
 			if (ioSpecification!=null) {
-				Resource resource = ObjectPropertyProvider.getResource(context.getTargetContainer());
+				Resource resource = getResource(context);
 				if (ioSpecification.getInputSets().size()==0) {
 					InputSet is = Bpmn2ModelerFactory.create(resource, InputSet.class);
 					ioSpecification.getInputSets().add(is);

@@ -33,7 +33,7 @@ public class CallGlobalTaskFeatureContainer extends AbstractCallGlobalTaskFeatur
 		 * @param fp
 		 */
 		public CreateCallGlobalTaskFeature(IFeatureProvider fp) {
-			super(fp, "Call Global Task", "Call Activity for a Global Task");
+			super(fp);
 		}
 
 		@Override

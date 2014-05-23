@@ -125,7 +125,7 @@ public class StyleUtil {
 				}
 				else if (ga.eContainer() instanceof Connection) {
 					// TODO: add a Line Width attribute to ShapeStyle
-					ga.setLineWidth(2);
+//					ga.setLineWidth(2);
 					// this is the connection line itself, set its color to
 					// foreground and make sure all of the connection decorators
 					// are set to the same
