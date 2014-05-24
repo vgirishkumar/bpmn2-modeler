@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui;
 import org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 
 /**
  *
@@ -30,19 +31,18 @@ public class DefaultObjectDecorator implements IObjectDecorator {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#canApplyTo(org.eclipse.emf.ecore.EObject)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#canApply(org.eclipse.emf.ecore.resource.Resource, org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public boolean canApplyTo(EObject object) {
+	public boolean canApply(Resource resource, EObject object) {
 		return Bpmn2FeatureMap.ALL_SHAPES.contains(object.eClass().getInstanceClass());
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#applyTo(org.eclipse.emf.ecore.EObject)
+	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#apply(org.eclipse.emf.ecore.resource.Resource, java.lang.Object)
 	 */
 	@Override
-	public boolean applyTo(EObject object) {
-		return false;
+	public boolean apply(Resource resource, Object object) {
+		return true;
 	}
-
 }
