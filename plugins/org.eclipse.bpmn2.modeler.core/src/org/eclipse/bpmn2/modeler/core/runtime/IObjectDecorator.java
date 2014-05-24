@@ -14,11 +14,12 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 
 /**
  *
  */
 public interface IObjectDecorator {
-	boolean canApplyTo(EObject object);
-	boolean applyTo(EObject object);
+	boolean canApply(Resource resource, EObject object);
+	boolean apply(Resource resource, Object object);
 }
