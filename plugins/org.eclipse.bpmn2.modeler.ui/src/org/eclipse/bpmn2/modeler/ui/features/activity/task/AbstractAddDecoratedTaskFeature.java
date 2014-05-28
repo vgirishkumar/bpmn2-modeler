@@ -30,7 +30,6 @@ public abstract class AbstractAddDecoratedTaskFeature<T extends Task> extends Ad
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
 		super.decorateShape(context, containerShape, businessObject);
-		
 		GraphicsAlgorithmContainer ga = getGraphicsAlgorithm(containerShape);
 		IGaService service = Graphiti.getGaService();
 		Image img = service.createImage(ga, getStencilImageId());

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
@@ -195,7 +196,17 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	@SuppressWarnings("unchecked")
 	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
 		EClass eClass = getEClass(clazz);
-		return (T) create(resource, eClass);
+		if (eClass!=null) {
+			return (T) create(resource, eClass);
+		}
+		else {
+			// maybe it's a DI object type?
+			EClassifier eClassifier = BpmnDiPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
+			if (eClassifier instanceof EClass) {
+				BpmnDiFactory.eINSTANCE.create((EClass)eClassifier);
+			}
+		}
+		return null;
 	}
 	
 	public static EObject create(Resource resource, EClass eClass) {

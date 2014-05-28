@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
@@ -46,6 +47,12 @@ public class CallConversationFeatureContainer extends AbstractExpandableActivity
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new AbstractCreateConversationNodeFeature<CallConversation>(fp) {
+
+			@Override
+			public String getCreateImageId() {
+				return ImageProvider.IMG_16_CALL_CONVERSATION;
+			}
+
 			@Override
 			public EClass getBusinessObjectClass() {
 				return Bpmn2Package.eINSTANCE.getCallConversation();
@@ -55,9 +62,10 @@ public class CallConversationFeatureContainer extends AbstractExpandableActivity
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddConversationNodeFeature<CallConversation>(fp) {
+		return new AddConversationNodeFeature<CallConversation>(fp) {
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, CallConversation businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
 				Shape hexShape = containerShape.getChildren().get(0);
 				hexShape.getGraphicsAlgorithm().setLineWidth(4);
 			}

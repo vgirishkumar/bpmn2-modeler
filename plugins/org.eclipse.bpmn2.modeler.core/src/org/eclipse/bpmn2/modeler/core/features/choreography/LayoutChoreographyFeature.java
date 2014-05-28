@@ -28,6 +28,7 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -44,7 +45,11 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 
 	@Override
 	public boolean canLayout(ILayoutContext context) {
-		return BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), ChoreographyActivity.class) != null;
+		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape)) {
+			return false;
+		}
+		return BusinessObjectUtil.getFirstElementOfType(pe, ChoreographyActivity.class) != null;
 	}
 
 	@Override
@@ -58,8 +63,7 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 		Shape rectShape = choreographyActivityShape.getChildren().get(0);
 		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 		
-		int height = choreographyActivityShape.getGraphicsAlgorithm().getHeight();
-		int minY = height;
+		int minY = newHeight;
 		List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityShape);
 		for (ContainerShape b : bandShapes) {
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(b, BPMNShape.class);
@@ -72,7 +76,7 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 					minY = y;
 			}
 		}
-		GraphicsUtil.setActivityMarkerOffest(choreographyActivityShape, height - minY);
+		GraphicsUtil.setActivityMarkerOffest(choreographyActivityShape, newHeight - minY);
 		GraphicsUtil.layoutActivityMarkerContainer(choreographyActivityShape);
 
 		IUpdateFeature feature = new UpdateChoreographyLabelFeature(getFeatureProvider());

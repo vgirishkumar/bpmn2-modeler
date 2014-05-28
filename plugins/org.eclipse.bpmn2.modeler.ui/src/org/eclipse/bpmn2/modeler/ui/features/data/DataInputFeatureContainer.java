@@ -62,6 +62,7 @@ public class DataInputFeatureContainer extends AbstractDataFeatureContainer {
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, DataInput businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
 			Polygon arrow = GraphicsUtil.createDataArrow(p);
 			arrow.setFilled(false);

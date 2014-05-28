@@ -54,11 +54,7 @@ public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddConversationNodeFeature<Conversation>(fp) {
-			@Override
-			protected void decorateShape(IAddContext context, ContainerShape containerShape, Conversation businessObject) {
-			}
-		};
+		return new AddConversationNodeFeature<Conversation>(fp);
 	}
 
 	@Override

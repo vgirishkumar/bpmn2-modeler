@@ -17,6 +17,8 @@ import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallChoreography;
+import org.eclipse.bpmn2.CallConversation;
 import org.eclipse.bpmn2.CancelEventDefinition;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.CompensateEventDefinition;
@@ -52,6 +54,8 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.SubConversation;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.TerminateEventDefinition;
@@ -132,14 +136,24 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_16_DATA_INPUT = PREFIX + DataInput.class.getSimpleName().toLowerCase() + dot16;
 	public static final String IMG_16_DATA_OUTPUT = PREFIX + DataOutput.class.getSimpleName().toLowerCase() + dot16;
 	public static final String IMG_16_CALL_ACTIVITY = PREFIX + CallActivity.class.getSimpleName().toLowerCase() + dot16;
-	public static final String IMG_16_CONVERSATION = PREFIX + Conversation.class.getSimpleName().toLowerCase() + dot16;
-	public static final String IMG_16_CONVERSATION_LINK = PREFIX + ConversationLink.class.getSimpleName().toLowerCase()
-	        + dot16;
-	public static final String IMG_16_CHOREOGRAPHY_TASK = PREFIX + ChoreographyTask.class.getSimpleName().toLowerCase()
-	        + dot16;
 
-	public static final String IMG_20_CONDITION = PREFIX
-	        + ConditionalEventDefinition.class.getSimpleName().toLowerCase() + dot20;
+	public static final String IMG_16_CALL_GLOBAL_TASK = PREFIX + "CallGlobalTask" + dot16;
+	public static final String IMG_16_CALL_GLOBAL_BUSINESS_RULE_TASK = PREFIX + "CallGlobalBusinessRuleTask" + dot16;
+	public static final String IMG_16_CALL_GLOBAL_MANUAL_TASK = PREFIX + "CallGlobalManualTask" + dot16;
+	public static final String IMG_16_CALL_GLOBAL_SCRIPT_TASK= PREFIX + "CallGlobalScriptTask" + dot16;
+	public static final String IMG_16_CALL_GLOBAL_USER_TASK = PREFIX + "CallGlobalUserTask" + dot16;
+	
+	public static final String IMG_16_CONVERSATION = PREFIX + Conversation.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_SUB_CONVERSATION = PREFIX + SubConversation.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_CALL_CONVERSATION = PREFIX + CallConversation.class.getSimpleName().toLowerCase() + dot16;
+
+	
+	public static final String IMG_16_CONVERSATION_LINK = PREFIX + ConversationLink.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_CHOREOGRAPHY_TASK = PREFIX + ChoreographyTask.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_SUB_CHOREOGRAPHY = PREFIX + SubChoreography.class.getSimpleName().toLowerCase() + dot16;
+	public static final String IMG_16_CALL_CHOREOGRAPHY = PREFIX + CallChoreography.class.getSimpleName().toLowerCase() + dot16;
+
+	public static final String IMG_20_CONDITION = PREFIX + ConditionalEventDefinition.class.getSimpleName().toLowerCase() + dot20;
 	public static final String IMG_20_TIMER = PREFIX + TimerEventDefinition.class.getSimpleName().toLowerCase() + dot20;
 	public static final String IMG_20_MULTIPLE = PREFIX + "multipleeventdefinition" + dot20; //$NON-NLS-1$
 
@@ -209,9 +223,20 @@ public class ImageProvider extends AbstractImageProvider {
 		addImageFilePath(IMG_16_DATA_INPUT, ICONS_16 + "DataInput.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_DATA_OUTPUT, ICONS_16 + "DataOutput.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_CALL_ACTIVITY, ICONS_16 + "CallActivity.png"); //$NON-NLS-1$
+		
+		addImageFilePath(IMG_16_CALL_GLOBAL_TASK, ICONS_16 + "CallGlobalTask.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_GLOBAL_BUSINESS_RULE_TASK, ICONS_16 + "CallGlobalBusinessRuleTask.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_GLOBAL_MANUAL_TASK, ICONS_16 + "CallGlobalManualTask.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_GLOBAL_SCRIPT_TASK, ICONS_16 + "CallGlobalScriptTask.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_GLOBAL_USER_TASK, ICONS_16 + "CallGlobalUserTask.png"); //$NON-NLS-1$
+
 		addImageFilePath(IMG_16_CONVERSATION, ICONS_16 + "Conversation.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_SUB_CONVERSATION, ICONS_16 + "SubConversation.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_CONVERSATION, ICONS_16 + "CallConversation.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_CONVERSATION_LINK, ICONS_16 + "ConversationLink.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_16_CHOREOGRAPHY_TASK, ICONS_16 + "ChoreographyTask.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_SUB_CHOREOGRAPHY, ICONS_16 + "SubChoreography.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_CALL_CHOREOGRAPHY, ICONS_16 + "CallChoreography.png"); //$NON-NLS-1$
 
 		addImageFilePath(IMG_20_CONDITION, ICONS_20 + "Condition.png"); //$NON-NLS-1$
 		addImageFilePath(IMG_20_TIMER, ICONS_20 + "Timer.png"); //$NON-NLS-1$

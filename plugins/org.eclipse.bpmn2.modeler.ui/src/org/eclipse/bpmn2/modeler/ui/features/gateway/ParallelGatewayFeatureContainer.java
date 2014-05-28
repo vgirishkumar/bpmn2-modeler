@@ -49,6 +49,7 @@ public class ParallelGatewayFeatureContainer extends AbstractGatewayFeatureConta
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, ParallelGateway businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			GraphicsUtil.createGatewayCross(containerShape);
 		}
 	}

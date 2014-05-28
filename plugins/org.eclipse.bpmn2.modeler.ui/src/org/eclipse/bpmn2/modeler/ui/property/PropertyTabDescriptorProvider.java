@@ -76,6 +76,8 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 		ArrayList<PropertyTabDescriptor> replaced = new ArrayList<PropertyTabDescriptor>();
 		for (PropertyTabDescriptor d : desc) {
 			String replacedId = d.getReplaceTab();
+			if ("org.eclipse.bpmn2.modeler.callActivity.tab".equals(replacedId))
+				System.out.println();
 			if (replacedId!=null) {
 				String[] replacements = replacedId.split(" "); //$NON-NLS-1$
 				// tab replacement is only done if the replacement tab has section descriptors

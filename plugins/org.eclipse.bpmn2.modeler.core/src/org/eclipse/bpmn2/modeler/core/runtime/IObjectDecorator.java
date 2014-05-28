@@ -20,6 +20,6 @@ import org.eclipse.emf.ecore.resource.Resource;
  *
  */
 public interface IObjectDecorator {
-	boolean canApply(Resource resource, EObject object);
-	boolean apply(Resource resource, Object object);
+	boolean canApply(String id, Resource resource, EObject object);
+	boolean apply(String id, Resource resource, Object object);
 }

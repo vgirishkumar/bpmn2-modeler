@@ -114,6 +114,7 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			create((ICreateContext) context);
 		else if (context instanceof ICreateConnectionContext)
 			create((ICreateConnectionContext)context);
+		getDiagramEditor().selectPictogramElements(pes.toArray(new PictogramElement[pes.size()]));
 	}
 	
 	/* (non-Javadoc)

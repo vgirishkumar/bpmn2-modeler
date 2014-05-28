@@ -72,6 +72,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, StartEvent businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
 			Graphiti.getPeService().setPropertyValue(containerShape, INTERRUPTING, Boolean.toString(true));
 			IPeService peService = Graphiti.getPeService();

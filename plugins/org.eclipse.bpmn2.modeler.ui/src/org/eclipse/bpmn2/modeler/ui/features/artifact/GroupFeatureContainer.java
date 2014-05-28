@@ -213,10 +213,6 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
-		protected void decorateShape(IAddContext context, ContainerShape containerShape, Group businessObject) {
-		}
-
-		@Override
 		public int getHeight() {
 			return 200;
 		}

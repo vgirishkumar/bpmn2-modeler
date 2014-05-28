@@ -87,6 +87,7 @@ import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.MmFactory;
 import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -280,6 +281,41 @@ public class FeatureSupport {
 	
 	public static void setHorizontal(IContext context, boolean isHorizontal) {
 		context.putProperty(GraphitiConstants.IS_HORIZONTAL_PROPERTY, isHorizontal);
+	}
+	
+	/**
+	 * Checks if the given PictogramElement is a ContainerShape that is linked
+	 * to both a BaseElement and a BPMNShape object. In other words, the PE
+	 * represents an visual for a BPMN2 node element such as a Task, Gateway,
+	 * Event, etc.
+	 * 
+	 * @param pe the PictogramElement
+	 * @return true if the PE is a BPMN2 node element.
+	 */
+	public static boolean isBpmnShape(PictogramElement pe) {
+		return BusinessObjectUtil.getFirstBaseElement(pe) != null &&
+				BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) !=null;
+	}
+	
+	public static boolean isValidationDecorator(PictogramElement pe) {
+		String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.VALIDATION_DECORATOR);
+		if (new Boolean(value))
+			return true;
+		return false;
+	}
+	
+	public static PictogramElement createValidationDecorator(ContainerShape containerShape) {
+		for (PictogramElement pe : containerShape.getChildren()) {
+			if (isValidationDecorator(pe))
+				return pe;
+		}
+		PictogramElement decorator = Graphiti.getPeCreateService().createShape(containerShape, true);
+		Graphiti.getPeService().setPropertyValue(decorator, GraphitiConstants.VALIDATION_DECORATOR, "true");
+		Rectangle rect = Graphiti.getGaCreateService().createInvisibleRectangle(decorator);
+		rect.setX(-5);
+		rect.setY(-5);
+		
+		return decorator;
 	}
 	
 	public static List<PictogramElement> getContainerChildren(ContainerShape container) {
@@ -1031,6 +1067,9 @@ public class FeatureSupport {
 					if (uf instanceof UpdateLabelFeature) {
 						uf.update(context);
 					}
+			}
+			else {
+				feature.update(context);
 			}
 		}
 	}

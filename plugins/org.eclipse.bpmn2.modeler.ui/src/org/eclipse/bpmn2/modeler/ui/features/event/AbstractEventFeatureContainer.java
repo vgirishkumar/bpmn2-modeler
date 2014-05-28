@@ -15,9 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.event;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.MoveFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
-import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AppendActivityFeature;
 import org.eclipse.bpmn2.modeler.ui.features.gateway.AppendGatewayFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -39,15 +37,9 @@ public abstract class AbstractEventFeatureContainer extends BaseElementFeatureCo
 
 	@Override
 	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutBaseElementTextFeature(fp) {
-
-			@Override
-			public int getMinimumWidth() {
-				return GraphicsUtil.EVENT_SIZE;
-			}
-		};
+		return null;
 	}
-
+	
 	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
 		return new MoveFlowNodeFeature(fp);

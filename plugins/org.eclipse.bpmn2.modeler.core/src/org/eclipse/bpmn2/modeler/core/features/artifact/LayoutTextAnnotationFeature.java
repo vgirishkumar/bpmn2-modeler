@@ -38,11 +38,11 @@ public class LayoutTextAnnotationFeature extends AbstractLayoutBpmn2ShapeFeature
 
 	@Override
 	public boolean canLayout(ILayoutContext context) {
-		PictogramElement pictoElem = context.getPictogramElement();
-		if (!(pictoElem instanceof ContainerShape)) {
+		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape)) {
 			return false;
 		}
-		Object bo = getBusinessObjectForPictogramElement(pictoElem);
+		Object bo = getBusinessObjectForPictogramElement(pe);
 		return bo instanceof TextAnnotation;
 	}
 

@@ -55,7 +55,11 @@ public class LayoutActivityFeature extends AbstractLayoutBpmn2ShapeFeature {
 	 */
 	@Override
 	public boolean canLayout(ILayoutContext context) {
-		Object bo = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(), BaseElement.class);
+		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape)) {
+			return false;
+		}
+		Object bo = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		return bo != null && bo instanceof Activity;
 	}
 

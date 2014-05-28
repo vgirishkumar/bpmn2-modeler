@@ -51,6 +51,7 @@ public class ExclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, ExclusiveGateway businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			// TODO: handle showExclusiveGatewayMarker property change event in BPMN2Editor
 			// and override the default gateway UpdateFeature to show/hide the "X" marker.
 			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);

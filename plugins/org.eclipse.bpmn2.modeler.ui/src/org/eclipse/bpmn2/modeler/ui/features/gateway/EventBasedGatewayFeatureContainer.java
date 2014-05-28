@@ -68,6 +68,7 @@ public class EventBasedGatewayFeatureContainer extends AbstractGatewayFeatureCon
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, EventBasedGateway businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Ellipse outer = GraphicsUtil.createGatewayOuterCircle(containerShape);
 			Ellipse inner = GraphicsUtil.createGatewayInnerCircle(outer);
 			Polygon pentagon = GraphicsUtil.createGatewayPentagon(containerShape);

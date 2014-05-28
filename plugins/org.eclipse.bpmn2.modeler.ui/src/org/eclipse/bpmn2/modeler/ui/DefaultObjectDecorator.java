@@ -34,7 +34,7 @@ public class DefaultObjectDecorator implements IObjectDecorator {
 	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#canApply(org.eclipse.emf.ecore.resource.Resource, org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public boolean canApply(Resource resource, EObject object) {
+	public boolean canApply(String id, Resource resource, EObject object) {
 		return Bpmn2FeatureMap.ALL_SHAPES.contains(object.eClass().getInstanceClass());
 	}
 
@@ -42,7 +42,7 @@ public class DefaultObjectDecorator implements IObjectDecorator {
 	 * @see org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator#apply(org.eclipse.emf.ecore.resource.Resource, java.lang.Object)
 	 */
 	@Override
-	public boolean apply(Resource resource, Object object) {
+	public boolean apply(String id, Resource resource, Object object) {
 		return true;
 	}
 }

@@ -37,7 +37,6 @@ import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.bpmn2.modeler.ui.features.flow.MessageFlowFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -120,7 +119,12 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		}
 		return false;
 	}
-	
+
+	@Override
+	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
+		return null;
+	}
+
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateMessageFeature(fp);
@@ -139,16 +143,6 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 	@Override
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		return new UpdateLabelFeature(fp);
-	}
-
-	@Override
-	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutBaseElementTextFeature(fp) {
-			@Override
-			public int getMinimumWidth() {
-				return 30;
-			}
-		};
 	}
 
 	@Override

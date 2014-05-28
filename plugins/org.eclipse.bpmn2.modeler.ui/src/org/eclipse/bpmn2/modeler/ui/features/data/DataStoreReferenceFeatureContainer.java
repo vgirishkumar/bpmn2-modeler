@@ -32,7 +32,6 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -73,6 +72,11 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 	}
 
 	@Override
+	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
+		return null;
+	}
+
+	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new CreateDataStoreReferenceFeature(fp);
 	}
@@ -88,17 +92,6 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 		multiUpdate.addFeature(new UpdateItemAwareElementFeature<DataStoreReference>(fp));
 		multiUpdate.addFeature(new UpdateLabelFeature(fp));
 		return multiUpdate;
-	}
-
-	@Override
-	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutBaseElementTextFeature(fp) {
-
-			@Override
-			public int getMinimumWidth() {
-				return 50;
-			}
-		};
 	}
 
 	@Override

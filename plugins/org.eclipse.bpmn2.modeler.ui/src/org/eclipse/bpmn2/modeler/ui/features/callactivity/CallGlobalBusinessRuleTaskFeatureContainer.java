@@ -39,7 +39,7 @@ public class CallGlobalBusinessRuleTaskFeatureContainer extends AbstractCallGlob
 
 		@Override
 		public String getStencilImageId() {
-			return ImageProvider.IMG_16_CALL_ACTIVITY;
+			return ImageProvider.IMG_16_CALL_GLOBAL_BUSINESS_RULE_TASK;
 		}
 
 		/* (non-Javadoc)

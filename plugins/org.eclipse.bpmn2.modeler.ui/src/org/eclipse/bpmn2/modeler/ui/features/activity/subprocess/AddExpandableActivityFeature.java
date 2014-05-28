@@ -35,6 +35,8 @@ public class AddExpandableActivityFeature<T extends Activity>
 
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
+		super.decorateShape(context, containerShape, businessObject);
+		
 		boolean isTriggeredByEvent = false;
 		boolean isExpanded = true;
 		

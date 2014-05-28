@@ -31,9 +31,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public abstract class AbstractAddConversationNodeFeature<T extends ConversationNode> extends AbstractBpmn2AddFeature<T> {
+public class AddConversationNodeFeature<T extends ConversationNode> extends AbstractBpmn2AddFeature<T> {
 
-	public AbstractAddConversationNodeFeature(IFeatureProvider fp) {
+	public AddConversationNodeFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -80,8 +80,6 @@ public abstract class AbstractAddConversationNodeFeature<T extends ConversationN
 
 		return containerShape;
 	}
-
-	protected abstract void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject);
 
 	@Override
 	public int getHeight() {

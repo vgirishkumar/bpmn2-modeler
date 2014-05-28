@@ -39,7 +39,7 @@ public class CallGlobalManualTaskFeatureContainer extends AbstractCallGlobalTask
 
 		@Override
 		public String getStencilImageId() {
-			return ImageProvider.IMG_16_CALL_ACTIVITY;
+			return ImageProvider.IMG_16_CALL_GLOBAL_MANUAL_TASK;
 		}
 
 		/* (non-Javadoc)

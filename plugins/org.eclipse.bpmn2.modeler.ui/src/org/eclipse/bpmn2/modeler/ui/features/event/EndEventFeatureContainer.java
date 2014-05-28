@@ -67,6 +67,7 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, EndEvent businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
 			e.setLineWidth(3);
 			IPeService peService = Graphiti.getPeService();

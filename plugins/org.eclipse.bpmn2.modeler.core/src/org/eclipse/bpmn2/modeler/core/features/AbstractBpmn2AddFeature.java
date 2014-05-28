@@ -382,6 +382,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @param businessObject the business object, a {@code BaseElement} subclass.
 	 */
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
+		FeatureSupport.createValidationDecorator(containerShape);
 	}
 
 	/**

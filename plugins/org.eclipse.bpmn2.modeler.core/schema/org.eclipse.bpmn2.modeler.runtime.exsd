@@ -426,6 +426,8 @@ will activate the property tab whenever the editor canvas is selected, or when a
             <annotation>
                <documentation>
                   An optional decorator class provided by a contributing plugin for this &lt;b&gt;modelExtension&lt;/b&gt;. This class must implement the &lt;code&gt;org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator&lt;/code&gt; interface.
+
+This class can be used to filter extension objects or perform additional intiailzation of the extended model object.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.bpmn2.modeler.core.runtime.IObjectDecorator"/>

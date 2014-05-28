@@ -50,6 +50,7 @@ public class InclusiveGatewayFeatureContainer extends AbstractGatewayFeatureCont
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, InclusiveGateway businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(containerShape);
 			ellipse.setLineWidth(3);
 		}

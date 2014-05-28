@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
@@ -274,6 +275,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	 */
 	public static void updateParticipantBands(IFeatureProvider fp, PictogramElement pe) {
 		IUpdateContext updateContext = new UpdateContext(pe);
+		updateContext.putProperty(GraphitiConstants.FORCE_UPDATE_ALL, Boolean.TRUE);
 		IUpdateFeature updateFeature = fp.getUpdateFeature(updateContext); //new UpdateChoreographyParticipantRefsFeature(fp);
 		updateFeature.update(updateContext);
 

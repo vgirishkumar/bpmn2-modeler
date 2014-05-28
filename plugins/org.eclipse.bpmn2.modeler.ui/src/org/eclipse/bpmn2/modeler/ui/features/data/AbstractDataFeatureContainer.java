@@ -21,10 +21,8 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.data.MoveDataFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
-import org.eclipse.bpmn2.modeler.ui.features.LayoutBaseElementTextFeature;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -43,21 +41,15 @@ import org.eclipse.graphiti.services.Graphiti;
 public abstract class AbstractDataFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
-	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
-		return new LayoutBaseElementTextFeature(fp) {
-
-			@Override
-			public int getMinimumWidth() {
-				return GraphicsUtil.DATA_WIDTH;
-			}
-		};
-	}
-
-	@Override
 	public IMoveShapeFeature getMoveFeature(IFeatureProvider fp) {
 		return new MoveDataFeature(fp);
 	}
 
+	@Override
+	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
+		return null;
+	}
+	
 	@Override
 	public IResizeShapeFeature getResizeFeature(IFeatureProvider fp) {
 		return new DefaultResizeShapeFeature(fp) {

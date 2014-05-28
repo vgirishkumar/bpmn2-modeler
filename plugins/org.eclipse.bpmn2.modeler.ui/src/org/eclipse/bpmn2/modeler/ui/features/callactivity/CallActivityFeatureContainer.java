@@ -236,15 +236,18 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 
 			else if (callActivity.getCalledElementRef() instanceof GlobalTask) {
 				GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
-				GlobalTask t = (GlobalTask) callActivity.getCalledElementRef();
-				if (globalTaskShape == null) {
-					globalTaskShape = peService.createShape(container, false);
-					peService.setPropertyValue(globalTaskShape, GLOBAL_TASK_SHAPE_PROPERTY, Boolean.toString(true));
-				}
-				String imageId = getImageId(t);
+				GlobalTask globalTask = (GlobalTask) callActivity.getCalledElementRef();
+				String imageId = getImageId(globalTask);
 				if (imageId != null) {
+					if (globalTaskShape == null) {
+						globalTaskShape = peService.createShape(container, false);
+						peService.setPropertyValue(globalTaskShape, GLOBAL_TASK_SHAPE_PROPERTY, Boolean.toString(true));
+					}
 					Image image = gaService.createImage(globalTaskShape, imageId);
 					gaService.setLocationAndSize(image, MARKER_OFFSET + 2, MARKER_OFFSET + 2, 16, 16);
+				}
+				else if (globalTaskShape != null) {
+					peService.deletePictogramElement(globalTaskShape);
 				}
 			}
 

@@ -40,7 +40,7 @@ public class CallGlobalUserTaskFeatureContainer extends AbstractCallGlobalTaskFe
 
 		@Override
 		public String getStencilImageId() {
-			return ImageProvider.IMG_16_CALL_ACTIVITY;
+			return ImageProvider.IMG_16_CALL_GLOBAL_USER_TASK;
 		}
 
 		/* (non-Javadoc)

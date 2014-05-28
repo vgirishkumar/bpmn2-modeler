@@ -64,6 +64,7 @@ public class IntermediateThrowEventFeatureContainer extends AbstractEventFeature
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, IntermediateThrowEvent businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
 			Ellipse circle = GraphicsUtil.createIntermediateEventCircle(e);
 			circle.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));

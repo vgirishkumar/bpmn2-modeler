@@ -18,11 +18,10 @@ import java.util.List;
 import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Collaboration;
-import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.DataInput;
@@ -30,7 +29,6 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
@@ -51,10 +49,8 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
-import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.Messages;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -72,10 +68,7 @@ import org.eclipse.dd.dc.Point;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.IllegalValueException;
@@ -489,6 +482,21 @@ public class ModelHandler {
 		return conversationNode;
 	}
 
+	public Choreography addChoreographyActivity(BPMNDiagram bpmnDiagram, ChoreographyActivity choreographyActivity) {
+		Collaboration collaboration = getParticipantContainer(bpmnDiagram);
+		Choreography choreography = null;
+		if (collaboration instanceof Choreography) {
+			choreography = (Choreography) collaboration;
+		}
+		else {
+			choreography = getChoreography();
+			if (choreography==null)
+				choreography = createChoreography();
+		}
+		choreography.getFlowElements().add(choreographyActivity);
+		return choreography;
+	}
+
 	private InputOutputSpecification getOrCreateIOSpecification(Object target) {
 		Process process = getOrCreateProcess(getParticipant(target));
 		if (process.getIoSpecification() == null) {
@@ -719,6 +727,14 @@ public class ModelHandler {
 		return null;
 	}
 	
+	public Choreography getChoreography() {
+		for (RootElement re : getDefinitions().getRootElements()) {
+			if (re instanceof Choreography)
+				return (Choreography)re;
+		}
+		return null;
+	}
+	
 	public Choreography createChoreography() {
 		Choreography choreography = create(Choreography.class);
 		getDefinitions().getRootElements().add(choreography);
@@ -907,7 +923,7 @@ public class ModelHandler {
 	public static <T> List<T> getAll(Resource resource, final Class<T> class1) {
 		ArrayList<T> l = new ArrayList<T>();
 		TreeIterator<EObject> contents = resource.getAllContents();
-		for (; contents.hasNext();) {
+		while (contents.hasNext()) {
 			Object t = contents.next();
 			if (class1.isInstance(t)) {
 				l.add((T) t);
@@ -941,75 +957,15 @@ public class ModelHandler {
 	public <T extends EObject> T create(Class<T> clazz) {
 		return (T) create(this.resource, clazz);
 	}
-
-	public void initialize(EObject newObject) {
-		ModelHandler.initialize(this.resource, newObject);
-	}
 	
 	////////////////////////////////////////////////////////////////////////////
 	// static versions of the above, for convenience
 	
 	public static EObject create(Resource resource, EClass eClass) {
-		EObject newObject = null;
-		EPackage pkg = eClass.getEPackage();
-		EFactory factory = pkg.getEFactoryInstance();
-		// make sure we don't try to construct abstract objects here!
-		if (eClass == Bpmn2Package.eINSTANCE.getExpression())
-			eClass = Bpmn2Package.eINSTANCE.getFormalExpression();
-		newObject = factory.create(eClass);
-		initialize(resource, newObject);
-		return newObject;
+		return Bpmn2ModelerFactory.create(resource, eClass);
 	}
 
 	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
-		EObject newObject = null;
-		EClassifier eClassifier = Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
-		if (eClassifier instanceof EClass) {
-			EClass eClass = (EClass)eClassifier;
-			ObjectPropertyProvider.adapt(Bpmn2ModelerFactory.eINSTANCE, resource);
-			newObject = Bpmn2ModelerFactory.getInstance().create(eClass);
-		}
-		else {
-			// maybe it's a DI object type?
-			eClassifier = BpmnDiPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
-			if (eClassifier instanceof EClass) {
-				EClass eClass = (EClass)eClassifier;
-				newObject = BpmnDiFactory.eINSTANCE.create(eClass);
-			}
-		}
-		
-		if (newObject!=null) {
-			initialize(resource, newObject);
-		}
-
-		return (T)newObject;
+		return (T) Bpmn2ModelerFactory.create(resource, clazz);
 	}
-
-	public static void initialize(Resource resource, EObject newObject) {
-		if (newObject!=null) {
-			if (newObject.eClass().getEPackage() == Bpmn2Package.eINSTANCE) {
-				// Set appropriate default values for the object features here
-				switch (newObject.eClass().getClassifierID()) {
-				case Bpmn2Package.CONDITIONAL_EVENT_DEFINITION:
-					{
-						Expression expr = Bpmn2ModelerFactory.getInstance().createFormalExpression();
-						((ConditionalEventDefinition)newObject).setCondition(expr);
-					}
-					break;
-				}
-			}
-			
-			// if the object has an "id", assign it now.
-			String id = ModelUtil.setID(newObject,resource);
-			// also set a default name
-//			EStructuralFeature feature = newObject.eClass().getEStructuralFeature("name");
-//			if (feature!=null) {
-//				if (id!=null)
-//					newObject.eSet(feature, ModelUtil.toDisplayName(id));
-//				else
-//					newObject.eSet(feature, "New "+ModelUtil.toDisplayName(newObject.eClass().getName()));
-//			}
-		}
-	}
-	
 }

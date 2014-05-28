@@ -55,10 +55,13 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 	@Override
 	public boolean canLayout(ILayoutContext context) {
 		// Check if automatic routing has been disabled by the user.
-		Connection connection = (Connection) context.getPictogramElement();
-		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
-		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(be);
-		return prefs.getEnableConnectionRouting();
+		if (context.getPictogramElement() instanceof Connection) {
+			Connection connection = (Connection) context.getPictogramElement();
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(be);
+			return prefs.getEnableConnectionRouting();
+		}
+		return false;
 	}
 
 	@Override

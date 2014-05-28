@@ -48,7 +48,6 @@ public abstract class AbstractChoreographyFeatureContainer extends BaseElementFe
 				context instanceof IResizeContext
 				) {
 			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
-			PictogramElement originalpe = pe; 
 			if (FeatureSupport.isLabelShape(pe))
 				pe = (PictogramElement) pe.eContainer();
 			if (FeatureSupport.isChoreographyParticipantBand(pe))

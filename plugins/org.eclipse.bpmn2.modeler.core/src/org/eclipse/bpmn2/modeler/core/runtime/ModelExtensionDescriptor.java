@@ -430,9 +430,14 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			if (containingResource==null)
 				containingResource = ObjectPropertyProvider.getResource(object);
 			getModelDecorator();
-			if (objectDecorator!=null && objectDecorator.canApply(containingResource,modelObject)) {
+			if (objectDecorator!=null) {
+				if (objectDecorator.canApply(id, containingResource,modelObject)) {
+					populateObject(modelObject, initialize);
+					objectDecorator.apply(id,containingResource,modelObject);
+				}
+			}
+			else {
 				populateObject(modelObject, initialize);
-				objectDecorator.apply(containingResource,modelObject);
 			}
 		}
 		finally {

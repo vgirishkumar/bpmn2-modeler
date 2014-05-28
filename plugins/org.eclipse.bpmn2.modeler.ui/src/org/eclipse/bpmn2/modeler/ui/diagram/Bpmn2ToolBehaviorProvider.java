@@ -781,17 +781,15 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
     public IDecorator[] getDecorators(PictogramElement pe) {
         List<IDecorator> decorators = new ArrayList<IDecorator>();
 
-        // labels should not be decorated
-		String labelProperty = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.LABEL_SHAPE);
-		if (!Boolean.parseBoolean(labelProperty)) {
+		if (FeatureSupport.isValidationDecorator(pe)) {
 	        IFeatureProvider featureProvider = getFeatureProvider();
-	        Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
+	        Object bo = featureProvider.getBusinessObjectForPictogramElement((PictogramElement) pe.eContainer());
 	        if (bo!=null) {
 		        ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter((EObject) bo,
 		                ValidationStatusAdapter.class);
 		        if (statusAdapter != null) {
-		            final IImageDecorator decorator;
-		            final IStatus status = statusAdapter.getValidationStatus();
+		            IImageDecorator decorator;
+		            IStatus status = statusAdapter.getValidationStatus();
 		            switch (status.getSeverity()) {
 		            case IStatus.INFO:
 		                decorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_INFORMATION_TSK);
@@ -811,8 +809,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		                if (ga == null) {
 		                    ga = pe.getGraphicsAlgorithm();
 		                }
-		                decorator.setX(-5);
-		                decorator.setY(-5);
 		                decorator.setMessage(status.getMessage());
 		                decorators.add(decorator);
 		            }

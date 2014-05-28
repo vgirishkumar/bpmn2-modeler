@@ -21,16 +21,22 @@ import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.IResizeShapeContext;
+import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -175,7 +181,29 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 					if (index>1)
 						--index;
 					choreographyActivity.getParticipantRefs().add(index, result);
-					ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityShape);
+					// if the Choreography Activity is too short to fit all of the Participant Bands
+					// then we need to resize it first.
+					List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityShape);
+					int bandHeight = 0;
+					for (ContainerShape s : bandShapes) {
+						bandHeight += Graphiti.getGaLayoutService().calculateSize(s.getGraphicsAlgorithm()).getHeight();
+					}
+					GraphicsAlgorithm choreographyActivityGA = choreographyActivityShape.getGraphicsAlgorithm();
+					int containerHeight = choreographyActivityGA.getHeight();
+					int w = choreographyActivityGA.getWidth();
+					int x = choreographyActivityGA.getX();
+					int y = choreographyActivityGA.getY();
+					if (bandHeight + 100 > containerHeight) {
+						ResizeShapeContext resizeContext = new ResizeShapeContext(choreographyActivityShape);
+						resizeContext.setSize(w, bandHeight + 100);
+						resizeContext.setLocation(x, y);
+						resizeContext.setDirection(IResizeShapeContext.DIRECTION_SOUTH);
+						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
+						resizeFeature.resizeShape(resizeContext);
+					}
+					else {
+						ChoreographyUtil.updateParticipantBands(getFeatureProvider(), choreographyActivityShape);
+					}
 				}
 			}
 		}

@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -31,11 +32,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
@@ -145,6 +145,12 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		
 		protected void bindAppearance(EObject be) {
 			if (Bpmn2FeatureMap.ALL_SHAPES.contains(be.eClass().getInstanceClass())) {
+				// don't show appearance section for Participant Bands
+				PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
+				if (pes.length==1 && ChoreographyUtil.isChoreographyParticipantBand(pes[0])) {
+					return;
+				}
+					
 				final BaseElement element = (BaseElement) be;
 				EObject style = ShapeStyle.getStyleObject(element);
 				if (style==null)

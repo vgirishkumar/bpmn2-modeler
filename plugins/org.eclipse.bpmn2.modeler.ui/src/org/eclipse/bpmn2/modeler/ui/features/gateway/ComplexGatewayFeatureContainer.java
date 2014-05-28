@@ -49,6 +49,7 @@ public class ComplexGatewayFeatureContainer extends AbstractGatewayFeatureContai
 
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, ComplexGateway businessObject) {
+			super.decorateShape(context, containerShape, businessObject);
 			GraphicsUtil.createGatewayAsterisk(containerShape);
 		}
 	}

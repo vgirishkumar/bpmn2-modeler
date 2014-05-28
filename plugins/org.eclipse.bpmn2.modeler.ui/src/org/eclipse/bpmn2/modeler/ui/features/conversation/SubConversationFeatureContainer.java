@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
 import org.eclipse.emf.ecore.EClass;
@@ -46,6 +47,12 @@ public class SubConversationFeatureContainer extends AbstractExpandableActivityF
 	@Override
 	public ICreateFeature getCreateFeature(IFeatureProvider fp) {
 		return new AbstractCreateConversationNodeFeature<SubConversation>(fp) {
+
+			@Override
+			public String getCreateImageId() {
+				return ImageProvider.IMG_16_SUB_CONVERSATION;
+			}
+
 			@Override
 			public EClass getBusinessObjectClass() {
 				return Bpmn2Package.eINSTANCE.getSubConversation();
@@ -55,9 +62,10 @@ public class SubConversationFeatureContainer extends AbstractExpandableActivityF
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AbstractAddConversationNodeFeature<SubConversation>(fp) {
+		return new AddConversationNodeFeature<SubConversation>(fp) {
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, SubConversation businessObject) {
+				super.decorateShape(context, containerShape, businessObject);
 				GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 			}
 		};

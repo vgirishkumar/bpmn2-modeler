@@ -15,7 +15,6 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SubChoreography;
-import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -40,7 +39,7 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 		return new AddSubChoreographyFeature(fp);
 	}
 
-	public static class CreateSubChoreographyFeature extends AbstractCreateExpandableFlowNodeFeature<SubChoreography> {
+	public static class CreateSubChoreographyFeature extends AbstractCreateChoreographyActivityFeature<SubChoreography> {
 
 		public CreateSubChoreographyFeature(IFeatureProvider fp) {
 			super(fp);
@@ -51,7 +50,7 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 		 */
 		@Override
 		public String getStencilImageId() {
-			return ImageProvider.IMG_16_CHOREOGRAPHY_TASK;
+			return ImageProvider.IMG_16_SUB_CHOREOGRAPHY;
 		}
 
 		/* (non-Javadoc)

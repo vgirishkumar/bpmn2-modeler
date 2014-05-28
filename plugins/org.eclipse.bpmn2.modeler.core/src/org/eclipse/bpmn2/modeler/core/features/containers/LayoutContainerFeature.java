@@ -65,6 +65,9 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 	@Override
 	public boolean canLayout(ILayoutContext context) {
 		PictogramElement pe = context.getPictogramElement();
+		if (!(pe instanceof ContainerShape)) {
+			return false;
+		}
 		return FeatureSupport.isParticipant(pe) || FeatureSupport.isLane(pe);
 	}
 

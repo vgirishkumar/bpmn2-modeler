@@ -34,6 +34,7 @@ public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<C
 
 	@Override
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, CallChoreography businessObject) {
+		super.decorateShape(context, containerShape, businessObject);
 		RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 		rect.setLineWidth(4);
 	}
