@@ -25,7 +25,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
@@ -79,7 +79,7 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape cancelShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon link = GraphicsUtil.createEventCancel(cancelShape);
+		Polygon link = ShapeDecoratorUtil.createEventCancel(cancelShape);
 		StyleUtil.setFillStyle(link, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(link, be);
 		return cancelShape;
@@ -88,7 +88,7 @@ public class CancelEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape cancelShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon link = GraphicsUtil.createEventCancel(cancelShape);
+		Polygon link = ShapeDecoratorUtil.createEventCancel(cancelShape);
 		StyleUtil.setFillStyle(link, FillStyle.FILL_STYLE_FOREGROUND);
 		StyleUtil.applyStyle(link, be);
 		return cancelShape;

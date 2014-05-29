@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.features.AbstractLayoutBpmn2ShapeFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -76,8 +76,8 @@ public class LayoutChoreographyFeature extends AbstractLayoutBpmn2ShapeFeature {
 					minY = y;
 			}
 		}
-		GraphicsUtil.setActivityMarkerOffest(choreographyActivityShape, newHeight - minY);
-		GraphicsUtil.layoutActivityMarkerContainer(choreographyActivityShape);
+		ShapeDecoratorUtil.setActivityMarkerOffest(choreographyActivityShape, newHeight - minY);
+		ShapeDecoratorUtil.layoutActivityMarker(choreographyActivityShape);
 
 		IUpdateFeature feature = new UpdateChoreographyLabelFeature(getFeatureProvider());
 		IUpdateContext updateContext = new UpdateContext(choreographyActivityShape);

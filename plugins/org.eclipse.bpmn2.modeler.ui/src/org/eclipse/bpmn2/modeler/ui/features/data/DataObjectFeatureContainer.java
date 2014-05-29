@@ -109,6 +109,14 @@ public class DataObjectFeatureContainer extends AbstractDataFeatureContainer {
 		public String getName(DataObject t) {
 			return t.getName();
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return DataObject.class;
+		}
 	}
 
 	public static class CreateDataObjectFeature extends AbstractCreateFlowElementFeature<FlowElement> {

@@ -126,9 +126,6 @@ public class AnchorUtil {
 	}
 	
 	public static FixPointAnchor createBoundaryAnchor(AnchorContainer ac, AnchorLocation loc, int x, int y) {
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
-
 		FixPointAnchor anchor = peService.createFixPointAnchor(ac);
 		peService.setPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR, loc.getKey());
 		anchor.setLocation(gaService.createPoint(x, y));
@@ -138,7 +135,7 @@ public class AnchorUtil {
 	}
 	
 	public static AnchorLocation getBoundaryAnchorLocation(Anchor anchor) {
-		String property = Graphiti.getPeService().getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
+		String property = peService.getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
 		if (property != null && anchor instanceof FixPointAnchor) {
 			return AnchorLocation.getLocation(property);
 		}
@@ -150,9 +147,6 @@ public class AnchorUtil {
 	}
 	
 	public static FixPointAnchor createAdHocAnchor(AnchorContainer ac, Point p) {
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
-
 		FixPointAnchor anchor = peService.createFixPointAnchor(ac);
 		peService.setPropertyValue(anchor, GraphitiConstants.BOUNDARY_ADHOC_ANCHOR, "true"); //$NON-NLS-1$
 		anchor.setLocation(p);
@@ -192,7 +186,7 @@ public class AnchorUtil {
 			Iterator<Anchor> iterator = ac.getAnchors().iterator();
 			while (iterator.hasNext()) {
 				Anchor anchor = iterator.next();
-				String property = Graphiti.getPeService().getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
+				String property = peService.getPropertyValue(anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
 				if (property != null && anchor instanceof FixPointAnchor) {
 					BoundaryAnchor a = new BoundaryAnchor();
 					a.anchor = (FixPointAnchor) anchor;
@@ -713,7 +707,7 @@ public class AnchorUtil {
 	public static boolean deleteConnectionPointIfPossible(IFeatureProvider fp,Shape connectionPointShape) {
 		if (isConnectionPoint(connectionPointShape)) {
 			Anchor anchor = getConnectionPointAnchor(connectionPointShape);
-			List<Connection> allConnections = Graphiti.getPeService().getAllConnections(anchor);
+			List<Connection> allConnections = peService.getAllConnections(anchor);
 			if (allConnections.size()==0) {
 				// remove the bendpoint from target connection if there are no other connections going to it
 				FreeFormConnection oldTargetConnection = (FreeFormConnection) connectionPointShape.getLink().getBusinessObjects().get(0);
@@ -752,7 +746,7 @@ public class AnchorUtil {
 	}
 
 	public static ILocation getConnectionPointLocation(Shape connectionPointShape) {
-		ILocation location = GraphicsUtil.peService.getLocationRelativeToDiagram(connectionPointShape);
+		ILocation location = ShapeDecoratorUtil.peService.getLocationRelativeToDiagram(connectionPointShape);
 		int x = location.getX() + CONNECTION_POINT_SIZE / 2;
 		int y = location.getY() + CONNECTION_POINT_SIZE / 2;
 		location.setX(x);
@@ -810,7 +804,7 @@ public class AnchorUtil {
 
 
 	public static boolean isConnectionPoint(PictogramElement pe) {
-		String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.CONNECTION_POINT_KEY);
+		String value =peService.getPropertyValue(pe, GraphitiConstants.CONNECTION_POINT_KEY);
 		return GraphitiConstants.CONNECTION_POINT.equals(value);
 	}
 

@@ -24,10 +24,12 @@ import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.graphiti.IExecutionInfo;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -55,7 +57,9 @@ import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.services.IPeService;
 
 /**
  * This is the Graphiti {@code AddFeature} base class for all BPMN2 model elements which
@@ -73,6 +77,15 @@ import org.eclipse.graphiti.services.ILayoutService;
 public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	extends AbstractAddPictogramElementFeature {
 
+	/** The ga service. */
+	protected final static IGaService gaService = Graphiti.getGaService();
+	
+	/** The pe service. */
+	protected final static IPeService peService = Graphiti.getPeService();
+
+	/** The preferences. */
+	protected Bpmn2Preferences preferences;
+
 	/**
 	 * Instantiates a new AddFeature.
 	 *
@@ -80,6 +93,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 */
 	public AbstractBpmn2AddFeature(IFeatureProvider fp) {
 		super(fp);
+		preferences = Bpmn2Preferences.getInstance(getDiagram());
 	}
 
 	public abstract IAddFeature getAddLabelFeature(IFeatureProvider fp);
@@ -112,7 +126,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	protected BPMNShape createDIShape(Shape shape, BaseElement elem, boolean applyDefaults) {
 		BPMNShape bpmnShape = DIUtils.createDIShape(shape, elem, findDIShape(elem), getFeatureProvider());
 		if (applyDefaults && bpmnShape!=null)
-			Bpmn2Preferences.getInstance(bpmnShape.eResource()).applyBPMNDIDefaults(bpmnShape, null);
+			preferences.applyBPMNDIDefaults(bpmnShape, null);
 		return bpmnShape;
 	}
 
@@ -262,8 +276,14 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			if (b!=null)
 				return (int) b.getHeight();
 		}
-		return context.getHeight() > 0 ? context.getHeight() :
-			(isHorizontal(context) ? getHeight() : getWidth());
+		if (context.getHeight() > 0)
+			return context.getHeight();
+		int h = getHeight();
+		int w = getWidth();
+		if (!isHorizontal(context)) {
+			return Math.max(w, h);
+		}
+		return Math.min(w, h);
 	}
 	
 	/**
@@ -280,8 +300,34 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			if (b!=null)
 				return (int) b.getWidth();
 		}
-		return context.getWidth() > 0 ? context.getWidth() :
-			(isHorizontal(context) ? getWidth() : getHeight());
+		if (context.getHeight() > 0)
+			return context.getHeight();
+		int h = getHeight();
+		int w = getWidth();
+		if (isHorizontal(context)) {
+			return Math.max(w, h);
+		}
+		return Math.min(w, h);
+	}
+	
+	/**
+	 * Gets the height.
+	 *
+	 * @return the height
+	 */
+	private int getHeight() {
+		ShapeStyle ss = preferences.getShapeStyle(getBusinessObjectType());
+		return ss.getDefaultHeight();
+	}
+	
+	/**
+	 * Gets the width.
+	 *
+	 * @return the width
+	 */
+	private int getWidth() {
+		ShapeStyle ss = preferences.getShapeStyle(getBusinessObjectType());
+		return ss.getDefaultWidth();
 	}
 
 	/**
@@ -311,23 +357,11 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 					return laneShape.isIsHorizontal();
 			}
 		}
-		return Bpmn2Preferences.getInstance(context.getTargetContainer()).isHorizontalDefault();
+		return preferences.isHorizontalDefault();
 	}
-	
-	/**
-	 * Gets the height. Subclasses must implement this.
-	 *
-	 * @return the height
-	 */
-	public abstract int getHeight();
-	
-	/**
-	 * Gets the width. Subclasses must implement this.
-	 *
-	 * @return the width
-	 */
-	public abstract int getWidth();
 
+	public abstract Class<? extends BaseElement> getBusinessObjectType();
+	
 	public T getBusinessObject(IAddContext context) {
 		Object businessObject = context.getProperty(GraphitiConstants.BUSINESS_OBJECT);
 		if (businessObject instanceof BaseElement)
@@ -382,7 +416,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @param businessObject the business object, a {@code BaseElement} subclass.
 	 */
 	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
-		FeatureSupport.createValidationDecorator(containerShape);
+		ShapeDecoratorUtil.createValidationDecorator(containerShape);
 	}
 
 	/**

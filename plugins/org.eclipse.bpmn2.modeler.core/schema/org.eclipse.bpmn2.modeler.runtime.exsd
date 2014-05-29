@@ -908,7 +908,7 @@ Property Extensions are typically used to define custom labels for objects and f
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="foreground" type="string">
+         <attribute name="shapeForeground" type="string">
             <annotation>
                <documentation>
                   The foreground color of the graphical element. For shapes, this is the border and text color; for connections, this is the line color.
@@ -917,14 +917,14 @@ Colors are a string of six hexadecimal digits representing the red, green and bl
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="background" type="string">
+         <attribute name="shapeBackground" type="string">
             <annotation>
                <documentation>
                   The background or fill color of the graphical element. Connection lines do not use a background color.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="font" type="string">
+         <attribute name="labelFont" type="string">
             <annotation>
                <documentation>
                   The font style and size for text labels. Fonts are encoded as:
@@ -952,10 +952,17 @@ bold = the letter &quot;B&quot; if a bold font should be used, or a dash (&quot;
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="textColor" type="string">
+         <attribute name="labelForeground" type="string">
             <annotation>
                <documentation>
-                  The color for text labels.
+                  The foreground color of the Label.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="labelBackground" type="string">
+            <annotation>
+               <documentation>
+                  The background or fill color of the Label.
                </documentation>
             </annotation>
          </attribute>
@@ -963,6 +970,86 @@ bold = the letter &quot;B&quot; if a bold font should be used, or a dash (&quot;
             <annotation>
                <documentation>
                   Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;style&lt;/b&gt; definition will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="labelPosition" type="string">
+            <annotation>
+               <documentation>
+                  The position of the Label relative to the graphical element. This can be one of the following:
+
+&lt;ul&gt;
+&lt;li&gt;
+NORTH - above the figure
+&lt;/li&gt;
+&lt;li&gt;
+SOUTH - below the figure
+&lt;/li&gt;
+&lt;li&gt;
+WEST - left of figure
+&lt;/li&gt;
+&lt;li&gt;
+EAST - right of figure
+&lt;/li&gt;
+&lt;li&gt;
+TOP - top inside the figure
+&lt;/li&gt;
+&lt;li&gt;
+BOTTOM - bottom inside the figure
+&lt;/li&gt;
+&lt;li&gt;
+CENTER - centered inside the figure
+&lt;/li&gt;
+&lt;li&gt;
+LEFT - left inside the figure
+&lt;/li&gt;
+&lt;li&gt;
+RIGHT - right inside the figure
+&lt;/li&gt;
+&lt;li&gt;
+MOVABLE - the Label may be moved independently of its figure. Moving the figure will keep the Label&apos;s relative position the same.
+&lt;/li&gt;
+&lt;/ul&gt;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="routingStyle" type="string">
+            <annotation>
+               <documentation>
+                  This only applies to Connections. The routing style determines how the editor will layou out connections between figures. This can be one of the following:
+
+&lt;ul&gt;
+&lt;li&gt;
+ManualBendpoint - Connections are initially drawn as straight lines between the source and target figure, but they can be adjust by dragging sections of the figure, thereby manually creating bendpoints.
+&lt;/li&gt;
+&lt;li&gt;
+AutomaticBendpoint - Connections are drawn as straight lines between the source and target if possible, but bendpoints will be inserted to avoid collisions with other figures.
+&lt;/li&gt;
+&lt;li&gt;
+Manhattan - Connections are drawn as orthogonal line segments, and bendpoints will be inserted to avoid collisions.
+&lt;/li&gt;
+&lt;/ul&gt;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="useDefaultSize" type="boolean">
+            <annotation>
+               <documentation>
+                  This can be used to override the size specifications contained in the BPMN2 file, with default values. See &lt;b&gt;defaultHeight&lt;/b&gt; and &lt;b&gt;defaultWidth&lt;/b&gt;.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="defaultHeight" type="string">
+            <annotation>
+               <documentation>
+                  The height of the figure when a new one is created, or the default height used if &lt;b&gt;useDefaultSize&lt;/b&gt; is &quot;true&quot;.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="defaultWidth" type="string">
+            <annotation>
+               <documentation>
+                  The width of the figure when a new one is created, or the default width used if &lt;b&gt;useDefaultSize&lt;/b&gt; is &quot;true&quot;.
                </documentation>
             </annotation>
          </attribute>

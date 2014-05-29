@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AbstractExpandableActivityFeatureContainer;
@@ -66,7 +66,12 @@ public class SubConversationFeatureContainer extends AbstractExpandableActivityF
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, SubConversation businessObject) {
 				super.decorateShape(context, containerShape, businessObject);
-				GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+				ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			}
+
+			@Override
+			public Class getBusinessObjectType() {
+				return SubConversation.class;
 			}
 		};
 	}

@@ -33,7 +33,7 @@ import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeat
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractUpdateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.event.definitions.CompensateEventDefinitionContainer;
 import org.eclipse.bpmn2.modeler.ui.features.event.definitions.ConditionalEventDefinitionContainer;
@@ -50,21 +50,14 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
-import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.util.IColorConstant;
 
 public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatureContainer {
 
-	public static final String TRIGGERED_BY_EVENT = "triggered.by.event"; //$NON-NLS-1$
-	public static final String IS_EXPANDED = "is.expanded"; //$NON-NLS-1$
-	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
-	
 	@Override
 	public boolean canApplyTo(Object o) {
 		return super.canApplyTo(o) && o instanceof SubProcess &&
@@ -78,7 +71,14 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddExpandableActivityFeature<SubProcess>(fp);
+		return new AddExpandableActivityFeature<SubProcess>(fp) {
+
+			@Override
+			public Class getBusinessObjectType() {
+				return SubProcess.class;
+			}
+			
+		};
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 				ContainerShape subProcessShape = (ContainerShape) pe;
 				SubProcess subProcess = (SubProcess) getBusinessObjectForPictogramElement(pe);
 				for (Shape s : subProcessShape.getChildren()) {
-					if (Graphiti.getPeService().getPropertyValue(s, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER)!=null) {
+					if (ShapeDecoratorUtil.isEventSubProcessDecorator(s)) {
 						isVisible = pe.isVisible();
 					}
 				}
@@ -179,7 +179,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 		 */
 		@Override
 		protected String getPropertyKey() {
-			return EVENT_SUBPROCESS_DECORATOR;
+			return GraphitiConstants.EVENT_SUBPROCESS_DECORATOR;
 		}
 
 		/* (non-Javadoc)
@@ -214,7 +214,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 			}
 
 			for (Shape s : subProcessShape.getChildren()) {
-				if (Graphiti.getPeService().getPropertyValue(s, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER)!=null) {
+				if (ShapeDecoratorUtil.isEventSubProcessDecorator(s)) {
 					Graphiti.getPeService().deletePictogramElement(s);
 					break;
 				}
@@ -223,18 +223,8 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 			if (subProcess.isTriggeredByEvent()) {
 				ContainerShape decoratorShape = null;
 				if (eventDefinition!=null) {
-					decoratorShape = Graphiti.getPeCreateService().createContainerShape(subProcessShape, false);
-					Rectangle invisibleRect = Graphiti.getGaCreateService().createInvisibleRectangle(decoratorShape);
-
-					ContainerShape circleShape = Graphiti.getPeCreateService().createContainerShape(decoratorShape, false);
-					Ellipse circle = Graphiti.getGaCreateService().createEllipse(circleShape);
-					Graphiti.getGaService().setLocationAndSize(circle, 0, 0, 20, 20);
-					circle.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-					circle.setFilled(false);
-					if (!startEvent.isIsInterrupting())
-						circle.setLineStyle(LineStyle.DASH);
-					Graphiti.getPeService().setPropertyValue(decoratorShape, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER, Boolean.TRUE.toString());
-					Graphiti.getGaService().setLocationAndSize(invisibleRect, 1, 1, 20, 20);
+					decoratorShape = ShapeDecoratorUtil.createEventSubProcessDecorator(
+							subProcessShape, startEvent.isIsInterrupting());
 				}
 				
 				if (isMultiple) {

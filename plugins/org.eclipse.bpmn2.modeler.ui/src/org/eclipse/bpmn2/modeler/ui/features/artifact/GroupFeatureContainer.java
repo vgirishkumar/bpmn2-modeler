@@ -212,14 +212,12 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			return containerShape;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		public int getHeight() {
-			return 200;
-		}
-
-		@Override
-		public int getWidth() {
-			return 200;
+		public Class getBusinessObjectType() {
+			return Group.class;
 		}
 	}
 

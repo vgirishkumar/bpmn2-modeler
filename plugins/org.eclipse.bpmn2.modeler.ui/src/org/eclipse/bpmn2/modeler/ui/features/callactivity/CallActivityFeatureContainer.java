@@ -32,7 +32,7 @@ import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandableFlowNodeFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
@@ -225,17 +225,17 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 			CallActivity callActivity = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 					CallActivity.class);
 
-			Shape globalTaskShape = GraphicsUtil.getContainedShape(container, GLOBAL_TASK_SHAPE_PROPERTY);
+			Shape globalTaskShape = ShapeDecoratorUtil.getContainedShape(container, GLOBAL_TASK_SHAPE_PROPERTY);
 
 			if (callActivity.getCalledElementRef() == null) {
-				GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+				ShapeDecoratorUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 				if (globalTaskShape != null) {
 					peService.deletePictogramElement(globalTaskShape);
 				}
 			}
 
 			else if (callActivity.getCalledElementRef() instanceof GlobalTask) {
-				GraphicsUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+				ShapeDecoratorUtil.hideActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 				GlobalTask globalTask = (GlobalTask) callActivity.getCalledElementRef();
 				String imageId = getImageId(globalTask);
 				if (imageId != null) {
@@ -255,7 +255,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 				if (globalTaskShape != null) {
 					peService.deletePictogramElement(globalTaskShape);
 				}
-				GraphicsUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+				ShapeDecoratorUtil.showActivityMarker(container, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 			}
 
 			peService.setPropertyValue(container, CALL_ACTIVITY_REF_PROPERTY,

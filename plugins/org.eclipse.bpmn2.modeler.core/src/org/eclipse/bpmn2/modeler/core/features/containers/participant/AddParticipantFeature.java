@@ -33,14 +33,9 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.services.IPeService;
 
 public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> {
-
-	public static final int DEFAULT_POOL_WIDTH = 600;
-	public static final int DEFAULT_POOL_HEIGHT = 150;
 
 	public AddParticipantFeature(IFeatureProvider fp) {
 		super(fp);
@@ -76,8 +71,6 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 	@Override
 	public PictogramElement add(IAddContext context) {
 		Participant businessObject = getBusinessObject(context);
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
  
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
@@ -119,13 +112,11 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 		return containerShape;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
 	@Override
-	public int getHeight() {
-		return DEFAULT_POOL_HEIGHT;
-	}
-
-	@Override
-	public int getWidth() {
-		return DEFAULT_POOL_WIDTH;
+	public Class getBusinessObjectType() {
+		return Participant.class;
 	}
 }

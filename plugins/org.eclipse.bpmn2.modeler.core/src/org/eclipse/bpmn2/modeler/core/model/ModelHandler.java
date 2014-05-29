@@ -54,9 +54,10 @@ import org.eclipse.bpmn2.modeler.core.Messages;
 import org.eclipse.bpmn2.modeler.core.di.ImportDiagnostics;
 import org.eclipse.bpmn2.modeler.core.features.containers.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
@@ -185,8 +186,8 @@ public class ModelHandler {
 					Bounds bounds = DcFactory.eINSTANCE.createBounds();
 					bounds.setX(100);
 					bounds.setY(100);
-					bounds.setWidth(GraphicsUtil.EVENT_SIZE);
-					bounds.setHeight(GraphicsUtil.EVENT_SIZE);
+					bounds.setWidth(ShapeDecoratorUtil.EVENT_SIZE);
+					bounds.setHeight(ShapeDecoratorUtil.EVENT_SIZE);
 					shape.setBounds(bounds);
 					plane.getPlaneElement().add(shape);
 					getPreferences().applyBPMNDIDefaults(shape, null);
@@ -197,13 +198,13 @@ public class ModelHandler {
 					edge.setSourceElement(shape);
 					
 					Point wp = DcFactory.eINSTANCE.createPoint();
-					wp.setX(100+GraphicsUtil.EVENT_SIZE);
-					wp.setY(100+GraphicsUtil.EVENT_SIZE/2);
+					wp.setX(100+ShapeDecoratorUtil.EVENT_SIZE);
+					wp.setY(100+ShapeDecoratorUtil.EVENT_SIZE/2);
 					edge.getWaypoint().add(wp);
 					
 					wp = DcFactory.eINSTANCE.createPoint();
 					wp.setX(500);
-					wp.setY(100+GraphicsUtil.EVENT_SIZE/2);
+					wp.setY(100+ShapeDecoratorUtil.EVENT_SIZE/2);
 					edge.getWaypoint().add(wp);
 					
 					plane.getPlaneElement().add(edge);
@@ -216,8 +217,8 @@ public class ModelHandler {
 					bounds = DcFactory.eINSTANCE.createBounds();
 					bounds.setX(500);
 					bounds.setY(100);
-					bounds.setWidth(GraphicsUtil.EVENT_SIZE);
-					bounds.setHeight(GraphicsUtil.EVENT_SIZE);
+					bounds.setWidth(ShapeDecoratorUtil.EVENT_SIZE);
+					bounds.setHeight(ShapeDecoratorUtil.EVENT_SIZE);
 					shape.setBounds(bounds);
 					plane.getPlaneElement().add(shape);
 					getPreferences().applyBPMNDIDefaults(shape, null);
@@ -238,6 +239,8 @@ public class ModelHandler {
 	public BPMNDiagram createCollaborationDiagram(final String name) {
 	
 		EList<EObject> contents = resource.getContents();
+		final Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(resource);
+
 		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
 		final BPMNDiagram bpmnDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
 
@@ -278,19 +281,21 @@ public class ModelHandler {
 					BPMNShape shape = BpmnDiFactory.eINSTANCE.createBPMNShape();
 					ModelUtil.setID(shape,resource);
 
+					ShapeStyle ss = preferences.getShapeStyle(initiatingParticipant);
+
 					shape.setBpmnElement(initiatingParticipant);
 					Bounds bounds = DcFactory.eINSTANCE.createBounds();
 					if (horz) {
 						bounds.setX(100);
 						bounds.setY(100);
-						bounds.setWidth(AddParticipantFeature.DEFAULT_POOL_WIDTH);
-						bounds.setHeight(AddParticipantFeature.DEFAULT_POOL_HEIGHT);
+						bounds.setWidth(ss.getDefaultWidth());
+						bounds.setHeight(ss.getDefaultHeight());
 					}
 					else {
 						bounds.setX(100);
 						bounds.setY(100);
-						bounds.setWidth(AddParticipantFeature.DEFAULT_POOL_HEIGHT);
-						bounds.setHeight(AddParticipantFeature.DEFAULT_POOL_WIDTH);
+						bounds.setWidth(ss.getDefaultHeight());
+						bounds.setHeight(ss.getDefaultWidth());
 					}
 					shape.setBounds(bounds);
 					shape.setIsHorizontal(horz);
@@ -306,14 +311,14 @@ public class ModelHandler {
 					if (horz) {
 						bounds.setX(100);
 						bounds.setY(350);
-						bounds.setWidth(AddParticipantFeature.DEFAULT_POOL_WIDTH);
-						bounds.setHeight(AddParticipantFeature.DEFAULT_POOL_HEIGHT);
+						bounds.setWidth(ss.getDefaultWidth());
+						bounds.setHeight(ss.getDefaultHeight());
 					}
 					else {
 						bounds.setX(350);
 						bounds.setY(100);
-						bounds.setWidth(AddParticipantFeature.DEFAULT_POOL_HEIGHT);
-						bounds.setHeight(AddParticipantFeature.DEFAULT_POOL_WIDTH);
+						bounds.setWidth(ss.getDefaultHeight());
+						bounds.setHeight(ss.getDefaultWidth());
 					}
 					shape.setBounds(bounds);
 					shape.setIsHorizontal(horz);
@@ -336,6 +341,7 @@ public class ModelHandler {
 		EList<EObject> contents = resource.getContents();
 		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
 		final BPMNDiagram bpmnDiagram = BpmnDiFactory.eINSTANCE.createBPMNDiagram();
+		final Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(resource);
 
 		if (domain != null) {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
@@ -375,12 +381,15 @@ public class ModelHandler {
 					BPMNShape taskShape = BpmnDiFactory.eINSTANCE.createBPMNShape();
 					ModelUtil.setID(taskShape,resource);
 
+					ShapeStyle ss = preferences.getShapeStyle(task);
+					int bandHeight = ss.getDefaultHeight() / 7;
+					
 					taskShape.setBpmnElement(task);
 					Bounds bounds = DcFactory.eINSTANCE.createBounds();
 					bounds.setX(100);
 					bounds.setY(100);
-					bounds.setWidth(GraphicsUtil.CHOREOGRAPHY_WIDTH);
-					bounds.setHeight(GraphicsUtil.CHOREOGRAPHY_HEIGHT);
+					bounds.setWidth(ss.getDefaultWidth());
+					bounds.setHeight(ss.getDefaultHeight());
 					taskShape.setBounds(bounds);
 					plane.getPlaneElement().add(taskShape);
 					getPreferences().applyBPMNDIDefaults(taskShape, null);
@@ -393,8 +402,8 @@ public class ModelHandler {
 					bounds = DcFactory.eINSTANCE.createBounds();
 					bounds.setX(100);
 					bounds.setY(100);
-					bounds.setWidth(GraphicsUtil.CHOREOGRAPHY_WIDTH);
-					bounds.setHeight(GraphicsUtil.PARTICIPANT_BAND_HEIGHT);
+					bounds.setWidth(ss.getDefaultWidth());
+					bounds.setHeight(bandHeight);
 					participantShape.setBounds(bounds);
 					plane.getPlaneElement().add(participantShape);
 					getPreferences().applyBPMNDIDefaults(participantShape, null);
@@ -406,9 +415,9 @@ public class ModelHandler {
 					participantShape.setParticipantBandKind(ParticipantBandKind.BOTTOM_NON_INITIATING);
 					bounds = DcFactory.eINSTANCE.createBounds();
 					bounds.setX(100);
-					bounds.setY(100 + GraphicsUtil.CHOREOGRAPHY_HEIGHT - GraphicsUtil.PARTICIPANT_BAND_HEIGHT);
-					bounds.setWidth(GraphicsUtil.CHOREOGRAPHY_WIDTH);
-					bounds.setHeight(GraphicsUtil.PARTICIPANT_BAND_HEIGHT);
+					bounds.setY(100 + ss.getDefaultHeight() - bandHeight);
+					bounds.setWidth(ss.getDefaultWidth());
+					bounds.setHeight(bandHeight);
 					participantShape.setBounds(bounds);
 					plane.getPlaneElement().add(participantShape);
 					getPreferences().applyBPMNDIDefaults(participantShape, null);

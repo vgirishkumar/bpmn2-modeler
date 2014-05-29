@@ -45,10 +45,10 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Size;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeLayoutManager;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
@@ -79,6 +79,7 @@ public class DIGenerator {
 	private HashMap<BaseElement, PictogramElement> elements;
 	private ImportDiagnostics diagnostics;
 	private DiagramElementTree missingElements;
+	private Bpmn2Preferences preferences;
 	
 	public DIGenerator(DIImport importer) {
 		this.importer = importer;
@@ -88,6 +89,7 @@ public class DIGenerator {
 		diagram = editor.getDiagramTypeProvider().getDiagram();
 		bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
 		definitions = ModelUtil.getDefinitions(bpmnDiagram);
+		preferences = Bpmn2Preferences.getInstance(definitions);
 	}
 	
 	public boolean hasMissingDIElements() {
@@ -583,12 +585,12 @@ public class DIGenerator {
 			Bounds bounds = DcFactory.eINSTANCE.createBounds();
 			bounds.setX(x);
 			bounds.setY(y);
-			Size size = GraphicsUtil.getShapeSize(bpmnElement, diagram);
-			bounds.setWidth(size.getWidth());
-			bounds.setHeight(size.getHeight());
+			ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
+			bounds.setWidth(ss.getDefaultWidth());
+			bounds.setHeight(ss.getDefaultHeight());
 			bpmnShape.setBounds(bounds);
 			plane.getPlaneElement().add(bpmnShape);
-			Bpmn2Preferences.getInstance(bpmnDiagram.eResource()).applyBPMNDIDefaults(bpmnShape, null);
+			preferences.applyBPMNDIDefaults(bpmnShape, null);
 
 			ModelUtil.setID(bpmnShape);
 			if (doImport)

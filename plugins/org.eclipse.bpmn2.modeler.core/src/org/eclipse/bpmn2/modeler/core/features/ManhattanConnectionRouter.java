@@ -64,28 +64,28 @@ import org.eclipse.graphiti.util.IColorConstant;
 public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 
 	/** The source top edge. */
-	protected LineSegment sourceTopEdge;
+	protected GraphicsUtil.LineSegment sourceTopEdge;
 	
 	/** The source bottom edge. */
-	protected LineSegment sourceBottomEdge;
+	protected GraphicsUtil.LineSegment sourceBottomEdge;
 	
 	/** The source left edge. */
-	protected LineSegment sourceLeftEdge;
+	protected GraphicsUtil.LineSegment sourceLeftEdge;
 	
 	/** The source right edge. */
-	protected LineSegment sourceRightEdge;
+	protected GraphicsUtil.LineSegment sourceRightEdge;
 
 	/** The target top edge. */
-	protected LineSegment targetTopEdge;
+	protected GraphicsUtil.LineSegment targetTopEdge;
 	
 	/** The target bottom edge. */
-	protected LineSegment targetBottomEdge;
+	protected GraphicsUtil.LineSegment targetBottomEdge;
 	
 	/** The target left edge. */
-	protected LineSegment targetLeftEdge;
+	protected GraphicsUtil.LineSegment targetLeftEdge;
 	
 	/** The target right edge. */
-	protected LineSegment targetRightEdge;
+	protected GraphicsUtil.LineSegment targetRightEdge;
 	
 	/** The Constant offset. */
 	static final int offset = 20;
@@ -124,13 +124,13 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		if (isSelfConnection())
 			return super.calculateRoute();
 		
-		LineSegment sourceEdges[] = GraphicsUtil.getEdges(source);
+		GraphicsUtil.LineSegment sourceEdges[] = GraphicsUtil.getEdges(source);
 		sourceTopEdge = sourceEdges[0];
 		sourceBottomEdge = sourceEdges[1];
 		sourceLeftEdge = sourceEdges[2];
 		sourceRightEdge = sourceEdges[3];
 
-		LineSegment targetEdges[] = GraphicsUtil.getEdges(target);
+		GraphicsUtil.LineSegment targetEdges[] = GraphicsUtil.getEdges(target);
 		targetTopEdge = targetEdges[0];
 		targetBottomEdge = targetEdges[1];
 		targetLeftEdge = targetEdges[2];

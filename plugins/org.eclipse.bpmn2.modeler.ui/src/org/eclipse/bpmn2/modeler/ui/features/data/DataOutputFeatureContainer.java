@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateDataInputOutputFeature;
 import org.eclipse.bpmn2.modeler.core.features.data.AddDataFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -64,7 +64,7 @@ public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, DataOutput businessObject) {
 			super.decorateShape(context, containerShape, businessObject);
 			Polygon p = (Polygon)getGraphicsAlgorithm(containerShape);
-			Polygon arrow = GraphicsUtil.createDataArrow(p);
+			Polygon arrow = ShapeDecoratorUtil.createDataArrow(p);
 			arrow.setFilled(true);
 			arrow.setBackground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			arrow.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
@@ -73,6 +73,14 @@ public class DataOutputFeatureContainer extends AbstractDataFeatureContainer {
 		@Override
 		public String getName(DataOutput t) {
 			return t.getName();
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return DataOutput.class;
 		}
 	}
 

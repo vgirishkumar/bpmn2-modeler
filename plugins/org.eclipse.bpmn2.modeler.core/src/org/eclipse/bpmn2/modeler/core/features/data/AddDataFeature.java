@@ -15,12 +15,9 @@ package org.eclipse.bpmn2.modeler.core.features.data;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -35,8 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
 public abstract class AddDataFeature<T extends ItemAwareElement> extends AbstractBpmn2AddFeature<T> {
 
@@ -55,19 +50,15 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 	@Override
 	public PictogramElement add(IAddContext context) {
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
-		@SuppressWarnings("unchecked")
 		T businessObject = getBusinessObject(context);
  
-		int width = this.getWidth();
-		int height = this.getHeight();
+		int width = getWidth(context);
+		int height = getHeight(context);
 		int e = 10;
-		int textArea = 15;
 		
 		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 		Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
-		gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height + textArea);
+		gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height);
 
 		Shape rectShape = peService.createShape(containerShape, false);
 		Polygon rect = gaService.createPolygon(rectShape, new int[] { 0, 0, width - e, 0, width, e, width, height, 0,
@@ -91,7 +82,7 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		if (feature!=null && businessObject.eGet(feature)!=null)
 			value = ((Boolean)businessObject.eGet(feature)).toString();
 
-		Graphiti.getPeService().setPropertyValue(containerShape, GraphitiConstants.COLLECTION_PROPERTY, value);
+		peService.setPropertyValue(containerShape, GraphitiConstants.COLLECTION_PROPERTY, value);
 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
@@ -108,8 +99,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 	}
 
 	private Shape createCollectionShape(ContainerShape container, int[] xy) {
-		IPeService peService = Graphiti.getPeService();
-		IGaService gaService = Graphiti.getGaService();
 		Shape collectionShape = peService.createShape(container, false);
 		Polyline line = gaService.createPolyline(collectionShape, xy);
 		line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
@@ -117,16 +106,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		line.setLineVisible(false);
 		peService.setPropertyValue(collectionShape, GraphitiConstants.HIDEABLE_PROPERTY, Boolean.toString(true));
 		return collectionShape;
-	}
-
-	@Override
-	public int getHeight() {
-		return GraphicsUtil.DATA_HEIGHT;
-	}
-
-	@Override
-	public int getWidth() {
-		return GraphicsUtil.DATA_WIDTH;
 	}
 	
 	public abstract String getName(T t);

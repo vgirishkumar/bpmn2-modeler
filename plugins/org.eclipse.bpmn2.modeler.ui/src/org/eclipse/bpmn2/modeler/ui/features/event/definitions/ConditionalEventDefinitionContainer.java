@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -68,7 +68,7 @@ public class ConditionalEventDefinitionContainer extends AbstractEventDefinition
 
 	public static Shape draw(ContainerShape shape) {
 		Shape conditionShape = Graphiti.getPeService().createShape(shape, false);
-		GraphicsUtil.createEventImage(conditionShape, ImageProvider.IMG_20_CONDITION);
+		ShapeDecoratorUtil.createEventImage(conditionShape, ImageProvider.IMG_20_CONDITION);
 		return conditionShape;
 	}
 

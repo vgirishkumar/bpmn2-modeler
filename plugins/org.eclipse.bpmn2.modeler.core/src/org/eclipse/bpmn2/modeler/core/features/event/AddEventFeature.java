@@ -12,17 +12,14 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.event;
 
-import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape;
+import static org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.createEventShape;
 
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -32,11 +29,8 @@ import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
-public class AddEventFeature<T extends Event>
+public abstract class AddEventFeature<T extends Event>
 	extends AbstractBpmn2AddFeature<T> {
 
 	public AddEventFeature(IFeatureProvider fp) {
@@ -56,9 +50,6 @@ public class AddEventFeature<T extends Event>
 	public PictogramElement add(IAddContext context) {
 		T businessObject = getBusinessObject(context);
  
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
-
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 		// for backward compatibility with older files that included
@@ -92,15 +83,5 @@ public class AddEventFeature<T extends Event>
 		splitConnection(context, containerShape);
 
 		return containerShape;
-	}
-
-	@Override
-	public int getHeight() {
-		return GraphicsUtil.getEventSize(this.getDiagram()).getHeight();
-	}
-
-	@Override
-	public int getWidth() {
-		return GraphicsUtil.getEventSize(this.getDiagram()).getWidth();
 	}
 }

@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -71,7 +71,7 @@ public class ErrorEventDefinitionContainer extends AbstractEventDefinitionFeatur
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape errorShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon error = GraphicsUtil.createEventError(errorShape);
+		Polygon error = ShapeDecoratorUtil.createEventError(errorShape);
 		StyleUtil.setFillStyle(error, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(error, be);
 		return errorShape;
@@ -80,7 +80,7 @@ public class ErrorEventDefinitionContainer extends AbstractEventDefinitionFeatur
 	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape errorShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon error = GraphicsUtil.createEventError(errorShape);
+		Polygon error = ShapeDecoratorUtil.createEventError(errorShape);
 		StyleUtil.setFillStyle(error, FillStyle.FILL_STYLE_FOREGROUND);
 		StyleUtil.applyStyle(error, be);
 		return errorShape;

@@ -124,8 +124,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 			}
 		}
 
-		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, 
-				hasMultiplicity ? Boolean.toString(true) : Boolean.toString(false));
+		peService.setPropertyValue(containerShape, GraphitiConstants.MULTIPLICITY, Boolean.toString(hasMultiplicity));
 		return true;
 	}
 }

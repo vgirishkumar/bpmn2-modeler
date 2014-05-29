@@ -20,7 +20,6 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * Add a Label for a Connection. This Add Feature class must be invoked from a {@link org.eclipse.bpmn2.modeler.core.features.MultiAddFeature}
@@ -45,7 +44,7 @@ public class AddConnectionLabelFeature extends AbstractAddLabelFeature {
 		BaseElement businessObject = (BaseElement) context.getNewObject();
 		PictogramElement labelOwner = FeatureSupport.getLabelOwner(context);
 		if (labelOwner instanceof Connection) {
-			labelShape = Graphiti.getPeService().createConnectionDecorator((Connection)labelOwner, true, 0.5, true);
+			labelShape = peService.createConnectionDecorator((Connection)labelOwner, true, 0.5, true);
 			createText(labelOwner, labelShape, businessObject);
 		}
 		return labelShape;

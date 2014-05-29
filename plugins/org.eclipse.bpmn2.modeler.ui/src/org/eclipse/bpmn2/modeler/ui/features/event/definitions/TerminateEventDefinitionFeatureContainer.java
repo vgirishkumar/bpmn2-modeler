@@ -24,7 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -77,7 +77,7 @@ public class TerminateEventDefinitionFeatureContainer extends AbstractEventDefin
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape terminateShape = Graphiti.getPeService().createShape(shape, false);
-		Ellipse ellispe = GraphicsUtil.createEventTerminate(terminateShape);
+		Ellipse ellispe = ShapeDecoratorUtil.createEventTerminate(terminateShape);
 		StyleUtil.setFillStyle(ellispe, FillStyle.FILL_STYLE_FOREGROUND);
 		StyleUtil.applyStyle(ellispe, be);
 		return terminateShape;

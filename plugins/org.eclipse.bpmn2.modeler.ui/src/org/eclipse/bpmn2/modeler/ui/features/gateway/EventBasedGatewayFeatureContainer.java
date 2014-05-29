@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.EventBasedGatewayType;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AbstractCreateGatewayFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AddGatewayFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -69,9 +69,9 @@ public class EventBasedGatewayFeatureContainer extends AbstractGatewayFeatureCon
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, EventBasedGateway businessObject) {
 			super.decorateShape(context, containerShape, businessObject);
-			Ellipse outer = GraphicsUtil.createGatewayOuterCircle(containerShape);
-			Ellipse inner = GraphicsUtil.createGatewayInnerCircle(outer);
-			Polygon pentagon = GraphicsUtil.createGatewayPentagon(containerShape);
+			Ellipse outer = ShapeDecoratorUtil.createGatewayOuterCircle(containerShape);
+			Ellipse inner = ShapeDecoratorUtil.createGatewayInnerCircle(outer);
+			Polygon pentagon = ShapeDecoratorUtil.createGatewayPentagon(containerShape);
 			pentagon.setFilled(false);
 		}
 
@@ -84,6 +84,14 @@ public class EventBasedGatewayFeatureContainer extends AbstractGatewayFeatureCon
 			service.setPropertyValue(element, EVENT_GATEWAY_TYPE_PROPERTY,
 					EventBasedGatewayType.EXCLUSIVE.getName());
 			return element;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return EventBasedGateway.class;
 		}
 	}
 

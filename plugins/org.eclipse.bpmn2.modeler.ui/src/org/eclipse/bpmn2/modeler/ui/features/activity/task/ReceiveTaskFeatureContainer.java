@@ -48,6 +48,14 @@ public class ReceiveTaskFeatureContainer extends AbstractTaskFeatureContainer {
 		protected String getStencilImageId() {
 			return ImageProvider.IMG_16_RECEIVE_TASK;
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return ReceiveTask.class;
+		}
 	}
 
 	public static class CreateReceiveTaskFeature extends AbstractCreateTaskFeature<ReceiveTask> {

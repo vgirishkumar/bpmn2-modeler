@@ -13,18 +13,14 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 
-import java.util.Iterator;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractLayoutBpmn2ShapeFeature;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractBoundaryEventOperation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
@@ -76,8 +72,8 @@ public class LayoutActivityFeature extends AbstractLayoutBpmn2ShapeFeature {
 		gaService.setSize(rectShape.getGraphicsAlgorithm(), newWidth, newHeight);
 		layoutInRectangle((RoundedRectangle) rectShape.getGraphicsAlgorithm());
 	
-		GraphicsUtil.setActivityMarkerOffest(containerShape, getMarkerContainerOffset());
-		GraphicsUtil.layoutActivityMarkerContainer(containerShape);
+		ShapeDecoratorUtil.setActivityMarkerOffest(containerShape, getMarkerContainerOffset());
+		ShapeDecoratorUtil.layoutActivityMarker(containerShape);
 	
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		new AbstractBoundaryEventOperation() {

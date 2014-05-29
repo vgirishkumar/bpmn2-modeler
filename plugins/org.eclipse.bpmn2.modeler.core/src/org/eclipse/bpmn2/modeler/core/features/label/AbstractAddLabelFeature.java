@@ -36,8 +36,8 @@ import org.eclipse.graphiti.services.IPeService;
  */
 abstract public class AbstractAddLabelFeature extends AbstractAddPictogramElementFeature {
 
-	protected final IGaService gaService = Graphiti.getGaService();
-	protected final IPeService peService = Graphiti.getPeService();
+	protected final static IGaService gaService = Graphiti.getGaService();
+	protected final static IPeService peService = Graphiti.getPeService();
 
 	/**
 	 * @param fp

@@ -674,7 +674,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
 		
 		Point p = GraphicsUtil.createPoint(context.getX(), context.getY());
-		Shape s = GraphicsUtil.findShapeAt(diagram, p, new IShapeFilter() {
+		Shape s = GraphicsUtil.findShapeAt(diagram, p, new GraphicsUtil.IShapeFilter() {
 			@Override
 			public boolean matches(Shape shape) {
 				if (shape instanceof ContainerShape) {

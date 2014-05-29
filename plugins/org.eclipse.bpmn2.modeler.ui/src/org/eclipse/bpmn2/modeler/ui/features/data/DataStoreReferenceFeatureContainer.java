@@ -125,12 +125,10 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 
 		@Override
 		public PictogramElement add(IAddContext context) {
-			IGaService gaService = Graphiti.getGaService();
-			IPeService peService = Graphiti.getPeService();
 			DataStoreReference businessObject = getBusinessObject(context);
 
-			int width = this.getWidth();
-			int height = this.getHeight();
+			int width = getWidth(context);
+			int height = getHeight(context);
 
 			ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 			Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
@@ -172,14 +170,12 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			return containerShape;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		public int getHeight() {
-			return 50;
-		}
-
-		@Override
-		public int getWidth() {
-			return 50;
+		public Class getBusinessObjectType() {
+			return DataStoreReference.class;
 		}
 	}
 

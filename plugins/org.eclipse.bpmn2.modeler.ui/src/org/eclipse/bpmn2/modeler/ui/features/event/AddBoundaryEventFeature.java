@@ -26,7 +26,7 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -98,7 +98,7 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddFeature<BoundaryEve
 			gaService.setLocationAndSize(ellipse, x, y, height, height);
 		}
 
-		Ellipse circle = GraphicsUtil.createIntermediateEventCircle(ellipse);
+		Ellipse circle = ShapeDecoratorUtil.createIntermediateEventCircle(ellipse);
 		circle.setStyle(StyleUtil.getStyleForClass(getDiagram()));
 		createDIShape(containerShape, businessObject, !isImport);
 
@@ -127,13 +127,11 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddFeature<BoundaryEve
 		return containerShape;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
 	@Override
-	public int getHeight() {
-		return GraphicsUtil.getEventSize(getDiagram()).getHeight();
-	}
-
-	@Override
-	public int getWidth() {
-		return GraphicsUtil.getEventSize(getDiagram()).getWidth();
+	public Class getBusinessObjectType() {
+		return BoundaryEvent.class;
 	}
 }

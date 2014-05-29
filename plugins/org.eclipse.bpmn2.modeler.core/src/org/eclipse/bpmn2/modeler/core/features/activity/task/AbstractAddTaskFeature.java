@@ -25,9 +25,9 @@ import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
-public class AddTaskFeature extends AbstractAddTaskFeature<Task> {
+public abstract class AbstractAddTaskFeature<T extends Task> extends AbstractAddActivityFeature<T> {
 
-	public AddTaskFeature(IFeatureProvider fp) {
+	public AbstractAddTaskFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -37,12 +37,7 @@ public class AddTaskFeature extends AbstractAddTaskFeature<Task> {
 		        || BusinessObjectUtil.containsElementOfType(context.getTargetContainer(), FlowElementsContainer.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
-	 */
 	@Override
-	public Class getBusinessObjectType() {
-		// TODO Auto-generated method stub
-		return null;
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, T businessObject) {
 	}
 }

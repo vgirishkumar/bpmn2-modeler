@@ -174,7 +174,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	}
 	
 	public static String getMessageRefIds(ContainerShape choreographyTaskShape) {
-		String property = Graphiti.getPeService().getPropertyValue(choreographyTaskShape, MESSAGE_REF_IDS);
+		String property = peService.getPropertyValue(choreographyTaskShape, MESSAGE_REF_IDS);
 		if (property == null) {
 			return new String(); // return empty string
 		}
@@ -305,7 +305,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	}
 
 	public static String getParticipantRefIds(ContainerShape choreographyActivityShape) {
-		String property = Graphiti.getPeService().getPropertyValue(choreographyActivityShape, PARTICIPANT_REF_IDS);
+		String property = peService.getPropertyValue(choreographyActivityShape, PARTICIPANT_REF_IDS);
 		if (property == null) {
 			return new String(); // return empty string
 		}

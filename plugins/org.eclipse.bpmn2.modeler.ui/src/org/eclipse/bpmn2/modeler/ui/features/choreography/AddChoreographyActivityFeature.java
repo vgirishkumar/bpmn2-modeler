@@ -24,7 +24,7 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -39,7 +39,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
+public abstract class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 	extends AbstractBpmn2AddFeature<T> {
 
 	protected final IGaService gaService = Graphiti.getGaService();
@@ -99,7 +99,7 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 			}
 		}
 
-		GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+		ShapeDecoratorUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 
 		if (businessObject instanceof ChoreographyTask) {
 			peService.setPropertyValue(containerShape, ChoreographyUtil.MESSAGE_REF_IDS,
@@ -114,15 +114,5 @@ public class AddChoreographyActivityFeature<T extends ChoreographyActivity>
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
-	}
-
-	@Override
-	public int getHeight() {
-		return GraphicsUtil.CHOREOGRAPHY_HEIGHT;
-	}
-
-	@Override
-	public int getWidth() {
-		return GraphicsUtil.CHOREOGRAPHY_WIDTH;
 	}
 }

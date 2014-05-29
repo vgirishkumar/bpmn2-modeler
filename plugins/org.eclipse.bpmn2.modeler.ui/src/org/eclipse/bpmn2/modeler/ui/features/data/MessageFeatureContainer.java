@@ -32,8 +32,8 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -176,8 +176,6 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public PictogramElement add(IAddContext context) {
-			IGaService gaService = Graphiti.getGaService();
-			IPeService peService = Graphiti.getPeService();
 			Message businessObject = getBusinessObject(context);
 			
 			// if the Message is being dropped onto a MessageFlow, associate it with that flow
@@ -186,14 +184,14 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			if (containerShape!=null)
 				return containerShape;
 
-			int width = this.getWidth();
-			int height = this.getHeight();
+			int width = getWidth(context);
+			int height = getHeight(context);
 
 			containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 			Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
 			gaService.setLocationAndSize(invisibleRect, context.getX(), context.getY(), width, height);
 
-			Envelope envelope = GraphicsUtil.createEnvelope(invisibleRect, 0, 0, width, height);
+			Envelope envelope = ShapeDecoratorUtil.createEnvelope(invisibleRect, 0, 0, width, height);
 			envelope.rect.setFilled(true);
 			StyleUtil.applyStyle(envelope.rect, businessObject);
 			envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
@@ -243,14 +241,12 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			return null;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		public int getHeight() {
-			return ENVELOPE_HEIGHT;
-		}
-
-		@Override
-		public int getWidth() {
-			return ENVELOPE_WIDTH;
+		public Class getBusinessObjectType() {
+			return Message.class;
 		}
 	}
 

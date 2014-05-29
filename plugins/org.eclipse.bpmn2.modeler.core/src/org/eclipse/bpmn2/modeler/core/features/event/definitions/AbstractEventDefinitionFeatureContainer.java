@@ -87,6 +87,14 @@ public abstract class AbstractEventDefinitionFeatureContainer extends BaseElemen
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, EventDefinition businessObject) {
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return EventDefinition.class;
+		}
 	}
 
 	public class UpdateEventDefinitionFeature extends AbstractUpdateEventDefinitionFeature {

@@ -173,7 +173,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 * @param p2 the p2
 	 * @return the collision edge
 	 */
-	protected LineSegment getCollisionEdge(Point p1, Point p2) {
+	protected GraphicsUtil.LineSegment getCollisionEdge(Point p1, Point p2) {
 		ContainerShape shape = getCollision(p1, p2);
 		if (shape!=null) {
 			return GraphicsUtil.findNearestEdge(shape, p1);
@@ -230,9 +230,9 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	
 			@Override
 			public int compare(ContainerShape s1, ContainerShape s2) {
-				LineSegment seg1 = GraphicsUtil.findNearestEdge(s1, p);
+				GraphicsUtil.LineSegment seg1 = GraphicsUtil.findNearestEdge(s1, p);
 				double d1 = seg1.getDistance(p);
-				LineSegment seg2 = GraphicsUtil.findNearestEdge(s2, p);
+				GraphicsUtil.LineSegment seg2 = GraphicsUtil.findNearestEdge(s2, p);
 				double d2 = seg2.getDistance(p);
 				return (int) (d2 - d1);
 			}

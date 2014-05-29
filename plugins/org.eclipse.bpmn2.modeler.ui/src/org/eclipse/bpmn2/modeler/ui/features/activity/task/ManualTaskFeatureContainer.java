@@ -47,6 +47,14 @@ public class ManualTaskFeatureContainer extends AbstractTaskFeatureContainer {
 		protected String getStencilImageId() {
 			return ImageProvider.IMG_16_MANUAL_TASK;
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return ManualTask.class;
+		}
 	}
 
 	public static class CreateManualTaskFeature extends AbstractCreateTaskFeature<ManualTask> {

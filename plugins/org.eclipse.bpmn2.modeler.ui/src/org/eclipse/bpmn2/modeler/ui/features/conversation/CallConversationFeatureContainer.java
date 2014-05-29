@@ -69,6 +69,11 @@ public class CallConversationFeatureContainer extends AbstractExpandableActivity
 				Shape hexShape = containerShape.getChildren().get(0);
 				hexShape.getGraphicsAlgorithm().setLineWidth(4);
 			}
+
+			@Override
+			public Class getBusinessObjectType() {
+				return CallConversation.class;
+			}
 		};
 	}
 

@@ -98,22 +98,4 @@ public abstract class AbstractAddEventDefinitionFeature<T extends EventDefinitio
 		}
 		getDiagramEditor().setPictogramElementsForSelection(pes.toArray(new PictogramElement[pes.size()]));
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getHeight()
-	 */
-	@Override
-	public int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getWidth()
-	 */
-	@Override
-	public int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

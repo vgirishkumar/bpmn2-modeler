@@ -33,13 +33,13 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.Envelope;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -365,7 +365,7 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		gaService.setSize(invisibleRectangle, ChoreographyUtil.ENV_W + 50, ChoreographyUtil.ENV_H);
 
 		Shape envelopeShape = peService.createShape(envelope, false);
-		Envelope envelopeGa = GraphicsUtil.createEnvelope(envelopeShape, 0, 0, ChoreographyUtil.ENV_W, ChoreographyUtil.ENV_H);
+		Envelope envelopeGa = ShapeDecoratorUtil.createEnvelope(envelopeShape, 0, 0, ChoreographyUtil.ENV_W, ChoreographyUtil.ENV_H);
 		IColorConstant color = filled ? IColorConstant.LIGHT_GRAY : IColorConstant.WHITE;
 		envelopeGa.rect.setFilled(true);
 		envelopeGa.rect.setBackground(gaService.manageColor(diagram, color));

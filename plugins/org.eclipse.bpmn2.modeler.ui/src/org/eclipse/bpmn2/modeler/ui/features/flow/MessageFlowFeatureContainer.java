@@ -350,8 +350,11 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			return connectionLine;
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		protected Class<? extends BaseElement> getBoClass() {
+		public Class getBusinessObjectType() {
 			return MessageFlow.class;
 		}
 	}

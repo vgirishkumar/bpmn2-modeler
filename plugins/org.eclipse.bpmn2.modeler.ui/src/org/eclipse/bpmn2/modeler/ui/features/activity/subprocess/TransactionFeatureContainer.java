@@ -70,6 +70,11 @@ public class TransactionFeatureContainer extends AbstractExpandableActivityFeatu
 			protected int getMarkerContainerOffset() {
 				return offset;
 			}
+
+			@Override
+			public Class getBusinessObjectType() {
+				return Transaction.class;
+			}
 		};
 	}
 

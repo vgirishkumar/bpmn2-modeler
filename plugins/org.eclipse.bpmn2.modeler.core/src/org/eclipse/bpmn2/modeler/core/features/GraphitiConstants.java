@@ -14,6 +14,8 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -101,13 +103,15 @@ public interface GraphitiConstants {
 	public static final String VALIDATION_DECORATOR = "validation.decorator"; //$NON-NLS-1$
 
 	/**
-	 * The {@link Shape} property key that identifies this Shape as an Activity
-	 * Decorator. This is an image that appears inside the top-left corner and
-	 * is used to identify the Activity type, i.e. a hand icon for Manual Task,
-	 * a person icon for User Task, envelope icons for Send and Receive Tasks,
+	 * The {@link Shape} property key that identifies this Shape as the
+	 * Activity's border decoration. This is a rounded rectangle drawn in the
+	 * Activity's foreground color. This shape optionally owns an {@link Image}
+	 * {@link GraphicsAlgorithm} which appears inside the top-left corner and is
+	 * used to identify the Activity type, i.e. a hand icon for Manual Task, a
+	 * person icon for User Task, envelope icons for Send and Receive Tasks,
 	 * etc.
 	 **/
-	public static final String ACTIVITY_DECORATOR = "activity.decorator"; //$NON-NLS-1$
+	public static final String ACTIVITY_BORDER = "activity.border"; //$NON-NLS-1$
 
 	/** The Constant ACTIVITY_MOVE_PROPERTY. */
 	public static final String ACTIVITY_MOVE_PROPERTY = "activity.move"; //$NON-NLS-1$
@@ -240,7 +244,7 @@ public interface GraphitiConstants {
 	/** The Constant CUSTOM_ELEMENT_ID. */
 	public final static String CUSTOM_ELEMENT_ID = "custom.element.id"; //$NON-NLS-1$
 
-	/**
+	/** 
 	 * The {@link IContext} property key used by the {@link MultiUpdateFeature}
 	 * to force an update of all of its contained features, regardless of
 	 * whether they have determined an update is needed.
@@ -264,5 +268,11 @@ public interface GraphitiConstants {
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
 
 	public static final String CONNECTION_POINT_KEY = "connection.point.key"; //$NON-NLS-1$
+
+	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
+
+	public static final String IS_EXPANDED = "is.expanded"; //$NON-NLS-1$
+
+	public static final String TRIGGERED_BY_EVENT = "triggered.by.event"; //$NON-NLS-1$
 
 }

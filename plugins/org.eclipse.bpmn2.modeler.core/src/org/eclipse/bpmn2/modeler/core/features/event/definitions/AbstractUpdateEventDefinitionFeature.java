@@ -23,7 +23,7 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
@@ -48,7 +48,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(event);
 		int size = eventDefinitions.size();
 
-		GraphicsUtil.deleteEventShape(container);
+		ShapeDecoratorUtil.deleteEventShape(container);
 		
 		if (size==1) {
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
@@ -79,7 +79,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 	
 	public static void drawMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
-		Polygon pentagon = GraphicsUtil.createEventPentagon(shape);
+		Polygon pentagon = ShapeDecoratorUtil.createEventPentagon(shape);
 		if (event instanceof ThrowEvent) {
 			StyleUtil.setFillStyle(pentagon, FillStyle.FILL_STYLE_FOREGROUND);
 		} else {
@@ -90,7 +90,7 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2
 	
 	public static void drawParallelMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
-		Polygon cross = GraphicsUtil.createEventParallelMultiple(shape);
+		Polygon cross = ShapeDecoratorUtil.createEventParallelMultiple(shape);
 		StyleUtil.setFillStyle(cross, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(cross, be);
 	}

@@ -37,7 +37,7 @@ public class TaskFeatureContainer extends AbstractTaskFeatureContainer {
 
 	@Override 
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddTaskFeature<Task>(fp);
+		return new AddTaskFeature(fp);
 	}
 
 	public static class CreateTaskFeature extends AbstractCreateTaskFeature<Task> {

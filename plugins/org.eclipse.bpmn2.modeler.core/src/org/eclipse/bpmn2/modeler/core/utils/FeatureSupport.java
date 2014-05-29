@@ -87,7 +87,6 @@ import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.MmFactory;
 import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
@@ -297,32 +296,12 @@ public class FeatureSupport {
 				BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) !=null;
 	}
 	
-	public static boolean isValidationDecorator(PictogramElement pe) {
-		String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.VALIDATION_DECORATOR);
-		if (new Boolean(value))
-			return true;
-		return false;
-	}
-	
-	public static PictogramElement createValidationDecorator(ContainerShape containerShape) {
-		for (PictogramElement pe : containerShape.getChildren()) {
-			if (isValidationDecorator(pe))
-				return pe;
-		}
-		PictogramElement decorator = Graphiti.getPeCreateService().createShape(containerShape, true);
-		Graphiti.getPeService().setPropertyValue(decorator, GraphitiConstants.VALIDATION_DECORATOR, "true");
-		Rectangle rect = Graphiti.getGaCreateService().createInvisibleRectangle(decorator);
-		rect.setX(-5);
-		rect.setY(-5);
-		
-		return decorator;
-	}
-	
 	public static List<PictogramElement> getContainerChildren(ContainerShape container) {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
-			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
-			if (new Boolean(value))
+			if (ShapeDecoratorUtil.isActivityBorder(pe))
+				continue;
+			if (ShapeDecoratorUtil.isValidationDecorator(pe))
 				continue;
 			if (isLabelShape(pe))
 				continue;
@@ -334,8 +313,7 @@ public class FeatureSupport {
 	public static List<PictogramElement> getContainerDecorators(ContainerShape container) {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		for (PictogramElement pe : container.getChildren()) {
-			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
-			if (new Boolean(value))
+			if (ShapeDecoratorUtil.isActivityBorder(pe))
 				list.add(pe);
 		}
 		return list;
@@ -345,11 +323,10 @@ public class FeatureSupport {
 		List<PictogramElement> list = new ArrayList<PictogramElement>();
 		list.addAll(container.getChildren());
 		for (PictogramElement pe : list) {
-			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
-			if (new Boolean(value))
+			if (ShapeDecoratorUtil.isActivityBorder(pe))
 				continue;
 			
-			if (isEventSubProcessDecoratorContainer(pe)) {
+			if (ShapeDecoratorUtil.isEventSubProcessDecorator(pe)) {
 				pe.setVisible(!visible);
 			}
 			else
@@ -905,18 +882,6 @@ public class FeatureSupport {
 			}
 		}
 		return null;
-	}
-
-	public static boolean isActivityMarkerContainer(PictogramElement pe) {
-		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_MARKER_CONTAINER);
-		return new Boolean(property).booleanValue();
-	}
-
-	public static boolean isEventSubProcessDecoratorContainer(PictogramElement pe) {
-		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.EVENT_SUBPROCESS_DECORATOR_CONTAINER);
-		if (property!=null)
-			return true;
-		return false;
 	}
 
 	public static boolean hasBPMNShape(PictogramElement pe) {

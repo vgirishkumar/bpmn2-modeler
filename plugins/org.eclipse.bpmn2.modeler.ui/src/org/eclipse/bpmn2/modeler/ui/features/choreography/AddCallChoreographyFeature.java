@@ -38,4 +38,13 @@ public class AddCallChoreographyFeature extends AddChoreographyActivityFeature<C
 		RoundedRectangle rect = (RoundedRectangle)getGraphicsAlgorithm(containerShape);
 		rect.setLineWidth(4);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
+	@Override
+	public Class getBusinessObjectType() {
+		// TODO Auto-generated method stub
+		return CallChoreography.class;
+	}
 }

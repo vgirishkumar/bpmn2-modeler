@@ -291,7 +291,7 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 			PictogramElement pe = addFeatureDelegate.add(context);
 			// make sure everyone knows that this PE is a custom task
 			if (pe!=null)
-				Graphiti.getPeService().setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
+				peService.setPropertyValue(pe,GraphitiConstants.CUSTOM_ELEMENT_ID,getId());
 			
 			// add an icon to the top-left corner if applicable, and if the implementing
 			// addFeatureDelegate hasn't already done so.
@@ -370,16 +370,24 @@ public class CustomShapeFeatureContainer extends CustomElementFeatureContainer i
 		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getHeight()
 		 */
 		@Override
-		public int getHeight() {
-			return addFeatureDelegate.getHeight();
+		public int getHeight(IAddContext context) {
+			return addFeatureDelegate.getHeight(context);
 		}
 
 		/* (non-Javadoc)
 		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getWidth()
 		 */
 		@Override
-		public int getWidth() {
-			return addFeatureDelegate.getWidth();
+		public int getWidth(IAddContext context) {
+			return addFeatureDelegate.getWidth(context);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return addFeatureDelegate.getBusinessObjectType();
 		}
 	}
 	

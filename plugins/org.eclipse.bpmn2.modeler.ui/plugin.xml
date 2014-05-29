@@ -1008,47 +1008,64 @@
 			<disable object="MessageFlowAssociation"/>
 		</modelEnablement>
 
-		<style object="AdHocSubProcess" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="Association" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="BoundaryEvent" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="BusinessRuleTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="CallActivity" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="CallChoreography" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ChoreographyTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ComplexGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
-		<style object="Conversation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataAssociation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataInput" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataObject" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataOutput" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="DataStoreReference" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="EndEvent" foreground="7F0000" background="FF8080" textColor="7F0000" font="arial,10,-,-"/>
-		<style object="EventBasedGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
-		<style object="ExclusiveGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
-		<style object="Group" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="InclusiveGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
-		<style object="IntermediateCatchEvent" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="IntermediateThrowEvent" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="Lane" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ManualTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="Message" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="MessageFlow" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ParallelGateway" foreground="484800" background="C8C864" textColor="484800" font="arial,10,-,-"/>
-		<style object="Participant" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ReceiveTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ScriptTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="SendTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="SequenceFlow" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="ServiceTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="StartEvent" foreground="007F00" background="80FF80" textColor="007F00" font="arial,10,-,-"/>
-		<style object="SubChoreography" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="SubProcess" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="Task" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="TextAnnotation" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="Transaction" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="UserTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
-		<style object="CANVAS" background="FFFFFF"/>
-		<style object="GRID" foreground="E3EEF9"/>
+		
+		<style object="DataInput" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="DataObject" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="DataObjectReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="DataOutput" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="DataStoreReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="Message" shapeBackground="D4E7F8" defaultWidth="30" defaultHeight="20"/>
+
+		<style object="BoundaryEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
+		<style object="EndEvent" shapeBackground="FF8080" defaultWidth="36" defaultHeight="36"/>
+		<style object="IntermediateCatchEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
+		<style object="IntermediateThrowEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
+		<style object="StartEvent" shapeBackground="80FF80" defaultWidth="36" defaultHeight="36"/>
+
+		<style object="ComplexGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
+		<style object="EventBasedGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
+		<style object="ExclusiveGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
+		<style object="InclusiveGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
+		<style object="ParallelGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
+
+		<style object="CallChoreography" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
+		<style object="ChoreographyTask" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
+		<style object="SubChoreography" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
+
+		<style object="AdHocSubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="BusinessRuleTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="CallActivity" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="Conversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalBusinessRuleTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalManualTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalScriptTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalUserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="ManualTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="ReceiveTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="ScriptTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SendTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="ServiceTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SubConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="Task" shapeBackground="D4E7F8" useDefaultSize="true" defaultWidth="110" defaultHeight="50"/>
+		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="UserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+
+		<style object="Group" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="110"/>
+		<style object="Lane" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
+		<style object="Participant" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
+		<style object="TextAnnotation" shapeBackground="80FF80" defaultWidth="100" defaultHeight="150"/>
+
+		<style object="Association" shapeBackground="D4E7F8"/>
+		<style object="ConversationLink" shapeBackground="D4E7F8"/>
+		<style object="DataAssociation" shapeBackground="D4E7F8"/>
+		<style object="MessageFlow" shapeBackground="D4E7F8"/>
+		<style object="SequenceFlow" shapeBackground="D4E7F8"/>
+
+		<style object="CANVAS" shapeBackground="FFFFFF"/>
+		<style object="GRID" shapeForeground="E3EEF9" useDefaultSize="true" defaultWidth="10" defaultHeight="10"/>
 		
 		<typeLanguage name="XSD Schema" uri="http://www.w3.org/2001/XMLSchema" prefix="xs">
 			<type name="string"/>

@@ -39,7 +39,7 @@ public class ServiceTaskFeatureContainer extends AbstractTaskFeatureContainer {
 		return new AddServiceTaskFeature(fp);
 	}
 
-	public static class AddServiceTaskFeature extends AbstractAddDecoratedTaskFeature<SendTask> {
+	public static class AddServiceTaskFeature extends AbstractAddDecoratedTaskFeature<ServiceTask> {
 
 		public AddServiceTaskFeature(IFeatureProvider fp) {
 			super(fp);
@@ -48,6 +48,14 @@ public class ServiceTaskFeatureContainer extends AbstractTaskFeatureContainer {
 		@Override
 		protected String getStencilImageId() {
 			return ImageProvider.IMG_16_SERVICE_TASK;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return ServiceTask.class;
 		}
 	}
 

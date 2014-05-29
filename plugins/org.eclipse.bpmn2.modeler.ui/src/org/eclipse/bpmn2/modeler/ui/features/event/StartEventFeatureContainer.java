@@ -60,7 +60,7 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 	public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 		MultiUpdateFeature updateFeature = new MultiUpdateFeature(fp);
 		updateFeature.addFeature(super.getUpdateFeature(fp));
-		updateFeature.addFeature(new UpdateSubProcessEventFeature(fp));
+		updateFeature.addFeature(new UpdateEventSubProcessFeature(fp));
 		updateFeature.addFeature(new UpdateStartEventFeature(fp));
 		return updateFeature;
 	}
@@ -79,6 +79,14 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 			peService.setPropertyValue(containerShape,
 					UpdateStartEventFeature.START_EVENT_MARKER,
 					AbstractUpdateEventFeature.getEventDefinitionsValue((StartEvent)businessObject));
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return StartEvent.class;
 		}
 	}
 
@@ -122,9 +130,9 @@ public class StartEventFeatureContainer extends AbstractEventFeatureContainer {
 		}
 	}
 
-	private class UpdateSubProcessEventFeature extends AbstractBpmn2UpdateFeature {
+	private class UpdateEventSubProcessFeature extends AbstractBpmn2UpdateFeature {
 
-		public UpdateSubProcessEventFeature(IFeatureProvider fp) {
+		public UpdateEventSubProcessFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 

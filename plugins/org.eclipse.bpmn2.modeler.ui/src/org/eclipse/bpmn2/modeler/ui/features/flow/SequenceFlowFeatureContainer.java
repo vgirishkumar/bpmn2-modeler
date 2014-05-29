@@ -121,11 +121,6 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		}
 
 		@Override
-		protected Class<? extends BaseElement> getBoClass() {
-			return SequenceFlow.class;
-		}
-
-		@Override
 		protected Polyline createConnectionLine(Connection connection) {
 			IPeService peService = Graphiti.getPeService();
 			IGaService gaService = Graphiti.getGaService();
@@ -151,6 +146,14 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		protected void decorateConnection(IAddConnectionContext context, Connection connection, SequenceFlow businessObject) {
 			setDefaultSequenceFlow(connection);
 			setConditionalSequenceFlow(connection);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return SequenceFlow.class;
 		}
 	}
 

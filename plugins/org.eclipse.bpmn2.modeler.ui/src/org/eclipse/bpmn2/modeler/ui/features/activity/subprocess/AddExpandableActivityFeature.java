@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.IS_EXPANDED;
-import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.TRIGGERED_BY_EVENT;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.SubProcess;
@@ -21,13 +19,12 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
-public class AddExpandableActivityFeature<T extends Activity>
+public abstract class AddExpandableActivityFeature<T extends Activity>
 	extends AbstractAddActivityFeature<T> {
 
 	public AddExpandableActivityFeature(IFeatureProvider fp) {
@@ -50,28 +47,14 @@ public class AddExpandableActivityFeature<T extends Activity>
 				isExpanded = bpmnShape.isIsExpanded();
 			}
 		}
-		peService.setPropertyValue(containerShape, TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
-		peService.setPropertyValue(containerShape, IS_EXPANDED, Boolean.toString(isExpanded));
+		peService.setPropertyValue(containerShape, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
+		peService.setPropertyValue(containerShape, GraphitiConstants.IS_EXPANDED, Boolean.toString(isExpanded));
 		
 		if (!isExpanded){
-			GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		else {
-			GraphicsUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			ShapeDecoratorUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
-	}
-
-	@Override
-	public int getWidth() {
-		if (preferences.isExpandedDefault())
-			return GraphicsUtil.SUB_PROCEESS_DEFAULT_WIDTH;
-		return GraphicsUtil.TASK_DEFAULT_WIDTH;
-	}
-
-	@Override
-	public int getHeight() {
-		if (preferences.isExpandedDefault())
-			return GraphicsUtil.SUB_PROCESS_DEFAULT_HEIGHT;
-		return GraphicsUtil.TASK_DEFAULT_HEIGHT;
 	}
 }

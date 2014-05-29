@@ -650,19 +650,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			setAssociationDirection(connection, businessObject);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		protected Class<? extends BaseElement> getBoClass() {
+		public Class getBusinessObjectType() {
 			return DataAssociation.class;
-		}
-
-		@Override
-		public int getHeight() {
-			return 0;
-		}
-
-		@Override
-		public int getWidth() {
-			return 0;
 		}
 	}
 

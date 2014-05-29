@@ -16,9 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -27,8 +25,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.algorithms.MultiText;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
@@ -36,7 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 
 public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnotation> {
@@ -78,8 +73,6 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnota
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		ContainerShape containerShape = peCreateService.createContainerShape(context.getTargetContainer(), true);
 
-		IGaService gaService = Graphiti.getGaService();
-
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 		int commentEdge = 15;
@@ -116,13 +109,11 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnota
 		return containerShape;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
 	@Override
-	public int getHeight() {
-		return 100;
-	}
-
-	@Override
-	public int getWidth() {
-		return 50;
+	public Class getBusinessObjectType() {
+		return TextAnnotation.class;
 	}
 }

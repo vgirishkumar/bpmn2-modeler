@@ -44,6 +44,7 @@ import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
@@ -781,7 +782,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
     public IDecorator[] getDecorators(PictogramElement pe) {
         List<IDecorator> decorators = new ArrayList<IDecorator>();
 
-		if (FeatureSupport.isValidationDecorator(pe)) {
+		if (ShapeDecoratorUtil.isValidationDecorator(pe)) {
 	        IFeatureProvider featureProvider = getFeatureProvider();
 	        Object bo = featureProvider.getBusinessObjectForPictogramElement((PictogramElement) pe.eContainer());
 	        if (bo!=null) {
@@ -805,10 +806,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		                break;
 		            }
 		            if (decorator != null) {
-		                GraphicsAlgorithm ga = getSelectionBorder(pe);
-		                if (ga == null) {
-		                    ga = pe.getGraphicsAlgorithm();
-		                }
 		                decorator.setMessage(status.getMessage());
 		                decorators.add(decorator);
 		            }

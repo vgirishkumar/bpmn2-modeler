@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -69,7 +69,7 @@ public class TimerEventDefinitionContainer extends AbstractEventDefinitionFeatur
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape timerShape = Graphiti.getPeService().createShape(shape, false);
-		Image image = GraphicsUtil.createEventImage(timerShape, ImageProvider.IMG_20_TIMER);
+		Image image = ShapeDecoratorUtil.createEventImage(timerShape, ImageProvider.IMG_20_TIMER);
 
 		// TODO: can't change foreground color of an Image?
 //		Diagram diagram = StyleUtil.findDiagram(image);

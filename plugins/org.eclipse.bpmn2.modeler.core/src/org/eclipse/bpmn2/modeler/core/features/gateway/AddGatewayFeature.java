@@ -15,12 +15,10 @@ package org.eclipse.bpmn2.modeler.core.features.gateway;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -30,11 +28,8 @@ import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
-public class AddGatewayFeature<T extends Gateway>
+public abstract class AddGatewayFeature<T extends Gateway>
 	extends AbstractBpmn2AddFeature<T> {
 
 	public AddGatewayFeature(IFeatureProvider fp) {
@@ -53,8 +48,6 @@ public class AddGatewayFeature<T extends Gateway>
 	@Override
 	public PictogramElement add(IAddContext context) {
 		T businessObject = getBusinessObject(context);
-		IGaService gaService = Graphiti.getGaService();
-		IPeService peService = Graphiti.getPeService();
 
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
@@ -74,7 +67,7 @@ public class AddGatewayFeature<T extends Gateway>
 		gaService.setLocationAndSize(gatewayRect, x, y, width, height);
 
 		Shape gatewayShape = peService.createShape(containerShape, false);
-		Polygon gatewayPolygon = GraphicsUtil.createGateway(gatewayShape, width, height);
+		Polygon gatewayPolygon = ShapeDecoratorUtil.createGateway(gatewayShape, width, height);
 		StyleUtil.applyStyle(gatewayPolygon, businessObject);
 		gaService.setLocationAndSize(gatewayPolygon, 0, 0, width, height);
 
@@ -90,15 +83,4 @@ public class AddGatewayFeature<T extends Gateway>
 		
 		return containerShape;
 	}
-
-	@Override
-	public int getHeight() {
-		return GraphicsUtil.getGatewaySize(this.getDiagram()).getHeight();
-	}
-
-	@Override
-	public int getWidth() {
-		return GraphicsUtil.getGatewaySize(this.getDiagram()).getWidth();
-	}
-	
 }

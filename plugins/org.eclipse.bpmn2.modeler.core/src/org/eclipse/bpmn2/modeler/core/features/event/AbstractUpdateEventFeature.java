@@ -20,7 +20,7 @@ import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -96,7 +96,7 @@ public abstract class AbstractUpdateEventFeature<T extends Event> extends Abstra
 			}
 		}
 		else {
-			GraphicsUtil.deleteEventShape(container);
+			ShapeDecoratorUtil.deleteEventShape(container);
 		}
 		
 	}

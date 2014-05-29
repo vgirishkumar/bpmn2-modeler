@@ -241,10 +241,23 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 						vpos = hpos = LabelPosition.SOUTH;
 					}
 				} else {
-					x = (int) bounds.getX();
-					y = (int) bounds.getY();
-					w = (int) bounds.getWidth();
-					h = (int) bounds.getHeight();
+					int bw = (int) bounds.getWidth();
+					int bh = (int) bounds.getHeight();
+					/*
+					 * The size provided in BPMNLabel for this Label shape is
+					 * not sufficient to hold all of the text at the selected
+					 * Font. Recalculate the Label bounds using the selected
+					 * preferences.
+					 */
+					if (bw < w || bh < h) {
+						isAddingLabel = false;
+					}
+					else {
+						x = (int) bounds.getX();
+						y = (int) bounds.getY();
+						w = bw;
+						h = bh;
+					}
 				}
 			}
 

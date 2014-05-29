@@ -17,9 +17,11 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.DefaultResizeBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
@@ -30,8 +32,11 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeature {
 	public final static int MARGIN = 20;
 	
+	protected Bpmn2Preferences preferences;
+	
 	public ResizeExpandableActivityFeature(IFeatureProvider fp) {
 		super(fp);
+		preferences = Bpmn2Preferences.getInstance(getDiagram());
 	}
 	
 	@Override
@@ -41,6 +46,8 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
+		ShapeStyle ss = preferences.getShapeStyle(activity);
+		
 		try {
 			BPMNShape shape = DIUtils.findBPMNShape(activity);
 			
@@ -137,13 +144,13 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 				for (PictogramElement pe : FeatureSupport.getContainerDecorators(containerShape)) {
 					GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 					if (childGa!=null) {
-						childGa.setWidth(GraphicsUtil.getActivitySize(getDiagram()).getWidth());
-						childGa.setHeight(GraphicsUtil.getActivitySize(getDiagram()).getHeight());
+						childGa.setWidth(ss.getDefaultWidth());
+						childGa.setHeight(ss.getDefaultHeight());
 					}
 				}
 				
-				resizeShapeContext.setWidth(GraphicsUtil.getActivitySize(getDiagram()).getWidth());
-				resizeShapeContext.setHeight(GraphicsUtil.getActivitySize(getDiagram()).getHeight());
+				resizeShapeContext.setWidth(ss.getDefaultWidth());
+				resizeShapeContext.setHeight(ss.getDefaultHeight());
 			}
 			
 		} catch (Exception e) {
@@ -161,6 +168,7 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 		int minWidth;
 		int minHeight;
 		ContainerShape containerShape;
+		ShapeStyle ss;
 		
 		public SizeCalculator(ContainerShape containerShape) {
 			setShape(containerShape);
@@ -168,6 +176,8 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 		
 		public void setShape(ContainerShape containerShape) {
 			this.containerShape = containerShape;
+			Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(containerShape.eResource());
+			ss = preferences.getShapeStyle(BusinessObjectUtil.getFirstBaseElement(containerShape));
 			calculate();
 		}
 		
@@ -204,9 +214,9 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 				}
 			}
 			if (minWidth<=0)
-				minWidth = GraphicsUtil.TASK_DEFAULT_WIDTH;
+				minWidth = ss.getDefaultWidth();
 			if (minHeight<=0)
-				minHeight = GraphicsUtil.TASK_DEFAULT_HEIGHT;
+				minHeight = ss.getDefaultHeight();
 		}
 
 		public int getShiftX() {

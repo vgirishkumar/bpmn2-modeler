@@ -45,15 +45,9 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
 
 public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 	
-	public static final int DEFAULT_LANE_WIDTH = 600;
-	public static final int DEFAULT_LANE_HEIGHT = 100;
-
 	public AddLaneFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -95,10 +89,7 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 	public PictogramElement add(IAddContext context) {
 		Lane businessObject = getBusinessObject(context);
  
-		IPeCreateService peCreateService = Graphiti.getPeCreateService();
-		IGaService gaService = Graphiti.getGaService();
-
-		ContainerShape containerShape = peCreateService.createContainerShape(context.getTargetContainer(), true);
+		ContainerShape containerShape = peService.createContainerShape(context.getTargetContainer(), true);
 		Rectangle rect = gaService.createRectangle(containerShape);
 		StyleUtil.applyStyle(rect, businessObject);
 		
@@ -157,7 +148,7 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		((AddContext)context).setHeight(height);
 		decorateShape(context, containerShape, businessObject);
 
-		peCreateService.createChopboxAnchor(containerShape);
+		peService.createChopboxAnchor(containerShape);
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
@@ -280,13 +271,11 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		return super.getWidth(context);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
 	@Override
-	public int getHeight() {
-		return DEFAULT_LANE_HEIGHT;
-	}
-
-	@Override
-	public int getWidth() {
-		return DEFAULT_LANE_WIDTH;
+	public Class getBusinessObjectType() {
+		return Lane.class;
 	}
 }

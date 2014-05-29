@@ -26,7 +26,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -80,7 +80,7 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
 		Shape escalationShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon escalation = GraphicsUtil.createEventEscalation(escalationShape);
+		Polygon escalation = ShapeDecoratorUtil.createEventEscalation(escalationShape);
 		StyleUtil.setFillStyle(escalation, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(escalation, be);
 		return escalationShape;
@@ -89,7 +89,7 @@ public class EscalationEventDefinitionContainer extends AbstractEventDefinitionF
 	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
 		Shape escalationShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon escalation = GraphicsUtil.createEventEscalation(escalationShape);
+		Polygon escalation = ShapeDecoratorUtil.createEventEscalation(escalationShape);
 		StyleUtil.setFillStyle(escalation, FillStyle.FILL_STYLE_FOREGROUND);
 		StyleUtil.applyStyle(escalation, be);
 		return escalationShape;

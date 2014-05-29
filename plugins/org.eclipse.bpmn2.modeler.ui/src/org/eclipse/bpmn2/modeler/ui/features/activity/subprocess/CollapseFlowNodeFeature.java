@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
@@ -82,6 +82,8 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 				try {
 					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
 					if (bpmnShape.isIsExpanded()) {
+						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(getDiagram());
+						ShapeStyle ss = preferences.getShapeStyle(flowNode);
 						
 						// SubProcess is collapsed - resize to standard modelObject size
 						// NOTE: children tasks will be set not-visible in LayoutExpandableActivityFeature
@@ -93,8 +95,8 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
 						int oldWidth = ga.getWidth();
 						int oldHeight = ga.getHeight();
-						int newWidth = GraphicsUtil.getActivitySize(getDiagram()).getWidth();
-						int newHeight = GraphicsUtil.getActivitySize(getDiagram()).getHeight();
+						int newWidth = ss.getDefaultWidth();
+						int newHeight = ss.getDefaultHeight();
 						resizeContext.setX(ga.getX() + oldWidth/2 - newWidth/2);
 						resizeContext.setY(ga.getY() + oldHeight/2 - newHeight/2);
 						resizeContext.setWidth(newWidth);

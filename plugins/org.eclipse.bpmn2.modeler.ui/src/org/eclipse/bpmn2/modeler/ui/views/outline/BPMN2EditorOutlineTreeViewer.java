@@ -12,6 +12,7 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EObject;
@@ -25,8 +26,6 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-
-import static org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer.IS_EXPANDED;
 
 public class BPMN2EditorOutlineTreeViewer extends TreeViewer implements Adaptable {
 
@@ -70,7 +69,7 @@ public class BPMN2EditorOutlineTreeViewer extends TreeViewer implements Adaptabl
 					Object model = editPartParent.getModel();
 					if (model instanceof EObject) {
 						for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, (EObject)model)) {
-							String value = Graphiti.getPeService().getPropertyValue(pe, IS_EXPANDED);
+							String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.IS_EXPANDED);
 							if (value!=null && Boolean.parseBoolean(value)==false) {
 								super.setSelection(new StructuredSelection(editPartParent));
 								return;

@@ -18,7 +18,7 @@ import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractCreateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.AddEventFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
@@ -66,12 +66,20 @@ public class IntermediateThrowEventFeatureContainer extends AbstractEventFeature
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, IntermediateThrowEvent businessObject) {
 			super.decorateShape(context, containerShape, businessObject);
 			Ellipse e = (Ellipse)getGraphicsAlgorithm(containerShape);
-			Ellipse circle = GraphicsUtil.createIntermediateEventCircle(e);
+			Ellipse circle = ShapeDecoratorUtil.createIntermediateEventCircle(e);
 			circle.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 			IPeService peService = Graphiti.getPeService();
 			peService.setPropertyValue(containerShape,
 					UpdateIntermediateThrowEventFeature.INTERMEDIATE_THROW_EVENT_MARKER,
 					AbstractUpdateEventFeature.getEventDefinitionsValue((IntermediateThrowEvent)businessObject));
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return IntermediateThrowEvent.class;
 		}
 	}
 

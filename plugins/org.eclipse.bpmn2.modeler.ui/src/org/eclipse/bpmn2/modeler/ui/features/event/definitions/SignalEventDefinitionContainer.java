@@ -22,7 +22,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -75,7 +75,7 @@ public class SignalEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape signalShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon signal = GraphicsUtil.createEventSignal(signalShape);
+		Polygon signal = ShapeDecoratorUtil.createEventSignal(signalShape);
 		StyleUtil.setFillStyle(signal, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(signal, be);
 		return signalShape;
@@ -84,7 +84,7 @@ public class SignalEventDefinitionContainer extends AbstractEventDefinitionFeatu
 	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape signalShape = Graphiti.getPeService().createShape(shape, false);
-		Polygon signal = GraphicsUtil.createEventSignal(signalShape);
+		Polygon signal = ShapeDecoratorUtil.createEventSignal(signalShape);
 		StyleUtil.setFillStyle(signal, FillStyle.FILL_STYLE_FOREGROUND);
 		StyleUtil.applyStyle(signal, be);
 		return signalShape;

@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.modeler.core.features.activity.AbstractCreateExpandable
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -51,7 +51,12 @@ public class AdHocSubProcessFeatureContainer extends AbstractExpandableActivityF
 			@Override
 			protected void decorateShape(IAddContext context, ContainerShape containerShape, AdHocSubProcess businessObject) {
 				super.decorateShape(context, containerShape, businessObject);
-				GraphicsUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
+				ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_AD_HOC);
+			}
+
+			@Override
+			public Class getBusinessObjectType() {
+				return AdHocSubProcess.class;
 			}
 		};
 	}

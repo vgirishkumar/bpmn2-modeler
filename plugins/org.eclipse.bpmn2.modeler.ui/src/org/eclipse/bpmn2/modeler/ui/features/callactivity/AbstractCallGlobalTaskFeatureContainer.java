@@ -14,7 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.callactivity;
 
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.GlobalTask;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AddExpandableActivityFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -56,17 +56,13 @@ public abstract class AbstractCallGlobalTaskFeatureContainer<T extends GlobalTas
 		protected int getMarkerContainerOffset() {
 			return MARKER_OFFSET;
 		}
-
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
 		@Override
-		public int getWidth() {
-			return GraphicsUtil.getActivitySize(getDiagram()).getWidth();
+		public Class getBusinessObjectType() {
+			return CallActivity.class;
 		}
-
-		@Override
-		public int getHeight() {
-			return GraphicsUtil.getActivitySize(getDiagram()).getHeight();
-		}
-	
 	}
 
 }

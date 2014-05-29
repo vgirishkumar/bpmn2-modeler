@@ -59,7 +59,6 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Size;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
@@ -75,15 +74,12 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.mm.algorithms.styles.impl.PointImpl;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -92,12 +88,10 @@ import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.mm.pictograms.impl.FreeFormConnectionImpl;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.swt.widgets.Display;
 
 @SuppressWarnings("restriction")
 public class DIImport {
@@ -498,25 +492,17 @@ public class DIImport {
 		Diagram diagram = getDiagram(shape);
 		context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 		context.setNewObject(bpmnElement);
-		boolean defaultSize = false;
+
 		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
-		if (ss!=null)
-			defaultSize = ss.getUseDefaultSize();
-		
-		if (defaultSize) {
-			Size size = GraphicsUtil.getShapeSize(bpmnElement,diagram);
-			if (size!=null)
-				context.setSize(size.getWidth(),size.getHeight());
-			else
-				defaultSize = false;
+		if (ss!=null && ss.getUseDefaultSize()) {
+			context.setSize(ss.getDefaultWidth(),ss.getDefaultHeight());
 		}
-		
-		if (!defaultSize) {
+		else {
 			context.setSize((int) shape.getBounds().getWidth(), (int) shape.getBounds().getHeight());
 		}
 
 		if ( (bpmnElement instanceof SubProcess) && !shape.isIsExpanded()) {
-			context.setSize(GraphicsUtil.getActivitySize(diagram).getWidth(), GraphicsUtil.getActivitySize(diagram).getHeight());
+			context.setSize(ss.getDefaultWidth(),ss.getDefaultHeight());
 		}
 
 		if (bpmnElement instanceof Lane) {
@@ -554,13 +540,6 @@ public class DIImport {
 						elements.put((Participant)o, pe);
 				}
 			}
-//			else if (bpmnElement instanceof Event) {
-//				GraphicsUtil.setEventSize(context.getWidth(), context.getHeight(), diagram);
-//			} else if (bpmnElement instanceof Gateway) {
-//				GraphicsUtil.setGatewaySize(context.getWidth(), context.getHeight(), diagram);
-//			} else if (bpmnElement instanceof Activity && !(bpmnElement instanceof SubProcess)) {
-//				GraphicsUtil.setActivitySize(context.getWidth(), context.getHeight(), diagram);
-//			}
 			
 			elements.put(bpmnElement, newContainer);
 			handleEvents(bpmnElement, newContainer);

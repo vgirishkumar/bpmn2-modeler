@@ -16,7 +16,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AbstractCreateGatewayFeature;
 import org.eclipse.bpmn2.modeler.core.features.gateway.AddGatewayFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -50,7 +50,15 @@ public class ComplexGatewayFeatureContainer extends AbstractGatewayFeatureContai
 		@Override
 		protected void decorateShape(IAddContext context, ContainerShape containerShape, ComplexGateway businessObject) {
 			super.decorateShape(context, containerShape, businessObject);
-			GraphicsUtil.createGatewayAsterisk(containerShape);
+			ShapeDecoratorUtil.createGatewayAsterisk(containerShape);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return ComplexGateway.class;
 		}
 	}
 

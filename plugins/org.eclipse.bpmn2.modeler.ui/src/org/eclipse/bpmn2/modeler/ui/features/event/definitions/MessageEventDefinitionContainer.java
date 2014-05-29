@@ -19,8 +19,8 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDe
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateEventDefinitionFeature;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Envelope;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -71,7 +71,7 @@ public class MessageEventDefinitionContainer extends AbstractEventDefinitionFeat
 	public static Shape draw(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape envelopeShape = Graphiti.getPeService().createShape(shape, false);
-		Envelope env = GraphicsUtil.createEventEnvelope(envelopeShape);
+		Envelope env = ShapeDecoratorUtil.createEventEnvelope(envelopeShape);
 		StyleUtil.setFillStyle(env.rect, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(env.rect, be);
 		StyleUtil.setFillStyle(env.line, FillStyle.FILL_STYLE_BACKGROUND);
@@ -82,7 +82,7 @@ public class MessageEventDefinitionContainer extends AbstractEventDefinitionFeat
 	public static Shape drawFilled(ContainerShape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
 		Shape envelopeShape = Graphiti.getPeService().createShape(shape, false);
-		Envelope env = GraphicsUtil.createEventEnvelope(envelopeShape);
+		Envelope env = ShapeDecoratorUtil.createEventEnvelope(envelopeShape);
 		StyleUtil.setFillStyle(env.rect, FillStyle.FILL_STYLE_INVERT);
 		StyleUtil.applyStyle(env.rect, be);
 		StyleUtil.setFillStyle(env.line, FillStyle.FILL_STYLE_INVERT);

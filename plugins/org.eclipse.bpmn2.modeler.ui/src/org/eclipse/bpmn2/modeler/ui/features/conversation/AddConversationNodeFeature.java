@@ -31,7 +31,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 
-public class AddConversationNodeFeature<T extends ConversationNode> extends AbstractBpmn2AddFeature<T> {
+public abstract class AddConversationNodeFeature<T extends ConversationNode> extends AbstractBpmn2AddFeature<T> {
 
 	public AddConversationNodeFeature(IFeatureProvider fp) {
 		super(fp);
@@ -79,15 +79,5 @@ public class AddConversationNodeFeature<T extends ConversationNode> extends Abst
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
-	}
-
-	@Override
-	public int getHeight() {
-		return 40;
-	}
-
-	@Override
-	public int getWidth() {
-		return 40;
 	}
 }

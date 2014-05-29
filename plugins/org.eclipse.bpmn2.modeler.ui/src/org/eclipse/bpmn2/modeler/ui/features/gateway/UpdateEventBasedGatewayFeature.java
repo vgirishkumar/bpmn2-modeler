@@ -17,7 +17,7 @@ import org.eclipse.bpmn2.EventBasedGatewayType;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -82,7 +82,7 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFea
 	}
 
 	private void clearGateway(PictogramElement element) {
-		GraphicsUtil.clearGateway(element);
+		ShapeDecoratorUtil.clearGateway(element);
 	}
 
 	private void drawEventBased(ContainerShape container) {
@@ -90,9 +90,9 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFea
 			// don't draw decorators on Labels
 			return;
 		}
-		Ellipse outer = GraphicsUtil.createGatewayOuterCircle(container);
-		Ellipse inner = GraphicsUtil.createGatewayInnerCircle(outer);
-		Polygon pentagon = GraphicsUtil.createGatewayPentagon(container);
+		Ellipse outer = ShapeDecoratorUtil.createGatewayOuterCircle(container);
+		Ellipse inner = ShapeDecoratorUtil.createGatewayInnerCircle(outer);
+		Polygon pentagon = ShapeDecoratorUtil.createGatewayPentagon(container);
 		pentagon.setFilled(false);
 	}
 
@@ -101,8 +101,8 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFea
 			// don't draw decorators on Labels
 			return;
 		}
-		Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(container);
-		Polygon pentagon = GraphicsUtil.createGatewayPentagon(container);
+		Ellipse ellipse = ShapeDecoratorUtil.createGatewayOuterCircle(container);
+		Polygon pentagon = ShapeDecoratorUtil.createGatewayPentagon(container);
 		pentagon.setFilled(false);
 	}
 
@@ -111,7 +111,7 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFea
 			// don't draw decorators on Labels
 			return;
 		}
-		Ellipse ellipse = GraphicsUtil.createGatewayOuterCircle(container);
-		Polygon cross = GraphicsUtil.createEventGatewayParallelCross(container);
+		Ellipse ellipse = ShapeDecoratorUtil.createGatewayOuterCircle(container);
+		Polygon cross = ShapeDecoratorUtil.createEventGatewayParallelCross(container);
 	}
 }

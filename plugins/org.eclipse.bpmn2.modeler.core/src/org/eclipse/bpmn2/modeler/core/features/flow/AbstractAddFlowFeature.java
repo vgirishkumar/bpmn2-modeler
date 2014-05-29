@@ -69,7 +69,7 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 					return false;
 				}
 			}
-			return getBoClass().isAssignableFrom(getBusinessObject(context).getClass());
+			return getBusinessObjectType().isAssignableFrom(getBusinessObject(context).getClass());
 		}
 		return false;
 	}
@@ -79,8 +79,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 	 */
 	@Override
 	public PictogramElement add(IAddContext context) {
-		IPeService peService = Graphiti.getPeService();
- 
 		boolean isImporting = DIImport.isImporting(context);
 
 		T businessObject = getBusinessObject(context);
@@ -151,18 +149,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 
 		return connection;
 	}
-	
-	@Override
-	public int getHeight() {
-		return -1;
-	}
-
-	@Override
-	public int getWidth() {
-		return -1;
-	}
-
-	protected abstract Class<? extends BaseElement> getBoClass();
 
 	protected Polyline createConnectionLine(Connection connection) {
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);

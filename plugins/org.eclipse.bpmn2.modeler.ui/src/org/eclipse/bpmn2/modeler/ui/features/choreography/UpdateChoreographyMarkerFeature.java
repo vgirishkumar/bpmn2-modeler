@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
@@ -48,24 +48,24 @@ public class UpdateChoreographyMarkerFeature extends AbstractUpdateMarkerFeature
 	protected void doUpdate(ChoreographyActivity element, ContainerShape markerContainer) {
 		switch (element.getLoopType()) {
 		case STANDARD:
-			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			ShapeDecoratorUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		case MULTI_INSTANCE_PARALLEL:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			ShapeDecoratorUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		case MULTI_INSTANCE_SEQUENTIAL:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			ShapeDecoratorUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 			break;
 		default:
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
-			GraphicsUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_STANDARD);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_PARALLEL);
+			ShapeDecoratorUtil.hideActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_LC_MULTI_SEQUENTIAL);
 		}
 	}
 

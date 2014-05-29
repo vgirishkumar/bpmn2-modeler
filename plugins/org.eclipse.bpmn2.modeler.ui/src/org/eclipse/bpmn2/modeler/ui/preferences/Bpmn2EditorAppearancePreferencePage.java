@@ -256,14 +256,14 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		gd.verticalIndent = 10;
 		snapToGrid.setLayoutData(gd);
 
-		gridWidth = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_GRID_WIDTH,
+		gridWidth = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_WIDTH,
 				Messages.Bpmn2EditorPreferencePage_GridWidth);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		gridWidth.setLayoutData(gd);
 
-		gridHeight = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_GRID_WIDTH,
+		gridHeight = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_WIDTH,
 				Messages.Bpmn2EditorPreferencePage_GridHeight);
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
@@ -435,16 +435,19 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				if (Bpmn2FeatureMap.ARTIFACTS.contains(c))
 					artifactShapeStyles.put(c, ss);
 				
-				if (Activator.getDefault().isDebugging()) {
-					IColorConstant foreground = ss.getShapeForeground();
-					IColorConstant background = ss.getShapeBackground();
-					IColorConstant textColor = ss.getLabelForeground();
-					Font font = ss.getLabelFont();
-					System.out.println("\t\t<style object=\"" + c.getSimpleName() + "\"" + " foreground=\"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-							+ ShapeStyle.colorToString(foreground) + "\"" + " background=\"" //$NON-NLS-1$ //$NON-NLS-2$
-							+ ShapeStyle.colorToString(background) + "\"" + " labelForeground=\"" //$NON-NLS-1$ //$NON-NLS-2$
-							+ ShapeStyle.colorToString(textColor) + "\"" + " font=\"" + ShapeStyle.fontToString(font) //$NON-NLS-1$ //$NON-NLS-2$
-							+ "\"/>"); //$NON-NLS-1$
+				if (true || Activator.getDefault().isDebugging()) {
+					System.out.println("\t\t<"+ShapeStyle.STYLE_OBJECT + " object=\"" + c.getSimpleName() + "\" "
+							+ ShapeStyle.STYLE_SHAPE_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeForeground()) + "\" "
+							+ ShapeStyle.STYLE_SHAPE_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeBackground()) + "\" "
+							+ ShapeStyle.STYLE_LABEL_FONT+"=\"" + ShapeStyle.fontToString(ss.getLabelFont()) + "\" "
+							+ ShapeStyle.STYLE_LABEL_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelForeground()) + "\" "
+							+ ShapeStyle.STYLE_LABEL_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelBackground()) + "\" "
+							+ ShapeStyle.STYLE_LABEL_POSITION+"=\"" + ss.getLabelPosition().name() + "\" "
+							+ ShapeStyle.STYLE_ROUTING_STYLE+"=\"" + ss.getRoutingStyle().name() + "\" "
+							+ ShapeStyle.STYLE_USE_DEFAULT_SIZE+"=\"" + ss.getUseDefaultSize() + "\" "
+							+ ShapeStyle.STYLE_DEFAULT_HEIGHT+"=\"" + ss.getDefaultHeight() + "\" "
+							+ ShapeStyle.STYLE_DEFAULT_WIDTH+"=\"" + ss.getDefaultWidth() + "\" "
+							+ "/>"); //$NON-NLS-1$
 				}
 			}
 			for (Category key : Category.values()) {
@@ -1134,7 +1137,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	private class LabelLocationShapeStyleEditor extends LabeledComboShapeStyleEditor {
 
 		public LabelLocationShapeStyleEditor(Composite parent, String text) {
-			super(parent, ShapeStyle.SS_LABEL_LOCATION, text);
+			super(parent, ShapeStyle.SS_LABEL_POSITION, text);
 			for (LabelPosition p : LabelPosition.values())
 				add(p.toString(), p);
 		}

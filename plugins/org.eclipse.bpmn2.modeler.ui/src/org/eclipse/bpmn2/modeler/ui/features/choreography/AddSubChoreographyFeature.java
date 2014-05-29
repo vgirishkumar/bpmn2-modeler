@@ -20,4 +20,12 @@ public class AddSubChoreographyFeature extends AddChoreographyActivityFeature<Su
 	public AddSubChoreographyFeature(IFeatureProvider fp) {
 		super(fp);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
+	@Override
+	public Class getBusinessObjectType() {
+		return SubChoreography.class;
+	}
 }

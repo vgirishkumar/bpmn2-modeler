@@ -75,6 +75,14 @@ public class EndEventFeatureContainer extends AbstractEventFeatureContainer {
 					UpdateEndEventFeature.END_EVENT_MARKER,
 					AbstractUpdateEventFeature.getEventDefinitionsValue((EndEvent)businessObject));
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return EndEvent.class;
+		}
 	}
 
 	public static class CreateEndEventFeature extends AbstractCreateEventFeature<EndEvent> {

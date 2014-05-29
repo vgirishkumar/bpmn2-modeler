@@ -48,6 +48,14 @@ public class BusinessRuleTaskFeatureContainer extends AbstractTaskFeatureContain
 		protected String getStencilImageId() {
 			return ImageProvider.IMG_16_BUSINESS_RULE_TASK;
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class getBusinessObjectType() {
+			return BusinessRuleTask.class;
+		}
 	}
 
 	public static class CreateBusinessRuleTaskFeature extends AbstractCreateTaskFeature<BusinessRuleTask> {

@@ -13,17 +13,18 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -31,13 +32,10 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
-import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -47,15 +45,6 @@ import org.eclipse.graphiti.services.IPeService;
  */
 public abstract class AbstractAddActivityFeature<T extends Activity>
 	extends AbstractBpmn2AddFeature<T> {
-
-	/** The ga service. */
-	protected final IGaService gaService = Graphiti.getGaService();
-	
-	/** The pe service. */
-	protected final IPeService peService = Graphiti.getPeService();
-
-	/** The preferences. */
-	protected Bpmn2Preferences preferences;
 	
 	/**
 	 * Instantiates a new abstract add activity feature.
@@ -101,12 +90,10 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	 */
 	@Override
 	public PictogramElement add(IAddContext context) {
-		preferences = Bpmn2Preferences.getInstance((EObject)context.getNewObject());
-
 		T businessObject = getBusinessObject(context);
 
-		int width = context.getWidth() > 0 ? context.getWidth() : this.getWidth();
-		int height = context.getHeight() > 0 ? context.getHeight() : this.getHeight();
+		int width = getWidth(context);
+		int height = getHeight(context);
 		
 		GraphicsAlgorithm targetAlgorithm = context.getTargetContainer().getGraphicsAlgorithm();
 		
@@ -124,22 +111,13 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		Rectangle invisibleRect = gaService.createInvisibleRectangle(containerShape);
 		gaService.setLocationAndSize(invisibleRect, x, y, width, height);
 
-		Shape rectShape = peService.createShape(containerShape, false);
-		RoundedRectangle rect = gaService.createRoundedRectangle(rectShape, 5, 5);
-		StyleUtil.applyStyle(rect, businessObject);
-		gaService.setLocationAndSize(rect, 0, 0, width, height);
-		link(rectShape, businessObject);
+		Shape rectShape = ShapeDecoratorUtil.createActivityBorder(containerShape, businessObject);
 		
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
-		Graphiti.getPeService().setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
-		Graphiti.getPeService().setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
-
-		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
-		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
-		}
+		peService.setPropertyValue(containerShape, GraphitiConstants.IS_COMPENSATE_PROPERTY, Boolean.toString(false));
+		peService.setPropertyValue(containerShape, GraphitiConstants.IS_LOOP_OR_MULTI_INSTANCE, LoopCharacteristicType.NULL.getName());
 
 		// hook for subclasses to inject extra code
 		((AddContext)context).setWidth(width);
@@ -147,12 +125,8 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		decorateShape(context, containerShape, businessObject);
 		
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
+		AnchorUtil.addFixedPointAnchors(containerShape, rectShape.getGraphicsAlgorithm());
 
-		// set a property on the decorators so we can distinguish them from the real children (i.e. tasks, etc.)
-		for (PictogramElement pe : containerShape.getChildren()) {
-			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR, "true"); //$NON-NLS-1$
-		}
 		splitConnection(context, containerShape);
 		
 		return containerShape;
@@ -166,14 +140,4 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	protected int getMarkerContainerOffset() {
 		return 0;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getWidth()
-	 */
-	public abstract int getWidth();
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getHeight()
-	 */
-	public abstract int getHeight();
 }

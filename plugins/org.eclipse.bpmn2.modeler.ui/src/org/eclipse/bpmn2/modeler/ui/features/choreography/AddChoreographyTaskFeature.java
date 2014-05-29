@@ -30,4 +30,12 @@ public class AddChoreographyTaskFeature extends AddChoreographyActivityFeature<C
 				|| BusinessObjectUtil.containsElementOfType(context.getTargetContainer(), FlowElementsContainer.class);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+	 */
+	@Override
+	public Class getBusinessObjectType() {
+		return ChoreographyTask.class;
+	}
+
 }

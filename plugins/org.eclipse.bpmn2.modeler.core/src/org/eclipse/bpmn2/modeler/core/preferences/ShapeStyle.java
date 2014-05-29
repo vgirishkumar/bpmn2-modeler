@@ -56,7 +56,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public final static String EXTENSION_NAME = "style"; //$NON-NLS-1$
 	
 	public static IColorConstant DEFAULT_COLOR = new ColorConstant(212, 231, 248);
-	public static String DEFAULT_FONT_STRING = "arial,10,-,-"; //$NON-NLS-1$
+	public static String DEFAULT_FONT_STRING = "arial,9,-,-"; //$NON-NLS-1$
 	public final static int SS_SHAPE_BACKGROUND = 1 << 0;
 	public final static int SS_SHAPE_FOREGROUND = 1 << 1;
 	public final static int SS_SHAPE_PRIMARY_SELECTION = 1 << 2;
@@ -64,11 +64,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public final static int SS_LABEL_FONT = 1 << 4;
 	public final static int SS_LABEL_FOREGROUND = 1 << 5;
 	public final static int SS_LABEL_BACKGROUND = 1 << 6;
+	public final static int SS_LABEL_POSITION = 1 << 11;
 	public final static int SS_ROUTING_STYLE = 1 << 7;
-	public final static int SS_SNAP_TO_GRID = 1 << 8;
-	public final static int SS_GRID_WIDTH = 1 << 9;
-	public final static int SS_GRID_HEIGHT = 1 << 10;
-	public final static int SS_LABEL_LOCATION = 1 << 11;
+	public final static int SS_USE_DEFAULT_SIZE = 1 << 8;
+	public final static int SS_DEFAULT_WIDTH = 1 << 9;
+	public final static int SS_DEFAULT_HEIGHT = 1 << 10;
 	public final static int SS_ALL = -1;
 
 	/** Attribute names of the ShapeStyle components in the style object in BaseElement extension values **/
@@ -76,11 +76,17 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public final static String STYLE_ECLASS = "ShapeStyle";
 	public final static String STYLE_SHAPE_FOREGROUND = "shapeForeground";
 	public final static String STYLE_SHAPE_BACKGROUND = "shapeBackground";
+	public final static String STYLE_LABEL_FONT = "labelFont";
 	public final static String STYLE_LABEL_FOREGROUND = "labelForeground";
 	public final static String STYLE_LABEL_BACKGROUND = "labelBackground";
-	public final static String STYLE_LABEL_FONT = "labelFont";
 	public final static String STYLE_LABEL_POSITION = "labelPosition";
 	public final static String STYLE_ROUTING_STYLE = "routingStyle";
+	public final static String STYLE_USE_DEFAULT_SIZE = "useDefaultSize";
+	public final static String STYLE_DEFAULT_WIDTH = "defaultWidth";
+	public final static String STYLE_DEFAULT_HEIGHT = "defaultHeight";
+	
+	private final static String DEFAULT_BACKGROUND = "FFFFFF";
+	private final static String DEFAULT_FOREGROUND = "000000";
 	
 	String object;
 	IColorConstant shapeBackground;
@@ -92,14 +98,12 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	IColorConstant labelBackground;
 	RoutingStyle routingStyle = RoutingStyle.Manhattan;
 	boolean useDefaultSize;
-	boolean snapToGrid = true;
-	// TODO: use this as Line Width for Connections and as Figure Width for Shapes
+	// the useDefault doubles as the flag for "snap to grid" in the Canvas ShapeStyle
+//	boolean snapToGrid = true;
 	int defaultWidth = 10;
 	int defaultHeight = 10;
 	LabelPosition labelPosition = LabelPosition.SOUTH;
 	int changeMask;
-	protected TargetRuntime targetRuntime;
-	protected IFile configFile;
 	
 	public static enum Category {
 		CONNECTIONS(Messages.ShapeStyle_Category_Connections),
@@ -175,34 +179,51 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 	public ShapeStyle(IConfigurationElement e) {
 		super(e);
-		object = e.getAttribute("object"); //$NON-NLS-1$
-		String foreground = e.getAttribute("foreground"); //$NON-NLS-1$
-		String background = e.getAttribute("background"); //$NON-NLS-1$
-		String textColor = e.getAttribute("labelForeground"); //$NON-NLS-1$
-		String font = e.getAttribute("font"); //$NON-NLS-1$
-		// TODO: parse these
-		String labelPosition = e.getAttribute("labelPosition"); //$NON-NLS-1$
-		String routing = e.getAttribute("routing"); //$NON-NLS-1$
+		object = e.getAttribute("object");
+		String shapeForeground = e.getAttribute(STYLE_SHAPE_FOREGROUND);
+		String shapeBackground = e.getAttribute(STYLE_SHAPE_BACKGROUND);
+		String labelFont = e.getAttribute(STYLE_LABEL_FONT);
+		String labelForeground = e.getAttribute(STYLE_LABEL_FOREGROUND);
+		String labelBackground = e.getAttribute(STYLE_LABEL_BACKGROUND);
+		String labelPosition = e.getAttribute(STYLE_LABEL_POSITION);
+		String routingStyle = e.getAttribute(STYLE_ROUTING_STYLE);
+		String useDefaultSize = e.getAttribute(STYLE_USE_DEFAULT_SIZE);
+		String defaultHeight = e.getAttribute(STYLE_DEFAULT_HEIGHT);
+		String defaultWidth = e.getAttribute(STYLE_DEFAULT_WIDTH);
 
 		// only background color is required to set up default color scheme
-		if (background==null || background.isEmpty())
-			background = "FFFFFF";
-		shapeBackground = stringToColor(background);
-		setDefaultColors(shapeBackground);
+		if (shapeBackground==null || shapeBackground.isEmpty())
+			shapeBackground = DEFAULT_BACKGROUND;
+		this.shapeBackground = stringToColor(shapeBackground);
+		setDefaultColors(this.shapeBackground);
 		
 		// optional:
-		if (foreground!=null && !foreground.isEmpty())
-			shapeForeground = stringToColor(foreground);
-		if (textColor!=null && !textColor.isEmpty())
-			this.labelForeground = stringToColor(textColor);
-		if (font==null || font.isEmpty())
-			font = DEFAULT_FONT_STRING;
-		labelFont = stringToFont(font);
-		useDefaultSize = false;
+		if (shapeForeground!=null && !shapeForeground.isEmpty())
+			this.shapeForeground = stringToColor(shapeForeground);
+		if (labelFont==null || labelFont.isEmpty())
+			labelFont = DEFAULT_FONT_STRING;
+		this.labelFont = stringToFont(labelFont);
+		if (labelForeground!=null && !labelForeground.isEmpty())
+			this.labelForeground = stringToColor(labelForeground);
+		if (labelBackground!=null && !labelBackground.isEmpty())
+			this.labelBackground = stringToColor(labelBackground);
+		if (labelPosition!=null && !labelPosition.isEmpty())
+			this.labelPosition = LabelPosition.valueOf(labelPosition);
+		else
+			this.labelPosition = LabelPosition.SOUTH;
+		if (routingStyle!=null && !routingStyle.isEmpty())
+			this.routingStyle = RoutingStyle.valueOf(labelPosition);
+		else
+			this.routingStyle = RoutingStyle.Manhattan;
+		this.useDefaultSize = Boolean.parseBoolean(useDefaultSize);
+		try { this.defaultHeight = Integer.parseInt(defaultHeight); } catch (Exception e1) {}
+		try { this.defaultWidth = Integer.parseInt(defaultWidth); } catch (Exception e1) {}
 	}
 
 	public ShapeStyle(ShapeStyle other) {
 		this(encode(other));
+		this.object = other.object;
+		this.targetRuntime = other.targetRuntime;
 	}
 	
 	private ShapeStyle(String s) {
@@ -220,9 +241,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (a.length>5)
 			labelForeground = stringToColor(a[5]);
 		if (a.length>6)
-			useDefaultSize = stringToBoolean(a[6]);
-		else
-			useDefaultSize = false;
+			labelBackground = stringToColor(a[6]);
 		if (a.length>7) {
 			try {
 				routingStyle = RoutingStyle.values()[Integer.parseInt(a[7])];
@@ -235,10 +254,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			routingStyle = RoutingStyle.ManualBendpoint;
 		
 		if (a.length>8) {
-			snapToGrid = Integer.parseInt(a[8])==0 ? false : true;
+			useDefaultSize = stringToBoolean(a[8]);
 		}
 		else
-			snapToGrid = true;
+			useDefaultSize = false;
 		
 		if (a.length>9) {
 			defaultWidth = Integer.parseInt(a[9]);
@@ -264,8 +283,12 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		return EXTENSION_NAME;
 	}
 
-	public String getObjectName() {
+	public String getObject() {
 		return object;
+	}
+
+	public void setObject(String object) {
+		this.object = object;
 	}
 	
 	public void setDefaultColors(IColorConstant defaultColor) {
@@ -274,6 +297,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		setShapeSecondarySelectedColor(StyleUtil.shiftColor(defaultColor, -32));
 		setShapeForeground(StyleUtil.shiftColor(defaultColor, -128));
 		setLabelForeground(StyleUtil.shiftColor(defaultColor, -128));
+		setLabelBackground(stringToColor(DEFAULT_BACKGROUND));
 	}
 	
 	public boolean isDirty() {
@@ -350,6 +374,19 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 
+	public IColorConstant getLabelBackground() {
+		if (labelBackground==null)
+			return stringToColor(DEFAULT_BACKGROUND);
+		return labelBackground;
+	}
+
+	public void setLabelBackground(IColorConstant labelBackground) {
+		if (!equals(this.labelBackground, labelBackground)) {
+			this.labelBackground = labelBackground;
+			changeMask |= SS_LABEL_BACKGROUND;
+		}
+	}
+
 	public RoutingStyle getRoutingStyle() {
 		return routingStyle;
 	}
@@ -360,37 +397,48 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			changeMask |= SS_ROUTING_STYLE;
 		}
 	}
-
-	public boolean getSnapToGrid() {
-		return snapToGrid;
-	}
-	
-	public void setSnapToGrid(boolean value) {
-		if (snapToGrid!=value) {
-			snapToGrid = value;
-			changeMask |= SS_SNAP_TO_GRID;
-		}
-	}
 	
 	public int getDefaultWidth() {
+		if (defaultWidth<=0) {
+			if (object.toLowerCase().contains("gateway"))
+				return 50;
+			if (object.toLowerCase().contains("event"))
+				return 36;
+			if (object.toLowerCase().contains("choreography"))
+				return 150;
+			if (object.toLowerCase().contains("data"))
+				return 36;
+			return 110;
+		}
 		return defaultWidth;
 	}
 
 	public void setDefaultWidth(int defaultWidth) {
 		if (this.defaultWidth!=defaultWidth) {
 			this.defaultWidth = defaultWidth;
-			changeMask |= SS_GRID_WIDTH;
+			changeMask |= SS_DEFAULT_WIDTH;
 		}
 	}
 	
 	public int getDefaultHeight() {
+		if (defaultHeight<=0) {
+			if (object.toLowerCase().contains("gateway"))
+				return 50;
+			if (object.toLowerCase().contains("event"))
+				return 36;
+			if (object.toLowerCase().contains("choreography"))
+				return 150;
+			if (object.toLowerCase().contains("data"))
+				return 50;
+			return 50;
+		}
 		return defaultHeight;
 	}
 
 	public void setDefaultHeight(int defaultHeight) {
 		if (this.defaultHeight!=defaultHeight) {
 			this.defaultHeight = defaultHeight;
-			changeMask |= SS_GRID_HEIGHT;
+			changeMask |= SS_DEFAULT_HEIGHT;
 		}
 	}
 
@@ -401,7 +449,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setLabelPosition(LabelPosition labelPosition) {
 		if (this.labelPosition!=labelPosition) {
 			this.labelPosition = labelPosition;
-			changeMask |= SS_LABEL_LOCATION;
+			changeMask |= SS_LABEL_POSITION;
 		}
 	}
 	
@@ -414,6 +462,14 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			useDefaultSize = b;
 			setDirty(true);
 		}
+	}
+
+	public boolean getSnapToGrid() {
+		return getUseDefaultSize();
+	}
+	
+	public void setSnapToGrid(boolean value) {
+		setUseDefaultSize(value);
 	}
 	
 	public static String colorToString(IColorConstant c) {
@@ -550,9 +606,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				colorToString(sp.shapeForeground) + ";" + //$NON-NLS-1$
 				fontToString(sp.labelFont) + ";" + //$NON-NLS-1$
 				colorToString(sp.labelForeground) + ";" + //$NON-NLS-1$
+				// placeholder for backward compatibility
 				booleanToString(sp.useDefaultSize) + ";" + //$NON-NLS-1$
 				sp.routingStyle.ordinal() + ";" + //$NON-NLS-1$
-				(sp.snapToGrid ? "1" : "0") + ";" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				booleanToString(sp.useDefaultSize) + ";" + //$NON-NLS-1$
 				sp.defaultWidth + ";" + //$NON-NLS-1$
 				sp.defaultHeight + ";" + //$NON-NLS-1$
 				sp.labelPosition.ordinal()
@@ -581,13 +638,13 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			this.setLabelForeground(other.getLabelForeground());
 		if ((m & SS_ROUTING_STYLE) != 0)
 			this.setRoutingStyle(other.getRoutingStyle());
-		if ((m & SS_SNAP_TO_GRID) != 0)
+		if ((m & SS_USE_DEFAULT_SIZE) != 0)
 			this.setSnapToGrid(other.getSnapToGrid());
-		if ((m & SS_GRID_WIDTH) != 0)
+		if ((m & SS_DEFAULT_WIDTH) != 0)
 			this.setDefaultWidth(other.getDefaultWidth());
-		if ((m & SS_GRID_HEIGHT) != 0)
+		if ((m & SS_DEFAULT_HEIGHT) != 0)
 			this.setDefaultHeight(other.getDefaultHeight());
-		if ((m & SS_LABEL_LOCATION) != 0)
+		if ((m & SS_LABEL_POSITION) != 0)
 			this.setLabelPosition(other.getLabelPosition());
 	}
 
@@ -606,13 +663,13 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			this.setLabelForeground((IColorConstant)value);
 		if (m == SS_ROUTING_STYLE)
 			this.setRoutingStyle((RoutingStyle)value);
-		if (m == SS_SNAP_TO_GRID)
+		if (m == SS_USE_DEFAULT_SIZE)
 			this.setSnapToGrid((Boolean)value);
-		if (m == SS_GRID_WIDTH)
+		if (m == SS_DEFAULT_WIDTH)
 			this.setDefaultWidth((Integer)value);
-		if (m == SS_GRID_HEIGHT)
+		if (m == SS_DEFAULT_HEIGHT)
 			this.setDefaultHeight((Integer)value);
-		if (m == SS_LABEL_LOCATION)
+		if (m == SS_LABEL_POSITION)
 			this.setLabelPosition((LabelPosition)value);
 	}
 

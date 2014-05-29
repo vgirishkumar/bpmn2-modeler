@@ -187,7 +187,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
 
-	private static HashMap<String, ShapeStyle> shapeStyles = new HashMap<String, ShapeStyle>();
+	private HashMap<String, ShapeStyle> shapeStyles = new HashMap<String, ShapeStyle>();
 
 	private Bpmn2Preferences(IProject project) {
 		this.project = project;
@@ -282,8 +282,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public static Bpmn2Preferences getInstance(IProject project) {
 		Bpmn2Preferences pref = null;
 		if (project==null) {
-			if (globalInstance==null)
+			if (globalInstance==null) {
 				globalInstance = new Bpmn2Preferences(null);
+			}
 			pref = globalInstance;
 		}
 		else {
@@ -292,6 +293,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			pref = projectInstances.get(project);
 			if (pref==null) {
 				pref = new Bpmn2Preferences(project);
+				pref.reload();
 				projectInstances.put(project, pref);
 			}
 		}
@@ -401,15 +403,17 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				String path = getShapeStylePath(rt);
 				Preferences prefs = defaultPreferences.node(path);
+				for (ShapeStyle ss : rt.getShapeStyles()) {
+					String value = ShapeStyle.encode(ss);
+					prefs.put(ss.getObject(), value);
+					shapeStyles.put(ss.getObject(), ss);
+				}
 				if (rt!=TargetRuntime.getDefaultRuntime()) {
 					for (ShapeStyle ss : defaultShapeStyles) {
 						String value = ShapeStyle.encode(ss);
-						prefs.put(ss.getObjectName(), value);
+						prefs.put(ss.getObject(), value);
+						shapeStyles.put(ss.getObject(), ss);
 					}
-				}
-				for (ShapeStyle ss : rt.getShapeStyles()) {
-					String value = ShapeStyle.encode(ss);
-					prefs.put(ss.getObjectName(), value);
 				}
 			}
 		}
@@ -471,6 +475,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			propagateGroupCategories = getBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			allowMultipleConnections = getBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 
+			if (globalInstance!=null && this!=globalInstance) {
+				shapeStyles.clear();
+				shapeStyles.putAll(globalInstance.shapeStyles);
+			}
+			
 			cached = true;
 		}
 	}
@@ -577,10 +586,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				ss = new ShapeStyle();
 			else
 				ss = ShapeStyle.decode(value);
+			ss.setRuntime(targetRuntime);
+			ss.setObject(name);
 			shapeStyles.put(name, ss);
 		}
-		// make a copy for client
-		return new ShapeStyle(ss);
+		return ss;
 	}
 
 	public void setShapeStyle(EObject object, ShapeStyle ss) {

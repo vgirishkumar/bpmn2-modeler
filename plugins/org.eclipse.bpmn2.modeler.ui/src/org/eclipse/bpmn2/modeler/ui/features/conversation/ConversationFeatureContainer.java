@@ -54,7 +54,14 @@ public class ConversationFeatureContainer extends BaseElementFeatureContainer {
 
 	@Override
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
-		return new AddConversationNodeFeature<Conversation>(fp);
+		return new AddConversationNodeFeature<Conversation>(fp) {
+
+			@Override
+			public Class getBusinessObjectType() {
+				return Conversation.class;
+			}
+			
+		};
 	}
 
 	@Override
