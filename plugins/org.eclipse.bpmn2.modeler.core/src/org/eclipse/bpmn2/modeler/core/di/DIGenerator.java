@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationNode;
+import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
@@ -47,10 +48,10 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Size;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeLayoutManager;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.Size;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
@@ -242,13 +243,13 @@ public class DIGenerator {
 			
 			for (FlowElement fe : container.getFlowElements()) {
 				if (isMissingDIElement(fe) && !laneElements.contains(fe)) {
-					if (!(fe instanceof SequenceFlow)) {
-						if (parentNode==null)
-							parentNode = missing.addChild(container);
-						parentNode.addChild(fe);
-						if (fe instanceof FlowElementsContainer || fe instanceof ChoreographyActivity) {
-							findMissingDIElements(parentNode, fe);
-						}
+					if (fe instanceof SequenceFlow || fe instanceof DataObject || fe instanceof DataStore)
+						continue;
+					if (parentNode==null)
+						parentNode = missing.addChild(container);
+					parentNode.addChild(fe);
+					if (fe instanceof FlowElementsContainer || fe instanceof ChoreographyActivity) {
+						findMissingDIElements(parentNode, fe);
 					}
 				}
 			}
@@ -277,12 +278,11 @@ public class DIGenerator {
 				}
 			}
 			for (Participant p : container.getParticipants()) {
-				if (isMissingDIElement(p) && p.getProcessRef()!=null) {
+				// This Pool may be the default process diagram if
+				// the Pool references a Process.
+				if (isMissingDIElement(p) && p.getProcessRef()==null) {
 					if (parentNode==null)
 						parentNode = missing.addChild(container);
-					DiagramElementTreeNode child = parentNode.addChild(p);
-					if (p.getProcessRef()!=null)
-						findMissingDIElements(child, p.getProcessRef());
 				}
 			}
 			for (ConversationNode c : container.getConversations()) {

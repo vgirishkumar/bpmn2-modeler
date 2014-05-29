@@ -324,6 +324,8 @@ public class FeatureSupport {
 			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
 			if (new Boolean(value))
 				continue;
+			if (isLabelShape(pe))
+				continue;
 			list.add(pe);
 		}
 		return list;
@@ -340,7 +342,13 @@ public class FeatureSupport {
 	}
 	
 	public static void setContainerChildrenVisible(IFeatureProvider fp, ContainerShape container, boolean visible) {
-		for (PictogramElement pe : getContainerChildren(container)) {
+		List<PictogramElement> list = new ArrayList<PictogramElement>();
+		list.addAll(container.getChildren());
+		for (PictogramElement pe : list) {
+			String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.ACTIVITY_DECORATOR);
+			if (new Boolean(value))
+				continue;
+			
 			if (isEventSubProcessDecoratorContainer(pe)) {
 				pe.setVisible(!visible);
 			}
@@ -747,6 +755,7 @@ public class FeatureSupport {
 
 	public static boolean updateConnection(IFeatureProvider fp, Connection connection) {
 		boolean layoutChanged = false;
+//if (true) return false;
 		LayoutContext layoutContext = new LayoutContext(connection);
 		ILayoutFeature layoutFeature = fp.getLayoutFeature(layoutContext);
 		if (layoutFeature!=null) {

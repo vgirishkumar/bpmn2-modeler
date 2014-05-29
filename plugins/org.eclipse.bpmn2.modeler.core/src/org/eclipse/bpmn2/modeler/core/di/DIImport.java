@@ -234,17 +234,18 @@ public class DIImport {
 			PictogramElement pe = elements.get(be);
 
 			if (be instanceof SubProcess) { // we need the layout to hide children if collapsed
-				LayoutContext context = new LayoutContext(pe);
-				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
-				if (feature!=null && feature.canLayout(context))
-					feature.layout(context);
+				UpdateContext context = new UpdateContext(pe);
+				context.putProperty(GraphitiConstants.FORCE_UPDATE_ALL, Boolean.TRUE);
+				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
+				if (feature!=null)
+					feature.update(context);
 			}
-			else if (be instanceof Participant) {
-				LayoutContext context = new LayoutContext(pe);
-				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
-				if (feature!=null && feature.canLayout(context))
-					feature.layout(context);
-			}
+//			else if (be instanceof Participant) {
+//				LayoutContext context = new LayoutContext(pe);
+//				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
+//				if (feature!=null && feature.canLayout(context))
+//					feature.layout(context);
+//			}
 //			else if (be instanceof FlowNode) {
 //				LayoutContext context = new LayoutContext(pe);
 //				ILayoutFeature feature = featureProvider.getLayoutFeature(context);
@@ -252,13 +253,13 @@ public class DIImport {
 //					feature.layout(context);
 //			}
 //
-			else if (pe instanceof Connection) {
-				UpdateContext context = new UpdateContext(pe);
-				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
-				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
-					feature.update(context);
-				}
-			}
+//			else if (pe instanceof Connection) {
+//				UpdateContext context = new UpdateContext(pe);
+//				IUpdateFeature feature = featureProvider.getUpdateFeature(context);
+//				if (feature!=null && feature.updateNeeded(context).toBoolean()) {
+//					feature.update(context);
+//				}
+//			}
 		}
  
 	}

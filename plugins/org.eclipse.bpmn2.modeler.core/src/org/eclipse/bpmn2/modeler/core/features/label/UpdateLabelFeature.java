@@ -41,6 +41,7 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -137,11 +138,12 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 
 	protected int getLabelWrapWidth(PictogramElement ownerPE) {
 		int w = GraphicsUtil.calculateSize(ownerPE).getWidth();
-		return w>=100 ? w : 100; 
+		return w>=80 ? w : 80; 
 	}
 	
 	protected int[] wrapText(AbstractText ga, String text, int wrapWidth) {
 		IUiLayoutService layoutService = GraphitiUi.getUiLayoutService();
+		Font font = ga.getFont();
 		List<String> ss = new ArrayList<String>();
 		int start = 0;
 		for (int end=0; end<text.length(); ++end) {
@@ -150,24 +152,33 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				start = end+1;
 			}
 		}
+		if (start<text.length()-1)
+			ss.add(text.substring(start));
 		String words[] = ss.toArray(new String[ss.size()]);
-		IDimension dim = layoutService.calculateTextSize(text, ga.getFont());
+		IDimension dim = layoutService.calculateTextSize(text, font);
 		int totalHeight = dim.getHeight();
 		int totalWidth = dim.getWidth();
-		int height = 0;
+		int height = totalHeight;
 		int width = 0;
 		String line = "";
-		for (int i=0; i<words.length - 1; ++i) {
+		String nextword = "";
+		for (int i=0; i<words.length; ++i) {
 			line += words[i];
-			dim = layoutService.calculateTextSize(line + words[i+1], ga.getFont());
-			if (dim.getWidth()>=wrapWidth) {
-				line = "";
+			if (i<words.length-1)
+				nextword = words[i+1];
+			else
+				nextword = "";
+			dim = layoutService.calculateTextSize(line + nextword, font);
+			if (dim.getWidth()>wrapWidth) {
 				height += dim.getHeight();
+				dim = layoutService.calculateTextSize(line, font);
 				if (dim.getWidth()>width)
 					width = dim.getWidth();
+				line = "";
 			}
+			else if (dim.getWidth()>width)
+				width = dim.getWidth();
 		}
-		height += totalHeight;
 		if (width==0)
 			width = totalWidth;
 		return new int[] {height, width};

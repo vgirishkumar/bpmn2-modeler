@@ -398,19 +398,20 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
-			IPeService peService = Graphiti.getPeService();
-			Connection connection = (Connection) context.getPictogramElement();
-			Association businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-					Association.class);
-			String newDirection = businessObject.getAssociationDirection().toString();
-			if (newDirection==null || newDirection.isEmpty())
-				newDirection = AssociationDirection.NONE.toString();
-			String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
-			if (oldDirection==null || oldDirection.isEmpty())
-				oldDirection = AssociationDirection.NONE.toString();
-
-			if (!oldDirection.equals(newDirection)) {
-				return Reason.createTrueReason("Association Direction");
+			if (canUpdate(context)) {
+				Connection connection = (Connection) context.getPictogramElement();
+				Association businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
+						Association.class);
+				String newDirection = businessObject.getAssociationDirection().toString();
+				if (newDirection==null || newDirection.isEmpty())
+					newDirection = AssociationDirection.NONE.toString();
+				String oldDirection = Graphiti.getPeService().getPropertyValue(connection, ASSOCIATION_DIRECTION);
+				if (oldDirection==null || oldDirection.isEmpty())
+					oldDirection = AssociationDirection.NONE.toString();
+	
+				if (!oldDirection.equals(newDirection)) {
+					return Reason.createTrueReason("Association Direction");
+				}
 			}
 			return Reason.createFalseReason();
 		}

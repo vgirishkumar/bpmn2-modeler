@@ -240,7 +240,11 @@ public interface GraphitiConstants {
 	/** The Constant CUSTOM_ELEMENT_ID. */
 	public final static String CUSTOM_ELEMENT_ID = "custom.element.id"; //$NON-NLS-1$
 
-	/** The Constant FORCE_UPDATE_ALL. */
+	/**
+	 * The {@link IContext} property key used by the {@link MultiUpdateFeature}
+	 * to force an update of all of its contained features, regardless of
+	 * whether they have determined an update is needed.
+	 **/
 	public final static String FORCE_UPDATE_ALL = "force.update.all"; //$NON-NLS-1$
 
 	public static final String BOUNDARY_EVENT_RELATIVE_POS = "boundary.event.relative.pos"; //$NON-NLS-1$

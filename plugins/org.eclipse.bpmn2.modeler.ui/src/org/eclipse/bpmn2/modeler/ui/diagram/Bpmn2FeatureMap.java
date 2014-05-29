@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.EndEvent;
@@ -158,7 +159,7 @@ public class Bpmn2FeatureMap {
 
 		features = new ArrayList<Class>();
 		features.add(DataObject.class);
-//		features.add(DataObjectReference.class);
+		features.add(DataObjectReference.class);
 		features.add(DataStoreReference.class);
 		features.add(DataInput.class);
 		features.add(DataOutput.class);

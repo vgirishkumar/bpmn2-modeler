@@ -63,6 +63,7 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 						}
 					}
 				}
+//needResize = false;
 				if (needResize) {
 					ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
 					resizeContext.setX(parentGa.getX());

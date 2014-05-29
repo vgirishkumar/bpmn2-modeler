@@ -728,27 +728,30 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
-			IPeService peService = Graphiti.getPeService();
-			Connection connection = (Connection) context.getPictogramElement();
-			DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-					DataAssociation.class);
-			String newDirection = getDirection(businessObject);
-			String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
-			if (oldDirection==null || oldDirection.isEmpty())
-				oldDirection = ""; //$NON-NLS-1$
-
-			if (!oldDirection.equals(newDirection)) {
-				return Reason.createTrueReason();
+			if (canUpdate(context)) {
+				Connection connection = (Connection) context.getPictogramElement();
+				DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
+						DataAssociation.class);
+				String newDirection = getDirection(businessObject);
+				String oldDirection = Graphiti.getPeService().getPropertyValue(connection, ASSOCIATION_DIRECTION);
+				if (oldDirection==null || oldDirection.isEmpty())
+					oldDirection = ""; //$NON-NLS-1$
+	
+				if (!oldDirection.equals(newDirection)) {
+					return Reason.createTrueReason();
+				}
 			}
 			return Reason.createFalseReason();
 		}
 
 		@Override
 		public boolean update(IUpdateContext context) {
-			Connection connection = (Connection) context.getPictogramElement();
-			DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
-					DataAssociation.class);
-			setAssociationDirection(connection, businessObject);
+			if (canUpdate(context)) {
+				Connection connection = (Connection) context.getPictogramElement();
+				DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
+						DataAssociation.class);
+				setAssociationDirection(connection, businessObject);
+			}
 			return true;
 		}
 	}
