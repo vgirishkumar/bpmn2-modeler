@@ -119,11 +119,6 @@ public class CustomTemporalDependencyFeatureContainer extends CustomConnectionFe
 		}
 
 		@Override
-		protected Class<? extends BaseElement> getBoClass() {
-			return TemporalDependency.class;
-		}
-
-		@Override
 		protected Polyline createConnectionLine(Connection connection) {
 			IPeService peService = Graphiti.getPeService();
 			IGaService gaService = Graphiti.getGaService();
@@ -143,6 +138,14 @@ public class CustomTemporalDependencyFeatureContainer extends CustomConnectionFe
 			StyleUtil.applyStyle(arrowhead, be);
 			
 			return connectionLine;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		 */
+		@Override
+		public Class<? extends BaseElement> getBusinessObjectType() {
+			return TemporalDependency.class;
 		}
 	}
 	
