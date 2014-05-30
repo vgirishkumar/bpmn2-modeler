@@ -98,7 +98,7 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 		
-		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height); ///
+		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
 		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
 		
 		if (FeatureSupport.isTargetLane(context)) {
@@ -152,6 +152,12 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#decorateShape(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.graphiti.mm.pictograms.ContainerShape, org.eclipse.bpmn2.BaseElement)
+	 */
+	protected void decorateShape(IAddContext context, ContainerShape containerShape, Lane businessObject) {
 	}
 	
 	private void moveFlowNodes(Process targetProcess, Lane lane) {

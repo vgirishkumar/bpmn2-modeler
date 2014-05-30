@@ -522,7 +522,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			if (feature != null)
 				return feature;
 		}
-		return null; //super.getMoveShapeFeature(context);
+		return super.getMoveShapeFeature(context);
 	}
 
 	@Override
@@ -544,7 +544,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			if (feature != null)
 				return feature;
 		}
-		return null; //super.getResizeShapeFeature(context);
+		return super.getResizeShapeFeature(context);
 	}
 
 	@Override

@@ -538,27 +538,6 @@ public class ModelHandler {
 		return participant;
 	}
 
-	@Deprecated
-	public void moveLane(Lane movedLane, Participant targetParticipant) {
-		Participant sourceParticipant = getParticipant(movedLane);
-		moveLane(movedLane, sourceParticipant, targetParticipant);
-	}
-
-	public void moveLane(Lane movedLane, Participant sourceParticipant, Participant targetParticipant) {
-		if (sourceParticipant!=targetParticipant) {
-			Process sourceProcess = getOrCreateProcess(sourceParticipant);
-			Process targetProcess = getOrCreateProcess(targetParticipant);
-			for (FlowNode node : movedLane.getFlowNodeRefs()) {
-				moveFlowNode(node, sourceProcess, targetProcess);
-			}
-			if (movedLane.getChildLaneSet() != null && !movedLane.getChildLaneSet().getLanes().isEmpty()) {
-				for (Lane lane : movedLane.getChildLaneSet().getLanes()) {
-					moveLane(lane, sourceParticipant, targetParticipant);
-				}
-			}
-		}
-	}
-
 	public Process createProcess() {
 		Process process = create(Process.class);
 		getDefinitions().getRootElements().add(process);
@@ -623,13 +602,6 @@ public class ModelHandler {
 		}
 		container.getLaneSets().get(0).getLanes().add(lane);
 		return lane;
-	}
-
-	public void laneToTop(Lane lane) {
-		LaneSet laneSet = create(LaneSet.class);
-		laneSet.getLanes().add(lane);
-		Process process = getOrCreateProcess(getInternalParticipant());
-		process.getLaneSets().add(laneSet);
 	}
 
 	public SequenceFlow createSequenceFlow(FlowNode source, FlowNode target) {

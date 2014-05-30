@@ -14,10 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
-import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -48,45 +45,29 @@ public class MoveFromParticipantToLaneFeature extends MoveLaneFeature {
 		modifyModelStructure(context);
 		layoutPictogramElement(context.getSourceContainer());
 		layoutPictogramElement(context.getTargetContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
-	}
-
-	private Lane getTargetLane(IMoveShapeContext context) {
-		ContainerShape targetContainer = context.getTargetContainer();
-		return (Lane) getBusinessObjectForPictogramElement(targetContainer);
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
 		Lane movedLane = getMovedLane(context);
-		Lane toLane = getTargetLane(context);
+		Lane targetLane = getTargetLane(context);
+		Process sourceProcess = getProcess(context.getSourceContainer());
+		Process targetProcess = getProcess(targetLane);
+		moveLane(movedLane, sourceProcess, targetProcess);
 
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
-		Participant participant = mh.getParticipant(toLane);
-		mh.moveLane(movedLane, participant);
-
-		Participant sourceParticipant = (Participant) getBusinessObjectForPictogramElement(context.getSourceContainer());
-
-		LaneSet laneSet = null;
-		for (LaneSet set : sourceParticipant.getProcessRef().getLaneSets()) {
-			if (set.getLanes().contains(movedLane)) {
-				laneSet = set;
+		for (LaneSet laneSet : sourceProcess.getLaneSets()) {
+			if (laneSet.getLanes().contains(movedLane)) {
+				laneSet.getLanes().remove(movedLane);
+				if (laneSet.getLanes().isEmpty()) {
+					sourceProcess.getLaneSets().remove(laneSet);
+				}
 				break;
 			}
 		}
 
-		if (laneSet != null) {
-			laneSet.getLanes().remove(movedLane);
-			if (laneSet.getLanes().isEmpty()) {
-				sourceParticipant.getProcessRef().getLaneSets().remove(laneSet);
-			}
+		if (targetLane.getChildLaneSet() == null) {
+			LaneSet newLaneSet = createLaneSet();
+			targetLane.setChildLaneSet(newLaneSet);
 		}
-
-		if (toLane.getChildLaneSet() == null) {
-			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-			toLane.setChildLaneSet(createLaneSet);
-			ModelUtil.setID(createLaneSet);
-		}
-		toLane.getChildLaneSet().getLanes().add(movedLane);
+		targetLane.getChildLaneSet().getLanes().add(movedLane);
 	}
 }

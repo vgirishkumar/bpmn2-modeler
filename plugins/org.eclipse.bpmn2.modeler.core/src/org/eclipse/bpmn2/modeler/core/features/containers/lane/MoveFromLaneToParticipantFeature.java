@@ -16,9 +16,6 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
@@ -52,24 +49,19 @@ public class MoveFromLaneToParticipantFeature extends MoveLaneFeature {
 		modifyModelStructure(context);
 		layoutPictogramElement(context.getTargetContainer());
 		layoutPictogramElement(context.getSourceContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
 		Lane movedLane = getMovedLane(context);
-		Participant targetParticipant = (Participant) getBusinessObjectForPictogramElement(context.getTargetContainer());
+		Process sourceProcess = getProcess(context.getSourceContainer());
+		Process targetProcess = getProcess(context.getTargetContainer());
+		moveLane(movedLane, sourceProcess, targetProcess);
 
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
-		mh.moveLane(movedLane, targetParticipant);
-
-		Process process = targetParticipant.getProcessRef();
-		if (process.getLaneSets().isEmpty()) {
-			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-			process.getLaneSets().add(createLaneSet);
-			ModelUtil.setID(createLaneSet);
+		if (targetProcess.getLaneSets().isEmpty()) {
+			LaneSet newLaneSet = createLaneSet();
+			targetProcess.getLaneSets().add(newLaneSet);
 		}
-		process.getLaneSets().get(0).getLanes().add(movedLane);
+		targetProcess.getLaneSets().get(0).getLanes().add(movedLane);
 
 		Lane fromLane = (Lane) getBusinessObjectForPictogramElement(context.getSourceContainer());
 		fromLane.getChildLaneSet().getLanes().remove(movedLane);

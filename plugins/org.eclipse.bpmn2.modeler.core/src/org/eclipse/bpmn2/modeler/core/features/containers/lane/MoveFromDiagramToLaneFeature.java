@@ -19,7 +19,6 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -56,12 +55,14 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 	@Override
 	protected void internalMove(IMoveShapeContext context) {
 		IGaService gaService = Graphiti.getGaService();
-
 		Lane movedLane = getMovedLane(context);
+		Process sourceProcess = getProcess(context.getSourceContainer());
+		Process targetProcess = getProcess(context.getTargetContainer());
+		moveLane(movedLane, sourceProcess, targetProcess);
+
 		GraphicsAlgorithm laneGa = context.getShape().getGraphicsAlgorithm();
 
 		Lane targetLane = getTargetLane(context);
-		GraphicsAlgorithm tga = context.getTargetContainer().getGraphicsAlgorithm();
 
 		List<Shape> shapes = getFlowNodeShapes(context, targetLane);
 		modifyModelStructure(targetLane, movedLane);
@@ -77,7 +78,6 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 		}
 
 		layoutPictogramElement(context.getTargetContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getTargetContainer());
 	}
 
 	private void modifyModelStructure(Lane targetLane, Lane lane) {
@@ -93,9 +93,9 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 		}
 
 		if (targetLane.getChildLaneSet() == null) {
-			LaneSet createLaneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-			targetLane.setChildLaneSet(createLaneSet);
-			ModelUtil.setID(createLaneSet);
+			LaneSet newLaneSet = createLaneSet();
+			targetLane.setChildLaneSet(newLaneSet);
+			ModelUtil.setID(newLaneSet);
 		}
 
 		List<Lane> lanes = targetLane.getChildLaneSet().getLanes();
@@ -126,10 +126,5 @@ public class MoveFromDiagramToLaneFeature extends MoveLaneFeature {
 		ContainerShape targetContainer = context.getTargetContainer();
 		Lane lane = (Lane) getBusinessObjectForPictogramElement(targetContainer);
 		return lane.getChildLaneSet().getLanes().size();
-	}
-
-	private Lane getTargetLane(IMoveShapeContext context) {
-		ContainerShape targetContainer = context.getTargetContainer();
-		return (Lane) getBusinessObjectForPictogramElement(targetContainer);
 	}
 }

@@ -211,7 +211,13 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 			return containerShape;
 		}
-
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#decorateShape(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.graphiti.mm.pictograms.ContainerShape, org.eclipse.bpmn2.BaseElement)
+		 */
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, Group businessObject) {
+		}
+		
 		/* (non-Javadoc)
 		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
 		 */

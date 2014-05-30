@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -85,9 +84,10 @@ public class BPMN2EditorOutlineTreeViewer extends TreeViewer implements Adaptabl
 
 	@Override
 	public Object getAdapter(Class adapterType) {
-		if (adapterType==BPMN2Editor.class) {
+		if (adapterType==BPMN2Editor.class)
 			return diagramEditor;
-		}
+		else if (diagramEditor!=null)
+			return diagramEditor.getAdapter(adapterType);
 		return null;
 	}
 }

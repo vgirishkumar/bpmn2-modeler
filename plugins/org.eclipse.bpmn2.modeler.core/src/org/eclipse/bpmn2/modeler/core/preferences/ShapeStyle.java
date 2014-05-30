@@ -100,8 +100,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	boolean useDefaultSize;
 	// the useDefault doubles as the flag for "snap to grid" in the Canvas ShapeStyle
 //	boolean snapToGrid = true;
-	int defaultWidth = 10;
-	int defaultHeight = 10;
+	int defaultWidth = 110;
+	int defaultHeight = 50;
 	LabelPosition labelPosition = LabelPosition.SOUTH;
 	int changeMask;
 	
@@ -263,13 +263,13 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			defaultWidth = Integer.parseInt(a[9]);
 		}
 		else
-			defaultWidth = 10;
+			defaultWidth = 110;
 		
 		if (a.length>10) {
 			defaultHeight= Integer.parseInt(a[10]);
 		}
 		else
-			defaultHeight = 10;
+			defaultHeight = 50;
 		
 		if (a.length>11) {
 			labelPosition = LabelPosition.values()[Integer.parseInt(a[11])];
@@ -821,6 +821,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 		EObject style = getStyleObject(element);
 		if (style!=null) {
+			style.eSetDeliver(false);
+			
 			RGB shapeForeground = (RGB) getStyleValue(style,STYLE_SHAPE_FOREGROUND);
 			RGB shapeBackground = (RGB) getStyleValue(style,STYLE_SHAPE_BACKGROUND);
 			RGB labelForeground = (RGB) getStyleValue(style,STYLE_LABEL_FOREGROUND);
@@ -870,6 +872,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			else
 				setStyleValue(style, STYLE_ROUTING_STYLE, toEENumLiteral(element, ss.getRoutingStyle()));
 
+			style.eSetDeliver(true);
 		}
 		return ss;
 	}

@@ -1009,6 +1009,8 @@
 		</modelEnablement>
 
 		
+		<style object="SHAPES" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="DATA" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataInput" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataObject" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataObjectReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
@@ -1016,53 +1018,67 @@
 		<style object="DataStoreReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="Message" shapeBackground="D4E7F8" defaultWidth="30" defaultHeight="20"/>
 
+		<style object="EVENTS" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
 		<style object="BoundaryEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
 		<style object="EndEvent" shapeBackground="FF8080" defaultWidth="36" defaultHeight="36"/>
 		<style object="IntermediateCatchEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
 		<style object="IntermediateThrowEvent" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>
 		<style object="StartEvent" shapeBackground="80FF80" defaultWidth="36" defaultHeight="36"/>
 
+		<style object="GATEWAYS" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 		<style object="ComplexGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 		<style object="EventBasedGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 		<style object="ExclusiveGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 		<style object="InclusiveGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 		<style object="ParallelGateway" shapeBackground="C8C864" defaultWidth="50" defaultHeight="50"/>
 
+		<style object="CHOREOGRAPHY" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
 		<style object="CallChoreography" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
 		<style object="ChoreographyTask" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
 		<style object="SubChoreography" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="150"/>
 
-		<style object="AdHocSubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="TASKS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="BusinessRuleTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="CallActivity" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="Conversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="GlobalBusinessRuleTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="GlobalManualTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="GlobalScriptTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="GlobalTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="GlobalUserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="ManualTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="ReceiveTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="ScriptTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="SendTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="ServiceTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="SubConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="Task" shapeBackground="D4E7F8" useDefaultSize="true" defaultWidth="110" defaultHeight="50"/>
-		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="Task" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="UserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 
+		<style object="GLOBAL_TASKS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="CallActivity" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalBusinessRuleTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalManualTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalScriptTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="GlobalUserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+
+		<style object="SUBPROCESS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="AdHocSubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+
+		<style object="CONVERSATION" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="Conversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SubConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+
+		<style object="ARTIFACTS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="110"/>
 		<style object="Group" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="110"/>
-		<style object="Lane" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
-		<style object="Participant" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
 		<style object="TextAnnotation" shapeBackground="80FF80" defaultWidth="100" defaultHeight="150"/>
 
-		<style object="Association" shapeBackground="D4E7F8"/>
-		<style object="ConversationLink" shapeBackground="D4E7F8"/>
-		<style object="DataAssociation" shapeBackground="D4E7F8"/>
-		<style object="MessageFlow" shapeBackground="D4E7F8"/>
-		<style object="SequenceFlow" shapeBackground="D4E7F8"/>
+		<style object="SWIMLANES" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
+		<style object="Lane" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
+		<style object="Participant" shapeBackground="D4E7F8" defaultWidth="150" defaultHeight="500"/>
+
+		<style object="CONNECTIONS" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="Association" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="ConversationLink" shapeBackground="D4E7F8" defaultWidth="4"/>
+		<style object="DataAssociation" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="MessageFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="SequenceFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
 
 		<style object="CANVAS" shapeBackground="FFFFFF"/>
 		<style object="GRID" shapeForeground="E3EEF9" useDefaultSize="true" defaultWidth="10" defaultHeight="10"/>

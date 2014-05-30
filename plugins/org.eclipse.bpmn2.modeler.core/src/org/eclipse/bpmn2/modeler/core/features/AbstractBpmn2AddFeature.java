@@ -300,8 +300,8 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			if (b!=null)
 				return (int) b.getWidth();
 		}
-		if (context.getHeight() > 0)
-			return context.getHeight();
+		if (context.getWidth() > 0)
+			return context.getWidth();
 		int h = getHeight();
 		int w = getWidth();
 		if (isHorizontal(context)) {

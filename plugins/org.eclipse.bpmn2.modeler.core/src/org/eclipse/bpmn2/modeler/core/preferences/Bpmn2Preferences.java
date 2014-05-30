@@ -147,8 +147,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL = Messages.Bpmn2Preferences_Allow_Mutliple_Connections;
 	public final static String PREF_SERVICE_IMPLEMENTATIONS = "service.implementations"; //$NON-NLS-1$
 
-	private static Hashtable<IProject,Bpmn2Preferences> projectInstances = null;
-	private static Bpmn2Preferences globalInstance = null;
+	private static Hashtable<IProject,Bpmn2Preferences> projectPreferenceCacheMap = null;
+	private static Bpmn2Preferences instancePreferenceCache = null;
 	private static IProject activeProject;
 	private static ListenerList preferenceChangeListeners;
 	private static IPreferenceStore preferenceStore;
@@ -282,19 +282,23 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public static Bpmn2Preferences getInstance(IProject project) {
 		Bpmn2Preferences pref = null;
 		if (project==null) {
-			if (globalInstance==null) {
-				globalInstance = new Bpmn2Preferences(null);
+			if (instancePreferenceCache==null) {
+				// Create a cache for the Instance Preference Store.
+				instancePreferenceCache = new Bpmn2Preferences(null);
 			}
-			pref = globalInstance;
+			pref = instancePreferenceCache;
 		}
 		else {
-			if (projectInstances==null)
-				projectInstances = new Hashtable<IProject,Bpmn2Preferences>();
-			pref = projectInstances.get(project);
+			if (projectPreferenceCacheMap==null) {
+				// Create a map that will hold the Project Preference Store cache objects.
+				projectPreferenceCacheMap = new Hashtable<IProject,Bpmn2Preferences>();
+			}
+			pref = projectPreferenceCacheMap.get(project);
 			if (pref==null) {
+				// Create a cache for the Project Preference Store.
 				pref = new Bpmn2Preferences(project);
 				pref.reload();
-				projectInstances.put(project, pref);
+				projectPreferenceCacheMap.put(project, pref);
 			}
 		}
 		return pref;
@@ -304,10 +308,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Assert.isNotNull(rt);
 		String id = rt.getId();
 		List<Bpmn2Preferences> prefs = new ArrayList<Bpmn2Preferences>();
-		if (globalInstance!=null && globalInstance.targetRuntime.getId().equals(id))
-			prefs.add(globalInstance);
-		if (projectInstances!=null) {
-			for (Entry<IProject, Bpmn2Preferences> entry : projectInstances.entrySet()) {
+		if (instancePreferenceCache!=null && instancePreferenceCache.targetRuntime.getId().equals(id))
+			prefs.add(instancePreferenceCache);
+		if (projectPreferenceCacheMap!=null) {
+			for (Entry<IProject, Bpmn2Preferences> entry : projectPreferenceCacheMap.entrySet()) {
 				Bpmn2Preferences pref = entry.getValue();
 				if (pref.targetRuntime.getId().equals(id))
 					prefs.add(pref);
@@ -324,7 +328,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	public void dispose() {
 		if (project!=null)
-			projectInstances.remove(project);
+			projectPreferenceCacheMap.remove(project);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		preferenceStore.removePropertyChangeListener(this);
 	}
@@ -406,13 +410,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				for (ShapeStyle ss : rt.getShapeStyles()) {
 					String value = ShapeStyle.encode(ss);
 					prefs.put(ss.getObject(), value);
-					shapeStyles.put(ss.getObject(), ss);
 				}
 				if (rt!=TargetRuntime.getDefaultRuntime()) {
 					for (ShapeStyle ss : defaultShapeStyles) {
 						String value = ShapeStyle.encode(ss);
 						prefs.put(ss.getObject(), value);
-						shapeStyles.put(ss.getObject(), ss);
 					}
 				}
 			}
@@ -431,7 +433,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				return projectPreferences.nodeExists(key);
 			}
 			catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -474,11 +475,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, false);
 			propagateGroupCategories = getBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			allowMultipleConnections = getBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
-
-			if (globalInstance!=null && this!=globalInstance) {
-				shapeStyles.clear();
-				shapeStyles.putAll(globalInstance.shapeStyles);
-			}
 			
 			cached = true;
 		}
@@ -521,8 +517,13 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			}
 		}
 		
-		for (Entry<String, ShapeStyle> entry : shapeStyles.entrySet()) {
-			setShapeStyle(entry.getKey(), entry.getValue());
+		// prevent concurrent modification of the shapeStyle cache
+		HashMap<String, ShapeStyle> ssCache = new HashMap<String, ShapeStyle>();
+		ssCache.putAll(shapeStyles);
+		for (Entry<String, ShapeStyle> entry : ssCache.entrySet()) {
+			ShapeStyle ss = entry.getValue();
+			if (ss.isDirty())
+				setShapeStyle(entry.getKey(), ss);
 		}
 		
 		instancePreferences.flush();
@@ -580,14 +581,42 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public ShapeStyle getShapeStyle(String name) {
 		ShapeStyle ss = shapeStyles.get(name);
 		if (ss==null) {
-			String key = getShapeStyleKey(getRuntime(), name);
-			String value = get(key, ""); //$NON-NLS-1$
-			if (value.isEmpty())
-				ss = new ShapeStyle();
-			else
-				ss = ShapeStyle.decode(value);
-			ss.setRuntime(targetRuntime);
+			if (instancePreferenceCache!=null) {
+				// check the Instance Preferences cache first
+				if (instancePreferenceCache.shapeStyles.containsKey(name)) {
+					ss = new ShapeStyle( instancePreferenceCache.shapeStyles.get(name) );
+				}
+				else {
+					// this has not been cached yet: check if contained
+					// in Instance Preference Store
+					String path = getShapeStylePath(TargetRuntime.getDefaultRuntime());
+					Preferences prefs = instancePreferences.node(path);
+					String value = prefs.get(name,"");
+					if (!value.isEmpty()) {
+						// found! save it in Instance Preferences cache
+						ss = ShapeStyle.decode(value);
+						instancePreferenceCache.shapeStyles.put(name,ss);
+					}
+					else {
+						// check if this key is in Default Preferences store
+						prefs = defaultPreferences.node(path);
+						value = prefs.get(name,"");
+						if (!value.isEmpty()) {
+							ss = ShapeStyle.decode(value);
+						}
+					}
+				}
+			}
+			if (ss==null) {
+				String key = getShapeStyleKey(getRuntime(), name);
+				String value = get(key, ""); //$NON-NLS-1$
+				if (value.isEmpty())
+					ss = new ShapeStyle();
+				else
+					ss = ShapeStyle.decode(value);
+			}
 			ss.setObject(name);
+			ss.setRuntime(targetRuntime);
 			shapeStyles.put(name, ss);
 		}
 		return ss;
@@ -1688,8 +1717,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());
 	
 		// notify all other Bpmn2Preferences instances (if any)
-		if (projectInstances!=null) {
-			for (Entry<IProject, Bpmn2Preferences> entry : projectInstances.entrySet()) {
+		if (projectPreferenceCacheMap!=null) {
+			for (Entry<IProject, Bpmn2Preferences> entry : projectPreferenceCacheMap.entrySet()) {
 				Bpmn2Preferences pref = entry.getValue();
 				if (pref!=this)
 					pref.firePreferenceEvent(instancePreferences, event.getProperty(), event.getOldValue(), event.getNewValue());

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
@@ -18,6 +19,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.Viewport;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
+import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.EditDomain;
 import org.eclipse.gef.EditPart;
@@ -35,16 +40,26 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.fixed.FixedScrollableThumbnail;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.about.AboutAction;
 import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.PageBook;
 
@@ -136,7 +151,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	public void init(IPageSite pageSite) {
 		super.init(pageSite);
 		// TODO: implement editing actions in Outline
-		IActionBars actionBars = pageSite.getActionBars();
+//		IActionBars actionBars = pageSite.getActionBars();
 //		registerGlobalActionHandler(actionBars, ActionFactory.UNDO.getId());
 //		registerGlobalActionHandler(actionBars, ActionFactory.REDO.getId());
 //		registerGlobalActionHandler(actionBars, ActionFactory.COPY.getId());
@@ -168,9 +183,55 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		selectionSynchronizer.addViewer(getViewer());
 		diagramEditor.addPropertyListener(this);
 		
+		addContextMenu(getViewer());
+		
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IHelpContexts.Outline_View);
 	}
 
+	private void addContextMenu(final EditPartViewer viewer) {
+		// add a double-click listener to show the Property Dialog for the selected item
+		viewer.getControl().addMouseListener(new MouseListener() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				for (Object p : viewer.getSelectedEditParts()) {
+					if (p instanceof AbstractGraphicsTreeEditPart) {
+						Object model = ((AbstractGraphicsTreeEditPart)p).getModel();
+						if (model instanceof EObject) {
+							EObject businessObject = (EObject) model;
+							ObjectEditingDialog dialog = new ObjectEditingDialog(diagramEditor, businessObject);
+							dialog.open();
+						}
+					}
+				}
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+		});
+
+		// Add a context menu for editing actions
+		final MenuManager contextMenu = new MenuManager("#PopUp");
+		contextMenu.add(new Separator("additions"));
+		contextMenu.setRemoveAllWhenShown(true);
+		contextMenu.addMenuListener(new IMenuListener() {
+
+			@Override
+			public void menuAboutToShow(IMenuManager manager) {
+				System.out.println(viewer.getSelection());
+				contextMenu.add(new AboutAction(diagramEditor.getSite().getWorkbenchWindow()));
+			}
+		});
+		
+		Menu menu = contextMenu.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(Activator.PLUGIN_ID+".outline", contextMenu, viewer);
+	}
+	
 	private void removeKeyListeners(Tree tree) {
 		for (Listener l : tree.getListeners(SWT.KeyUp)) {
 			tree.removeListener(SWT.KeyUp, l);
@@ -217,9 +278,10 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 	}
 	
 	public Object getAdapter(Class key) {
-		if (key==BPMN2Editor.class) {
+		if (key==BPMN2Editor.class)
 			return diagramEditor;
-		}
+		else if (diagramEditor!=null)
+			return diagramEditor.getAdapter(key);
 		return null;
 	}
 	

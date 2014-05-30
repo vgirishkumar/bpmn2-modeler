@@ -79,9 +79,14 @@ public class Messages extends NLS {
 
 	public static String Bpmn2EditorPreferencePage_Colors_Group;
 	public static String Bpmn2EditorPreferencePage_GraphicalElements_Group;
+	
 	public static String Bpmn2EditorPreferencePage_GridHeight;
 	public static String Bpmn2EditorPreferencePage_GridWidth;
 	public static String Bpmn2EditorPreferencePage_SnapToGrid;
+
+	public static String Bpmn2EditorPreferencePage_DefaultHeight;
+	public static String Bpmn2EditorPreferencePage_DefaultWidth;
+	public static String Bpmn2EditorPreferencePage_UseDefaultSize;
 	
 	public static String Bpmn2EditorPreferencePage_Change_Button;
 	public static String Bpmn2EditorPreferencePage_Fill_Color_Label;

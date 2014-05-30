@@ -16,9 +16,6 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
@@ -54,32 +51,27 @@ public class MoveFromDiagramToParticipantFeature extends MoveLaneFeature {
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
-		Participant targetParticipant = (Participant) getBusinessObjectForPictogramElement(context
-				.getTargetContainer());
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
 		Lane movedLane = getMovedLane(context);
-		mh.moveLane(movedLane, targetParticipant);
-		Participant internalParticipant = mh.getParticipant(getDiagram());
-		LaneSet laneSet = null;
-		for (LaneSet set : internalParticipant.getProcessRef().getLaneSets()) {
-			if (set.getLanes().contains(movedLane)) {
-				laneSet = set;
+		Process sourceProcess = getProcess(context.getSourceContainer());
+		Process targetProcess = getProcess(context.getTargetContainer());
+		moveLane(movedLane, sourceProcess, targetProcess);
+		
+		for (LaneSet laneSet : sourceProcess.getLaneSets()) {
+			if (laneSet.getLanes().contains(movedLane)) {
+				laneSet.getLanes().remove(movedLane);
+				if (laneSet.getLanes().isEmpty()) {
+					// remove the LaneSet if it's empty
+					sourceProcess.getLaneSets().remove(laneSet);
+				}
 				break;
 			}
 		}
-		if (laneSet != null) {
-			laneSet.getLanes().remove(movedLane);
-			if (laneSet.getLanes().isEmpty()) {
-				internalParticipant.getProcessRef().getLaneSets().remove(laneSet);
-			}
-
-			Process process = targetParticipant.getProcessRef();
-			if (process.getLaneSets().isEmpty()) {
-				LaneSet claneSet = Bpmn2ModelerFactory.create(LaneSet.class);
-				process.getLaneSets().add(claneSet);
-				ModelUtil.setID(claneSet);
-			}
-			process.getLaneSets().get(0).getLanes().add(movedLane);
+		
+		if (targetProcess.getLaneSets().isEmpty()) {
+			// create a new LaneSet if needed
+			LaneSet newLaneSet = createLaneSet();
+			targetProcess.getLaneSets().add(newLaneSet);
 		}
+		targetProcess.getLaneSets().get(0).getLanes().add(movedLane);
 	}
 }

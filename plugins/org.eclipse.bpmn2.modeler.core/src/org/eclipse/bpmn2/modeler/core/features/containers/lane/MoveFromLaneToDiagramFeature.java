@@ -13,7 +13,8 @@
 package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
 import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
+import org.eclipse.bpmn2.LaneSet;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 
@@ -32,14 +33,17 @@ public class MoveFromLaneToDiagramFeature extends MoveLaneFeature {
 	protected void internalMove(IMoveShapeContext context) {
 		modifyModelStructure(context);
 		layoutPictogramElement(context.getSourceContainer());
-//		FeatureSupport.redrawLanes(getFeatureProvider(), context.getSourceContainer());
 	}
 
 	private void modifyModelStructure(IMoveShapeContext context) {
-		Lane parentLane = (Lane) getBusinessObjectForPictogramElement(context.getSourceContainer());
-		Lane movedLane = (Lane) getBusinessObjectForPictogramElement(context.getShape());
-		parentLane.getChildLaneSet().getLanes().remove(movedLane);
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
-		mh.laneToTop(movedLane);
+		Lane sourceLane = (Lane) getBusinessObjectForPictogramElement(context.getSourceContainer());
+		Lane movedLane = getMovedLane(context);
+		sourceLane.getChildLaneSet().getLanes().remove(movedLane);
+		
+		LaneSet newLaneSet = createLaneSet();
+		newLaneSet.getLanes().add(movedLane);
+		Process targetProcess = getProcess(context.getTargetContainer());
+		targetProcess.getLaneSets().add(newLaneSet);
 	}
+
 }
