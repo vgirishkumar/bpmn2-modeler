@@ -41,7 +41,7 @@ import org.eclipse.graphiti.services.Graphiti;
 public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNShapeFeature {
 
 	protected ContainerShape rootContainer;
-	protected List<PictogramElement> children = new ArrayList<PictogramElement>();
+	protected List<PictogramElement> descendants = new ArrayList<PictogramElement>();
 	protected boolean isHorizontal;
 	protected Stack<Point> containerPos = new Stack<Point>();
 
@@ -64,7 +64,7 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 
 			rootContainer = FeatureSupport.getRootContainer(containerShape);
 			isHorizontal = FeatureSupport.isHorizontal(rootContainer);
-			children = FeatureSupport.getPoolAndLaneDescendants(rootContainer);
+			descendants = FeatureSupport.getPoolAndLaneDescendants(rootContainer);
 			
 		}
 		
@@ -93,7 +93,7 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 			// we'll need to use this as the offset for MOVABLE Labels
 			offset = Graphiti.getCreateService().createPoint(deltaX, deltaY);
 			
-			for (PictogramElement pe : children) {
+			for (PictogramElement pe : descendants) {
 				if (containerShape.getChildren().contains(pe)) {
 					GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
 					Graphiti.getLayoutService().setLocation(ga, ga.getX() + deltaX, ga.getY() + deltaY);
@@ -102,7 +102,7 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 			}
 		}
 		
-		for (PictogramElement pe : children) {
+		for (PictogramElement pe : descendants) {
 			if (pe instanceof FreeFormConnection) {
 				FreeFormConnection c = (FreeFormConnection) pe;
 				FeatureSupport.updateConnection(getFeatureProvider(), c, true);

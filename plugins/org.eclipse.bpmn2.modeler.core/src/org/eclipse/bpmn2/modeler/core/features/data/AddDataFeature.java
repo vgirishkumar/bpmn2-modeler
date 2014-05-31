@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -106,6 +107,10 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		line.setLineVisible(false);
 		peService.setPropertyValue(collectionShape, GraphitiConstants.HIDEABLE_PROPERTY, Boolean.toString(true));
 		return collectionShape;
+	}
+	
+	protected boolean isHorizontal(ITargetContext context) {
+		return false;
 	}
 	
 	public abstract String getName(T t);

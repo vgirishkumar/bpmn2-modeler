@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.Category;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
@@ -151,7 +152,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		allElements.addAll(Bpmn2FeatureMap.CHOREOGRAPHY);
 		allElements.addAll(Bpmn2FeatureMap.CONVERSATION);
 		allElements.addAll(Bpmn2FeatureMap.SWIMLANES);
-		allElements.addAll(Bpmn2FeatureMap.DATA);
+		allElements.addAll(Bpmn2FeatureMap.ALL_DATA);
 		allElements.addAll(Bpmn2FeatureMap.ARTIFACTS);
 		Collections.sort(allElements, new Comparator<Class>() {
 
@@ -422,7 +423,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					conversationShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.SWIMLANES.contains(c))
 					swimLanesShapeStyles.put(c, ss);
-				if (Bpmn2FeatureMap.DATA.contains(c))
+				if (Bpmn2FeatureMap.ALL_DATA.contains(c))
 					dataShapeStyles.put(c, ss);
 				if (Bpmn2FeatureMap.ARTIFACTS.contains(c))
 					artifactShapeStyles.put(c, ss);
@@ -755,7 +756,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					String text = classNameMap.get((Class)entry.getKey());
 					if (text!=null)
 						return text;
-					return ((Class)entry.getKey()).getSimpleName();
+					return ModelUtil.toCanonicalString( ((Class)entry.getKey()).getSimpleName() );
 				}
 			}
 			return element.toString();

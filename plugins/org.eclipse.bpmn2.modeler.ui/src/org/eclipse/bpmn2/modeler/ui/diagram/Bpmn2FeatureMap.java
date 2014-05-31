@@ -75,6 +75,7 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.ui.features.data.DataObjectFeatureContainer.AddDataObjectFeature;
 
 @SuppressWarnings("rawtypes")
 public class Bpmn2FeatureMap {
@@ -88,6 +89,7 @@ public class Bpmn2FeatureMap {
 	public static final List<Class> CHOREOGRAPHY;
 	public static final List<Class> CONVERSATION;
 	public static final List<Class> DATA;
+	public static final List<Class> ALL_DATA;
 	public static final List<Class> ARTIFACTS;
 	public static final List<Class> SWIMLANES;
 	public static HashSet<Class> ALL_SHAPES;
@@ -157,6 +159,22 @@ public class Bpmn2FeatureMap {
 		features.add(Transaction.class);
 		SUBPROCESS = Collections.unmodifiableList(features);
 
+		// this is used by the tool palette
+		// it does NOT include DataObjectReference because
+		// that object needs to be handled by the {@link AddDataObjectFeature}
+		features = new ArrayList<Class>();
+		features.add(DataObject.class);
+//		features.add(DataObjectReference.class);
+		features.add(DataStoreReference.class);
+		features.add(DataInput.class);
+		features.add(DataOutput.class);
+		features.add(Message.class);
+		DATA = Collections.unmodifiableList(features);
+
+		// and this is used by the Appearance Preference Page
+		// this DOES include DataObjectReference because
+		// we MAY want to be able to change the appearance of
+		// these things independently of DataObjects 
 		features = new ArrayList<Class>();
 		features.add(DataObject.class);
 		features.add(DataObjectReference.class);
@@ -164,7 +182,7 @@ public class Bpmn2FeatureMap {
 		features.add(DataInput.class);
 		features.add(DataOutput.class);
 		features.add(Message.class);
-		DATA = Collections.unmodifiableList(features);
+		ALL_DATA = Collections.unmodifiableList(features);
 
 		features = new ArrayList<Class>();
 		features.add(ChoreographyTask.class);
@@ -197,7 +215,7 @@ public class Bpmn2FeatureMap {
 		ALL_SHAPES.addAll(SUBPROCESS);
 		ALL_SHAPES.addAll(CHOREOGRAPHY);
 		ALL_SHAPES.addAll(CONVERSATION);
-		ALL_SHAPES.addAll(DATA);
+		ALL_SHAPES.addAll(ALL_DATA);
 		ALL_SHAPES.addAll(ARTIFACTS);
 		ALL_SHAPES.addAll(SWIMLANES);
 	}

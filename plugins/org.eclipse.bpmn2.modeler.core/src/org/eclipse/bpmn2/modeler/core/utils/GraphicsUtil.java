@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -681,4 +682,26 @@ public class GraphicsUtil {
 		return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
 	}
 
+	public static Rectangle getBoundingRectangle(List<PictogramElement> pes) {
+		int xMin = Integer.MAX_VALUE;
+		int yMin = Integer.MAX_VALUE;
+		int xMax = Integer.MIN_VALUE;
+		int yMax = Integer.MIN_VALUE;
+		
+		for (PictogramElement pe : pes) {
+			if (pe instanceof Shape) {
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram((Shape)pe);
+				IDimension size = calculateSize(pe);
+				if (loc.getX()<xMin)
+					xMin = loc.getX();
+				if (loc.getY()<yMin)
+					yMin = loc.getY();
+				if (loc.getX() + size.getWidth()>xMax)
+					xMax = loc.getX() + size.getWidth();
+				if (loc.getY() + size.getHeight()>yMax)
+					yMax = loc.getY() + size.getHeight();
+			}
+		}
+		return new Rectangle(xMin, yMin, xMax-xMin, yMax-yMin);
+	}
 }

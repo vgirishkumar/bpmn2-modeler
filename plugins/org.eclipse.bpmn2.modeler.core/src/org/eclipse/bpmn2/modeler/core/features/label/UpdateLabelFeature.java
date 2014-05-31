@@ -152,7 +152,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				start = end+1;
 			}
 		}
-		if (start<text.length()-1)
+		if (start<text.length())
 			ss.add(text.substring(start));
 		String words[] = ss.toArray(new String[ss.size()]);
 		IDimension dim = layoutService.calculateTextSize(text, font);

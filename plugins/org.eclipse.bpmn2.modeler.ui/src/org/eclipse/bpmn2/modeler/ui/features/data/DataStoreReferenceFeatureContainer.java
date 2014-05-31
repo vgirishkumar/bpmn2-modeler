@@ -47,6 +47,7 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
+import org.eclipse.graphiti.features.context.ITargetContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
@@ -168,6 +169,10 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 			
 			return containerShape;
+		}
+		
+		protected boolean isHorizontal(ITargetContext context) {
+			return true;
 		}
 
 		/* (non-Javadoc)

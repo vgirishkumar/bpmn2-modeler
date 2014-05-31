@@ -1015,7 +1015,7 @@
 		<style object="DataObject" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataObjectReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataOutput" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
-		<style object="DataStoreReference" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
+		<style object="DataStoreReference" shapeBackground="D4E7F8" defaultWidth="50" defaultHeight="50"/>
 		<style object="Message" shapeBackground="D4E7F8" defaultWidth="30" defaultHeight="20"/>
 
 		<style object="EVENTS" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="36"/>

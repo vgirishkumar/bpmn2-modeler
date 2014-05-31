@@ -28,7 +28,6 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
-import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
@@ -184,12 +183,8 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 					if (FeatureSupport.isLabelShape(s))
 						continue;
 					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof AbstractText) {
-						// AbstractText text = (AbstractText)childGa;
-						// text.setAngle(-90);
-						// service.setLocationAndSize(text, 5, 0, 15,
-						// newHeight);
-					} else if (childGa instanceof Polyline) {
+					if (childGa instanceof Polyline) {
+						// this is the separator line in a Pool
 						Polyline line = (Polyline) childGa;
 						Point p0 = line.getPoints().get(0);
 						Point p1 = line.getPoints().get(1);
@@ -214,11 +209,8 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 					if (FeatureSupport.isLabelShape(s))
 						continue;
 					GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-					if (childGa instanceof AbstractText) {
-						// AbstractText text = (AbstractText)childGa;
-						// text.setAngle(0);
-						// service.setLocationAndSize(text, 0, 5, newWidth, 15);
-					} else if (childGa instanceof Polyline) {
+					if (childGa instanceof Polyline) {
+						// this is the separator line in a Pool
 						Polyline line = (Polyline) childGa;
 						Point p0 = line.getPoints().get(0);
 						Point p1 = line.getPoints().get(1);
@@ -261,19 +253,7 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 				if (FeatureSupport.isLabelShape(s))
 					continue;
 				GraphicsAlgorithm childGa = s.getGraphicsAlgorithm();
-				if (childGa instanceof AbstractText) {
-					// AbstractText text = (AbstractText)childGa;
-					// if (horz) {
-					// text.setAngle(-90);
-					// service.setLocationAndSize(text, 5, 0, 15,
-					// ga.getHeight());
-					// }
-					// else {
-					// text.setAngle(0);
-					// service.setLocationAndSize(text, 0, 5, ga.getWidth(),
-					// 15);
-					// }
-				} else if (childGa instanceof Polyline) {
+				if (childGa instanceof Polyline) {
 					Polyline line = (Polyline) childGa;
 					Point p0 = line.getPoints().get(0);
 					Point p1 = line.getPoints().get(1);

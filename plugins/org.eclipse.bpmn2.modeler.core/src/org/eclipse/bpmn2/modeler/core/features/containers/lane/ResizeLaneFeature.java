@@ -12,11 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.containers.lane;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.containers.AbstractResizeContainerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -70,16 +74,15 @@ public class ResizeLaneFeature extends AbstractResizeContainerFeature {
 		}
 		return doit;
 	}
+	
+	@Override
+	public void resizeShape(IResizeShapeContext context) {
+		preResizeShape(context);
 
-	private int compare(int heightBefore, int widthBefore, int heightAfter,
-			int widthAfter) {
-		if (heightAfter > heightBefore || widthAfter > widthBefore) {
-			return 1;
-		}
-		if (heightAfter < heightBefore || widthAfter < widthBefore) {
-			return -1;
-		}
-		return 0;
+		resizeHeight(context);
+		resizeWidth(context);
+		
+		postResizeShape(context);
 	}
 
 	protected void resizeHeight(IResizeShapeContext context) {
@@ -235,15 +238,27 @@ public class ResizeLaneFeature extends AbstractResizeContainerFeature {
 	}
 	
 	@Override
-	public void resizeShape(IResizeShapeContext context) {
-		preResizeShape(context);
-
-		resizeHeight(context);
-		resizeWidth(context);
-		
-		postResizeShape(context);
+	protected void preResizeShape(IResizeShapeContext context) {
+		super.preResizeShape(context);
+		// TODO: figure out an algorithm to resize lanes so that children
+		// are always visible
+//		List<PictogramElement> children = FeatureSupport.getPoolOrLaneChildren((ContainerShape)context.getShape());
+//		Rectangle bounds = GraphicsUtil.getBoundingRectangle(children);
+//		int direction = 0;
+//		if (bounds.x < context.getX()) {
+//			((ResizeShapeContext)context).setX(bounds.x);
+//		}
+//		if (bounds.y < context.getY()) {
+//			((ResizeShapeContext)context).setY(bounds.y);
+//		}
+//		if (bounds.x + bounds.width > context.getWidth()) {
+//			((ResizeShapeContext)context).setWidth(bounds.x + bounds.width);
+//		}
+//		if (bounds.y + bounds.height > context.getHeight()) {
+//			((ResizeShapeContext)context).setHeight(bounds.y + bounds.height);
+//		}
 	}
-
+	
 	private ContainerShape getLowestLane(ContainerShape root, boolean useFirstLane) {
 		ContainerShape result;
 		if (useFirstLane) {
@@ -257,4 +272,14 @@ public class ResizeLaneFeature extends AbstractResizeContainerFeature {
 		return result;
 	}
 
+	private int compare(int heightBefore, int widthBefore, int heightAfter,
+			int widthAfter) {
+		if (heightAfter > heightBefore || widthAfter > widthBefore) {
+			return 1;
+		}
+		if (heightAfter < heightBefore || widthAfter < widthBefore) {
+			return -1;
+		}
+		return 0;
+	}
 }
