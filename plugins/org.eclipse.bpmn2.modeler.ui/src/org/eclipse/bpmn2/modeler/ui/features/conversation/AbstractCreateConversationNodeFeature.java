@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.conversation;
 
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
@@ -33,7 +35,15 @@ public abstract class AbstractCreateConversationNodeFeature<T extends Conversati
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer().equals(getDiagram());
+		if (context.getTargetContainer().equals(getDiagram())) {
+			// Only Participants are allowed in a Conversation
+			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(getDiagram(), BPMNDiagram.class);
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			if (bpmnElement instanceof Collaboration) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

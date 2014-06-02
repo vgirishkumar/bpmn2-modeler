@@ -32,6 +32,9 @@ public abstract class AbstractCreateDataInputOutputFeature<T extends ItemAwareEl
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
+		if (!super.canCreate(context))
+			return false;
+		
 		Object containerBO = BusinessObjectUtil.getBusinessObjectForPictogramElement( context.getTargetContainer() );
 		boolean intoDiagram = containerBO instanceof BPMNDiagram;
 		if (intoDiagram) {

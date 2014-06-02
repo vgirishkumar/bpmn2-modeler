@@ -12,11 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
@@ -64,8 +66,8 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 	public boolean canExecute(ICustomContext context) {
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			return FeatureSupport.isElementExpanded(bo);
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(pes[0]);
+			return FeatureSupport.isElementExpanded(be);
 		}
 		return false;
 	}
@@ -85,7 +87,7 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(getDiagram());
 						ShapeStyle ss = preferences.getShapeStyle(flowNode);
 						
-						// SubProcess is collapsed - resize to standard modelObject size
+						// SubProcess is expanded - resize to standard Task size
 						// NOTE: children tasks will be set not-visible in LayoutExpandableActivityFeature
 						
 						bpmnShape.setIsExpanded(false);
@@ -95,6 +97,7 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
 						int oldWidth = ga.getWidth();
 						int oldHeight = ga.getHeight();
+						FeatureSupport.setExpandedSize(containerShape, oldWidth, oldHeight);
 						int newWidth = ss.getDefaultWidth();
 						int newHeight = ss.getDefaultHeight();
 						resizeContext.setX(ga.getX() + oldWidth/2 - newWidth/2);

@@ -13,9 +13,10 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 /**
  * This is the Graphiti UpdateFeature class for all BPMN2 model elements that
@@ -37,7 +38,7 @@ public abstract class AbstractUpdateBaseElementFeature<T extends BaseElement> ex
 
 	@Override
 	public boolean canUpdate(IUpdateContext context) {
-		if (!FeatureSupport.isLabelShape(context.getPictogramElement())) {
+		if (context.getPictogramElement() instanceof ContainerShape) {
 			Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 			try {
 				return ((T)bo) != null;

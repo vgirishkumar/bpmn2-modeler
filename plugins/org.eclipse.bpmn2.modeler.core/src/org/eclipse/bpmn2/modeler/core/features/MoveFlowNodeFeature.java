@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
@@ -44,6 +45,7 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 
 	private final List<Algorithm> algorithms;
 	private AlgorithmContainer algorithmContainer;
+	protected ModelHandler modelHandler;
 	
 	/** The context. */
 	protected IMoveShapeContext context;
@@ -78,8 +80,8 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			return onMoveAlgorithmNotFound(context);
 		}
 
-		ModelHandler mh = ModelHandler.getInstance(getDiagram());
-		return algorithmContainer.isMoveAllowed(getSourceBo(context, mh), getTargetBo(context, mh));
+		modelHandler = ModelHandler.getInstance(getDiagram());
+		return algorithmContainer.isMoveAllowed(getSourceBo(context), getTargetBo(context));
 	}
 
 	/**
@@ -109,12 +111,10 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		Shape shape = context.getShape();
 		if (!FeatureSupport.isLabelShape(shape)) {
 			try {
-				ModelHandler handler = ModelHandler.getInstance(getDiagram());
 				Object[] nodes = getAllBusinessObjectsForPictogramElement(shape);
 				for (Object object : nodes) {
 					if (object instanceof FlowNode && algorithmContainer!=null && !algorithmContainer.isEmpty()) {
-						algorithmContainer.move(((FlowNode) object), getSourceBo(context, handler),
-								getTargetBo(context, handler));
+						algorithmContainer.move(((FlowNode) object), getSourceBo(context), getTargetBo(context));
 					}
 				}
 			} catch (Exception e) {
@@ -124,15 +124,24 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		super.postMoveShape(context);
 	}
 
-	private Object getSourceBo(IMoveShapeContext context, ModelHandler modelHandler) {
+	private Object getSourceBo(IMoveShapeContext context) {
 		if (context.getSourceContainer().equals(getDiagram()))
 			return modelHandler.getFlowElementContainer(context.getSourceContainer());
 		return getBusinessObjectForPictogramElement(context.getSourceContainer());
 	}
 
-	private Object getTargetBo(IMoveShapeContext context, ModelHandler modelHandler) {
-		if (context.getTargetContainer().equals(getDiagram()))
-			return modelHandler.getFlowElementContainer(context.getTargetContainer());
+	private Object getTargetBo(IMoveShapeContext context) {
+		if (context.getTargetContainer().equals(getDiagram())) {
+			Object target = modelHandler.getFlowElementContainer(context.getTargetContainer());
+			if (target==null) {
+				// This handles the case where {@link #canMoveShape(IMoveShapeContext)} is called:
+				// at this point there is no write transaction open yet on the EditingDomain
+				// however,  if the target is the Diagram but no default Process exists yet
+				// for that Diagram, then the move should be conditionally allowed.
+				return Bpmn2Factory.eINSTANCE.createProcess();
+			}
+			return target;
+		}
 		return getBusinessObjectForPictogramElement(context.getTargetContainer());
 	}
 
@@ -351,8 +360,7 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		 */
 		@Override
 		public void move(FlowNode node, Object source, Object target) {
-			ModelHandler mh = ModelHandler.getInstance(getDiagram());
-			mh.moveFlowNode(node, source, target);
+			modelHandler.moveFlowNode(node, source, target);
 		}
 	}
 
@@ -491,7 +499,7 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 					return true;
 				if (target instanceof Participant) {
 					Participant p = (Participant) target;
-					if (p.equals(ModelHandler.getInstance(getDiagram()).getInternalParticipant())) {
+					if (p.equals(modelHandler.getInternalParticipant())) {
 						return true;
 					}
 					if (p.getProcessRef() == null) {

@@ -17,9 +17,12 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.MessageFlow;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -28,7 +31,6 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -637,6 +639,66 @@ public class DIUtils {
 		return null;
 	}
 	
+	public static boolean deleteContainerIfPossible(RootElement rootElement) {
+		boolean canDelete = false;
+		Definitions definitions = (Definitions)rootElement.eContainer();
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(rootElement);
+		RootElement newRootElement = null;
+		if (bpmnDiagram==null) {
+			canDelete = true;
+		}
+		else {
+			// find a replacement for the BPMNDiagram target element
+			for (RootElement r : definitions.getRootElements()) {
+				if (r!=rootElement && (r instanceof FlowElementsContainer || r instanceof Collaboration)) {
+					if (rootElement instanceof Collaboration) {
+						Collaboration collaboration = (Collaboration) rootElement;
+						if (collaboration.getParticipants().isEmpty()) {
+							newRootElement = r;
+							canDelete = true;
+							break;
+						}
+							
+					}
+					else if (rootElement instanceof FlowElementsContainer) {
+						FlowElementsContainer container = (FlowElementsContainer) rootElement;
+						if (container.getFlowElements().isEmpty()) {
+							newRootElement = r;
+							canDelete = true;
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		if (canDelete) {
+			EcoreUtil.delete(rootElement);
+			if (bpmnDiagram!=null && newRootElement!=null)
+				bpmnDiagram.getPlane().setBpmnElement(newRootElement);
+		}
+		return canDelete;
+	}
+	
+	public static void updateDiagramType(Diagram diagram) {
+		BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
+		if (bpmnDiagram!=null && bpmnDiagram.getPlane()!=null) {
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			if (bpmnElement==null) {
+				// this BPMNDiagram has had its bpmnElement deleted.
+				// make it point to the first valid RootElement.
+				Definitions definitions = ModelUtil.getDefinitions(bpmnDiagram);
+				for (RootElement r : definitions.getRootElements()) {
+					if (r instanceof FlowElementsContainer || r instanceof Collaboration) {
+						bpmnDiagram.getPlane().setBpmnElement(r);
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Returns a list of all PictogramElements that reference the given BaseElement in all Graphiti Diagrams
 	 * contained in all Resources of the given ResourceSet

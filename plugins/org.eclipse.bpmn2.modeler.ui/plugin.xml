@@ -1060,10 +1060,10 @@
 		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 
-		<style object="CONVERSATION" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="Conversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="SubConversation" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="CONVERSATION" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>
+		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>
+		<style object="Conversation" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>
+		<style object="SubConversation" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>
 
 		<style object="ARTIFACTS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="110"/>
 		<style object="Group" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="110"/>
@@ -1077,6 +1077,8 @@
 		<style object="Association" shapeBackground="D4E7F8" defaultWidth="2"/>
 		<style object="ConversationLink" shapeBackground="D4E7F8" defaultWidth="4"/>
 		<style object="DataAssociation" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="DataInputAssociation" shapeBackground="D4E7F8" defaultWidth="2"/>
+		<style object="DataOutputAssociation" shapeBackground="D4E7F8" defaultWidth="2"/>
 		<style object="MessageFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
 		<style object="SequenceFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
 

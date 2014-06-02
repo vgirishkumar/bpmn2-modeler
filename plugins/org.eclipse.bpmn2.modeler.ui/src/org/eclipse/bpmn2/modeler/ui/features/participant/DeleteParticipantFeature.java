@@ -12,55 +12,36 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.participant;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.DesignEditor;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
-public class DeleteParticipantFeature extends DefaultDeleteBPMNShapeFeature {
+public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 
 	public DeleteParticipantFeature(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	@Override
-	public void delete(IDeleteContext context) {
-		// Delete the pool's process and the BPMNDiagram page (if any).
-		PictogramElement pe = context.getPictogramElement();
-		Object bo = getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof Participant) {
-			bo = ((Participant)bo).getProcessRef();
-		}
-		if (bo instanceof FlowElementsContainer) {
-			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)bo);
-			if (bpmnDiagram != null) {
-				DIUtils.deleteDiagram(getDiagramBehavior(), bpmnDiagram);
-			}
-			EcoreUtil.delete((EObject) bo, true);
-		}
-
-		super.delete(context);
 	}
 
 	@Override
@@ -99,4 +80,40 @@ public class DeleteParticipantFeature extends DefaultDeleteBPMNShapeFeature {
 		return true;
 	}
 
+	@Override
+	public void delete(IDeleteContext context) {
+		// Delete the pool's process and the BPMNDiagram page (if any).
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			ContainerShape poolShape = (ContainerShape) pe;
+			Object bo = getBusinessObjectForPictogramElement(pe);
+			if (bo instanceof Participant) {
+				Participant pool = (Participant) bo;
+				// also delete any contained Lanes and their children
+				List<PictogramElement> children = new ArrayList<PictogramElement>();
+				FeatureSupport.collectChildren(poolShape, children, true);
+				for (PictogramElement child : children) {
+					if (child instanceof Connection) {
+						// don't bother with Connections, these will
+						// be deleted by their source/target shapes
+						continue;
+					}
+					IDeleteContext dc = new DeleteContext(child);
+					IDeleteFeature df = getFeatureProvider().getDeleteFeature(dc);
+					if (df.canDelete(dc)) {
+						df.delete(dc);
+					}
+				}
+				bo = pool.getProcessRef();
+				if (bo instanceof FlowElementsContainer) {
+					BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram((FlowElementsContainer)bo);
+					if (bpmnDiagram != null) {
+						DIUtils.deleteDiagram(getDiagramBehavior(), bpmnDiagram);
+					}
+					EcoreUtil.delete((FlowElementsContainer)bo, true);
+				}
+			}
+		}		
+		super.delete(context);
+	}
 }

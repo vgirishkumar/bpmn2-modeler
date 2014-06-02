@@ -19,7 +19,10 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -48,13 +51,14 @@ public abstract class AddExpandableActivityFeature<T extends Activity>
 			}
 		}
 		peService.setPropertyValue(containerShape, GraphitiConstants.TRIGGERED_BY_EVENT, Boolean.toString(isTriggeredByEvent));
-		peService.setPropertyValue(containerShape, GraphitiConstants.IS_EXPANDED, Boolean.toString(isExpanded));
+		FeatureSupport.setElementExpanded(containerShape, isExpanded);
 		
 		if (!isExpanded){
 			ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
 		}
 		else {
 			ShapeDecoratorUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			FeatureSupport.updateExpandedSize(containerShape);
 		}
 	}
 }

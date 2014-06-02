@@ -14,9 +14,11 @@
 package org.eclipse.bpmn2.modeler.ui.features.lane;
 
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.IDeleteContext;
@@ -43,6 +45,8 @@ public class DeleteLaneFeature extends AbstractDefaultDeleteFeature {
 	public void delete(IDeleteContext context) {
 		ContainerShape laneContainerShape = (ContainerShape) context.getPictogramElement();
 		ContainerShape parentContainerShape = laneContainerShape.getContainer();
+		Lane lane = (Lane)getBusinessObjectForPictogramElement(laneContainerShape);
+		LaneSet laneSet = (LaneSet)lane.eContainer();
 		
 		if (parentContainerShape != null) {
 			boolean before = false;
@@ -51,6 +55,9 @@ public class DeleteLaneFeature extends AbstractDefaultDeleteFeature {
 				neighborContainerShape = getLaneBefore(laneContainerShape);
 				if (neighborContainerShape == null) {
 					super.delete(context);
+					if (laneSet.getLanes().size()==0) {
+						EcoreUtil.delete(laneSet);
+					}
 					return;
 				} else {
 					before = true;

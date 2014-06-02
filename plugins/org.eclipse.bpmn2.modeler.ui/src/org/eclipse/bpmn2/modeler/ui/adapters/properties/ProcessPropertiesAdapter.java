@@ -50,20 +50,21 @@ public class ProcessPropertiesAdapter extends RootElementPropertiesAdapter<Proce
 				protected void internalSet(Process process, EStructuralFeature feature, Object value, int index) {
 	    			// changing the process name also changes its BPMNDiagram name
 	    			// which is used as the tab label in the multipage editor
-	    			BPMNDiagram bpmnDiagram = null;
-	    			Definitions defs = ModelUtil.getDefinitions(process);
-	    			if (defs!=null) {
-	    				for (BPMNDiagram d : defs.getDiagrams()) {
-	    					if (d.getPlane().getBpmnElement() == process) {
-	    						bpmnDiagram = d;
-	    						break;
-	    					}
-	    				}
-	    			}
+	    			// NO! This is a bad idea.
+//	    			BPMNDiagram bpmnDiagram = null;
+//	    			Definitions defs = ModelUtil.getDefinitions(process);
+//	    			if (defs!=null) {
+//	    				for (BPMNDiagram d : defs.getDiagrams()) {
+//	    					if (d.getPlane().getBpmnElement() == process) {
+//	    						bpmnDiagram = d;
+//	    						break;
+//	    					}
+//	    				}
+//	    			}
 
 	    			process.setName((String)value);
-    				if (bpmnDiagram!=null)
-    					bpmnDiagram.setName((String)value);
+//    				if (bpmnDiagram!=null)
+//    					bpmnDiagram.setName((String)value);
 	    		}
     		}
     	);

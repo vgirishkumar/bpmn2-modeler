@@ -33,6 +33,9 @@ public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefini
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
+		if (!super.canCreate(context))
+			return false;
+
 		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
 		if (bo instanceof Event) {
 			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(

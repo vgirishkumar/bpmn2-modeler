@@ -272,6 +272,7 @@ public interface GraphitiConstants {
 	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
 
 	public static final String IS_EXPANDED = "is.expanded"; //$NON-NLS-1$
+	public static final String EXPANDED_SIZE = "expanded.size"; //$NON-NLS-1$
 
 	public static final String TRIGGERED_BY_EVENT = "triggered.by.event"; //$NON-NLS-1$
 

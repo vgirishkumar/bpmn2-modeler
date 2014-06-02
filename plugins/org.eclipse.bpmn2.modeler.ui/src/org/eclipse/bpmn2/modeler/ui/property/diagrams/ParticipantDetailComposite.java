@@ -23,11 +23,15 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection.ProvidedInterfaceListComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -84,7 +88,23 @@ public class ParticipantDetailComposite extends DefaultDetailComposite {
 				parent = getAttributesParent();
 
 			Participant participant = (Participant) object;
-			if ("participantMultiplicity".equals(reference.getName())) { //$NON-NLS-1$
+			// do not allow the processRef to be changed if this is a Pool
+			if ("processRef".equals(reference.getName())) { //$NON-NLS-1$
+				PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
+				if (pes.length==1) {
+					if (FeatureSupport.isChoreographyParticipantBand(pes[0])) {
+						super.bindReference(parent, object, reference);
+					}
+					else {
+						// display a read-only text field containing the referenced Process name
+						TextObjectEditor editor = new TextObjectEditor(this, object, reference);
+						String label = getBusinessObjectDelegate().getLabel(object, reference);
+						editor.createControl(parent, label);
+						editor.setEditable(false);
+					}
+				}
+			}
+			else if ("participantMultiplicity".equals(reference.getName())) { //$NON-NLS-1$
 				Composite composite = getToolkit().createComposite(parent);
 				composite.setLayout(new GridLayout(7,true));
 				composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));

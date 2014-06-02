@@ -14,8 +14,10 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -46,24 +48,19 @@ public abstract class AbstractCreateFlowElementFeature<T extends FlowElement> ex
 	 */
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		/*
-		 * TODO: rethink this: it's causing all kinds of DI import problems
-		 * also see AbstractAddActivityFeature
-		 * 
-		if (intoParticipant) {
-			// don't allow flow elements to be added to a Pool if it is a "whitebox"
-			// (i.e. if it has its own BPMNDiagram page.) Flow elements should be added
-			// to the Process page instead.
+		if (!super.canCreate(context))
+			return false;
+		if (FeatureSupport.isTargetParticipant(context)) {
 			Participant participant = FeatureSupport.getTargetParticipant(context);
-			if (FeatureSupport.hasBpmnDiagram(participant))
+			if (FeatureSupport.hasBpmnDiagram(participant)) {
 				return false;
+			}
 		}
-		else if (intoFlowElementContainer) {
+		if (FeatureSupport.isTargetFlowElementsContainer(context)) {
 			FlowElementsContainer flowElementsContainer = FeatureSupport.getTargetFlowElementsContainer(context);
-			if (FeatureSupport.hasBpmnDiagram( create(flowElementsContainer))
+			if (FeatureSupport.hasBpmnDiagram(flowElementsContainer))
 				return false;
 		}
-		*/
 		return FeatureSupport.isValidFlowElementTarget(context);
 	}
 

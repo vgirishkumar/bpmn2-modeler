@@ -15,12 +15,12 @@ package org.eclipse.bpmn2.modeler.core.features.choreography;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallChoreography;
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
@@ -42,7 +42,7 @@ public class UpdateChoreographyLabelFeature extends UpdateLabelFeature {
 		PictogramElement pe = FeatureSupport.getLabelOwner(text);
 		Object bo = getBusinessObjectForPictogramElement(pe);
 		if ((bo instanceof SubChoreography || bo instanceof CallChoreography) &&
-				FeatureSupport.isElementExpanded(bo)) {
+				FeatureSupport.isElementExpanded((BaseElement)bo)) {
 			return LabelPosition.LEFT;
 		}
 		return LabelPosition.CENTER;
@@ -52,7 +52,7 @@ public class UpdateChoreographyLabelFeature extends UpdateLabelFeature {
 		PictogramElement pe = FeatureSupport.getLabelOwner(text);
 		Object bo = getBusinessObjectForPictogramElement(pe);
 		if ((bo instanceof SubChoreography || bo instanceof CallChoreography) &&
-				FeatureSupport.isElementExpanded(bo)) {
+				FeatureSupport.isElementExpanded((BaseElement)bo)) {
 			return LabelPosition.TOP;
 		}
 		return LabelPosition.CENTER;
@@ -64,7 +64,7 @@ public class UpdateChoreographyLabelFeature extends UpdateLabelFeature {
 		if (!isAddingLabel) {
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if ((bo instanceof SubChoreography || bo instanceof CallChoreography) &&
-					FeatureSupport.isElementExpanded(bo)) {
+					FeatureSupport.isElementExpanded((BaseElement)bo)) {
 				// This shape is expanded, so the label will appear at the top-left
 				// corner of the shape. Adjust the vertical position so that the label
 				// is just below the top Participant Band(s).

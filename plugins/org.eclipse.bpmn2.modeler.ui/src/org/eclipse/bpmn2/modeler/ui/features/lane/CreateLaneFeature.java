@@ -28,14 +28,15 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateLaneFeature extends AbstractBpmn2CreateFeature<Lane> {
 
-	private static int index = 1;
-
 	public CreateLaneFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
+		if (!super.canCreate(context))
+			return false;
+
 		// NOTE: This is slightly different from FeatureSupport.isValidFlowElementTarget()
 		// because a Lane can be added to a Lane that is not a top-level Lane. This is not
 		// the case for Activities, Events and Gateways.

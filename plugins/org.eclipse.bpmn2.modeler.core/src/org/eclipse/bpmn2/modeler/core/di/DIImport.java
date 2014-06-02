@@ -501,10 +501,6 @@ public class DIImport {
 			context.setSize((int) shape.getBounds().getWidth(), (int) shape.getBounds().getHeight());
 		}
 
-		if ( (bpmnElement instanceof SubProcess) && !shape.isIsExpanded()) {
-			context.setSize(ss.getDefaultWidth(),ss.getDefaultHeight());
-		}
-
 		if (bpmnElement instanceof Lane) {
 			handleLane((Lane)bpmnElement, context, shape);
 		} else if (bpmnElement instanceof FlowNode){ 

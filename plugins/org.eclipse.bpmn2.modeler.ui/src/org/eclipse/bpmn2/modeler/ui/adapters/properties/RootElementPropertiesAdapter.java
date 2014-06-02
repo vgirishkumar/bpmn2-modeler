@@ -76,8 +76,21 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 			else
 				definitions = ModelUtil.getDefinitions(rootElement);
 			if (definitions!=null) {
-				definitions.getRootElements().add(rootElement);
-				ECollections.sort((EList<RootElement>)definitions.getRootElements(), new RootElementComparator());
+				try {
+					definitions.getRootElements().add(rootElement);
+					ECollections.sort((EList<RootElement>)definitions.getRootElements(), new RootElementComparator());
+				}
+				catch (IllegalStateException e) {
+					try {
+						// well this is odd...
+						// even though we did not have an open write transaction,
+						// the getRootElements().add() does not get rolled back.
+						definitions.getRootElements().remove(rootElement);
+					}
+					catch (Exception e2) {
+						throw e;
+					}
+				}
 			}
 			return rootElement;
 		}

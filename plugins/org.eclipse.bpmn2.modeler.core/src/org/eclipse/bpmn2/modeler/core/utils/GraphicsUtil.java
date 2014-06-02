@@ -38,12 +38,17 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.services.IPeService;
 
 /**
  *
  */
 public class GraphicsUtil {
+
+	static final IGaService gaService = Graphiti.getGaService();
+	static final IPeService peService = Graphiti.getPeService();
 
 	public interface IShapeFilter {
 		boolean matches(Shape shape);
@@ -203,11 +208,11 @@ public class GraphicsUtil {
 		GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
 		Object o = pe.eContainer();
 		if (o instanceof ContainerShape && !(o instanceof Diagram)) {
-			ILocation containerLoc = ShapeDecoratorUtil.peService.getLocationRelativeToDiagram((Shape)o);
+			ILocation containerLoc = peService.getLocationRelativeToDiagram((Shape)o);
 			x -= containerLoc.getX();
 			y -= containerLoc.getY();
 		}
-		ShapeDecoratorUtil.gaService.setLocation(ga, x, y);
+		gaService.setLocation(ga, x, y);
 	}
 
 	public static boolean contains(Shape parent, Shape child) {
@@ -282,7 +287,7 @@ public class GraphicsUtil {
 	}
 
 	public static boolean intersectsLine(Shape shape, Point p1, Point p2) {
-			ILocation loc = ShapeDecoratorUtil.peService.getLocationRelativeToDiagram(shape);
+			ILocation loc = peService.getLocationRelativeToDiagram(shape);
 			IDimension size = GraphicsUtil.calculateSize(shape);
 			// adjust the shape rectangle so that a point touching one of the edges
 			// is not considered to be "intersecting"
@@ -380,20 +385,20 @@ public class GraphicsUtil {
 	}
 
 	public static Point createPoint(Point p) {
-		return ShapeDecoratorUtil.gaService.createPoint(p.getX(), p.getY());
+		return gaService.createPoint(p.getX(), p.getY());
 	}
 
 	public static Point createPoint(int x, int y) {
-		return ShapeDecoratorUtil.gaService.createPoint(x, y);
+		return gaService.createPoint(x, y);
 	}
 
 	public static Point createPoint(Anchor a) {
-		return GraphicsUtil.createPoint(ShapeDecoratorUtil.peService.getLocationRelativeToDiagram(a));
+		return GraphicsUtil.createPoint(peService.getLocationRelativeToDiagram(a));
 	}
 
 	public static Point createPoint(AnchorContainer ac) {
 		if (ac instanceof Shape)
-			return GraphicsUtil.createPoint(ShapeDecoratorUtil.peService.getLocationRelativeToDiagram((Shape)ac));
+			return GraphicsUtil.createPoint(peService.getLocationRelativeToDiagram((Shape)ac));
 		return null;
 	}
 
@@ -493,7 +498,7 @@ public class GraphicsUtil {
 	public static IDimension calculateSize(PictogramElement shape) {
 		GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
 		if (ga!=null)
-			return ShapeDecoratorUtil.gaService.calculateSize(ga);
+			return gaService.calculateSize(ga);
 		
 		IDimension dim = null;
 		if (shape instanceof ContainerShape) {
@@ -501,7 +506,7 @@ public class GraphicsUtil {
 			for (Shape s : cs.getChildren()) {
 				ga = s.getGraphicsAlgorithm();
 				if (ga!=null) {
-					IDimension d = ShapeDecoratorUtil.gaService.calculateSize(ga);
+					IDimension d = gaService.calculateSize(ga);
 					if (dim==null)
 						dim = d;
 					else {
@@ -532,7 +537,7 @@ public class GraphicsUtil {
 	public static void dump(String label, Anchor anchor) {
 		if (debug) {
 			System.out.print(label+" "); //$NON-NLS-1$
-			ILocation loc = ShapeDecoratorUtil.peService.getLocationRelativeToDiagram(anchor);
+			ILocation loc = peService.getLocationRelativeToDiagram(anchor);
 			System.out.print(" at "+loc.getX()+", "+loc.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 			GraphicsUtil.dump(" parent=", (ContainerShape)anchor.getParent()); //$NON-NLS-1$
 			if (AnchorUtil.isBoundaryAnchor(anchor)) {
@@ -584,7 +589,7 @@ public class GraphicsUtil {
 	}
 
 	public static GraphicsUtil.LineSegment[] getEdges(Shape shape) {
-		ILocation loc = ShapeDecoratorUtil.peService.getLocationRelativeToDiagram(shape);
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
 		IDimension size = calculateSize(shape);
 		GraphicsUtil.LineSegment top = new GraphicsUtil.LineSegment(loc.getX(),loc.getY(),
 				loc.getX()+size.getWidth(), loc.getY());
@@ -629,7 +634,7 @@ public class GraphicsUtil {
 	}
 
 	public static void sendToFront(Shape shape) {
-		ShapeDecoratorUtil.peService.sendToFront(shape);
+		peService.sendToFront(shape);
 		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
 		if (bpmnShape!=null) {
 			BPMNPlane plane = (BPMNPlane)bpmnShape.eContainer();
@@ -639,7 +644,7 @@ public class GraphicsUtil {
 	}
 
 	public static void sendToBack(Shape shape) {
-		ShapeDecoratorUtil.peService.sendToBack(shape);
+		peService.sendToBack(shape);
 		BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
 		if (bpmnShape!=null) {
 			BPMNPlane plane = (BPMNPlane)bpmnShape.eContainer();

@@ -87,6 +87,11 @@ public class Bpmn2EditorDiItemProviderAdapterFactory extends BpmnDiItemProviderA
 
 				@Override
 				public String getTextValue() {
+					if (object instanceof BPMNDiagram) {
+						String name = ((BPMNDiagram)object).getName();
+						if (name!=null && !name.isEmpty())
+							return name;
+					}
 		        	ExtendedPropertiesAdapter adapter = getBpmnElementAdapter(object);
 		        	if (adapter!=null) {
 		        		BaseElement bpmnElement = getBpmnElement(object);

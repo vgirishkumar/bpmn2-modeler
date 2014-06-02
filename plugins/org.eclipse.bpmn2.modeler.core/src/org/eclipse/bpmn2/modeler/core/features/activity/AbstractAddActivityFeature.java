@@ -13,19 +13,14 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.UpdateActivityLoopAndMultiInstanceMarkerFeature.LoopCharacteristicType;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -35,7 +30,6 @@ import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.services.Graphiti;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -64,24 +58,6 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 	 */
 	@Override
 	public boolean canAdd(IAddContext context) {
-		/*
-		 * TODO: rethink this: it's causing all kinds of DI import problems
-		 * also see AbstractCreateFlowElementFeature
-		 * 
-		if (intoParticipant) {
-			// don't allow flow elements to be added to a Pool if it is a "whitebox"
-			// (i.e. if it has its own BPMNDiagram page.) Flow elements should be added
-			// to the Process page instead.
-			Participant participant = FeatureSupport.getTargetParticipant(context);
-			if (FeatureSupport.hasBpmnDiagram(participant))
-				return false;
-		}
-		else if (intoFlowElementContainer) {
-			FlowElementsContainer flowElementsContainer = FeatureSupport.getTargetFlowElementsContainer(context);
-			if (FeatureSupport.hasBpmnDiagram(flowElementsContainer))
-				return false;
-		}
-		*/
 		return FeatureSupport.isValidFlowElementTarget(context);
 	}
 

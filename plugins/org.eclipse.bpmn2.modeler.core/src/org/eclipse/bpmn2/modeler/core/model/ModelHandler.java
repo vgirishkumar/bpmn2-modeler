@@ -818,26 +818,42 @@ public class ModelHandler {
 	        o = BusinessObjectUtil.getFirstElementOfType((Diagram)o, BPMNDiagram.class);
 		}
 		if (o instanceof BPMNDiagram) {
-			BaseElement be = ((BPMNDiagram)o).getPlane().getBpmnElement();
+			BPMNDiagram bpmnDiagram = (BPMNDiagram) o;
+			BaseElement be = bpmnDiagram.getPlane().getBpmnElement();
 			if (be != null && be instanceof FlowElementsContainer) {
 				return (FlowElementsContainer)be;
 			}
-			else { // somebody did not understand the BPMNPlane (seems to be common), try adding to the first process
-				List<Process> list = getAll(Process.class);
-				if (list.size()==0)
-					return getOrCreateProcess(null);
-				return list.get(0);
+			else {
+				// find an elligible Process for this FlowElement,
+				// one that is not referenced by a Pool
+				List<Participant> pools = getAll(Participant.class);
+				for (Process process : getAll(Process.class)) {
+					boolean isProcessForPool = false;
+					for (Participant pool : pools) {
+						if (pool.getProcessRef() == process) {
+							isProcessForPool = true;
+							break;
+						}
+					}
+					if (!isProcessForPool)
+						return process;
+				}
+				// create a default Process.
+				// The BPMNDiagram now becomes a Process Diagram
+				try {
+					Process process = create(Process.class);
+					bpmnDiagram.getPlane().setBpmnElement(process);
+					return process;
+				}
+				catch (IllegalStateException e) {
+				}
+				return null;
 			}
 		}
 		if (o instanceof Participant) {
 			return getOrCreateProcess((Participant) o);
 		}
 		if (o instanceof SubProcess) {
-//			EObject container = (SubProcess)o;
-//			while (!(container instanceof Process) && container.eContainer()!=null) {
-//				container = container.eContainer();
-//			}
-//			return (FlowElementsContainer) container;
 			return (FlowElementsContainer) o;
 		}
 		return findElementOfType(FlowElementsContainer.class, o);

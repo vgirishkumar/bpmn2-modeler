@@ -10,9 +10,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.views.outline;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.util.Adaptable;
@@ -62,20 +63,20 @@ public class BPMN2EditorOutlineTreeViewer extends TreeViewer implements Adaptabl
 			StructuredSelection ss = (StructuredSelection) newSelection;
 			if (ss.getFirstElement() instanceof AbstractGraphicsTreeEditPart) {
 				AbstractGraphicsTreeEditPart editPart = (AbstractGraphicsTreeEditPart) ss.getFirstElement();
-				Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
-				EditPart editPartParent = editPart.getParent();
-				while (editPartParent!=null) {
-					Object model = editPartParent.getModel();
-					if (model instanceof EObject) {
+				Object model = editPart.getModel();
+				if (model instanceof BaseElement && FeatureSupport.isExpandableElement((BaseElement)model)) {
+					Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
+					EditPart editPartParent = editPart.getParent();
+					while (editPartParent!=null) {
+						model = editPartParent.getModel();
 						for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, (EObject)model)) {
-							String value = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.IS_EXPANDED);
-							if (value!=null && Boolean.parseBoolean(value)==false) {
+							if (!FeatureSupport.isElementExpanded(pe)) {
 								super.setSelection(new StructuredSelection(editPartParent));
 								return;
 							}
 						}
+						editPartParent = editPartParent.getParent();
 					}
-					editPartParent = editPartParent.getParent();
 				}
 			}
 		}

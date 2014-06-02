@@ -12,12 +12,15 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ShowDiagramPageFeature;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -77,8 +80,8 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 		boolean ret = false;
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes != null && pes.length == 1) {
-			Object bo = getBusinessObjectForPictogramElement(pes[0]);
-			return !FeatureSupport.isElementExpanded(bo);
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(pes[0]);
+			return !FeatureSupport.isElementExpanded(be);
 		}
 		return ret;
 	}
@@ -109,11 +112,16 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 						GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
 						ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
 						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
+						IDimension oldSize = FeatureSupport.getExpandedSize(containerShape);
 						int oldWidth = ga.getWidth();
 						int oldHeight = ga.getHeight();
 						ResizeExpandableActivityFeature.SizeCalculator newSize = new ResizeExpandableActivityFeature.SizeCalculator(containerShape);
-						int newWidth = newSize.getWidth();
-						int newHeight = newSize.getHeight();
+						if (newSize.getWidth() > oldSize.getWidth())
+							oldSize.setWidth(newSize.getWidth());
+						if (newSize.getHeight() > oldSize.getHeight())
+							oldSize.setHeight(newSize.getHeight());
+						int newWidth = oldSize.getWidth();
+						int newHeight = oldSize.getHeight();
 						resizeContext.setX(ga.getX() + oldWidth/2 - newWidth/2);
 						resizeContext.setY(ga.getY() + oldHeight/2 - newHeight/2);
 						resizeContext.setWidth(newWidth);

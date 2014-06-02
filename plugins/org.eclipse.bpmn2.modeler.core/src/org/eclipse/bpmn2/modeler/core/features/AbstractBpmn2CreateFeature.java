@@ -14,6 +14,8 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
@@ -103,6 +105,26 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	@Override
 	public boolean isAvailable(IContext context) {
 		return isModelObjectEnabled();
+	}
+
+	@Override
+	public boolean canCreate(ICreateContext context) {
+		if (context.getTargetContainer().equals(getDiagram())) {
+			// Only Participants are allowed in a Conversation
+			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(getDiagram(), BPMNDiagram.class);
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			if (bpmnElement instanceof Collaboration) {
+				// If this is a Collaboration and it already contains ConversationNodes
+				// then this is a Conversation Diagram - it can't contain any FlowNodes,
+				// Data items, or Lanes.
+				Collaboration collaboration = (Collaboration) bpmnElement;
+				if (!collaboration.getConversations().isEmpty()) {
+					return false;
+				}
+			}
+		}
+		// otherwise, we can create a Default Process
+		return true;
 	}
 
 	/* (non-Javadoc)

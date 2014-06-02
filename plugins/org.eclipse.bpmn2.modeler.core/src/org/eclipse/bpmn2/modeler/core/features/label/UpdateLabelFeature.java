@@ -142,12 +142,16 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 	}
 	
 	protected int[] wrapText(AbstractText ga, String text, int wrapWidth) {
-		IUiLayoutService layoutService = GraphitiUi.getUiLayoutService();
 		Font font = ga.getFont();
 		List<String> ss = new ArrayList<String>();
 		int start = 0;
 		for (int end=0; end<text.length(); ++end) {
-			if (text.charAt(end)==' ') {
+			char c = text.charAt(end);
+			if (c==' ') {
+				ss.add(text.substring(start, end+1));
+				start = end+1;
+			}
+			else if (c=='\n') {
 				ss.add(text.substring(start, end+1));
 				start = end+1;
 			}
@@ -155,7 +159,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (start<text.length())
 			ss.add(text.substring(start));
 		String words[] = ss.toArray(new String[ss.size()]);
-		IDimension dim = layoutService.calculateTextSize(text, font);
+		IDimension dim = calculateTextSize(text, font);
 		int totalHeight = dim.getHeight();
 		int totalWidth = dim.getWidth();
 		int height = totalHeight;
@@ -168,10 +172,10 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				nextword = words[i+1];
 			else
 				nextword = "";
-			dim = layoutService.calculateTextSize(line + nextword, font);
+			dim = calculateTextSize(line + nextword, font);
 			if (dim.getWidth()>wrapWidth) {
 				height += dim.getHeight();
-				dim = layoutService.calculateTextSize(line, font);
+				dim = calculateTextSize(line, font);
 				if (dim.getWidth()>width)
 					width = dim.getWidth();
 				line = "";
@@ -182,6 +186,13 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		if (width==0)
 			width = totalWidth;
 		return new int[] {height, width};
+	}
+	
+	private IDimension calculateTextSize(String text, Font font) {
+		IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
+		if (text.endsWith("\n"))
+			dim.setHeight(2*dim.getHeight());
+		return dim;
 	}
 	
 	protected Rectangle getLabelBounds(PictogramElement pe, boolean isAddingLabel, Point offset) {

@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationNode;
@@ -280,11 +281,23 @@ public class DIGenerator {
 				}
 			}
 			for (Participant p : container.getParticipants()) {
-				// This Pool may be the default process diagram if
-				// the Pool references a Process.
-				if (isMissingDIElement(p) && p.getProcessRef()==null) {
+				boolean isParticipantBand = false;
+				if (p.eContainer() instanceof Choreography) {
+					// this may be a Choreography Activity Participant band
+					Choreography choreography = (Choreography) p.eContainer();
+					for (FlowElement fe : choreography.getFlowElements()) {
+						if (fe instanceof ChoreographyActivity) {
+							if (((ChoreographyActivity)fe).getParticipantRefs().contains(p)) {
+								isParticipantBand = true;
+								break;
+							}
+						}
+					}
+				}
+				if (isMissingDIElement(p) && p.getProcessRef()!=null && !isParticipantBand) {
 					if (parentNode==null)
 						parentNode = missing.addChild(container);
+					parentNode.addChild(p);
 				}
 			}
 			for (ConversationNode c : container.getConversations()) {

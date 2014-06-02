@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.ui.property;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.TextAnnotation;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
@@ -133,6 +134,11 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		public String getDescription(EObject object) {
 			String description = null;
 
+			if (object instanceof BPMNDiagram
+					&& ((BPMNDiagram)object).getPlane()!=null
+					&& ((BPMNDiagram)object).getPlane().getBpmnElement()!=null) {
+				object = ((BPMNDiagram)object).getPlane().getBpmnElement();
+			}
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter!=null) {
 				description = (String) adapter.getProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION);

@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -75,6 +76,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -292,7 +294,8 @@ public class FeatureSupport {
 	 * @return true if the PE is a BPMN2 node element.
 	 */
 	public static boolean isBpmnShape(PictogramElement pe) {
-		return BusinessObjectUtil.getFirstBaseElement(pe) != null &&
+		return pe instanceof ContainerShape &&
+				BusinessObjectUtil.getFirstBaseElement(pe) != null &&
 				BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class) !=null;
 	}
 	
@@ -469,7 +472,7 @@ public class FeatureSupport {
 	 */
 	public static List<PictogramElement> getPoolAndLaneDescendants(ContainerShape containerShape) {
 		List<PictogramElement> children = new ArrayList<PictogramElement>();
-		FeatureSupport.collectChildren(containerShape, children);
+		FeatureSupport.collectChildren(containerShape, children, false);
 		return children;
 	}
 
@@ -478,19 +481,22 @@ public class FeatureSupport {
 	 * children or descendants of the given Lane or Pool container. Only Shapes
 	 * that are NOT Lanes are collected.
 	 * 
-	 * @param laneShape the current Lane shape. This method is recursive and is
-	 *            initially invoked for the root container.
+	 * @param containerShape the current Pool or Lane shape. This method is
+	 *            recursive and is initially invoked for the root container.
 	 * @param descendants the list of descendant Shapes and attached Connections
+	 * @param includeLanes if true, includes all Lane shapes in the results
+	 *            list
 	 */
-	public static void collectChildren(ContainerShape laneShape, List<PictogramElement> descendants) {
-		for (PictogramElement pe : laneShape.getChildren()) {
+	public static void collectChildren(ContainerShape containerShape, List<PictogramElement> descendants, boolean includeLanes) {
+		for (PictogramElement pe : containerShape.getChildren()) {
 			if (pe instanceof ContainerShape) {
 				if (isLane(pe)) {
-					collectChildren((ContainerShape) pe, descendants);
+					if (includeLanes)
+						descendants.add(pe);
+					collectChildren((ContainerShape) pe, descendants, includeLanes);
 				}
 				else {
-					BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
-					if (be!=null) {
+					if (isBpmnShape(pe)) {
 						descendants.add(pe);
 						for (Anchor a :((ContainerShape) pe).getAnchors()) {
 							for (Connection c : a.getIncomingConnections()) {
@@ -1111,10 +1117,21 @@ public class FeatureSupport {
 		}
 		return bandShapes;
 	}
+	
+	public static boolean isElementExpanded(PictogramElement pe) {
+		String property = Graphiti.getPeService().getPropertyValue(pe,GraphitiConstants.IS_EXPANDED);
+		return Boolean.parseBoolean(property);
+	}
 
-	public static boolean isElementExpanded(Object object) {
-		if (isExpandableElement(object)) {
-			BaseElement be = (BaseElement)object;
+	public static void setElementExpanded(PictogramElement pe, boolean isExpanded) {
+		if (isExpanded)
+			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.IS_EXPANDED, Boolean.TRUE.toString());
+		else
+			Graphiti.getPeService().removeProperty(pe, GraphitiConstants.IS_EXPANDED);
+	}
+
+	public static boolean isElementExpanded(BaseElement be) {
+		if (isExpandableElement(be)) {
 			// if the BaseElement has its own BPMNDiagram page it should be considered
 			// to be collapsed and should be represented as such.
 			// TODO: this condition should be removed once we implement Link events as
@@ -1128,10 +1145,37 @@ public class FeatureSupport {
 		return false;
 	}
 
-	public static boolean isExpandableElement(Object object) {
-		return object instanceof FlowElementsContainer
-				|| object instanceof CallActivity
-				|| object instanceof CallChoreography;
+	public static boolean isExpandableElement(BaseElement be) {
+		return be instanceof SubProcess
+				|| be instanceof AdHocSubProcess
+				|| be instanceof Transaction
+				|| be instanceof CallActivity
+				|| be instanceof CallChoreography;
 	}
 	
+	public static void updateExpandedSize(PictogramElement pe) {
+		IDimension size = GraphicsUtil.calculateSize(pe);
+		FeatureSupport.setExpandedSize(pe, size);
+	}
+	
+	public static void setExpandedSize(PictogramElement pe, IDimension size) {
+		setExpandedSize(pe, size.getWidth(), size.getHeight());
+	}
+	
+	public static void setExpandedSize(PictogramElement pe, int width, int height) {
+		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.EXPANDED_SIZE, width+","+height);
+	}
+	
+	public static IDimension getExpandedSize(PictogramElement pe) {
+		IDimension size = GraphicsUtil.calculateSize(pe);
+		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.EXPANDED_SIZE);
+		if (property!=null) {
+			int index = property.indexOf(',');
+			int w = Integer.parseInt(property.substring(0,index));
+			int h = Integer.parseInt(property.substring(index+1));
+			size.setWidth(w);
+			size.setHeight(h);
+		}
+		return size;
+	}
 }

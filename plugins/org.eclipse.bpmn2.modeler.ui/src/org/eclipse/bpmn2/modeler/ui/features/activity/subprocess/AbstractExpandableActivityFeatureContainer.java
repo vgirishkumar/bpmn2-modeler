@@ -12,10 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.DirectEditTaskFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.ui.features.activity.AbstractActivityFeatureContainer;
 import org.eclipse.graphiti.features.IDeleteFeature;
@@ -50,8 +52,8 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 			
 			protected LabelPosition getHorizontalLabelPosition(AbstractText text) {
 				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				Object bo = getBusinessObjectForPictogramElement(pe);
-				if (FeatureSupport.isElementExpanded(bo)) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+				if (FeatureSupport.isElementExpanded(be)) {
 					return LabelPosition.LEFT;
 				}
 				return LabelPosition.CENTER;
@@ -59,8 +61,8 @@ public abstract class AbstractExpandableActivityFeatureContainer extends Abstrac
 			
 			protected LabelPosition getVerticalLabelPosition(AbstractText text) {
 				PictogramElement pe = FeatureSupport.getLabelOwner(text);
-				Object bo = getBusinessObjectForPictogramElement(pe);
-				if (FeatureSupport.isElementExpanded(bo)) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(pe);
+				if (FeatureSupport.isElementExpanded(be)) {
 					return LabelPosition.TOP;
 				}
 				return LabelPosition.CENTER;
