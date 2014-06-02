@@ -37,9 +37,10 @@ public class UserTaskFeatureContainer extends AbstractTaskFeatureContainer {
 	public IAddFeature getAddFeature(IFeatureProvider fp) {
 		return new AddUserTaskFeature(fp);
 	}
-	
+
 	public static class AddUserTaskFeature extends AbstractAddDecoratedTaskFeature<UserTask> {
-				public AddUserTaskFeature(IFeatureProvider fp) {
+
+		public AddUserTaskFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
@@ -48,8 +49,11 @@ public class UserTaskFeatureContainer extends AbstractTaskFeatureContainer {
 			return ImageProvider.IMG_16_USER_TASK;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#
+		 * getBusinessObjectType()
 		 */
 		@Override
 		public Class getBusinessObjectType() {
@@ -68,8 +72,12 @@ public class UserTaskFeatureContainer extends AbstractTaskFeatureContainer {
 			return ImageProvider.IMG_16_USER_TASK;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature#getFlowElementClass()
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature
+		 * #getFlowElementClass()
 		 */
 		@Override
 		public EClass getBusinessObjectClass() {
