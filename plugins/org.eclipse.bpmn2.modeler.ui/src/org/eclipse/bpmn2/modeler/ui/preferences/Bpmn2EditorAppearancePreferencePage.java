@@ -121,8 +121,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	ColorShapeStyleEditor shapePrimarySelectedColor;
 	ColorShapeStyleEditor shapeSecondarySelectedColor;
 	ColorShapeStyleEditor shapeForeground;
-//	Button useDefaultSize;
-	Button useDefaultSize;
+	CheckboxShapeStyleEditor useDefaultSize;
 	Button applyToAllChildren;
 	IntegerShapeStyleEditor defaultWidth;
 	IntegerShapeStyleEditor defaultHeight;
@@ -256,8 +255,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		gd.verticalIndent = 10;
 		defaultHeight.setLayoutData(gd);
 		
-		useDefaultSize = new Button(colorEditors, SWT.CHECK);
-		useDefaultSize.setText("");
+		useDefaultSize = new CheckboxShapeStyleEditor(colorEditors, ShapeStyle.SS_USE_DEFAULT_SIZE, "");
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
@@ -308,7 +306,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 	}
 	
 	private void applyToAll(ShapeStyle theShapeStyle) {
-		if (currentSelection instanceof Category) {
+		if (applyToAllChildren!=null && applyToAllChildren.getSelection()
+				&& currentSelection instanceof Category) {
 			List<ShapeStyle> ssl = new ArrayList<ShapeStyle>();
 			switch ((Category)currentSelection) {
 			case CONNECTIONS:
@@ -475,7 +474,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 			shapeBackground.setValue(ss.getShapeBackground());
 			shapePrimarySelectedColor.setValue(ss.getShapePrimarySelectedColor());
 			shapeSecondarySelectedColor.setValue(ss.getShapeSecondarySelectedColor());
-			useDefaultSize.setSelection(ss.getUseDefaultSize());
+			useDefaultSize.setValue(ss.getUseDefaultSize());
 			defaultWidth.setValue(ss.getDefaultWidth());
 			defaultHeight.setValue(ss.getDefaultHeight());
 			labelFont.setValue(ss.getLabelFont());
@@ -1080,6 +1079,44 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		public void setValue(int value) {
 			if (text!=null) {
 				text.setText(Integer.toString(value, 10));
+			}
+		}
+	}
+
+	private class CheckboxShapeStyleEditor extends ShapeStyleEditor {
+		private Button checkbox;
+		
+		public CheckboxShapeStyleEditor(Composite parent, final int ssMask, String labelText) {
+	    	super(parent, SWT.NONE, ssMask);
+	    	this.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+	    	this.setLayout(new GridLayout(1, true));
+	    	
+	    	checkbox = new Button(this, SWT.CHECK);
+	    	checkbox.setText(labelText);
+	    	checkbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		}
+
+		public void setText(String labelText) {
+			if (checkbox!=null)
+				checkbox.setText(labelText);
+		}
+		
+		@Override
+		public void addSelectionListener(final SelectionListener listener) {
+			checkbox.addSelectionListener(listener);
+		}
+
+		@Override
+		public Boolean getValue() {
+			if (checkbox!=null) {
+				return new Boolean(checkbox.getSelection());
+			}
+			return false;
+		}
+
+		public void setValue(boolean value) {
+			if (checkbox!=null) {
+				checkbox.setSelection(value);
 			}
 		}
 	}

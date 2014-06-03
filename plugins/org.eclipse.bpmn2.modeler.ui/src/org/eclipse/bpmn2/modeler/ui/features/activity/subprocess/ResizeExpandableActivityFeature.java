@@ -144,13 +144,10 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 				for (PictogramElement pe : FeatureSupport.getContainerDecorators(containerShape)) {
 					GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 					if (childGa!=null) {
-						childGa.setWidth(ss.getDefaultWidth());
-						childGa.setHeight(ss.getDefaultHeight());
+						childGa.setWidth(context.getWidth());
+						childGa.setHeight(context.getHeight());
 					}
 				}
-				
-				resizeShapeContext.setWidth(ss.getDefaultWidth());
-				resizeShapeContext.setHeight(ss.getDefaultHeight());
 			}
 			
 		} catch (Exception e) {

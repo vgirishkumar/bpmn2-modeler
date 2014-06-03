@@ -458,16 +458,34 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				editor.createControl(parent,label);
 			} else if ("anyAttribute".equals(attribute.getName()) || //$NON-NLS-1$
 					object.eGet(attribute) instanceof FeatureMap) {
+				List<EStructuralFeature> features = new ArrayList<EStructuralFeature>();
 				List<Entry> basicList = ((BasicFeatureMap) object.eGet(attribute)).basicList();
 				for (Entry entry : basicList) {
-					EStructuralFeature feature = entry.getEStructuralFeature();
-					if (isAttribute(object, feature))
-						bindAttribute(parent,object,(EAttribute)feature);
-					else if (isReference(object, feature))
-						bindReference(parent,object,(EReference)feature);
-					else if (isList(object,feature))
-						bindList(object,feature);
+					features.add(entry.getEStructuralFeature());
 				}
+				
+				// add the Extension Attributes
+				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+				if (adapter!=null) {
+					List<EStructuralFeature> extensionFeatures = adapter.getExtensionFeatures();
+					for (EStructuralFeature feature : extensionFeatures) {
+						if (!features.contains(feature)) {
+							features.add(feature);
+						}
+					}
+				}
+				for (EStructuralFeature feature : features) {
+					if (isAttribute(object, feature)) {
+						bindAttribute(parent,object,(EAttribute)feature);
+					}
+					else if (isReference(object, feature)) {
+						bindReference(parent,object,(EReference)feature);
+					}
+					else if (isList(object,feature)) {
+						bindList(object,feature);
+					}
+				}
+
 			}
 			else if (eTypeClassifier instanceof EDataType) {
 				ConversionDelegate cd = EDataTypeConversionFactory.INSTANCE.createConversionDelegate(
@@ -618,30 +636,25 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		return getPropertiesProvider(businessObject);
 	}
 	
-	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
+	public AbstractPropertiesProvider getPropertiesProvider(final EObject object) {
 		if (propertiesProvider==null) {
-			final EObject o = object;
 			return new AbstractPropertiesProvider(object) {
 				public String[] getProperties() {
 					List<String> list = new ArrayList<String>();
-					EClass c = o.eClass();
+					EClass c = object.eClass();
 					// add name and id attributes first (if any)
 					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
 						list.add("name"); //$NON-NLS-1$
 					if (c.getEStructuralFeature("id")!=null) //$NON-NLS-1$
 						list.add("id"); //$NON-NLS-1$
-					for (EStructuralFeature attribute : o.eClass().getEStructuralFeatures()) {
+					for (EStructuralFeature attribute : object.eClass().getEStructuralFeatures()) {
 						if (!list.contains(attribute.getName()))
 							list.add(attribute.getName());
 					}
 					// add the extension attributes and elements
-					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(o);
-					if (adapter!=null) {
-						List<EStructuralFeature> features = adapter.getFeatures();
-						for (EStructuralFeature f : features) {
-							if (!list.contains(f.getName()))
-								list.add(f.getName());
-						}
+					for (String f : getExtensionProperties(object)) {
+						if (!list.contains(f))
+							list.add(f);
 					}
 					String a[] = new String[list.size()];
 					list.toArray(a);
@@ -650,5 +663,19 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			};
 		}
 		return propertiesProvider;
+	}
+	
+	public List<String> getExtensionProperties(EObject object) {
+		// Get the list of extension attributes and elements
+		List<String> list = new ArrayList<String>();
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+		if (adapter!=null) {
+			List<EStructuralFeature> features = adapter.getExtensionFeatures();
+			for (EStructuralFeature f : features) {
+				if (!list.contains(f.getName()))
+					list.add(f.getName());
+			}
+		}
+		return list;
 	}
 }

@@ -639,6 +639,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public void setShapeStyle(String name, ShapeStyle style) {
 		if (style.isDirty()) {
 			shapeStyles.put(name, style);
+			if (instancePreferenceCache!=null) {
+				instancePreferenceCache.shapeStyles.put(name, style);
+			}
 			String key = getShapeStyleKey(getRuntime(), name);
 			String value = ShapeStyle.encode(style);
 			put(key, value);
@@ -1379,6 +1382,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			else if (key.startsWith(PREF_SHAPE_STYLE)) {
 				shapeStyles.clear();
 				Preferences prefs = instancePreferences.node(key);
+				instancePreferenceCache = null;
 				prefs.removeNode();
 			}
 			else if (key.startsWith(PREF_TARGET_RUNTIME)) {

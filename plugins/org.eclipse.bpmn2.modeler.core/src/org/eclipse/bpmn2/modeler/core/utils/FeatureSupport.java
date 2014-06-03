@@ -1178,4 +1178,30 @@ public class FeatureSupport {
 		}
 		return size;
 	}
+	
+	public static void updateCollapsedSize(PictogramElement pe) {
+		IDimension size = GraphicsUtil.calculateSize(pe);
+		FeatureSupport.setCollapsedSize(pe, size);
+	}
+	
+	public static void setCollapsedSize(PictogramElement pe, IDimension size) {
+		setCollapsedSize(pe, size.getWidth(), size.getHeight());
+	}
+	
+	public static void setCollapsedSize(PictogramElement pe, int width, int height) {
+		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.COLLAPSED_SIZE, width+","+height);
+	}
+	
+	public static IDimension getCollapsedSize(PictogramElement pe) {
+		IDimension size = GraphicsUtil.calculateSize(pe);
+		String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.COLLAPSED_SIZE);
+		if (property!=null) {
+			int index = property.indexOf(',');
+			int w = Integer.parseInt(property.substring(0,index));
+			int h = Integer.parseInt(property.substring(index+1));
+			size.setWidth(w);
+			size.setHeight(h);
+		}
+		return size;
+	}
 }

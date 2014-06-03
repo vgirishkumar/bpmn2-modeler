@@ -148,7 +148,16 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * @return the TabbedPropertySheetPage that owns this section.
 	 */
 	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
-		return tabbedPropertySheetPage;
+		/**
+		 * Check if the Tabbed Property Sheet Page is still alive. This prevents SWT
+		 * widget disposed errors during a stray refresh attempt when the editor is
+		 * shutting down.
+		 */
+		if (tabbedPropertySheetPage!=null
+					&& tabbedPropertySheetPage.getControl()!=null
+					&& !tabbedPropertySheetPage.getControl().isDisposed())
+			return tabbedPropertySheetPage;
+		return null;
 	}
 
 	/**
@@ -195,13 +204,13 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 			editor = (DiagramEditor)bpmn2Editor;
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.views.properties.tabbed.AbstractPropertySection#refresh()
 	 */
 	@Override
 	public void refresh() {
-		if (tabbedPropertySheetPage.getControl().isEnabled()) {
+		if (getTabbedPropertySheetPage()!=null) {
 			EObject be = getBusinessObjectForSelection(getSelection());
 			
 			if (be!=null) {
@@ -231,9 +240,11 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * Force a layout of the property sheet page.
 	 */
 	public void layout() {
-		Composite composite = (Composite)tabbedPropertySheetPage.getControl();
-		composite.layout(true);
-		tabbedPropertySheetPage.resizeScrolledComposite();
+		if (getTabbedPropertySheetPage()!=null) {
+			Composite composite = (Composite)tabbedPropertySheetPage.getControl();
+			composite.layout(true);
+			tabbedPropertySheetPage.resizeScrolledComposite();
+		}
 	}
 	
 	/* (non-Javadoc)

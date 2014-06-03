@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
@@ -95,11 +96,19 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 						GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
 						ResizeShapeContext resizeContext = new ResizeShapeContext(containerShape);
 						IResizeShapeFeature resizeFeature = getFeatureProvider().getResizeShapeFeature(resizeContext);
+						IDimension oldSize = FeatureSupport.getCollapsedSize(containerShape);
 						int oldWidth = ga.getWidth();
 						int oldHeight = ga.getHeight();
 						FeatureSupport.setExpandedSize(containerShape, oldWidth, oldHeight);
+
 						int newWidth = ss.getDefaultWidth();
 						int newHeight = ss.getDefaultHeight();
+						if (newWidth > oldSize.getWidth())
+							oldSize.setWidth(newWidth);
+						if (newHeight > oldSize.getHeight())
+							oldSize.setHeight(newHeight);
+						newWidth = oldSize.getWidth();
+						newHeight = oldSize.getHeight();
 						resizeContext.setX(ga.getX() + oldWidth/2 - newWidth/2);
 						resizeContext.setY(ga.getY() + oldHeight/2 - newHeight/2);
 						resizeContext.setWidth(newWidth);

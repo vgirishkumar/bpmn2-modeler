@@ -460,7 +460,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public void setUseDefaultSize(boolean b) {
 		if (useDefaultSize != b) {
 			useDefaultSize = b;
-			setDirty(true);
+			changeMask |= SS_USE_DEFAULT_SIZE;
 		}
 	}
 

@@ -220,7 +220,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 				}
 			}
 			
-			if (subProcess.isTriggeredByEvent()) {
+			if (subProcess.isTriggeredByEvent() && !FeatureSupport.isElementExpanded(subProcessShape)) {
 				ContainerShape decoratorShape = null;
 				if (eventDefinition!=null) {
 					decoratorShape = ShapeDecoratorUtil.createEventSubProcessDecorator(
@@ -237,7 +237,6 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 						AbstractUpdateEventDefinitionFeature.drawParallelMultiple(startEvent, s);
 					else
 						AbstractUpdateEventDefinitionFeature.drawMultiple(startEvent, s);
-					System.out.println();
 				}
 				else if (eventDefinition instanceof MessageEventDefinition) {
 					MessageEventDefinitionContainer.draw(decoratorShape);

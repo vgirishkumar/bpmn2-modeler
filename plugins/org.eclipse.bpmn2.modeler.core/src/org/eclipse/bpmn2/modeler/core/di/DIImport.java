@@ -492,14 +492,8 @@ public class DIImport {
 		Diagram diagram = getDiagram(shape);
 		context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 		context.setNewObject(bpmnElement);
-
-		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
-		if (ss!=null && ss.getUseDefaultSize()) {
-			context.setSize(ss.getDefaultWidth(),ss.getDefaultHeight());
-		}
-		else {
-			context.setSize((int) shape.getBounds().getWidth(), (int) shape.getBounds().getHeight());
-		}
+		context.setLocation((int)shape.getBounds().getX(), (int)shape.getBounds().getY());
+		context.setSize((int) shape.getBounds().getWidth(), (int) shape.getBounds().getHeight());
 
 		if (bpmnElement instanceof Lane) {
 			handleLane((Lane)bpmnElement, context, shape);
@@ -515,9 +509,26 @@ public class DIImport {
 			handleItemAwareElement((ItemAwareElement)bpmnElement, context, shape);
 		} else {
 			context.setTargetContainer(diagram);
-			context.setLocation((int) shape.getBounds().getX(), (int) shape.getBounds().getY());
 		}
 
+		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
+		if (ss!=null && ss.getUseDefaultSize()) {
+			// Use default size for this thing instead of the
+			// size defined in the BPMNShape object. This means
+			// we'll need to adjust the position as well to keep
+			// the center of the object in its same relative position.
+			int x = context.getX();
+			int y = context.getY();
+			int w = context.getWidth();
+			int h = context.getHeight();
+			int dw = w - ss.getDefaultWidth();
+			int dh = h - ss.getDefaultHeight();
+			context.setSize(ss.getDefaultWidth(),ss.getDefaultHeight());
+			x += dw/2;
+			y += dh/2;
+			context.setLocation(x, y);
+		}
+		
 		PictogramElement newContainer = featureProvider.addIfPossible(context);
 		if (newContainer!=null) {
 			featureProvider.link(newContainer, new Object[] { bpmnElement, shape });

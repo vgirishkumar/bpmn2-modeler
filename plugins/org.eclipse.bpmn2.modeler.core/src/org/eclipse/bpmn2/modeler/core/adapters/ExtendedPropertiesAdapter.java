@@ -78,6 +78,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	public static final String FEATURE_DESCRIPTOR = "feature.descriptor"; //$NON-NLS-1$
 	/** Property key for the line number in XML document where this object is defined */
 	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
+	public static final String IS_EXTENSION_FEATURE = "is.extension.feature"; //$NON-NLS-1$
 	
 	/**
 	 * An {@code ExtendedPropertiesAdapter} may be created with a type (EClass) and then later
@@ -360,7 +361,17 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 		features.addAll(featureProperties.keySet());
 		return features;
 	}
-
+	
+	public List<EStructuralFeature> getExtensionFeatures() {
+		List<EStructuralFeature> features = new ArrayList<EStructuralFeature>();
+		for (EStructuralFeature f : getFeatures()) {
+			FeatureDescriptor fd = getFeatureDescriptor(f);
+			if (fd.getProperty(IS_EXTENSION_FEATURE)!=null)
+				features.add(f);
+		}
+		return features;
+	}
+	
 	/**
 	 * Return a list of all Object Properties.
 	 * 

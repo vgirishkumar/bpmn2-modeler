@@ -55,6 +55,7 @@ public abstract class AddExpandableActivityFeature<T extends Activity>
 		
 		if (!isExpanded){
 			ShapeDecoratorUtil.showActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			FeatureSupport.updateCollapsedSize(containerShape);
 		}
 		else {
 			ShapeDecoratorUtil.hideActivityMarker(containerShape, GraphitiConstants.ACTIVITY_MARKER_EXPAND);

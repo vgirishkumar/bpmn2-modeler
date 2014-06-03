@@ -34,7 +34,9 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 
 // TODO: Auto-generated Javadoc
@@ -202,6 +204,39 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 		void move(FlowNode node, Object source, Object target) {
 			fromAlgorithm.move(node, source, target);
 			toAlgorithm.move(node, source, target);
+
+			// If this was a multiselection, keep all of the connections that
+			// were included in the move
+			PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
+			List<Connection> internalConnections = new ArrayList<Connection>();
+			for (PictogramElement pe : pes) {
+				if (pe instanceof AnchorContainer) {
+					for (Anchor a : ((AnchorContainer)pe).getAnchors()) {
+						for (Connection c : a.getIncomingConnections()) {
+							internalConnections.add(c);
+						}
+						for (Connection c : a.getOutgoingConnections()) {
+							internalConnections.add(c);
+						}
+					}
+				}
+			}
+			
+			List<Connection> externalConnections = new ArrayList<Connection>();
+			for (Connection c : internalConnections) {
+				boolean foundSource = false;
+				boolean foundTarget = false;
+				for (PictogramElement p : pes) {
+					if (p==c.getStart().getParent())
+						foundSource = true;
+					if (p==c.getEnd().getParent())
+						foundTarget = true;
+				}
+				if (!foundSource || !foundTarget)
+					externalConnections.add(c);
+			}
+			internalConnections.removeAll(externalConnections);
+			
 			// If flow node was moved from one Pool to another, delete all
 			// incoming and outgoing Sequence Flows; if flow node was connect
 			// to another flow node by a Message Flow, and it is moved into the
@@ -211,11 +246,11 @@ public class MoveFlowNodeFeature extends DefaultMoveBPMNShapeFeature {
 			Shape shape = context.getShape();
 			for (Anchor a : shape.getAnchors()) {
 				for (Connection c : a.getIncomingConnections()) {
-					if (!isConnectionValid(c))
+					if (!internalConnections.contains(c) && !isConnectionValid(c))
 						connections.add(c);
 				}
 				for (Connection c : a.getOutgoingConnections()) {
-					if (!isConnectionValid(c))
+					if (!internalConnections.contains(c) && !isConnectionValid(c))
 						connections.add(c);
 				}
 			}

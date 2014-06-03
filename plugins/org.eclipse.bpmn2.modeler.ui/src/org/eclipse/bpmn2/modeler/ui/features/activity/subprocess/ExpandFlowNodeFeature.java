@@ -115,6 +115,7 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 						IDimension oldSize = FeatureSupport.getExpandedSize(containerShape);
 						int oldWidth = ga.getWidth();
 						int oldHeight = ga.getHeight();
+						FeatureSupport.setCollapsedSize(containerShape, oldWidth, oldHeight);
 						ResizeExpandableActivityFeature.SizeCalculator newSize = new ResizeExpandableActivityFeature.SizeCalculator(containerShape);
 						if (newSize.getWidth() > oldSize.getWidth())
 							oldSize.setWidth(newSize.getWidth());

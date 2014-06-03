@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
+import java.util.Hashtable;
+
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -49,6 +51,8 @@ public class ObjectDescriptor<T extends EObject> {
 	protected String textValue;
 	/** the {@link ExtendedPropertiesAdapter} that owns this {@code ObjectDescriptor} */
 	protected ExtendedPropertiesAdapter<T> owner;
+
+	protected Hashtable<String, Object> properties = null;
 
 	public ObjectDescriptor(ExtendedPropertiesAdapter<T> owner, T object) {
 		this.owner = owner;
@@ -375,5 +379,39 @@ public class ObjectDescriptor<T extends EObject> {
 			adapter.setResource(resource);
 		
 		return newObject;
+	}
+
+
+	/**
+	 * Sets the property.
+	 *
+	 * @param key the key
+	 * @param value the value
+	 */
+	public void setProperty(String key, Object value) {
+		if (value==null) {
+			if (properties!=null) {
+				properties.remove(key);
+				if (properties.isEmpty())
+					properties = null;
+			}
+		}
+		else {
+			if (properties==null)
+				properties = new Hashtable<String, Object>();
+			properties.put(key, value);
+		}
+	}
+	
+	/**
+	 * Gets the property.
+	 *
+	 * @param key the key
+	 * @return the property
+	 */
+	public Object getProperty(String key) {
+		if (properties==null)
+			return null;
+		return properties.get(key);
 	}
 }

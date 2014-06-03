@@ -21,8 +21,8 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
-import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
@@ -727,7 +727,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
 			// if this is a dynamic feature, delegate access to the feature to the Model Decorator
-			adapter.getFeatureDescriptor(feature);
+			FeatureDescriptor fd = adapter.getFeatureDescriptor(feature);
+			if (object.eClass().getEStructuralFeature(feature.getName())==null)
+				fd.setProperty(ExtendedPropertiesAdapter.IS_EXTENSION_FEATURE, Boolean.TRUE);
 			if (property.description!=null)
 				adapter.setProperty(feature, ExtendedPropertiesAdapter.LONG_DESCRIPTION, property.description);
 			
