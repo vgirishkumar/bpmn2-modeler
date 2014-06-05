@@ -18,13 +18,14 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPart;
 
 public class TaskPropertySection extends DefaultPropertySection {
 
 	public TaskPropertySection() {
 		super();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractBpmn2PropertySection#createSectionRoot()
 	 */
@@ -39,9 +40,14 @@ public class TaskPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
+	public boolean appliesTo(EObject eObj) {
+		return eObj!=null && eObj.eClass().getName().equals("Task");
+	}
+
+	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof Task)
+		if (be!=null && be.eClass().getName().equals("Task"))
 			return be;
 		return null;
 	}

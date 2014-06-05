@@ -16,19 +16,25 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 import java.util.Collection;
 
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeature;
 
 /**
- * Target Runtime Extension Descriptor class for model enablements. This class controls the visibility of
- * an object and its features in the UI Property Sheets and dialogs. Any object or object feature that is
- * not explicitly "enabled" will not be visible in the UI.
+ * Target Runtime Extension Descriptor class for model enablements. This class
+ * controls the visibility of an object and its features in the UI Property
+ * Sheets and dialogs. Any object or object feature that is not explicitly
+ * "enabled" will not be visible in the UI.
  * 
- * Instances of this class correspond to <modelEnablement> extension elements in the extension's plugin.xml
- * See the description of the "modelEnablement" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ * This class encapsulates a so-called "Tool Profile" which defines a set of
+ * BPMN2 elements and attributes. When a Tool Profile is selected in the Tool
+ * Palette, only those elements and attributes that are enabled in this set will
+ * be visible in the Tool Palette and Property Sheets.
+ * 
+ * Instances of this class correspond to <modelEnablement> extension elements in
+ * the extension's plugin.xml See the description of the "modelEnablement"
+ * element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
@@ -36,27 +42,23 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	// Model Types that are enabled
 	private ModelEnablements modelEnablements;
-	// BPMN Diagram Type
-	private Bpmn2DiagramType diagramType;
 	// Tool Profile name
-	private String profile;
+	private String profileName;
 
 	
 	public ModelEnablementDescriptor(IConfigurationElement e) {
 		super(e);
 		TargetRuntime rt = TargetRuntime.getRuntime(e);
-		modelEnablements = new ModelEnablements(rt, null, null);
-		String type = e.getAttribute("type"); //$NON-NLS-1$
-		String profile = e.getAttribute("profile"); //$NON-NLS-1$
+		profileName = e.getAttribute("profile"); //$NON-NLS-1$
 		String ref = e.getAttribute("ref"); //$NON-NLS-1$
-		setDiagramType(Bpmn2DiagramType.fromString(type));
-		setProfile(profile);
+
+		modelEnablements = new ModelEnablements(rt, id);
+		
 		if (ref!=null) {
 			String a[] = ref.split(":"); //$NON-NLS-1$
 			rt = TargetRuntime.getRuntime(a[0]);
-			type = a[1];
-			profile = a[2];
-			initializeFromTargetRuntime(rt, Bpmn2DiagramType.fromString(type), profile);
+			String id = a[1];
+			initializeFromTargetRuntime(rt, id);
 		}
 		
 		for (IConfigurationElement c : e.getChildren()) {
@@ -75,25 +77,10 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 		return EXTENSION_NAME;
 	}
 
-	public ModelEnablementDescriptor(TargetRuntime rt) {
+	public ModelEnablementDescriptor(TargetRuntime rt, String id) {
 		super(rt);
-//		modelEnablements.setEnabledAll(true);
-	}
-
-	public void setDiagramType(Bpmn2DiagramType type) {
-		this.diagramType = type;
-	}
-	
-	public Bpmn2DiagramType getDiagramType() {
-		return diagramType;
-	}
-	
-	public String getProfile() {
-		return profile;
-	}
-
-	public void setProfile(String profile) {
-		this.profile = profile;
+		this.id = id;
+		modelEnablements = new ModelEnablements(rt, id);
 	}
 	
 	public void setEnabled(EClass eClass, boolean enabled) {
@@ -108,13 +95,18 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 		modelEnablements.setEnabled(className,  featureName, enabled);
 	}
 
-	public void initializeFromTargetRuntime(TargetRuntime rt, Bpmn2DiagramType type, String profile) {
-		ModelEnablementDescriptor med = rt.getModelEnablements(type, profile);
-		Collection<String> enabledClasses = med.modelEnablements.getAllEnabledClasses();
-		for (String c : enabledClasses) {
-			Collection<String> enabledFeatures = med.modelEnablements.getAllEnabledFeatures(c);
-			for (String f : enabledFeatures) {
-				setEnabled(c, f, true);
+	public void initializeFromTargetRuntime(TargetRuntime rt, String id) {
+		
+		for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+			if (id.equals(med.getId())) {
+				Collection<String> enabledClasses = med.modelEnablements.getAllEnabledClasses();
+				for (String c : enabledClasses) {
+					Collection<String> enabledFeatures = med.modelEnablements.getAllEnabledFeatures(c);
+					for (String f : enabledFeatures) {
+						setEnabled(c, f, true);
+					}
+				}
+				break;
 			}
 		}
 	}
@@ -141,5 +133,13 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	public Collection<String> getAllEnabled() {
 		return modelEnablements.getAllEnabled();
+	}
+	
+	public String getProfileName() {
+		return profileName;
+	}
+	
+	public void setProfileName(String profileName) {
+		this.profileName = profileName;
 	}
 }

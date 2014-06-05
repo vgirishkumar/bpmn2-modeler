@@ -40,7 +40,7 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof Process || ModelUtil.getDiagramType(be)==Bpmn2DiagramType.PROCESS)
+		if (be instanceof Process)
 			return ModelUtil.getDefinitions(be);
 		return null;
 	}

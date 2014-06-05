@@ -39,8 +39,8 @@ public class ResourcePropertyTester extends PropertyTester {
 				if (rt != null) {
 					ToolPaletteDescriptor tpd = rt.getToolPalette(object);
 					if (tpd != null) {
-						for (String profile : tpd.getProfiles()) {
-							if (profile.equals(expectedValue))
+						for (String profileId : tpd.getProfileIds()) {
+							if (profileId.equals(expectedValue))
 								return true;
 						}
 						if (expectedValue instanceof String)

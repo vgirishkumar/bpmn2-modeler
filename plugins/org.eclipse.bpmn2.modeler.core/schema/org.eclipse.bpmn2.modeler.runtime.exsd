@@ -702,31 +702,19 @@ Note the use of the special notation&quot;DeviceType:EEnum&quot; to create the &
             <element ref="enable" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="disable" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Unique ID for this &lt;b&gt;modelEnablement&lt;/b&gt; profile. The ID is used by the &quot;ref&quot; attribute and also to sort the Tool Palette profiles.
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="runtimeId" type="string">
             <annotation>
                <documentation>
                   Identifies one of the previously defined &lt;b&gt;runtime&lt;/b&gt; extensions for which this &lt;b&gt;modelEnablement&lt;/b&gt; definition will be used.
                </documentation>
             </annotation>
-         </attribute>
-         <attribute name="type" use="required">
-            <annotation>
-               <documentation>
-                  Required Diagram Type name: either Process, Collaboration, Choreography or Conversation.
-               </documentation>
-            </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="Process">
-                  </enumeration>
-                  <enumeration value="Collaboration">
-                  </enumeration>
-                  <enumeration value="Choreography">
-                  </enumeration>
-                  <enumeration value="Conversation">
-                  </enumeration>
-               </restriction>
-            </simpleType>
          </attribute>
          <attribute name="profile" type="string" use="required">
             <annotation>
@@ -740,10 +728,10 @@ Note the use of the special notation&quot;DeviceType:EEnum&quot; to create the &
                <documentation>
                   Initializes this &lt;b&gt;modelEnablement&lt;/b&gt; set from a different Target Runtime, DiagramType and Tool Profile. This simplifies Model Enablement definitions by referencing a base set of enablements already defined.
 
-The value of this attribute string must be the referenced Target Runtime ID, a Diagram Type and a Tool Profile name defined in the referenced runtime, all separated by a colon (:), for example:
+The value of this attribute string must be the referenced Target Runtime ID, and Tool Profile ID defined in the referenced runtime, separated by a colon (:), for example:
 
 &lt;pre&gt;
- ref=&quot;org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process&quot;
+ ref=&quot;org.eclipse.bpmn2.modeler.runtime.none:default.full&quot;
 &lt;/pre&gt;
                </documentation>
             </annotation>
@@ -1080,27 +1068,10 @@ Manhattan - Connections are drawn as orthogonal line segments, and bendpoints wi
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="type" use="required">
-            <annotation>
-               <documentation>
-                  Optional diagram type name: either Process, Collaboration or Choreography.
-               </documentation>
-            </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="Process">
-                  </enumeration>
-                  <enumeration value="Collaboration">
-                  </enumeration>
-                  <enumeration value="Choreography">
-                  </enumeration>
-               </restriction>
-            </simpleType>
-         </attribute>
          <attribute name="profile" type="string" use="required">
             <annotation>
                <documentation>
-                  A profile name that can be used to define different BPMN 2 language subsets within each diagram type. This may be a comma separated list to indicate that this tool palette should be included in more than one profile.
+                  A profile ID that references one of the &lt;b&gt;modelEnablement&lt;/b&gt; entries. This can be used to define different Tool Palettes for a selected &lt;b&gt;modelEnablement&lt;/b&gt; profile.This may be a space-separated list to indicate that this tool palette should be included in more than one profile.
                </documentation>
             </annotation>
          </attribute>

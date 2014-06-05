@@ -815,6 +815,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		return false;
 	}
 
+	public static boolean isStyleFeature(EStructuralFeature feature) {
+		return feature.getName().equals(STYLE_OBJECT) && feature.getEType().getName().equals(STYLE_ECLASS);
+	}
+	
 	public static ShapeStyle getShapeStyle(BaseElement element) {
 		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
 		ShapeStyle ss = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store

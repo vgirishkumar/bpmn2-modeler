@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureListObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -145,6 +146,12 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			}
 			if (description==null) {
 				description = ToolTipProvider.INSTANCE.getLongDescription(getDiagramEditor(), object);
+			}
+			if (!isModelObjectEnabled(object.eClass())) {
+				if (description==null)
+					description = "";
+				description = "*** The " + ModelUtil.toCanonicalString(object.eClass().getName()) +
+						" element is not enabled in this Tool Profile. ***\n" + description;
 			}
 			return description;
 		}

@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -48,7 +49,6 @@ import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -374,29 +374,24 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void loadDefaults(String key) {
 		if (key.equals(PREF_TOOL_PROFILE)) {
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
-					String defaultProfile = null;
-					for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
-						String path = getToolProfilePath(rt, diagramType);
-						Preferences prefs = defaultPreferences.node(path);
-						if (defaultProfile == null)
-							prefs.putBoolean(defaultProfile = med.getProfile(), true);
-						else
-							prefs.putBoolean(med.getProfile(), false);
-					}
+				String defaultProfile = null;
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					String path = getToolProfilePath(rt);
+					Preferences prefs = defaultPreferences.node(path);
+					if (defaultProfile == null)
+						prefs.putBoolean(defaultProfile = med.getId(), true);
+					else
+						prefs.putBoolean(med.getId(), false);
 				}
 			}
-			
 		}
 		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
-					for (ModelEnablementDescriptor med : rt.getModelEnablements(diagramType)) {
-						String path = getModelEnablementsPath(rt, diagramType, med.getProfile());
-						Preferences prefs = defaultPreferences.node(path);
-						for (String s : med.getAllEnabled()) {
-							prefs.putBoolean(s, Boolean.TRUE);
-						}
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					String path = getModelEnablementsPath(rt, med.getId());
+					Preferences prefs = defaultPreferences.node(path);
+					for (String s : med.getAllEnabled()) {
+						prefs.putBoolean(s, Boolean.TRUE);
 					}
 				}
 			}
@@ -653,14 +648,14 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for Tool Profiles
 	////////////////////////////////////////////////////////////////////////////////
 
-	public static String getToolProfilePath(TargetRuntime rt, Bpmn2DiagramType diagramType) {
-		return PREF_TOOL_PROFILE + "/" + rt.getId() + "/" + diagramType; //$NON-NLS-1$ //$NON-NLS-2$
+	public static String getToolProfilePath(TargetRuntime rt) {
+		return PREF_TOOL_PROFILE + "/" + rt.getId(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	public String getDefaultToolProfile(TargetRuntime rt, Bpmn2DiagramType diagramType) {
+	public String getDefaultToolProfile(TargetRuntime rt) {
 		try {
 			Preferences prefs = null;
-			String path = getToolProfilePath(rt, diagramType);
+			String path = getToolProfilePath(rt);
 			if (projectPreferences!=null && projectPreferences.nodeExists(path))
 				prefs = projectPreferences.node(path);
 			else if (instancePreferences.nodeExists(path))
@@ -681,12 +676,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return ""; //$NON-NLS-1$
 	}
 	
-	public boolean setDefaultToolProfile(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
+	public boolean setDefaultToolProfile(TargetRuntime rt, String profileId) {
 		boolean result = false;
-		if (profile!=null && !profile.isEmpty()) {
+		if (profileId!=null && !profileId.isEmpty()) {
 			try {
 				Preferences prefs = null;
-				String path = getToolProfilePath(rt, diagramType);
+				String path = getToolProfilePath(rt);
 				String keys[] = null;
 				if (projectPreferences!=null && useProjectPreferences) {
 					if (!projectPreferences.nodeExists(path))
@@ -703,7 +698,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					keys = prefs.keys();
 
 				for (String p : keys) {
-					if (profile.equals(p)) {
+					if (profileId.equals(p)) {
 						prefs.putBoolean(p, true);
 						result = true;
 					}
@@ -712,7 +707,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					}
 				}
 				
-				firePreferenceEvent(prefs, path, null, profile);
+				firePreferenceEvent(prefs, path, null, profileId);
 			}
 			catch (BackingStoreException e) {
 				// TODO Auto-generated catch block
@@ -722,12 +717,13 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return result;
 	}
 
-	public boolean createToolProfile(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
-		boolean result = false;
-		if (profile!=null && !profile.isEmpty()) {
+	public ModelEnablementDescriptor createToolProfile(TargetRuntime rt, String profileId, String profileName) {
+		ModelEnablementDescriptor med = null;
+		boolean createNew = false;
+		if (profileId!=null && !profileId.isEmpty()) {
 			try {
 				Preferences prefs = null;
-				String path = getToolProfilePath(rt, diagramType);
+				String path = getToolProfilePath(rt);
 				String keys[] = null;
 				boolean populate = false;
 				if (projectPreferences!=null && useProjectPreferences) {
@@ -748,32 +744,35 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				if (keys==null)
 					keys = prefs.keys();
 
-				result = true;
+				createNew = true;
 				for (String p : keys) {
-					if (profile.equals(p)) {
-						result = false;
+					if (profileId.equals(p)) {
+						createNew = false;
 					}
 					if (populate)
 						prefs.putBoolean(p, false);
 				}
-				if (result) {
-					prefs.putBoolean(profile, true);
-					firePreferenceEvent(prefs, path, null, profile);
+				if (createNew) {
+					med = new ModelEnablementDescriptor(rt, profileId);
+					med.setProfileName(profileName);
+					rt.getModelEnablementDescriptors().add(med);
+					prefs.putBoolean(profileId, true);
+					firePreferenceEvent(prefs, path, null, profileId);
 				}
 			}
 			catch (BackingStoreException e) {
 				e.printStackTrace();
 			}
 		}
-		return result;
+		return med;
 	}
 
-	public boolean deleteToolProfile(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
+	public boolean deleteToolProfile(TargetRuntime rt, String profileId) {
 		boolean result = false;
-		if (profile!=null && !profile.isEmpty()) {
+		if (profileId!=null && !profileId.isEmpty()) {
 			try {
 				Preferences prefs = null;
-				String path = getToolProfilePath(rt, diagramType);
+				String path = getToolProfilePath(rt);
 				String keys[] = null;
 				boolean populate = false;
 				if (projectPreferences!=null && useProjectPreferences) {
@@ -797,14 +796,14 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				for (String p : keys) {
 					if (populate)
 						prefs.putBoolean(p, false);
-					if (profile.equals(p)) {
+					if (profileId.equals(p)) {
 						result = true;
 						prefs.remove(p);
 					}
 				}
 				if (result && prefs.keys().length>0) {
 					prefs.putBoolean(prefs.keys()[0], true);
-					firePreferenceEvent(prefs, path, profile, null);
+					firePreferenceEvent(prefs, path, profileId, null);
 				}
 			}
 			catch (BackingStoreException e) {
@@ -814,11 +813,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return result;
 	}
 	
-	public String[] getAllToolProfiles(TargetRuntime rt, Bpmn2DiagramType diagramType) {
+	public String[] getAllToolProfiles(TargetRuntime rt) {
 		List<String> profiles = new ArrayList<String>();
 		try {
 			Preferences prefs = null;
-			String path = getToolProfilePath(rt, diagramType);
+			String path = getToolProfilePath(rt);
 			if (projectPreferences!=null && projectPreferences.nodeExists(path))
 				prefs = projectPreferences.node(path);
 			else if (instancePreferences.nodeExists(path))
@@ -827,7 +826,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				prefs = defaultPreferences.node(path);
 		
 			if (prefs!=null) {
-				int i = 1;
 				for (String p : prefs.keys()) {
 					profiles.add(p);
 				}
@@ -845,20 +843,20 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for Model Enablements
 	////////////////////////////////////////////////////////////////////////////////
 
-	public static String getModelEnablementsPath(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
-		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + diagramType + "/" + profile; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	public static String getModelEnablementsPath(TargetRuntime rt, String profileId) {
+		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + profileId; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	public ModelEnablements getModelEnablements(Bpmn2DiagramType diagramType, String profile) {
-		return getModelEnablements(getRuntime(), diagramType, profile);
+	public ModelEnablements getModelEnablements(String profileId) {
+		return getModelEnablements(getRuntime(), profileId);
 	}
 	
-	public ModelEnablements getModelEnablements(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
-		ModelEnablements me = new ModelEnablements(rt, diagramType, profile);
-		if (profile!=null && !profile.isEmpty()) {
+	public ModelEnablements getModelEnablements(TargetRuntime rt, String profileId) {
+		ModelEnablements me = new ModelEnablements(rt, profileId);
+		if (profileId!=null && !profileId.isEmpty()) {
 			try {
 				Preferences prefs = null;
-				String path = getModelEnablementsPath(rt, diagramType, profile);
+				String path = getModelEnablementsPath(rt, profileId);
 				if (projectPreferences!=null && projectPreferences.nodeExists(path))
 					prefs = projectPreferences.node(path);
 				else if (instancePreferences.nodeExists(path))
@@ -869,10 +867,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				if (prefs!=null) {
 					me.setEnabledAll(false);
 					for (String k : prefs.keys()) {
-						if (k.indexOf(".")>0) { //$NON-NLS-1$
-							if (prefs.getBoolean(k, false))
-								me.setEnabled(k, true);
-						}
+						if (prefs.getBoolean(k, false))
+							me.setEnabled(k, true);
 					}
 				}
 			}
@@ -886,11 +882,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return me;
 	}
 	
-	public boolean setModelEnablements(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile, ModelEnablements me) {
+	public boolean setModelEnablements(TargetRuntime rt, String profileId, ModelEnablements me) {
 		if (me!=null && me.size()>0) {
 			try {
 				Preferences prefs = null;
-				String path = getModelEnablementsPath(rt, diagramType, profile);
+				String path = getModelEnablementsPath(rt, profileId);
 				if (projectPreferences!=null && useProjectPreferences) {
 					prefs = projectPreferences.node(path);
 					prefs.removeNode();
@@ -905,7 +901,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				for (String s : me.getAllEnabled()) {
 					prefs.putBoolean(s, true);
 				}
-				firePreferenceEvent(prefs, path, null, profile);
+				firePreferenceEvent(prefs, path, null, profileId);
 				return true;
 			}
 			catch (BackingStoreException e) {

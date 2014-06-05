@@ -18,9 +18,15 @@ import java.util.Stack;
 import org.eclipse.core.runtime.IConfigurationElement;
 
 /**
- * Target Runtime Extension Descriptor class for Graphical Tool Palette definitions.
- * Instances of this class correspond to <toolPalette> extension elements in the extension's plugin.xml
- * See the description of the "toolPalette" element in the org.eclipse.bpmn2.modeler.runtime extension point schema.
+ * Target Runtime Extension Descriptor class for Graphical Tool Palette
+ * definitions. A Tool Palette must reference a
+ * {@link ModelEnablementDescriptor} class instance by its ID. The Model
+ * Enablement set is used to filter the BPMN2 elements that are available on
+ * this Tool Palette.
+ * 
+ * Instances of this class correspond to <toolPalette> extension elements in the
+ * extension's plugin.xml See the description of the "toolPalette" element in
+ * the org.eclipse.bpmn2.modeler.runtime extension point schema.
  */
 public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 
@@ -319,9 +325,9 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 	}
 	
-	String type; // the diagram type for which this toolPalette is to be used
-	String profile; // the model enablement profile for which this toolPalette is to be used
-	// the list of categories in the toolPalette
+	/** The model enablement profile for which this toolPalette is to be used **/
+	String profileId;
+	/** The list of categories in the toolPalette **/
 	List<CategoryDescriptor> categories = new ArrayList<CategoryDescriptor>();
 
 	
@@ -331,8 +337,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 	
 	public ToolPaletteDescriptor(IConfigurationElement e) {
 		super(e);
-		type = e.getAttribute("type"); //$NON-NLS-1$
-		profile = e.getAttribute("profile"); //$NON-NLS-1$
+		profileId = e.getAttribute("profile"); //$NON-NLS-1$
 		for (IConfigurationElement c : e.getChildren()) {
 			if (c.getName().equals("category")) { //$NON-NLS-1$
 				String cid = c.getAttribute("id"); //$NON-NLS-1$
@@ -448,17 +453,13 @@ public class ToolPaletteDescriptor extends BaseRuntimeExtensionDescriptor {
 		return id;
 	}
 	
-	public List<String> getProfiles() {
-		String a[] = profile.split(","); //$NON-NLS-1$
+	public List<String> getProfileIds() {
+		String a[] = profileId.split(" "); //$NON-NLS-1$
 		List<String> profiles = new ArrayList<String>();
 		for (String p : a) {
 			profiles.add(p.trim());
 		}
 		return profiles;
-	}
-
-	public String getType() {
-		return type;
 	}
 	
 	public List<CategoryDescriptor> getCategories() {

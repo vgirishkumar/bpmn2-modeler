@@ -10,15 +10,13 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.preferences;
+package org.eclipse.bpmn2.modeler.ui.preferences;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -26,12 +24,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -45,17 +43,15 @@ public class ToolProfilesPreferencesHelper {
 	private ModelEnablements modelEnablements;
 	private static HashSet<EClass> elementSet = null;
 	private TargetRuntime targetRuntime;
-	private Bpmn2DiagramType diagramType;
-	private String profile;
+	private String profileId;
 	private static boolean enableIdAttribute = false;
 
 	private ToolProfilesPreferencesHelper() {
 	}
 	
-	public ToolProfilesPreferencesHelper(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
+	public ToolProfilesPreferencesHelper(TargetRuntime rt, String profileId) {
 		this.targetRuntime = rt;
-		this.diagramType = diagramType;
-		this.profile = profile;
+		this.profileId = profileId;
 		createElementSet();
 	}
 
@@ -68,40 +64,43 @@ public class ToolProfilesPreferencesHelper {
 		if (elementSet==null) {
 			elementSet = new HashSet<EClass>();
 			Bpmn2Package pkg = Bpmn2Package.eINSTANCE;
-			EList<EClassifier> allClassifiers = pkg.getEClassifiers();
-			final List<EClass> elements = new ArrayList<EClass>();
-			for (EClassifier candidate : allClassifiers) {
-				if (candidate instanceof EClass && candidate!=pkg.getDocumentRoot()) {
-					boolean add = true;
-					for (EClassifier ec : allClassifiers) {
-						if (ec!=candidate && ec instanceof EClass) {
-							for (EClass superType : ((EClass)ec).getESuperTypes()) {
-								if (superType == candidate) {
-									add = false;
-									break;
-								}
-							}
-						}
-					}
-					if (add)
-						elements.add((EClass)candidate);
-				}
+//			EList<EClassifier> allClassifiers = pkg.getEClassifiers();
+//			final List<EClass> elements = new ArrayList<EClass>();
+//			for (EClassifier candidate : allClassifiers) {
+//				if (candidate instanceof EClass && candidate!=pkg.getDocumentRoot()) {
+//					boolean add = true;
+//					for (EClassifier ec : allClassifiers) {
+//						if (ec!=candidate && ec instanceof EClass) {
+//							for (EClass superType : ((EClass)ec).getESuperTypes()) {
+//								if (superType == candidate) {
+//									add = false;
+//									break;
+//								}
+//							}
+//						}
+//					}
+//					if (add)
+//						elements.add((EClass)candidate);
+//				}
+//			}
+//			elementSet.addAll(elements);
+			for (Class c : Bpmn2FeatureMap.ALL_SHAPES) {
+				elementSet.add((EClass)Bpmn2Package.eINSTANCE.getEClassifier(c.getSimpleName()));
 			}
-			elementSet.addAll(elements);
 			
-			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (ModelEnablementDescriptor med : rt.getModelEnablementDescriptors()) {
-					for (String name : med.getAllEnabled()) {
-						int i = name.indexOf("."); //$NON-NLS-1$
-						if (i>0)
-							name = name.substring(i);
-						EClassifier ec = pkg.getEClassifier(name);
-						if (ec instanceof EClass && !elementSet.contains(ec)) {
-							elementSet.add((EClass)ec);
-						}
-					}
-				}
-			}
+//			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+//				for (ModelEnablementDescriptor med : rt.getModelEnablementDescriptors()) {
+//					for (String name : med.getAllEnabled()) {
+//						int i = name.indexOf("."); //$NON-NLS-1$
+//						if (i>0)
+//							name = name.substring(i);
+//						EClassifier ec = pkg.getEClassifier(name);
+//						if (ec instanceof EClass && !elementSet.contains(ec)) {
+//							elementSet.add((EClass)ec);
+//						}
+//					}
+//				}
+//			}
 		}
 	}
 	
@@ -125,7 +124,7 @@ public class ToolProfilesPreferencesHelper {
 
 	public void copyModelEnablements(ModelEnablements copyMe) {
 		if (modelEnablements==null) {
-			modelEnablements = new ModelEnablements(targetRuntime, diagramType, profile);
+			modelEnablements = new ModelEnablements(targetRuntime, profileId);
 		}
 		modelEnablements.setEnabledAll(false);
 		for (String name : copyMe.getAllEnabled()) {
@@ -167,14 +166,16 @@ public class ToolProfilesPreferencesHelper {
 				possibleFeatures.add(a);
 			}
 
-			for (EStructuralFeature feature : possibleFeatures) {
-				ModelEnablementTreeEntry child = new ModelEnablementTreeEntry(feature, entry);
-				enable = isEnabled(eClass, feature);
-				child.setEnabled(enable);
-				children.add(child);
+			if (enable) {
+				for (EStructuralFeature feature : possibleFeatures) {
+					ModelEnablementTreeEntry child = new ModelEnablementTreeEntry(feature, entry);
+					enable = isEnabled(eClass, feature);
+					child.setEnabled(enable);
+					children.add(child);
+				}
+				sortElements(children);
+				entry.setChildren(children);
 			}
-			sortElements(children);
-			entry.setChildren(children);
 		}
 		sortElements(ret);
 		return ret;
@@ -378,7 +379,7 @@ public class ToolProfilesPreferencesHelper {
 		Properties p = new Properties();
 		p.load(new FileInputStream(path));
 		
-		ModelEnablements me = new ModelEnablements(targetRuntime, diagramType, profile);
+		ModelEnablements me = new ModelEnablements(targetRuntime, profileId);
 
 		for (Object key : p.keySet()) {
 			Object value = p.get(key);
@@ -396,12 +397,12 @@ public class ToolProfilesPreferencesHelper {
 		List<String> keys = modelEnablements.getAllEnabled();
 		Collections.sort(keys);
 
+		String profileName = targetRuntime.getModelEnablements(profileId).getProfileName();
 		if (writeXml) {
 			fw.write("\t\t<modelEnablement"); //$NON-NLS-1$
 			fw.write(" runtimeId=\"" + targetRuntime.getId() + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-			fw.write(" type=\"" + profile + "\""); //$NON-NLS-1$ //$NON-NLS-2$
-			if (profile!=null)
-				fw.write(" profile=\"" + profile + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+			fw.write(" id=\"" + profileId + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+			fw.write(" profile=\"" + profileName + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 			fw.write(">\r\n"); //$NON-NLS-1$
 			
 			fw.write("\t\t\t<disable object=\"all\"/>\r\n"); //$NON-NLS-1$

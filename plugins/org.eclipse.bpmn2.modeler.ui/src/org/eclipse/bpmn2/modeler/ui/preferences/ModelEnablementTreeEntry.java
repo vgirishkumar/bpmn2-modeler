@@ -10,10 +10,11 @@
  *
  * @author Ivar Meikas
  ******************************************************************************/
-package org.eclipse.bpmn2.modeler.core.preferences;
+package org.eclipse.bpmn2.modeler.ui.preferences;
 
 import java.util.ArrayList;
 
+import org.eclipse.bpmn2.modeler.core.preferences.AbstractPropertyChangeListenerProvider;
 import org.eclipse.emf.ecore.ENamedElement;
 
 public class ModelEnablementTreeEntry extends AbstractPropertyChangeListenerProvider {

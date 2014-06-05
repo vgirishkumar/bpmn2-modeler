@@ -308,16 +308,14 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.businessRuleTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection"
+			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
 			label="%propertyTab.label.11">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.manualTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ManualTaskPropertySection"
 			type="org.eclipse.bpmn2.ManualTask"
@@ -326,7 +324,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.receiveTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation instantiate messageRef operationRef isForCompensation"
@@ -336,7 +333,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.scriptTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskPropertySection"
 			type="org.eclipse.bpmn2.ScriptTask"
@@ -345,7 +341,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.sendTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation messageRef operationRef isForCompensation"
@@ -355,7 +350,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.serviceTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation operationRef isForCompensation"
@@ -365,7 +359,6 @@
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.userTask.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.task.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources renderings isForCompensation"
@@ -754,9 +747,9 @@
 		</propertyTab>
 
 		<toolPalette
-			id="org.bpmn2.modeler.toolpalette.process.default"
+			id="org.bpmn2.modeler.toolpalette.full"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			type="Process" profile="Default Process,Simple Process">
+			profile="profile.1">
 			
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 			
@@ -898,117 +891,206 @@
 			
 		</toolPalette>
 
+		<toolPalette
+			id="org.bpmn2.modeler.toolpalette.descriptive"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			profile="profile.2">
+			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
+		</toolPalette>
+
+		<toolPalette
+			id="org.bpmn2.modeler.toolpalette.analytic"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			profile="profile.3">
+			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
+		</toolPalette>
+
+		<toolPalette
+			id="org.bpmn2.modeler.toolpalette.executable"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			profile="profile.4">
+			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
+		</toolPalette>
+
+		<toolPalette
+			id="org.bpmn2.modeler.toolpalette.choreography"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			profile="profile.5">
+			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
+		</toolPalette>
+
+		<toolPalette
+			id="org.bpmn2.modeler.toolpalette.conversation"
+			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+			profile="profile.6">
+			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
+		</toolPalette>
+
 		<!-- ======================================== -->
 		<!-- ===  Model Enablements and Profiles ==== -->
 		<!-- ======================================== -->
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				type="Process"
-				profile="Default Process">
-				
+				id="profile.1"
+				profile="Full">
 			<enable object="all"/>
 		</modelEnablement>
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				type="Process"
-				profile="Simple Process"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
-			<disable object="DataAssociation"/>
-			<disable object="UserTask"/>
-			<disable object="ScriptTask"/>
-			<disable object="BusinessRuleTask"/>
-			<disable object="ComplexGateway"/>
-			<disable object="EventBasedGateway"/>
-			<disable object="Transaction"/>
-			<disable object="AdHocSubProcess"/>
-			<disable object="CallActivity"/>
-
-			<disable object="ConditionalEventDefinition"/>
-			<disable object="LinkEventDefinition"/>
-			<disable object="CancelEventDefinition"/>
-			<disable object="CompensateEventDefinition"/>
-				
-		</modelEnablement>
-
-		<modelEnablement
-				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				type="Collaboration"
-				profile="Default Collaboration"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
-				
-			<!-- copy the enablements from "Process" diagram type -->
-			<!-- and then add these objects -->
+				id="profile.2"
+				profile="Descriptive">
 			<enable object="Collaboration"/>
-			<enable object="Participant"/>
-			<enable object="MessageFlow"/>
-			<enable object="Conversation"/>
-			<enable object="SubConversation"/>
-			<enable object="CallConversation"/>
-			<enable object="ConversationLink"/>
+			<enable object="Process"/>
+			<enable object="Correlation"/>
+			<enable object="CorrelationProperty"/>
+			<enable object="CorrelationPropertyBinding"/>
+			<enable object="CorrelationPropertyRetrievalExpression"/>
+			<enable object="CorrelationSubsciption"/>
+			<enable object="Process"/>
+			<enable object="Process"/>
+			<enable object="Participant" feature="name"/>
+			<enable object="Participant" feature="processRef"/>
+			<enable object="Lane" feature="name"/>
+			<enable object="SequenceFlow" feature="name"/>
+			<enable object="MessageFlow" feature="name"/>
+			<enable object="ExclusiveGateway" feature="name"/>
+			<enable object="ParallelGateway" feature="name"/>
+			<enable object="Task" feature="name"/>
+			<enable object="UserTask" feature="name"/>
+			<enable object="ServiceTask" feature="name"/>
+			<enable object="SubProcess" feature="name"/>
+			<enable object="CallActivity" feature="name"/>
+			<enable object="CallActivity" feature="calledElementRef"/>
+			<enable object="CallableElement"/>
+			<enable object="DataObject" feature="name"/>
+			<enable object="TextAnnotation" feature="text"/>
+			<enable object="CallActivity" feature="name"/>
+			<enable object="Association" feature="name"/>
+			<enable object="Association" feature="associationDirection"/>
+			<enable object="DataInputAssociation"/>
+			<enable object="DataOutputAssociation"/>
+			<enable object="DataStore" feature="name"/>
+			<enable object="DataStoreReference" feature="name"/>
+			<enable object="DataStoreReference" feature="dataStoreRef"/>
+			<enable object="StartEvent" feature="name"/>
+			<enable object="EndEvent" feature="name"/>
+			<enable object="MessageEventDefinition"/>
+			<enable object="TimerEventDefinition"/>
+			<enable object="Documentation"/>
+			<enable object="Group"/>
+			<enable object="Category"/>
+			<enable object="CategoryValue"/>
+			<enable object="Message"/>
 		</modelEnablement>
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				type="Choreography"
-				profile="Default Choreography"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:Process:Default Process">
-				
-			<!-- copy the enablements from "Process" diagram type -->
-			<!-- and then add these objects -->
-			<enable object="Definitions"/>
-			<enable object="Group"/>
-
-			<enable object="StartEvent"/>
-			<enable object="EndEvent"/>
-
-			<disable object="DataObject"/>
-			<disable object="DataObjectReference"/>
-			<disable object="DataState"/>
-			<disable object="DataStore"/>
-			<disable object="DataStoreReference"/>
-			<disable object="DataInput"/>
-			<disable object="DataInputAssociation"/>
-			<disable object="DataOutput"/>
-			<disable object="DataOutputAssociation"/>
-			
-			<enable object="TextAnnotation"/>
-			<enable object="SequenceFlow"/>
-			<enable object="Choreography"/>
-			<enable object="SubChoreography"/>
-			<enable object="CallChoreography"/>
-			<enable object="ChoreographyTask"/>
-
-			<enable object="ExclusiveGateway"/>
-			<enable object="InclusiveGateway"/>
-			<enable object="ParallelGateway"/>
-			<enable object="EventBasedGateway"/>
-			<enable object="ComplexGateway"/>
-
-			<enable object="ConditionalEventDefinition"/>
-			<enable object="TimerEventDefinition"/>
+				id="profile.3"
+				profile="Analytic"
+				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.2">
+			<enable object="SequenceFlow" feature="conditionExpression"/>
+			<enable object="ExclusiveGateway" feature="default"/>
+			<enable object="InclusiveGateway" feature="name"/>
+			<enable object="InclusiveGateway" feature="default"/>
+			<enable object="InclusiveGateway" feature="eventGatewayType"/>
+			<enable object="EventBasedGateway" feature="name"/>
+			<enable object="EventBasedGateway" feature="eventGatewayType"/>
+			<enable object="SendTask" feature="name"/>
+			<enable object="ReceiveTask" feature="name"/>
+			<enable object="StandardLoopCharacteristics"/>
+			<enable object="MultiInstanceLoopCharacteristics"/>
 			<enable object="SignalEventDefinition"/>
-			<enable object="MessageEventDefinition"/>
+			<enable object="Signal"/>
 			<enable object="EscalationEventDefinition"/>
-			<enable object="CompensateEventDefinition"/>
-			<enable object="LinkEventDefinition" feature="name"/>
+			<enable object="Escalation"/>
 			<enable object="ErrorEventDefinition"/>
+			<enable object="Error"/>
+			<enable object="ConditionalEventDefinition"/>
+			<enable object="IntermediateCatchEvent"/>
+			<enable object="IntermediateThrowEvent"/>
+			<enable object="BoundaryEvent"/>
+		</modelEnablement>
+
+		<modelEnablement
+				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+				id="profile.4"
+				profile="Executable"
+				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.3">
+			<enable object="BusinessRuleTask"/>
+			<enable object="AdHocSubProcess"/>
+			<enable object="GlobalTask"/>
+			<enable object="GlobalBusinessRuleTask"/>
+			<enable object="GlobalManualTask"/>
+			<enable object="GlobalScriptTask"/>
+			<enable object="GlobalUserTask"/>
+			<enable object="Transaction"/>
+			<enable object="ManualTask"/>
+			<enable object="ScriptTask"/>
+			<enable object="ResourceRole"/>
+			<enable object="Rendering"/>
+			<enable object="InputOutputSpecification"/>
+			<enable object="InputSet"/>
+			<enable object="OutputSet"/>
+			<enable object="DataInput"/>
+			<enable object="DataOutput"/>
+			<enable object="ItemDefinition"/>
+			<enable object="Operation"/>
+			<enable object="Interface"/>
+			<enable object="Assignment"/>
+			<enable object="ComplexGateway"/>
+			<enable object="CompensateEventDefinition"/>
+			<enable object="LinkEventDefinition"/>
 			<enable object="CancelEventDefinition"/>
 			<enable object="TerminateEventDefinition"/>
-
-			<enable object="MessageFlow"/>
-			<enable object="Participant"/>
-			
-			<disable object="ConversationLink"/>
-			<disable object="ConversationAssociation"/>
-			<disable object="Collaboration"/>
-			<disable object="ConversationNode"/>
-			<disable object="ExtensionAttributeDefinition"/>
-			<disable object="MessageFlowAssociation"/>
 		</modelEnablement>
 
-		
+		<modelEnablement
+				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+				id="profile.5"
+				profile="Choreography">
+			<enable object="Choreography"/>
+			<enable object="Participant" feature="name"/>
+			<enable object="Lane" feature="name"/>
+			<enable object="ChoreographyTask"/>
+			<enable object="GlobalChoreographyTask"/>
+			<enable object="CallChoreography"/>
+			<enable object="SubChoreography"/>
+			<enable object="StartEvent"/>
+			<enable object="EndEvent"/>
+			<enable object="BoundaryEvent"/>
+			<enable object="IntermediateCatchEvent"/>
+			<enable object="IntermediateThrowEvent"/>
+			<enable object="ConditionalEventDefinition"/>
+			<enable object="MessageEventDefinition"/>
+			<enable object="Message"/>
+			<enable object="MessageFlow"/>
+			<enable object="TimerEventDefinition"/>
+			<enable object="SignalEventDefinition"/>
+			<enable object="Signal"/>
+			<enable object="InclusiveGateway"/>
+			<enable object="ExclusiveGateway"/>
+			<enable object="ParallelGateway"/>
+			<enable object="ConditionalGateway"/>
+			<enable object="ComplexGateway"/>
+			<enable object="EventBasedGateway"/>
+		</modelEnablement>
+
+		<modelEnablement
+				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
+				id="profile.6"
+				profile="Conversation">
+			<enable object="Participant" feature="name"/>
+			<enable object="Lane" feature="name"/>
+			<enable object="Conversation"/>
+			<enable object="ConversationLink"/>
+			<enable object="ConversationAssociation"/>
+			<enable object="GlobalConversation"/>
+			<enable object="CallConversation"/>
+			<enable object="SubConversation"/>
+		</modelEnablement>
+
 		<style object="SHAPES" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="DATA" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>
 		<style object="DataInput" shapeBackground="D4E7F8" defaultWidth="36" defaultHeight="50"/>

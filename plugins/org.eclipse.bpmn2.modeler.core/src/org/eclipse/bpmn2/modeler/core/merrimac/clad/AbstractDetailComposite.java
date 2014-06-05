@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ReadonlyTextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
@@ -475,14 +476,17 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					}
 				}
 				for (EStructuralFeature feature : features) {
-					if (isAttribute(object, feature)) {
-						bindAttribute(parent,object,(EAttribute)feature);
-					}
-					else if (isReference(object, feature)) {
-						bindReference(parent,object,(EReference)feature);
-					}
-					else if (isList(object,feature)) {
-						bindList(object,feature);
+					// ignore the ShapeStyle extension - this is already handled in the Description tab
+					if (!ShapeStyle.isStyleFeature(feature)) {
+						if (isAttribute(object, feature)) {
+							bindAttribute(parent,object,(EAttribute)feature);
+						}
+						else if (isReference(object, feature)) {
+							bindReference(parent,object,(EReference)feature);
+						}
+						else if (isList(object,feature)) {
+							bindList(object,feature);
+						}
 					}
 				}
 

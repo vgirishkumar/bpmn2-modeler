@@ -45,8 +45,6 @@ public class Messages extends NLS {
 	public static String Bpmn2Preferences_Target_Runtime;
 	public static String Bpmn2Preferences_Timeout;
 	public static String Bpmn2Preferences_True_if_not_set;
-	public static String ToolEnablementPreferences_BPMN_Extensions;
-	public static String ToolEnablementPreferences_Target_Extensions;
 	
 	public static String ShapeStyle_Category_Connections;
 	public static String ShapeStyle_Category_Shapes;

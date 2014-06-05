@@ -684,7 +684,7 @@
 
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				type="Process"
+				id="profile.1"
 				profile="Full">
 			<enable object="AdHocSubProcess" feature="cancelRemainingInstances"/>
 			<enable object="AdHocSubProcess" feature="completionCondition"/>
@@ -929,10 +929,10 @@
 		
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				type="Process"
+				id="profile.2"
 				profile="Simple"
-				ref="org.jboss.runtime.jbpm5:Process:Full">
-			<!-- copy the enablements from "Process" diagram type -->
+				ref="org.jboss.runtime.jbpm5:profile.1">
+			<!-- copy the enablements from "Full" profile -->
 			<!-- and then disable these objects and features -->
 			<disable object="AdHocSubProcess"/>
 			<disable object="Assignment"/>
@@ -982,7 +982,7 @@
 		
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				type="Process"
+				id="profile.3"
 				profile="RuleFlow">
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
@@ -1058,7 +1058,7 @@
 		<toolPalette
 			id="org.jboss.runtime.jbpm5.toolpalette.simple"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="Process" profile="Simple">
+			profile="Simple">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Tasks" name="%category.name">
 				<tool name="%tool.name.2" object="ManualTask"/>
@@ -1099,7 +1099,7 @@
 		<toolPalette
 			id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="Process" profile="RuleFlow">
+			profile="RuleFlow">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Tasks" name="%category.name.5">
 				<tool name="%tool.name.19" object="BusinessRuleTask"/>
@@ -1123,7 +1123,7 @@
 		<toolPalette
 			id="org.jboss.runtime.jbpm5.toolpalette.full"
 			runtimeId="org.jboss.runtime.jbpm5"
-			type="Process" profile="Full">
+			profile="Full">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Tasks" name="%category.name.9">
 				<tool name="%tool.name.31" object="Task"/>

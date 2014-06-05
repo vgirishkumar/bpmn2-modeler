@@ -12,7 +12,6 @@ package org.eclipse.bpmn2.modeler.ui.preferences;
 
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablementTreeEntry;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;

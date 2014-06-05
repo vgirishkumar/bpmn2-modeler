@@ -507,7 +507,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		EStructuralFeature feature = eClass.getEStructuralFeature(property.name);
 		
 		boolean isAttribute = true;
-		EClassifier eClassifier = modelDecorator.findEClassifier(property.type);
+		EClassifier eClassifier = getModelDecorator().findEClassifier(property.type);
 		if (eClassifier!=null) {
 			if (!(eClassifier instanceof EDataType || eClassifier instanceof EEnum))
 				isAttribute = false;
@@ -740,6 +740,9 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	private int recursionCounter;
 	public boolean isDefined(String className, String featureName) {
+		if (className==null || featureName==null) {
+			return false;
+		}
 		if (++recursionCounter>100) {
 			Activator.logError(new Exception("Possible infinite recursion in "+this.getClass().getName()+"#isDefined()")); //$NON-NLS-1$ //$NON-NLS-2$
 			--recursionCounter;
@@ -756,7 +759,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 				}
 			}
 			--recursionCounter;
-			return true;
+			return false;
 		}
 		EClass eClass = getEClass(className);
 		if (eClass!=null) {
@@ -785,7 +788,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 					}
 				}
 				--recursionCounter;
-				return true;
+				return false;
 			}
 
 			Iterator<Property> iter = property.iterator();

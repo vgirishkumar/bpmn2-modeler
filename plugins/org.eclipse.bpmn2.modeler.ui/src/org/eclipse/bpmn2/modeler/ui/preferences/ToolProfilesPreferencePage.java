@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablementTreeEntry;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
-import org.eclipse.bpmn2.modeler.core.preferences.ToolProfilesPreferencesHelper;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -28,11 +26,11 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDesc
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -75,13 +73,11 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime currentRuntime;
-	private Bpmn2DiagramType currentDiagramType;
-	private String currentProfile;
+	private String currentProfileId;
 	private final List<ModelEnablementTreeEntry> bpmnEntries = new ArrayList<ModelEnablementTreeEntry>();
 	private final List<ModelEnablementTreeEntry> extensionEntries = new ArrayList<ModelEnablementTreeEntry>();
 	
 	private Combo cboRuntimes;
-	private Combo cboDiagramTypes;
 	private Combo cboProfiles;
 	private Button btnUseAsDefaultProfile;
 	private Button btnCreateProfile;
@@ -101,18 +97,23 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	private Button btnEditTool;
 
 	private static ToolPaletteDescriptor defaultToolPalette = null;
-	
 
-
-	// a list of ToolProfilesPreferencesHelpers, one for each permutation of Target Runtime, Diagram Type
-	// and Tool Profiles defined in the Preferences. Helpers contain the Model Enablement list and are used
-	// as factories for Model Enablement Tree Entries. 
-	private Hashtable<TargetRuntime,
-				Hashtable<Bpmn2DiagramType,
-					Hashtable<String, ToolProfilesPreferencesHelper>>> helpers =
-		new Hashtable<TargetRuntime,
-				Hashtable<Bpmn2DiagramType,
-					Hashtable<String,ToolProfilesPreferencesHelper>>>();
+	/**
+	 * A map of ToolProfilesPreferencesHelpers, one for each permutation of
+	 * Target Runtime and Tool Profile defined in the Preferences. Helpers
+	 * contain the Model Enablement list and are used as factories for Model
+	 * Enablement Tree Entries. The lookup key for this map is a concatenation
+	 * of the Target Runtime ID and profile name string.
+	 **/
+	private static class ToolProfilesHelperMap extends Hashtable<String, ToolProfilesPreferencesHelper> {
+		public ToolProfilesPreferencesHelper get(TargetRuntime rt, String profileId) {
+			return get(rt.getId() + "\n" + profileId);
+		}
+		public ToolProfilesPreferencesHelper put(TargetRuntime rt, String profileId, ToolProfilesPreferencesHelper helper) {
+			return put(rt.getId() + "\n" + profileId, helper);
+		}
+	}
+	private ToolProfilesHelperMap helpers = new ToolProfilesHelperMap();
 
 	/**
 	 * Create the property page.
@@ -127,32 +128,20 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		ToolProfilesPreferencesHelper.setEnableIdAttribute(preferences.getShowIdAttribute());
 	}
 
-	private ToolProfilesPreferencesHelper getHelper(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
-		Hashtable<Bpmn2DiagramType, Hashtable<String,ToolProfilesPreferencesHelper>> map1 = helpers.get(rt);
+	private ToolProfilesPreferencesHelper getHelper(TargetRuntime rt, String profileId) {
+		ToolProfilesPreferencesHelper helper = helpers.get(rt, profileId);
 		
-		if (map1==null) {
-			map1 = new Hashtable<Bpmn2DiagramType, Hashtable<String,ToolProfilesPreferencesHelper>>();
-			helpers.put(rt, map1);
-		}
-		
-		Hashtable<String,ToolProfilesPreferencesHelper> map2 = map1.get(diagramType);
-		if (map2==null) {
-			map2 = new Hashtable<String,ToolProfilesPreferencesHelper>();
-			map1.put(diagramType, map2);
-		}
-		
-		ToolProfilesPreferencesHelper helper = map2.get(profile);
 		if (helper==null) {
-			helper = new ToolProfilesPreferencesHelper(rt, diagramType, profile);
-			ModelEnablements me = preferences.getModelEnablements(rt, diagramType, profile);
+			helper = new ToolProfilesPreferencesHelper(rt, profileId);
+			ModelEnablements me = preferences.getModelEnablements(rt, profileId);
 			helper.setModelEnablements(me);
-			map2.put(profile, helper);
+			helpers.put(rt, profileId, helper);
 		}
 		else {
 			ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
 			ModelEnablements me = helper.getModelEnablements();
 			if (me==null) {
-				me = preferences.getModelEnablements(rt, diagramType, profile);
+				me = preferences.getModelEnablements(rt, profileId);
 			}
 			helper.setModelEnablements(me);
 		}
@@ -160,27 +149,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		return helper;
 	}
 
-	private boolean hasHelper(TargetRuntime rt, Bpmn2DiagramType diagramType, String profile) {
-		Hashtable<Bpmn2DiagramType, Hashtable<String,ToolProfilesPreferencesHelper>> map1 = helpers.get(rt);
-		
-		if (map1==null) {
-			map1 = new Hashtable<Bpmn2DiagramType, Hashtable<String,ToolProfilesPreferencesHelper>>();
-			helpers.put(rt, map1);
-		}
-		
-		Hashtable<String,ToolProfilesPreferencesHelper> map2 = map1.get(diagramType);
-		if (map2==null) {
-			map2 = new Hashtable<String,ToolProfilesPreferencesHelper>();
-			map1.put(diagramType, map2);
-		}
-		
-		ToolProfilesPreferencesHelper helper = map2.get(profile);
-		if (helper==null) {
-			return false;
-		}
-
-
-		return true;
+	private boolean hasHelper(TargetRuntime rt, String profileId) {
+		return helpers.get(rt, profileId) != null;
 	}
 	
 	/**
@@ -196,11 +166,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
 
 		currentRuntime = TargetRuntime.getCurrentRuntime();
-		if (BPMN2Editor.getActiveEditor()!=null)
-			currentDiagramType = ModelUtil.getDiagramType(BPMN2Editor.getActiveEditor().getBpmnDiagram());
-		else
-			currentDiagramType = Bpmn2DiagramType.PROCESS;
-		currentProfile = ""; //$NON-NLS-1$
+		currentProfileId = ""; //$NON-NLS-1$
 		
 		final Label lblRuntime = new Label(container, SWT.NONE);
 		lblRuntime.setText(Messages.ToolProfilesPreferencePage_TargetRuntime_Label);
@@ -220,24 +186,6 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		});
 		fillRuntimesCombo();
 
-		final Label lblDiagramType = new Label(container, SWT.NONE);
-		lblDiagramType.setText(Messages.ToolProfilesPreferencePage_DiagramType_Label);
-		lblDiagramType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
-
-		cboDiagramTypes = new Combo(container, SWT.READ_ONLY);
-		cboDiagramTypes.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		cboDiagramTypes.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String s = cboDiagramTypes.getText();
-				currentDiagramType = (Bpmn2DiagramType) cboDiagramTypes.getData(s);
-				fillProfilesCombo();
-				fillModelEnablementTrees();
-				fillPaletteTree();
-			}
-		});
-		fillDiagramTypesCombo();
-
 		final Label lblProfile = new Label(container, SWT.NONE);
 		lblProfile.setText(Messages.ToolProfilesPreferencePage_ToolProfile_Label);
 		lblProfile.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 3, 1));
@@ -247,7 +195,9 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		cboProfiles.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				currentProfile = cboProfiles.getText();
+				String text = cboProfiles.getText();
+				ModelEnablementDescriptor med = (ModelEnablementDescriptor)cboProfiles.getData(text);
+				currentProfileId = med.getId();
 				fillModelEnablementTrees();
 				fillPaletteTree();
 			}
@@ -274,27 +224,23 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			public void widgetSelected(SelectionEvent e) {
 				CreateProfileDialog dlg = new CreateProfileDialog(parent.getShell());
 				if (dlg.open() == Window.OK) {
-					currentProfile = dlg.getValue();
-					preferences.createToolProfile(currentRuntime, currentDiagramType, currentProfile);
-					preferences.setDefaultToolProfile(currentRuntime, currentDiagramType, currentProfile);
+					String profileName = dlg.getValue();
+					currentProfileId = "profile." + profileName.replaceAll(" ", ".");
+					preferences.createToolProfile(currentRuntime, currentProfileId, profileName);
+					preferences.setDefaultToolProfile(currentRuntime, currentProfileId);
 					if (dlg.getCopyProfile()!=null) {
 						// make a copy of an existing Tool Profile: get the Model Enablements to be copied
-						Bpmn2DiagramType saveDiagramType = currentDiagramType;
-						currentDiagramType = dlg.getCopyDiagramType();
-						currentProfile = dlg.getCopyProfile();
-						ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+						ModelEnablementDescriptor med = dlg.getCopyProfile();
+						ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, med.getId());
 						ModelEnablements copyMe = helper.getModelEnablements();
 
 						// create a helper for the new Tool Profile
-						currentProfile = dlg.getValue();
-						currentDiagramType = saveDiagramType;
-						helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+						helper = getHelper(currentRuntime, currentProfileId);
 						
 						// and copy the ModelEnablements into it
 						helper.copyModelEnablements(copyMe);
-						preferences.setModelEnablements(currentRuntime, currentDiagramType, currentProfile, helper.getModelEnablements());
+						preferences.setModelEnablements(currentRuntime, currentProfileId, helper.getModelEnablements());
 					}					
-					currentProfile = dlg.getValue();
 					fillProfilesCombo();
 					fillModelEnablementTrees();
 					fillPaletteTree();
@@ -312,7 +258,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 						Messages.ToolProfilesPreferencePage_DeleteProfile_Title,
 						Messages.ToolProfilesPreferencePage_DeleteProfile_Message)) {
 					
-					preferences.deleteToolProfile(currentRuntime, currentDiagramType, currentProfile);
+					preferences.deleteToolProfile(currentRuntime, currentProfileId);
 					fillProfilesCombo();
 					fillModelEnablementTrees();
 					fillPaletteTree();
@@ -358,7 +304,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
-				getHelper(currentRuntime, currentDiagramType, currentProfile);
+				getHelper(currentRuntime, currentProfileId);
 				fillModelEnablementTrees();
 				fillPaletteTree();
 			}
@@ -374,7 +320,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				Object element = event.getElement();
 				if (element instanceof ModelEnablementTreeEntry) {
 					ModelEnablementTreeEntry entry = (ModelEnablementTreeEntry)element;
-					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 					helper.setEnabled(entry, checked);
 				}
 			}
@@ -451,7 +397,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 					try {
 						bpmnEntries.clear();
 						extensionEntries.clear();
-						getHelper(currentRuntime, currentDiagramType, currentProfile).importProfile(path);
+						getHelper(currentRuntime, currentProfileId).importProfile(path);
 						fillModelEnablementTrees();
 						fillPaletteTree();
 					} catch (Exception e1) {
@@ -470,7 +416,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				String path = dialog.open();
 				if (path != null) {
 					try {
-						getHelper(currentRuntime, currentDiagramType, currentProfile).exportProfile(path);
+						getHelper(currentRuntime, currentProfileId).exportProfile(path);
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -499,30 +445,21 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		}
 	}
 	
-	private void fillDiagramTypesCombo() {
-		int i = 0;
-		for (Bpmn2DiagramType t : Bpmn2DiagramType.values()) {
-			cboDiagramTypes.add(t.toString());
-			cboDiagramTypes.setData(t.toString(), t);
-			if (t==currentDiagramType)
-				cboDiagramTypes.select(i);
-			++i;
-		}
-	}
-	
 	private void fillProfilesCombo() {
 		if (cboProfiles!=null) {
 			int i = 0;
 			int iSelected = -1;
-			currentProfile = preferences.getDefaultToolProfile(currentRuntime, currentDiagramType);
+			currentProfileId = preferences.getDefaultToolProfile(currentRuntime);
 	
 			cboProfiles.removeAll();
-			for (String profile : preferences.getAllToolProfiles(currentRuntime, currentDiagramType)) {
-				String text = profile;
+			for (String profileId : preferences.getAllToolProfiles(currentRuntime)) {
+				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileId);
+				String text = med.getProfileName();
 				if (text==null || text.isEmpty())
 					text = Messages.ToolProfilePreferencePage_Unnamed + (i+1);
 				cboProfiles.add(text);
-				if (iSelected<0 && (currentProfile!=null && currentProfile.equals(profile)))
+				cboProfiles.setData(text, med);
+				if (iSelected<0 && (currentProfileId!=null && currentProfileId.equals(profileId)))
 					cboProfiles.select(iSelected = i);
 				++i;
 			}
@@ -546,7 +483,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private boolean isEnabled(ToolDescriptor td) {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 		for (ToolPart tp : td.getToolParts()) {
 			if (!isEnabled(helper, tp))
 				return false;
@@ -555,7 +492,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private boolean isEnabled(ToolPart tp) {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 		return isEnabled(helper,tp);
 	}
 	
@@ -577,7 +514,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			return;
 		
 		loadPalette();
-		ToolPaletteDescriptor toolPaletteDescriptor = currentRuntime.getToolPalette(currentDiagramType, currentProfile);
+		ToolPaletteDescriptor toolPaletteDescriptor = currentRuntime.getToolPalette(currentProfileId);
 		if (toolPaletteDescriptor==null)
 			toolPaletteDescriptor = defaultToolPalette;
 		
@@ -722,7 +659,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				@Override
 				public String getText(Object element) {
 					if (element instanceof ToolPaletteDescriptor) {
-						return ((ToolPaletteDescriptor) element).getProfiles().get(0);
+						return ((ToolPaletteDescriptor) element).getProfileIds().get(0);
 					}
 					else if (element instanceof CategoryDescriptor) {
 						CategoryDescriptor cd = (CategoryDescriptor) element;
@@ -756,23 +693,23 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	@Override
 	protected void performDefaults() {
 		super.performDefaults();
-		String path = Bpmn2Preferences.getToolProfilePath(currentRuntime, currentDiagramType);
+		String path = Bpmn2Preferences.getToolProfilePath(currentRuntime);
 		preferences.setToDefault(path);
-		path = Bpmn2Preferences.getModelEnablementsPath(currentRuntime, currentDiagramType, currentProfile);
+		path = Bpmn2Preferences.getModelEnablementsPath(currentRuntime, currentProfileId);
 		preferences.setToDefault(path);
 		fillProfilesCombo();
 		// force the helper's Model Enablements to be reloaded from default preferences
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 		helper.setModelEnablements(null);
 		fillModelEnablementTrees();
 		fillPaletteTree();
 	}
 
 	private void loadModelEnablements() {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentDiagramType, currentProfile);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 
 		loadModelEnablements(helper, bpmnEntries, null, null);
-		ModelEnablementDescriptor med = currentRuntime.getModelEnablements(currentDiagramType, currentProfile);
+		ModelEnablementDescriptor med = currentRuntime.getModelEnablements(currentProfileId);
 		if (med!=null)
 			loadModelEnablements(helper, extensionEntries, bpmnEntries, med);
 	}
@@ -799,46 +736,19 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		return enabled.toArray();
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void loadPalette() {
 		if (defaultToolPalette == null) {
 			defaultToolPalette = new ToolPaletteDescriptor();
 			
 			CategoryDescriptor cd;
-			
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Connectors_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.CONNECTIONS) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Tasks_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.TASKS) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Gateways_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.GATEWAYS) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Events_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.EVENTS) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_EventDefinitions_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.EVENT_DEFINITIONS) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_DataItems_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.DATA) {
-				loadCategory(cd,c);
-			}
-			cd = new CategoryDescriptor(defaultToolPalette,null,Messages.ToolProfilesPreferencePage_Other_Category,null,null);
-			defaultToolPalette.getCategories().add(cd);
-			for (Class c : Bpmn2FeatureMap.ARTIFACTS) {
-				loadCategory(cd,c);
+			List<Tuple<String, List<Class>>> drawers = Bpmn2ToolBehaviorProvider.getDefaultPaletteDrawers();
+			for (Tuple<String, List<Class>> entry : drawers) {
+				cd = new CategoryDescriptor(defaultToolPalette,null,entry.getFirst(),null,null);
+				defaultToolPalette.getCategories().add(cd);
+				for (Class c : entry.getSecond()) {
+					loadCategory(cd,c);
+				}
 			}
 		}
 	}
@@ -855,19 +765,17 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		setErrorMessage(null);
 		try {
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
-					for (String profile : preferences.getAllToolProfiles(rt, diagramType)) {
-						if (hasHelper(rt, diagramType, profile)) {
-							ToolProfilesPreferencesHelper helper = getHelper(rt, diagramType, profile);
-							preferences.setModelEnablements(rt, diagramType, profile, helper.getModelEnablements());
-						}
+				for (String profileId : preferences.getAllToolProfiles(rt)) {
+					if (hasHelper(rt, profileId)) {
+						ToolProfilesPreferencesHelper helper = getHelper(rt, profileId);
+						preferences.setModelEnablements(rt, profileId, helper.getModelEnablements());
 					}
 				}
 			}
 
 			preferences.setShowIdAttribute(btnShowIds.getSelection());
 			if (btnUseAsDefaultProfile.getSelection())
-				preferences.setDefaultToolProfile(currentRuntime, currentDiagramType, currentProfile);
+				preferences.setDefaultToolProfile(currentRuntime, currentProfileId);
 
 			preferences.flush();
 		} catch (BackingStoreException e) {
@@ -878,7 +786,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	
 	private class CreateProfileDialog extends InputDialog {
 
-		private String copySelection = null;
+		private ModelEnablementDescriptor copySelection = null;
 		
 		public CreateProfileDialog(Shell parentShell) {
 			super(parentShell,
@@ -901,21 +809,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			});
 		}
 
-		public String getCopyProfile() {
-			if (copySelection!=null && copySelection.contains("/")) { //$NON-NLS-1$
-				int i = copySelection.indexOf("/"); //$NON-NLS-1$
-				return copySelection.substring(i+1);
-			}
-			return null;
-		}
-
-		public Bpmn2DiagramType getCopyDiagramType() {
-			if (copySelection!=null && copySelection.contains("/")) { //$NON-NLS-1$
-				int i = copySelection.indexOf("/"); //$NON-NLS-1$
-				String s = copySelection.substring(0,i);
-				return Bpmn2DiagramType.fromString(s);
-			}
-			return null;
+		public ModelEnablementDescriptor getCopyProfile() {
+			return copySelection;
 		}
 		
 		@Override
@@ -935,15 +830,19 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			cboCopy.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					copySelection = cboCopy.getText();
+					String text = cboCopy.getText();
+					copySelection = (ModelEnablementDescriptor) cboCopy.getData(text);
 				}
 			});
 			
-			for (Bpmn2DiagramType diagramType : Bpmn2DiagramType.values()) {
-				for (String profile : preferences.getAllToolProfiles(currentRuntime, diagramType)) {
-					String key = diagramType + "/" + profile; //$NON-NLS-1$
-					cboCopy.add(key);
-				}
+			int i=1;
+			for (String profileId : preferences.getAllToolProfiles(currentRuntime)) {
+				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileId);
+				String text = med.getProfileName();
+				if (text==null || text.isEmpty())
+					text = Messages.ToolProfilePreferencePage_Unnamed + i++;
+				cboCopy.add(text);
+				cboCopy.setData(text, med);
 			}
 			cboCopy.setEnabled(false);
 			

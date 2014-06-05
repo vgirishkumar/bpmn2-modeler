@@ -51,13 +51,17 @@ public class ErrorDialog {
 	}
 	
 	public void show() {
-		Display.getDefault().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				String me = Activator.getDefault().getDescriptor().getLabel();
-				MessageDialog.openError(Display.getDefault().getActiveShell(), me + " - " + title, message); //$NON-NLS-1$
-			}
-		});
+		Thread t = Thread.currentThread();
+//		Display.getDefault().syncExec(new Runnable() {
+//			@Override
+//			public void run() {
+				try {
+					String me = Activator.getDefault().getDescriptor().getLabel();
+					MessageDialog.openError(Display.getDefault().getActiveShell(), me + " - " + title, message); //$NON-NLS-1$
+				}
+				catch (Exception e) {}
+//			}
+//		});
 
 	}
 }

@@ -72,7 +72,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static void logStatus(IStatus status) {
-		Platform.getLog(plugin.getBundle()).log(status);
+		if (plugin!=null)
+			Platform.getLog(plugin.getBundle()).log(status);
 	}
 	
 	public static void logError(Exception e) {

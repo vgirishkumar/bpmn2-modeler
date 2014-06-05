@@ -113,9 +113,11 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	}
 
 	public boolean appliesTo(EObject eObj) {
-		for (Class c : appliesToClasses) {
-			if (c.isInstance(eObj))
-				return true;
+		if (isModelObjectEnabled(eObj)) {
+			for (Class c : appliesToClasses) {
+				if (c.isInstance(eObj))
+					return true;
+			}
 		}
 		return false;
 	}

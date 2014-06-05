@@ -615,22 +615,20 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 	
 	public ModelEnablements getModelEnablements() {
-		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
-		String profile = getPreferences().getDefaultToolProfile(getTargetRuntime(), diagramType);
+		String profileId = getPreferences().getDefaultToolProfile(getTargetRuntime());
 		if (modelEnablements!=null) {
-			if (	!modelEnablements.getProfile().equals(profile) ||
-					!modelEnablements.getDiagramType().equals(diagramType)) {
+			if (!modelEnablements.getId().equals(profileId)) {
 				modelEnablements = null;
 			}
 				
 		}
 		if (modelEnablements==null) {
-			modelEnablements = getPreferences().getModelEnablements(getTargetRuntime(), diagramType, profile);
+			modelEnablements = getPreferences().getModelEnablements(getTargetRuntime(), profileId);
 			if (modelEnablements.size()==0) {
-				// This Target Runtime doesn't define a profile for the current diagram type,
+				// This Target Runtime doesn't define a Tool Profile
 				// so we'll use the one for Default Runtime
-				profile = getPreferences().getDefaultToolProfile(TargetRuntime.getDefaultRuntime(), diagramType);
-				ModelEnablements defaultEnablements = getPreferences().getModelEnablements(TargetRuntime.getDefaultRuntime(), diagramType, profile);
+				profileId = getPreferences().getDefaultToolProfile(TargetRuntime.getDefaultRuntime());
+				ModelEnablements defaultEnablements = getPreferences().getModelEnablements(TargetRuntime.getDefaultRuntime(), profileId);
 				modelEnablements.copy(defaultEnablements);
 			}
 		}
@@ -882,9 +880,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			return getModelEnablements();
 		}
 		if (required == ToolPaletteDescriptor.class) {
-			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(bpmnDiagram);
-			String profile = getPreferences().getDefaultToolProfile(getTargetRuntime(), diagramType);
-			return getTargetRuntime().getToolPalette(diagramType, profile);
+			String profileId = getPreferences().getDefaultToolProfile(getTargetRuntime());
+			return getTargetRuntime().getToolPalette(profileId);
 		}
 		if (required == NotificationFilter.class) {
 			if (saveInProgress)
@@ -935,7 +932,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		getPreferences().removePreferenceChangeListener(this);
 		
 		// cancel the Property Sheet Page job
-		propertySheetPage.selectionChanged(this, null);
+		if (propertySheetPage!=null)
+			propertySheetPage.selectionChanged(this, null);
 		
 		// get rid of cached Property Tab Descriptors
 		if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)

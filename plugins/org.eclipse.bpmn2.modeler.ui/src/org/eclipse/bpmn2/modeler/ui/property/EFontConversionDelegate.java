@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Label;
  */
 public class EFontConversionDelegate extends DefaultConversionDelegate {
 
+	private static FontData systemFontData;
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.EDataType.Internal.ConversionDelegate#convertToString(java.lang.Object)
@@ -86,7 +87,17 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 		catch (Exception e) {
 			Activator.logError(e);
 		}
-		return Display.getDefault().getSystemFont().getFontData()[0];
+		return getSystemFontData();
+	}
+	
+	private static FontData getSystemFontData() {
+		if (systemFontData==null) {
+			try {
+				systemFontData = Display.getDefault().getSystemFont().getFontData()[0];
+			}
+			catch (Exception e) {}
+		}
+		return systemFontData;
 	}
 
 	/* (non-Javadoc)

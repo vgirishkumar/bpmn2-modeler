@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,16 +21,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
-import org.eclipse.bpmn2.modeler.core.features.ICustomElementFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
-import org.eclipse.bpmn2.modeler.core.model.Messages;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -41,8 +36,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -543,42 +536,31 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return null;
 	}
 	
-	public List<ModelEnablementDescriptor>  getModelEnablements(Bpmn2DiagramType diagramType)
+	public List<ModelEnablementDescriptor>  getModelEnablements()
 	{
 		List<ModelEnablementDescriptor> list = new ArrayList<ModelEnablementDescriptor>();
 		for (ModelEnablementDescriptor me : getModelEnablementDescriptors()) {
-			if (diagramType == Bpmn2DiagramType.NONE && me.getDiagramType()==null) {
-				list.add(me);
-			}
-			else if (diagramType == me.getDiagramType()) {
-				list.add(me);
-			}
+			list.add(me);
 		}
 		return list;
 	}
 	
-	public ModelEnablementDescriptor getModelEnablements(Bpmn2DiagramType diagramType, String profile)
+	public ModelEnablementDescriptor getModelEnablements(String profileId)
 	{
-		if (profile!=null && profile.isEmpty())
-			profile = null;
+		if (profileId!=null && profileId.isEmpty())
+			profileId = null;
 		
 		for (ModelEnablementDescriptor me : getModelEnablementDescriptors()) {
-			if (diagramType == Bpmn2DiagramType.NONE && me.getDiagramType()==null) {
-				if (profile==null || profile.equalsIgnoreCase(me.getProfile()))
-					return me;
-			}
-			if (diagramType == me.getDiagramType()) {
-				if (profile==null || profile.equalsIgnoreCase(me.getProfile()))
-					return me;
-			}
+			if (profileId==null || profileId.equalsIgnoreCase(me.getId()))
+				return me;
 		}
 		if (this != getDefaultRuntime()) {
 			// fall back to enablements from Default Runtime
-			return getDefaultRuntime().getModelEnablements(diagramType, profile);
+			return getDefaultRuntime().getModelEnablements(profileId);
 		}
 		
 		if (defaultModelEnablementDescriptors==null)
-			defaultModelEnablementDescriptors = new ModelEnablementDescriptor(getDefaultRuntime());
+			defaultModelEnablementDescriptors = new ModelEnablementDescriptor(getDefaultRuntime(), profileId);
 		return defaultModelEnablementDescriptors;
 	}
 	
@@ -595,41 +577,30 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return (ToolPaletteDescriptor) diagramEditor.getAdapter(ToolPaletteDescriptor.class);
 	}
 	
-	public ToolPaletteDescriptor getToolPalette(Bpmn2DiagramType diagramType, String profile)
-	{
+	public ToolPaletteDescriptor getToolPalette(String profileId) {
 		ToolPaletteDescriptor defaultToolPalette = null;
-		// search from the end of the ToolPaletteDescriptors list so that we'll find the
-		// most recently defined ToolPalette, which may be in a .bpmn2config file
+		// search from the end of the ToolPaletteDescriptors list so that
+		// we'll find the most recently defined ToolPalette, which may be
+		// in a .bpmn2config file
 		List<ToolPaletteDescriptor> allToolPalettes = getToolPaletteDescriptors();
-		for (int i=allToolPalettes.size()-1; i>=0; --i) {
+		for (int i = allToolPalettes.size() - 1; i >= 0; --i) {
 			ToolPaletteDescriptor tp = allToolPalettes.get(i);
-			String s = diagramType.name();
-			if (diagramType == Bpmn2DiagramType.NONE && tp.getType()==null) {
-				if (profile==null)
+			if (profileId == null)
+				return tp;
+			for (String p : tp.getProfileIds()) {
+				if (profileId.equalsIgnoreCase(p))
 					return tp;
-				 for (String p : tp.getProfiles()) {
-					 if (profile.equalsIgnoreCase(p))
-						 return tp;
-				 }
 			}
-			if (s.equalsIgnoreCase(tp.getType())) {
-				if (profile==null)
-					return tp;
-				 for (String p : tp.getProfiles()) {
-					 if (profile.equalsIgnoreCase(p))
-						 return tp;
-				 }
-			}
-			if (tp.getType()==null || tp.getType().isEmpty())
+			if (defaultToolPalette==null)
 				defaultToolPalette = tp;
 		}
 
-		if (defaultToolPalette!=null)
+		if (defaultToolPalette != null)
 			return defaultToolPalette;
-		
+
 		if (this != getDefaultRuntime()) {
 			// fall back to toolPalettes from Default Runtime
-			return getDefaultRuntime().getToolPalette(diagramType, profile);
+			return getDefaultRuntime().getToolPalette(profileId);
 		}
 		return null;
 	}

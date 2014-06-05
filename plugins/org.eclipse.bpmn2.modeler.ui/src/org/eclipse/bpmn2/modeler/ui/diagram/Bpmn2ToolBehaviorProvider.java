@@ -34,6 +34,7 @@ import org.eclipse.bpmn2.modeler.core.features.gateway.GatewaySelectionBehavior;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.CategoryDescriptor;
@@ -42,9 +43,8 @@ import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor.ToolPart;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
@@ -125,16 +125,18 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	protected class ProfileSelectionToolEntry extends ToolEntry {
 		BPMN2Editor editor;
 		
-		ProfileSelectionToolEntry(BPMN2Editor editor, String label) {
-			super(label, null, null, null, null);
+		ProfileSelectionToolEntry(BPMN2Editor editor, String profileId) {
+			super("", null, null, null, null);
+			TargetRuntime rt = editor.getTargetRuntime();
+			ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+			setLabel(med.getProfileName());
+			setId(profileId);
 			this.editor = editor;
 		}
 		
 		public Tool createTool() {
-			String profile = getLabel();
-			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
 			TargetRuntime rt = editor.getTargetRuntime();
-			editor.getPreferences().setDefaultToolProfile(rt, diagramType, profile);
+			editor.getPreferences().setDefaultToolProfile(rt, getId());
 			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override
@@ -153,10 +155,9 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		@Override
 		public ImageDescriptor getSmallIcon() {
-			Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
 			TargetRuntime rt = editor.getTargetRuntime();
-			String profile = editor.getPreferences().getDefaultToolProfile(rt, diagramType);
-			if (getLabel().equals(profile))
+			String profileId = editor.getPreferences().getDefaultToolProfile(rt);
+			if (getId().equals(profileId))
 				return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_CHECKED_16);
 			return Activator.getDefault().getImageDescriptor(IConstants.ICON_CHECKBOX_UNCHECKED_16);
 		}
@@ -168,13 +169,12 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 	public void createPaletteProfilesGroup(BPMN2Editor editor, PaletteRoot paletteRoot) {
 		TargetRuntime rt = editor.getTargetRuntime();
-		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor);
 
 		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
 		int size = 0;
 
-		for (String profile : editor.getPreferences().getAllToolProfiles(rt, diagramType)) {
-			drawer.add(new ProfileSelectionToolEntry(editor, profile));
+		for (String profileId : editor.getPreferences().getAllToolProfiles(rt)) {
+			drawer.add(new ProfileSelectionToolEntry(editor, profileId));
 			++size;
 		}
 		if (size>1) {
@@ -192,12 +192,11 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		featureProvider = (BPMN2FeatureProvider)getFeatureProvider();
 
 		palette = new ArrayList<IPaletteCompartmentEntry>();
-		Bpmn2DiagramType diagramType = ModelUtil.getDiagramType(editor.getBpmnDiagram());
-		String profile = editor.getPreferences().getDefaultToolProfile(targetRuntime, diagramType);
+		String profile = editor.getPreferences().getDefaultToolProfile(targetRuntime);
 		
 		PaletteCompartmentEntry compartmentEntry = null;
 		categories.clear();
-		ToolPaletteDescriptor toolPaletteDescriptor = targetRuntime.getToolPalette(diagramType, profile);
+		ToolPaletteDescriptor toolPaletteDescriptor = targetRuntime.getToolPalette(profile);
 		if (toolPaletteDescriptor!=null) {
 			boolean needCustomTaskDrawer = true;
 			for (CategoryDescriptor category : toolPaletteDescriptor.getCategories()) {
@@ -307,6 +306,24 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		createDrawer(Messages.BPMNToolBehaviorProvider_Conversation_Drawer_Label,Bpmn2FeatureMap.CONVERSATION,palette);
 		createDrawer(Messages.BPMNToolBehaviorProvider_Artifact_Drawer_Label,Bpmn2FeatureMap.ARTIFACTS,palette);
 		createCustomTasks(palette);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static List<Tuple<String, List<Class>>> getDefaultPaletteDrawers() {
+		List<Tuple<String, List<Class>>> drawers = new ArrayList<Tuple<String, List<Class>>>();
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Connectors_Drawer_Label,Bpmn2FeatureMap.CONNECTIONS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_SwimLanes_Drawer_Label,Bpmn2FeatureMap.SWIMLANES));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Tasks_Drawer_Label,Bpmn2FeatureMap.TASKS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Gateways_Drawer_Label,Bpmn2FeatureMap.GATEWAYS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Events_Drawer_Label,Bpmn2FeatureMap.EVENTS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Event_Definitions_Drawer_Label,Bpmn2FeatureMap.EVENT_DEFINITIONS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Data_Items_Drawer_Label,Bpmn2FeatureMap.DATA));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_SubProcess_Drawer_Label,Bpmn2FeatureMap.SUBPROCESS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_GlobalTasks_Drawer_Label,Bpmn2FeatureMap.GLOBAL_TASKS));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Choreography_Drawer_Label,Bpmn2FeatureMap.CHOREOGRAPHY));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Conversation_Drawer_Label,Bpmn2FeatureMap.CONVERSATION));
+		drawers.add(new Tuple<String,List<Class>>(Messages.BPMNToolBehaviorProvider_Artifact_Drawer_Label,Bpmn2FeatureMap.ARTIFACTS));
+		return drawers;
 	}
 	
 	public List<IToolEntry> getTools() {

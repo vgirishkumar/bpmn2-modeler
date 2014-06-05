@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
@@ -38,6 +39,9 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInputOutputSpecification()))
+			return false;
+		
 		if (super.appliesTo(part, selection)) {
 			EObject object = getBusinessObjectForSelection(selection);
 //			if (object instanceof ServiceTask) {
