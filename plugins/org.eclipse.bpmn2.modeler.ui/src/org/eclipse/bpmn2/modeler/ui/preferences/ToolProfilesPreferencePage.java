@@ -29,7 +29,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
-import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -45,6 +44,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -60,6 +61,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -225,8 +227,9 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				CreateProfileDialog dlg = new CreateProfileDialog(parent.getShell());
 				if (dlg.open() == Window.OK) {
 					String profileName = dlg.getValue();
+					String description = dlg.getDescription();
 					currentProfileId = "profile." + profileName.replaceAll(" ", ".");
-					preferences.createToolProfile(currentRuntime, currentProfileId, profileName);
+					preferences.createToolProfile(currentRuntime, currentProfileId, profileName, description);
 					preferences.setDefaultToolProfile(currentRuntime, currentProfileId);
 					if (dlg.getCopyProfile()!=null) {
 						// make a copy of an existing Tool Profile: get the Model Enablements to be copied
@@ -787,6 +790,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	private class CreateProfileDialog extends InputDialog {
 
 		private ModelEnablementDescriptor copySelection = null;
+		private String description;
 		
 		public CreateProfileDialog(Shell parentShell) {
 			super(parentShell,
@@ -820,6 +824,21 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			Composite container = new Composite(composite, SWT.NULL);
 			container.setLayout(new GridLayout(2, false));
 			container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+			
+			Label lblDescription = new Label(container, SWT.NONE);
+			lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+			lblDescription.setText("Enter an optional description for the Tool Palette");
+			final Text txtDescription = new Text(container, SWT.BORDER);
+			txtDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+			txtDescription.addModifyListener(new ModifyListener() {
+				@Override
+				public void modifyText(ModifyEvent e) {
+					description = txtDescription.getText();
+				}
+			});
+
+			Label lblfiller = new Label(container, SWT.NONE);
+			lblfiller.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 			
 			final Button btnCopy = new Button(container, SWT.CHECK);
 			btnCopy.setText(Messages.ToolProfilesPreferencePage_CopyProfile_Button);
@@ -857,6 +876,10 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			});
 			
 			return composite;
+		}
+		
+		public String getDescription() {
+			return description;
 		}
 	}
 	

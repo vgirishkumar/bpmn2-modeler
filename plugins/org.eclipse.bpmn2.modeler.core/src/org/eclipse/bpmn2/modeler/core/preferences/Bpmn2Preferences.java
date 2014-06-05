@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.core.preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -717,7 +716,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return result;
 	}
 
-	public ModelEnablementDescriptor createToolProfile(TargetRuntime rt, String profileId, String profileName) {
+	public ModelEnablementDescriptor createToolProfile(TargetRuntime rt, String profileId, String profileName, String description) {
 		ModelEnablementDescriptor med = null;
 		boolean createNew = false;
 		if (profileId!=null && !profileId.isEmpty()) {
@@ -755,6 +754,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				if (createNew) {
 					med = new ModelEnablementDescriptor(rt, profileId);
 					med.setProfileName(profileName);
+					med.setDescription(description);
 					rt.getModelEnablementDescriptors().add(med);
 					prefs.putBoolean(profileId, true);
 					firePreferenceEvent(prefs, path, null, profileId);
@@ -865,10 +865,23 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					prefs = defaultPreferences.node(path);
 				
 				if (prefs!=null) {
+					boolean create = false;
+					ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+					if (med==null) {
+						String profileName = prefs.get("name","Unnamed Profile");
+						String description = prefs.get("description","");
+						med = createToolProfile(rt, profileId, profileName, description);
+						create = true;
+					}
+
 					me.setEnabledAll(false);
 					for (String k : prefs.keys()) {
-						if (prefs.getBoolean(k, false))
+						if (prefs.getBoolean(k, false)) {
 							me.setEnabled(k, true);
+							if (create) {
+								med.setEnabled(k, true);
+							}
+						}
 					}
 				}
 			}
@@ -898,6 +911,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					prefs = instancePreferences.node(path);
 				}
 			
+				ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+				if (med!=null) {
+					prefs.put("name", med.getProfileName());
+					prefs.put("description", med.getDescription());
+				}
 				for (String s : me.getAllEnabled()) {
 					prefs.putBoolean(s, true);
 				}

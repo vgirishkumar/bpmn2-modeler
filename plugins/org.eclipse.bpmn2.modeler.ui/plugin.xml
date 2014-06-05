@@ -933,14 +933,16 @@
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.1"
-				profile="Full">
+				profile="Full"
+				description="All BPMN2 elements and attributes">
 			<enable object="all"/>
 		</modelEnablement>
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.2"
-				profile="Descriptive">
+				profile="Descriptive"
+				description="Descriptive Process Modeling Conformance">
 			<enable object="Collaboration"/>
 			<enable object="Process"/>
 			<enable object="Correlation"/>
@@ -989,6 +991,7 @@
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.3"
 				profile="Analytic"
+				description="Analytic Process Modeling Conformance"
 				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.2">
 			<enable object="SequenceFlow" feature="conditionExpression"/>
 			<enable object="ExclusiveGateway" feature="default"/>
@@ -1017,6 +1020,7 @@
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.4"
 				profile="Executable"
+				description="Common Executable Process Modeling Conformance"
 				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.3">
 			<enable object="BusinessRuleTask"/>
 			<enable object="AdHocSubProcess"/>
@@ -1049,7 +1053,8 @@
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.5"
-				profile="Choreography">
+				profile="Choreography"
+				description="Choreography and Collaboration Modeling Conformance">
 			<enable object="Choreography"/>
 			<enable object="Participant" feature="name"/>
 			<enable object="Lane" feature="name"/>
@@ -1080,7 +1085,8 @@
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
 				id="profile.6"
-				profile="Conversation">
+				profile="Conversation"
+				description="Conversation Modeling">
 			<enable object="Participant" feature="name"/>
 			<enable object="Lane" feature="name"/>
 			<enable object="Conversation"/>

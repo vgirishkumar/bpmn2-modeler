@@ -131,6 +131,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
 			setLabel(med.getProfileName());
 			setId(profileId);
+			setDescription(med.getDescription());
 			this.editor = editor;
 		}
 		

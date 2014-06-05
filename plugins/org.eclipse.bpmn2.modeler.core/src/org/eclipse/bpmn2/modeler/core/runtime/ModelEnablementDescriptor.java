@@ -40,16 +40,19 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 
 	public final static String EXTENSION_NAME = "modelEnablement"; //$NON-NLS-1$
 
-	// Model Types that are enabled
+	/** Model Types that are enabled. **/
 	private ModelEnablements modelEnablements;
-	// Tool Profile name
+	/** Human-readable Tool Profile name. **/
 	private String profileName;
+	/** Descriptive text for Tool Palette. **/
+	private String description;
 
 	
 	public ModelEnablementDescriptor(IConfigurationElement e) {
 		super(e);
 		TargetRuntime rt = TargetRuntime.getRuntime(e);
 		profileName = e.getAttribute("profile"); //$NON-NLS-1$
+		description = e.getAttribute("description"); //$NON-NLS-1$
 		String ref = e.getAttribute("ref"); //$NON-NLS-1$
 
 		modelEnablements = new ModelEnablements(rt, id);
@@ -141,5 +144,13 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 	
 	public void setProfileName(String profileName) {
 		this.profileName = profileName;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
