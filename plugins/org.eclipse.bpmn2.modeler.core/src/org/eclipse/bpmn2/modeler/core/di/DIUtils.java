@@ -640,6 +640,9 @@ public class DIUtils {
 	}
 	
 	public static boolean deleteContainerIfPossible(RootElement rootElement) {
+		if (rootElement==null)
+			return false;
+		
 		boolean canDelete = false;
 		Definitions definitions = (Definitions)rootElement.eContainer();
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(rootElement);

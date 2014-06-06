@@ -47,11 +47,6 @@ public class MoveBendpointFeature extends DefaultMoveBendpointFeature {
 				p.setX(context.getX());
 				p.setY(context.getY());
 				
-				// also need to move the connection point if there is one at this bendpoint
-				Shape connectionPointShape = AnchorUtil.getConnectionPointAt(connection, context.getBendpoint());
-				if (connectionPointShape!=null)
-					AnchorUtil.setConnectionPointLocation(connectionPointShape, context.getX(), context.getY());
-	
 				BendpointConnectionRouter.setMovedBendpoint(connection, context.getBendpointIndex());
 				FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			}

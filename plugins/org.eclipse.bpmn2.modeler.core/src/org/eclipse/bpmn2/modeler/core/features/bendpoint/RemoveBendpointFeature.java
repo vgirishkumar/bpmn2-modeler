@@ -31,15 +31,6 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 	public RemoveBendpointFeature(IFeatureProvider fp) {
 	    super(fp);
     }
-	
-	@Override
-	public boolean canRemoveBendpoint(IRemoveBendpointContext context) {
-		Shape connectionPointShape = AnchorUtil.getConnectionPointAt(context.getConnection(), context.getBendpoint());
-		if (connectionPointShape!=null)
-			return false;
-		
-		return super.canRemoveBendpoint(context);
-	}
 
 	@Override
 	public void removeBendpoint(IRemoveBendpointContext context) {

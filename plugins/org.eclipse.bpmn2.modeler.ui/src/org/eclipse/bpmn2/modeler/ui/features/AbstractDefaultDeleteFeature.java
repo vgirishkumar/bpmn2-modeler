@@ -29,7 +29,7 @@ public class AbstractDefaultDeleteFeature extends DefaultDeleteBPMNShapeFeature 
 	public void delete(IDeleteContext context) {
 		RootElement container = null;
 		BaseElement element = BusinessObjectUtil.getFirstBaseElement(context.getPictogramElement());
-		if (element.eContainer() instanceof RootElement) {
+		if (element!=null && element.eContainer() instanceof RootElement) {
 			container = (RootElement) element.eContainer();
 		}
 		deletePeEnvironment(context.getPictogramElement());

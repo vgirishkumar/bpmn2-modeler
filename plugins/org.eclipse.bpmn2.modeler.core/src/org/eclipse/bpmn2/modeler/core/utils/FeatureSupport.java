@@ -738,7 +738,7 @@ public class FeatureSupport {
 
 	public static boolean updateConnection(IFeatureProvider fp, Connection connection) {
 		boolean layoutChanged = false;
-//if (true) return false;
+
 		LayoutContext layoutContext = new LayoutContext(connection);
 		ILayoutFeature layoutFeature = fp.getLayoutFeature(layoutContext);
 		if (layoutFeature!=null) {
@@ -757,6 +757,10 @@ public class FeatureSupport {
 		if (layoutChanged)
 			FeatureSupport.updateLabel(fp, connection, null);
 		
+		// also update any Connections that are connected to this Connection
+		for (Shape shape : AnchorUtil.getConnectionPoints(connection)) {
+			updateConnections(fp, shape);
+		}
 		return layoutChanged || updateChanged;
 	}
 

@@ -564,15 +564,11 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IReconnectionContext context) {
-		for (IFeatureContainer container : containers.values()) {
-			Object o = container.getApplyObject(context);
-			if (o != null && container.canApplyTo(o) && container instanceof IConnectionFeatureContainer) {
-				IReconnectionFeature feature = ((IConnectionFeatureContainer)container).getReconnectionFeature(this);
-				if (feature == null) {
-					break;
-				}
+		IFeatureContainer container = getFeatureContainer(context);
+		if (container instanceof IConnectionFeatureContainer) {
+			IReconnectionFeature feature = ((IConnectionFeatureContainer)container).getReconnectionFeature(this);
+			if (feature != null)
 				return feature;
-			}
 		}
 		return super.getReconnectionFeature(context);
 	}

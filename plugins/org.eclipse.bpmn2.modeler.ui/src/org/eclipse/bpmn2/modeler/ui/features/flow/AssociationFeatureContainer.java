@@ -12,10 +12,6 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.flow;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
@@ -23,23 +19,16 @@ import org.eclipse.bpmn2.AssociationDirection;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.EventDefinition;
-import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
@@ -53,17 +42,16 @@ import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
+import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
@@ -105,8 +93,26 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IFeatureProvider fp) {
-		// TODO Auto-generated method stub
 		return new ReconnectAssociationFeature(fp);
+	}
+	
+	@Override
+	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
+		return new DefaultDeleteBPMNShapeFeature(fp) {
+
+			@Override
+			public void delete(IDeleteContext context) {
+				PictogramElement pe = context.getPictogramElement();
+				if (pe instanceof Connection) {
+					Connection c = (Connection) pe;
+					if (c.getStart()!=null)
+						AnchorUtil.deleteConnectionPoint(c.getStart().getParent());
+					if (c.getEnd()!=null)
+						AnchorUtil.deleteConnectionPoint(c.getEnd().getParent());
+				}
+				super.delete(context);
+			}			
+		};
 	}
 
 	public class AddAssociationFeature extends AbstractAddFlowFeature<Association> {
@@ -277,11 +283,15 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			Anchor anchor = getSourceAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
-				Connection conn = AnchorUtil.getConnectionPointOwner(shape);
-				if (conn!=null) {
-					return BusinessObjectUtil.getFirstElementOfType(conn, getTargetClass());
+				Connection connection = AnchorUtil.getConnectionPointOwner(shape);
+				if (connection!=null) {
+					return BusinessObjectUtil.getFirstElementOfType(connection, getTargetClass());
 				}
 				return BusinessObjectUtil.getFirstElementOfType(shape, getTargetClass());
+			}
+			else if (context.getSourcePictogramElement() instanceof Connection) {
+				Connection connection = (Connection) context.getSourcePictogramElement();
+				return BusinessObjectUtil.getFirstBaseElement(connection);
 			}
 			return null;
 		}
@@ -291,11 +301,15 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			Anchor anchor = getTargetAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
-				Connection conn = AnchorUtil.getConnectionPointOwner(shape);
-				if (conn!=null) {
-					return BusinessObjectUtil.getFirstElementOfType(conn, getTargetClass());
+				Connection connection = AnchorUtil.getConnectionPointOwner(shape);
+				if (connection!=null) {
+					return BusinessObjectUtil.getFirstElementOfType(connection, getTargetClass());
 				}
 				return BusinessObjectUtil.getFirstElementOfType(shape, getTargetClass());
+			}
+			else if (context.getTargetPictogramElement() instanceof Connection) {
+				Connection connection = (Connection) context.getTargetPictogramElement();
+				return BusinessObjectUtil.getFirstBaseElement(connection);
 			}
 			return null;
 		}
@@ -450,26 +464,24 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		@Override
 		public void preReconnect(IReconnectionContext context) {
 			PictogramElement targetPictogramElement = context.getTargetPictogramElement();
-			if (targetPictogramElement instanceof FreeFormConnection) {
+			if (targetPictogramElement instanceof Connection) {
 				Shape connectionPointShape = AnchorUtil.createConnectionPoint(
 						getFeatureProvider(),
-						(FreeFormConnection)targetPictogramElement,
+						(Connection)targetPictogramElement,
 						context.getTargetLocation());
 				
-				if (context instanceof ReconnectionContext) {
-					ReconnectionContext rc = (ReconnectionContext) context;
-					rc.setNewAnchor(AnchorUtil.getConnectionPointAnchor(connectionPointShape));
-					rc.setTargetPictogramElement(connectionPointShape);
-				}
+				ReconnectionContext rc = (ReconnectionContext) context;
+				rc.setNewAnchor(AnchorUtil.getConnectionPointAnchor(connectionPointShape));
+				rc.setTargetPictogramElement(connectionPointShape);
 			}
 			super.preReconnect(context);
 		}
 
 		@Override
 		public void postReconnect(IReconnectionContext context) {
-			Anchor oldAnchor = context.getOldAnchor();
-			AnchorContainer oldAnchorContainer = oldAnchor.getParent();
-			AnchorUtil.deleteConnectionPointIfPossible(getFeatureProvider(), (Shape) oldAnchorContainer);
+			if (AnchorUtil.isConnectionPoint(context.getOldAnchor().getParent())) {
+				AnchorUtil.deleteConnectionPoint(context.getOldAnchor().getParent());
+			}
 			super.postReconnect(context);
 		}
 	} 

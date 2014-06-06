@@ -20,34 +20,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNEdge;
-import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
-import org.eclipse.dd.di.DiagramElement;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.features.IAddBendpointFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.ILayoutFeature;
-import org.eclipse.graphiti.features.IRemoveBendpointFeature;
-import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.IAddBendpointContext;
-import org.eclipse.graphiti.features.context.IRemoveBendpointContext;
-import org.eclipse.graphiti.features.context.impl.AddBendpointContext;
-import org.eclipse.graphiti.features.context.impl.LayoutContext;
-import org.eclipse.graphiti.features.context.impl.RemoveBendpointContext;
-import org.eclipse.graphiti.features.context.impl.RemoveContext;
-import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
@@ -170,10 +155,10 @@ public class AnchorUtil {
 	public static Map<AnchorLocation, BoundaryAnchor> getBoundaryAnchors(AnchorContainer ac) {
 		Map<AnchorLocation, BoundaryAnchor> map = new HashMap<AnchorLocation, BoundaryAnchor>(4);
 		
-		if (ac instanceof FreeFormConnection) {
+		if (ac instanceof Connection) {
 			// the anchor container is a Connection which does not have any predefined BoundaryAnchors
 			// so we have to synthesize these by looking for connection point shapes owned by the connection
-			for (Shape connectionPointShape : getConnectionPoints((FreeFormConnection)ac)) {
+			for (Shape connectionPointShape : getConnectionPoints((Connection)ac)) {
 				// TODO: if there are multiple connection points, figure out which one to use
 				return getConnectionBoundaryAnchors(connectionPointShape);
 			}
@@ -543,22 +528,24 @@ public class AnchorUtil {
 //	}
 
 	public static void deleteEmptyAdHocAnchors(AnchorContainer target) {
-		List<Integer> indexes = new ArrayList<Integer>();
-
-		for (int i = target.getAnchors().size()-1; i>=0; --i) {
-			Anchor a = target.getAnchors().get(i);
-			if (!(a instanceof FixPointAnchor)) {
-				continue;
+		if (target!=null && !AnchorUtil.isConnectionPoint(target)) {
+			List<Integer> indexes = new ArrayList<Integer>();
+	
+			for (int i = target.getAnchors().size()-1; i>=0; --i) {
+				Anchor a = target.getAnchors().get(i);
+				if (!(a instanceof FixPointAnchor)) {
+					continue;
+				}
+	
+				if (peService.getProperty(a, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR) == null && a.getIncomingConnections().isEmpty()
+						&& a.getOutgoingConnections().isEmpty()) {
+					indexes.add(i);
+				}
 			}
-
-			if (peService.getProperty(a, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR) == null && a.getIncomingConnections().isEmpty()
-					&& a.getOutgoingConnections().isEmpty()) {
-				indexes.add(i);
+	
+			for (int i : indexes) {
+				peService.deletePictogramElement(target.getAnchors().get(i));
 			}
-		}
-
-		for (int i : indexes) {
-			peService.deletePictogramElement(target.getAnchors().get(i));
 		}
 	}
 
@@ -620,63 +607,95 @@ public class AnchorUtil {
 
 	// Connection points allow creation of anchors on FreeFormConnections
 	
-	public static Shape createConnectionPoint(IFeatureProvider fp,
-			FreeFormConnection connection, ILocation location) {
+	private static class ConnectionPointShapeAdapter extends AdapterImpl {
+		Connection connection;
+		Shape shape;
+		boolean deleting = false;
+		double midpoint  = 0.5;
+		
+		public static ConnectionPointShapeAdapter adapt(Connection connection, Shape shape) {
+			return new ConnectionPointShapeAdapter(connection, shape);
+		}
+		
+		private ConnectionPointShapeAdapter(Connection connection, Shape shape) {
+			this.connection = connection;
+			this.shape = shape;
+			connection.eAdapters().add(this);
+			shape.eAdapters().add(this);
+			shape.getAnchors().get(0).eAdapters().add(this);
+
+			setTarget(connection);
+			int x = shape.getGraphicsAlgorithm().getX();
+			int y = shape.getGraphicsAlgorithm().getY();
+			int dx = Integer.MAX_VALUE;
+			int dy = Integer.MAX_VALUE;
+			for (double d=0; d<=1.0; d += 0.05) {
+				ILocation loc = Graphiti.getPeService().getConnectionMidpoint(connection, d);
+				if (Math.abs(x - loc.getX()) < dx || Math.abs(y - loc.getY()) < dy) {
+					dx = Math.abs(x - loc.getX());
+					dy = Math.abs(y - loc.getY());
+					midpoint = d;
+				}
+			}
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.eclipse.emf.common.notify.Adapter#notifyChanged(org.eclipse.emf.common.notify.Notification)
+		 */
+		@Override
+		public void notifyChanged(Notification notification) {
+			// if the connection is no longer connected to this shape
+			// then delete the Connection Point
+			if (!deleting) {
+				Anchor a = shape.getAnchors().get(0);
+				if (notification.getNotifier() == a) {
+					// something changed in the anchor
+					if (a.getIncomingConnections().isEmpty() && a.getOutgoingConnections().isEmpty()) {
+						// the anchor has no connections, so we need to delete it
+						deleting = true;
+						deleteConnectionPoint(shape);
+						return;
+					}
+				}
+				else 
+				{
+					ILocation loc = Graphiti.getPeService().getConnectionMidpoint(connection, midpoint);
+					Graphiti.getGaService().setLocation(shape.getGraphicsAlgorithm(), loc.getX(), loc.getY());
+				}
+			}
+		}
+	}
+	
+	public static void deleteConnectionPoint(AnchorContainer shape) {
+		if (isConnectionPoint(shape)) {
+			Connection connection = getConnectionPointOwner(shape);
+			if (connection!=null) {
+				for (Adapter a : shape.eAdapters()) {
+					if (a instanceof ConnectionPointShapeAdapter) {
+						connection.eAdapters().remove(a);
+					}
+				}
+				connection.getLink().getBusinessObjects().remove(shape);
+			}
+			Graphiti.getPeService().deletePictogramElement(shape);
+		}
+	}
+	
+	public static Shape createConnectionPoint(IFeatureProvider fp, Connection connection, ILocation location) {
 
 		Shape connectionPointShape = null;
 
-		Point bendPoint = null;
 		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
-
-		// TODO: fix this
-		for (Point p : connection.getBendpoints()) {
-			int px = p.getX();
-			int py = p.getY();
-			if (GraphicsUtil.isPointNear(p, location, 20)) {
-				bendPoint = p;
-				location.setX(px);
-				location.setY(py);
-			}
-
-			TreeIterator<EObject> iter = diagram.eAllContents();
-			while (iter.hasNext()) {
-				EObject o = iter.next();
-				if (o instanceof ContainerShape) {
-					ContainerShape s = (ContainerShape) o;
-					if (FeatureSupport.isLabelShape(s))
-						continue;
-					if (isConnectionPointNear(s, location, 0)) {
-						// this is the connection point on the target connection line
-						// reuse this connection point if it's "close enough" to
-						// target location otherwise create a new connection point
-						if (isConnectionPointNear(s, location, 20)) {
-							bendPoint = p;
-							connectionPointShape = s;
-							location.setX(px);
-							location.setY(py);
-						}
-						break;
-					}
-				}
-			}
-			if (bendPoint!=null)
-				break;
-		}
-
-		if (connectionPointShape == null) {
-			connectionPointShape = createConnectionPoint(location, diagram);
-			fp.link(connectionPointShape, connection);
-			connection.getLink().getBusinessObjects().add(connectionPointShape);
-
-			if (bendPoint == null) {
-				bendPoint = createService.createPoint(location.getX(),
-						location.getY());
-
-				IAddBendpointContext addBpContext = new AddBendpointContext(connection, bendPoint.getX(), bendPoint.getY(), 0);
-				IAddBendpointFeature addBpFeature = fp.getAddBendpointFeature(addBpContext);
-				addBpFeature.addBendpoint(addBpContext);
-			}
-		}
+		connectionPointShape = createConnectionPoint(location, diagram);
+		fp.link(connectionPointShape, connection);
+		connection.getLink().getBusinessObjects().add(connectionPointShape);
+		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
+		BPMNEdge bpmnEdge = DIUtils.findBPMNEdge(be);
+		if (bpmnEdge!=null)
+			fp.link(connectionPointShape, bpmnEdge);
+		
+		ConnectionPointShapeAdapter.adapt(connection, connectionPointShape);
+		
 		return connectionPointShape;
 	}
 
@@ -694,6 +713,8 @@ public class AnchorUtil {
 		ellipse.setFilled(true);
 		Diagram diagram = peService.getDiagramForPictogramElement(connectionPointShape);
 		ellipse.setForeground(Graphiti.getGaService().manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
+		ellipse.setWidth(CONNECTION_POINT_SIZE);
+		ellipse.setHeight(CONNECTION_POINT_SIZE);
 		
 		// create the anchor
 		getConnectionPointAnchor(connectionPointShape);
@@ -702,35 +723,6 @@ public class AnchorUtil {
 		setConnectionPointLocation(connectionPointShape, x, y);
 	
 		return connectionPointShape;
-	}
-
-	public static boolean deleteConnectionPointIfPossible(IFeatureProvider fp,Shape connectionPointShape) {
-		if (isConnectionPoint(connectionPointShape)) {
-			Anchor anchor = getConnectionPointAnchor(connectionPointShape);
-			List<Connection> allConnections = peService.getAllConnections(anchor);
-			if (allConnections.size()==0) {
-				// remove the bendpoint from target connection if there are no other connections going to it
-				FreeFormConnection oldTargetConnection = (FreeFormConnection) connectionPointShape.getLink().getBusinessObjects().get(0);
-				
-				Point bp = null;
-				for (Point p : oldTargetConnection.getBendpoints()) {
-					if (AnchorUtil.isConnectionPointNear(connectionPointShape, p, 0)) {
-						bp = p;
-						break;
-					}
-				}
-				
-				if (bp!=null) {
-					IRemoveBendpointContext removeBpContext = new RemoveBendpointContext(oldTargetConnection, bp);
-					IRemoveBendpointFeature removeBpFeature = fp.getRemoveBendpointFeature(removeBpContext);
-					removeBpFeature.removeBendpoint(removeBpContext);
-				}
-				
-				RemoveContext ctx = new RemoveContext(connectionPointShape);
-				fp.getRemoveFeature(ctx).remove(ctx);
-			}
-		}
-		return false;
 	}
 	
 	public static FixPointAnchor getConnectionPointAnchor(Shape connectionPointShape) {
@@ -777,62 +769,32 @@ public class AnchorUtil {
 				CONNECTION_POINT_SIZE / 2,CONNECTION_POINT_SIZE / 2);
 	}
 	
-	public static List<Shape> getConnectionPoints(FreeFormConnection connection) {
+	public static List<Shape> getConnectionPoints(Connection connection) {
 		ArrayList<Shape> list = new ArrayList<Shape>();
-		
 		if (connection.getLink()!=null) {
 			for (Object o : connection.getLink().getBusinessObjects()) {
-				if ( o instanceof AnchorContainer ) {
-					AnchorContainer c = (AnchorContainer)o;
-					if (AnchorUtil.isConnectionPoint(c)) {
-						list.add((Shape)c);
-					}
+				if (o instanceof Shape && isConnectionPoint((Shape)o)) {
+					list.add((Shape)o);
 				}
 			}
 		}
 		return list;
 	}
-	
-	public static Shape getConnectionPointAt(FreeFormConnection connection, Point point) {
-		for (Shape connectionPointShape : getConnectionPoints(connection)) {
-			if (AnchorUtil.isConnectionPointNear(connectionPointShape, point, 0)) {
-				return connectionPointShape;
-			}
-		}
-		return null;
-	}
-
 
 	public static boolean isConnectionPoint(PictogramElement pe) {
-		String value =peService.getPropertyValue(pe, GraphitiConstants.CONNECTION_POINT_KEY);
-		return GraphitiConstants.CONNECTION_POINT.equals(value);
-	}
-
-	public static boolean isConnectionPointNear(PictogramElement pe, ILocation loc, int dist) {
-		if (isConnectionPoint(pe)) {
-			int x = pe.getGraphicsAlgorithm().getX() + CONNECTION_POINT_SIZE / 2;
-			int y = pe.getGraphicsAlgorithm().getY() + CONNECTION_POINT_SIZE / 2;
-			int lx = loc.getX();
-			int ly = loc.getY();
-			return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
-		}
-		return false;
-	}
-
-	public static boolean isConnectionPointNear(PictogramElement pe, Point loc, int dist) {
-		if (isConnectionPoint(pe)) {
-			int x = pe.getGraphicsAlgorithm().getX() + CONNECTION_POINT_SIZE / 2;
-			int y = pe.getGraphicsAlgorithm().getY() + CONNECTION_POINT_SIZE / 2;
-			int lx = loc.getX();
-			int ly = loc.getY();
-			return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
+		if (pe!=null) {
+			String value =peService.getPropertyValue(pe, GraphitiConstants.CONNECTION_POINT_KEY);
+			return GraphitiConstants.CONNECTION_POINT.equals(value);
 		}
 		return false;
 	}
 	
-	public static FreeFormConnection getConnectionPointOwner(Shape connectionPointShape) {
-		if (isConnectionPoint(connectionPointShape)) {
-			return (FreeFormConnection)connectionPointShape.getLink().getBusinessObjects().get(0); 
+	public static Connection getConnectionPointOwner(AnchorContainer connectionPointShape) {
+		if (isConnectionPoint(connectionPointShape) && connectionPointShape.getLink()!=null) {
+			for (Object o : connectionPointShape.getLink().getBusinessObjects()) {
+				if (o instanceof Connection)
+					return (Connection) o;
+			}
 		}
 		return null;
 	}

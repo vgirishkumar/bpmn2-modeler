@@ -19,9 +19,11 @@ import java.util.List;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
@@ -30,6 +32,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 
@@ -68,6 +71,26 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 				getFeatureProvider(), context, context.getPictogramElement());
 		TargetRuntime.getCurrentRuntime().notify(event);
 		return event.doit;
+	}
+	public void delete(IDeleteContext context) {
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof Connection) {
+			// If the connection has other connections connected to it,
+			// remove those as well.
+			List<Connection> connections = new ArrayList<Connection>();
+			for (Shape shape : AnchorUtil.getConnectionPoints((Connection)pe)) {
+				for (Anchor a : shape.getAnchors()) {
+					connections.addAll(a.getIncomingConnections());
+					connections.addAll(a.getOutgoingConnections());
+				}
+			}
+			for  (Connection c : connections) {
+				DeleteContext dc = new DeleteContext(c);
+				IDeleteFeature f = getFeatureProvider().getDeleteFeature(dc);
+				f.delete(dc);
+			}
+		}
+		super.delete(context);
 	}
 	
 	/* (non-Javadoc)

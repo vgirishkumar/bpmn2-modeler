@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
@@ -39,7 +40,7 @@ import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -63,8 +64,19 @@ public abstract class AbstractCreateFlowFeature<
 			// Make sure only one connection of each type is created for the same
 			// source and target objects, i.e. you can't have two SequenceFlows
 			// with the same source and target objects.
-			AnchorContainer sourceContainer = context.getSourceAnchor().getParent();
-			AnchorContainer targetContainer = context.getTargetAnchor().getParent();
+			AnchorContainer sourceContainer = null;
+			AnchorContainer targetContainer = null;
+			if (context.getSourceAnchor()!=null)
+				sourceContainer = context.getSourceAnchor().getParent();
+			else if (context.getSourcePictogramElement() instanceof FreeFormConnection) {
+				return true;
+			}
+			if (context.getTargetAnchor()!=null) {
+				targetContainer = context.getTargetAnchor().getParent();
+			}
+			else if (context.getTargetPictogramElement() instanceof FreeFormConnection) {
+				return true;
+			}
 			if (!canCreateConnection(sourceContainer, targetContainer, getBusinessObjectClass(), null))
 				return false;
 			return true;
