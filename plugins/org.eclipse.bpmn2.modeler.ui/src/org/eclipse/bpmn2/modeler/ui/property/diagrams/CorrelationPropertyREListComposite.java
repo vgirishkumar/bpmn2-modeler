@@ -13,40 +13,30 @@ package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
 
-public class ItemDefinitionListComposite extends DefaultListComposite {
+public class CorrelationPropertyREListComposite extends DefaultListComposite {
 
-	public ItemDefinitionListComposite(AbstractBpmn2PropertySection section, int style) {
+	public CorrelationPropertyREListComposite(AbstractBpmn2PropertySection section, int style) {
 		super(section, style);
 	}
 
-	public ItemDefinitionListComposite(AbstractBpmn2PropertySection section) {
-		super(section, DEFAULT_STYLE|EDIT_BUTTON);
+	public CorrelationPropertyREListComposite(AbstractBpmn2PropertySection section) {
+		super(section);
 	}
 
-	public ItemDefinitionListComposite(Composite parent, int style) {
+	public CorrelationPropertyREListComposite(Composite parent, int style) {
 		super(parent, style);
-	}
-
-	public ItemDefinitionListComposite(Composite parent) {
-		super(parent, DEFAULT_STYLE|EDIT_BUTTON);
 	}
 
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
 			columnProvider = new ListCompositeColumnProvider(this);
-			EClass eclass = PACKAGE.getItemDefinition();
 			
-			TableColumn tc = columnProvider.add(object,PACKAGE.getItemDefinition_StructureRef());
-			if (tc!=null)
-				tc.setEditable(false);
-			columnProvider.add(object,PACKAGE.getItemDefinition_ItemKind());
-			columnProvider.add(object,PACKAGE.getItemDefinition_IsCollection());
+			columnProvider.add(object,PACKAGE.getCorrelationPropertyRetrievalExpression_MessageRef());
+			columnProvider.add(object,PACKAGE.getCorrelationPropertyRetrievalExpression_MessagePath());
 		}
 		return columnProvider;
 	}

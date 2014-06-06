@@ -94,7 +94,7 @@ import org.eclipse.bpmn2.modeler.ui.adapters.properties.CompensateEventDefinitio
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationKeyPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyBindingPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyRetrievalExpressionPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.CorrelationPropertyREPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataObjectReferencePropertiesAdapter;
@@ -458,7 +458,7 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
 			if (adapter!=null)
 				return adapter;
-        	return new CorrelationPropertyRetrievalExpressionPropertiesAdapter(adapterFactory,object);
+        	return new CorrelationPropertyREPropertiesAdapter(adapterFactory,object);
 		}
 
 		@Override

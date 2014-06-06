@@ -23,17 +23,17 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  * @author Bob Brodt
  *
  */
-public class CorrelationPropertyRetrievalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter<CorrelationPropertyRetrievalExpression> {
+public class CorrelationPropertyREPropertiesAdapter extends ExtendedPropertiesAdapter<CorrelationPropertyRetrievalExpression> {
 
 	/**
 	 * @param adapterFactory
 	 * @param object
 	 */
-	public CorrelationPropertyRetrievalExpressionPropertiesAdapter(AdapterFactory adapterFactory, CorrelationPropertyRetrievalExpression object) {
+	public CorrelationPropertyREPropertiesAdapter(AdapterFactory adapterFactory, CorrelationPropertyRetrievalExpression object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getCorrelationPropertyRetrievalExpression_MessageRef();
-    	setFeatureDescriptor(ref, new RootElementRefFeatureDescriptor<CorrelationPropertyRetrievalExpression>(this,object,ref));
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getCorrelationPropertyRetrievalExpression_MessageRef();
+    	setFeatureDescriptor(feature, new RootElementRefFeatureDescriptor<CorrelationPropertyRetrievalExpression>(this,object,feature));
 	}
 
 }

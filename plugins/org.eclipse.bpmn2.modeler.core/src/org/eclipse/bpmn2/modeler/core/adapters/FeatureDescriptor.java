@@ -19,8 +19,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.bpmn2.Category;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
@@ -28,7 +28,6 @@ import org.eclipse.bpmn2.modeler.core.model.ModelDecoratorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -134,6 +133,9 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 					String name = (String)o.eGet(f);
 					if (name!=null && !name.isEmpty())
 						t = name;
+				}
+				else if (o instanceof FormalExpression) {
+					t = ModelUtil.getExpressionBody((FormalExpression)o);
 				}
 			}
 			if (t==null && o!=null) {
