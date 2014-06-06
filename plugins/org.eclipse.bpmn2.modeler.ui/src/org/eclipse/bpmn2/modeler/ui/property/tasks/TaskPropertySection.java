@@ -41,7 +41,9 @@ public class TaskPropertySection extends DefaultPropertySection {
 
 	@Override
 	public boolean appliesTo(EObject eObj) {
-		return eObj!=null && eObj.eClass().getName().equals("Task");
+		if (super.appliesTo(eObj))
+			return eObj!=null && eObj.eClass().getName().equals("Task");
+		return false;
 	}
 
 	@Override

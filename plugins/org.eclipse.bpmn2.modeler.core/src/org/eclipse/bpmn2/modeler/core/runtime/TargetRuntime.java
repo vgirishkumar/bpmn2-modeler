@@ -71,7 +71,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	protected List<CustomTaskDescriptor> customTaskDescriptors;
 	protected List<ModelExtensionDescriptor> modelExtensionDescriptors;
 	protected List<ModelEnablementDescriptor> modelEnablementDescriptors;
-	protected ModelEnablementDescriptor defaultModelEnablementDescriptors;
+//	protected ModelEnablementDescriptor defaultModelEnablementDescriptors;
 	protected List<PropertyExtensionDescriptor> propertyExtensionDescriptors;
 	protected List<FeatureContainerDescriptor> featureContainerDescriptors;
 	protected List<ToolPaletteDescriptor> toolPaletteDescriptors;
@@ -558,10 +558,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			// fall back to enablements from Default Runtime
 			return getDefaultRuntime().getModelEnablements(profileId);
 		}
-		
-		if (defaultModelEnablementDescriptors==null)
-			defaultModelEnablementDescriptors = new ModelEnablementDescriptor(getDefaultRuntime(), profileId);
-		return defaultModelEnablementDescriptors;
+		return null;
 	}
 	
 	public void addModelEnablements(ModelEnablementDescriptor me) {

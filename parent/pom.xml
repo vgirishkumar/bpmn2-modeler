@@ -127,7 +127,7 @@
 
 		<repository>
 			<id>eclipse-bpel</id>
-			<url>http://download.eclipse.org/bpel/site/1.0.2</url>
+			<url>http://download.eclipse.org/bpel/site/1.0.4</url>
 			<layout>p2</layout>
 			<snapshots>
 				<enabled>true</enabled>

@@ -86,7 +86,7 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
 					if (bpmnShape.isIsExpanded()) {
 						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(getDiagram());
-						ShapeStyle ss = preferences.getShapeStyle(flowNode);
+						ShapeStyle ss = preferences.getShapeStyle("TASKS");
 						
 						// SubProcess is expanded - resize to standard Task size
 						// NOTE: children tasks will be set not-visible in LayoutExpandableActivityFeature
@@ -103,9 +103,9 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 
 						int newWidth = ss.getDefaultWidth();
 						int newHeight = ss.getDefaultHeight();
-						if (newWidth > oldSize.getWidth())
+						if (newWidth < oldSize.getWidth())
 							oldSize.setWidth(newWidth);
-						if (newHeight > oldSize.getHeight())
+						if (newHeight < oldSize.getHeight())
 							oldSize.setHeight(newHeight);
 						newWidth = oldSize.getWidth();
 						newHeight = oldSize.getHeight();

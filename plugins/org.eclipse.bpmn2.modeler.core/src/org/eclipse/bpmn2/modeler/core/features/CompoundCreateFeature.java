@@ -218,6 +218,12 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			TargetRuntime rt = tool.getParent().getParent().getRuntime();
 			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.SMALL);
 		}
+		// use the create image from the first child toolpart
+		IFeature feature = getChildren().get(0).getFeature();
+		if (feature instanceof ICreateFeature)
+			return ((ICreateFeature)feature).getCreateImageId();
+		if (feature instanceof ICreateConnectionFeature)
+			return ((ICreateConnectionFeature)feature).getCreateImageId();
 		return null;
 	}
 
@@ -231,6 +237,11 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			TargetRuntime rt = tool.getParent().getParent().getRuntime();
 			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.LARGE);
 		}
+		IFeature feature = getChildren().get(0).getFeature();
+		if (feature instanceof ICreateFeature)
+			return ((ICreateFeature)feature).getCreateLargeImageId();
+		if (feature instanceof ICreateConnectionFeature)
+			return ((ICreateConnectionFeature)feature).getCreateLargeImageId();
 		return null;
 	}
 

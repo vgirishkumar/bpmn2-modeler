@@ -709,7 +709,7 @@
 			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
-			<enable object="CancelEventDefinition"/>
+<!--			<enable object="CancelEventDefinition"/> -->
 			<enable object="CallActivity" feature="calledElementRef"/>
 			<enable object="CallActivity" feature="dataInputAssociations"/>
 			<enable object="CallActivity" feature="dataOutputAssociations"/>
@@ -1136,16 +1136,18 @@
 				<tool name="%tool.name.38" object="ReceiveTask"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.SubProcesses" name="%category.name.9.1">
-				<tool name="%tool.name.28" object="AdHocSubProcess"/>
-				<tool name="%tool.name.29" object="SubProcess"/>
-				<tool name="%tool.name.30" object="CallActivity"/>
+				<tool name="%tool.name.AdHoc.SubProcess" object="AdHocSubProcess"/>
+				<tool name="%tool.name.Embedded.SubProcess" object="SubProcess"/>
+				<tool name="%tool.name.MultiInstance.SubProcess" object="SubProcess[$loopCharacteristics=MultiInstanceLoopCharacteristics]"/>
+				<tool name="%tool.name.Event.SubProcess" object="SubProcess[$triggeredByEvent=true,$name='Event Handler']"/>
+				<tool name="%tool.name.Reusable.Process" object="CallActivity"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Artifacts" name="%category.name.10">
 				<tool name="%tool.name.39" object="Group"/>
 				<tool name="%tool.name.40" object="TextAnnotation"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.BoundaryEvents" name="%category.name.11">
-				<tool name="%tool.name.41" object="BoundaryEvent+CancelEventDefinition" icon="CancelEndEvent.png"/>
+<!--				<tool name="%tool.name.41" object="BoundaryEvent+CancelEventDefinition" icon="CancelEndEvent.png"/> -->
 				<tool name="%tool.name.41.1" object="BoundaryEvent+CompensateEventDefinition" icon="CompensationStartEvent.png"/>
 				<tool name="%tool.name.42" object="BoundaryEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
 				<tool name="%tool.name.43" object="BoundaryEvent+ErrorEventDefinition" icon="ErrorCatchEvent.png"/>
@@ -1164,7 +1166,7 @@
 				<tool name="%tool.name.52" object="DataObject"/>
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.EndEvents" name="%category.name.14">
-				<tool name="%tool.name.53" object="EndEvent+CancelEventDefinition" icon="CancelEndEvent.png"/>
+<!--				<tool name="%tool.name.53" object="EndEvent+CancelEventDefinition" icon="CancelEndEvent.png"/> -->
 				<tool name="%tool.name.54" object="EndEvent+CompensateEventDefinition" icon="CompensationEndEvent.png"/>
 				<tool name="%tool.name.55" object="EndEvent" icon="EndEvent.png"/>
 				<tool name="%tool.name.56" object="EndEvent+ErrorEventDefinition" icon="ErrorEndEvent.png"/>
@@ -1206,7 +1208,7 @@
 				<tool name="%tool.name.82" object="Lane"/>
 			</category>
 			
-			<category id="org.bpmn2.modeler.toolpalette.process.patterns" fromPalette="org.bpmn2.modeler.toolpalette.process.default"/>
+			<category id="org.bpmn2.modeler.toolpalette.process.patterns" fromPalette="org.bpmn2.modeler.toolpalette.full"/>
 			
 		</toolPalette>
 		

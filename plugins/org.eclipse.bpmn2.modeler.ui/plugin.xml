@@ -1143,10 +1143,10 @@
 		<style object="GlobalTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 		<style object="GlobalUserTask" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
 
-		<style object="SUBPROCESS" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="AdHocSubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
-		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="110" defaultHeight="50"/>
+		<style object="SUBPROCESS" shapeBackground="D4E7F8" defaultWidth="3000" defaultHeight="150"/>
+		<style object="AdHocSubProcess" shapeBackground="D4E7F8" defaultWidth="300" defaultHeight="150"/>
+		<style object="SubProcess" shapeBackground="D4E7F8" defaultWidth="300" defaultHeight="150"/>
+		<style object="Transaction" shapeBackground="D4E7F8" defaultWidth="300" defaultHeight="150"/>
 
 		<style object="CONVERSATION" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>
 		<style object="CallConversation" shapeBackground="D4E7F8" defaultWidth="58" defaultHeight="50"/>

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
@@ -221,9 +222,15 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		}
 
 		public boolean appliesTo(EObject eObj) {
-			for (Class c : appliesToClasses) {
-				if (c.isInstance(eObj))
-					return true;
+			DiagramEditor editor = ModelUtil.getDiagramEditor(eObj);
+			if (editor!=null) {
+				ModelEnablements me = (ModelEnablements) editor.getAdapter(ModelEnablements.class);
+				if (me.isEnabled(eObj.eClass())) {
+					for (Class c : appliesToClasses) {
+						if (c.isInstance(eObj))
+							return true;
+					}
+				}
 			}
 			return false;
 		}

@@ -397,12 +397,15 @@ public class ToolProfilesPreferencesHelper {
 		List<String> keys = modelEnablements.getAllEnabled();
 		Collections.sort(keys);
 
-		String profileName = targetRuntime.getModelEnablements(profileId).getProfileName();
+		ModelEnablementDescriptor med = targetRuntime.getModelEnablements(profileId);
+		String profileName = med.getProfileName();
+		String description = med.getDescription();
 		if (writeXml) {
 			fw.write("\t\t<modelEnablement"); //$NON-NLS-1$
 			fw.write(" runtimeId=\"" + targetRuntime.getId() + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 			fw.write(" id=\"" + profileId + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 			fw.write(" profile=\"" + profileName + "\""); //$NON-NLS-1$ //$NON-NLS-2$
+			fw.write(" description=\"" + description + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 			fw.write(">\r\n"); //$NON-NLS-1$
 			
 			fw.write("\t\t\t<disable object=\"all\"/>\r\n"); //$NON-NLS-1$

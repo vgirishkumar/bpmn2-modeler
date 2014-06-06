@@ -746,7 +746,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				createNew = true;
 				for (String p : keys) {
 					if (profileId.equals(p)) {
-						createNew = false;
+						if (rt.getModelEnablements(profileId)!=null)
+							createNew = false;
 					}
 					if (populate)
 						prefs.putBoolean(p, false);
@@ -826,8 +827,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				prefs = defaultPreferences.node(path);
 		
 			if (prefs!=null) {
-				for (String p : prefs.keys()) {
-					profiles.add(p);
+				for (String profileId : prefs.keys()) {
+					profiles.add(profileId);
+					if (rt.getModelEnablements(profileId) == null) {
+						getModelEnablements(rt, profileId);
+					}
 				}
 				Collections.sort(profiles);
 			}

@@ -16,8 +16,11 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.StandardLoopCharacteristics;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -36,10 +39,30 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 	 */
 	public ActivityPropertiesAdapter(AdapterFactory adapterFactory, T object) {
 		super(adapterFactory, object);
-    	setProperty(Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), UI_CAN_CREATE_NEW, Boolean.FALSE);
-    	setProperty(Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics(), UI_CAN_EDIT, Boolean.FALSE);
+		
+		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getActivity_LoopCharacteristics();
+    	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.FALSE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+		setFeatureDescriptor(feature,
+				new FeatureDescriptor<T>(this,object,feature) {
+					@Override
+					protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
+						if (value instanceof String) {
+							if ("MultiInstanceLoopCharacteristics".equals(value)) {
+								MultiInstanceLoopCharacteristics lc = Bpmn2ModelerFactory.create(getResource(), MultiInstanceLoopCharacteristics.class);
+								value = lc;
+							}
+							else if ("StandardLoopCharacteristics".equals(value)) {
+								StandardLoopCharacteristics lc = Bpmn2ModelerFactory.create(getResource(), StandardLoopCharacteristics.class);
+								value = lc;
+							}
+						}
+						super.internalSet(object, feature, value, index);
+					}
+				}
+			);
 
-		EStructuralFeature feature = Bpmn2Package.eINSTANCE.getActivity_Properties();
+		feature = Bpmn2Package.eINSTANCE.getActivity_Properties();
 		setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(this,object,feature) {
 				@Override

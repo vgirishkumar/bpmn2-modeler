@@ -218,7 +218,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 							compartmentEntry.setInitiallyOpen(false);
 							categories.put(category.getName(), compartmentEntry);
 						}
-						createEntry(feature, compartmentEntry);
+						createEntry(tool, feature, compartmentEntry);
 					}
 				}
 				// if there are no tools defined for this category, check if it will be
@@ -409,7 +409,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			}
 			getCreateFeature(tool, root, node, childToolPart);
 		}
-		
+
 		return parentFeature;
 	}
 
@@ -455,7 +455,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		}
 	}
 	
-	private void createEntry(IFeature feature, PaletteCompartmentEntry compartmentEntry) {
+	private void createEntry(ToolDescriptor tool, IFeature feature, PaletteCompartmentEntry compartmentEntry) {
 		if (modelEnablements.isEnabled(feature) || feature instanceof CompoundCreateFeature) {
 			IFeature targetFeature = feature;
 			if (feature instanceof CompoundCreateFeature) {
@@ -464,15 +464,26 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 			}
 			if (targetFeature instanceof ICreateFeature) {
 				ICreateFeature cf = (ICreateFeature)feature;
-				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(cf.getCreateName(),
-					cf.getDescription(), cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
+				String name = tool.getName();
+				if (name==null)
+					name = cf.getName();
+				String description = tool.getDescription();
+				if (description==null)
+					description = cf.getCreateDescription();
+				ObjectCreationToolEntry objectCreationToolEntry = new ObjectCreationToolEntry(
+						name, description, cf.getCreateImageId(), cf.getCreateLargeImageId(), cf);
 				compartmentEntry.addToolEntry(objectCreationToolEntry);
 			}
 			else if (targetFeature instanceof ICreateConnectionFeature) {
 				ICreateConnectionFeature cf = (ICreateConnectionFeature)feature;
+				String name = tool.getName();
+				if (name==null)
+					name = cf.getName();
+				String description = tool.getDescription();
+				if (description==null)
+					description = cf.getCreateDescription();
 				ConnectionCreationToolEntry connectionCreationToolEntry = new ConnectionCreationToolEntry(
-						cf.getCreateName(), cf.getDescription(), cf.getCreateImageId(),
-						cf.getCreateLargeImageId());
+						name, description, cf.getCreateImageId(), cf.getCreateLargeImageId());
 				connectionCreationToolEntry.addCreateConnectionFeature(cf);
 				compartmentEntry.addToolEntry(connectionCreationToolEntry);
 			}
