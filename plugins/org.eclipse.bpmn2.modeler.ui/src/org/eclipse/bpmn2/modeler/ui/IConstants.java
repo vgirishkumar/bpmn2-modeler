@@ -131,6 +131,7 @@ public interface IConstants {
 	public final String ICON_USERTASK = "16/UserTask.png"; //$NON-NLS-1$
 	public final String ICON_BPMNSHAPE = "16/BPMNShape.png"; //$NON-NLS-1$
 	public final String ICON_BPMNEDGE = "16/BPMNEdge.png"; //$NON-NLS-1$
+	public final String ICON_BPMNLABEL = "16/BPMNLabel.png"; //$NON-NLS-1$
 	public final String ICON_BPMNDIAGRAM = "16/BPMNDiagram.png"; //$NON-NLS-1$
 	public final String ICON_BPMNSUBDIAGRAM = "16/BPMNSubDiagram.png"; //$NON-NLS-1$
 	public final String ICON_PROCESS = "16/Process.png"; //$NON-NLS-1$

@@ -177,7 +177,6 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	 */
 	@Override
 	public void paste(IPasteContext context) {
-		// TODO: COPY-PASTE
 		ContainerShape targetContainerShape = getTargetContainerShape(context);
 		BaseElement targetContainerObject = getContainerObject(targetContainerShape);
 
@@ -257,19 +256,25 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 	protected Object[] getFromClipboard() {
 		List<Object> allObjects = new ArrayList<Object>();
 		Object[] objects = super.getFromClipboard();
-		for (Object o : objects)
-			allObjects.add(o);
+		for (Object object : objects) {
+			if (object instanceof EObject && ((EObject)object).eContainer()!=null)
+				allObjects.add(object);
+		}
 		
 		List<Object> filteredObjects = new ArrayList<Object>();
 		for (Object object : allObjects) {
-			if (object instanceof ContainerShape && !FeatureSupport.isLabelShape((Shape)object)) {
-				filteredObjects.add(object);
-			}
-			else if (object instanceof Connection) {
-				Connection c = (Connection)object;
-				if (allObjects.contains(c.getStart().getParent()) &&
-						allObjects.contains(c.getEnd().getParent())) {
+			if (object instanceof EObject && ((EObject)object).eContainer()!=null) {
+				if (object instanceof ContainerShape) {
 					filteredObjects.add(object);
+				}
+				else if (object instanceof Connection) {
+					Connection c = (Connection)object;
+					if (c.getStart()!=null && c.getEnd()!=null) {
+						if (allObjects.contains(c.getStart().getParent()) &&
+								allObjects.contains(c.getEnd().getParent())) {
+							filteredObjects.add(object);
+						}
+					}
 				}
 			}
 		}
@@ -483,8 +488,8 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		}
 		ac.putProperty(GraphitiConstants.COPIED_BPMN_OBJECT, oldObject);
 		
-		IAddFeature af = getFeatureProvider().getAddFeature(ac);
-		ContainerShape newShape = (ContainerShape) af.add(ac);
+		
+		ContainerShape newShape = (ContainerShape) getFeatureProvider().addIfPossible(ac);
 
 		shapeMap.put(oldShape, newShape);
 
@@ -643,8 +648,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		AddConnectionContext acc = new AddConnectionContext(newStart, newEnd);
 		acc.setNewObject(newObject);
 
-		IAddFeature af = getFeatureProvider().getAddFeature(acc);
-		Connection newConnection = (Connection) af.add(acc);
+		Connection newConnection = (Connection) getFeatureProvider().addIfPossible(acc);
 		connectionMap.put(oldConnection, newConnection);
 
 		if (oldConnection instanceof FreeFormConnection && newConnection instanceof FreeFormConnection) {

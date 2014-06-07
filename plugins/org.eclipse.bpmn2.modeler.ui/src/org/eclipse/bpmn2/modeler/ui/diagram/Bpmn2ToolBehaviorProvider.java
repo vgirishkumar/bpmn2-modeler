@@ -733,8 +733,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void postExecute(IExecutionInfo executionInfo) {
-		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
 		for (IFeatureAndContext fc : executionInfo.getExecutionList()) {
 			IContext context = fc.getContext();
 			IFeature feature = fc.getFeature();
@@ -747,28 +747,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 				if (feature instanceof IBpmn2CreateFeature) {
 					((IBpmn2CreateFeature)feature).postExecute(executionInfo);
 				}
-			}
-			else if (context instanceof UpdateContext) {
-				PictogramElement pe = ((UpdateContext)context).getPictogramElement();
-				if (!(pe instanceof Connection)) {
-					editor.setPictogramElementForSelection(pe);
-				}
-				editor.refresh();
-			}
-			else if (context instanceof MoveShapeContext) {
-				PictogramElement pe = ((MoveShapeContext)context).getPictogramElement();
-				editor.setPictogramElementForSelection(pe);
-				editor.refresh();
-			}
-			else if (context instanceof AddBendpointContext) {
-				PictogramElement pe = ((AddBendpointContext)context).getConnection();
-				editor.setPictogramElementForSelection(pe);
-				editor.refresh();
-			}
-			else if (context instanceof MoveBendpointContext) {
-				PictogramElement pe = ((MoveBendpointContext)context).getConnection();
-				editor.setPictogramElementForSelection(pe);
-				editor.refresh();
 			}
 		}
 	}

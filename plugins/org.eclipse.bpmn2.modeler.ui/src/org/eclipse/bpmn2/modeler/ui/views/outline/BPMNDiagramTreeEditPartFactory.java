@@ -20,8 +20,9 @@ import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.di.BPMNLabel;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -85,6 +86,8 @@ public class BPMNDiagramTreeEditPartFactory implements EditPartFactory {
 				ret = new BPMNShapeTreeEditPart(dep, (BPMNShape) model);
 			} else if (model instanceof BPMNEdge) {
 				ret = new BPMNEdgeTreeEditPart(dep, (BPMNEdge) model);
+			} else if (model instanceof BPMNLabel) {
+				ret = new BPMNLabelTreeEditPart(dep, (BPMNLabel) model);
 			}
 		}
 		return ret;

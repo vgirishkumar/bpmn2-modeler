@@ -13,18 +13,17 @@ package org.eclipse.bpmn2.modeler.ui.views.outline;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
-import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.dd.dc.Bounds;
 
-public class BPMNEdgeTreeEditPart extends AbstractGraphicsTreeEditPart {
+public class BPMNLabelTreeEditPart extends AbstractGraphicsTreeEditPart {
 
-	public BPMNEdgeTreeEditPart(DiagramTreeEditPart dep, BPMNEdge bpmnEdge) {
-		super(dep, bpmnEdge);
+	public BPMNLabelTreeEditPart(DiagramTreeEditPart dep, BPMNLabel BPMNLabel) {
+		super(dep, BPMNLabel);
 	}
 
-	public BPMNEdge getBPMNEdge() {
-		return (BPMNEdge) getModel();
+	public BPMNLabel getBPMNLabel() {
+		return (BPMNLabel) getModel();
 	}
 
 	// ======================= overwriteable behaviour ========================
@@ -40,16 +39,18 @@ public class BPMNEdgeTreeEditPart extends AbstractGraphicsTreeEditPart {
 	@Override
 	protected List<Object> getModelChildren() {
 		List<Object> retList = new ArrayList<Object>();
-		BPMNEdge bpmnEdge = getBPMNEdge();
-		BPMNLabel bpmnLabel = bpmnEdge.getLabel();
-		if (bpmnLabel!=null)
-			retList.add(bpmnLabel);
+		BPMNLabel bpmnLabel = getBPMNLabel();
+		// TODO
 		return retList;
 	}
 	
 	@Override
 	protected String getText() {
-		BPMNEdge bpmnEdge = getBPMNEdge();
-		return super.getText(bpmnEdge.getBpmnElement());
+		BPMNLabel bpmnLabel = getBPMNLabel();
+		if (bpmnLabel.getBounds()!=null) {
+			Bounds b = bpmnLabel.getBounds();
+			return "Label: x="+b.getX()+", y="+b.getY()+" w="+b.getWidth()+" h="+b.getHeight();
+		}
+		return "Label";
 	}
 }
