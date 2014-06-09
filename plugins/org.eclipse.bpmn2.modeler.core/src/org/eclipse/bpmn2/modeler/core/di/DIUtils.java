@@ -13,7 +13,11 @@
 package org.eclipse.bpmn2.modeler.core.di;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
@@ -47,6 +51,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -573,14 +578,16 @@ public class DIUtils {
 	 */
 	public static BPMNShape findBPMNShape(BaseElement baseElement) {
 		Definitions definitions = ModelUtil.getDefinitions(baseElement);
-		for (BPMNDiagram d : definitions.getDiagrams()) {
-			BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-			BaseElement bpmnElement = null;
-			for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-				if (de instanceof BPMNShape) {
-					bpmnElement = ((BPMNShape)de).getBpmnElement();
-					if (bpmnElement == baseElement)
-						return (BPMNShape)de;
+		if (definitions!=null) {
+			for (BPMNDiagram d : definitions.getDiagrams()) {
+				BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+				BaseElement bpmnElement = null;
+				for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+					if (de instanceof BPMNShape) {
+						bpmnElement = ((BPMNShape)de).getBpmnElement();
+						if (bpmnElement == baseElement)
+							return (BPMNShape)de;
+					}
 				}
 			}
 		}
@@ -648,7 +655,14 @@ public class DIUtils {
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(rootElement);
 		RootElement newRootElement = null;
 		if (bpmnDiagram==null) {
-			canDelete = true;
+			List<EObject> allObjects = new ArrayList<EObject>();
+			Map<EObject, Collection<EStructuralFeature.Setting>> usages;
+			TreeIterator<EObject> iter = rootElement.eContainer().eAllContents();
+			while (iter.hasNext())
+				allObjects.add(iter.next());
+				
+	        usages = UsageCrossReferencer.findAll(allObjects, rootElement);
+			canDelete = usages.isEmpty();
 		}
 		else {
 			// find a replacement for the BPMNDiagram target element

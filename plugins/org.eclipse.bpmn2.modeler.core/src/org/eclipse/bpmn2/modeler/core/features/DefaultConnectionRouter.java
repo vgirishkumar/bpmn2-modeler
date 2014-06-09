@@ -18,13 +18,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -34,12 +34,9 @@ import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
-import org.eclipse.graphiti.mm.MmFactory;
-import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.impl.PropertyImpl;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -210,9 +207,18 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) && !FeatureSupport.isParticipant(shape))
+			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) && !FeatureSupport.isParticipant(shape)) {
+				EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
+				if (bo instanceof FlowElementsContainer) {
+					// it's not a collision if the shape is a SubProcess and
+					// both source and target connection points lie inside the SubProcess
+					if (GraphicsUtil.contains(shape, p1) || GraphicsUtil.contains(shape, p2))
+						continue;
+				}
+				
 				if (GraphicsUtil.intersectsLine(shape, p1, p2))
 					collisions.add(shape);
+			}
 		}
 //		if (collisions.size()>0)
 //			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);

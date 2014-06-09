@@ -231,10 +231,12 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 				BPMNLabel bpmnLabel = null;
 				if (ownerPE instanceof Connection) {
 					BPMNEdge bpmnEdge = DIUtils.findBPMNEdge(element);
-					bpmnLabel = bpmnEdge.getLabel();
+					if (bpmnEdge!=null)
+						bpmnLabel = bpmnEdge.getLabel();
 				} else {
 					BPMNShape bpmnShape = DIUtils.findBPMNShape(element);
-					bpmnLabel = bpmnShape.getLabel();
+					if (bpmnShape!=null)
+						bpmnLabel = bpmnShape.getLabel();
 				}
 				Bounds bounds = bpmnLabel == null ? null : bpmnLabel.getBounds();
 

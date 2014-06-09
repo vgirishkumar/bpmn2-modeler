@@ -27,6 +27,7 @@ import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -143,7 +144,8 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 	}
 	
 	private Rectangle[] getClip(ContainerShape pe) {
+		ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(pe);
 		GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
-		return new Rectangle[] { new Rectangle(ga.getX(), ga.getY(), ga.getWidth(), ga.getHeight()) };
+		return new Rectangle[] { new Rectangle(loc.getX(), loc.getY(), ga.getWidth(), ga.getHeight()) };
 	}
 }

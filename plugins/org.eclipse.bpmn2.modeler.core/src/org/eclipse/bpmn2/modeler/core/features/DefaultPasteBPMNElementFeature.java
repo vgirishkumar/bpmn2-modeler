@@ -21,7 +21,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.Definitions;
@@ -46,24 +46,25 @@ import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.IShapeFilter;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
+import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
@@ -162,6 +163,10 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			}
 			// can't paste Label shapes
 			if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+				continue;
+			}
+			// Participants can only be pasted into into a Collaboration
+			if (be instanceof Participant && !(targetContainerObject instanceof Collaboration)) {
 				continue;
 			}
 			++count;
@@ -281,12 +286,42 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		
 		return filteredObjects.toArray();
 	}
-	
+
+	public <T extends EObject> T copyEObject(T eObject) {
+		Copier copier = new Copier() {
+			@Override
+			protected EObject createCopy(EObject eObject) {
+				EClass eClass = getTarget(eObject.eClass());
+				if (eClass.getEPackage().getEFactoryInstance() == Bpmn2Factory.eINSTANCE) {
+					return Bpmn2ModelerFactory.create(resource, eClass);
+				}
+				return super.createCopy(eObject); 
+			}
+
+		};
+		EObject result = copier.copy(eObject);
+		copier.copyReferences();
+
+		@SuppressWarnings("unchecked")
+		T t = (T) result;
+		return t;
+	}
+
 	private BaseElement createNewObject(BaseElement oldObject, BaseElement targetContainerObject) {
 		Bpmn2ModelerFactory.setEnableModelExtensions(false);
-		BaseElement newObject = EcoreUtil.copy(oldObject);
+		BaseElement newObject = copyEObject(oldObject);
 		Bpmn2ModelerFactory.setEnableModelExtensions(true);
 
+		if (targetContainerObject instanceof Participant) {
+			// need to create a Process for target container if it doesn't have one yet
+			Participant participant = (Participant) targetContainerObject;
+			if (participant.getProcessRef()==null) {
+				Process process = Bpmn2ModelerFactory.create(resource, Process.class);
+				participant.setProcessRef(process);
+			}
+			targetContainerObject = participant.getProcessRef();
+		}
+		
 		// get rid of some of the objects created by EcoreUtil.copy() as these will be
 		// constructed here because we need to create the Graphiti shapes and DI elements
 		// along with these
@@ -424,6 +459,14 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		return oldId;
 	}
 
+	private boolean wasCopied(EObject object) {
+		String id = getId(object);
+		if (id!=null) {
+			return idMap.containsValue(id);
+		}
+		return false;
+	}
+	
 	private EObject findObjectById(String id) {
 		TreeIterator<EObject> iter = definitions.eAllContents();
 		while (iter.hasNext()) {
@@ -500,6 +543,8 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
 		// create shapes and connections for children if this is a FlowElementsContainer
 		if (oldObject instanceof FlowElementsContainer) {
+			List<ContainerShape> childShapes = new ArrayList<ContainerShape>();
+			List<Connection> childConnections = new ArrayList<Connection>();
 			TreeIterator<EObject> iter = oldObject.eAllContents();
 			while (iter.hasNext()) {
 				// look up the old child object that corresponds to the new child object 
@@ -509,24 +554,29 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 					// new attachedToRef task is actually created.
 					continue;
 				}
+				if (wasCopied(oldChildObject)) {
+					// stop infinite recursion: this would happen if a FlowElementsContainer
+					//was copied into itself.
+					continue;
+				}
 				
 				// if the old child has a Graphiti ContainerShape, duplicate it.
 				ContainerShape oldChildShape = findShape(oldChildObject);
 				if (oldChildShape != null) {
-					copyShape(oldChildShape, newShape, 0, 0);
+					childShapes.add(oldChildShape);
+				}
+				Connection oldChildConnection = findConnection(oldChildObject);
+				if (oldChildConnection != null) {
+					childConnections.add(oldChildConnection);
 				}
 			}
 			
-			iter = oldObject.eAllContents();
-			while (iter.hasNext()) {
-				// do the same for connections 
-				EObject oldChildObject = iter.next();
-				// if the old child has a Graphiti Connection, duplicate it.
-				Connection oldChildConnection = findConnection(oldChildObject);
-				if (oldChildConnection != null) {
-					// the old BPMN2 object is a Connection, copy it
-					copyConnection(oldChildConnection, newShape, x, y);
-				}
+			for (ContainerShape oldChildShape : childShapes) {
+				copyShape(oldChildShape, newShape, 0, 0);
+			}
+			
+			for (Connection oldChildConnection : childConnections) {
+				copyConnection(oldChildConnection, newShape, x, y);
 			}
 		}
 		else if (oldObject instanceof Lane) {
@@ -660,7 +710,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			}
 		}
 		
-		// also copy the BPMNShape properties
+		// also copy the BPMNEdge properties
 		if (oldObject instanceof BaseElement) {
 			BPMNEdge oldBpmnEdge = DIUtils.findBPMNEdge((BaseElement)oldObject);
 			if (oldBpmnEdge!=null) {
@@ -683,7 +733,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			public boolean matches(Shape shape) {
 				if (shape instanceof ContainerShape) {
 					BaseElement be = getContainerObject((ContainerShape) shape);
-					return be instanceof FlowElementsContainer;
+					return be instanceof FlowElementsContainer || be instanceof Participant;
 				}
 				return false;
 			}
@@ -699,9 +749,11 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			bo = ((BPMNDiagram) bo).getPlane().getBpmnElement();
 		}
 		if (bo instanceof Participant) {
+			if (!FeatureSupport.isChoreographyParticipantBand(targetContainerShape))
+				return (Participant) bo;
 			bo = ((Participant) bo).getProcessRef();
 		}
-		if (bo instanceof FlowElementsContainer || bo instanceof Lane)
+		if (bo instanceof FlowElementsContainer || bo instanceof Lane || bo instanceof Collaboration)
 			return (BaseElement) bo;
 		return null;
 	}
