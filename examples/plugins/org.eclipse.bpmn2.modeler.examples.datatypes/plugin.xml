@@ -5,8 +5,8 @@
 	<extension point="org.eclipse.bpmn2.modeler.runtime">
 		<!-- is this necessary for this example? -->
 		<runtime
-			id="org.eclipse.bpmn2.modeler.runtime.none"
-			name="Data Types"
+			id="org.eclipse.bpmn2.modeler.examples.datatypes"
+			name="Sample Runtime - Data Types"
 			description="Data Types Example"
 			class="org.eclipse.bpmn2.modeler.examples.datatypes.DataTypeRuntimeExtension">
 		</runtime>
