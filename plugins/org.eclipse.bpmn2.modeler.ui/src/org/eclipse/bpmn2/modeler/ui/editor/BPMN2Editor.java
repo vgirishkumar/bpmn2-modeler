@@ -604,11 +604,6 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public String getContributorId() {
 		return CONTRIBUTOR_ID;
 	}
-
-	public TargetRuntime getTargetRuntime(ITabDescriptorProvider tdp) {
-		tabDescriptorProvider = tdp;
-		return getTargetRuntime();
-	}
 	
 	public TargetRuntime getTargetRuntime() {
 		if (targetRuntime==null) {
@@ -843,13 +838,14 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		if (required==ITabDescriptorProvider.class) {
 			if (tabDescriptorProvider==null) {
-				IWorkbenchPage page = getEditorSite().getPage();
-				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
-				try {
-					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
-					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
-				}
-				catch (Exception e) {}
+				tabDescriptorProvider = new PropertyTabDescriptorProvider();
+//				IWorkbenchPage page = getEditorSite().getPage();
+//				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
+//				try {
+//					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
+//					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
+//				}
+//				catch (Exception e) {}
 			}
 			return tabDescriptorProvider;
 		}

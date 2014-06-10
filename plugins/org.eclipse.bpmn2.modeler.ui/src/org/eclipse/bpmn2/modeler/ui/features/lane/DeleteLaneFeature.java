@@ -46,6 +46,10 @@ public class DeleteLaneFeature extends AbstractDefaultDeleteFeature {
 		ContainerShape laneContainerShape = (ContainerShape) context.getPictogramElement();
 		ContainerShape parentContainerShape = laneContainerShape.getContainer();
 		Lane lane = (Lane)getBusinessObjectForPictogramElement(laneContainerShape);
+		if (lane==null) {
+			// this can happen if the lane was already deleted by its parent Lane or Pool
+			return;
+		}
 		LaneSet laneSet = (LaneSet)lane.eContainer();
 		
 		if (parentContainerShape != null) {

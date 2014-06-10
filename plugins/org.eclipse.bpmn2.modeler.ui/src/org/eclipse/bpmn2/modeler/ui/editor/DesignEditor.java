@@ -63,6 +63,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 
@@ -430,6 +431,37 @@ public class DesignEditor extends BPMN2Editor {
 			}
 		};
 		registry.registerAction(action);
+		
+		action = new WorkbenchPartAction(multipageEditor.getDesignEditor()) {
+
+			@Override
+			protected void init() {
+				super.init();
+				setId("show.property.view"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getText() {
+				return Messages.DesignEditor_Show_Property_View_Action;
+			}
+
+			@Override
+			protected boolean calculateEnabled() {
+				return true;
+			}
+
+			public void run() {
+				IWorkbenchPage page = getEditorSite().getPage();
+				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
+				try {
+					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
+					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
+				}
+				catch (Exception e) {}
+			}
+		};
+		registry.registerAction(action);
+
 	}
 
 	public class AddRemoveDiagramListener implements ResourceSetListener {

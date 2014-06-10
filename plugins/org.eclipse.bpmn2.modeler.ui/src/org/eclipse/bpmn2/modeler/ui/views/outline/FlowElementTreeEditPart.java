@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CatchEvent;
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElement;
@@ -25,6 +26,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LaneSet;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.SubChoreography;
@@ -167,6 +169,23 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 		}
 		if (container instanceof SubChoreography) {
 			retList.addAll(((SubChoreography)container).getArtifacts());
+		}
+		if (container instanceof Choreography) {
+			// Add Pools as children if the Pool has a Process associated with it,
+			// or if the Participant is NOT referenced by a Choreography Activity.
+			for (Participant p : ((Choreography)container).getParticipants()) {
+				if (p.getProcessRef()!=null)
+					retList.add(p);
+				else {
+					for (FlowElement fe : flowElements) {
+						if (fe instanceof ChoreographyActivity) {
+							if (!((ChoreographyActivity)fe).getParticipantRefs().contains(p)) {
+								retList.add(p);
+							}
+						}
+					}
+				}
+			}
 		}
 		return retList;
 	}

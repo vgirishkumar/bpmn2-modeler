@@ -78,6 +78,10 @@ public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
 					action.setEnabled(action.isEnabled());
 					manager.add(action);
 				}
+
+				action = getDiagramContainer().getActionRegistry().getAction("show.property.view"); //$NON-NLS-1$
+				action.setText(action.getText());
+				manager.add(action);
 			}
 		};
 	}

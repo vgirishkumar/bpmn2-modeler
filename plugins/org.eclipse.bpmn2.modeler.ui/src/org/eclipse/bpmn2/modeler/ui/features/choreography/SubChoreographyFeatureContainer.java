@@ -13,13 +13,18 @@
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.SubChoreography;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class SubChoreographyFeatureContainer extends AbstractChoreographyFeatureContainer {
 
@@ -39,6 +44,21 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 		return new AddSubChoreographyFeature(fp);
 	}
 
+	@Override
+	public MultiUpdateFeature getUpdateFeature(IFeatureProvider fp) {
+		MultiUpdateFeature multiUpdate = super.getUpdateFeature(fp);
+		multiUpdate.addFeature(new UpdateChoreographyMarkerFeature(fp) {
+			@Override
+			protected void doUpdate(ChoreographyActivity element, ContainerShape markerContainer) {
+				super.doUpdate(element, markerContainer);
+				// SubChoreography always has an EXPAND marker
+				ShapeDecoratorUtil.showActivityMarker(markerContainer, GraphitiConstants.ACTIVITY_MARKER_EXPAND);
+			}
+		});
+		
+		return multiUpdate;
+	}
+	
 	public static class CreateSubChoreographyFeature extends AbstractCreateChoreographyActivityFeature<SubChoreography> {
 
 		public CreateSubChoreographyFeature(IFeatureProvider fp) {

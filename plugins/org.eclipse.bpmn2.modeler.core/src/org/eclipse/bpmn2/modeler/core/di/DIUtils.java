@@ -652,48 +652,51 @@ public class DIUtils {
 		
 		boolean canDelete = false;
 		Definitions definitions = (Definitions)rootElement.eContainer();
-		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(rootElement);
-		RootElement newRootElement = null;
-		if (bpmnDiagram==null) {
-			List<EObject> allObjects = new ArrayList<EObject>();
-			Map<EObject, Collection<EStructuralFeature.Setting>> usages;
-			TreeIterator<EObject> iter = rootElement.eContainer().eAllContents();
-			while (iter.hasNext())
-				allObjects.add(iter.next());
-				
-	        usages = UsageCrossReferencer.findAll(allObjects, rootElement);
-			canDelete = usages.isEmpty();
-		}
-		else {
-			// find a replacement for the BPMNDiagram target element
-			for (RootElement r : definitions.getRootElements()) {
-				if (r!=rootElement && (r instanceof FlowElementsContainer || r instanceof Collaboration)) {
-					if (rootElement instanceof Collaboration) {
-						Collaboration collaboration = (Collaboration) rootElement;
-						if (collaboration.getParticipants().isEmpty()) {
-							newRootElement = r;
-							canDelete = true;
-							break;
+		// check if this thing has already been deleted (eContainer == null)
+		if (definitions!=null) {
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(rootElement);
+			RootElement newRootElement = null;
+			if (bpmnDiagram==null) {
+				List<EObject> allObjects = new ArrayList<EObject>();
+				Map<EObject, Collection<EStructuralFeature.Setting>> usages;
+				TreeIterator<EObject> iter = definitions.eAllContents();
+				while (iter.hasNext())
+					allObjects.add(iter.next());
+					
+		        usages = UsageCrossReferencer.findAll(allObjects, rootElement);
+				canDelete = usages.isEmpty();
+			}
+			else {
+				// find a replacement for the BPMNDiagram target element
+				for (RootElement r : definitions.getRootElements()) {
+					if (r!=rootElement && (r instanceof FlowElementsContainer || r instanceof Collaboration)) {
+						if (rootElement instanceof Collaboration) {
+							Collaboration collaboration = (Collaboration) rootElement;
+							if (collaboration.getParticipants().isEmpty()) {
+								newRootElement = r;
+								canDelete = true;
+								break;
+							}
+								
 						}
-							
-					}
-					else if (rootElement instanceof FlowElementsContainer) {
-						FlowElementsContainer container = (FlowElementsContainer) rootElement;
-						if (container.getFlowElements().isEmpty()) {
-							newRootElement = r;
-							canDelete = true;
-							break;
+						else if (rootElement instanceof FlowElementsContainer) {
+							FlowElementsContainer container = (FlowElementsContainer) rootElement;
+							if (container.getFlowElements().isEmpty()) {
+								newRootElement = r;
+								canDelete = true;
+								break;
+							}
 						}
+						break;
 					}
-					break;
 				}
 			}
-		}
-		
-		if (canDelete) {
-			EcoreUtil.delete(rootElement);
-			if (bpmnDiagram!=null && newRootElement!=null)
-				bpmnDiagram.getPlane().setBpmnElement(newRootElement);
+			
+			if (canDelete) {
+				EcoreUtil.delete(rootElement);
+				if (bpmnDiagram!=null && newRootElement!=null)
+					bpmnDiagram.getPlane().setBpmnElement(newRootElement);
+			}
 		}
 		return canDelete;
 	}

@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.PropertyTabDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -35,7 +35,7 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 	// cached in this map. It is the BPMN2 Editor's responsibility to remove these items from the map
 	// when it is disposed().
 	// @see PropertyTabDescriptorProvider#disposeTabDescriptors(Resource)
-	Hashtable <EObject, TabDescriptorList> tabDescriptorListMap = new Hashtable <EObject, TabDescriptorList>();
+	static Hashtable <EObject, TabDescriptorList> tabDescriptorListMap = new Hashtable <EObject, TabDescriptorList>();
 	
 	public PropertyTabDescriptorProvider() {
 		super();
@@ -45,26 +45,22 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 	@Override
 	public ITabDescriptor[] getTabDescriptors(IWorkbenchPart part, ISelection selection) {
 		
-		// is the Tab Descriptor List already in our cache?
-		TabDescriptorList tabDescriptorList = null;
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		if (businessObject!=null) {
-			tabDescriptorList = tabDescriptorListMap.get(businessObject);
-			if (tabDescriptorList!=null) {
-				// Yes! return it.
-				return tabDescriptorList.toArray();
-			}
+		if (businessObject==null || businessObject.eResource()==null) {
+			return new ITabDescriptor[] {};
+		}
+		
+		// is the Tab Descriptor List already in our cache?
+		TabDescriptorList tabDescriptorList = tabDescriptorListMap.get(businessObject);
+		if (tabDescriptorList!=null) {
+			// Yes! return it.
+			return tabDescriptorList.toArray();
 		}
 		
 		// No, we need build the list: get the Target Runtime <propertyTab> contributions
 		// and merge with the Default Runtime Tab Descriptors
-		TargetRuntime rt = TargetRuntime.getDefaultRuntime();
-		Object bpmn2Editor = part.getAdapter(BPMN2Editor.class);
-		if (bpmn2Editor instanceof BPMN2Editor) {
-			rt = ((BPMN2Editor)bpmn2Editor).getTargetRuntime(this);
-		}
-		
 		List<PropertyTabDescriptor> desc = null;
+		TargetRuntime rt = Bpmn2Preferences.getInstance(businessObject.eResource()).getRuntime();
 		if (rt!=TargetRuntime.getDefaultRuntime()) {
 			desc = TargetRuntime.getDefaultRuntime().buildPropertyTabDescriptors();
 			desc.addAll(rt.buildPropertyTabDescriptors());
@@ -185,5 +181,14 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 				tabDescriptorListMap.remove(object);
 			}
 		}
+		// clean up any dangling EObjects (ones that are not contained in a Resource)
+		List<EObject> removed = new ArrayList<EObject>();
+		for (EObject o : tabDescriptorListMap.keySet()) {
+			if (o.eResource()==null) {
+				removed.add(o);
+			}
+		}
+		for (EObject o : removed)
+			tabDescriptorListMap.remove(o);
 	}
 }
