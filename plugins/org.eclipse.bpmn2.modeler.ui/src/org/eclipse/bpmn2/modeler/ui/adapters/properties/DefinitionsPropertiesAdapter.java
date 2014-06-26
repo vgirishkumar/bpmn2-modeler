@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.Hashtable;
 
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ItemDefinition;
@@ -68,7 +69,7 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 		setObjectDescriptor(new ObjectDescriptor<Definitions>(this,object) {
 			@Override
 			public Definitions createObject(Resource resource, EClass eclass) {
-				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
+				Definitions definitions = Bpmn2Factory.eINSTANCE.createDefinitions();
 				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 				definitions.setTypeLanguage(rt.getTypeLanguage());
 				definitions.setExpressionLanguage(rt.getExpressionLanguage());
@@ -94,17 +95,6 @@ public class DefinitionsPropertiesAdapter extends ExtendedPropertiesAdapter<Defi
 					choices.put(eld.getName(), eld.getUri());
 				}
 				return choices;
-			}
-		});
-    	
-		setObjectDescriptor(new ObjectDescriptor<Definitions>(this,object) {
-			@Override
-			public Definitions createObject(Resource resource, EClass eclass) {
-				Definitions definitions = Bpmn2ModelerFactory.create(Definitions.class);
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-				definitions.setTypeLanguage(rt.getTypeLanguage());
-				definitions.setExpressionLanguage(rt.getExpressionLanguage());
-				return definitions;
 			}
 		});
 	}
