@@ -442,6 +442,9 @@ public class ModelEnablements {
 	public boolean isEnabled(EClass eClass) {
 		if (eClass==null)
 			return false;
+		EPackage pkg = eClass.getEPackage();
+		if (pkg instanceof BpmnDiPackage)
+			return true;
 		return isEnabled(eClass.getName());
 	}
 

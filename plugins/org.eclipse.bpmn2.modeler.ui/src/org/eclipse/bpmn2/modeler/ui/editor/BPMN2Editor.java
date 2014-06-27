@@ -804,8 +804,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 	
 	public void refreshTitle() {
-		String name = getEditorInput().getName();
-		setPartName(URI.decode(name));
+		if (getEditorInput()!=null) {
+			String name = getEditorInput().getName();
+			setPartName(URI.decode(name));
+		}
 	}
 
 	public BPMN2EditingDomainListener getEditingDomainListener() {
@@ -970,6 +972,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		removeWorkbenchListener();
 		removeMarkerChangeListener();
 		getPreferences().dispose();
+		currentInput = null;
 	}
 
 	public IPath getModelPath() {
@@ -1175,8 +1178,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				updateDirtyState();
-		    	refreshTitle();
+				if (getEditorInput()!=null) {
+					updateDirtyState();
+			    	refreshTitle();
+				}
 			}
 		});
 		return true;

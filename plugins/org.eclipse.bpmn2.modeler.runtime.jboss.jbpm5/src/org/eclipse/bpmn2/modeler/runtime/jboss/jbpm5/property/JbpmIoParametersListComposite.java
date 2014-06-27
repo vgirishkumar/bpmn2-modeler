@@ -83,10 +83,11 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 		else if (BaseRuntimeExtensionDescriptor.getDescriptor(activity, CustomTaskDescriptor.class) != null) {
 			enabled = false;
 		}
-
-		for (TableColumn tc : (List<TableColumn>) columnProvider.getColumns()) {
-			if (tc instanceof IoParameterNameColumn) {
-				tc.setEditable(enabled);
+		if (columnProvider!=null) {
+			for (TableColumn tc : (List<TableColumn>) columnProvider.getColumns()) {
+				if (tc instanceof IoParameterNameColumn) {
+					tc.setEditable(enabled);
+				}
 			}
 		}
 	}
