@@ -389,10 +389,10 @@ public class ModelEnablements {
 				EClass eClass = getEClass(className);
 				if (eClass!=null) {
 					for (EClass st : eClass.getEAllSuperTypes()) {
-						className = st.getName();
-						if (classes.containsKey(className)) { // && isOverride()) {
+						String cn = st.getName();
+						if (classes.containsKey(cn)) { // && isOverride()) {
 							if (featureName!=null && !featureName.isEmpty()) {
-								features = classes.get(className);
+								features = classes.get(cn);
 								if (features.contains(featureName))
 									return true;
 								break;
