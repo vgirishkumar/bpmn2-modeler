@@ -13,7 +13,9 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -30,5 +32,10 @@ public class JbpmUserTaskPropertySection extends JbpmTaskPropertySection {
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		return new JbpmUserTaskDetailComposite(parent,style);
+	}
+	
+	@Override
+	public boolean appliesTo(EObject eObj) {
+		return eObj instanceof UserTask;
 	}
 }

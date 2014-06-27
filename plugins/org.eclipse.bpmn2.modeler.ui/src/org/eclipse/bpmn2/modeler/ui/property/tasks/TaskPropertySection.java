@@ -12,13 +12,11 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
-import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
 public class TaskPropertySection extends DefaultPropertySection {
 
@@ -44,13 +42,5 @@ public class TaskPropertySection extends DefaultPropertySection {
 		if (super.appliesTo(eObj))
 			return eObj!=null && eObj.eClass().getName().equals("Task");
 		return false;
-	}
-
-	@Override
-	public EObject getBusinessObjectForSelection(ISelection selection) {
-		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be!=null && be.eClass().getName().equals("Task"))
-			return be;
-		return null;
 	}
 }

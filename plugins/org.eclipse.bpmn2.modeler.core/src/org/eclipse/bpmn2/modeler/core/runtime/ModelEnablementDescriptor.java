@@ -147,6 +147,8 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 	}
 	
 	public String getDescription() {
+		if (description==null)
+			return "";
 		return description;
 	}
 	
