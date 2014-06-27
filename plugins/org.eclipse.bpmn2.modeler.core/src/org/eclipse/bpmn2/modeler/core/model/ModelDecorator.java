@@ -1073,6 +1073,9 @@ public class ModelDecorator {
 		EPackage pkg = ModelDecorator.getEPackage(namespace);
 		EDataType eDataType = (EDataType)ModelDecorator.findEClassifier(pkg, type);//(EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
 		if (eDataType!=null) {
+			// value can not be null - use the default value instead
+			if (value==null)
+				value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
 			if (attr==null) {
 				attr = createEAttribute(name, type, eclass.getName(), null);
 				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
@@ -1094,11 +1097,16 @@ public class ModelDecorator {
 				anyMap.add( FeatureMapUtil.createEntry(attr, value) );
 			}
 		}
-		else if (attr==null) {
-			attr = createEAttribute(name, type, eclass.getName(), null);
-			anyMap.add( FeatureMapUtil.createEntry(attr, value) );
-		}
 		else {
+			if (attr==null) {
+				attr = createEAttribute(name, type, eclass.getName(), null);
+			}
+			if (value==null) {
+				if (attr.getEType() instanceof EDataType) {
+					eDataType = (EDataType) attr.getEType();
+					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
+				}
+			}
 			anyMap.add( FeatureMapUtil.createEntry(attr, value) );
 		}
 		return attr;
