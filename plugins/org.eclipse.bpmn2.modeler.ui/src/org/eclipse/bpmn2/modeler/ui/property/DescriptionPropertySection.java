@@ -166,8 +166,11 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 					
 				final BaseElement element = (BaseElement) be;
 				EObject style = ShapeStyle.getStyleObject(element);
-				if (style==null)
+				if (style==null) {
 					style = ShapeStyle.createStyleObject(element);
+					if (style==null)
+						return;
+				}
 				final EObject styleObject = style;
 				
 				Composite container = createSectionComposite(this, Messages.DescriptionPropertySection_Appearance_Label);
@@ -206,12 +209,13 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 					@Override
 					public void widgetSelected(SelectionEvent e) {
 						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
-						final ShapeStyle ss = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+						final ShapeStyle ss = preferences.getShapeStyle(element);
 						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
 								ShapeStyle.setShapeStyle(element, styleObject, ss);
+								setBusinessObject(element);
 							}
 						});
 					}

@@ -661,7 +661,7 @@
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
+			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process org.eclipse.bpmn2.Participant"
 			label="%propertyTab.label.50">
 		</propertyTab>
 

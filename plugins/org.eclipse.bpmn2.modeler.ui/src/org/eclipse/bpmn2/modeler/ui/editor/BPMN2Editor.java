@@ -577,6 +577,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public boolean isDirty() {
 		if (!editable)
 			return false;
+		if (getEditorInput()==null)
+			return false;
 		return super.isDirty();
 	}
 	

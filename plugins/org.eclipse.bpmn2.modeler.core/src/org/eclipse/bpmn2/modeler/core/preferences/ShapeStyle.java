@@ -732,18 +732,20 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(element);
 			ModelDecorator md = med.getModelDecorator();
 			EStructuralFeature styleFeature = md.getEStructuralFeature(element, STYLE_OBJECT);
-			ShapeStyle ss = getShapeStyle(element);
-			style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
-			if (style==null) {
-				// this object does not have a <style> extension element yet so create one
-				// and initialize it from the User Preference store
-				style = med.createObject((EClass)styleFeature.getEType());
-				setShapeStyle(element, style, ss);
-				// add it to the BaseElement extension values
-				InsertionAdapter.add(element, styleFeature, style);
-			}
-			else {
-				setShapeStyle(element, style, ss);
+			if (styleFeature!=null) {
+				ShapeStyle ss = getShapeStyle(element);
+				style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+				if (style==null) {
+					// this object does not have a <style> extension element yet so create one
+					// and initialize it from the User Preference store
+					style = med.createObject((EClass)styleFeature.getEType());
+					setShapeStyle(element, style, ss);
+					// add it to the BaseElement extension values
+					InsertionAdapter.add(element, styleFeature, style);
+				}
+				else {
+					setShapeStyle(element, style, ss);
+				}
 			}
 		}
 		catch (Exception e) {
@@ -759,9 +761,10 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			ModelExtensionDescriptor med = TargetRuntime.getDefaultRuntime().getModelExtensionDescriptor(element);
 			ModelDecorator md = med.getModelDecorator();
 			EStructuralFeature styleFeature = md.getEStructuralFeature(element, STYLE_OBJECT);
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
-	
-			style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+			if (styleFeature!=null) {
+				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
+				style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+			}
 		}
 		catch (Exception e) {
 			// ignore exceptions - the BaseElement doesn't have a <style> extension element
@@ -821,7 +824,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	
 	public static ShapeStyle getShapeStyle(BaseElement element) {
 		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
-		ShapeStyle ss = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+		ShapeStyle ss = preferences.getShapeStyle(element);
+		ss = new ShapeStyle(ss); // makes a copy of the value in Preference Store
 
 		EObject style = getStyleObject(element);
 		if (style!=null) {
@@ -927,7 +931,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (element==null)
 			return false;
 		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
-		ShapeStyle ssDefault = preferences.getShapeStyle(element); // this makes a copy of the value in Preference Store
+		ShapeStyle ssDefault = preferences.getShapeStyle(element);
 		ShapeStyle ssElement = getShapeStyle(element);
 		String defaultString = ssDefault.toString();
 		String elementString = ssElement.toString();

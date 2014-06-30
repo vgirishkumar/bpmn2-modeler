@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.util.EList;
@@ -156,20 +157,11 @@ public class ModelEnablements {
 	 * @return the EClass instance or null if not found.
 	 */
 	private EClass getEClass(String className) {
-		// try the runtime package first
-		EClass eClass = (EClass)targetRuntime.getModelDescriptor().getEPackage().getEClassifier(className);
-		// then all BPMN2 packages
-		if (eClass==null)
-			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(className);
-		if (eClass==null)
-			eClass = (EClass)BpmnDiPackage.eINSTANCE.getEClassifier(className);
-		
-		// TODO: do we need these?
-//		if (eClass==null)
-//			eClass = (EClass)DcPackage.eINSTANCE.getEClassifier(className);
-//		if (eClass==null)
-//			eClass = (EClass)DiPackage.eINSTANCE.getEClassifier(className);
-		return eClass;
+		EClassifier eClassifier = ModelDecorator.findEClassifier(
+				targetRuntime.getModelDescriptor().getEPackage(), className);
+		if (eClassifier instanceof EClass)
+			return (EClass) eClassifier;
+		return null;
 	}
 	
 	private void setEnabledSingle(EClass eClass, boolean enabled) {

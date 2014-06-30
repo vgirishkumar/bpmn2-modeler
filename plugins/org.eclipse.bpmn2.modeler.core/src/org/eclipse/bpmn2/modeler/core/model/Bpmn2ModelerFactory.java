@@ -141,6 +141,7 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 				String className = eClass.getName();
 	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
 	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
+	    			rt.getModelDescriptor().getEPackage() != null &&
 	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
 					EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
 	    			object = rt.getModelDescriptor().getEFactory().create(clazz);

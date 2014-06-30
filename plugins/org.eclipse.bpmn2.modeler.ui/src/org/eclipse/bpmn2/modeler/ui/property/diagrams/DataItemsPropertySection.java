@@ -10,14 +10,15 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.bpmn2.Process;
 
 public class DataItemsPropertySection extends DefaultPropertySection {
 
@@ -36,11 +37,11 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof Process)
+		if (be instanceof Participant || be instanceof Process || be instanceof BPMNDiagram)
 			return ModelUtil.getDefinitions(be);
 		return null;
 	}

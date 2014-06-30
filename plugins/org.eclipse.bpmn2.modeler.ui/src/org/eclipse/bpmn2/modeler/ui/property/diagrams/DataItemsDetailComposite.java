@@ -13,16 +13,13 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
-import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -74,17 +71,28 @@ public class DataItemsDetailComposite extends DefaultDetailComposite {
 			}
 			return null;
 		}
-		BPMNDiagram bpmnDiagram = ((BPMN2Editor)getDiagramEditor()).getBpmnDiagram();
-		BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
-		if (bpmnElement != object) {
-			// This Process is embedded in a Participant, and is not the top-level diagram
-			// only display variables table for the selected Process, not all Processes
-			if (propertySection!=null) {
-				EObject bo = BusinessObjectUtil.getBusinessObjectForSelection(propertySection.getSelection());
-				if (bo!=object)
-					return null;
-			}
+
+		// The Data Items list enables for BPMNDiagrams (show Data Items for all contained Processes)
+		// Processes (show Data Items only for the selected Process) and Participants (show Data Items
+		// only for the referenced Process).
+		EObject selected = null;
+		if (propertySection!=null) {
+			selected = BusinessObjectUtil.getBusinessObjectForSelection(propertySection.getSelection());
 		}
+
+		if (selected instanceof Process) {
+			if (selected == object)
+				return super.bindList(object, feature, listItemClass);
+			return null;
+		}
+
+		if (selected instanceof Participant) {
+			selected = ((Participant)selected).getProcessRef();
+			if (selected == object)
+				return super.bindList(object, feature, listItemClass);
+			return null;
+		}
+
 		return super.bindList(object, feature, listItemClass);
 	}
 }

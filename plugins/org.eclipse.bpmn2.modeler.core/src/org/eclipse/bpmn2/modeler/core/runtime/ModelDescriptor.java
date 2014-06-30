@@ -47,6 +47,9 @@ public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 			}
 		}
 		catch (Exception e1) {
+		}
+		
+		if (getEPackage()==null) {
 			// The plugin does not define its own EPackage, but we still need one
 			// to be able to create model objects.
 			ModelDescriptor defaultModelDescriptor = TargetRuntime.getDefaultRuntime().getModelDescriptor();

@@ -16,6 +16,8 @@ package org.eclipse.bpmn2.modeler.ui.property;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
+import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -97,7 +99,9 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 		
 		ShapeStyle ss = ShapeStyle.getShapeStyle(businessObject);
 		GraphicsAlgorithm ga = null;
-		if (businessObject instanceof ChoreographyActivity) {
+		if (businessObject instanceof ChoreographyActivity
+				|| businessObject instanceof Lane
+				 || businessObject instanceof Participant) {
 			ga = pictogramElement.getGraphicsAlgorithm();
 		}
 		else if (pictogramElement instanceof ContainerShape && ((ContainerShape)pictogramElement).getChildren().size()>0) {
