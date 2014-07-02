@@ -12,15 +12,21 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.flow;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ChoreographyTask;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.ConversationNode;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.EndEvent;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElementsContainer;
+import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;

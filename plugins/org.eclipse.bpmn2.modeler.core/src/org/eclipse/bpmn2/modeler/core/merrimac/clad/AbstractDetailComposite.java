@@ -528,7 +528,14 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 
 			ObjectEditor editor = null;
-			if (getBusinessObjectDelegate().isContainmentFeature(object, reference)) {
+			if (getBusinessObjectDelegate().isMultiChoice(object, reference)) {
+				if (reference.isMany()) {
+					editor = new FeatureListObjectEditor(this,object,reference);
+				} else {
+					editor = new ComboObjectEditor(this,object,reference);
+				}
+			}
+			else if (getBusinessObjectDelegate().isContainmentFeature(object, reference)) {
 				EClass eClass = (EClass) reference.getEType();
 				// FIXME: how do we deal with lists of these things?
 				Object v = getBusinessObjectDelegate().getValue(object,reference);
@@ -540,13 +547,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass.getInstanceClass(), this, SWT.NONE);
 				detailComposite.setBusinessObject(value);
 				detailComposite.setTitle(getBusinessObjectDelegate().getLabel(value));
-			}
-			else if (getBusinessObjectDelegate().isMultiChoice(object, reference)) {
-				if (reference.isMany()) {
-					editor = new FeatureListObjectEditor(this,object,reference);
-				} else {
-					editor = new ComboObjectEditor(this,object,reference);
-				}
 			}
 			else if (getBusinessObjectDelegate().canCreateNew(object, reference)) {
 				editor = new ReadonlyTextObjectEditor(this,object,reference);

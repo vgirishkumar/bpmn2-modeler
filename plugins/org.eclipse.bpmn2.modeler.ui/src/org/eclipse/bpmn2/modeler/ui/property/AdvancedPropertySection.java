@@ -12,12 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property;
 
-import org.eclipse.bpmn2.di.impl.BPMNDiagramImpl;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -37,21 +34,13 @@ public class AdvancedPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	public EObject getBusinessObjectForSelection(ISelection selection) {
-		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof BPMNDiagramImpl) {
-			be = ModelUtil.getDefinitions(be);
-		}
-		return be;
-	}
-
-	@Override
 	public boolean shouldUseExtraSpace() {
 		return false;
 	}
 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
+		super.appliesTo(part, selection); // set DiagramEditor as a side effect
 		BPMN2Editor editor = (BPMN2Editor)part.getAdapter(BPMN2Editor.class);
 		if (editor!=null)
 			return editor.getPreferences().getShowAdvancedPropertiesTab();

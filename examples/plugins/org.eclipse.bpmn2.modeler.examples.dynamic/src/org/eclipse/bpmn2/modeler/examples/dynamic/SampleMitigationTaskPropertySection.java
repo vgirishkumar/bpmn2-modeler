@@ -58,7 +58,7 @@ public class SampleMitigationTaskPropertySection extends DefaultPropertySection 
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			EObject eObj = this.getBusinessObjectForSelection(selection);
+			EObject eObj = getBusinessObjectForSelection(selection);
 			if (eObj instanceof TextAnnotation) {
 				EStructuralFeature f = ModelDecorator.getAnyAttribute(eObj, "benefit");
 				return f!=null;

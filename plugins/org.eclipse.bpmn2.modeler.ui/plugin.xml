@@ -187,37 +187,46 @@
 		</propertyTab>
 
 		<!-- ============  Diagrams ============ -->
-		<propertyTab
-			id="org.eclipse.bpmn2.modeler.process.diagram.tab"
-			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			label="%propertyTab.label.Process">
-		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.participant.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ParticipantPropertySection"
 			type="org.eclipse.bpmn2.Participant"
-			label="%propertyTab.label.60">
+			label="%propertyTab.label.Participant">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.process.diagram.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection"
+			type="org.eclipse.bpmn2.Process"
+			label="%propertyTab.label.Process">
+		</propertyTab>
+
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.interface.tab"
+			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
+			type="org.eclipse.bpmn2.Process org.eclipse.bpmn2.Collaboration org.eclipse.bpmn2.Participant"
+			label="%propertyTab.label.Interfaces">
 		</propertyTab>
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
+			type="org.eclipse.bpmn2.Definitions"
 			label="%propertyTab.label.Definitions">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.collaboration.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
-			class="default"
+			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.CollaborationDiagramPropertySection"
 			features="isClosed correlationKeys"
 			type="org.eclipse.bpmn2.Collaboration"
-			label="Collaboration">
+			label="%propertyTab.label.Collaboration">
 		</propertyTab>
 
 		<propertyTab
@@ -226,7 +235,7 @@
 			class="default"
 			features="isClosed correlationKeys"
 			type="org.eclipse.bpmn2.Choreography"
-			label="Choreography">
+			label="%propertyTab.label.Choreography">
 		</propertyTab>
 
 		<!-- ============  Connections ============ -->
@@ -236,7 +245,7 @@
 			class="default"
 			features="associationDirection"
 			type="org.eclipse.bpmn2.Association"
-			label="%propertyTab.label.2">
+			label="%propertyTab.label.Association">
 		</propertyTab>
 
 		<propertyTab
@@ -245,7 +254,7 @@
 			class="default"
 			features="transformation assignment"
 			type="org.eclipse.bpmn2.DataInputAssociation org.eclipse.bpmn2.DataOutputAssociation"
-			label="%propertyTab.label.3">
+			label="%propertyTab.label.DataAssociation">
 		</propertyTab>
 
 		<propertyTab
@@ -253,7 +262,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.connectors.SequenceFlowPropertySection"
 			type="org.eclipse.bpmn2.SequenceFlow"
-			label="%propertyTab.label.4">
+			label="%propertyTab.label.SequenceFlow">
 		</propertyTab>
 
 		<propertyTab
@@ -261,7 +270,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowPropertySection"
 			type="org.eclipse.bpmn2.MessageFlow"
-			label="%propertyTab.label.5">
+			label="%propertyTab.label.MessageFlow">
 		</propertyTab>
 		
 		<!-- ============  Activities ============ -->
@@ -270,7 +279,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.CallActivity"
-			label="%propertyTab.label.6">
+			label="%propertyTab.label.CallActivity">
 		</propertyTab>
 
 		<propertyTab
@@ -278,7 +287,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessPropertySection"
 			type="org.eclipse.bpmn2.SubProcess"
-			label="%propertyTab.label.7">
+			label="%propertyTab.label.SubProcess">
 		</propertyTab>
 
 		<propertyTab
@@ -286,7 +295,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.AdHocSubProcess"
-			label="%propertyTab.label.8">
+			label="%propertyTab.label.AdHocSubProcess">
 		</propertyTab>
 
 		<propertyTab
@@ -294,7 +303,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.Transaction"
-			label="%propertyTab.label.9">
+			label="%propertyTab.label.Transaction">
 		</propertyTab>
 
 		<!-- ============  Tasks ============ -->
@@ -303,7 +312,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection"
 			type="org.eclipse.bpmn2.Task"
-			label="%propertyTab.label.10">
+			label="%propertyTab.label.Task">
 		</propertyTab>
 
 		<propertyTab
@@ -311,7 +320,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
-			label="%propertyTab.label.11">
+			label="%propertyTab.label.BusinessRuleTask">
 		</propertyTab>
 
 		<propertyTab
@@ -319,7 +328,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ManualTaskPropertySection"
 			type="org.eclipse.bpmn2.ManualTask"
-			label="%propertyTab.label.12">
+			label="%propertyTab.label.ManualTask">
 		</propertyTab>
 
 		<propertyTab
@@ -328,7 +337,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation instantiate messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ReceiveTask"
-			label="%propertyTab.label.13">
+			label="%propertyTab.label.ReceiveTask">
 		</propertyTab>
 
 		<propertyTab
@@ -336,7 +345,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskPropertySection"
 			type="org.eclipse.bpmn2.ScriptTask"
-			label="%propertyTab.label.14">
+			label="%propertyTab.label.ScriptTask">
 		</propertyTab>
 
 		<propertyTab
@@ -345,7 +354,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation messageRef operationRef isForCompensation"
 			type="org.eclipse.bpmn2.SendTask"
-			label="%propertyTab.label.15">
+			label="%propertyTab.label.SendTask">
 		</propertyTab>
 
 		<propertyTab
@@ -354,7 +363,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation operationRef isForCompensation"
 			type="org.eclipse.bpmn2.ServiceTask"
-			label="%propertyTab.label.16">
+			label="%propertyTab.label.ServiceTask">
 		</propertyTab>
 
 		<propertyTab
@@ -363,7 +372,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources renderings isForCompensation"
 			type="org.eclipse.bpmn2.UserTask"
-			label="%propertyTab.label.17">
+			label="%propertyTab.label.UserTask">
 		</propertyTab>
 
 		<!-- ============  Global Tasks ============ -->
@@ -374,7 +383,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources"
 			type="org.eclipse.bpmn2.GlobalBusinessRuleTask"
-			label="%propertyTab.label.18">
+			label="%propertyTab.label.GlobalBusinessRuleTask">
 		</propertyTab>
 		
 		<propertyTab
@@ -383,7 +392,7 @@
 			class="default"
 			features="resources"
 			type="org.eclipse.bpmn2.GlobalManualTask"
-			label="%propertyTab.label.19">
+			label="%propertyTab.label.GlobalManualTask">
 		</propertyTab>
 		
 		<propertyTab
@@ -392,7 +401,7 @@
 			class="default"
 			features="scriptLanguage script resources"
 			type="org.eclipse.bpmn2.GlobalScriptTask"
-			label="%propertyTab.label.20">
+			label="%propertyTab.label.GlobalScriptTask">
 		</propertyTab>
 		
 		<propertyTab
@@ -401,7 +410,7 @@
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			features="implementation resources"
 			type="org.eclipse.bpmn2.GlobalUserTask"
-			label="%propertyTab.label.21">
+			label="%propertyTab.label.GlobalUserTask">
 		</propertyTab>
 
 		<!-- ============  Choreography Activities ============ -->
@@ -410,7 +419,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityPropertySection"
 			type="org.eclipse.bpmn2.CallChoreography"
-			label="%propertyTab.label.22">
+			label="%propertyTab.label.CallChoreography">
 		</propertyTab>
 		
 		<propertyTab
@@ -419,7 +428,7 @@
 			class="default"
 			features="loopType initiatingParticipantRef correlationKeys messageFlowRef"
 			type="org.eclipse.bpmn2.ChoreographyTask"
-			label="%propertyTab.label.23">
+			label="%propertyTab.label.ChoreographyTask">
 		</propertyTab>
 
 		<propertyTab
@@ -428,7 +437,7 @@
 			class="default"
 			features="anyAttribute loopType participantRefs initiatingParticipantRef correlationKeys artifacts"
 			type="org.eclipse.bpmn2.SubChoreography"
-			label="%propertyTab.label.24">
+			label="%propertyTab.label.SubChoreography">
 		</propertyTab>
 
 		<propertyTab
@@ -437,7 +446,7 @@
 			class="default"
 			features="correlationKeys"
 			type="org.eclipse.bpmn2.Conversation"
-			label="%propertyTab.label.25">
+			label="%propertyTab.label.Conversation">
 		</propertyTab>
 
 		<!-- ============  Gateways ============ -->
@@ -446,7 +455,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.gateways.GatewayPropertySection"
 			type="org.eclipse.bpmn2.Gateway"
-			label="%propertyTab.label.26">
+			label="%propertyTab.label.Gateway">
 		</propertyTab>
 
 		<!-- ============  Events ============ -->
@@ -455,7 +464,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.events.CommonEventPropertySection"
 			type="org.eclipse.bpmn2.Event"
-			label="%propertyTab.label.27">
+			label="%propertyTab.label.Event">
 		</propertyTab>
 
 		<!-- ============  Event Definitionss ============ -->
@@ -465,7 +474,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionPropertySection"
 			type="org.eclipse.bpmn2.ConditionalEventDefinition"
-			label="%propertyTab.label.28">
+			label="%propertyTab.label.ConditionalEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -474,7 +483,7 @@
 			class="default"
 			features="activityRef waitForCompletion"
 			type="org.eclipse.bpmn2.CompensateEventDefinition"
-			label="%propertyTab.label.29">
+			label="%propertyTab.label.CompensateEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -483,7 +492,7 @@
 			class="default"
 			features="errorRef"
 			type="org.eclipse.bpmn2.ErrorEventDefinition"
-			label="%propertyTab.label.30">
+			label="%propertyTab.label.ErrorEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -492,7 +501,7 @@
 			class="default"
 			features="escalationRef"
 			type="org.eclipse.bpmn2.EscalationEventDefinition"
-			label="%propertyTab.label.31">
+			label="%propertyTab.label.EscalationEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -501,7 +510,7 @@
 			class="default"
 			features="name"
 			type="org.eclipse.bpmn2.LinkEventDefinition"
-			label="%propertyTab.label.33">
+			label="%propertyTab.label.LinkEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -510,7 +519,7 @@
 			class="default"
 			features="messageRef operationReft"
 			type="org.eclipse.bpmn2.MessageEventDefinition"
-			label="%propertyTab.label.34">
+			label="%propertyTab.label.MessageEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -519,7 +528,7 @@
 			class="default"
 			features="signalRef"
 			type="org.eclipse.bpmn2.SignalEventDefinition"
-			label="%propertyTab.label.35">
+			label="%propertyTab.label.SignalEvent">
 		</propertyTab>
 
 		<propertyTab
@@ -527,7 +536,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionPropertySection"
 			type="org.eclipse.bpmn2.TimerEventDefinition"
-			label="%propertyTab.label.36">
+			label="%propertyTab.label.TimerEvent">
 		</propertyTab>
 		
 		<!-- ============  Artifacts ============ -->
@@ -538,7 +547,7 @@
 			class="default"
 			features="categoryValueRef"
 			type="org.eclipse.bpmn2.Group"
-			label="%propertyTab.label.37">
+			label="%propertyTab.label.Group">
 		</propertyTab>
 		
 		<propertyTab
@@ -546,7 +555,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationPropertySection"
 			type="org.eclipse.bpmn2.TextAnnotation"
-			label="%propertyTab.label.38">
+			label="%propertyTab.label.TextAnnotation">
 		</propertyTab>
 
 		<!-- ============  Root Elements ============ -->
@@ -556,7 +565,7 @@
 			class="default"
 			features="errorCode structureRef"
 			type="org.eclipse.bpmn2.Error"
-			label="%propertyTab.label.39">
+			label="%propertyTab.label.Error">
 		</propertyTab>
 
 		<propertyTab
@@ -565,15 +574,7 @@
 			class="default"
 			features="escalationCode structureRef"
 			type="org.eclipse.bpmn2.Escalation"
-			label="%propertyTab.label.40">
-		</propertyTab>
-
-		<propertyTab
-			id="org.eclipse.bpmn2.modeler.interface.tab"
-			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process org.eclipse.bpmn2.Participant"
-			label="%propertyTab.label.41">
+			label="%propertyTab.label.Escalation">
 		</propertyTab>
 
 		<propertyTab
@@ -581,7 +582,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
 			type="org.eclipse.bpmn2.Interface"
-			label="%propertyTab.label.42">
+			label="%propertyTab.label.Interface">
 		</propertyTab>
 
 		<propertyTab
@@ -590,7 +591,7 @@
 			class="default"
 			features="implementationRef inMessageRef outMessageRef errorRefs"
 			type="org.eclipse.bpmn2.Operation"
-			label="%propertyTab.label.43">
+			label="%propertyTab.label.Operation">
 		</propertyTab>
 
 		<propertyTab
@@ -599,7 +600,7 @@
 			class="default"
 			features="itemKind structureRef isCollection"
 			type="org.eclipse.bpmn2.ItemDefinition"
-			label="%propertyTab.label.44">
+			label="%propertyTab.label.DataType">
 		</propertyTab>
 
 		<propertyTab
@@ -608,7 +609,7 @@
 			class="default"
 			features="itemRef"
 			type="org.eclipse.bpmn2.Message"
-			label="%propertyTab.label.45">
+			label="%propertyTab.label.Message">
 		</propertyTab>
 
 		<propertyTab
@@ -617,7 +618,7 @@
 			class="default"
 			features="participantRef"
 			type="org.eclipse.bpmn2.PartnerEntity"
-			label="%propertyTab.label.46">
+			label="%propertyTab.label.Partner">
 		</propertyTab>
 
 		<propertyTab
@@ -626,7 +627,7 @@
 			class="default"
 			features="participantRef"
 			type="org.eclipse.bpmn2.PartnerRole"
-			label="%propertyTab.label.47">
+			label="%propertyTab.label.PartnerRole">
 		</propertyTab>
 
 		<propertyTab
@@ -635,7 +636,7 @@
 			class="default"
 			features="resourceParameters"
 			type="org.eclipse.bpmn2.Resource"
-			label="%propertyTab.label.48">
+			label="%propertyTab.label.Resource">
 		</propertyTab>
 
 		<propertyTab
@@ -644,7 +645,7 @@
 			class="default"
 			features="structureRef"
 			type="org.eclipse.bpmn2.Signal"
-			label="%propertyTab.label.49">
+			label="%propertyTab.label.Signal">
 		</propertyTab>
 
 		<propertyTab
@@ -653,7 +654,7 @@
 			class="default"
 			features="categoryValue"
 			type="org.eclipse.bpmn2.Category"
-			label="%propertyTab.label.59">
+			label="%propertyTab.label.Category">
 		</propertyTab>
 
 		<!-- ============  Item Aware Elements ============ -->
@@ -661,8 +662,7 @@
 			id="org.eclipse.bpmn2.modeler.dataitems.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DataItemsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process org.eclipse.bpmn2.Participant"
-			label="%propertyTab.label.50">
+			label="%propertyTab.label.DataItems">
 		</propertyTab>
 
 		<propertyTab
@@ -670,7 +670,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataInputPropertySection"
 			type="org.eclipse.bpmn2.DataInput"
-			label="%propertyTab.label.51">
+			label="%propertyTab.label.DataInput">
 		</propertyTab>
 
 		<propertyTab
@@ -678,7 +678,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectPropertySection"
 			type="org.eclipse.bpmn2.DataObject org.eclipse.bpmn2.DataObjectReference"
-			label="%propertyTab.label.52">
+			label="%propertyTab.label.DataObject">
 		</propertyTab>
 
 		<propertyTab
@@ -686,7 +686,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataObjectReferencePropertySection"
 			type="org.eclipse.bpmn2.DataObjectReference"
-			label="%propertyTab.label.53">
+			label="%propertyTab.label.Reference">
 		</propertyTab>
 
 		<propertyTab
@@ -694,7 +694,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataOutputPropertySection"
 			type="org.eclipse.bpmn2.DataOutput"
-			label="%propertyTab.label.54">
+			label="%propertyTab.label.DataOutput">
 		</propertyTab>
 
 		<propertyTab
@@ -702,7 +702,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection"
 			type="org.eclipse.bpmn2.DataStore org.eclipse.bpmn2.DataStoreReference"
-			label="%propertyTab.label.55">
+			label="%propertyTab.label.DataStore">
 		</propertyTab>
 		
 		<propertyTab
@@ -710,14 +710,14 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.data.DataStoreReferencePropertySection"
 			type="org.eclipse.bpmn2.DataStoreReference"
-			label="%propertyTab.label.56">
+			label="%propertyTab.label.Reference">
 		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.activity.io.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersPropertySection"
-			label="%propertyTab.label.57">
+			label="%propertyTab.label.IOParameters">
 		</propertyTab>
 		
 		<propertyTab
@@ -726,7 +726,7 @@
 			class="default"
 			features="correlationPropertyRetrievalExpression type"
 			type="org.eclipse.bpmn2.CorrelationProperty"
-			label="Correlation Property">
+			label="%propertyTab.label.CorrelationProperty">
 		</propertyTab>
 		
 		<propertyTab
@@ -735,7 +735,7 @@
 			class="default"
 			features="messagePath messageRef"
 			type="org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression"
-			label="Correlation">
+			label="%propertyTab.label.Correlation">
 		</propertyTab>
 		
 		<propertyTab
@@ -743,7 +743,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.AdvancedPropertySection"
 			popup="false"
-			label="%propertyTab.label.58">
+			label="%propertyTab.label.Advanced">
 		</propertyTab>
 
 		<toolPalette

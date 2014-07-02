@@ -35,7 +35,7 @@
 			id="bpmn2.jbpm.diagram.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmProcessDiagramPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
+			type="org.eclipse.bpmn2.Process"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			label="%propertyTab.label.Process">
 		</propertyTab>
@@ -45,8 +45,7 @@
 			replaceTab="org.eclipse.bpmn2.modeler.interface.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmInterfacePropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			label="%propertyTab.label.1">
+			label="%propertyTab.label.Interfaces">
 		</propertyTab>
 
 		<propertyTab
@@ -54,16 +53,15 @@
 			replaceTab="org.eclipse.bpmn2.modeler.definitions.tab"
 			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			label="%propertyTab.label.2">
+			type="org.eclipse.bpmn2.Definitions"
+			label="%propertyTab.label.Definitions">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.dataitems.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.dataitems.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataItemsPropertySection"
-			type="org.eclipse.bpmn2.di.BPMNDiagram"
-			label="%propertyTab.label.3">
+			label="%propertyTab.label.DataItems">
 		</propertyTab>
 
 		<propertyTab
@@ -72,7 +70,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCustomTaskPropertySection"
 			type="org.eclipse.bpmn2.Task"
-			label="%propertyTab.label.4">
+			label="%propertyTab.label.CustomTask">
 		</propertyTab>
 
 		<propertyTab
@@ -81,7 +79,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmTaskPropertySection"
 			type="org.eclipse.bpmn2.Task"
-			label="%propertyTab.label.5">
+			label="%propertyTab.label.Task">
 		</propertyTab>
 
 		<propertyTab
@@ -90,7 +88,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmUserTaskPropertySection"
 			type="org.eclipse.bpmn2.UserTask"
-			label="%propertyTab.label.6">
+			label="%propertyTab.label.UserTask">
 		</propertyTab>
 
 		<propertyTab
@@ -99,7 +97,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmBusinessRuleTaskPropertySection"
 			type="org.eclipse.bpmn2.BusinessRuleTask"
-			label="%propertyTab.label.7">
+			label="%propertyTab.label.BusinessRuleTask">
 		</propertyTab>
 
 		<propertyTab
@@ -108,7 +106,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCallActivityPropertySection"
 			type="org.eclipse.bpmn2.CallActivity"
-			label="%propertyTab.label.8">
+			label="%propertyTab.label.CallActivity">
 		</propertyTab>
 
 		<propertyTab
@@ -117,14 +115,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSubProcessPropertySection"
 			type="org.eclipse.bpmn2.SubProcess"
-			label="%propertyTab.label.9">
-		</propertyTab>
-
-		<propertyTab
-			id="bpmn2.jbpm.empty.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.main.tab"
-			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmEmptyPropertySection"
-			label="%propertyTab.label.10">
+			label="%propertyTab.label.SubProcess">
 		</propertyTab>
 
 		<propertyTab
@@ -133,7 +124,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskPropertySection"
 		    type="org.eclipse.bpmn2.ScriptTask"
-		    label="%propertyTab.label.11">
+		    label="%propertyTab.label.ScriptTask">
 		</propertyTab>
 
 		<propertyTab
@@ -142,7 +133,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmServiceTaskPropertySection"
 		    type="org.eclipse.bpmn2.ServiceTask"
-		    label="%propertyTab.label.12">
+		    label="%propertyTab.label.ServiceTask">
 		</propertyTab>
 
 		<propertyTab
@@ -151,7 +142,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmReceiveTaskPropertySection"
 		    type="org.eclipse.bpmn2.ReceiveTask"
-	        label="%propertyTab.label.13">
+	        label="%propertyTab.label.ReceiveTask">
 		</propertyTab>
 
 		<propertyTab
@@ -160,7 +151,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskPropertySection"
 		    type="org.eclipse.bpmn2.SendTask"
-	        label="%propertyTab.label.14">
+	        label="%propertyTab.label.SendTask">
 		</propertyTab>
 
 		<propertyTab
@@ -169,7 +160,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 		    class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmManualTaskPropertySection"
 		    type="org.eclipse.bpmn2.ManualTask"
-	        label="%propertyTab.label.15">
+	        label="%propertyTab.label.ManualTask">
 		</propertyTab>
 
 		<propertyTab
@@ -178,7 +169,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSequenceFlowPropertySection"
 			type="org.eclipse.bpmn2.SequenceFlow"
-			label="%propertyTab.label.16">
+			label="%propertyTab.label.SequenceFlow">
 		</propertyTab>
 
 		<propertyTab
@@ -186,7 +177,7 @@
 			replaceTab="org.eclipse.bpmn2.modeler.activity.io.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmIoParametersPropertySection"
-			label="%propertyTab.label.17">
+			label="%propertyTab.label.IOParameters">
 		</propertyTab>
 
 		<propertyTab
@@ -195,7 +186,7 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCommonEventPropertySection"
 			type="org.eclipse.bpmn2.Event"
-			label="%propertyTab.label.18">
+			label="%propertyTab.label.Event">
 		</propertyTab>
 		
 		<propertyTab
@@ -204,14 +195,14 @@
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmGatewayPropertySection"
 			type="org.eclipse.bpmn2.Gateway"
-			label="%propertyTab.label.19">
+			label="%propertyTab.label.Gateway">
 		</propertyTab>
 		
 		<propertyTab
 			id="org.jboss.runtime.jbpm5.simulation.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.SimulationPropertySection"
 			type="org.eclipse.bpmn2.BaseElement"
-			label="%propertyTab.label.20">
+			label="%propertyTab.label.Simulation">
 		</propertyTab>
 
 <!-- Property Extension Adapters -->

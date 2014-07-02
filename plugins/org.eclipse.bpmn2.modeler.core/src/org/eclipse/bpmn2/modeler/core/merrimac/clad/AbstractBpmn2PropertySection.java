@@ -257,6 +257,9 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 
 	/* (non-Javadoc)
 	 * Override this to allow the section to decide whether or not it will be rendered.
+	 * Subclasses MUST call this method because it sets the DiagramEditor as a side effect
+	 * and checks if the selected business object is enabled in the Tool Profile.
+	 * 
 	 * @see org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection#appliesTo(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
 	 */
 	@Override
@@ -268,9 +271,11 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 				part = v.getContributingPart();
 		}
 		editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
-		
+	
 		if (editor!=null) {
-			return true;
+			EObject be = getBusinessObjectForSelection(selection);
+			if (be!=null)
+				return isModelObjectEnabled(be);
 		}
 		return false;
 	}

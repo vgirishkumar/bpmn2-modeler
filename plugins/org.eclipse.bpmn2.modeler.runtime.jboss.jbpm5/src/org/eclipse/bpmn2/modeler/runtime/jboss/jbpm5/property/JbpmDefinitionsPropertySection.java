@@ -45,11 +45,6 @@ public class JbpmDefinitionsPropertySection extends DefinitionsPropertySection {
 		return new JbpmDefinitionsPropertyComposite(parent,style);
 	}
 	
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		return super.appliesTo(part, selection);
-	}
-	
 	public class JbpmMessageDetailComposite extends DefaultDetailComposite {
 
 		private AbstractPropertiesProvider propertiesProvider;

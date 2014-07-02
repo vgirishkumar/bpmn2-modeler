@@ -11,16 +11,15 @@
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 
-public class ProcessDiagramPropertySection extends DefaultPropertySection {
+public class CollaborationDiagramPropertySection extends DefaultPropertySection {
 
 	/*
 	 * (non-Javadoc)
@@ -30,23 +29,21 @@ public class ProcessDiagramPropertySection extends DefaultPropertySection {
 	 */
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
-		return new ProcessDiagramDetailComposite(this);
+		return new DefaultDetailComposite(this);
 	}
 
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
-		return new ProcessDiagramDetailComposite(parent,style);
+		return new DefaultDetailComposite(parent,style);
 	}
 
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject bo = super.getBusinessObjectForSelection(selection);
-		if (bo instanceof Process) {
+		// check class name instead of using instanceof to distinguish it
+		// from a Choreography which is a subclass of Collaboration.
+		if (bo!=null && bo.eClass().getName().equals("Collaboration"))
 			return bo;
-		}
-		else if (bo instanceof Participant) {
-			return ((Participant)bo).getProcessRef();
-		}
 		
 		return null;
 	}

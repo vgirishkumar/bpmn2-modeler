@@ -22,9 +22,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.ui.property.DescriptionPropertySection;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * This is an empty tab section which simply exists to hide the "Basic" tab
@@ -34,14 +32,6 @@ import org.eclipse.ui.IWorkbenchPart;
  *
  */
 public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
-	
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (super.appliesTo(part, selection)) {
-			return getBusinessObjectForSelection(selection) != null;
-		}
-		return false;
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
@@ -55,7 +45,6 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 	
 	public JbpmDescriptionPropertySection() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public class JbpmDescriptionPropertyComposite extends DescriptionDetailComposite {

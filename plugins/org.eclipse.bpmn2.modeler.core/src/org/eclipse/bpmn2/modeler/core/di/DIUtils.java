@@ -373,9 +373,12 @@ public class DIUtils {
 
 		// create a new one
 		IDiagramTypeProvider dtp = editor.getDiagramContainer().getDiagramTypeProvider();
+		final Resource resource = dtp.getDiagram().eResource() != null ?
+				dtp.getDiagram().eResource() :
+				editor.getEditingDomain().getResourceSet().getResources().get(0);
+
 		final Diagram newDiagram = createDiagram(bpmnDiagram.getName());
 		final IFeatureProvider featureProvider = dtp.getFeatureProvider();
-		final Resource resource = dtp.getDiagram().eResource();
 		TransactionalEditingDomain domain = editor.getEditingDomain();
 		domain.getCommandStack().execute(new RecordingCommand(domain) {
 			protected void doExecute() {

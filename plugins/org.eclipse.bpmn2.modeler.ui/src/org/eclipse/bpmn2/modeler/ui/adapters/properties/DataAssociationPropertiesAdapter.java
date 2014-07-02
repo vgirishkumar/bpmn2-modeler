@@ -386,8 +386,11 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				ac.setNewObject(association);
 				IAddFeature af = fp.getAddFeature(ac);
 				if (af.canAdd(ac)) {
-					af.add(ac);
-					hasDoneChanges = true;
+					PictogramElement pe = af.add(ac);
+					if (pe instanceof Connection) {
+						connection = (Connection) pe;
+						hasDoneChanges = true;
+					}
 				}
 			}
 			if (hasDoneChanges) {

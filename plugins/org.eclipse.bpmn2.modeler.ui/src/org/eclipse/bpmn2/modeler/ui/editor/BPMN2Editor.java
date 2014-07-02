@@ -505,24 +505,30 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_INITIALIZED,this));
 
 		if (otherEditor==null) {
-			// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
-			BasicCommandStack commandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
-			commandStack.execute(new RecordingCommand(getEditingDomain()) {
-				@Override
-				protected void doExecute() {
-					importDiagram();
+			try {
+				getPreferences().setDoCoreValidation(false);
+				// Import the BPMNDI model that creates the Graphiti shapes, connections, etc.
+				BasicCommandStack commandStack = (BasicCommandStack) getEditingDomain().getCommandStack();
+				commandStack.execute(new RecordingCommand(getEditingDomain()) {
+					@Override
+					protected void doExecute() {
+						importDiagram();
+					}
+				});
+		
+				Definitions definitions = ModelUtil.getDefinitions(bpmnResource);
+				if (definitions!=null) {
+					// we'll need this in case doSaveAs()
+					((Bpmn2DiagramEditorInput)input).setTargetNamespace(definitions.getTargetNamespace());
+					((Bpmn2DiagramEditorInput)input).setInitialDiagramType(ModelUtil.getDiagramType(this));
 				}
-			});
-	
-			Definitions definitions = ModelUtil.getDefinitions(bpmnResource);
-			if (definitions!=null) {
-				// we'll need this in case doSaveAs()
-				((Bpmn2DiagramEditorInput)input).setTargetNamespace(definitions.getTargetNamespace());
-				((Bpmn2DiagramEditorInput)input).setInitialDiagramType(ModelUtil.getDiagramType(this));
+				// Reset the save point and initialize the undo stack
+				commandStack.saveIsDone();
+				commandStack.flush();
 			}
-			// Reset the save point and initialize the undo stack
-			commandStack.saveIsDone();
-			commandStack.flush();
+			finally {
+				getPreferences().setDoCoreValidation(true);
+			}
 		}
 		
 		// Load error markers

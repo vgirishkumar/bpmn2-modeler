@@ -49,8 +49,8 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 	public PropertyPropertiesAdapter(AdapterFactory adapterFactory, Property object) {
 		super(adapterFactory, object);
 
-    	EStructuralFeature f = Bpmn2Package.eINSTANCE.getProperty_Name();
-		final FeatureDescriptor<Property> fd = new FeatureDescriptor<Property>(this,object,f) {
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getProperty_Name();
+		final FeatureDescriptor<Property> fd = new FeatureDescriptor<Property>(this,object,feature) {
 
 			@Override
 			public void setTextValue(String text) {
@@ -87,7 +87,7 @@ public class PropertyPropertiesAdapter extends ItemAwareElementPropertiesAdapter
 			}
 			
 		};
-		setFeatureDescriptor(f, fd);
+		setFeatureDescriptor(feature, fd);
 		
 		setObjectDescriptor(new ObjectDescriptor<Property>(this,object) {
 

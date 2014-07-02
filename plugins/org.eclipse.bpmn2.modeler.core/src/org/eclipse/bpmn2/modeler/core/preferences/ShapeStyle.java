@@ -763,7 +763,8 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			EStructuralFeature styleFeature = md.getEStructuralFeature(element, STYLE_OBJECT);
 			if (styleFeature!=null) {
 				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
-				style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
+				if (adapter!=null)
+					style = (EObject)adapter.getFeatureDescriptor(styleFeature).getValue();
 			}
 		}
 		catch (Exception e) {

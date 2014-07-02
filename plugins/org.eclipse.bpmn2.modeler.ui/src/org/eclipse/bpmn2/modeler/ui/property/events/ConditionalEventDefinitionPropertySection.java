@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.events;
 
-import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.emf.ecore.EObject;
@@ -38,7 +38,7 @@ public class ConditionalEventDefinitionPropertySection extends DefaultPropertySe
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof EventDefinition)
+		if (be instanceof ConditionalEventDefinition)
 			return be;
 		return null;
 	}

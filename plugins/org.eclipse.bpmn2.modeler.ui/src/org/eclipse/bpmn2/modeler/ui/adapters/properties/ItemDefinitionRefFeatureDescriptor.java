@@ -54,8 +54,6 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 	 */
 	public ItemDefinitionRefFeatureDescriptor(ExtendedPropertiesAdapter<T> owner, T object, EStructuralFeature feature) {
 		super(owner, object, feature);
-		owner.setProperty(feature, ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW, Boolean.FALSE);
-
 		// I found a couple of instances where this class was used for references that were NOT
 		// RootElements - just check to make sure here...
 		Assert.isTrue( RootElement.class.isAssignableFrom(feature.getEType().getInstanceClass()) );

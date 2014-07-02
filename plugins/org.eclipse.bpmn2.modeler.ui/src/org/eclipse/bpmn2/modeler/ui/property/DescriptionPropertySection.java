@@ -126,7 +126,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			if (Bpmn2Preferences.getInstance(be).getShowDescriptions()) {
 				String description = getDescription(be);
 	
-				if (description != null) {
+				if (description != null && !description.isEmpty()) {
 					descriptionText = createDescription(this, description);
 				}
 			}

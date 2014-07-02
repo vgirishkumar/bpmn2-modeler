@@ -12,16 +12,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import java.util.List;
-
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -46,19 +40,9 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
 			// only show this property section if the selected Task is a "custom task"
-			// that is, it has a "taskName" extension attribute
-			BPMN2Editor editor = (BPMN2Editor)part.getAdapter(BPMN2Editor.class);
-			if (editor!=null) {
-				EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-				
-				if (object.eClass() == Bpmn2Package.eINSTANCE.getTask() && isModelObjectEnabled(object)) {
-					List<EStructuralFeature> features = ModelDecorator.getAnyAttributes(object);
-					for (EStructuralFeature f : features) {
-						if ("displayName".equals(f.getName())) //$NON-NLS-1$
-							return true;
-					}
-				}
-			}
+			// that is, it has a "displayName" extension attribute
+			EObject be = getBusinessObjectForSelection(selection);
+			return ModelDecorator.getAnyAttribute(be, "displayName") != null;
 		}
 		return false;
 	}

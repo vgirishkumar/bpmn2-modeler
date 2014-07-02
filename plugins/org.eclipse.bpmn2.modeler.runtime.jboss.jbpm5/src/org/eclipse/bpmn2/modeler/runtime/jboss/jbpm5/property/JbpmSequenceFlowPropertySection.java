@@ -17,7 +17,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.property.connectors.SequenceFlowPropertySection;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -34,7 +33,7 @@ public class JbpmSequenceFlowPropertySection extends SequenceFlowPropertySection
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			EObject be = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+			EObject be = getBusinessObjectForSelection(selection);
 			if (be instanceof SequenceFlow) {
 				// only show this tab if the sequence flow is attached to a Gateway
 				if (((SequenceFlow) be).getSourceRef() instanceof Gateway) {

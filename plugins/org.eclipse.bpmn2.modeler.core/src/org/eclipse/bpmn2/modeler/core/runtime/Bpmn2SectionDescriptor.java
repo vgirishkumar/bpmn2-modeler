@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -30,7 +31,6 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.viewers.IFilter;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
 import org.eclipse.ui.views.properties.tabbed.AbstractSectionDescriptor;
 import org.eclipse.ui.views.properties.tabbed.ISection;
 
@@ -38,7 +38,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 
 		protected String id;
 		protected String tab;
-		protected AbstractPropertySection sectionClass;
+		protected AbstractBpmn2PropertySection sectionClass;
 		protected List<Class> appliesToClasses = new ArrayList<Class>();
 		protected String enablesFor;
 		protected String filterClassName;
@@ -68,7 +68,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 					sectionClass = null;
 				}
 				else {
-					sectionClass = (AbstractPropertySection) e.createExecutableExtension("class"); //$NON-NLS-1$
+					sectionClass = (AbstractBpmn2PropertySection) e.createExecutableExtension("class"); //$NON-NLS-1$
 				}
 				filterClassName = e.getAttribute("filter"); //$NON-NLS-1$
 				if (filterClassName==null || filterClassName.isEmpty())
@@ -142,8 +142,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		@Override
 		public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 
-			if (sectionClass==null)
+			if (sectionClass==null) {
+				// this was defined as "empty" in the plugin, which means we should hide this tab.
 				return false;
+			}
 			
 			EObject businessObject = null;
 			PictogramElement pe = BusinessObjectUtil.getPictogramElementForSelection(selection);
@@ -161,7 +163,9 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 			else {
 				businessObject = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 			}
-				
+			if (businessObject==null)
+				return false;
+
 			DiagramEditor editor = ModelUtil.getDiagramEditor(businessObject);
 			if (editor!=null) {
 				TargetRuntime rt = (TargetRuntime) editor.getAdapter(TargetRuntime.class);
@@ -191,34 +195,8 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				}
 			}
 
-			// should we delegate to the section to determine whether it should be included in this tab?
-			if (sectionClass instanceof IBpmn2PropertySection) {
-				if (businessObject==null)
-					return false;
-				return ((IBpmn2PropertySection)sectionClass).appliesTo(part, selection);
-			}
-			
-			// if an input description was specified, check if the selected business object is of this description. 
-			if (appliesToClasses.isEmpty()) {
-				return true;
-			}
-			
-			// check all linked BusinessObjects for a match
-			if (pe!=null) {
-				if (pe.getLink()!=null) {
-					for (EObject eObj : pe.getLink().getBusinessObjects()){
-						if (appliesTo(eObj)) {
-							return true;
-						}
-					}
-				}
-			}
-			if (businessObject!=null) {
-				if (appliesTo(businessObject)) {
-					return true;
-				}
-			}
-			return false;
+			// delegate to the section class to determine whether it applies to this selection
+			return sectionClass.appliesTo(part, selection);
 		}
 
 		public boolean appliesTo(EObject eObj) {

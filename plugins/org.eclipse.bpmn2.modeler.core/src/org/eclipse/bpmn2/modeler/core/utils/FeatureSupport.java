@@ -1052,7 +1052,7 @@ public class FeatureSupport {
 						uf.update(context);
 					}
 			}
-			else {
+			else if (feature!=null) {
 				feature.update(context);
 			}
 		}

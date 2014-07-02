@@ -43,15 +43,15 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 		super(adapterFactory, object);
 		
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
-    	
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
-		setProperty(feature, UI_CAN_CREATE_NEW, Boolean.FALSE);
-		
+		setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
     	setFeatureDescriptor(feature,
 			new ItemDefinitionRefFeatureDescriptor<T>(this, object, feature)
     	);
     	
     	feature = Bpmn2Package.eINSTANCE.getItemAwareElement_DataState();
+    	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+		setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
     	setFeatureDescriptor(feature,
 			new FeatureDescriptor<T>(this, object,feature) {
     		
@@ -97,8 +97,5 @@ public class ItemAwareElementPropertiesAdapter<T extends ItemAwareElement> exten
 				}
 			}
     	);
-    	
-    	setProperty(Bpmn2Package.eINSTANCE.getItemAwareElement_DataState(), UI_IS_MULTI_CHOICE, Boolean.TRUE);
 	}
-
 }

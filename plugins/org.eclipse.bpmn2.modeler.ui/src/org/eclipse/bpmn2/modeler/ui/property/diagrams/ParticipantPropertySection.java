@@ -12,9 +12,6 @@ package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 
 public class ParticipantPropertySection extends DefaultPropertySection {
 
@@ -24,11 +21,5 @@ public class ParticipantPropertySection extends DefaultPropertySection {
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new ParticipantDetailComposite(this);
-	}
-
-	@Override
-	public EObject getBusinessObjectForSelection(ISelection selection) {
-		EObject be = super.getBusinessObjectForSelection(selection);
-		return be;
 	}
 }

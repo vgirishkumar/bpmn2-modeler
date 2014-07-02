@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -81,6 +82,9 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		propertiesProvider.setProperties(properties);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection#appliesTo(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
+	 */
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
@@ -105,9 +109,7 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 					}
 				}
 			}
-			EObject eObj = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-			if (eObj!=null)
-				return appliesTo(eObj);
+			return appliesTo(getBusinessObjectForSelection(selection));
 		}
 		return false;
 	}
@@ -127,6 +129,11 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	}
 	
 	public EObject getBusinessObjectForSelection(ISelection selection) {
-		return BusinessObjectUtil.getBusinessObjectForSelection(selection);
+		EObject bo = BusinessObjectUtil.getBusinessObjectForSelection(selection);
+		if (bo instanceof BPMNDiagram) {
+			if (((BPMNDiagram)bo).getPlane()!=null && ((BPMNDiagram)bo).getPlane().getBpmnElement()!=null)
+				return ((BPMNDiagram)bo).getPlane().getBpmnElement();
+		}
+		return bo;
 	}
 }

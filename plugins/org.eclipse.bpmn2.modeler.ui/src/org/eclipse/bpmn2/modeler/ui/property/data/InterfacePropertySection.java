@@ -17,12 +17,11 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallableElement;
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
@@ -73,16 +72,11 @@ public class InterfacePropertySection extends DefaultPropertySection {
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject bo = super.getBusinessObjectForSelection(selection);
-		if (bo instanceof BPMNDiagram) {
-			BaseElement be = ((BPMNDiagram)bo).getPlane().getBpmnElement();
-			if (be instanceof Collaboration)
-				return be;
-			if (be instanceof Process)
-				return be;
-		} else if (bo instanceof CallableElement) {
-			return bo;
-		}
-		else if (bo instanceof Interface) {
+		if (
+				bo instanceof CallableElement || // includes Process
+				bo instanceof Interface ||
+				bo instanceof Collaboration // includes Choreography
+			) {
 			return bo;
 		}
 		

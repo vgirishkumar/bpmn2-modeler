@@ -40,16 +40,11 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInputOutputSpecification()))
-			return false;
-		
 		if (super.appliesTo(part, selection)) {
-			EObject object = getBusinessObjectForSelection(selection);
-//			if (object instanceof ServiceTask) {
-//				if (((ServiceTask)object).getOperationRef()!=null)
-//					return false;
-//			}
-			return object!=null;
+			if (isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInputOutputSpecification())) {
+				EObject object = getBusinessObjectForSelection(selection);
+				return object!=null;
+			}
 		}
 		return false;
 	}

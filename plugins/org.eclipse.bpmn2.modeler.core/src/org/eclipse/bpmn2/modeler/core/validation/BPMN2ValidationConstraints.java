@@ -69,6 +69,7 @@ import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -92,33 +93,35 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 	@Override
 	public IStatus validate(IValidationContext ctx) {
 		EObject eObj = ctx.getTarget();
-		EMFEventType eType = ctx.getEventType();
-		String id = ctx.getCurrentConstraintId();
-		if (WARNING_ID.equals(id))
-			warnings = true;
-		else
-			warnings = false;
-		
-		// In the case of batch mode.
-		if (eType == EMFEventType.NULL) {
-			if (eObj instanceof Definitions) {
-				return validateDefinitions(ctx, (Definitions) eObj);
-			}
-			if (eObj instanceof BaseElement) {
-				return validateBaseElement(ctx, (BaseElement) eObj);
-			}
-			else {
-				validateEObject(ctx,eObj);
-			}
-		} else { // In the case of live mode.
-			if (eObj instanceof BaseElement) {
-				return validateBaseElementLive(ctx, (BaseElement) eObj);
-			}
-			else {
-				validateEObject(ctx,eObj);
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(eObj);
+		if (prefs.getDoCoreValidation()) {
+			EMFEventType eType = ctx.getEventType();
+			String id = ctx.getCurrentConstraintId();
+			if (WARNING_ID.equals(id))
+				warnings = true;
+			else
+				warnings = false;
+			
+			// In the case of batch mode.
+			if (eType == EMFEventType.NULL) {
+				if (eObj instanceof Definitions) {
+					return validateDefinitions(ctx, (Definitions) eObj);
+				}
+				if (eObj instanceof BaseElement) {
+					return validateBaseElement(ctx, (BaseElement) eObj);
+				}
+				else {
+					validateEObject(ctx,eObj);
+				}
+			} else { // In the case of live mode.
+				if (eObj instanceof BaseElement) {
+					return validateBaseElementLive(ctx, (BaseElement) eObj);
+				}
+				else {
+					validateEObject(ctx,eObj);
+				}
 			}
 		}
-
 		return ctx.createSuccessStatus();
 	}
 	

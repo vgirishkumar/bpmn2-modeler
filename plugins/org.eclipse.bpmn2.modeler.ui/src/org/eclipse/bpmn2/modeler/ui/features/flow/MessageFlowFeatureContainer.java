@@ -314,9 +314,20 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			if (context instanceof IAddConnectionContext) {
 				IAddConnectionContext acc = (IAddConnectionContext) context;
 				if (acc.getSourceAnchor() != null) {
-					Object obj = BusinessObjectUtil.getFirstElementOfType(acc.getSourceAnchor().getParent(),
-							BaseElement.class);
-					if (obj instanceof StartEvent) {
+					PictogramElement pe = acc.getSourceAnchor().getParent();
+					Object source = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+					if (source instanceof EndEvent) {
+						// End Events can only be the source of Message Flow connections
+						// if the End Event has a Message Event Definition
+						List<EventDefinition> eventDefinitions = ((EndEvent) source).getEventDefinitions();
+						for (EventDefinition eventDefinition : eventDefinitions) {
+							if (eventDefinition instanceof MessageEventDefinition) {
+								return true;
+							}
+						}
+						return false;
+					}
+					if (source instanceof StartEvent) {
 						return false;
 					}
 				}
@@ -408,6 +419,20 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 					return false;
 			}
 			InteractionNode source = getSourceBo(context);
+			// Special case for End Event: only allow Message Flows if the End Event
+			// has a Message Event Definition.
+			if (source instanceof EndEvent) {
+				boolean allow = false;
+				List<EventDefinition> eventDefinitions = ((EndEvent) source).getEventDefinitions();
+				for (EventDefinition eventDefinition : eventDefinitions) {
+					if (eventDefinition instanceof MessageEventDefinition) {
+						allow = true;
+						break;
+					}
+				}
+				if (!allow)
+					return false;
+			}
 			InteractionNode target = getTargetBo(context);
 			return super.canCreate(context) && isDifferentParticipants(source, target);
 		}
