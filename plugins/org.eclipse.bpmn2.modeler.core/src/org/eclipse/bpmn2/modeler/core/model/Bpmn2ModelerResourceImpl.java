@@ -956,7 +956,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 			if (f == Bpmn2Package.eINSTANCE.getBaseElement_ExtensionValues()) {
 				// check if this element is (or should be) empty
-				boolean shouldSave = false;
+				boolean shouldSave = true;
 				for (ExtensionAttributeValue ev : (EList<ExtensionAttributeValue>)o.eGet(f)) {
 					BasicFeatureMap map = (BasicFeatureMap) ev.getValue();
 					Iterator<FeatureMap.Entry> mi = map.iterator();
@@ -968,8 +968,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 							while (ai.hasNext()) {
 								Adapter a = ai.next();
 								if (a instanceof IExtensionValueAdapter) {
-									if (((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
-										shouldSave = true;
+									if (!((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
+										shouldSave = false;
 										break;
 									}
 								}

@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractCreateE
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractEventDefinitionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.event.definitions.DecorationAlgorithm;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.emf.ecore.EClass;
@@ -24,9 +25,12 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -47,7 +51,17 @@ public class MyEventDefinitionFeatureContainer extends CustomShapeFeatureContain
 			
 		return null;
 	}
-
+	
+	@Override
+	public Object getApplyObject(IContext context) {
+		if (context instanceof IPictogramElementContext) {
+			PictogramElement pe = ((IPictogramElementContext)context).getPictogramElement();
+			EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe);
+			return bo instanceof MyEventDefinition ? bo : null;
+		}
+		return null;
+	}
+	
 	protected IShapeFeatureContainer createFeatureContainer(IFeatureProvider fp) {
 		return new AbstractEventDefinitionFeatureContainer() {
 

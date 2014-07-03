@@ -13,18 +13,18 @@
 
 package org.eclipse.bpmn2.modeler.examples.dynamic;
 
-import java.util.List;
-
 import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.IShapeFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.AddTextAnnotationFeature;
 import org.eclipse.bpmn2.modeler.core.features.artifact.UpdateTextAnnotationFeature;
+import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.examples.dynamic.SampleImageProvider.IconSize;
 import org.eclipse.bpmn2.modeler.ui.features.artifact.CreateTextAnnotationFeature;
@@ -42,6 +42,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
+import org.eclipse.graphiti.mm.algorithms.AbstractText;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.MultiText;
@@ -174,8 +175,8 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 			@Override
 			public IUpdateFeature getUpdateFeature(IFeatureProvider fp) {
 
-				return new UpdateTextAnnotationFeature(fp) {
-
+				MultiUpdateFeature multiUpdate = new MultiUpdateFeature(fp);
+				multiUpdate.addFeature(new UpdateTextAnnotationFeature(fp) {
 					/* (non-Javadoc)
 					 * @see org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature#updateNeeded(org.eclipse.graphiti.features.context.IUpdateContext)
 					 * 
@@ -214,8 +215,16 @@ public class SampleCustomTaskFeatureContainer extends CustomShapeFeatureContaine
 						setFillColor((ContainerShape)context.getPictogramElement());
 						return true;
 					}
+				});
+				multiUpdate.addFeature(new UpdateLabelFeature(fp) {
+
+					@Override
+					protected LabelPosition getLabelPosition(AbstractText text) {
+						return LabelPosition.CENTER;
+					}
 					
-				};
+				});
+				return multiUpdate;
 			}
 
 			@Override

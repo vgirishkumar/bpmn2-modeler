@@ -446,10 +446,18 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			}
 		}
 		// last chance: check custom task feature containers
-		if (id!=null && customTaskContainers!=null) {
-			IFeatureContainer container = customTaskContainers.get(id);
-			if (container!=null && container.getApplyObject(context)!=null)
-				return container;
+		if (customTaskContainers!=null) {
+			if (id!=null) {
+				IFeatureContainer container = customTaskContainers.get(id);
+				if (container!=null && container.getApplyObject(context)!=null)
+					return container;
+			}
+			else {
+				for (IFeatureContainer container : customTaskContainers.values()) {
+					if (container.getApplyObject(context)!=null)
+						return container;
+				}
+			}
 		}
 		return null;
 	}

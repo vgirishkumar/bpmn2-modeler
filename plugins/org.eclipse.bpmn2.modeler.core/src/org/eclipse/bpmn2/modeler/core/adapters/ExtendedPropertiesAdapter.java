@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -159,8 +160,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 				adapter = genericAdapter;
 			
 			EObject eclass = getFeatureClass(eObject,feature);
-			if (adapter==null)
+			if (adapter==null) {
 				adapter = (ExtendedPropertiesAdapter) AdapterUtil.adapt(eclass, ExtendedPropertiesAdapter.class);
+				if (adapter==null) {
+					adapter = new ExtendedPropertiesAdapter(new AdapterFactoryImpl(), eObject);
+				}
+			}
 			if (adapter!=null) {
 				if (eObject instanceof EClass) {
 					EObject dummy = getDummyObject((EClass)eObject);

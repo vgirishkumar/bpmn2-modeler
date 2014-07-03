@@ -87,7 +87,7 @@ public abstract class AbstractUpdateEventFeature<T extends Event> extends Abstra
 			}
 			// ...so we can create an UpdateContext...
 			UpdateContext context = new UpdateContext(eventDefinitionShape);
-			// ...to look up the EventDefinitionUpdateFeature
+			// ...to look up the UpdateEventDefinitionFeature
 			IUpdateFeature upateFeature = getFeatureProvider().getUpdateFeature(context);
 			if (upateFeature!=null) {
 				// and do the update with the Event object (not the EventDefinition!)

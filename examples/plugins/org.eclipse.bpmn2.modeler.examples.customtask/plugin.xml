@@ -33,30 +33,7 @@
 			runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
 			type="Task">
 			<property name="type" value="MyTask" />
-			<property name="taskConfig" label="Task Configuration">
-				<value>
-					<property name="parameters">
-						<value>
-							<property
-								name="name"
-								value="taskName" />
-							<property
-								name="value"
-								value="My Custom Task" />
-						</value>
-					</property>
-					<property name="parameters">
-						<value>
-							<property
-								name="name"
-								value="processingTime" />
-							<property
-								name="value"
-								value="1 hr" />
-						</value>
-					</property>
-				</value>
-			</property>
+			<property name="taskConfig" label="Task Configuration" type="TaskConfig"/>
 		</customTask>
 
 		<customTask
@@ -82,8 +59,8 @@
 			name="My Event Definition"
 			propertyTabs="org.eclipse.bpmn2.modeler.examples.customtask.myEventDefinition.tab"
 			runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
-			type="EventDefinition">
-			<property name="type" value="MyEventDefinition" />
+			type="MyEventDefinition">
+			<property name="type" value="MyEventDefinition"/>
 		</customTask>
 
 		<customTask
@@ -94,9 +71,19 @@
 			id="org.eclipse.bpmn2.modeler.examples.customtask.temporalDependency"
 			name="Temporal Dependency"
 			runtimeId="org.eclipse.bpmn2.modeler.examples.timebpmn.runtime"
-			type="FlowElement">
-			<property name="lagTime" type="EString" value="3hr">
-			</property>
+			type="TemporalDependency">
+			<property name="lagTime" type="EString" value="3hr"/>
+		</customTask>
+
+		<!-- This CustomTask defines a Start Event containing a MessageEventDefinition -->
+		<customTask
+			category="My Tools"
+			description="Message Start Event"
+			featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MessageStartEventFeatureContainer"
+			id="org.eclipse.bpmn2.modeler.examples.customtask.messageStartEvent"
+			name="Message Event"
+			runtimeId="org.eclipse.bpmn2.modeler.examples.timebpmn.runtime"
+			type="StartEvent">
 		</customTask>
 
 		<propertyTab
@@ -138,17 +125,18 @@
 			type="org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition"
 			class="org.eclipse.bpmn2.modeler.examples.customtask.MyEventDefinitionPropertiesAdapter">
 		</propertyExtension>
-
-
-		<customTask
-			category="My Tools"
-			description="Message Start Event"
-			featureContainer="org.eclipse.bpmn2.modeler.examples.customtask.MessageStartEventFeatureContainer"
-			id="org.eclipse.bpmn2.modeler.examples.customtask.messageStartEvent"
-			name="Message Event"
-			runtimeId="org.eclipse.bpmn2.modeler.examples.timebpmn.runtime"
-			type="StartEvent">
-		</customTask>
+		
+		<modelEnablement
+				runtimeId="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
+				id="customtask.profile.1"
+				profile="Full"
+				description="All BPMN2 elements and attributes"
+				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.1">
+			<enable object="TaskConfig"/>
+			<enable object="TemporalDependency"/>
+			<enable object="Parameter"/>
+			<enable object="MyEventDefinition"/>
+		</modelEnablement>
 
 	</extension>
 
