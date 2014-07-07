@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -34,6 +35,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.ENamedElement;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.osgi.service.prefs.BackingStoreException;
@@ -216,118 +218,64 @@ public class ToolProfilesPreferencesHelper {
 		return null;
 	}
 	
-	public List<ModelEnablementTreeEntry> getAllExtensionElements(ModelEnablementDescriptor me, List<ModelEnablementTreeEntry> bpmnEntries) {
+	public List<ModelEnablementTreeEntry> getAllExtensionElements(TargetRuntime rt, ModelEnablementDescriptor me, List<ModelEnablementTreeEntry> bpmnEntries) {
 		
-		// Fetch all of the <modelExtension> extension point elements defined
-		// in the Target Runtime plugin.
+		// Fetch all of the <modelExtension> extension point elements defined in the Target Runtime plugin.
 		ArrayList<ModelEnablementTreeEntry> bpmnModelExtensions = new ArrayList<ModelEnablementTreeEntry>();
-		
 		ModelEnablementTreeEntry bpmnModelExtensionsRoot = new ModelEnablementTreeEntry();
 		bpmnModelExtensionsRoot.setEnabled(true);
 		bpmnModelExtensionsRoot.setName(Messages.ToolEnablementPreferences_BPMN_Extensions);
-
-		TargetRuntime rt = me.getRuntime();
-		for (ModelExtensionDescriptor med : rt.getAllModelExtensionDescriptors()) {
-			if (med.getProperties().size()>0) {
-				// this <modelExtension> has at least one <property>
-				// that can be enabled or disabled:
-				// get the EClass which this <modelExtension> extends
-				String className = med.getType();
-				EClassifier eclass = me.getClassifier(className);
-				if (eclass instanceof EClass) {
-					// and create a ModelEnablementTreeEntry for it
-					ModelEnablementTreeEntry entry = new ModelEnablementTreeEntry(eclass, bpmnModelExtensionsRoot);
-					// fetch its current enablement state
-					entry.setEnabled(isEnabled((EClass)eclass));
-					// and add it to our list
-					bpmnModelExtensions.add(entry);
-				}
+		for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(1).entrySet()) {
+			// create a ModelEnablementTreeEntry for extension EClass
+			EClass eClass = e.getKey();
+			ModelEnablementTreeEntry entry = new ModelEnablementTreeEntry(eClass, bpmnModelExtensionsRoot);
+			// fetch its current enablement state
+			entry.setEnabled(isEnabled(eClass));
+			// and add it to our list
+			bpmnModelExtensions.add(entry);
+			ArrayList<ModelEnablementTreeEntry> children = new ArrayList<ModelEnablementTreeEntry>();
+			for (EStructuralFeature feature : e.getValue()) {
+				ModelEnablementTreeEntry child = findOrCreateEntry(bpmnEntries, feature, entry);
+				// set enablement state of the feature:
+				// the EClass is that of the parent entry.
+				child.setEnabled(isEnabled(eClass, feature));
+				children.add(child);
 			}
-			
-			// now fetch all of the <property> elements contained
-			// in the <modelExtension> element. The result list
-			// so far contains only EClass entries; the <property>
-			// elements will become their children.
-			for (ModelEnablementTreeEntry entry : bpmnModelExtensions) {
-				for (ModelExtensionDescriptor med2 : rt.getAllModelExtensionDescriptors()) {
-					if (entry.getName().equals(med2.getType())) {
-						ArrayList<ModelEnablementTreeEntry> children = new ArrayList<ModelEnablementTreeEntry>();
-						for (Property p : med2.getProperties()) {
-							EClass eclass = (EClass)entry.getElement();
-							EStructuralFeature feature = me.getFeature(med2.getType(), p.name);
-							if (feature==null)
-								feature = med2.getFeature(eclass, p);
-							if (feature instanceof EAttribute) {
-								ModelEnablementTreeEntry child = findOrCreateEntry(bpmnEntries, feature, entry);
-								// set enablement state of the feature:
-								// the EClass is that of the parent entry.
-								child.setEnabled(isEnabled(eclass, feature));
-								children.add(child);
-							}
-						}
-						// add the sorted list to the children of this entry parent
-						sortElements(children);
-						entry.setChildren(children);
-					}
-				}
-			}
-		}
+			// add the sorted list to the children of this entry parent
+			sortElements(children);
+			entry.setChildren(children);
+		}		
 		sortElements(bpmnModelExtensions);
 		bpmnModelExtensionsRoot.setChildren(bpmnModelExtensions);
 		
+		ArrayList<ModelEnablementTreeEntry> runtimeModelExtensions = new ArrayList<ModelEnablementTreeEntry>();
 		ModelEnablementTreeEntry runtimeModelExtensionsRoot = new ModelEnablementTreeEntry();
 		runtimeModelExtensionsRoot.setEnabled(true);
 		runtimeModelExtensionsRoot.setName(Messages.ToolEnablementPreferences_Target_Extensions);
-
-		
-		ArrayList<ModelEnablementTreeEntry> runtimeModelExtensions = new ArrayList<ModelEnablementTreeEntry>();
-
-		for (EClassifier ec : rt.getModelDescriptor().getEPackage().getEClassifiers()) {
-			if (ec instanceof EClass) {
-				EClass eclass = (EClass)ec;
-				// skip over DocumentRoot - we'll assume that all of its features are
-				// containers of, or references to EClasses which we'll process anyway.
-				if (eclass.getName().equals("DocumentRoot")) //$NON-NLS-1$
-					continue;
-				
-				ModelEnablementTreeEntry entry = new ModelEnablementTreeEntry(eclass, runtimeModelExtensionsRoot);
-				// fetch its current enablement state
-				entry.setEnabled(isEnabled((EClass)eclass));
-				// and add it to our list
-				runtimeModelExtensions.add(entry);
-				
-				HashSet<EStructuralFeature> possibleFeatures = new HashSet<EStructuralFeature>();
-
-				ArrayList<ModelEnablementTreeEntry> children = new ArrayList<ModelEnablementTreeEntry>();
-
-				for (EAttribute a : eclass.getEAllAttributes()) {
-					possibleFeatures.add(a);
-				}
-
-				for (EReference a : eclass.getEAllContainments()) {
-					possibleFeatures.add(a);
-				}
-
-				for (EReference a : eclass.getEAllReferences()) {
-					possibleFeatures.add(a);
-				}
-
-				for (EStructuralFeature feature : possibleFeatures) {
-					ModelEnablementTreeEntry modelEnablementTreeEntry = findOrCreateEntry(bpmnEntries, feature, entry);
-					modelEnablementTreeEntry.setEnabled(isEnabled(eclass, feature));
-					children.add(modelEnablementTreeEntry);
-				}
-				sortElements(children);
-				entry.setChildren(children);
+		for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(2).entrySet()) {
+			// create a ModelEnablementTreeEntry for extension EClass
+			EClass eClass = e.getKey();
+			ModelEnablementTreeEntry entry = new ModelEnablementTreeEntry(eClass, runtimeModelExtensionsRoot);
+			// fetch its current enablement state
+			entry.setEnabled(isEnabled(eClass));
+			// and add it to our list
+			runtimeModelExtensions.add(entry);
+			ArrayList<ModelEnablementTreeEntry> children = new ArrayList<ModelEnablementTreeEntry>();
+			for (EStructuralFeature feature : e.getValue()) {
+				ModelEnablementTreeEntry child = findOrCreateEntry(bpmnEntries, feature, entry);
+				// set enablement state of the feature:
+				// the EClass is that of the parent entry.
+				child.setEnabled(isEnabled(eClass, feature));
+				children.add(child);
 			}
-		}
+			// add the sorted list to the children of this entry parent
+			sortElements(children);
+			entry.setChildren(children);
+		}		
 		sortElements(runtimeModelExtensions);
 		runtimeModelExtensionsRoot.setChildren(runtimeModelExtensions);
 
 		ArrayList<ModelEnablementTreeEntry> allExtensions = new ArrayList<ModelEnablementTreeEntry>();
-//		allExtensions.addAll(bpmnModelExtensions);
-//		allExtensions.addAll(runtimeModelExtensions);
-		
 		allExtensions.add(bpmnModelExtensionsRoot);
 		allExtensions.add(runtimeModelExtensionsRoot);
 		

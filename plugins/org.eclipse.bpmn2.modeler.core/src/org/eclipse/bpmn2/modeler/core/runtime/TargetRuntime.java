@@ -18,13 +18,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.resources.IFile;
@@ -33,7 +37,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
@@ -866,6 +872,105 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns a list of model extension types and their features. A filter can
+	 * be used to select only BPMN2 model elements, plugin model elements or
+	 * both.
+	 * 
+	 * @param filter selects which elements to return: 0 = all, 1 = BPMN2 model
+	 *            extensions only, 2 = plugin model extension elements only
+	 * @return a list of EClass objects, and their lists of EStructuralFeatures.
+	 */
+	public Hashtable<EClass, List<EStructuralFeature>> getModelExtensions(int filter) {
+		Hashtable<EClass, List<EStructuralFeature>> list = new Hashtable<EClass, List<EStructuralFeature>>();
+		for (CustomTaskDescriptor ctd : getCustomTaskDescriptors()) {
+			getModelExtensions(filter, ctd, list);
+		}
+		for (ModelExtensionDescriptor med : getModelExtensionDescriptors()) {
+			getModelExtensions(filter, med, list);
+		}
+		if (filter==2) { // plugin extension elements only
+			ModelDescriptor md = getModelDescriptor();
+			if (md.getEPackage() != Bpmn2Package.eINSTANCE) {
+				for (EClassifier ec : md.getEPackage().getEClassifiers()) {
+					if (ec.getName().equals("DocumentRoot"))
+						continue;
+					if (ec instanceof EClass) {
+						EClass eClass = (EClass)ec;
+						List<EStructuralFeature> features = list.get(eClass);
+						if (features==null) {
+							features = new ArrayList<EStructuralFeature>();
+							list.put(eClass,features);
+						}
+						for (EStructuralFeature f : eClass.getEStructuralFeatures()) {
+							features.add(f);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	private void getModelExtensions(int filter, ModelExtensionDescriptor med, Hashtable<EClass, List<EStructuralFeature>> list) {
+		String type = med.getType();
+		EClassifier bpmn2type  = Bpmn2Package.eINSTANCE.getEClassifier(type);
+		if (filter==1) { // BPMN2 elements only
+			if (bpmn2type==null)
+				return;
+		}
+		if (filter==2) { // plugin extension elements only
+			if (bpmn2type!=null)
+				return;
+		}
+		EClass eClass = med.createEClass(type);
+		List<EStructuralFeature> features = list.get(eClass);
+		if (features==null) {
+			features = new ArrayList<EStructuralFeature>();
+			list.put(eClass,features);
+		}
+		for (Property p : med.getProperties()) {
+			EStructuralFeature feature = med.createEFeature(eClass, p);
+			if (bpmn2type instanceof EClass) {
+				// ignore structural features that are already defined in
+				// the BPMN2 package. These <property> elements are used
+				// only for initialization of these features and should not
+				// be considered as model extensions.
+				if (((EClass) bpmn2type).getEStructuralFeature(p.name)!=null)
+					continue;
+			}
+			if (feature!=null && !features.contains(feature))
+				features.add(feature);
+			for (Object v : p.getValues()) {
+				if (v instanceof Property) {
+					getModelExtensions(med, (Property)v, list);
+				}
+			}
+		}
+		if (features.isEmpty())
+			list.remove(eClass);
+	}
+	
+	private void getModelExtensions(ModelExtensionDescriptor med, Property p,  Hashtable<EClass, List<EStructuralFeature>> list) {
+		EClassifier eClassifier = med.getClassifier(p.name);
+		if (eClassifier instanceof EClass) {
+			EClass eClass = (EClass) eClassifier;
+			List<EStructuralFeature> features = list.get(eClass);
+			if (features==null) {
+				features = new ArrayList<EStructuralFeature>();
+				list.put(eClass,features);
+			}
+			for (Object v : p.getValues()) {
+				if (v instanceof Property) {
+					EStructuralFeature feature = med.createEFeature(eClass, (Property)v);
+					if (feature!=null && !features.contains(feature))
+						features.add(feature);
+					getModelExtensions(med, (Property)v, list);
+				}
+			}
+		}
 	}
 	
 	public List<PropertyExtensionDescriptor> getPropertyExtensionDescriptors()

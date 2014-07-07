@@ -47,6 +47,7 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -67,7 +68,9 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChange
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -386,11 +389,33 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		}
 		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-					String path = getModelEnablementsPath(rt, med.getId());
+				if (rt.getModelEnablements().size()==0) {
+					String path = getModelEnablementsPath(rt, null);
 					Preferences prefs = defaultPreferences.node(path);
-					for (String s : med.getAllEnabled()) {
+					for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
+						for (EStructuralFeature f : e.getValue()) {
+							String s = e.getKey().getName() + "." + f.getName();
+							prefs.putBoolean(s, Boolean.TRUE);
+						}
+					}
+					ModelEnablements me = new ModelEnablements(rt,"default");
+					me.setEnabledAll(true);
+					for (String s : me.getAllEnabled())
 						prefs.putBoolean(s, Boolean.TRUE);
+				}
+				else {
+					for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+						String path = getModelEnablementsPath(rt, med.getId());
+						Preferences prefs = defaultPreferences.node(path);
+						for (String s : med.getAllEnabled()) {
+							prefs.putBoolean(s, Boolean.TRUE);
+						}
+						for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
+							for (EStructuralFeature f : e.getValue()) {
+								String s = e.getKey().getName() + "." + f.getName();
+								prefs.putBoolean(s, Boolean.TRUE);
+							}
+						}
 					}
 				}
 			}
@@ -848,6 +873,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	////////////////////////////////////////////////////////////////////////////////
 
 	public static String getModelEnablementsPath(TargetRuntime rt, String profileId) {
+		if (profileId==null || profileId.isEmpty())
+			profileId = "default";
 		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + profileId; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -857,44 +884,39 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	public ModelEnablements getModelEnablements(TargetRuntime rt, String profileId) {
 		ModelEnablements me = new ModelEnablements(rt, profileId);
-		if (profileId!=null && !profileId.isEmpty()) {
-			try {
-				Preferences prefs = null;
-				String path = getModelEnablementsPath(rt, profileId);
-				if (projectPreferences!=null && projectPreferences.nodeExists(path))
-					prefs = projectPreferences.node(path);
-				else if (instancePreferences.nodeExists(path))
-					prefs = instancePreferences.node(path);
-				else if (defaultPreferences.nodeExists(path))
-					prefs = defaultPreferences.node(path);
-				
-				if (prefs!=null) {
-					boolean create = false;
-					ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
-					if (med==null) {
-						String profileName = prefs.get("name","Unnamed Profile");
-						String description = prefs.get("description","");
-						med = createToolProfile(rt, profileId, profileName, description);
-						create = true;
-					}
+		try {
+			Preferences prefs = null;
+			String path = getModelEnablementsPath(rt, profileId);
+			if (projectPreferences!=null && projectPreferences.nodeExists(path))
+				prefs = projectPreferences.node(path);
+			else if (instancePreferences.nodeExists(path))
+				prefs = instancePreferences.node(path);
+			else if (defaultPreferences.nodeExists(path))
+				prefs = defaultPreferences.node(path);
+			
+			if (prefs!=null) {
+				boolean create = false;
+				ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+				if (med==null) {
+					String profileName = prefs.get("name","Unnamed Profile");
+					String description = prefs.get("description","");
+					med = createToolProfile(rt, profileId, profileName, description);
+					create = true;
+				}
 
-					me.setEnabledAll(false);
-					for (String k : prefs.keys()) {
-						if (prefs.getBoolean(k, false)) {
-							me.setEnabled(k, true);
-							if (create) {
-								med.setEnabled(k, true);
-							}
+				me.setEnabledAll(false);
+				for (String k : prefs.keys()) {
+					if (prefs.getBoolean(k, false)) {
+						me.setEnabled(k, true);
+						if (create) {
+							med.setEnabled(k, true);
 						}
 					}
 				}
 			}
-			catch (BackingStoreException e) {
-				e.printStackTrace();
-			}
 		}
-		else {
-			me.setEnabledAll(true);
+		catch (BackingStoreException e) {
+			e.printStackTrace();
 		}
 		return me;
 	}

@@ -501,9 +501,14 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return object.eGet(feature);
 	}
 	
-	// FIXME: this is called in ToolProfilesPreferencesHelper. Check if there's a way to decouple.
-	public EStructuralFeature getFeature(EObject object, Property property) {
-		EClass eClass = object.eClass();
+	public EClass createEClass(String type) {
+		EClass eClass = getModelDecorator().getEClass(type);
+		if (eClass==null)
+			eClass = getModelDecorator().createEClass(type);
+		return eClass;
+	}
+	
+	public EStructuralFeature createEFeature(EClass eClass, Property property) {
 		EStructuralFeature feature = eClass.getEStructuralFeature(property.name);
 		
 		boolean isAttribute = true;
@@ -524,7 +529,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 
 		if (isAttribute) {
 			if (feature==null)
-				feature = modelDecorator.createEAttribute(
+				feature = getModelDecorator().createEAttribute(
 					property.name,
 					property.type,
 					eClass.getName(),
@@ -532,7 +537,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		}
 		else {
 			if (feature==null)
-				feature = modelDecorator.createEReference(
+				feature = getModelDecorator().createEReference(
 					property.name,
 					property.type,
 					eClass.getName(),
@@ -543,6 +548,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		ModelDecorator.setLabel(feature, property.label);
 		
 		return feature;
+	}
+	
+	private EStructuralFeature getFeature(EObject object, Property property) {
+		return createEFeature(object.eClass(), property);
 	}
 
 	/**

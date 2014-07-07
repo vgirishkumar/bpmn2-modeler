@@ -12,11 +12,11 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.features.Messages;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -39,6 +39,8 @@ import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.ocl.util.Adaptable;
 
 /**
  * The base class for custom shape and connection Feature Containers.
@@ -132,6 +134,13 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	 */
 	@Override
 	public boolean isAvailable(IFeatureProvider fp) {
+		DiagramEditor editor = (DiagramEditor) fp.getDiagramTypeProvider().getDiagramEditor();
+		if (editor != null) {
+			ModelEnablements me = (ModelEnablements)editor.getAdapter(ModelEnablements.class);
+			if (me!=null) {
+				return me.isEnabled(customTaskDescriptor.getType());
+			}
+		}
 		return true;
 	}
 	

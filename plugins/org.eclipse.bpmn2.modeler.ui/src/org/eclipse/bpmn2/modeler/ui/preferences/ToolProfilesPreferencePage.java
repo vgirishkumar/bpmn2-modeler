@@ -720,7 +720,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	private Object[] loadModelEnablements(ToolProfilesPreferencesHelper helper, List<ModelEnablementTreeEntry> entries, List<ModelEnablementTreeEntry> bpmnEntries, ModelEnablementDescriptor med) {
 		entries.clear();
 		if (med!=null)
-			entries.addAll(helper.getAllExtensionElements(med, bpmnEntries));
+			entries.addAll(helper.getAllExtensionElements(currentRuntime, med, bpmnEntries));
 		else
 			entries.addAll(helper.getAllElements());
 

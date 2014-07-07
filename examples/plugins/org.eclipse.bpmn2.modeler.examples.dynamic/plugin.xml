@@ -72,8 +72,8 @@
 			icon="mitigation.png"
 			runtimeId="org.eclipse.bpmn2.modeler.examples.dynamic"
 			type="TextAnnotation">
-			<property name="text" value="Mitigation Task" type="EString"/>
 			<property name="name" value="Mitigation Task" type="EString"/>
+			<property name="text" value="Mitigation Task" type="EString"/>
 			<property name="evaluate" value="true" type="EBoolean" description="Include this activity in Risk Calculations"/>
 			<property name="benefit" value="0" type="EInt" description="Potential benefit provided by this Mitigation activity"/>
 		</customTask>

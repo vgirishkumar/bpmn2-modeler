@@ -365,7 +365,6 @@ public class ModelEnablements {
 
 		if (className==null)
 			return true;
-		
 		if (classes.containsKey(className)) { // && isOverride()) {
 			if (featureName!=null && !featureName.isEmpty()) {
 				// the "anyAttribute" FeatureMap should always be enabled,
@@ -393,35 +392,11 @@ public class ModelEnablements {
 						}
 					}
 				}
-				if (isEnabled(targetRuntime, className, featureName))
-					return true;
 				return false;
 			}
 			return true;
 		}
-		
-		// Check any model extensions - these are always enabled by default
-		// This is an expensive operation, so we'll cache these values.
-		//
-		// FIXME: if there ever comes a time when we'll want to reload model extensions
-		// while the editor is still active, we'll need to clear out this cache.
-		if (isEnabled(targetRuntime, className, featureName))
-			return true;
-		
-		// FIXME: should we also check the Default Target Runtime extensions?
-//		if (targetRuntime!=TargetRuntime.getDefaultRuntime())
-//			return isEnabled(TargetRuntime.getDefaultRuntime(), className, featureName);
 
-		return false;
-	}
-	
-	private boolean isEnabled(TargetRuntime targetRuntime, String className, String featureName) {
-		for (ModelExtensionDescriptor md : targetRuntime.getAllModelExtensionDescriptors()) {
-			if (md.isDefined(className, featureName)) {
-				setEnabled(className, featureName, true);
-				return true;
-			}
-		}
 		return false;
 	}
 	

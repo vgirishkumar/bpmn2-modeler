@@ -145,9 +145,9 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 	}
 
 	public EClassifier getClassifier(String name) {
-		EClass eClass = (EClass)getEPackage().getEClassifier(name);
+		EClassifier eClass = getEPackage().getEClassifier(name);
 		if (eClass==null) {
-			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(name);
+			eClass = Bpmn2Package.eINSTANCE.getEClassifier(name);
 		}
 		return eClass;
 	}
