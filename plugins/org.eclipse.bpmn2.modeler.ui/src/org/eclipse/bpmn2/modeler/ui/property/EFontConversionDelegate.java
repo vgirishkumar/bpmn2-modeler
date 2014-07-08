@@ -97,7 +97,9 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 			}
 			catch (Exception e) {}
 		}
-		return systemFontData;
+		if (systemFontData!=null)
+			return systemFontData;
+		return new FontData("arial",12,SWT.NORMAL);
 	}
 
 	/* (non-Javadoc)

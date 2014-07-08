@@ -40,9 +40,11 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
@@ -440,11 +442,20 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 				}
 				
 				protected boolean setValue(final Object value) {
-					// remove old prefix
-					String prefix = text.getText();
-					NamespaceUtil.removeNamespaceForPrefix(imp.eResource(), prefix);
-					// and add new
-					NamespaceUtil.addNamespace(imp.eResource(), (String)value, imp.getNamespace());
+					final Resource resource = imp.eResource();
+					TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
+					if (domain != null) {
+						domain.getCommandStack().execute(new RecordingCommand(domain) {
+							@Override
+							protected void doExecute() {
+								// remove old prefix
+								String prefix = text.getText();
+								NamespaceUtil.removeNamespaceForPrefix(resource, prefix);
+								// and add new
+								NamespaceUtil.addNamespace(resource, (String)value, imp.getNamespace());
+							}
+						});
+					}
 					setText((String) value);
 					return true;
 				}

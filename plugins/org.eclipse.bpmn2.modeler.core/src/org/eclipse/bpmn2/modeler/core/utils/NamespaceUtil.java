@@ -129,16 +129,7 @@ public class NamespaceUtil {
 			if (prefix==null) {
 				prefix = "ns"; //$NON-NLS-1$
 			}
-			final String pfx = createUniquePrefix(map, prefix);
-			TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
-			if (domain != null) {
-				domain.getCommandStack().execute(new RecordingCommand(domain) {
-					@Override
-					protected void doExecute() {
-						map.put(pfx, namespace);
-					}
-				});
-			}
+			map.put(prefix, namespace);
 			return prefix;
 		}
 		return null;

@@ -1256,86 +1256,87 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		
 		// if the selected element is obscured by another shape
 		// send it to the top of the z-stack.
-		final List<ContainerShape> moved = new ArrayList<ContainerShape>();
-		for (PictogramElement pe : getSelectedPictogramElements()) {
-			if (pe instanceof ContainerShape && !(pe instanceof Diagram)) {
-				final ContainerShape shape = (ContainerShape)pe;
-				ContainerShape container = shape.getContainer();
-				// make sure this shape has not been deleted
-				if (container==null)
-					continue;
-				int size = container.getChildren().size();
-				if (size>1) {
-					// don't send Choreography Participant bands, Pools or Lanes to front
-					// they're already there...
-					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
-					if (baseElement instanceof Participant || baseElement instanceof Lane)
-						continue;
-					boolean obscured = false;
-					int index = container.getChildren().indexOf(shape);
-					for (int i=index+1; i<container.getChildren().size(); ++i) {
-						PictogramElement sibling = container.getChildren().get(i);
-						if (sibling instanceof ContainerShape &&
-								!FeatureSupport.isLabelShape((ContainerShape)sibling)) {
-							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
-								boolean siblingIsBoundaryEvent = false;
-								if (baseElement instanceof Activity) {
-									BaseElement be = BusinessObjectUtil.getFirstBaseElement(sibling);
-									for (BoundaryEvent boundaryEvent : ((Activity)baseElement).getBoundaryEventRefs()) {
-										if (be==boundaryEvent) {
-											siblingIsBoundaryEvent = true;
-											break;
-										}
-									}
-								}
-								if (!siblingIsBoundaryEvent) {
-									obscured = true;
-								}
-							}
-						}
-					}
-					// if the selected shape is an Activity, it may have Boundary Event shapes
-					// attached to it - these will have to be moved to the top so they're
-					// not obscured by the Activity.
-					if (baseElement instanceof Activity) {
-						for (BoundaryEvent be : ((Activity)baseElement).getBoundaryEventRefs()) {
-							for (PictogramElement child : container.getChildren()) {
-								if (child instanceof ContainerShape && BusinessObjectUtil.getFirstBaseElement(child) == be) {
-									index = container.getChildren().indexOf(child);
-									for (int i=index+1; i<container.getChildren().size(); ++i) {
-										PictogramElement sibling = container.getChildren().get(i);
-										if (sibling!=shape && sibling instanceof ContainerShape) {
-											if (GraphicsUtil.intersects((ContainerShape)child, (ContainerShape)sibling)) {
-												obscured = true;
-												moved.add((ContainerShape)child);
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-					if (obscured) {
-						moved.add(0,shape);
-					}
-				}
-			}
-		}
-		if (!moved.isEmpty()) {
-			Display.getDefault().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
-						@Override
-						protected void doExecute() {
-							for (ContainerShape child : moved) {
-								GraphicsUtil.sendToFront(child);
-							}
-						}
-					});
-				}
-			});
-		}
+		// FIXME: this should be done in the figure's UpdateFeature or LayoutFeature, not here.
+//		final List<ContainerShape> moved = new ArrayList<ContainerShape>();
+//		for (PictogramElement pe : getSelectedPictogramElements()) {
+//			if (pe instanceof ContainerShape && !(pe instanceof Diagram)) {
+//				final ContainerShape shape = (ContainerShape)pe;
+//				ContainerShape container = shape.getContainer();
+//				// make sure this shape has not been deleted
+//				if (container==null)
+//					continue;
+//				int size = container.getChildren().size();
+//				if (size>1) {
+//					// don't send Choreography Participant bands, Pools or Lanes to front
+//					// they're already there...
+//					BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(shape);
+//					if (baseElement instanceof Participant || baseElement instanceof Lane)
+//						continue;
+//					boolean obscured = false;
+//					int index = container.getChildren().indexOf(shape);
+//					for (int i=index+1; i<container.getChildren().size(); ++i) {
+//						PictogramElement sibling = container.getChildren().get(i);
+//						if (sibling instanceof ContainerShape &&
+//								!FeatureSupport.isLabelShape((ContainerShape)sibling)) {
+//							if (GraphicsUtil.intersects(shape, (ContainerShape)sibling)) {
+//								boolean siblingIsBoundaryEvent = false;
+//								if (baseElement instanceof Activity) {
+//									BaseElement be = BusinessObjectUtil.getFirstBaseElement(sibling);
+//									for (BoundaryEvent boundaryEvent : ((Activity)baseElement).getBoundaryEventRefs()) {
+//										if (be==boundaryEvent) {
+//											siblingIsBoundaryEvent = true;
+//											break;
+//										}
+//									}
+//								}
+//								if (!siblingIsBoundaryEvent) {
+//									obscured = true;
+//								}
+//							}
+//						}
+//					}
+//					// if the selected shape is an Activity, it may have Boundary Event shapes
+//					// attached to it - these will have to be moved to the top so they're
+//					// not obscured by the Activity.
+//					if (baseElement instanceof Activity) {
+//						for (BoundaryEvent be : ((Activity)baseElement).getBoundaryEventRefs()) {
+//							for (PictogramElement child : container.getChildren()) {
+//								if (child instanceof ContainerShape && BusinessObjectUtil.getFirstBaseElement(child) == be) {
+//									index = container.getChildren().indexOf(child);
+//									for (int i=index+1; i<container.getChildren().size(); ++i) {
+//										PictogramElement sibling = container.getChildren().get(i);
+//										if (sibling!=shape && sibling instanceof ContainerShape) {
+//											if (GraphicsUtil.intersects((ContainerShape)child, (ContainerShape)sibling)) {
+//												obscured = true;
+//												moved.add((ContainerShape)child);
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//					if (obscured) {
+//						moved.add(0,shape);
+//					}
+//				}
+//			}
+//		}
+//		if (!moved.isEmpty()) {
+//			Display.getDefault().asyncExec(new Runnable() {
+//				@Override
+//				public void run() {
+//					getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
+//						@Override
+//						protected void doExecute() {
+//							for (ContainerShape child : moved) {
+//								GraphicsUtil.sendToFront(child);
+//							}
+//						}
+//					});
+//				}
+//			});
+//		}
 	}
 
 	@Override

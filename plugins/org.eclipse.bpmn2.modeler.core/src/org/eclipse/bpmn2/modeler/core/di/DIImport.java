@@ -453,6 +453,17 @@ public class DIImport {
 	private void importConnections(List<DiagramElement> ownedElement) {
 		for (DiagramElement diagramElement : ownedElement) {
 			if (diagramElement instanceof BPMNEdge) {
+				// Since Associations can have other connections as sources/targets
+				// handle these last.
+				if (((BPMNEdge) diagramElement).getBpmnElement() instanceof Association)
+					continue;
+				createEdge((BPMNEdge) diagramElement);
+			}
+		}
+		for (DiagramElement diagramElement : ownedElement) {
+			if (diagramElement instanceof BPMNEdge) {
+				if (!(((BPMNEdge) diagramElement).getBpmnElement() instanceof Association))
+					continue;
 				createEdge((BPMNEdge) diagramElement);
 			}
 		}
