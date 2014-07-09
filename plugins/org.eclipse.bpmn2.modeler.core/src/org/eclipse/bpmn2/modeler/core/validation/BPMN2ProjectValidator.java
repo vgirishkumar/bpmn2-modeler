@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.builder.BPMN2Nature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Assignment;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataAssociation;
@@ -60,7 +61,9 @@ import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
 import org.eclipse.bpmn2.util.QNameURIHandler;
 import org.eclipse.bpmn2.util.XmlExtendedMetadata;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
@@ -98,8 +101,9 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
-import org.eclipse.emf.ecore.xml.type.AnyType;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.PortType;
 import org.eclipse.wst.wsdl.util.WSDLResourceImpl;
@@ -449,6 +453,55 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 			Bpmn2ModelerFactory.setEnableModelExtensions(true);
+		}
+		
+		@Override
+		protected void handleForwardReferences(boolean isEndDocument) {
+			if (isEndDocument) {
+				List<SingleReference> resolved = new ArrayList<SingleReference>();
+				for (SingleReference ref : forwardSingleReferences) {
+					EObject obj = null;
+					RuntimeException cause = null;
+					try {
+						obj = xmlResource.getEObject((String) ref.getValue());
+					} catch (RuntimeException exception) {
+						cause = exception;
+					}
+					if (obj==null) {
+						// The forward reference may be in an external document.
+						// Check the reference type and its owner, then search
+						// external documents contained in the same project.
+						EObject ro = ref.getObject();
+						EStructuralFeature rf = ref.getFeature();
+						String id = (String) ref.getValue();
+						obj = importHandler.resolveExternalReference(ro, rf, id);
+						if (obj != null) {
+							resolved.add(ref);
+							Resource r = obj.eResource();
+							IPath path = new Path(r.getURI().toPlatformString(true));
+							boolean doit = MessageDialog.openQuestion(new Shell(),
+									Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Title,
+									NLS.bind(
+											Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Message,
+											new Object[] {
+												obj.eClass().getName(),
+												id,
+												ModelUtil.getLabel(ro)+" \""+ModelUtil.getName((BaseElement)ro)+"\"",
+												path.toString()}
+									)
+								);
+							if (doit) {
+								importHandler.addImport(xmlResource, ModelUtil.getDefinitions(obj));
+								xmlResource.getResourceSet().getResources().add(obj.eResource());
+						        setFeatureValue(ro, rf, obj, ref.getPosition());
+							}
+						}
+					}
+				}
+				if (!resolved.isEmpty())
+					forwardSingleReferences.removeAll(resolved);
+			}
+			super.handleForwardReferences(isEndDocument);
 		}
 
 		@Override

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.model;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +27,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
@@ -38,15 +37,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
-import org.eclipse.wst.wsdl.internal.util.WSDLResourceFactoryImpl;
 import org.eclipse.wst.wsdl.util.WSDLResourceFactoryRegistry;
 import org.eclipse.xsd.util.XSDResourceFactoryImpl;
 
@@ -109,9 +100,9 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 				catch (Exception e) {
 					// if the resource does not contain anything, it was probably not found
 					// and has already been reported earlier so don't bother with error log here.
-				    Resource resource = getResource(uri.trimFragment(), loadOnDemand);
-				    if (resource!=null && resource.getContents().size()>0) 
-				    	Activator.logError(e);
+//				    Resource resource = getResource(uri.trimFragment(), loadOnDemand);
+//				    if (resource!=null && resource.getContents().size()>0)
+//				    	Activator.logError(e);
 				}
 				finally {
 					restoreTimeoutProperties();
@@ -362,26 +353,30 @@ public class Bpmn2ModelerResourceSetImpl extends ResourceSetImpl implements IRes
 				doLoad(resource, monitor);
 			}
 			else {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							IProgressService ps = PlatformUI.getWorkbench().getProgressService();
-							ps.busyCursorWhile(
-								new IRunnableWithProgress() {
-
-									@Override
-									public void run(IProgressMonitor monitor) throws InvocationTargetException,
-											InterruptedException {
-										doLoad(resource, monitor);
-									}
-								}
-							);
-						}
-						catch (Exception e) {
-						}
-					}
-				});
+				// This causes a deadlock waiting on the EditingDomain's CommandStack.
+				// Use a Null Progress Monitor instead - it won't show progress, but
+				// it's better than a deadlock.
+				// TODO: figure out how to show a ProgressMonitorDialog without causing a deadlock
+//				Display.getDefault().asyncExec(new Runnable() {
+//					@Override
+//					public void run() {
+//						try {
+//							IProgressService ps = PlatformUI.getWorkbench().getProgressService();
+//							ps.busyCursorWhile(
+//								new IRunnableWithProgress() {
+//
+//									@Override
+//									public void run(IProgressMonitor monitor) throws InvocationTargetException,
+//											InterruptedException {
+										doLoad(resource, new NullProgressMonitor());
+//									}
+//								}
+//							);
+//						}
+//						catch (Exception e) {
+//						}
+//					}
+//				});
 			}
 		}
 		finally {

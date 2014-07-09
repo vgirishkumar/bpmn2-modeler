@@ -780,9 +780,13 @@ public class ModelUtil {
 		if (object instanceof Resource) {
 			Resource resource = (Resource) object;
 			if (resource!=null && !resource.getContents().isEmpty() && !resource.getContents().get(0).eContents().isEmpty()) {
-				Object defs = resource.getContents().get(0).eContents().get(0);
-				if (defs instanceof Definitions)
-					return (Definitions)defs;
+				// The assumption was that Definitions would always be the first entry in Resource.contents...not necessarily!
+				for (EObject c : resource.getContents()) {
+					for (Object o : c.eContents()) {
+						if (o instanceof Definitions)
+							return (Definitions) o;
+					}
+				}
 			}
 		}
 		return null;
@@ -804,9 +808,11 @@ public class ModelUtil {
 	public static DocumentRoot getDocumentRoot(EObject object) {
 		Resource resource = ObjectPropertyProvider.getResource(object);
 		if (resource!=null) {
-			EList<EObject> contents = resource.getContents();
-			if (!contents.isEmpty() && contents.get(0) instanceof DocumentRoot)
-				return (DocumentRoot)contents.get(0);
+			for (EObject c : resource.getContents()) {
+				if (c instanceof DocumentRoot) {
+					return (DocumentRoot)c;
+				}
+			}
 		}
 		return null;
 	}

@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.impl.SequenceFlowImpl;
 import org.eclipse.bpmn2.util.Bpmn2ResourceFactoryImpl;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 
@@ -40,7 +41,7 @@ public class ModelReader {
 		resource.load(options);
 		
 		// This is the root element of the XML document
-		Definitions d = (Definitions) resource.getContents().get(0).eContents().get(0);
+		Definitions d = getDefinitions(resource);
 
 		// Print all elements contained in all Processes found
 		List<RootElement> rootElements = d.getRootElements();
@@ -68,5 +69,18 @@ public class ModelReader {
 
 			}
 		}
+	}
+	
+	private static Definitions getDefinitions(Resource resource) {
+		if (resource!=null && !resource.getContents().isEmpty() && !resource.getContents().get(0).eContents().isEmpty()) {
+			// Search for a Definitions object in this Resource
+			for (EObject e : resource.getContents()) {
+				for (Object o : e.eContents()) {
+					if (o instanceof Definitions)
+						return (Definitions) o;
+				}
+			}
+		}
+		return null;
 	}
 }

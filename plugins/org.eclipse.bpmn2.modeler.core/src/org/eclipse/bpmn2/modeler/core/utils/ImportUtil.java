@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.Interface;
@@ -28,12 +30,19 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -273,6 +282,10 @@ public class ImportUtil {
 	}
 	
 	public Object loadImport(URI uri, String kind) {
+		return loadImport(this.fHackedResourceSet, uri, kind);
+	}		
+	
+	public Object loadImport(Bpmn2ModelerResourceSetImpl resourceSet, URI uri, String kind) {
 
 		Resource resource = null;
 		if (IMPORT_KIND_JAVA.equals(kind)) {
@@ -294,7 +307,7 @@ public class ImportUtil {
 		}
 		else {
 			try {
-				resource = fHackedResourceSet.getResource(uri, true, kind);
+				resource = resourceSet.getResource(uri, true, kind);
 			} catch (Throwable t) {
 				return t;
 			}
@@ -304,10 +317,125 @@ public class ImportUtil {
 					// set modification tracking on so Graphiti's EMFService doesn't try to save this thing!
 					resource.setTrackingModification(true);
 				}
+				if (kind.equals(IMPORT_KIND_BPMN2))
+					return ModelUtil.getDefinitions(resource);
 				return resource.getContents().get(0);
 			}
 		}
 		return null;
+	}
+
+	protected Object loadImport(Bpmn2ModelerResourceSetImpl resourceSet, IFile file, String kind) {
+		URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		return loadImport(resourceSet, uri, kind);
+	}
+
+	/**
+	 * Attempt to resolve object ID references by examining all files in the
+	 * current Project. The referencing object and feature are used to determine
+	 * the type of object being referenced. Currently only CallableElements,
+	 * XSDElementDeclarations and WSDL PortTypes are supported as referenced
+	 * objects.
+	 * 
+	 * @param object the referencing object
+	 * @param feature the feature of the referencing object that identifies the
+	 *            object being referenced
+	 * @param id the ID string of the referenced object
+	 */
+	public EObject resolveExternalReference(EObject object, EStructuralFeature feature, String id) {
+		Resource resource = object.eResource();
+		Bpmn2ModelerResourceSetImpl rs = new Bpmn2ModelerResourceSetImpl();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile file = workspace.getRoot().getFile(new Path(resource.getURI().toPlatformString(true)));
+		IContainer container = file.getProject();
+		List<IFile> files = new ArrayList<IFile>();
+		if (object instanceof CallActivity) {
+			if (feature == Bpmn2Package.eINSTANCE.getCallActivity_CalledElementRef()) {
+				// search other BPMN2 files in this project for a CallableElement
+				findAllFiles(container, new String[] {"bpmn","bpmn2"}, files);
+				for (IFile f : files) {
+					if (f==file)
+						continue;
+					Object root = loadImport(rs, f, IMPORT_KIND_BPMN2);
+					if (root instanceof Definitions) {
+						TreeIterator<EObject> iter = ((Definitions)root).eAllContents();
+						while (iter.hasNext()) {
+							EObject o = iter.next();
+							if (o instanceof CallableElement) {
+								if (id.equals( ((CallableElement)o).getId() )) {
+									return o;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (object instanceof ItemDefinition) {
+			if (feature == Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef()) {
+				findAllFiles(container, new String[] {"xml","xsd"}, files);
+				for (IFile f : files) {
+					if (f==file)
+						continue;
+					Object root = loadImport(rs, f, IMPORT_KIND_XML_SCHEMA);
+					if (root instanceof XSDSchema) {
+						TreeIterator<EObject> iter = ((XSDSchema)root).eAllContents();
+						while (iter.hasNext()) {
+							EObject o = iter.next();
+							if (o instanceof XSDElementDeclaration) {
+								String name = getLocalnameForObject(o);
+								if ( id.equals(name) )
+									return o;
+							}
+						}
+					}
+				}
+			}			
+		}
+		else if (object instanceof Interface) {
+			if (feature == Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()) {
+				// Look for a WSDL PortType or a Java type
+				findAllFiles(container, new String[] {"wsdl"}, files);
+				for (IFile f : files) {
+					if (f==file)
+						continue;
+					Object root = loadImport(rs, f, IMPORT_KIND_WSDL);
+					if (root instanceof org.eclipse.wst.wsdl.Definition) {
+						TreeIterator<EObject> iter = ((Definition)root).eAllContents();
+						while (iter.hasNext()) {
+							EObject o = iter.next();
+							if (o instanceof PortType) {
+								String name = getLocalnameForObject(o);
+								if ( id.equals(name) )
+									return o;
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private void findAllFiles(IContainer container, String[] extensions, List<IFile> files) {
+		try {
+			for (IResource res : container.members()) {
+				if (res instanceof IFile) {
+					String ext = ((IFile)res).getFileExtension();
+					for (String s : extensions) {
+						if (s.equals(ext)) {
+							files.add((IFile)res);
+						}
+					}
+				}
+				else if (res instanceof IContainer) {
+					findAllFiles((IContainer)res, extensions, files);
+				}
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -343,7 +471,7 @@ public class ImportUtil {
 	public Import addImport(Resource resource, final Object importObject) {
 		Import imp = null;
 		if (resource instanceof Bpmn2Resource) {
-			final Definitions definitions = (Definitions) resource.getContents().get(0).eContents().get(0);
+			final Definitions definitions = ModelUtil.getDefinitions(resource);
 	
 			if (importObject instanceof org.eclipse.wst.wsdl.Definition) {
 				// WSDL Definition

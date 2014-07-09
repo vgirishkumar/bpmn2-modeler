@@ -72,7 +72,7 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 			
 			Definitions definitions = null;
 			if (resource!=null)
-				definitions = (Definitions) resource.getContents().get(0).eContents().get(0);
+				definitions = ModelUtil.getDefinitions(resource);
 			else
 				definitions = ModelUtil.getDefinitions(rootElement);
 			if (definitions!=null) {

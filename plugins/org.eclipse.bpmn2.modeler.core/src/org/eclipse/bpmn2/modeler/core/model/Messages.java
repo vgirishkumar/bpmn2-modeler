@@ -20,6 +20,8 @@ public class Messages extends NLS {
 	public static String Bpmn2ModelerResourceSetImpl_Loading_Error;
 	public static String Bpmn2ModelerResourceSetImpl_Loading_Resource_Not_Found;
 	public static String Bpmn2ModelerResourceSetImpl_Loading_Title;
+	public static String Bpmn2ModelerResourceSetImpl_External_Reference_Found_Title;
+	public static String Bpmn2ModelerResourceSetImpl_External_Reference_Found_Message;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
