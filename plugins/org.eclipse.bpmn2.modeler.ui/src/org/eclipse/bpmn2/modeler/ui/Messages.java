@@ -101,6 +101,10 @@ public class Messages extends NLS {
 	public static String Bpmn2HomePreferencePage_Default_DI_Values_Title;
 	public static String Bpmn2PreferencePage_HomePage_Description;
 	public static String Bpmn2PropertyPage_HomePage_Description;
+	public static String Bpmn2PreferencePage_HomePage_Resolve_Externals_Always;
+	public static String Bpmn2PreferencePage_HomePage_Resolve_Externals_Never;
+	public static String Bpmn2PreferencePage_HomePage_Resolve_Externals_Prompt;
+	
 	public static String CommonLabels_Data_Type;
 	public static String DefaultSchemaImportDialog_All;
 	public static String DefaultSchemaImportDialog_BPMN2_Filter_1;

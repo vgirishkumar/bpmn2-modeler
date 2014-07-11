@@ -405,7 +405,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 	 */
 	protected static class Bpmn2ModelerXmlHandler extends BpmnXmlHandler {
 
-		Bpmn2Preferences prefs = null;
+		Bpmn2Preferences preferences = null;
 		ImportUtil importHandler = new ImportUtil();
 		String targetNamespace = null;
 
@@ -417,6 +417,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public void startDocument() {
 			super.startDocument();
 			Bpmn2ModelerFactory.setEnableModelExtensions(false);
+			preferences = Bpmn2Preferences.getInstance(xmlResource);
 		}
 
 		@Override
@@ -460,40 +461,24 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			if (isEndDocument) {
 				List<SingleReference> resolved = new ArrayList<SingleReference>();
 				for (SingleReference ref : forwardSingleReferences) {
-					EObject obj = null;
-					RuntimeException cause = null;
+					EObject referencedObject = null;
 					try {
-						obj = xmlResource.getEObject((String) ref.getValue());
-					} catch (RuntimeException exception) {
-						cause = exception;
-					}
-					if (obj==null) {
+						referencedObject = xmlResource.getEObject((String) ref.getValue());
+					} catch (RuntimeException exception) {}
+					if (referencedObject==null) {
 						// The forward reference may be in an external document.
 						// Check the reference type and its owner, then search
 						// external documents contained in the same project.
-						EObject ro = ref.getObject();
-						EStructuralFeature rf = ref.getFeature();
+						EObject referencingObject = ref.getObject();
+						EStructuralFeature referencingFeature = ref.getFeature();
 						String id = (String) ref.getValue();
-						obj = importHandler.resolveExternalReference(ro, rf, id);
-						if (obj != null) {
+						referencedObject = importHandler.resolveExternalReference(referencingObject, referencingFeature, id);
+						if (referencedObject != null) {
 							resolved.add(ref);
-							Resource r = obj.eResource();
-							IPath path = new Path(r.getURI().toPlatformString(true));
-							boolean doit = MessageDialog.openQuestion(new Shell(),
-									Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Title,
-									NLS.bind(
-											Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Message,
-											new Object[] {
-												obj.eClass().getName(),
-												id,
-												ModelUtil.getLabel(ro)+" \""+ModelUtil.getName((BaseElement)ro)+"\"",
-												path.toString()}
-									)
-								);
-							if (doit) {
-								importHandler.addImport(xmlResource, ModelUtil.getDefinitions(obj));
-								xmlResource.getResourceSet().getResources().add(obj.eResource());
-						        setFeatureValue(ro, rf, obj, ref.getPosition());
+							if (shouldResolveExternals(referencingObject, referencedObject, id)) {
+								importHandler.addImport(xmlResource, ModelUtil.getDefinitions(referencedObject));
+								xmlResource.getResourceSet().getResources().add(referencedObject.eResource());
+						        setFeatureValue(referencingObject, referencingFeature, referencedObject, ref.getPosition());
 							}
 						}
 					}
@@ -504,6 +489,42 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			super.handleForwardReferences(isEndDocument);
 		}
 
+		/**
+		 * Check if the loader should allow external references to other files
+		 * in the project. This is controlled by a User Preference setting.
+		 * 
+		 * @param referencingObject the object referencing an external object.
+		 * @param referencedObject the referenced object contained in another
+		 *            file in the project.
+		 * @param id the ID string of the referenced object.
+		 * @return true if externals should be resolved, false to cause an error
+		 *         for missing references.
+		 */
+		private boolean shouldResolveExternals(EObject referencingObject, EObject referencedObject, String id) {
+			if (preferences.getResolveExternals()==0)
+				return false;
+			if (preferences.getResolveExternals()==1)
+				return true;
+			try {
+				Resource resource = referencedObject.eResource();
+				IPath path = new Path(resource.getURI().toPlatformString(true));
+				boolean doit = MessageDialog.openQuestion(new Shell(),
+						Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Title,
+						NLS.bind(
+								Messages.Bpmn2ModelerResourceSetImpl_External_Reference_Found_Message,
+								new Object[] {
+									referencedObject.eClass().getName(),
+									id,
+									ModelUtil.getLabel(referencingObject)+" \""+ModelUtil.getName((BaseElement)referencingObject)+"\"",
+									path.toString()}
+						)
+					);
+				return doit;
+			}
+			catch (Exception e) {}
+			return true;
+		}
+		
 		@Override
 		protected EStructuralFeature getFeature(EObject object, String prefix, String name, boolean isElement) {
 			EStructuralFeature feature = null;
@@ -643,7 +664,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						String value = attribs.getValue(i);
 						map.put(key, value);
 					}
-					Bpmn2Preferences.getInstance(this.resourceURI).applyBPMNDIDefaults(bpmnShape, map);
+					preferences.applyBPMNDIDefaults(bpmnShape, map);
 				}
 			}
 			else if (obj instanceof ItemDefinition) {

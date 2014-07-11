@@ -17,6 +17,8 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -47,7 +49,16 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(this,object,feature));
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(this,object,feature) {
+    		
+    		@Override
+    		protected void internalSet(ServiceTask serviceTask, EStructuralFeature feature, Object value, int index) {
+    			if (value instanceof Operation || value==null) {
+					setOperationRef(serviceTask, (Operation)value);
+    			}
+    		}
+   		
+    	});
 
     	feature = Bpmn2Package.eINSTANCE.getServiceTask_Implementation();
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
@@ -77,5 +88,19 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 			}
 		}
 		return choices;
+	}
+
+	private void setOperationRef(ServiceTask serviceTask, Operation operation) {
+		if (serviceTask.getOperationRef()!=operation) {
+			serviceTask.setOperationRef(operation);
+			if (operation!=null) {
+				fixDataInputs(serviceTask, operation.getInMessageRef());
+				fixDataOutputs(serviceTask, operation.getOutMessageRef());
+			}
+			else {
+				fixDataInputs(serviceTask, null);
+				fixDataOutputs(serviceTask, null);
+			}
+		}
 	}
 }

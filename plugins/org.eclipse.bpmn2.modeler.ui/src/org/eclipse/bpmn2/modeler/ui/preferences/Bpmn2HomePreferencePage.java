@@ -15,11 +15,10 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.preferences.TristateCheckboxFieldEditor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.IPreferencePage;
@@ -27,13 +26,11 @@ import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -114,6 +111,16 @@ public class Bpmn2HomePreferencePage
 				Bpmn2Preferences.PREF_SAVE_BPMNLABELS_LABEL,
 				getFieldEditorParent());
 		addField(saveBPMNLabels);
+		
+		ComboFieldEditor resolveExternals = new ComboFieldEditor(
+				Bpmn2Preferences.PREF_RESOLVE_EXTERNALS,
+				Bpmn2Preferences.PREF_RESOLVE_EXTERNALS_LABEL,
+				new String[][]  {
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Always, "1"},
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Never, "0"},
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Prompt, "2"} },
+				getFieldEditorParent());
+		addField(resolveExternals);
 		
 		IntegerFieldEditor connectionTimeout = new IntegerFieldEditor(
 				Bpmn2Preferences.PREF_CONNECTION_TIMEOUT,

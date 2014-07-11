@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
@@ -27,11 +28,8 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
 /**
@@ -62,13 +60,15 @@ public class MessageFlowPropertiesAdapter extends ExtendedPropertiesAdapter<Mess
     				// or ReceiveTask make sure the messageRef is the same as ours
     				List<Connection> connections = DIUtils.getConnections(resourceSet, messageFlow);
     				for (Connection connection : connections) {
-    					Object o = BusinessObjectUtil.getFirstBaseElement(connection.getEnd().getParent());
-    					if (o instanceof ReceiveTask) {
-    						((ReceiveTask)o).setMessageRef(message);
+    					BaseElement source = BusinessObjectUtil.getFirstBaseElement(connection.getStart().getParent());
+    					BaseElement target = BusinessObjectUtil.getFirstBaseElement(connection.getEnd().getParent());
+    					if (source instanceof SendTask) {
+    						ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(source);
+							adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getSendTask_MessageRef()).setValue(message);
     					}
-    					o = BusinessObjectUtil.getFirstBaseElement(connection.getStart().getParent());
-    					if (o instanceof SendTask) {
-    						((SendTask)o).setMessageRef(message);
+    					if (target instanceof ReceiveTask) {
+    						ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(target);
+							adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef()).setValue(message);
     					}
     				}
     			}

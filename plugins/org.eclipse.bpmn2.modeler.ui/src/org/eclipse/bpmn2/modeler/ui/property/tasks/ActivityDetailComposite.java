@@ -14,19 +14,25 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.OutputSet;
@@ -35,9 +41,11 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
+import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -55,6 +63,14 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -406,13 +422,14 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		Operation oldOperation = (Operation) activity.eGet(operationRef);
 		boolean operationChanged = (oldOperation != operation);
 		boolean messageChanged = false;
+		ExtendedPropertiesAdapter activityAdapter = ExtendedPropertiesAdapter.adapt(activity);
 		if (operationChanged) {
-			activity.eSet(operationRef, operation);
+			activityAdapter.getFeatureDescriptor(operationRef).setValue(operation);
 			if (operation!=null) {
 				if (activity instanceof ReceiveTask)
-					activity.eSet(messageRef, operation.getInMessageRef());
+					activityAdapter.getFeatureDescriptor(messageRef).setValue(operation.getInMessageRef());
 				else if (activity instanceof SendTask)
-					activity.eSet(messageRef, operation.getOutMessageRef());
+					activityAdapter.getFeatureDescriptor(messageRef).setValue(operation.getOutMessageRef());
 			}
 		}
 		
@@ -420,17 +437,19 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			Message oldMessage = (Message) activity.eGet(messageRef);
 			messageChanged = (oldMessage != message);
 			if (messageChanged)
-				activity.eSet(messageRef, message);
+				activityAdapter.getFeatureDescriptor(messageRef).setValue(message);
 		}
 
-		if (inputComposite==null) {
-			inputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
-			inputComposite.setShowToGroup(false);
-		}
-		
-		if (outputComposite==null) {
-			outputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
-			outputComposite.setShowFromGroup(false);
+		if (container!=null) {
+			if (inputComposite==null) {
+				inputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
+				inputComposite.setShowToGroup(false);
+			}
+			
+			if (outputComposite==null) {
+				outputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
+				outputComposite.setShowFromGroup(false);
+			}
 		}
 		
 		Resource resource = activity.eResource();
@@ -466,15 +485,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		DataInput input = null;
 		DataOutput output = null;
-		if (operationChanged || messageChanged) {
-			activity.getDataInputAssociations().clear();
-			activity.getDataOutputAssociations().clear();
-			ioSpec.getDataInputs().clear();
-			ioSpec.getDataOutputs().clear();
-			ioSpec.getInputSets().get(0).getDataInputRefs().clear();
-			ioSpec.getOutputSets().get(0).getDataOutputRefs().clear();
-		}
-
 		Message inMessage = null;
 		Message outMessage = null;
 		if (operation!=null) {
@@ -489,9 +499,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		else {
 			if (activity instanceof SendTask)
-				inMessage = ((SendTask) activity).getMessageRef();
+				message = inMessage = ((SendTask) activity).getMessageRef();
 			else if (activity instanceof ReceiveTask)
-				outMessage = ((ReceiveTask) activity).getMessageRef();
+				message = outMessage = ((ReceiveTask) activity).getMessageRef();
 		}
 		
 		if (activity instanceof SendTask)
@@ -574,45 +584,48 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			InsertionAdapter.add(activity, Bpmn2Package.eINSTANCE.getActivity_IoSpecification(), ioSpec);
 		}
 		
-		if (activity instanceof ServiceTask) {
-			if (inMessage!=null) {
-				// display the "From" association widgets
-				inputComposite.setVisible(true);
-				inputComposite.setBusinessObject(input);
-				inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Request_Message);
+		if (container!=null) {
+			if (activity instanceof ServiceTask) {
+				if (inMessage!=null) {
+					// display the "From" association widgets
+					inputComposite.setVisible(true);
+					inputComposite.setBusinessObject(input);
+					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Request_Message);
+				}
+				else
+					inputComposite.setVisible(false);
+				
+				if (outMessage!=null) {
+					outputComposite.setVisible(true);
+					outputComposite.setBusinessObject(output);
+					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Response_Message);
+				}
+				else
+					outputComposite.setVisible(false);
 			}
-			else
-				inputComposite.setVisible(false);
-			
-			if (outMessage!=null) {
-				outputComposite.setVisible(true);
-				outputComposite.setBusinessObject(output);
-				outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Response_Message);
+			else if (activity instanceof SendTask) {
+				if (inMessage!=null) {
+					inputComposite.setVisible(true);
+					inputComposite.setBusinessObject(input);
+					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
+				}
+				else
+					inputComposite.setVisible(false);
 			}
-			else
-				outputComposite.setVisible(false);
+			else if (activity instanceof ReceiveTask) {
+				if (outMessage!=null) {
+					outputComposite.setVisible(true);
+					outputComposite.setBusinessObject(output);
+					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
+				}
+				else
+					outputComposite.setVisible(false);
+			}
+	
+			if (operationChanged || messageChanged) {
+				redrawPage();
+			}
 		}
-		else if (activity instanceof SendTask) {
-			if (inMessage!=null) {
-				inputComposite.setVisible(true);
-				inputComposite.setBusinessObject(input);
-				inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
-			}
-			else
-				inputComposite.setVisible(false);
-		}
-		else if (activity instanceof ReceiveTask) {
-			if (outMessage!=null) {
-				outputComposite.setVisible(true);
-				outputComposite.setBusinessObject(output);
-				outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
-			}
-			else
-				outputComposite.setVisible(false);
-		}
-
-		if (operationChanged || messageChanged)
-			redrawPage();
 	}
 	
 	private void createNewDiagram(final BaseElement bpmnElement) {

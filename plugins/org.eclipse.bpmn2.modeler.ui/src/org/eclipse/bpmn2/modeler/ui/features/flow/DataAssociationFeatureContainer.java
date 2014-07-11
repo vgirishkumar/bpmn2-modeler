@@ -29,6 +29,9 @@ import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -69,7 +72,6 @@ import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
@@ -196,20 +198,15 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				// if this new DataAssociation replaces another one, delete it
 				if (newAssociation instanceof DataInputAssociation) {
 					DataInputAssociation dia = BusinessObjectUtil.getFirstElementOfType(c, DataInputAssociation.class);
-					if (dia!=null) {
-						if (newAssociation.getTargetRef() == dia.getTargetRef())
-							return c;
+					if (dia==newAssociation) {
+						return c;
 					}
 					
 				}
 				else {
 					DataOutputAssociation doa = BusinessObjectUtil.getFirstElementOfType(c, DataOutputAssociation.class);
-					if (doa!=null) {
-						for (ItemAwareElement d : newAssociation.getSourceRef()) {
-							if (doa.getSourceRef().contains(d)) {
-								return c;
-							}
-						}
+					if (doa==newAssociation) {
+						return c;
 					}
 				}
 			}
@@ -232,32 +229,43 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			targetFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
 		}
 
-		// allow user to select a dataInput:
-		// create a throw away object as a placeholder in our popup list
-		DataInput dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
-		dataInput.setName(
-			NLS.bind(
-				Messages.DataAssociationFeatureContainer_New_Input_For,
-				ExtendedPropertiesProvider.getTextValue(target)
-			)
-		);
-		DataInput result = dataInput;
-		// build the popup list
-		List<DataInput> list = new ArrayList<DataInput>();
-		list.add(dataInput);
-		list.addAll(dataInputs);
-		if (list.size()>1) {
-			PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-			boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-			if (b) {
-				result = (DataInput) popupMenu.getResult();
-			}
-			else {
-				EcoreUtil.delete(dataInput);
-				return null;
-			}
+		DataInput result = null;
+		DataInput dataInput = null;
+		if (target instanceof SendTask || target instanceof ReceiveTask || target instanceof ServiceTask) {
+			// don't create a new Data Input/Output for these types of tasks if
+			// they already have one
+			if (dataInputs.size()>0)
+				result = dataInputs.get(0);
 		}
 
+		if (result==null) {
+			// allow user to select a dataInput:
+			// create a throw away object as a placeholder in our popup list
+			dataInput = Bpmn2Factory.eINSTANCE.createDataInput();
+			dataInput.setName(
+				NLS.bind(
+					Messages.DataAssociationFeatureContainer_New_Input_For,
+					ExtendedPropertiesProvider.getTextValue(target)
+				)
+			);
+			result = dataInput;
+			// build the popup list
+			List<DataInput> list = new ArrayList<DataInput>();
+			list.add(dataInput);
+			list.addAll(dataInputs);
+			if (list.size()>1) {
+				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (b) {
+					result = (DataInput) popupMenu.getResult();
+				}
+				else {
+					EcoreUtil.delete(dataInput);
+					return null;
+				}
+			}
+		}
+		
 		DataInputAssociation dataInputAssoc = null;
 		if (result == dataInput) {
 			// create the new one
@@ -300,32 +308,43 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			sourceFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
 		}
 
-		// allow user to select a dataOutput:
-		// create a throw away object as a placeholder in our popup list
-		DataOutput dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
-		dataOutput.setName(
-			NLS.bind(
-				Messages.DataAssociationFeatureContainer_New_Output_For,
-				ExtendedPropertiesProvider.getTextValue(source)
-			)
-		);
-		DataOutput result = dataOutput;
-		// build the popup list
-		List<DataOutput> list = new ArrayList<DataOutput>();
-		list.add(dataOutput);
-		list.addAll(dataOutputs);
-		if (list.size()>1) {
-			PopupMenu popupMenu = new PopupMenu(list, labelProvider);
-			boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
-			if (b) {
-				result = (DataOutput) popupMenu.getResult();
-			}
-			else {
-				EcoreUtil.delete(dataOutput);
-				return null;
+		DataOutput result = null;
+		DataOutput dataOutput = null;
+		if (source instanceof SendTask || source instanceof ReceiveTask || source instanceof ServiceTask) {
+			// don't create a new Data Input/Output for these types of tasks if
+			// they already have one
+			if (dataOutputs.size()>0)
+				result = dataOutputs.get(0);
+		}
+		
+		if (result==null) {
+			// allow user to select a dataOutput:
+			// create a throw away object as a placeholder in our popup list
+			dataOutput = Bpmn2Factory.eINSTANCE.createDataOutput();
+			dataOutput.setName(
+				NLS.bind(
+					Messages.DataAssociationFeatureContainer_New_Output_For,
+					ExtendedPropertiesProvider.getTextValue(source)
+				)
+			);
+			result = dataOutput;
+			// build the popup list
+			List<DataOutput> list = new ArrayList<DataOutput>();
+			list.add(dataOutput);
+			list.addAll(dataOutputs);
+			if (list.size()>1) {
+				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
+				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
+				if (b) {
+					result = (DataOutput) popupMenu.getResult();
+				}
+				else {
+					EcoreUtil.delete(dataOutput);
+					return null;
+				}
 			}
 		}
-
+		
 		DataOutputAssociation dataOutputAssoc = null;
 		if (result == dataOutput) {
 			// create the new one

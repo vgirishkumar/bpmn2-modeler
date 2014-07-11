@@ -21,14 +21,12 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -83,32 +81,39 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 		ResourceSet resourceSet = sendTask.eResource().getResourceSet();
 		
 		// first change the MessageRef on the SendTask
-		sendTask.setMessageRef(message);
-		
-		// If there are any OUTGOING Message Flows attached to this SendTask figure,
-		// make sure the MessageFlow.messageRef is the same as ours
-		List<ContainerShape> shapes = DIUtils.getContainerShapes(resourceSet, sendTask);
-		for (ContainerShape shape : shapes) {
-			for (Anchor a : shape.getAnchors()) {
-				for (Connection c : a.getOutgoingConnections()) {
-					Object o = BusinessObjectUtil.getFirstBaseElement(c);
-					if (o instanceof MessageFlow) {
-						((MessageFlow)o).setMessageRef(message);
-					}
-					// also set the "messageRef" on the target of this Message Flow
-					// (the target should be a ReceiveTask)
-					o = BusinessObjectUtil.getFirstBaseElement(c.getEnd().getParent());
-					if (o instanceof ReceiveTask) {
-						((ReceiveTask)o).setMessageRef(message);
+		if (sendTask.getMessageRef()!=message) {
+			sendTask.setMessageRef(message);
+			
+			// If there are any OUTGOING Message Flows attached to this SendTask figure,
+			// make sure the MessageFlow.messageRef is the same as ours
+			List<ContainerShape> shapes = DIUtils.getContainerShapes(resourceSet, sendTask);
+			for (ContainerShape shape : shapes) {
+				for (Anchor a : shape.getAnchors()) {
+					for (Connection c : a.getOutgoingConnections()) {
+						Object o = BusinessObjectUtil.getFirstBaseElement(c);
+						if (o instanceof MessageFlow && ((MessageFlow)o).getMessageRef()!=message) {
+							((MessageFlow)o).setMessageRef(message);
+						}
+						// also set the "messageRef" on the target of this Message Flow
+						// (the target should be a ReceiveTask)
+						o = BusinessObjectUtil.getFirstBaseElement(c.getEnd().getParent());
+						if (o instanceof ReceiveTask && ((ReceiveTask)o).getMessageRef()!=message) {
+							ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(o);
+							adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getReceiveTask_MessageRef()).setValue(message);
+						}
 					}
 				}
 			}
+			
+			fixDataInputs(sendTask, message);
 		}
 	}
 
 	private void setOperationRef(SendTask sendTask, Operation operation) {
-		sendTask.setOperationRef(operation);
-		Message message = operation==null ? null : operation.getOutMessageRef();
-		setMessageRef(sendTask, message);
+		if (sendTask.getOperationRef()!=operation) {
+			sendTask.setOperationRef(operation);
+			Message message = operation==null ? null : operation.getOutMessageRef();
+			setMessageRef(sendTask, message);
+		}
 	}
 }

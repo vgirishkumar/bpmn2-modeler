@@ -149,6 +149,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL = Messages.Bpmn2Preferences_Allow_Mutliple_Connections;
 	public final static String PREF_SERVICE_IMPLEMENTATIONS = "service.implementations"; //$NON-NLS-1$
 
+	public final static String PREF_RESOLVE_EXTERNALS = "resolve.externals"; //$NON-NLS-1$
+	public final static String PREF_RESOLVE_EXTERNALS_LABEL = Messages.Bpmn2Preferences_Resolve_Externals;
+	
 	private static Hashtable<IProject,Bpmn2Preferences> projectPreferenceCacheMap = null;
 	private static Bpmn2Preferences instancePreferenceCache = null;
 	private static IProject activeProject;
@@ -188,6 +191,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private int connectionTimeout;
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
+	private int resolveExternals;
 
 	private HashMap<String, ShapeStyle> shapeStyles = new HashMap<String, ShapeStyle>();
 
@@ -365,7 +369,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			defaultPreferences.putBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 
-			defaultPreferences.put(PREF_CONNECTION_TIMEOUT, "1000"); //$NON-NLS-1$
+			defaultPreferences.putInt(PREF_CONNECTION_TIMEOUT, 60000);
+			defaultPreferences.putInt(PREF_RESOLVE_EXTERNALS, 2);
 			
 			loadDefaults(PREF_TOOL_PROFILE);
 			loadDefaults(PREF_MODEL_ENABLEMENT);
@@ -482,6 +487,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			isMarkerVisible = getBPMNDIAttributeDefault(PREF_IS_MARKER_VISIBLE, BPMNDIAttributeDefault.USE_DI_VALUE);
 			saveBPMNLabels = getBoolean(PREF_SAVE_BPMNLABELS, true);
 			connectionTimeout = getInt(PREF_CONNECTION_TIMEOUT, 60000); //$NON-NLS-1$
+			resolveExternals = getInt(PREF_RESOLVE_EXTERNALS, 2); //$NON-NLS-1$
 			
 			popupConfigDialog = getInt(PREF_POPUP_CONFIG_DIALOG, 0); // tri-state checkbox
 			popupConfigDialogFor[0] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, false);
@@ -522,6 +528,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				putBoolean(PREF_SAVE_BPMNLABELS, saveBPMNLabels);
 				
 				putInt(PREF_CONNECTION_TIMEOUT, connectionTimeout);
+				putInt(PREF_RESOLVE_EXTERNALS, resolveExternals);
 	
 				putInt(PREF_POPUP_CONFIG_DIALOG, popupConfigDialog);
 				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, popupConfigDialogFor[0]);
@@ -1194,6 +1201,15 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public void setConnectionTimeout(int value) {
 		putInt(PREF_CONNECTION_TIMEOUT, value);
 		connectionTimeout = value;
+	}
+
+	public int getResolveExternals() {
+		return resolveExternals;
+	}
+	
+	public void setResolveExternals(int value) {
+		putInt(PREF_RESOLVE_EXTERNALS, value);
+		resolveExternals = value;
 	}
 	
 	// this is temporary until the connection routing has been proven reliable

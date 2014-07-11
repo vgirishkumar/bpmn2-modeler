@@ -22,8 +22,14 @@ import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.ReceiveTask;
+import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
@@ -336,6 +342,46 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		}
 
 		@Override
+		public PictogramElement add(IAddContext context) {
+			Connection connection = (Connection)super.add(context);
+			if (!DIImport.isImporting(context)) {
+				// take a SWAG at the Message type by looking at the source and target figures:
+				// if the source is a SendTask, use the Message from the SendTask
+				// if the target is a ReceiveTask, use the Message from that
+				// if the source or target is a ServiceTask use the input or output Message from its Operation
+				BaseElement source = BusinessObjectUtil.getFirstBaseElement(connection.getStart().getParent());
+				BaseElement target = BusinessObjectUtil.getFirstBaseElement(connection.getEnd().getParent());
+				Message message = null;
+				if (source instanceof SendTask) {
+					message = ((SendTask)source).getMessageRef(); 
+				}
+				else if (target instanceof ReceiveTask) {
+					message = ((ReceiveTask)target).getMessageRef(); 
+				}
+				else if (source instanceof ServiceTask) {
+					Operation operation = ((ServiceTask)source).getOperationRef();
+					if (operation!=null)
+						message = operation.getInMessageRef();
+				}
+				else if (target instanceof ServiceTask) {
+					Operation operation = ((ServiceTask)target).getOperationRef();
+					if (operation!=null)
+						message = operation.getOutMessageRef();
+				}
+				
+				if (message!=null) {
+					// Set the Message type. The ExtendedPropertiesAdapter will
+					// handle the setting of Message types in the source and target
+					// nodes as required.
+					MessageFlow mf = BusinessObjectUtil.getFirstElementOfType(connection, MessageFlow.class);
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(mf);
+					adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getMessageFlow_MessageRef()).setValue(message);
+				}
+			}
+			return connection;
+		}
+
+		@Override
 		protected Polyline createConnectionLine(final Connection connection) {
 			MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
 
@@ -434,6 +480,10 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 					return false;
 			}
 			InteractionNode target = getTargetBo(context);
+			if (source instanceof ReceiveTask)
+				return false;
+			if (target instanceof SendTask)
+				return false;
 			return super.canCreate(context) && isDifferentParticipants(source, target);
 		}
 

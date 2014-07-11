@@ -477,12 +477,12 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		bpmnTreeViewer.setInput(bpmnEntries);
 		extensionTreeViewer.setInput(extensionEntries);
 
-		if (TargetRuntime.DEFAULT_RUNTIME_ID.equals(currentRuntime.getId())) {
-			extensionTreeViewer.setVisible(false);
-		}
-		else {
-			extensionTreeViewer.setVisible(true);
-		}
+//		if (TargetRuntime.DEFAULT_RUNTIME_ID.equals(currentRuntime.getId())) {
+//			extensionTreeViewer.setVisible(false);
+//		}
+//		else {
+//			extensionTreeViewer.setVisible(true);
+//		}
 	}
 	
 	private boolean isEnabled(ToolDescriptor td) {
@@ -726,13 +726,13 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 
 		ArrayList<ModelEnablementTreeEntry> enabled = new ArrayList<ModelEnablementTreeEntry>();
 		for (ModelEnablementTreeEntry entry : entries) {
-			if (entry.getEnabled()) {
-				enabled.add(entry);
-			}
 			ArrayList<ModelEnablementTreeEntry> children = entry.getChildren();
-			for (ModelEnablementTreeEntry t : children) {
-				if (t.getEnabled()) {
-					enabled.add(t);
+			if (entry.getEnabled() && !children.isEmpty()) {
+				enabled.add(entry);
+				for (ModelEnablementTreeEntry t : children) {
+					if (t.getEnabled()) {
+						enabled.add(t);
+					}
 				}
 			}
 		}

@@ -276,7 +276,9 @@ public class ToolProfilesPreferencesHelper {
 		runtimeModelExtensionsRoot.setChildren(runtimeModelExtensions);
 
 		ArrayList<ModelEnablementTreeEntry> allExtensions = new ArrayList<ModelEnablementTreeEntry>();
-		allExtensions.add(bpmnModelExtensionsRoot);
+		if (!bpmnModelExtensionsRoot.getChildren().isEmpty())
+			allExtensions.add(bpmnModelExtensionsRoot);
+		if (!runtimeModelExtensionsRoot.getChildren().isEmpty())
 		allExtensions.add(runtimeModelExtensionsRoot);
 		
 		return allExtensions;

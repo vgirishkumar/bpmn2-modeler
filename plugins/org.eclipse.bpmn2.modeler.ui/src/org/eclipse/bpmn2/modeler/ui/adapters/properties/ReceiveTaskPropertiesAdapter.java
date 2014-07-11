@@ -13,32 +13,20 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.ReceiveTask;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SendTask;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -93,32 +81,38 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 		ResourceSet resourceSet = receiveTask.eResource().getResourceSet();
 		
 		// first change the MessageRef on the ReceiveTask
-		receiveTask.setMessageRef(message);
-		
-		// If there are any INCOMING Message Flows attached to this SendTask figure,
-		// make sure the MessageFlow.messageRef is the same as ours
-		List<ContainerShape> shapes = DIUtils.getContainerShapes(resourceSet, receiveTask);
-		for (ContainerShape shape : shapes) {
-			for (Anchor a : shape.getAnchors()) {
-				for (Connection c : a.getIncomingConnections()) {
-					Object o = BusinessObjectUtil.getFirstBaseElement(c);
-					if (o instanceof MessageFlow) {
-						((MessageFlow)o).setMessageRef(message);
-					}
-					// also set the "messageRef" on the source of this Message Flow
-					// (the source should be a SendTask)
-					o = BusinessObjectUtil.getFirstBaseElement(c.getStart().getParent());
-					if (o instanceof SendTask) {
-						((SendTask)o).setMessageRef(message);
+		if (receiveTask.getMessageRef()!=message) {
+			receiveTask.setMessageRef(message);
+			
+			// If there are any INCOMING Message Flows attached to this SendTask figure,
+			// make sure the MessageFlow.messageRef is the same as ours
+			List<ContainerShape> shapes = DIUtils.getContainerShapes(resourceSet, receiveTask);
+			for (ContainerShape shape : shapes) {
+				for (Anchor a : shape.getAnchors()) {
+					for (Connection c : a.getIncomingConnections()) {
+						Object o = BusinessObjectUtil.getFirstBaseElement(c);
+						if (o instanceof MessageFlow && ((MessageFlow)o).getMessageRef()!=message) {
+							((MessageFlow)o).setMessageRef(message);
+						}
+						// also set the "messageRef" on the source of this Message Flow
+						// (the source should be a SendTask)
+						o = BusinessObjectUtil.getFirstBaseElement(c.getStart().getParent());
+						if (o instanceof SendTask && ((SendTask)o).getMessageRef()!=message) {
+							ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(o);
+							adapter.getFeatureDescriptor(Bpmn2Package.eINSTANCE.getSendTask_MessageRef()).setValue(message);
+						}
 					}
 				}
 			}
+			fixDataOutputs(receiveTask, message);
 		}
 	}
 
 	private void setOperationRef(ReceiveTask receiveTask, Operation operation) {
-		receiveTask.setOperationRef(operation);
-		Message message = operation==null ? null : operation.getInMessageRef();
-		setMessageRef(receiveTask, message);
+		if (receiveTask.getOperationRef()!=operation) {
+			receiveTask.setOperationRef(operation);
+			Message message = operation==null ? null : operation.getInMessageRef();
+			setMessageRef(receiveTask, message);
+		}
 	}
 }
