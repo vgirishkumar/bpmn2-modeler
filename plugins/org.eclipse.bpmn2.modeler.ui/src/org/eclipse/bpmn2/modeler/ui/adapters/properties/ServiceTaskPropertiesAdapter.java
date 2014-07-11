@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
@@ -93,14 +92,6 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 	private void setOperationRef(ServiceTask serviceTask, Operation operation) {
 		if (serviceTask.getOperationRef()!=operation) {
 			serviceTask.setOperationRef(operation);
-			if (operation!=null) {
-				fixDataInputs(serviceTask, operation.getInMessageRef());
-				fixDataOutputs(serviceTask, operation.getOutMessageRef());
-			}
-			else {
-				fixDataInputs(serviceTask, null);
-				fixDataOutputs(serviceTask, null);
-			}
 		}
 	}
 }

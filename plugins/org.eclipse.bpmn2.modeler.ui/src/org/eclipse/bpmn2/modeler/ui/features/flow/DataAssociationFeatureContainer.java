@@ -231,12 +231,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		DataInput result = null;
 		DataInput dataInput = null;
-		if (target instanceof SendTask || target instanceof ReceiveTask || target instanceof ServiceTask) {
-			// don't create a new Data Input/Output for these types of tasks if
-			// they already have one
-			if (dataInputs.size()>0)
-				result = dataInputs.get(0);
-		}
+//		if (target instanceof SendTask || target instanceof ReceiveTask || target instanceof ServiceTask) {
+//			// don't create a new Data Input/Output for these types of tasks if
+//			// they already have one
+//			if (dataInputs.size()>0)
+//				result = dataInputs.get(0);
+//		}
 
 		if (result==null) {
 			// allow user to select a dataInput:
@@ -310,12 +310,12 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		DataOutput result = null;
 		DataOutput dataOutput = null;
-		if (source instanceof SendTask || source instanceof ReceiveTask || source instanceof ServiceTask) {
-			// don't create a new Data Input/Output for these types of tasks if
-			// they already have one
-			if (dataOutputs.size()>0)
-				result = dataOutputs.get(0);
-		}
+//		if (source instanceof SendTask || source instanceof ReceiveTask || source instanceof ServiceTask) {
+//			// don't create a new Data Input/Output for these types of tasks if
+//			// they already have one
+//			if (dataOutputs.size()>0)
+//				result = dataOutputs.get(0);
+//		}
 		
 		if (result==null) {
 			// allow user to select a dataOutput:

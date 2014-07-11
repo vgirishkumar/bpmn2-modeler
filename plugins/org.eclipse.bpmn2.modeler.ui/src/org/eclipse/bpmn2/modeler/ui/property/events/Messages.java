@@ -16,8 +16,8 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.property.events.messages"; //$NON-NLS-1$
 	public static String CommonEventDetailComposite_Attached_To_Label;
 	public static String CommonEventDetailComposite_Event_Definition_Title;
-	public static String CommonEventDetailComposite_Input_Parameters_Title;
-	public static String CommonEventDetailComposite_Output_Parameters_Title;
+	public static String CommonEventDetailComposite_Input_Data_Title;
+	public static String CommonEventDetailComposite_Output_Data_Title;
 	public static String EventDefinitionsListComposite_Event_ID_Header;
 	public static String EventDefinitionsListComposite_Event_Type_Header;
 	public static String EventDefinitionsListComposite_Map_Incoming;

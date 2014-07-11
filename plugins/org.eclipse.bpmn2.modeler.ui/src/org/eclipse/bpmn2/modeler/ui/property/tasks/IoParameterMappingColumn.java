@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
@@ -28,10 +29,6 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.swt.widgets.Composite;
 
 public class IoParameterMappingColumn extends TableColumn {
 
@@ -56,13 +53,19 @@ public class IoParameterMappingColumn extends TableColumn {
 
 	@Override
 	public String getText(Object element) {
-		String text = null;
+		String result = null;
 		ItemAwareElement source = (ItemAwareElement)element;
-		DataAssociation da = getDataAssociation(source);
-		if (da!=null) {
-			ItemAwareElement target = getTargetElement(da);
-			if (target!=null)
-				text = ExtendedPropertiesProvider.getTextValue(target);
+		for (DataAssociation da : getDataAssociations(source)) {
+			String text = null;
+			List<ItemAwareElement> target = getTargetElements(da);
+			if (!target.isEmpty())
+				for (ItemAwareElement e : target) {
+					if (text==null)
+						text = "";
+					else
+						text += ", ";
+					text += ExtendedPropertiesProvider.getTextValue(e);
+				}
 			else {
 				if (da.getTransformation()!=null) {
 					text = Messages.IoParameterMappingColumn_Transform_Prefix + ExtendedPropertiesProvider.getTextValue(da.getTransformation());
@@ -83,89 +86,40 @@ public class IoParameterMappingColumn extends TableColumn {
 						text += " + " + text2; //$NON-NLS-1$
 				}
 			}
+			if (text!=null && !text.isEmpty()) {
+				if (result==null)
+					result = "";
+				else
+					result += ", ";
+				result += text;
+			}
 		}
-		return text==null ? "" : text; //$NON-NLS-1$
+		return result==null ? "" : result; //$NON-NLS-1$
 	}
 
 	private FormalExpression getTargetExpression(DataAssociation da, Assignment assign) {
 		return (FormalExpression) ((da instanceof DataInputAssociation) ? assign.getFrom() : assign.getTo());
 	}
 
-	@Override
-	public Object getValue(Object element, String property) {
-		Integer value = new Integer(-1);
-		ItemAwareElement source = (ItemAwareElement)element;
-		DataAssociation da = getDataAssociation(source);
-		if (da!=null) {
-			ItemAwareElement target = getTargetElement(da);
-			association = da;
-			EStructuralFeature f = getTargetFeature(source);
-			CellEditor ce = getCellEditor();
-			if (ce instanceof CustomComboBoxCellEditor) {
-				((CustomComboBoxCellEditor)ce).setValue(da,f,target);
-				value = (Integer)getCellEditor().getValue();
-			}
-		}
-		return value;
-	}
-	
-	@Override
-	public CellEditor createCellEditor(Composite parent) {
-		return new CustomComboBoxCellEditor(parent, feature) {
-			
-			public void activate(ColumnViewerEditorActivationEvent activationEvent) {
-				Object activationSource = activationEvent.getSource();
-				if (activationSource instanceof ViewerCell) {
-					Object element = ((ViewerCell)activationSource).getElement();
-					if (element instanceof ItemAwareElement) {
-						ItemAwareElement source = (ItemAwareElement)element;
-						DataAssociation da = getDataAssociation(source);
-						if (da!=null) {
-							ItemAwareElement target = getTargetElement(da);
-							association = da;
-							EStructuralFeature f = getTargetFeature(source);
-							setValue(da,f,target);
-						}
-					}
-				}
-			}
-		};
-	}
-	
-	@Override
-	public boolean canModify(Object element, String property) {
-		if (super.canModify(element, property)) {
-			// only allow the combobox cell editor to work if the DataAssociation is
-			// with a Property (no MultipleAssignments or Transformations please!)
-			// Other types of associations must be done in the Detail section
-			DataAssociation da = getDataAssociation((ItemAwareElement)element);
-			if (da!= null) {
-				if (getTargetElement(da) == null) {
-					if (!da.getAssignment().isEmpty() || da.getTransformation()!=null)
-						return false;
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void modify(Object element, String property, Object value) {
-		// the real object to be modified is the DataAssociation
-		EStructuralFeature f = getTargetFeature((ItemAwareElement)element);
-		super.modify(association, f, value);
-		tableViewer.refresh(element);
-	}
-	
-	protected List<DataAssociation> getDataAssociations(ItemAwareElement element) {
+	private List<DataAssociation> getDataAssociations(ItemAwareElement element) {
+		List<DataAssociation> list = null;
 		if (element instanceof DataInput)
-			return getDataInputAssociations();
+			list = getDataInputAssociations();
 		if (element instanceof DataOutput)
-			return getDataOutputAssociations();
-		return null;
+			list = getDataOutputAssociations();
+		List<DataAssociation> result = new ArrayList<DataAssociation>();
+		if (list!=null) {
+			for (DataAssociation da : list) {
+				for (ItemAwareElement e : getSourceElements(da)) {
+					if (element==e)
+						result.add(da);
+				}
+			}
+		}
+		return result;
 	}
 	
-	public List getDataInputAssociations() {
+	private List getDataInputAssociations() {
 		if (object instanceof Activity) {
 			return ((Activity)object).getDataInputAssociations();
 		}
@@ -175,7 +129,7 @@ public class IoParameterMappingColumn extends TableColumn {
 		return null;
 	}
 	
-	public List getDataOutputAssociations() {
+	private List getDataOutputAssociations() {
 		if (object instanceof Activity) {
 			return ((Activity)object).getDataOutputAssociations();
 		}
@@ -184,39 +138,32 @@ public class IoParameterMappingColumn extends TableColumn {
 		}
 		return null;
 	}
-
-	protected DataAssociation getDataAssociation(ItemAwareElement element) {
-		for (DataAssociation da : getDataAssociations(element)) {
-			if (element==getSourceElement(da)) {
-				return da;
-			}
-		}
-		return null;
-	}
 	
-	protected ItemAwareElement getSourceElement(DataAssociation da) {
+	private List<ItemAwareElement> getSourceElements(DataAssociation da) {
+		List<ItemAwareElement> result = new ArrayList<ItemAwareElement>();
 		if (da instanceof DataOutputAssociation) {
 			if (da.getSourceRef().size()==1)
-				return da.getSourceRef().get(0);
+				result.addAll(da.getSourceRef());
 		}
 		else if (da instanceof DataInputAssociation) {
-			return da.getTargetRef();
+			result.add(da.getTargetRef());
 		}
-		return null;
+		return result;
 	}
 	
-	protected ItemAwareElement getTargetElement(DataAssociation da) {
+	private List<ItemAwareElement> getTargetElements(DataAssociation da) {
+		List<ItemAwareElement> result = new ArrayList<ItemAwareElement>();
 		if (da instanceof DataInputAssociation) {
 			if (da.getSourceRef().size()==1)
-				return da.getSourceRef().get(0);
+				result.addAll(da.getSourceRef());
 		}
 		else if (da instanceof DataOutputAssociation) {
-			return da.getTargetRef();
+			result.add(da.getTargetRef());
 		}
-		return null;
+		return result;
 	}
 	
-	protected EStructuralFeature getTargetFeature(ItemAwareElement element) {
+	private EStructuralFeature getTargetFeature(ItemAwareElement element) {
 		return element instanceof DataInput ?
 				Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef() :
 				Bpmn2Package.eINSTANCE.getDataAssociation_TargetRef();

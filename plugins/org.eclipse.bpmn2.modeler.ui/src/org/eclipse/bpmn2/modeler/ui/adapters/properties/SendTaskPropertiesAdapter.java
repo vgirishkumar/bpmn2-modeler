@@ -104,8 +104,6 @@ public class SendTaskPropertiesAdapter extends TaskPropertiesAdapter<SendTask> {
 					}
 				}
 			}
-			
-			fixDataInputs(sendTask, message);
 		}
 	}
 

@@ -81,12 +81,12 @@ public class IoSetsListComposite extends DefaultListComposite {
 
 			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_2);
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText(Messages.IoSetsListComposite_3);
+			tc.setHeaderText(Messages.IoSetsListComposite_Input_Data_Header);
 			columnProvider.add(tc);
 			
 			f = listItemClass.getEStructuralFeature(Messages.IoSetsListComposite_4);
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText(Messages.IoSetsListComposite_5);
+			tc.setHeaderText(Messages.IoSetsListComposite_Optional_Inputs_Header);
 			columnProvider.add(tc);
 			
 			f = listItemClass.getEStructuralFeature("whileExecutingInputRefs"); //$NON-NLS-1$
@@ -106,12 +106,12 @@ public class IoSetsListComposite extends DefaultListComposite {
 
 			f = listItemClass.getEStructuralFeature("dataOutputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText(Messages.IoSetsListComposite_Output_Parameters_Header);
+			tc.setHeaderText(Messages.IoSetsListComposite_Output_Data_Header);
 			columnProvider.add(tc);
 			
 			f = listItemClass.getEStructuralFeature("optionalOutputRefs"); //$NON-NLS-1$
 			tc = new IoParameterNameColumn(ioSpecification,f);
-			tc.setHeaderText(Messages.IoSetsListComposite_Option_Outputs_Header);
+			tc.setHeaderText(Messages.IoSetsListComposite_Optional_Outputs_Header);
 			columnProvider.add(tc);
 			
 			f = listItemClass.getEStructuralFeature("whileExecutingOutputRefs"); //$NON-NLS-1$

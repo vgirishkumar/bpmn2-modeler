@@ -14,25 +14,20 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.Collaboration;
-import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
-import org.eclipse.bpmn2.InteractionNode;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.OutputSet;
@@ -41,7 +36,6 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StandardLoopCharacteristics;
-import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
@@ -63,14 +57,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.eclipse.graphiti.features.context.impl.DeleteContext;
-import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -440,17 +426,17 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				activityAdapter.getFeatureDescriptor(messageRef).setValue(message);
 		}
 
-		if (container!=null) {
-			if (inputComposite==null) {
-				inputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
-				inputComposite.setShowToGroup(false);
-			}
-			
-			if (outputComposite==null) {
-				outputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
-				outputComposite.setShowFromGroup(false);
-			}
+		if (inputComposite==null) {
+			inputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
+			inputComposite.setShowToGroup(false);
 		}
+//		inputComposite.setShowItemsInScope(false);
+
+		if (outputComposite==null) {
+			outputComposite = new DataAssociationDetailComposite(container, SWT.NONE);
+			outputComposite.setShowFromGroup(false);
+		}
+//		outputComposite.setShowItemsInScope(false);
 		
 		Resource resource = activity.eResource();
 		InputOutputSpecification ioSpec = activity.getIoSpecification();
@@ -511,40 +497,64 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 
 		if (inMessage!=null) {
 			// display the "From" association widgets
-			input = Bpmn2ModelerFactory.create(resource, DataInput.class);
-			if (inMessage.getItemRef()!=null) {
-				input.setItemSubjectRef(inMessage.getItemRef());
-				input.setIsCollection(inMessage.getItemRef().isIsCollection());
-			}
-			if (operationChanged || messageChanged || ioSpec.eContainer()==null)
-			{
-				ioSpec.getDataInputs().add(input);
-				ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
+			boolean newInput = false;
+			if (ioSpec.getDataInputs().size()>0) {
+				input = ioSpec.getDataInputs().get(0);
 			}
 			else {
-				InsertionAdapter.add(ioSpec,
-						Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs(), input);
-				InsertionAdapter.add(ioSpec.getInputSets().get(0),
-						Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs(), input);
+				input = Bpmn2ModelerFactory.create(resource, DataInput.class);
+				newInput = true;
+			}
+			if (operationChanged || messageChanged) {
+				ItemDefinition id = inMessage.getItemRef();
+				if (id!=null && id!=input.getItemSubjectRef()) {
+					input.setItemSubjectRef(id);
+					input.setIsCollection(id.isIsCollection());
+				}
+			}
+			if (newInput) {
+				if (operationChanged || messageChanged || ioSpec.eContainer()==null)
+				{
+					ioSpec.getDataInputs().add(input);
+					ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
+				}
+				else {
+					InsertionAdapter.add(ioSpec,
+							Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs(), input);
+					InsertionAdapter.add(ioSpec.getInputSets().get(0),
+							Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs(), input);
+				}
 			}
 		}
 		
 		if (outMessage!=null) {
-			output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
-			if (outMessage.getItemRef()!=null) {
-				output.setItemSubjectRef(outMessage.getItemRef());
-				output.setIsCollection(outMessage.getItemRef().isIsCollection());
-			}
-			if (operationChanged || messageChanged ||ioSpec.eContainer()==null)
-			{
-				ioSpec.getDataOutputs().add(output);
-				ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
+			boolean newOutput = false;
+			if (ioSpec.getDataOutputs().size()>0) {
+				output = ioSpec.getDataOutputs().get(0);
 			}
 			else {
-				InsertionAdapter.add(ioSpec,
-						Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs(), output);
-				InsertionAdapter.add(ioSpec.getOutputSets().get(0),
-						Bpmn2Package.eINSTANCE.getOutputSet_DataOutputRefs(), output);
+				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
+				newOutput = true;
+			}
+			if (operationChanged || messageChanged) {
+				ItemDefinition id = outMessage.getItemRef();
+				if (id!=null && id!=input.getItemSubjectRef()) {
+					output.setItemSubjectRef(id);
+					output.setIsCollection(id.isIsCollection());
+				}
+			}
+			if (newOutput) {
+				if (operationChanged || messageChanged ||ioSpec.eContainer()==null)
+				{
+					ioSpec.getDataOutputs().add(output);
+					ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
+				}
+				else {
+					InsertionAdapter.add(ioSpec,
+							Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs(), output);
+					InsertionAdapter.add(ioSpec.getOutputSets().get(0),
+							Bpmn2Package.eINSTANCE.getOutputSet_DataOutputRefs(), output);
+				}
 			}
 		}
 		
@@ -565,7 +575,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		if (ioSpec.getDataOutputs().size()>0) {
 			output = ioSpec.getDataOutputs().get(0);
-			// fix missing InputSet
+			// fix missing OutputSet
 			final OutputSet outputSet = ioSpec.getOutputSets().get(0);
 			if (!outputSet.getDataOutputRefs().contains(output)) {
 				final DataOutput o = output;
@@ -584,47 +594,45 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			InsertionAdapter.add(activity, Bpmn2Package.eINSTANCE.getActivity_IoSpecification(), ioSpec);
 		}
 		
-		if (container!=null) {
-			if (activity instanceof ServiceTask) {
-				if (inMessage!=null) {
-					// display the "From" association widgets
-					inputComposite.setVisible(true);
-					inputComposite.setBusinessObject(input);
-					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Request_Message);
-				}
-				else
-					inputComposite.setVisible(false);
-				
-				if (outMessage!=null) {
-					outputComposite.setVisible(true);
-					outputComposite.setBusinessObject(output);
-					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Response_Message);
-				}
-				else
-					outputComposite.setVisible(false);
+		if (activity instanceof ServiceTask) {
+			if (inMessage!=null) {
+				// display the "From" association widgets
+				inputComposite.setVisible(true);
+				inputComposite.setBusinessObject(input);
+				inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Request_Message);
 			}
-			else if (activity instanceof SendTask) {
-				if (inMessage!=null) {
-					inputComposite.setVisible(true);
-					inputComposite.setBusinessObject(input);
-					inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
-				}
-				else
-					inputComposite.setVisible(false);
+			else
+				inputComposite.setVisible(false);
+			
+			if (outMessage!=null) {
+				outputComposite.setVisible(true);
+				outputComposite.setBusinessObject(output);
+				outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Response_Message);
 			}
-			else if (activity instanceof ReceiveTask) {
-				if (outMessage!=null) {
-					outputComposite.setVisible(true);
-					outputComposite.setBusinessObject(output);
-					outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
-				}
-				else
-					outputComposite.setVisible(false);
+			else
+				outputComposite.setVisible(false);
+		}
+		else if (activity instanceof SendTask) {
+			if (inMessage!=null) {
+				inputComposite.setVisible(true);
+				inputComposite.setBusinessObject(input);
+				inputComposite.getFromGroup().setText(Messages.ActivityDetailComposite_Map_Outgoing_Message);
 			}
-	
-			if (operationChanged || messageChanged) {
-				redrawPage();
+			else
+				inputComposite.setVisible(false);
+		}
+		else if (activity instanceof ReceiveTask) {
+			if (outMessage!=null) {
+				outputComposite.setVisible(true);
+				outputComposite.setBusinessObject(output);
+				outputComposite.getToGroup().setText(Messages.ActivityDetailComposite_Map_Incoming_Message);
 			}
+			else
+				outputComposite.setVisible(false);
+		}
+
+		if (operationChanged || messageChanged) {
+			redrawPage();
 		}
 	}
 	

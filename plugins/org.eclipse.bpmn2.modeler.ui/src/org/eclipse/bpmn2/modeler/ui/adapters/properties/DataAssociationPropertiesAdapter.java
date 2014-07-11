@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallableElement;
-import org.eclipse.bpmn2.CategoryValue;
+import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
@@ -37,8 +37,8 @@ import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
@@ -55,8 +55,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -80,6 +78,8 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
  */
 public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<DataAssociation> {
 
+	public final static String UI_SHOW_ITEMS_IN_SCOPE = "show.items.in.scope";
+	
 	/**
 	 * @param adapterFactory
 	 * @param object
@@ -117,7 +117,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				return Messages.DataAssociationPropertiesAdapter_Source;
 			return Messages.DataAssociationPropertiesAdapter_Target;
 		}
-
+		
 		@Override
 		public Hashtable<String, Object> getChoiceOfValues() {
 			List<EObject> values = new ArrayList<EObject>();
@@ -125,34 +125,34 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			// Properties are contained in the nearest enclosing Process or Event;
 			// DataStores are contained in the DocumentRoot
 			EObject container = ModelUtil.getContainer(object);
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) ); //$NON-NLS-1$
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) ); //$NON-NLS-1$
-			values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) ); //$NON-NLS-1$
-			values.addAll( ModelUtil.collectAncestorObjects(container, "dataStore", new Class[] {DocumentRoot.class}) ); //$NON-NLS-1$
-			values.addAll( ModelUtil.collectAncestorObjects(container, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class})); //$NON-NLS-1$
 			
-			Activity activity = (Activity)ModelUtil.findNearestAncestor(container, new Class[] {Activity.class});
-			if (activity!=null) {
-				InputOutputSpecification ioSpec = activity.getIoSpecification();
-				if (ioSpec!=null) {
-					if (object instanceof DataInputAssociation)
-						values.addAll(ioSpec.getDataInputs());
-					else
-						values.addAll(ioSpec.getDataOutputs());
+			Object p = owner.getProperty(UI_SHOW_ITEMS_IN_SCOPE);
+			if (p instanceof Boolean && (Boolean)p) {
+				values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) ); //$NON-NLS-1$
+				values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) ); //$NON-NLS-1$
+				values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Event.class}) ); //$NON-NLS-1$
+				values.addAll( ModelUtil.collectAncestorObjects(container, "dataStore", new Class[] {DocumentRoot.class}) ); //$NON-NLS-1$
+				values.addAll( ModelUtil.collectAncestorObjects(container, "flowElements", new Class[] {FlowElementsContainer.class}, new Class[] {ItemAwareElement.class})); //$NON-NLS-1$
+			}
+			else {
+				if (container instanceof Activity) {
+					Activity activity = (Activity)container;
+					if (object instanceof DataInputAssociation) {
+						values.addAll(ModelUtil.getItemAwareElements(activity.getDataInputAssociations()));
+					}
+					else {
+						values.addAll(ModelUtil.getItemAwareElements(activity.getDataOutputAssociations()));
+					}
+				}
+				else if (container instanceof ThrowEvent) {
+					ThrowEvent event = (ThrowEvent)container;
+					values.addAll(ModelUtil.getItemAwareElements(event.getDataInputAssociation()));
+				}
+				else if (container instanceof CatchEvent) {
+					CatchEvent event = (CatchEvent)container;
+					values.addAll(ModelUtil.getItemAwareElements(event.getDataOutputAssociation()));
 				}
 			}
-			
-			CallableElement callable = (CallableElement)ModelUtil.findNearestAncestor(container, new Class[] {CallableElement.class});
-			if (callable!=null) {
-				InputOutputSpecification ioSpec = callable.getIoSpecification();
-				if (ioSpec!=null) {
-					if (object instanceof DataInputAssociation)
-						values.addAll(ioSpec.getDataInputs());
-					else
-						values.addAll(ioSpec.getDataOutputs());
-				}
-			}
-			
 			super.setChoiceOfValues(values);
 			return super.getChoiceOfValues();
 		}

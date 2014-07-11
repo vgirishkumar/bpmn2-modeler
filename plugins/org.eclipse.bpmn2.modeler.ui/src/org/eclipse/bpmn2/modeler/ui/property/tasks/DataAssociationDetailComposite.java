@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -42,6 +43,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -112,6 +114,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	protected boolean updatingWidgets;
 	
 	protected boolean showFromGroup = true;
+	protected boolean showItemsInScope = true;
 	protected Group fromGroup;
 	protected boolean showToGroup = true;
 	protected Group toGroup;
@@ -235,7 +238,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			}
 			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
-			sectionTitle = (isInput ? Messages.DataAssociationDetailComposite_Input_Parameter_Mapping_Title : Messages.DataAssociationDetailComposite_Output_Parameter_Mapping_Title);
+			sectionTitle = (isInput ? Messages.DataAssociationDetailComposite_Input_Data_Mapping_Title : Messages.DataAssociationDetailComposite_Output_Data_Mapping_Title);
 		}
 		else if (container instanceof ThrowEvent) {
 			ThrowEvent throwEvent = (ThrowEvent)container;
@@ -318,6 +321,10 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		return toGroup;
 	}
 
+	public void setShowItemsInScope(boolean showItemsInScope) {
+		this.showItemsInScope = showItemsInScope;
+	}
+	
 	public void setShowFromGroup(boolean showFromGroup) {
 		this.showFromGroup = showFromGroup;
 	}
@@ -554,7 +561,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 		Group group = !isInput ? toGroup : fromGroup;
 		if (mapPropertyButton==null) {
-			mapPropertyButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_Variable_Button, SWT.RADIO);
+			mapPropertyButton = toolkit.createButton(group, Messages.DataAssociationDetailComposite_DataItem_Button, SWT.RADIO);
 			mapPropertyButton.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,true,false,3,1));
 
 			mapPropertyButton.addSelectionListener(new SelectionAdapter() {
@@ -706,6 +713,10 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 
 						@Override
 						protected void bindReference(Composite parent, EObject object, EReference reference) {
+							ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+							adapter.setProperty(
+									DataAssociationPropertiesAdapter.UI_SHOW_ITEMS_IN_SCOPE,
+									new Boolean(showItemsInScope));
 							String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 							ObjectEditor editor = new ComboObjectEditor(this,object,reference);
 							editor.createControl(parent,displayName);
@@ -716,7 +727,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						}						
 					};
 					propertyDetailsComposite.setBusinessObject(association);
-					propertyDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_Variables_Title);
+					propertyDetailsComposite.setTitle(Messages.DataAssociationDetailComposite_DataItems_Title);
 				}
 			}
 			else {

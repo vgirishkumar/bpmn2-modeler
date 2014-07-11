@@ -104,7 +104,6 @@ public class ReceiveTaskPropertiesAdapter extends TaskPropertiesAdapter<ReceiveT
 					}
 				}
 			}
-			fixDataOutputs(receiveTask, message);
 		}
 	}
 

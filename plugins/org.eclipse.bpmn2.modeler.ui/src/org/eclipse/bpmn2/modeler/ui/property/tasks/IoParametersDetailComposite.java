@@ -87,18 +87,17 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 				inputSetsTable = new IoSetsListComposite(this, be, ioSpecification, inputSetsFeature);
 				inputSetsTable.bindList(ioSpecification, inputSetsFeature);
 				inputSetsTable.setTitle(Messages.IoParametersDetailComposite_Input_Sets_Title);
-				if (be instanceof ReceiveTask) {
-					inputSetsTable.setVisible(false);
-				}
+//				if (be instanceof ReceiveTask)
+//					inputSetsTable.setVisible(false);
 			}
 			
 			EStructuralFeature dataInputsFeature = getFeature(ioSpecification, "dataInputs"); //$NON-NLS-1$
 			if (isModelObjectEnabled(ioSpecification.eClass(),dataInputsFeature)) {
 				dataInputsTable = new IoParametersListComposite(this, be, ioSpecification, dataInputsFeature);
 				dataInputsTable.bindList(ioSpecification, dataInputsFeature);
-				dataInputsTable.setTitle(Messages.IoParametersDetailComposite_Input_Parameter_Mapping_Title);
-				if (be instanceof ReceiveTask)
-					dataInputsTable.setVisible(false);
+				dataInputsTable.setTitle(Messages.IoParametersDetailComposite_Input_Data_Mapping_Title);
+//				if (be instanceof ReceiveTask)
+//					dataInputsTable.setVisible(false);
 			}
 
 			EStructuralFeature outputSetsFeature = getFeature(ioSpecification, "outputSets"); //$NON-NLS-1$
@@ -106,17 +105,17 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 				outputSetsTable = new IoSetsListComposite(this, be, ioSpecification, outputSetsFeature);
 				outputSetsTable.bindList(ioSpecification, outputSetsFeature);
 				outputSetsTable.setTitle(Messages.IoParametersDetailComposite_Output_Sets_Title);
-				if (be instanceof SendTask)
-					outputSetsTable.setVisible(false);
+//				if (be instanceof SendTask)
+//					outputSetsTable.setVisible(false);
 			}
 			
 			EStructuralFeature dataOutputsFeature = getFeature(ioSpecification, "dataOutputs"); //$NON-NLS-1$
 			if (isModelObjectEnabled(ioSpecification.eClass(),dataOutputsFeature)) {
 				dataOutputsTable = new IoParametersListComposite(this, be, ioSpecification, dataOutputsFeature);
 				dataOutputsTable.bindList(ioSpecification, dataOutputsFeature);
-				dataOutputsTable.setTitle(Messages.IoParametersDetailComposite_Output_Parameter_Mapping_Title);
-				if (be instanceof SendTask)
-					dataOutputsTable.setVisible(false);
+				dataOutputsTable.setTitle(Messages.IoParametersDetailComposite_Output_Data_Mapping_Title);
+//				if (be instanceof SendTask)
+//					dataOutputsTable.setVisible(false);
 			}
 			refresh();
 		}
@@ -127,41 +126,41 @@ public class IoParametersDetailComposite extends AbstractDetailComposite {
 
 	@Override
 	public void refresh() {
-		final EStructuralFeature ioSpecificationFeature = businessObject.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
-		if (ioSpecificationFeature != null) {
-			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)
-			InputOutputSpecification ioSpecification = (InputOutputSpecification)businessObject.eGet(ioSpecificationFeature);
-			if (ioSpecification==null) {
-				ioSpecification = createModelObject(InputOutputSpecification.class);
-				InsertionAdapter.add(businessObject, ioSpecificationFeature, ioSpecification);
-			}
-			boolean enable = true;
-			if (businessObject instanceof ServiceTask) {
-				enable = ((ServiceTask)businessObject).getOperationRef() == null;
-			}
-			if (businessObject instanceof SendTask) {
-				enable = ((SendTask)businessObject).getOperationRef() == null && ((SendTask)businessObject).getMessageRef() == null;
-			}
-			if (businessObject instanceof ReceiveTask) {
-				enable = ((ReceiveTask)businessObject).getOperationRef() == null && ((ReceiveTask)businessObject).getMessageRef() == null;
-			}
-			if (inputSetsTable!=null) {
-				inputSetsTable.setBusinessObject(ioSpecification);
-				enableActions(inputSetsTable, enable);
-			}
-			if (dataInputsTable!=null) {
-				dataInputsTable.setBusinessObject(ioSpecification);
-				enableActions(dataInputsTable, enable);
-			}
-			if (outputSetsTable!=null) {
-				outputSetsTable.setBusinessObject(ioSpecification);
-				enableActions(outputSetsTable, enable);
-			}
-			if (dataOutputsTable!=null) {
-				dataOutputsTable.setBusinessObject(ioSpecification);
-				enableActions(dataOutputsTable, enable);
-			}
-		}
+//		final EStructuralFeature ioSpecificationFeature = businessObject.eClass().getEStructuralFeature("ioSpecification"); //$NON-NLS-1$
+//		if (ioSpecificationFeature != null) {
+//			// the control parameter must be an Activity or CallableElement (i.e. a Process or GlobalTask)
+//			InputOutputSpecification ioSpecification = (InputOutputSpecification)businessObject.eGet(ioSpecificationFeature);
+//			if (ioSpecification==null) {
+//				ioSpecification = createModelObject(InputOutputSpecification.class);
+//				InsertionAdapter.add(businessObject, ioSpecificationFeature, ioSpecification);
+//			}
+//			boolean enable = true;
+//			if (businessObject instanceof ServiceTask) {
+//				enable = ((ServiceTask)businessObject).getOperationRef() == null;
+//			}
+//			if (businessObject instanceof SendTask) {
+//				enable = ((SendTask)businessObject).getOperationRef() == null && ((SendTask)businessObject).getMessageRef() == null;
+//			}
+//			if (businessObject instanceof ReceiveTask) {
+//				enable = ((ReceiveTask)businessObject).getOperationRef() == null && ((ReceiveTask)businessObject).getMessageRef() == null;
+//			}
+//			if (inputSetsTable!=null) {
+//				inputSetsTable.setBusinessObject(ioSpecification);
+//				enableActions(inputSetsTable, enable);
+//			}
+//			if (dataInputsTable!=null) {
+//				dataInputsTable.setBusinessObject(ioSpecification);
+//				enableActions(dataInputsTable, enable);
+//			}
+//			if (outputSetsTable!=null) {
+//				outputSetsTable.setBusinessObject(ioSpecification);
+//				enableActions(outputSetsTable, enable);
+//			}
+//			if (dataOutputsTable!=null) {
+//				dataOutputsTable.setBusinessObject(ioSpecification);
+//				enableActions(dataOutputsTable, enable);
+//			}
+//		}
 		super.refresh();
 	}
 	

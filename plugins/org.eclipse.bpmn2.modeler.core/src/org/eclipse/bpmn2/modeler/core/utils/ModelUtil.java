@@ -24,11 +24,15 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
@@ -1110,6 +1114,24 @@ public class ModelUtil {
 				return (T) a;
 		}
 		return null;
+	}
+
+	public static List<ItemAwareElement> getItemAwareElements(List<? extends DataAssociation> list) {
+		List<ItemAwareElement> result = new ArrayList<ItemAwareElement>();
+		for (DataAssociation da : list) {
+			if (da instanceof DataInputAssociation) {
+				for (ItemAwareElement e : da.getSourceRef()) {
+					if (e!=null)
+						result.add(e);
+				}
+			}
+			else if (da instanceof DataOutputAssociation) {
+				ItemAwareElement e = da.getTargetRef();
+				if (e!=null)
+					result.add(e);
+			}
+		}
+		return result;
 	}
 
 	// FIXME: update Switchyard to use new API 
