@@ -163,6 +163,10 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 				if (pes.length==1 && ChoreographyUtil.isChoreographyParticipantBand(pes[0])) {
 					return;
 				}
+
+				EStructuralFeature feature = getFeature(be,ShapeStyle.STYLE_OBJECT);
+				if (feature==null || !isModelObjectEnabled(be.eClass(), feature) || !isModelObjectEnabled(ShapeStyle.STYLE_ECLASS,null))
+					return;
 					
 				final BaseElement element = (BaseElement) be;
 				EObject style = ShapeStyle.getStyleObject(element);

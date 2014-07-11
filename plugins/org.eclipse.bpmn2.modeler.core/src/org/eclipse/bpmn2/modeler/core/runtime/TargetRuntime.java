@@ -954,20 +954,21 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	}
 	
 	private void getModelExtensions(ModelExtensionDescriptor med, Property p,  Hashtable<EClass, List<EStructuralFeature>> list) {
-		EClassifier eClassifier = med.getClassifier(p.name);
-		if (eClassifier instanceof EClass) {
-			EClass eClass = (EClass) eClassifier;
-			List<EStructuralFeature> features = list.get(eClass);
-			if (features==null) {
-				features = new ArrayList<EStructuralFeature>();
-				list.put(eClass,features);
-			}
-			for (Object v : p.getValues()) {
-				if (v instanceof Property) {
-					EStructuralFeature feature = med.createEFeature(eClass, (Property)v);
-					if (feature!=null && !features.contains(feature))
-						features.add(feature);
-					getModelExtensions(med, (Property)v, list);
+		if (p.parent!=null) {
+			EClass eClass = med.getModelDecorator().getEClass(p.parent.type);
+			if (eClass!=null) {
+				List<EStructuralFeature> features = list.get(eClass);
+				if (features==null) {
+					features = new ArrayList<EStructuralFeature>();
+					list.put(eClass,features);
+				}
+				EStructuralFeature feature = med.createEFeature(eClass, p);
+				if (feature!=null && !features.contains(feature))
+					features.add(feature);
+				for (Object v : p.getValues()) {
+					if (v instanceof Property) {
+						getModelExtensions(med, (Property)v, list);
+					}
 				}
 			}
 		}

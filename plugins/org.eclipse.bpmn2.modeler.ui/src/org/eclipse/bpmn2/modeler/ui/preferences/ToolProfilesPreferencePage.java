@@ -325,6 +325,11 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 					ModelEnablementTreeEntry entry = (ModelEnablementTreeEntry)element;
 					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
 					helper.setEnabled(entry, checked);
+					if (entry.hasChildren()) {
+						for (ModelEnablementTreeEntry c : entry.getChildren()) {
+							helper.setEnabled(c, checked);
+						}
+					}
 				}
 			}
 		};

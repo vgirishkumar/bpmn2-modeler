@@ -166,18 +166,21 @@ public class ModelEnablements {
 	
 	private void setEnabledSingle(EClass eClass, boolean enabled) {
 		if (isValid(eClass)) {
-			String className = eClass.getName();
-			if (enabled) {
-				if (classes.containsKey(className))
-					return;
-				HashSet<String> features = new HashSet<String>();
-				classes.put(className, features);
-			}
-			else {
-				if (!classes.containsKey(className))
-					return;
-				classes.remove(className);
-			}
+			setEnabledSingle(eClass.getName(), enabled);
+		}
+	}
+	
+	private void setEnabledSingle(String className, boolean enabled) {
+		if (enabled) {
+			if (classes.containsKey(className))
+				return;
+			HashSet<String> features = new HashSet<String>();
+			classes.put(className, features);
+		}
+		else {
+			if (!classes.containsKey(className))
+				return;
+			classes.remove(className);
 		}
 	}
 	
@@ -197,7 +200,7 @@ public class ModelEnablements {
 		}
 		// enable or disable just the class
 		EClass eClass = getEClass(name);
-		setEnabledSingle(eClass, enabled);
+		setEnabledSingle(name, enabled);
 		
 		if (enabled) {
 			// and enable all of its contained and referenced types
