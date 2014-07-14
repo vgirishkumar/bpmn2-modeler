@@ -282,6 +282,24 @@ public class ImportUtil {
 		return null;
 	}
 	
+	// FIXME: {@see ICustomElementFeatureContainer#getId(EObject)}
+	public static String getImportKind(Object object) {
+		String kind = null;
+		if (object instanceof IFile) {
+			String ext = ((IFile)object).getFileExtension();
+			if ("xml".equals(ext) || "xsd".equals(ext))
+				kind = IMPORT_KIND_XML_SCHEMA;
+			else if ("bpmn".equals(ext) || "bpmn2".equals(ext))
+				kind = IMPORT_KIND_BPMN2;
+			else if ("wsdl".equals(ext))
+				kind = IMPORT_KIND_WSDL;
+		}
+		else if (object instanceof IType) {
+			kind = IMPORT_KIND_JAVA;
+		}
+		return kind;
+	}		
+	
 	public Object loadImport(URI uri, String kind) {
 		return loadImport(this.fHackedResourceSet, uri, kind);
 	}		

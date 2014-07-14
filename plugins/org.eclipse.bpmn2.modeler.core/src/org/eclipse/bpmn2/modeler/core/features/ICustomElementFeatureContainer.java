@@ -58,6 +58,11 @@ public interface ICustomElementFeatureContainer extends IFeatureContainer {
 	 * @param object - the model object to inspect
 	 * @return a Custom Task ID string or null
 	 */
+	// FIXME: change parameter type to Object. This will allow the Target Runtime extension
+	// to handle DND objects from Project Explorer because AddContext.getNewObject() will
+	// be an IFile or IType or something other than EObject. By inspecting the NewObject,
+	// the extension plugin can decide whether it wants to handle DND of different types
+	// of files onto the canvas.
 	public abstract String getId(EObject object);
 
 	/* (non-Javadoc)

@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -182,15 +183,17 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 
 		// IAddContext can also mean that a file is dragged, therefore we have
 		// to check if we are really dragging a customTask
-		if (context instanceof IAddContext && 
-			((IAddContext)context).getNewObject() instanceof EObject ) {
-			EObject object = (EObject) ((IAddContext)context).getNewObject();
+		if (context instanceof IAddContext) {
 			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
-				id = ctd.getFeatureContainer().getId(object);
-				if (ctd.getId().equals(id)) {
-					context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
-					return (String)id;
+			Object newObject = ((IAddContext)context).getNewObject();
+			if (newObject instanceof EObject ) {
+				for (CustomTaskDescriptor ctd : rt.getCustomTaskDescriptors()) {
+					// FIXME: {@see ICustomElementFeatureContainer#getId(EObject)}
+					id = ctd.getFeatureContainer().getId((EObject) newObject);
+					if (ctd.getId().equals(id)) {
+						context.putProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
+						return (String)id;
+					}
 				}
 			}
 		}

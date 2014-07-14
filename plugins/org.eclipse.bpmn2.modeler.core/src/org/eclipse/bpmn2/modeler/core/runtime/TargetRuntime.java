@@ -458,6 +458,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		ct.targetRuntime = this;
 	}
 	
+	// FIXME: {@see ICustomElementFeatureContainer#getId(EObject)}
 	public String getCustomTaskId(EObject object) {
 		for (CustomTaskDescriptor ctd : getCustomTaskDescriptors()) {
 			String id = ctd.getFeatureContainer().getId(object);
