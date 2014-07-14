@@ -1074,8 +1074,20 @@ public class ModelDecorator {
 		EDataType eDataType = (EDataType)ModelDecorator.findEClassifier(pkg, type);//(EDataType)EcorePackage.eINSTANCE.getEClassifier(type);
 		if (eDataType!=null) {
 			// value can not be null - use the default value instead
-			if (value==null)
-				value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
+			if (value==null) {
+				try {
+					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
+				}
+				catch (Exception e) {
+					// data type converter can't handle empty strings,
+					// try creating an empty object using default constructor
+					try {
+						value = eDataType.getInstanceClass().newInstance();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 			if (attr==null) {
 				attr = createEAttribute(name, type, eclass.getName(), null);
 				anyMap.add( FeatureMapUtil.createEntry(attr, value) );

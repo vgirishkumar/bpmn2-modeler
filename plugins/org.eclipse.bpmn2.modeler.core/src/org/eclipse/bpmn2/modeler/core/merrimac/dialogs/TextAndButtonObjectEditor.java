@@ -124,7 +124,22 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 			removeButton = null;
 		}
 	}
-
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (defaultButton!=null && !defaultButton.isDisposed()) {
+			defaultButton.setVisible(visible);
+		}
+		if (addButton!=null && !addButton.isDisposed()) {
+			addButton.setVisible(visible);
+		}
+		if (removeButton!=null && !removeButton.isDisposed()) {
+			removeButton.setVisible(visible);
+		}
+		text.getParent().pack();
+		text.getParent().layout();
+	}
+	
 	/**
 	 * The implementation must override this to handle the "Edit..." button click.
 	 * @param buttonId TODO

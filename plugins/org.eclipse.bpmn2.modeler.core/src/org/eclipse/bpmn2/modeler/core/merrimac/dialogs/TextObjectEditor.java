@@ -214,6 +214,7 @@ public class TextObjectEditor extends ObjectEditor {
 		text.setVisible(visible);
 		GridData data = (GridData)text.getLayoutData();
 		data.exclude = !visible;
+		text.getParent().redraw();
 	}
 	
 	public void dispose() {

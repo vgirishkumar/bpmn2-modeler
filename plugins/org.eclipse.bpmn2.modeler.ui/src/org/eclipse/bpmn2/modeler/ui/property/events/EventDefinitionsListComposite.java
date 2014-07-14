@@ -47,6 +47,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -466,6 +467,10 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 
 	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+		AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, style);
+		if (detailComposite!=null)
+			return detailComposite;
+		
 		if (eClass==TimerEventDefinition.class) {
 			return new TimerEventDefinitionDetailComposite(parent, style);
 		}

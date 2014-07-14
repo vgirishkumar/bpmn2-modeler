@@ -29,7 +29,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 /**
  * @author Bob Brodt
@@ -37,18 +36,18 @@ import org.eclipse.swt.widgets.Label;
  */
 public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite {
 
-	private Button timeDateButton;
-	private Button timeCycleButton;
-	private Button timeDurationButton;
-	private TextObjectEditor timeValueEditor;
+	protected Button timeDateButton;
+	protected Button timeCycleButton;
+	protected Button timeDurationButton;
+	protected TextObjectEditor timeValueEditor;
 
-	enum TimerType {
+	public enum TimerType {
 		NONE,
 		TIMEDATE,
 		TIMECYCLE,
 		TIMEDURATION
 	};
-	TimerType timerType = TimerType.NONE;
+	protected TimerType timerType = TimerType.NONE;
 	
 	/**
 	 * @param parent
@@ -79,7 +78,7 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 
 		Composite composite = getAttributesParent();
 
-		Label label = createLabel(composite, Messages.TimerEventDefinitionDetailComposite_Type);
+		createLabel(composite, Messages.TimerEventDefinitionDetailComposite_Type);
 		Composite buttonComposite = toolkit.createComposite(composite);
 		buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
 		FillLayout layout = new FillLayout();
@@ -119,9 +118,6 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 			timerType = TimerType.NONE;
 			exp = createModelObject(FormalExpression.class);
 		}
-			
-		if (ModelUtil.getExpressionBody(exp)==null)
-			exp.setBody(""); //$NON-NLS-1$
 		
 		timeValueEditor = new TextObjectEditor(this, exp, PACKAGE.getFormalExpression_Body());
 		

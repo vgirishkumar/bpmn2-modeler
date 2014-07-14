@@ -822,7 +822,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return false;
 	}
 
-	private EClass getEClass(String className) {
+	public EClass getEClass(String className) {
 		// try the runtime package first
 		EClass eClass = getModelDecorator().getEClass(className);
 		
@@ -834,4 +834,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return eClass;
 	}
 
+	public EStructuralFeature getEStructuralFeature(String className, String featureName) {
+		EClass eClass = getEClass(className);
+		if (eClass!=null)
+			return eClass.getEStructuralFeature(featureName);
+		return null;
+	}
 }

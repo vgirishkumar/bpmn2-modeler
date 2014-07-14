@@ -107,6 +107,12 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 		return Bpmn2Package.eINSTANCE;
 	}
 
+	/**
+	 * @param className
+	 * @param featureName
+	 * @return
+	 * @deprecated use {@link ModelExtensionDescriptor#getEStructuralFeature(String, String)} instead
+	 */
 	public EStructuralFeature getFeature(String className, String featureName) {
 		return getFeature(className + "." + featureName); //$NON-NLS-1$
 	}
@@ -118,6 +124,7 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 	 * @param name - name of the feature that specifies both an EClass and an EStructuralFeature
 	 *               in the form "EClassName.EStructuralFeatureName"
 	 * @return
+	 * @deprecated use {@link ModelExtensionDescriptor#getEStructuralFeature(String, String)} instead
 	 */
 	public EStructuralFeature getFeature(String name) {
 		String[] parts = name.split("\\."); //$NON-NLS-1$
@@ -144,6 +151,11 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 		return null;
 	}
 
+	/**
+	 * @param name
+	 * @return
+	 * @deprecated use {@link ModelExtensionDescriptor#getEClass(String)} instead
+	 */
 	public EClassifier getClassifier(String name) {
 		EClassifier eClass = getEPackage().getEClassifier(name);
 		if (eClass==null) {
