@@ -50,6 +50,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataOutputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ServiceImplementationObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -503,6 +505,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 			else {
 				input = Bpmn2ModelerFactory.create(resource, DataInput.class);
+				input.setName( DataInputPropertiesAdapter.generateName(ioSpec.getDataInputs()) );
 				newInput = true;
 			}
 			if (operationChanged || messageChanged) {
@@ -534,6 +537,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 			else {
 				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
+				output.setName( DataOutputPropertiesAdapter.generateName(ioSpec.getDataOutputs()) );
 				newOutput = true;
 			}
 			if (operationChanged || messageChanged) {

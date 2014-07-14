@@ -86,7 +86,14 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 	}
 
 	public static DataInput createDataInput(Resource resource, List<DataInput> dataInputs) {
+		DataInput dataInput = Bpmn2ModelerFactory.create(resource,DataInput.class);
+		dataInput.setName( generateName(dataInputs) );
+		dataInputs.add(dataInput);
 	
+		return dataInput;
+	}
+
+	public static String generateName(List<DataInput> dataInputs) {
 		String base = "input"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
@@ -102,11 +109,6 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 				break;
 			name = base + ++suffix;
 		}
-		DataInput dataInput = Bpmn2ModelerFactory.create(resource,DataInput.class);
-		dataInput.setName(name);
-		dataInputs.add(dataInput);
-	
-		return dataInput;
+		return name;
 	}
-
 }
