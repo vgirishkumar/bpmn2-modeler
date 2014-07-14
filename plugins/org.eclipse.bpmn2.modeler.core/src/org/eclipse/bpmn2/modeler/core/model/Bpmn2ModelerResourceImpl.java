@@ -72,6 +72,7 @@ import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -299,27 +300,29 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					super.load(resource, inputStream, options);
 				}
 				catch (Exception e) {
-					DiagnosticWrappedException error = new DiagnosticWrappedException(e);
+					BPMNDiagnostic error = new BPMNDiagnostic(e.getMessage());
 					error.setLine(handler.getLineNumber());
 					error.setColumn(handler.getColumnNumber());
 					error.setLocation(handler.getLocation());
-					resource.getErrors().add(error);
+					if (!resource.getErrors().contains(error))
+						resource.getErrors().add(error);
 					throw new IOException(e);
 				}
 			}
 		};
 	}
 
-	class DiagnosticWrappedException extends WrappedException implements Resource.Diagnostic {
-		private static final long serialVersionUID = 1L;
+	static class BPMNDiagnostic implements Resource.Diagnostic {
+
+		private String message;
 		private String location;
 		private int column;
 		private int line;
-		
-		public DiagnosticWrappedException(Exception exception) {
-			super(exception);
-		}
 
+		public BPMNDiagnostic(String message) {
+			this.message = message;
+		}
+		
 		public void setLocation(String location) {
 			this.location = location;
 		}
@@ -342,6 +345,26 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		public int getLine() {
 			return line;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof BPMNDiagnostic) {
+				BPMNDiagnostic that = (BPMNDiagnostic)obj;
+				return
+						this.message.equals(that.message) &&
+						this.line==that.line &&
+						this.column==that.column;
+			}
+			else if (obj instanceof Exception) {
+				String message = ((Exception)obj).getMessage();
+				return this.message.equals(message);
+			}
+			return super.equals(obj);
 		}
 	}
 
@@ -439,10 +462,19 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 			// Load all of the Imports and generate Interfaces, Operations, Messages, Faults and ItemDefinitions
 			for (Import imp : definitions.getImports()) {
-            	Object importObject = importHandler.loadImport(imp);
-            	if (importObject!=null) {
-            		importHandler.addImportObjects(imp, importObject);
-            	}
+				try {
+	            	Object importObject = importHandler.loadImport(imp);
+	            	if (importObject!=null) {
+	            		importHandler.addImportObjects(imp, importObject);
+	            	}
+				}
+				catch (Exception e) {
+					BPMNDiagnostic error = new BPMNDiagnostic(e.getMessage());
+					error.setLine(getLineNumber());
+					error.setColumn(getColumnNumber());
+					error.setLocation(getLocation());
+					xmlResource.getErrors().add(error);
+				}
             }
 			
 			// Fix up the descriptions for BPMNDiagrams

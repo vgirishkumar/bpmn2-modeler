@@ -98,8 +98,9 @@ public class ImportUtil {
 			kind = IMPORT_KIND_JAVA;
 		else if (IMPORT_TYPE_BPMN2.equals(type))
 			kind = "bpmn"; //$NON-NLS-1$
-		else
-			return null;
+		else {
+			throw new IllegalArgumentException("Unsupported Import type: "+type);
+		}
 		String location = imp.getLocation();
 		if (location==null) {
 			location = ""; //$NON-NLS-1$
