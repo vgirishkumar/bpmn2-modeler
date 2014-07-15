@@ -372,54 +372,52 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.putInt(PREF_CONNECTION_TIMEOUT, 60000);
 			defaultPreferences.putInt(PREF_RESOLVE_EXTERNALS, 2);
 			
-			loadDefaults(PREF_TOOL_PROFILE);
-			loadDefaults(PREF_MODEL_ENABLEMENT);
-			loadDefaults(PREF_SHAPE_STYLE);
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				loadDefaults(rt, PREF_TOOL_PROFILE);
+				loadDefaults(rt, PREF_MODEL_ENABLEMENT);
+				loadDefaults(rt, PREF_SHAPE_STYLE);
+			}
 		}
 	}
 
-	private void loadDefaults(String key) {
+	public void loadDefaults(TargetRuntime rt, String key) {
 		if (key.equals(PREF_TOOL_PROFILE)) {
-			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				String defaultProfile = null;
-				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-					String path = getToolProfilePath(rt);
-					Preferences prefs = defaultPreferences.node(path);
-					if (defaultProfile == null)
-						prefs.putBoolean(defaultProfile = med.getId(), true);
-					else
-						prefs.putBoolean(med.getId(), false);
-				}
+			String defaultProfile = null;
+			for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+				String path = getToolProfilePath(rt);
+				Preferences prefs = defaultPreferences.node(path);
+				if (defaultProfile == null)
+					prefs.putBoolean(defaultProfile = med.getId(), true);
+				else
+					prefs.putBoolean(med.getId(), false);
 			}
 		}
 		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
-			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				if (rt.getModelEnablements().size()==0) {
-					String path = getModelEnablementsPath(rt, null);
+			if (rt.getModelEnablements().size()==0) {
+				String path = getModelEnablementsPath(rt, null);
+				Preferences prefs = defaultPreferences.node(path);
+				for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
+					for (EStructuralFeature f : e.getValue()) {
+						String s = e.getKey().getName() + "." + f.getName();
+						prefs.putBoolean(s, Boolean.TRUE);
+					}
+				}
+				ModelEnablements me = new ModelEnablements(rt,"default");
+				me.setEnabledAll(true);
+				for (String s : me.getAllEnabled())
+					prefs.putBoolean(s, Boolean.TRUE);
+			}
+			else {
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					String path = getModelEnablementsPath(rt, med.getId());
 					Preferences prefs = defaultPreferences.node(path);
+					for (String s : med.getAllEnabled()) {
+						prefs.putBoolean(s, Boolean.TRUE);
+					}
 					for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
 						for (EStructuralFeature f : e.getValue()) {
 							String s = e.getKey().getName() + "." + f.getName();
 							prefs.putBoolean(s, Boolean.TRUE);
-						}
-					}
-					ModelEnablements me = new ModelEnablements(rt,"default");
-					me.setEnabledAll(true);
-					for (String s : me.getAllEnabled())
-						prefs.putBoolean(s, Boolean.TRUE);
-				}
-				else {
-					for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-						String path = getModelEnablementsPath(rt, med.getId());
-						Preferences prefs = defaultPreferences.node(path);
-						for (String s : med.getAllEnabled()) {
-							prefs.putBoolean(s, Boolean.TRUE);
-						}
-						for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
-							for (EStructuralFeature f : e.getValue()) {
-								String s = e.getKey().getName() + "." + f.getName();
-								prefs.putBoolean(s, Boolean.TRUE);
-							}
 						}
 					}
 				}
@@ -428,18 +426,53 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		else if (key.equals(PREF_SHAPE_STYLE)) {
 			// Use ShapeStyles defined in the Default Target Runtime if an extension does not provide its own. 
 			List<ShapeStyle> defaultShapeStyles = TargetRuntime.getDefaultRuntime().getShapeStyles();
-			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				String path = getShapeStylePath(rt);
-				Preferences prefs = defaultPreferences.node(path);
-				for (ShapeStyle ss : rt.getShapeStyles()) {
+			String path = getShapeStylePath(rt);
+			Preferences prefs = defaultPreferences.node(path);
+			for (ShapeStyle ss : rt.getShapeStyles()) {
+				String value = ShapeStyle.encode(ss);
+				prefs.put(ss.getObject(), value);
+			}
+			if (rt!=TargetRuntime.getDefaultRuntime()) {
+				for (ShapeStyle ss : defaultShapeStyles) {
 					String value = ShapeStyle.encode(ss);
 					prefs.put(ss.getObject(), value);
 				}
-				if (rt!=TargetRuntime.getDefaultRuntime()) {
-					for (ShapeStyle ss : defaultShapeStyles) {
-						String value = ShapeStyle.encode(ss);
-						prefs.put(ss.getObject(), value);
-					}
+			}
+		}
+	}
+
+	public void unloadDefaults(TargetRuntime rt, String key) {
+		if (key.equals(PREF_TOOL_PROFILE)) {
+			for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+				String path = getToolProfilePath(rt);
+				Preferences prefs = defaultPreferences.node(path);
+				prefs.remove(med.getId());
+			}
+		}
+		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
+			for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+				String path = getModelEnablementsPath(rt, med.getId());
+				Preferences prefs = defaultPreferences.node(path);
+				for (String s : med.getAllEnabled()) {
+					prefs.remove(s);
+				}
+			}
+			String path = getModelEnablementsPath(rt, null);
+			Preferences prefs = defaultPreferences.node(path);
+			for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
+				for (EStructuralFeature f : e.getValue()) {
+					String s = e.getKey().getName() + "." + f.getName();
+					prefs.remove(s);
+				}
+			}
+		}
+		else if (key.equals(PREF_SHAPE_STYLE)) {
+			// Use ShapeStyles defined in the Default Target Runtime if an extension does not provide its own. 
+			String path = getShapeStylePath(rt);
+			Preferences prefs = defaultPreferences.node(path);
+			if (rt!=TargetRuntime.getDefaultRuntime()) {
+				for (ShapeStyle ss : rt.getShapeStyles()) {
+					prefs.remove(ss.getObject());
 				}
 			}
 		}
@@ -478,7 +511,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
-			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
+			checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, true);
 			simplifyLists = getBoolean(PREF_SIMPLIFY_LISTS, true);
 			usePopupDialogForLists = getBoolean(PREF_USE_POPUP_DIALOG_FOR_LISTS, false);
 			isHorizontal = getBPMNDIAttributeDefault(PREF_IS_HORIZONTAL, BPMNDIAttributeDefault.USE_DI_VALUE);

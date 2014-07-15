@@ -215,7 +215,14 @@ public class Bpmn2FeatureMap {
 		ALL_SHAPES.addAll(SUBPROCESS);
 		ALL_SHAPES.addAll(CHOREOGRAPHY);
 		ALL_SHAPES.addAll(CONVERSATION);
-		ALL_SHAPES.addAll(ALL_DATA);
+		// By default we want to ignore DataInput and DataOutput from Shapes
+		// because they are created in Activity inputs and outputs as well
+		// as in Process-level diagrams. The extension plugin can override
+		// this behavior with its own {@link IObjectDecorator} implementation.
+		// {@see DefaultObjectDecorator} for details.
+		ALL_SHAPES.add(DataObject.class);
+		ALL_SHAPES.add(DataStoreReference.class);
+		ALL_SHAPES.add(Message.class);
 		ALL_SHAPES.addAll(ARTIFACTS);
 		ALL_SHAPES.addAll(SWIMLANES);
 	}

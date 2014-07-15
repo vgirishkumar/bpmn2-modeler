@@ -49,6 +49,7 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 
 	protected TargetRuntime targetRuntime;
 	protected IFile configFile;
+	protected long configFileTimestamp;
 	protected final IConfigurationElement configurationElement;
 	protected String id;
 
@@ -89,6 +90,14 @@ public abstract class BaseRuntimeExtensionDescriptor implements IRuntimeExtensio
 
 	public void setConfigFile(IFile configFile) {
 		this.configFile = configFile;
+		if (configFile!=null)
+			configFileTimestamp = configFile.getLocalTimeStamp();
+		else
+			configFileTimestamp = 0;
+	}
+	
+	public long getConfigFileTimestamp() {
+		return configFileTimestamp;
 	}
 	
 	public TargetRuntime getRuntime() {

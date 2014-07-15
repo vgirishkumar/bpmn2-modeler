@@ -12,12 +12,16 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.preferences;
 
+import org.eclipse.bpmn2.modeler.core.builder.BPMN2Nature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -34,6 +38,8 @@ public class Bpmn2PropertyPage extends PropertyPage {
 	
 	private Combo cboRuntimes;
 	private Button btnCheckProjectNature;
+	private Button addRemoveProjectNature;
+	private IProject project;
 	
 	public Bpmn2PropertyPage() {
 		super();
@@ -55,10 +61,36 @@ public class Bpmn2PropertyPage extends PropertyPage {
 		cboRuntimes = new Combo(container, SWT.READ_ONLY);
 		cboRuntimes.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
 
+		addRemoveProjectNature = new Button(container, SWT.CHECK);
+		addRemoveProjectNature.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+		addRemoveProjectNature.setText("Enable BPMN2 Project Nature");
+		try {
+			if (project.getNature(BPMN2Nature.NATURE_ID)==null) {
+				addRemoveProjectNature.setSelection(false);
+			}
+			else {
+				addRemoveProjectNature.setSelection(true);
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		addRemoveProjectNature.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean enabled = addRemoveProjectNature.getSelection();
+				btnCheckProjectNature.setEnabled(!enabled);
+				BPMN2Nature.setBPMN2Nature(project, enabled);
+			}
+		});
+		boolean enabled = addRemoveProjectNature.getSelection();
+
 		btnCheckProjectNature = new Button(container, SWT.CHECK);
-		btnCheckProjectNature.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+		GridData d = new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1);
+		d.horizontalIndent = 20;
+		btnCheckProjectNature.setLayoutData(d);
 		btnCheckProjectNature.setText(Bpmn2Preferences.PREF_CHECK_PROJECT_NATURE_LABEL);
-		
+		btnCheckProjectNature.setEnabled(!enabled);
+
 		initData();
 
 		return container;
@@ -77,7 +109,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 	}
 	
 	public void loadPrefs() {
-		IProject project = (IProject) getElement().getAdapter(IProject.class);
+		project = (IProject) getElement().getAdapter(IProject.class);
 		preferences = Bpmn2Preferences.getInstance(project);
 		preferences.useProjectPreferences();
 	}

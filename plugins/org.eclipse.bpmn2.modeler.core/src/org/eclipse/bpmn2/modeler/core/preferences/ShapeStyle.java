@@ -277,7 +277,30 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		else
 			labelPosition = LabelPosition.SOUTH;
 	}
-	
+
+	@Override
+	public void setConfigFile(IFile configFile) {
+		super.setConfigFile(configFile);
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.loadDefaults(targetRuntime, Bpmn2Preferences.PREF_SHAPE_STYLE);
+		}
+	}
+
+	public void dispose() {
+		// remove the ModelEnablement classes and features that may
+		// have been defined in this Model Extension
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.unloadDefaults(targetRuntime, Bpmn2Preferences.PREF_SHAPE_STYLE);
+		}
+		super.dispose();
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.loadDefaults(targetRuntime, Bpmn2Preferences.PREF_SHAPE_STYLE);
+		}
+	}
+
 	@Override
 	public String getExtensionName() {
 		return EXTENSION_NAME;

@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,8 +25,10 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.Adapter;
@@ -298,8 +301,28 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		getModelExtensionProperties(null, this, e);
 	}
 
+	@Override
+	public void setConfigFile(IFile configFile) {
+		super.setConfigFile(configFile);
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.loadDefaults(targetRuntime, Bpmn2Preferences.PREF_MODEL_ENABLEMENT);
+		}
+	}
+
 	public void dispose() {
+		// remove the ModelEnablement classes and features that may
+		// have been defined in this Model Extension
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.unloadDefaults(targetRuntime, Bpmn2Preferences.PREF_MODEL_ENABLEMENT);
+		}
 		super.dispose();
+		if (configFile!=null) {
+			Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(configFile.getProject());
+			prefs.loadDefaults(targetRuntime, Bpmn2Preferences.PREF_MODEL_ENABLEMENT);
+		}
+		
 		getModelDecorator().dispose();
 	}
 	

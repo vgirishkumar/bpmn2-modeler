@@ -191,11 +191,11 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 	public void loadExtension(IFile file) {
 		XMLConfigElementHandler handler = new XMLConfigElementHandler(file);
 		try {
-			SAXParser parser = getParser();
-			if (file.exists()) {
+			TargetRuntime rt = Bpmn2Preferences.getInstance(file.getProject()).getRuntime();
+			if (file.exists() && file.getLocalTimeStamp() > rt.getConfigFileTimestamp()) {
+				SAXParser parser = getParser();
 				FileInputStream fis = new FileInputStream(file.getLocation().makeAbsolute().toOSString());
 				parser.parse(fis, handler);
-				TargetRuntime rt = Bpmn2Preferences.getInstance(file.getProject()).getRuntime();
 				IConfigurationElement element = handler.root.getChildren()[0];
 				TargetRuntime.loadExtensions(rt, element.getChildren(), file);
 			}

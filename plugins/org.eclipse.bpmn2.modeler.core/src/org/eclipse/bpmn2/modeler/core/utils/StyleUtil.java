@@ -108,6 +108,7 @@ public class StyleUtil {
 			IColorConstant foreground = ga instanceof AbstractText ? ss.getLabelForeground() : ss.getShapeForeground();
 			IColorConstant background = ss.getShapeBackground();
 
+			peService.setPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE, Boolean.TRUE.toString());
 			if (BusinessObjectUtil.isConnection(be.eClass().getInstanceClass())) {
 				ga.setForeground(gaService.manageColor(diagram, foreground));
 				if (ga instanceof AbstractText) {

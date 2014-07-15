@@ -87,5 +87,39 @@ public class BPMN2Nature implements IProjectNature {
 	public void setProject(IProject project) {
 		this.project = project;
 	}
+	
+	public static void setBPMN2Nature(IProject project, boolean enable) {
+		try {
+			IProjectDescription description = project.getDescription();
+			String[] natures = description.getNatureIds();
 
+			if (enable) {
+				if (project.getNature(BPMN2Nature.NATURE_ID)==null) {
+					// Add the nature
+					String[] newNatures = new String[natures.length + 1];
+					System.arraycopy(natures, 0, newNatures, 0, natures.length);
+					newNatures[natures.length] = BPMN2Nature.NATURE_ID;
+					description.setNatureIds(newNatures);
+					project.setDescription(description, null);
+				}
+			}
+			else {
+				if (project.getNature(BPMN2Nature.NATURE_ID)!=null) {
+					for (int i = 0; i < natures.length; ++i) {
+						if (BPMN2Nature.NATURE_ID.equals(natures[i])) {
+							// Remove the nature
+							String[] newNatures = new String[natures.length - 1];
+							System.arraycopy(natures, 0, newNatures, 0, i);
+							System.arraycopy(natures, i + 1, newNatures, i,
+									natures.length - i - 1);
+							description.setNatureIds(newNatures);
+							project.setDescription(description, null);
+							return;
+						}
+					}
+				}
+			}
+		} catch (CoreException e) {
+		}
+	}
 }
