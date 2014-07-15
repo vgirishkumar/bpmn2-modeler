@@ -333,20 +333,24 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						createMessageAssociations(container, activity,
 								operationRef, operation,
 								messageRef, message);
-						
-						if (implementationEditor!=null) {
-							String imp = null;
-							if ( operation!=null) {
-								// If the Interface is defined by a WSDL set the default
-								// service implementation as ##WebService, otherwise
-								// use ##unspecified
-								if (operation.getImplementationRef() instanceof WSDLElement)
-									imp = ServiceImplementationObjectEditor.WEBSERVICE_VALUE;
-								else
-									imp = ServiceImplementationObjectEditor.UNSPECIFIED_VALUE;
-							}
-							implementationEditor.setValue(imp);
-						}
+
+						// This was me, trying to be too smart:
+						// if the selected Operation is a WSDL Operation,
+						// then set the service implementation to ##WebService.
+						// This is not always desired behavior.
+//						if (implementationEditor!=null) {
+//							String imp = null;
+//							if ( operation!=null) {
+//								// If the Interface is defined by a WSDL set the default
+//								// service implementation as ##WebService, otherwise
+//								// use ##unspecified
+//								if (operation.getImplementationRef() instanceof WSDLElement)
+//									imp = ServiceImplementationObjectEditor.WEBSERVICE_VALUE;
+//								else
+//									imp = ServiceImplementationObjectEditor.UNSPECIFIED_VALUE;
+//							}
+//							implementationEditor.setValue(imp);
+//						}
 					}
 				});
 				return true;
