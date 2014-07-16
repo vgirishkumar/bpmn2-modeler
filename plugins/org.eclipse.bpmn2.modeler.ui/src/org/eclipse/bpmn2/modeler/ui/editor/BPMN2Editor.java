@@ -16,7 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -53,7 +54,6 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.LinkEventDefinition;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
@@ -61,7 +61,6 @@ import org.eclipse.bpmn2.MessageEventDefinition;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Performer;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.Process;
@@ -103,7 +102,6 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -205,7 +203,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -1340,7 +1337,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 
 	@Override
-	public void preferenceChange(PreferenceChangeEvent event) {
+	public void preferenceChange(final PreferenceChangeEvent event) {
 		getPreferences().reload();
 		
 		if (event.getKey().contains("/"+Bpmn2Preferences.PREF_MODEL_ENABLEMENT+"/")) //$NON-NLS-1$ //$NON-NLS-2$
@@ -1354,36 +1351,49 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		}
 		
 		if (event.getKey().contains("/"+Bpmn2Preferences.PREF_SHAPE_STYLE+"/")) { //$NON-NLS-1$ //$NON-NLS-2$
+			int i = event.getKey().lastIndexOf('/');
+			if (i<=0)
+				return;
+			// Get the object type whose ShapeStyle has changed (e.g. "Task")
+			// and change it if possible. This needs to run in a transaction.
+			final String name = event.getKey().substring(i+1);
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
 					IFeatureProvider fp = BPMN2Editor.this.getDiagramTypeProvider().getFeatureProvider();
 					IPeService peService = Graphiti.getPeService();
-					TreeIterator<EObject> iter = getDiagramTypeProvider().getDiagram().eAllContents();
-					while (iter.hasNext()) {
-						EObject o = iter.next();
-						if (o instanceof PictogramElement) {
-							PictogramElement pe = (PictogramElement)o;
-							BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
-							if (be!=null) {
-								TreeIterator<EObject> childIter = pe.eAllContents();
-								while (childIter.hasNext()) {
-									o = childIter.next();
-									if (o instanceof GraphicsAlgorithm) {
-										GraphicsAlgorithm ga = (GraphicsAlgorithm)o;
-										if (peService.getPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE)!=null) {
+					// Collect all PictogramElements and their corresponding GraphicsAlgorithms
+					// to which the ShapeStyle change applies.
+					Resource resource = getDiagramTypeProvider().getDiagram().eResource();
+					for (PictogramElement pe : ModelUtil.getAllObjectsOfType(resource, PictogramElement.class)) {
+						BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
+						// The Business Object class name must match the ShapeStyle type
+						if (be!=null && be.eClass().getName().equals(name)) {
+							// find all of this PE's GraphicsAlgorithrms that have the
+							// PREF_SHAPE_STYLE property set - this is the GA to which
+							// the ShapeStyle applies.
+							TreeIterator<EObject> childIter = pe.eAllContents();
+							while (childIter.hasNext()) {
+								EObject o = childIter.next();
+								if (o instanceof GraphicsAlgorithm) {
+									GraphicsAlgorithm ga = (GraphicsAlgorithm)o;
+									if (peService.getPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE)!=null) {
+										// If the ShapeStyle for this BaseElement has already
+										// been changed by the user, do not reset it.
+										String style = ShapeStyle.encode(ShapeStyle.getShapeStyle(be));
+										if (style.equals(event.getNewValue())) {
 											StyleUtil.applyStyle(ga, be);
+											if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+												UpdateContext context = new UpdateContext(pe);
+												IUpdateFeature feature = fp.getUpdateFeature(context);
+												if (feature!=null) {
+													feature.update(context);
+												}
+											}
 										}
 									}
-			
 								}
-							}
-							if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
-								UpdateContext context = new UpdateContext(pe);
-								IUpdateFeature feature = fp.getUpdateFeature(context);
-								if (feature!=null) {
-									feature.update(context);
-								}
+		
 							}
 						}
 					}

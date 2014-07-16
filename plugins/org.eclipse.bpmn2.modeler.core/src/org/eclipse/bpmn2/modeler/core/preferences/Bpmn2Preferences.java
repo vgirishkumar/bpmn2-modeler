@@ -428,53 +428,54 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			List<ShapeStyle> defaultShapeStyles = TargetRuntime.getDefaultRuntime().getShapeStyles();
 			String path = getShapeStylePath(rt);
 			Preferences prefs = defaultPreferences.node(path);
-			for (ShapeStyle ss : rt.getShapeStyles()) {
+			for (ShapeStyle ss : defaultShapeStyles) {
 				String value = ShapeStyle.encode(ss);
 				prefs.put(ss.getObject(), value);
-			}
-			if (rt!=TargetRuntime.getDefaultRuntime()) {
-				for (ShapeStyle ss : defaultShapeStyles) {
-					String value = ShapeStyle.encode(ss);
-					prefs.put(ss.getObject(), value);
-				}
 			}
 		}
 	}
 
 	public void unloadDefaults(TargetRuntime rt, String key) {
-		if (key.equals(PREF_TOOL_PROFILE)) {
-			for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-				String path = getToolProfilePath(rt);
+		try {
+			if (key.equals(PREF_TOOL_PROFILE)) {
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					String path = getToolProfilePath(rt);
+					Preferences prefs = defaultPreferences.node(path);
+					prefs.remove(med.getId());
+				}
+			}
+			else if (key.equals(PREF_MODEL_ENABLEMENT)) {
+				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
+					String path = getModelEnablementsPath(rt, med.getId());
+					Preferences prefs = defaultPreferences.node(path);
+					for (String s : med.getAllEnabled()) {
+						prefs.remove(s);
+					}
+				}
+				String path = getModelEnablementsPath(rt, null);
 				Preferences prefs = defaultPreferences.node(path);
-				prefs.remove(med.getId());
+				for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
+					for (EStructuralFeature f : e.getValue()) {
+						String s = e.getKey().getName() + "." + f.getName();
+						prefs.remove(s);
+					}
+				}
 			}
-		}
-		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
-			for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-				String path = getModelEnablementsPath(rt, med.getId());
+			else if (key.equals(PREF_SHAPE_STYLE)) {
+				String path = getShapeStylePath(rt);
 				Preferences prefs = defaultPreferences.node(path);
-				for (String s : med.getAllEnabled()) {
-					prefs.remove(s);
+				prefs.removeNode();
+				if (instancePreferences!=null) {
+					prefs = instancePreferences.node(path);
+					prefs.removeNode();
 				}
+				if (instancePreferenceCache!=null)
+					instancePreferenceCache.shapeStyles.clear();
+				if (shapeStyles!=null)
+					shapeStyles.clear();
 			}
-			String path = getModelEnablementsPath(rt, null);
-			Preferences prefs = defaultPreferences.node(path);
-			for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
-				for (EStructuralFeature f : e.getValue()) {
-					String s = e.getKey().getName() + "." + f.getName();
-					prefs.remove(s);
-				}
-			}
-		}
-		else if (key.equals(PREF_SHAPE_STYLE)) {
-			// Use ShapeStyles defined in the Default Target Runtime if an extension does not provide its own. 
-			String path = getShapeStylePath(rt);
-			Preferences prefs = defaultPreferences.node(path);
-			if (rt!=TargetRuntime.getDefaultRuntime()) {
-				for (ShapeStyle ss : rt.getShapeStyles()) {
-					prefs.remove(ss.getObject());
-				}
-			}
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -696,15 +697,29 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public void setShapeStyle(String name, ShapeStyle style) {
-		if (style.isDirty()) {
-			shapeStyles.put(name, style);
-			if (instancePreferenceCache!=null) {
-				instancePreferenceCache.shapeStyles.put(name, style);
+		if (style!=null) {
+			if (style.isDirty()) {
+				shapeStyles.put(name, style);
+				if (instancePreferenceCache!=null) {
+					instancePreferenceCache.shapeStyles.put(name, style);
+				}
+				String key = getShapeStyleKey(getRuntime(), name);
+				String value = ShapeStyle.encode(style);
+				put(key, value);
+				style.setDirty(false);
 			}
+		}
+		else {
+			shapeStyles.remove(name);
+			if (instancePreferenceCache!=null) {
+				instancePreferenceCache.shapeStyles.remove(name);
+			}
+			
 			String key = getShapeStyleKey(getRuntime(), name);
-			String value = ShapeStyle.encode(style);
+			String path = getShapeStylePath(getRuntime());
+			Preferences prefs = defaultPreferences.node(path);
+			String value = prefs.get(name, "");
 			put(key, value);
-			style.setDirty(false);
 		}
 	}
 	
