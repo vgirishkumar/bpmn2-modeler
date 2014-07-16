@@ -41,6 +41,7 @@ import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
+import org.eclipse.bpmn2.di.BPMNLabelStyle;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
@@ -72,14 +73,12 @@ import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.notify.Adapter;
-import org.eclipse.emf.common.util.BasicDiagnostic;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EFactory;
@@ -1175,6 +1174,23 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					if (!((IExtensionValueAdapter)a).shouldSaveElement(o))
 						return;
 				}
+			}
+			
+			if (o instanceof BPMNLabelStyle) {
+				// is anyone still using this BPMNLabelStyle?
+				// if not, get rid of it.
+				boolean save = false;
+				Definitions definitions = ModelUtil.getDefinitions(o);
+				TreeIterator<EObject> iter = definitions.eAllContents();
+				while (iter.hasNext()) {
+					EObject eo = iter.next();
+					if (eo instanceof BPMNLabel) {
+						if (((BPMNLabel)eo).getLabelStyle() == o)
+							save = true;
+					}
+				}
+				if (!save)
+					return;
 			}
 
 			float oldX = 0, oldY = 0;

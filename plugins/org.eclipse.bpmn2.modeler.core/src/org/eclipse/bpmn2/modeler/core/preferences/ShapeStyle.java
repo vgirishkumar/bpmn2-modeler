@@ -13,10 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.preferences;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.di.BPMNLabelStyle;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -27,18 +25,17 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesFactory;
 import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.ColorUtil;
@@ -563,6 +560,19 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		return new FontData(f.getName(), f.getSize(), style);
 	}
 	
+	/**
+	 * @param font
+	 * @return
+	 */
+	private static Object fontToFontData(org.eclipse.dd.dc.Font f) {
+		int style = 0;
+		if (f.isIsItalic())
+			style |= SWT.ITALIC;
+		if (f.isIsBold())
+			style |= SWT.BOLD;
+		return new FontData(f.getName(), (int)f.getSize(), style);
+	}
+
 	public static Font fontDataToFont(FontData fd) {
 		Font f = StylesFactory.eINSTANCE.createFont();
 		f.eSet(StylesPackage.eINSTANCE.getFont_Name(),fd.getName());
@@ -592,7 +602,33 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		}
 		return ret;
 	}
+	
+	public static Font toGraphitiFont(Diagram diagram, org.eclipse.dd.dc.Font bpmnFont) {
+		if (bpmnFont == null) {
+			return null;
+		}
+		Font ret = null;
+		try {
+			String name = bpmnFont.getName();
+			int height = (int)bpmnFont.getSize();
+			boolean italic = bpmnFont.isIsItalic();
+			boolean bold = bpmnFont.isIsBold();
+			ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
+		}
+		catch (Exception e) {
+		}
+		return ret;
+	}
 
+	public static org.eclipse.dd.dc.Font toBPMNFont(Font font) {
+		org.eclipse.dd.dc.Font bpmnFont = DcFactory.eINSTANCE.createFont();
+		bpmnFont.setName(font.getName());
+		bpmnFont.setSize(font.getSize());
+		bpmnFont.setIsBold(font.isBold());
+		bpmnFont.setIsItalic(font.isItalic());
+		return bpmnFont;
+	}
+	
 	/**
 	 * @param pictogramFont
 	 * @return
@@ -799,7 +835,18 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			return style.eGet(f);
 		return null;
 	}
-	
+
+	private static void setStyleValue(EObject style, String feature, Object value) {
+		try {
+			EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
+			Object oldValue = style.eGet(f);
+			if (value!=null && !value.equals(oldValue))
+				style.eSet(f, value);
+		}
+		catch (Exception e) {
+		}
+	}
+
 	public Object getStyleValue(BaseElement element, String feature) {
 		if (STYLE_SHAPE_FOREGROUND.equals(feature))
 			return colorToRGB(getShapeForeground());
@@ -816,17 +863,6 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (STYLE_ROUTING_STYLE.equals(feature))
 			return ShapeStyle.toEENumLiteral(element, getRoutingStyle());
 		return null;
-	}
-	
-	private static void setStyleValue(EObject style, String feature, Object value) {
-		try {
-			EStructuralFeature f = style.eClass().getEStructuralFeature(feature);
-			Object oldValue = style.eGet(f);
-			if (value!=null && !value.equals(oldValue))
-				style.eSet(f, value);
-		}
-		catch (Exception e) {
-		}
 	}
 
 	public static boolean isStyleObject(Object object) {
@@ -881,12 +917,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			if (labelFont!=null) {
 				// roundabout way to get the Diagram for a Business Object:
 				// see {@link DIUtils} for details.
-				Resource res = ExtendedPropertiesAdapter.getResource(element);
-				List<PictogramElement> pes = DIUtils.getPictogramElements(res.getResourceSet(), element);
-				if (pes.size()>0) {
-					Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pes.get(0));
+				Diagram diagram = DIUtils.getDiagram(element);
+				if (diagram!=null)
 					ss.setLabelFont(ShapeStyle.toGraphitiFont(diagram, labelFont));
-				}
 			}
 			else
 				setStyleValue(style, STYLE_LABEL_FONT, ShapeStyle.toFontData(ss.getLabelFont()));
@@ -903,7 +936,43 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 			style.eSetDeliver(true);
 		}
+		else {
+			// if this BPMN element has a BPMNShape, and if that BPMNShape has
+			// a BPMNLabelStyle, then get the style attributes from there.
+			BPMNLabelStyle bpmnStyle = DIUtils.getDILabelStyle(element);
+			if (bpmnStyle!=null && bpmnStyle.getFont()!=null) {
+				Diagram diagram = DIUtils.getDiagram(element);
+				if (diagram!=null) {
+					Font f = toGraphitiFont(diagram, bpmnStyle.getFont());
+					ss.setLabelFont(f);
+				}
+			}
+		}
 		return ss;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ShapeStyle) {
+			return encode(this).equals(encode((ShapeStyle)obj));
+		}
+		if (obj instanceof BPMNLabelStyle) {
+			BPMNLabelStyle ls = (BPMNLabelStyle) obj;
+			ShapeStyle ss = this;
+			org.eclipse.dd.dc.Font f1 = ls.getFont();
+			Font f2 = ss.getLabelFont();
+			if (f1==null) {
+				if (f2==null)
+				return false;
+			}
+			if (f2==null)
+				return false;
+			return f1.getName().equals(f1.getName()) &&
+					f1.getSize() == f2.getSize() &&
+					f1.isIsBold() == f2.isBold() &&
+					f1.isIsItalic() == f2.isItalic();
+		}
+		return super.equals(obj);
 	}
 
 	private static Enum fromEENumLiteral(EObject element, EEnumLiteral el) {

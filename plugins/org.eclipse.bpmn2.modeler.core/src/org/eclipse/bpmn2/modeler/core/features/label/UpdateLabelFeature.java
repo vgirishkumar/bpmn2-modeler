@@ -49,7 +49,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.graphiti.ui.services.IUiLayoutService;
 
 public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 

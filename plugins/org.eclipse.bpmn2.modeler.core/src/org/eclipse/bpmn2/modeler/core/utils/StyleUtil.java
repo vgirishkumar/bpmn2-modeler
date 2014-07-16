@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.StyleContainer;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
@@ -31,6 +32,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.StylesPackage;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
@@ -92,6 +94,20 @@ public class StyleUtil {
 		peService.setPropertyValue(ga, FILL_STYLE, fillStyle.toString());
 	}
 	
+	public static GraphicsAlgorithm getShapeStyleContainer(PictogramElement pe) {
+		TreeIterator<EObject> childIter = pe.eAllContents();
+		while (childIter.hasNext()) {
+			EObject o = childIter.next();
+			if (o instanceof GraphicsAlgorithm) {
+				GraphicsAlgorithm ga = (GraphicsAlgorithm)o;
+				if (peService.getPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE)!=null) {
+					return ga;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public static void applyStyle(GraphicsAlgorithm ga, BaseElement be) {
 		applyStyle(ga, be, null);
 	}
@@ -102,7 +118,7 @@ public class StyleUtil {
 
 			if (ss==null) {
 				// fetch ShapeStyle for this BaseElement from the User Preferences
-				ss = Bpmn2Preferences.getInstance(be).getShapeStyle(be);
+				ss = ShapeStyle.getShapeStyle(be); //Bpmn2Preferences.getInstance(be).getShapeStyle(be);
 			}
 			
 			IColorConstant foreground = ga instanceof AbstractText ? ss.getLabelForeground() : ss.getShapeForeground();

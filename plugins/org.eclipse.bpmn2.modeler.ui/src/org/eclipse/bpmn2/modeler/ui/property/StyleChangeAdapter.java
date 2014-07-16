@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
@@ -37,6 +38,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.swt.graphics.FontData;
 
 /**
  *
@@ -98,25 +100,18 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 			return;
 		
 		ShapeStyle ss = ShapeStyle.getShapeStyle(businessObject);
-		GraphicsAlgorithm ga = null;
-		if (businessObject instanceof ChoreographyActivity
-				|| businessObject instanceof Lane
-				 || businessObject instanceof Participant) {
-			ga = pictogramElement.getGraphicsAlgorithm();
-		}
-		else if (pictogramElement instanceof ContainerShape && ((ContainerShape)pictogramElement).getChildren().size()>0) {
-			Shape shape = ((ContainerShape)pictogramElement).getChildren().get(0);
-			ga = shape.getGraphicsAlgorithm();
-		}
-		else
-			ga = pictogramElement.getGraphicsAlgorithm();
+		GraphicsAlgorithm ga = StyleUtil.getShapeStyleContainer(pictogramElement);
 		
 		if (ga!=null) {
 			// only certain components, such as color and size apply to the appearance
 			// of the figure. Other components (of type enum) apply to the Label Position
 			// or line Routing Style which will be handled by the appropriate Update Features.
-			if (!(newValue instanceof EEnumLiteral))
+			if (!(newValue instanceof EEnumLiteral)) {
 				StyleUtil.applyStyle(ga, businessObject, ss);
+				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(businessObject);
+				if (prefs.getSaveBPMNLabels())
+					DIUtils.getOrCreateDILabelStyle(businessObject, ss);
+			}
 			
 			// also apply the style to Label
 			Shape labelShape = FeatureSupport.getLabelShape(pictogramElement);
@@ -151,7 +146,13 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 			ShapeStyle ss = preferences.getShapeStyle(businessObject);
 			Object v = ShapeStyle.getStyleValue(o, feature);
 			if (v!=null) {
-				return !v.equals(ss.getStyleValue(businessObject, feature));
+				if (!v.equals(ss.getStyleValue(businessObject, feature))) {
+					if (ShapeStyle.STYLE_LABEL_FONT.equals(feature)) {
+						Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(businessObject);
+						return !prefs.getSaveBPMNLabels();
+					}
+					return true;
+				}
 			}
 			return false;
 		}

@@ -14,10 +14,8 @@ package org.eclipse.bpmn2.modeler.core.di;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BaseElement;
@@ -31,9 +29,11 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
+import org.eclipse.bpmn2.di.BPMNLabelStyle;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
@@ -124,7 +124,7 @@ public class DIUtils {
 				bounds.setWidth(w);
 				bounds.setHeight(h);
 				bpmnShape.setBounds(bounds);
-				getOrCreateDILabel(shape, bpmnShape);
+				getOrCreateDILabel(bpmnShape);
 
 				Bpmn2Preferences.getInstance(bpmnDiagram.eResource()).applyBPMNDIDefaults(bpmnShape, null);
 
@@ -236,7 +236,7 @@ public class DIUtils {
 					point.setY(targetLoc.getY());
 					bpmnEdge.getWaypoint().add(point);
 
-					getOrCreateDILabel(connection, bpmnEdge);
+					getOrCreateDILabel(bpmnEdge);
 
 					DIUtils.addDIElement(bpmnEdge, bpmnDiagram);
 					ModelUtil.setID(bpmnEdge);
@@ -293,7 +293,7 @@ public class DIUtils {
 		elements.add(elem);
 	}
 	
-	public static BPMNLabel getOrCreateDILabel(PictogramElement pe, DiagramElement de) {
+	public static BPMNLabel getOrCreateDILabel(DiagramElement de) {
 		BPMNLabel bpmnLabel = null;
 		EStructuralFeature feature = de.eClass().getEStructuralFeature("label");
 		if (feature!=null) {
@@ -313,7 +313,7 @@ public class DIUtils {
 		}
 		
 		if (de!=null) {
-			BPMNLabel bpmnLabel = getOrCreateDILabel(pe, de);
+			BPMNLabel bpmnLabel = getOrCreateDILabel(de);
 			if (w==0 && h==0) {
 				bpmnLabel.setBounds(null);
 			}
@@ -328,6 +328,74 @@ public class DIUtils {
 				bpmnLabel.setBounds(bounds);
 			}
 		}
+	}
+	
+	public static BPMNLabelStyle getDILabelStyle(BaseElement element) {
+		BPMNLabelStyle bpmnStyle = null;
+		DiagramElement de = DIUtils.findDiagramElement(element);
+		if (de instanceof BPMNShape) {
+			BPMNShape bpmnShape = (BPMNShape) de;
+			if (bpmnShape.getLabel() != null) {
+				bpmnStyle = bpmnShape.getLabel().getLabelStyle();
+			}
+		}
+		else if (de instanceof BPMNEdge) {
+			BPMNEdge bpmnEdge = (BPMNEdge) de;
+			if (bpmnEdge.getLabel() != null) {
+				bpmnStyle = bpmnEdge.getLabel().getLabelStyle();
+			}
+		}
+		return bpmnStyle;
+	}
+	
+	public static BPMNLabelStyle getOrCreateDILabelStyle(BaseElement element, ShapeStyle ss) {
+		BPMNLabelStyle bpmnStyle = null;
+		DiagramElement de = DIUtils.findDiagramElement(element);
+		BPMNLabel bpmnLabel = getOrCreateDILabel(de);
+		if (bpmnLabel!=null) {
+			BPMNDiagram bpmnDiagram = (BPMNDiagram) de.eContainer().eContainer();
+			for (BPMNLabelStyle ls : bpmnDiagram.getLabelStyle()) {
+				if (ss.equals(ls)) {
+					// found a BPMNLabelStyle that matches the given ShapeStyle
+					// so we can reuse it for this BPMNShape or BPMNEdge object.
+					bpmnStyle = ls;
+				}
+			}
+			if (bpmnStyle==null) {
+				// create a new BPMNLabelStyle and add it to the BPMNDiagram
+				bpmnStyle = BpmnDiFactory.eINSTANCE.createBPMNLabelStyle();
+				bpmnStyle.setFont( ShapeStyle.toBPMNFont(ss.getLabelFont()) );
+				bpmnDiagram.getLabelStyle().add(bpmnStyle);
+			}
+			bpmnLabel.setLabelStyle(bpmnStyle);
+		}
+		
+		return bpmnStyle;
+	}
+	
+	private static boolean compareDILabelStyle(BPMNLabelStyle ls1, BPMNLabelStyle ls2) {
+		if (ls1==null) {
+			if (ls2==null)
+				return true;
+			return false;
+		}
+		if (ls2==null)
+			return false;
+		org.eclipse.dd.dc.Font f1 = ls1.getFont();
+		org.eclipse.dd.dc.Font f2 = ls2.getFont();
+		if (f1==null) {
+			if (f2==null)
+				return true;
+			return false;
+		}
+		if (f2==null)
+			return false;
+		return f1.getName().equals(f1.getName()) &&
+				f1.getSize() == f2.getSize() &&
+				f1.isIsBold() == f2.isIsBold() &&
+				f1.isIsItalic() == f2.isIsItalic() &&
+				f1.isIsStrikeThrough() == f2.isIsStrikeThrough() &&
+				f1.isIsUnderline() == f2.isIsUnderline();
 	}
 	
 	public static DiagramElement findDiagramElement(List<BPMNDiagram> diagrams, BaseElement bpmnElement) {
@@ -782,4 +850,14 @@ public class DIUtils {
 		}
 		return connections;
 	}
+	
+	public static Diagram getDiagram(BaseElement baseElement) {
+		Resource res = ExtendedPropertiesAdapter.getResource(baseElement);
+		List<PictogramElement> pes = getPictogramElements(res.getResourceSet(), baseElement);
+		if (pes.size()>0) {
+			return Graphiti.getPeService().getDiagramForPictogramElement(pes.get(0));
+		}
+		return null;
+	}
+	
 }

@@ -1369,31 +1369,22 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 						BaseElement be = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 						// The Business Object class name must match the ShapeStyle type
 						if (be!=null && be.eClass().getName().equals(name)) {
-							// find all of this PE's GraphicsAlgorithrms that have the
-							// PREF_SHAPE_STYLE property set - this is the GA to which
-							// the ShapeStyle applies.
-							TreeIterator<EObject> childIter = pe.eAllContents();
-							while (childIter.hasNext()) {
-								EObject o = childIter.next();
-								if (o instanceof GraphicsAlgorithm) {
-									GraphicsAlgorithm ga = (GraphicsAlgorithm)o;
-									if (peService.getPropertyValue(ga, Bpmn2Preferences.PREF_SHAPE_STYLE)!=null) {
-										// If the ShapeStyle for this BaseElement has already
-										// been changed by the user, do not reset it.
-										String style = ShapeStyle.encode(ShapeStyle.getShapeStyle(be));
-										if (style.equals(event.getNewValue())) {
-											StyleUtil.applyStyle(ga, be);
-											if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
-												UpdateContext context = new UpdateContext(pe);
-												IUpdateFeature feature = fp.getUpdateFeature(context);
-												if (feature!=null) {
-													feature.update(context);
-												}
-											}
-										}
+							// find this PE's GraphicsAlgorithrms that has the
+							// PREF_SHAPE_STYLE property set - this is the GA to
+							// which the ShapeStyle applies.
+							GraphicsAlgorithm ga = StyleUtil.getShapeStyleContainer(pe);
+							// If the ShapeStyle for this BaseElement has already
+							// been changed by the user, do not reset it.
+							String style = ShapeStyle.encode(ShapeStyle.getShapeStyle(be));
+							if (style.equals(event.getNewValue())) {
+								StyleUtil.applyStyle(ga, be);
+								if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
+									UpdateContext context = new UpdateContext(pe);
+									IUpdateFeature feature = fp.getUpdateFeature(context);
+									if (feature!=null) {
+										feature.update(context);
 									}
 								}
-		
 							}
 						}
 					}
