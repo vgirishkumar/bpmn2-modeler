@@ -560,19 +560,6 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		return new FontData(f.getName(), f.getSize(), style);
 	}
 	
-	/**
-	 * @param font
-	 * @return
-	 */
-	private static Object fontToFontData(org.eclipse.dd.dc.Font f) {
-		int style = 0;
-		if (f.isIsItalic())
-			style |= SWT.ITALIC;
-		if (f.isIsBold())
-			style |= SWT.BOLD;
-		return new FontData(f.getName(), (int)f.getSize(), style);
-	}
-
 	public static Font fontDataToFont(FontData fd) {
 		Font f = StylesFactory.eINSTANCE.createFont();
 		f.eSet(StylesPackage.eINSTANCE.getFont_Name(),fd.getName());
@@ -610,7 +597,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		Font ret = null;
 		try {
 			String name = bpmnFont.getName();
-			int height = (int)bpmnFont.getSize();
+			int height = Math.round(bpmnFont.getSize());
 			boolean italic = bpmnFont.isIsItalic();
 			boolean bold = bpmnFont.isIsBold();
 			ret = Graphiti.getGaService().manageFont(diagram, name, height, italic, bold);
@@ -1015,16 +1002,5 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 			Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
 			preferences.setShapeStyle(element,ss);
 		}
-	}
-	
-	public static boolean isDirty(BaseElement element) {
-		if (element==null)
-			return false;
-		Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(element);
-		ShapeStyle ssDefault = preferences.getShapeStyle(element);
-		ShapeStyle ssElement = getShapeStyle(element);
-		String defaultString = ssDefault.toString();
-		String elementString = ssElement.toString();
-		return !defaultString.equals(elementString);
 	}
 }

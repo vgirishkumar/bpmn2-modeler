@@ -199,6 +199,7 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 	    
 	    private void setSelectedFont(FontData fd) {
 
+	    	fd.setHeight( Math.round(fd.getHeight()) ); 
 	        FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
 	        		new FontData[]{fd}, previewLabel.getDisplay());
 

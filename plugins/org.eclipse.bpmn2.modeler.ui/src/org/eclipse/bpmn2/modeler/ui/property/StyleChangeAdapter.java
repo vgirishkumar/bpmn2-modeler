@@ -108,9 +108,7 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 			// or line Routing Style which will be handled by the appropriate Update Features.
 			if (!(newValue instanceof EEnumLiteral)) {
 				StyleUtil.applyStyle(ga, businessObject, ss);
-				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(businessObject);
-				if (prefs.getSaveBPMNLabels())
-					DIUtils.getOrCreateDILabelStyle(businessObject, ss);
+				DIUtils.getOrCreateDILabelStyle(businessObject, ss);
 			}
 			
 			// also apply the style to Label
@@ -130,11 +128,26 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 	public boolean shouldSaveElement(EObject o) {
 		if (ShapeStyle.isStyleObject(o)) {
 			// this is the "style" object
-			return ShapeStyle.isDirty(businessObject);
+			if (businessObject==null) {
+				// which hasn't been attached to anything yet
+				return false;
+			}
+			Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(businessObject);
+			ShapeStyle ssDefault = preferences.getShapeStyle(businessObject);
+			ShapeStyle ssElement = ShapeStyle.getShapeStyle(businessObject);
+			// if the font is the only thing that changed AND if we're serializing
+			// label fonts as BPMNLabelStyle elements, then don't save this empty
+			// <style> object.
+			if (preferences.getSaveBPMNLabels()) {
+				ssElement.setLabelFont( ssDefault.getLabelFont() );
+			}
+			String defaultString = ssDefault.toString();
+			String elementString = ssElement.toString();
+			return !defaultString.equals(elementString);
 		}
 		return true;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter#shouldSaveFeature(org.eclipse.emf.ecore.EStructuralFeature)
 	 */

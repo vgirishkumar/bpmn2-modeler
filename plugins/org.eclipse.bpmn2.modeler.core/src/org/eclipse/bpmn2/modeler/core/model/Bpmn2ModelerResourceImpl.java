@@ -872,6 +872,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		protected float minY = Float.MAX_VALUE;
 		protected int lineNum = 1;
 		protected int lineOffset = 0;
+		protected Bpmn2Preferences preferences;
 
 		@SuppressWarnings("serial")
 		protected class Bpmn2ModelerXMLString extends XMLString {
@@ -926,6 +927,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		public Bpmn2ModelerXMLSave(XMLHelper helper) {
 			super(helper);
 			helper.getPrefixToNamespaceMap().clear();
+			preferences = Bpmn2Preferences.getInstance(helper.getResource());
 		}
 
 		@Override
@@ -1176,17 +1178,24 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
 			}
 			
+			if (o instanceof BPMNLabel) {
+				if (!preferences.getSaveBPMNLabels())
+					return;
+			}
+			
 			if (o instanceof BPMNLabelStyle) {
 				// is anyone still using this BPMNLabelStyle?
 				// if not, get rid of it.
 				boolean save = false;
-				Definitions definitions = ModelUtil.getDefinitions(o);
-				TreeIterator<EObject> iter = definitions.eAllContents();
-				while (iter.hasNext()) {
-					EObject eo = iter.next();
-					if (eo instanceof BPMNLabel) {
-						if (((BPMNLabel)eo).getLabelStyle() == o)
-							save = true;
+				if (preferences.getSaveBPMNLabels()) {
+					Definitions definitions = ModelUtil.getDefinitions(o);
+					TreeIterator<EObject> iter = definitions.eAllContents();
+					while (iter.hasNext()) {
+						EObject eo = iter.next();
+						if (eo instanceof BPMNLabel) {
+							if (((BPMNLabel)eo).getLabelStyle() == o)
+								save = true;
+						}
 					}
 				}
 				if (!save)
