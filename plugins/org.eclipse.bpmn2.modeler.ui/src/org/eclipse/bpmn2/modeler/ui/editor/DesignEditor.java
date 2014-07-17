@@ -284,11 +284,13 @@ public class DesignEditor extends BPMN2Editor {
 			tabFolder = new CTabFolder(parent, SWT.BOTTOM);
 			tabFolder.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					int pageIndex = tabFolder.indexOf((CTabItem) e.item);
-					CTabItem item = tabFolder.getItem(pageIndex);
-					BPMNDiagram bpmnDiagram = (BPMNDiagram) item.getData();
-					showDesignPageInternal(bpmnDiagram);
-					selectBpmnDiagram(bpmnDiagram);
+					if (!tabFolder.isLayoutDeferred()) {
+						int pageIndex = tabFolder.indexOf((CTabItem) e.item);
+						CTabItem item = tabFolder.getItem(pageIndex);
+						BPMNDiagram bpmnDiagram = (BPMNDiagram) item.getData();
+						showDesignPageInternal(bpmnDiagram);
+						selectBpmnDiagram(bpmnDiagram);
+					}
 				}
 			});
 			tabFolder.addTraverseListener(new TraverseListener() { 

@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
@@ -21,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Listener;
@@ -65,6 +67,8 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 	private CTabFolder tabFolder;
 	private int defaultTabHeight;
 	private List<BPMNDiagram> bpmnDiagrams = new ArrayList<BPMNDiagram>();
+	private List<PictogramElement[]> currentSelections = new ArrayList<PictogramElement[]>();
+	private int currentPageIndex = -1;
 	
 	public BPMN2MultiPageEditor() {
 		super();
@@ -313,6 +317,7 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 		super.addPage(pageIndex,editor,input);
 		if (editor instanceof DesignEditor) {
 			bpmnDiagrams.add(pageIndex,((DesignEditor)editor).getBpmnDiagram());
+			currentSelections.add(new PictogramElement[]{});
 		}
 	}
 	
@@ -323,20 +328,39 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 		updateTabs();
 		if (page instanceof DesignEditor) {
 			bpmnDiagrams.remove(pageIndex);
+			currentSelections.remove(pageIndex);
 		}
 	}
 
 	@Override
-	protected void pageChange(int newPageIndex) {
+	protected void pageChange(final int newPageIndex) {
+		if (currentPageIndex>=0 && currentPageIndex<tabFolder.getItemCount()) {
+			IEditorPart editor = getEditor(currentPageIndex);
+			if (editor instanceof DesignEditor) {
+				final DesignEditor de = (DesignEditor) editor;
+				PictogramElement selections[] = de.getSelectedPictogramElements();
+				currentSelections.set(currentPageIndex, selections);
+			}
+		}
+		currentPageIndex = newPageIndex;
+		
 		super.pageChange(newPageIndex);
 
 		IEditorPart editor = getEditor(newPageIndex);
 		if (editor instanceof DesignEditor) {
+			final DesignEditor de = (DesignEditor) editor;
 			BPMNDiagram bpmnDiagram = bpmnDiagrams.get(newPageIndex);
-			((DesignEditor)editor).pageChange(bpmnDiagram);
-//			Diagram diagram = DIUtils.findDiagram(designEditor, bpmnDiagram);
-//			if (diagram != null)
-//				designEditor.selectPictogramElements(new PictogramElement[] {(PictogramElement)diagram});
+			final PictogramElement selections[] = currentSelections.get(newPageIndex);
+			de.pageChange(bpmnDiagram);
+			
+			if (selections!=null) {
+				Display.getCurrent().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						de.selectPictogramElements(selections);
+					}
+				});
+			}
 		}
 	}
 

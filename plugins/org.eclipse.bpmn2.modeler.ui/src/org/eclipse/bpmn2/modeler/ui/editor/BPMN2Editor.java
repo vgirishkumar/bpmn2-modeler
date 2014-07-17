@@ -1080,6 +1080,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		final PictogramElement selections[] = getSelectedPictogramElements();
 //		long start = System.currentTimeMillis();
 		try {
 			saveInProgress = true;
@@ -1092,6 +1093,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 //		System.out.println("done in "+(System.currentTimeMillis()-start)+" ms");
 		Resource resource = getResourceSet().getResource(modelUri, false);
 		BPMN2ProjectValidator.validateOnSave(resource, monitor);
+		
+		Display.getCurrent().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				selectPictogramElements(selections);
+			}
+		});
 	}
 
 	@Override
