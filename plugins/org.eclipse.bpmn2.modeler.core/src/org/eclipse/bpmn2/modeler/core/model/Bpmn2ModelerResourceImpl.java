@@ -65,6 +65,7 @@ import org.eclipse.bpmn2.util.XmlExtendedMetadata;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
@@ -93,6 +94,7 @@ import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.eclipse.emf.ecore.util.FeatureMap;
+import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -101,6 +103,7 @@ import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
@@ -957,6 +960,38 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 			
 			doc = createXMLString();
+			
+        	if (contents.size()>0 && contents.get(0) instanceof Bpmn2ModelerDocumentRootImpl) {
+        		Bpmn2ModelerDocumentRootImpl documentRoot = (Bpmn2ModelerDocumentRootImpl)contents.get(0);
+				Definitions definitions = ModelUtil.getDefinitions(helper.getResource());
+        		try {
+					documentRoot.setDeliver(false);
+					documentRoot.eSetDeliver(false);
+					FeatureMap featureMap = documentRoot.getMixed();
+					if (featureMap.size()>0) {
+						// insert a comment before the Definitions node 
+						String comment = " origin at X="+(minX<0 ? minX : 0)+
+								" Y="+(minY<0 ? minY : 0)+" ";
+						if (featureMap.get(0).getEStructuralFeature() != XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
+						    featureMap.add(0,XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, comment);
+						}
+						else {
+							FeatureMap.Entry e = FeatureMapUtil.createEntry(XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, comment);
+						    featureMap.set(0, e);
+						}
+					}
+					definitions.eSetDeliver(false);
+					definitions.setExporter(Activator.PLUGIN_ID);
+					String version = Platform.getBundle(Activator.PLUGIN_ID).getHeaders().get("Bundle-Version");
+					version = version.replaceAll(".qualifier", "");
+					definitions.setExporterVersion(version);
+        		}
+        		finally {
+    				documentRoot.setDeliver(true);
+    				documentRoot.eSetDeliver(true);
+					definitions.eSetDeliver(true);
+        		}
+        	}
 		}
 
 		protected XMLString createXMLString() {
@@ -977,13 +1012,18 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
         	if (contents.size()>0 && contents.get(0) instanceof Bpmn2ModelerDocumentRootImpl) {
         		documentRoot = (Bpmn2ModelerDocumentRootImpl)contents.get(0);
 				documentRoot.setDeliver(false);
+				documentRoot.eSetDeliver(false);
 			}
-        	
-			super.endSave(contents);
-			
-			if (documentRoot!=null) {
-				documentRoot.setDeliver(true);
-			}
+
+        	try {
+        		super.endSave(contents);
+        	}
+       		finally {
+				if (documentRoot!=null) {
+					documentRoot.setDeliver(true);
+					documentRoot.eSetDeliver(true);
+				}
+       		}
 		}
 
 		@Override
