@@ -13,10 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.core.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
+
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.INamespaceMap;
@@ -26,8 +30,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-
-import javax.xml.namespace.QName;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.wst.wsdl.Definition;
+import org.eclipse.wst.wsdl.Message;
+import org.eclipse.xsd.XSDNamedComponent;
+import org.eclipse.xsd.XSDSchema;
 
 /**
  * @author Bob Brodt
@@ -240,5 +247,103 @@ public class NamespaceUtil {
 			}
 		}
 		return null;
+	}
+	
+	///////
+	
+	public static List<String> getAllPrefixesForNamespace(Resource resource, String namespace) {
+		List<String> result = new ArrayList<String>();
+		Map<String,String> map = getXMLNSPrefixMap(resource);
+		if (map!=null) {
+			for (Entry<String, String> e : map.entrySet()) {
+				String value = e.getValue();
+				if (value!=null && value.equals(namespace))
+					result.add(e.getKey());
+			}
+		}
+		return result;
+	}
+	
+	
+	public static String getNamespaceForObject(Object object) {
+		String namespace = null;
+		// find the root container for this EObject
+		if (object instanceof EObject) {
+			EObject root = (EObject)object;
+			while ((namespace==null ||namespace.isEmpty()) && root!=null) {
+				if (root instanceof Definition) {
+					namespace = ((Definition)root).getTargetNamespace();
+				}
+				else if (root instanceof XSDNamedComponent) {
+					namespace = ((XSDNamedComponent)root).getTargetNamespace();
+				}
+				else if (root instanceof Definitions) {
+					namespace = ((Definitions)root).getTargetNamespace();
+				}
+				else if (root instanceof Message) {
+					namespace = ((Message)root).getQName().getNamespaceURI();
+				}
+				root = root.eContainer();
+			}
+		}
+		else if (object instanceof IType) {
+			namespace = "http://www.java.com/java";
+		}
+		return (namespace == null || namespace.isEmpty()) ? null : namespace;
+	}
+	
+	public static String getQualifier(Object object) {
+		String qualifier = null;
+		// find the root container for this EObject
+		if (object instanceof EObject) {
+			EObject root = (EObject)object;
+			while (qualifier==null && root!=null) {
+				if (root instanceof Definition) {
+					qualifier = "wsdl";
+				}
+				else if (root instanceof XSDSchema) {
+					qualifier = "xsd";
+				}
+				else if (root instanceof Definitions) {
+					qualifier = "bpmn2";
+				}
+				root = root.eContainer();
+			}
+		}
+		else if (object instanceof IType) {
+			qualifier = "java";
+		}
+		return qualifier;
+	}
+	
+	public static String getPrefixForObject(Resource resource, Object object) {
+		String prefix = "";
+		String namespace = getNamespaceForObject(object);
+		String qualifier = getQualifier(object);
+		if (namespace!=null) {
+			for (String s : getAllPrefixesForNamespace(resource, namespace)) {
+				if (s.endsWith("."+qualifier))
+					return s;
+			}
+		}
+		Map<String,String> map = getXMLNSPrefixMap(resource);
+		if (map!=null) {
+			prefix = createUniquePrefix(map, "ns"); //$NON-NLS-1$
+		}
+		if (prefix!=null) {
+			return prefix + "." + qualifier;
+		}
+		return prefix;
+	}
+	
+	public static String addNamespaceForObject(Resource resource, Object object) {
+		String namespace = getNamespaceForObject(object);
+		String prefix = getPrefixForObject(resource, object);
+		if (namespace==null || hasPrefix(resource,prefix))
+			return null;
+		
+		// generate a prefix
+		addNamespace(resource, prefix, namespace);
+		return namespace;
 	}
 }

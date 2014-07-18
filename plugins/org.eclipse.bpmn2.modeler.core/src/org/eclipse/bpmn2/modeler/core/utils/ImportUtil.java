@@ -14,8 +14,13 @@
 package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.namespace.QName;
+
+import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
@@ -26,8 +31,6 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.resources.IContainer;
@@ -40,6 +43,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -57,6 +62,7 @@ import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Input;
 import org.eclipse.wst.wsdl.Message;
+import org.eclipse.wst.wsdl.MessageReference;
 import org.eclipse.wst.wsdl.Operation;
 import org.eclipse.wst.wsdl.Output;
 import org.eclipse.wst.wsdl.PortType;
@@ -147,10 +153,31 @@ public class ImportUtil {
 		return findImportForNamespace(resource, namespace);
 	}
 	
-	public Object getObjectForLocalname(Import imp, EObject referencingObject, EReference referencingFeature, String localname) {
+	private boolean isObjectQName(Resource resource, EObject o, String prefix, String localname) {
+		String olocalname = getLocalnameForObject(o);
+		if (prefix!=null) {
+			String oprefix = NamespaceUtil.getPrefixForObject(resource, o);
+			if (prefix.equals(oprefix) && localname.equals(olocalname)) {
+				return true;
+			}
+		}
+		else if (localname.equals(olocalname))
+			return true;
+		return false;
+	}
+	
+	public Object getObjectForId(Import imp, EObject referencingObject, EReference referencingFeature, String id) {
 		// Load the import file: if successful, this should give us its contents which will be an EObject
 		Object result = loadImport(imp);
 		if (result instanceof EObject) {
+			Resource resource = imp.eResource();
+			String prefix = null;
+			String localname = id;
+			int i = id.indexOf(':');
+			if (i>0) {
+				prefix = id.substring(0,i);
+				localname = id.substring(i+1);
+			}
 			EObject contents = (EObject)result;
 			// Depending on the import type, determine the object hierarchy using the given object
 			// and feature. The "id" string will identify which object is being referenced in the import.
@@ -168,7 +195,7 @@ public class ImportUtil {
 						while (iter.hasNext()) {
 							EObject o = iter.next();
 							if (o instanceof PortType) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -181,7 +208,7 @@ public class ImportUtil {
 						while (iter.hasNext()) {
 							EObject o = iter.next();
 							if (o instanceof Operation) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -194,7 +221,7 @@ public class ImportUtil {
 						while (iter.hasNext()) {
 							EObject o = iter.next();
 							if (o instanceof Message) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -207,7 +234,7 @@ public class ImportUtil {
 						while (iter.hasNext()) {
 							EObject o = iter.next();
 							if (o instanceof Fault) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -220,7 +247,7 @@ public class ImportUtil {
 						while (iter.hasNext()) {
 							EObject o = iter.next();
 							if (o instanceof Message || o instanceof Fault || o instanceof XSDElementDeclaration) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -235,10 +262,8 @@ public class ImportUtil {
 						TreeIterator<EObject> iter = contents.eAllContents();
 						while (iter.hasNext()) {
 							EObject o = iter.next();
-							if (localname.equals(getLocalnameForObject(o)))
-								return o;
 							if (o instanceof XSDElementDeclaration) {
-								if (localname.equals(getLocalnameForObject(o)))
+								if (isObjectQName(resource, o, prefix, localname))
 									return o;
 							}
 						}
@@ -246,7 +271,14 @@ public class ImportUtil {
 				}
 			}
 			else if (IMPORT_TYPE_BPMN2.equals(imp.getImportType())) {
-				// TODO: figure out what to do with BPMN2 imports...
+				TreeIterator<EObject> iter = contents.eAllContents();
+				while (iter.hasNext()) {
+					EObject o = iter.next();
+					if (o instanceof CallableElement) {
+						if (isObjectQName(resource, o, prefix, localname))
+							return o;
+					}
+				}
 			}
 		}
 		else if (result instanceof List) {
@@ -274,12 +306,20 @@ public class ImportUtil {
 			return ((Message)o).getQName().getLocalPart();
 		}
 		if (o instanceof Fault) {
-			return ((Fault)o).getName();
+			return getLocalnameForObject( ((Fault)o).getEMessage() );
 		}
 		if (o instanceof XSDElementDeclaration) {
 			return ((XSDElementDeclaration)o).getName();
 		}
 		return null;
+	}
+	
+	public String getQNameForObject(Resource resource, Object o) {
+		String prefix = NamespaceUtil.getPrefixForObject(resource, o);
+		String name = getLocalnameForObject(o);
+		if (prefix!=null)
+			return prefix + ":" + name;
+		return name;
 	}
 	
 	// FIXME: {@see ICustomElementFeatureContainer#getId(EObject)}
@@ -496,7 +536,7 @@ public class ImportUtil {
 				// WSDL Definition
 				Definition wsdlDefinition = (Definition)importObject;
 	
-				imp = Bpmn2ModelerFactory.create(Import.class);
+				imp = createBpmn2Object(definitions, Import.class);
 				imp.setImportType(IMPORT_TYPE_WSDL);
 				imp.setLocation(makeURIRelative(resource.getURI(), wsdlDefinition.getLocation()));
 				imp.setNamespace(wsdlDefinition.getTargetNamespace());
@@ -505,7 +545,7 @@ public class ImportUtil {
 				// XSD Schema
 				XSDSchema schema = (XSDSchema)importObject;
 				
-				imp = Bpmn2ModelerFactory.create(Import.class);
+				imp = createBpmn2Object(definitions, Import.class);
 				imp.setImportType(IMPORT_TYPE_XML_SCHEMA);
 				imp.setLocation(makeURIRelative(resource.getURI(), schema.getSchemaLocation()));
 				imp.setNamespace(schema.getTargetNamespace());
@@ -518,7 +558,7 @@ public class ImportUtil {
 //				String name = clazz.getName().replaceAll("\\.", "/").concat(".class");
 //				java.net.URL url = cl.getResource(name);
 //				URI uri = URI.createPlatformPluginURI(url.getPath(), true);
-				imp = Bpmn2ModelerFactory.create(Import.class);
+				imp = createBpmn2Object(definitions, Import.class);
 				imp.setImportType(IMPORT_TYPE_JAVA);
 				imp.setLocation(clazz.getFullyQualifiedName('.'));
 				imp.setNamespace("http://" + clazz.getPackageFragment().getElementName()); //$NON-NLS-1$
@@ -527,7 +567,7 @@ public class ImportUtil {
 				// BPMN 2.0 Diagram file
 				Definitions defs = (Definitions)importObject;
 				
-				imp = Bpmn2ModelerFactory.create(Import.class);
+				imp = createBpmn2Object(definitions, Import.class);
 				imp.setImportType(IMPORT_TYPE_BPMN2);
 				imp.setLocation(makeURIRelative(resource.getURI(), defs.eResource().getURI().toString()));
 				imp.setNamespace(defs.getTargetNamespace());
@@ -560,14 +600,12 @@ public class ImportUtil {
 		if (importObject instanceof org.eclipse.wst.wsdl.Definition) {
 			// WSDL Definition
 			Definition wsdlDefinition = (Definition)importObject;
-
-			// WSDL Bindings are optional, instead create a new
-			// BPMN2 Interface for each PortType found in the WSDL.
-//					for (Binding b : (List<Binding>)wsdlDefinition.getEBindings()) {
-//						createInterface(definitions, imp,  b.getEPortType());
-//					}
-			for (PortType pt : (List<PortType>)wsdlDefinition.getEPortTypes()) {
-				createInterface(definitions, imp,  pt);
+			
+			String namespace = wsdlDefinition.getTargetNamespace();
+			if (namespace!=null && !namespace.isEmpty()) {
+				if (!NamespaceUtil.hasNamespace(definitions.eResource(), namespace)) {
+					String prefix = NamespaceUtil.addNamespace(definitions.eResource(), namespace);
+				}
 			}
 
 			// create XSD types (if any) defined in the WSDL
@@ -576,12 +614,20 @@ public class ImportUtil {
 				for (Object s : t.getSchemas()) {
 					if (s instanceof XSDSchema) {
 						XSDSchema schema = (XSDSchema)s;
-
 						for (XSDElementDeclaration elem : schema.getElementDeclarations()) {
 							createItemDefinition(definitions, imp, elem, ItemKind.INFORMATION);
 						}
 					}
 				}
+			}
+
+			// WSDL Bindings are optional, instead create a new
+			// BPMN2 Interface for each PortType found in the WSDL.
+//					for (Binding b : (List<Binding>)wsdlDefinition.getEBindings()) {
+//						createInterface(definitions, imp,  b.getEPortType());
+//					}
+			for (PortType pt : (List<PortType>)wsdlDefinition.getEPortTypes()) {
+				createInterface(definitions, imp,  pt);
 			}
 		}
 		else if (importObject instanceof XSDSchema){
@@ -655,8 +701,11 @@ public class ImportUtil {
 							deleteInterface(definitions, intf);
 					}
 				}
+				// also remove an ItemDefinitions
+				type = IMPORT_TYPE_XML_SCHEMA;
 			}
-			else if (IMPORT_TYPE_XML_SCHEMA.equals(type)) {
+			
+			if (IMPORT_TYPE_XML_SCHEMA.equals(type)) {
 				List<ItemDefinition> list = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 				for (ItemDefinition itemDef : list) {
 					Object ref = itemDef.getStructureRef();
@@ -668,7 +717,8 @@ public class ImportUtil {
 					}
 				}
 			}
-			else if (IMPORT_TYPE_JAVA.equals(type)) {
+
+			if (IMPORT_TYPE_JAVA.equals(type)) {
 				List<Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
 				for (Interface intf : list) {
 					Object ref = intf.getImplementationRef();
@@ -703,8 +753,9 @@ public class ImportUtil {
 				if (!deleted)
 					deleteItemDefinition(definitions, imp, className);
 			}
-			else if (IMPORT_TYPE_BPMN2.equals(type)) {
-				// TODO: what objects need to be created? Interface maybe? 
+			
+			if (IMPORT_TYPE_BPMN2.equals(type)) {
+				// TODO: what objects need to be destroyed? Interface maybe? 
 			}
 			definitions.getImports().remove(imp);
 		}
@@ -722,16 +773,15 @@ public class ImportUtil {
 	 * @return the newly created object, or an existing Interface with the same name and implementation reference
 	 */
 	public Interface createInterface(Definitions definitions, Import imp, PortType portType) {
-		Interface intf = Bpmn2ModelerFactory.create(Interface.class);
+		Interface intf = createBpmn2Object(definitions, Interface.class);
 		intf.setName(portType.getQName().getLocalPart());
 		intf.setImplementationRef(portType);
+		createOperations(definitions, imp, intf, portType);
 		Interface i = findInterface(definitions,intf);
 		if (i!=null)
 			return i;
 		
 		definitions.getRootElements().add(intf);
-		ModelUtil.setID(intf);
-		createOperations(definitions, imp, intf, portType);
 		
 		return intf;
 	}
@@ -746,16 +796,15 @@ public class ImportUtil {
      * @return the newly created object, or an existing Interface with the same name and implementation reference
      */
     public Interface createInterface(Definitions definitions, Import imp, IType type, IMethod[] methods) {
-        Interface intf = Bpmn2ModelerFactory.create(Interface.class);
+        Interface intf = createBpmn2Object(definitions, Interface.class);
         intf.setName(type.getElementName());
         intf.setImplementationRef(ModelUtil.createStringWrapper(type.getFullyQualifiedName('.')));
+        createOperations(definitions, imp, intf, type, methods);
         Interface i = findInterface(definitions,intf);
         if (i!=null)
             return i;
         
         definitions.getRootElements().add(intf);
-        ModelUtil.setID(intf);
-        createOperations(definitions, imp, intf, type, methods);
         
         return intf;
     }
@@ -780,13 +829,10 @@ public class ImportUtil {
 	 * @return the Interface if it already exists, null if not 
 	 */
 	public static Interface findInterface(Definitions definitions, Interface intf) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(intf);
-		if (adapter!=null) {
-			List <Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
-			for (Interface i : list) {
-				if (adapter.getObjectDescriptor().similar(i))
-					return i;
-			}
+		List <Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
+		for (Interface i : list) {
+			if (equals(i, intf))
+				return i;
 		}
 		return null;
 	}
@@ -803,7 +849,7 @@ public class ImportUtil {
 	 */
 	public void createOperations(Definitions definitions, Import imp, Interface intf, PortType portType) {
 		for (Operation wsdlop : (List<Operation>)portType.getEOperations()) {
-			org.eclipse.bpmn2.Operation bpmn2op = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Operation.class);
+			org.eclipse.bpmn2.Operation bpmn2op = createBpmn2Object(definitions, org.eclipse.bpmn2.Operation.class);
 			bpmn2op.setImplementationRef(wsdlop);
 			bpmn2op.setName(wsdlop.getName());
 			
@@ -825,7 +871,6 @@ public class ImportUtil {
 			
 			if (findOperation(definitions, bpmn2op)==null) {
 				intf.getOperations().add(bpmn2op);
-				ModelUtil.setID(bpmn2op);
 			}
 		}
 	}
@@ -857,7 +902,7 @@ public class ImportUtil {
 				if (method.getNumberOfParameters()!=1) {
 					continue;
 				}
-                org.eclipse.bpmn2.Operation bpmn2op = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Operation.class);
+                org.eclipse.bpmn2.Operation bpmn2op = createBpmn2Object(definitions, org.eclipse.bpmn2.Operation.class);
                 bpmn2op.setImplementationRef(ModelUtil.createStringWrapper(method.getElementName()));
                 bpmn2op.setName(method.getElementName());
 
@@ -926,7 +971,6 @@ public class ImportUtil {
 
                 if (findOperation(definitions, bpmn2op) == null) {
                     intf.getOperations().add(bpmn2op);
-                    ModelUtil.setID(bpmn2op);
                 }
             }
         } catch (JavaModelException e) {
@@ -1004,16 +1048,14 @@ public class ImportUtil {
 	 * @return the Operation if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Operation findOperation(Definitions definitions, org.eclipse.bpmn2.Operation bpmn2op) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(bpmn2op);
-		if (adapter!=null) {
-			List<org.eclipse.bpmn2.Operation> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Operation.class);
-			for (org.eclipse.bpmn2.Operation o : list) {
-				if (adapter.getObjectDescriptor().similar(o))
-					return (org.eclipse.bpmn2.Operation)o;
-			}
+		List<org.eclipse.bpmn2.Operation> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Operation.class);
+		for (org.eclipse.bpmn2.Operation o : list) {
+			if ( equals(o, bpmn2op))
+				return (org.eclipse.bpmn2.Operation)o;
 		}
 		return null;
 	}
+	
 	/**
 	 * Create a new Message object and add it to the rootElements in the given Definitions.
 	 * This also creates all of the ItemDefinitions that are defined in the "wsdlmsg" element.
@@ -1025,7 +1067,7 @@ public class ImportUtil {
 	 * @return the newly created object, or an existing Message that is identical to the given WSDL Message
 	 */
 	public org.eclipse.bpmn2.Message createMessage(Definitions definitions, Import imp, Message wsdlmsg) {
-		org.eclipse.bpmn2.Message bpmn2msg = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Message.class);
+		org.eclipse.bpmn2.Message bpmn2msg = createBpmn2Object(definitions, org.eclipse.bpmn2.Message.class);
 		ItemDefinition itemDef = createItemDefinition(definitions, imp, wsdlmsg);
 		bpmn2msg.setItemRef(itemDef);
 		bpmn2msg.setName(wsdlmsg.getQName().getLocalPart());
@@ -1035,7 +1077,6 @@ public class ImportUtil {
 			return m;
 		
 		definitions.getRootElements().add(bpmn2msg);
-		ModelUtil.setID(bpmn2msg);
 		
 		return bpmn2msg;
 	}
@@ -1052,7 +1093,7 @@ public class ImportUtil {
      * @return the newly created object, or an existing Message that is identical to the given WSDL Message
      */
     public org.eclipse.bpmn2.Message createMessage(Definitions definitions, Import imp, IType param, String paramName) {
-        org.eclipse.bpmn2.Message bpmn2msg = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Message.class);
+        org.eclipse.bpmn2.Message bpmn2msg = createBpmn2Object(definitions, org.eclipse.bpmn2.Message.class);
         if (param != null) {
             ItemDefinition itemDef = createItemDefinition(definitions, imp, param);
             bpmn2msg.setItemRef(itemDef);
@@ -1064,7 +1105,6 @@ public class ImportUtil {
             return m;
         
         definitions.getRootElements().add(bpmn2msg);
-        ModelUtil.setID(bpmn2msg);
         
         return bpmn2msg;
     }
@@ -1090,13 +1130,10 @@ public class ImportUtil {
 	 * @return the Operation if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Message findMessage(Definitions definitions, org.eclipse.bpmn2.Message msg) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(msg);
-		if (adapter!=null) {
-			List<org.eclipse.bpmn2.Message> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Message.class);
-			for (org.eclipse.bpmn2.Message m : list) {
-				if (adapter.getObjectDescriptor().similar(m))
-					return (org.eclipse.bpmn2.Message)m;
-			}
+		List<org.eclipse.bpmn2.Message> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Message.class);
+		for (org.eclipse.bpmn2.Message m : list) {
+			if (equals(m, msg))
+				return (org.eclipse.bpmn2.Message)m;
 		}
 		return null;
 	}
@@ -1113,7 +1150,7 @@ public class ImportUtil {
 	 * @return the newly created object, or an existing Error that is identical to the given WSDL Fault
 	 */
 	public org.eclipse.bpmn2.Error createError(Definitions definitions, Import imp, Fault fault) {
-		org.eclipse.bpmn2.Error error = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Error.class);
+		org.eclipse.bpmn2.Error error = createBpmn2Object(definitions, org.eclipse.bpmn2.Error.class);
 		ItemDefinition itemDef = createItemDefinition(definitions, imp, fault, ItemKind.INFORMATION);
 		error.setName(fault.getName());
 		error.setStructureRef(itemDef);
@@ -1122,7 +1159,6 @@ public class ImportUtil {
 			return e;
 
 		definitions.getRootElements().add(error);
-		ModelUtil.setID(error);
 		
 		return error;
 	}
@@ -1139,7 +1175,7 @@ public class ImportUtil {
      * @return the newly created object, or an existing Error that is identical to the given WSDL Fault
      */
     public org.eclipse.bpmn2.Error createError(Definitions definitions, Import imp, IType exceptionType) {
-        org.eclipse.bpmn2.Error error = Bpmn2ModelerFactory.create(org.eclipse.bpmn2.Error.class);
+        org.eclipse.bpmn2.Error error = createBpmn2Object(definitions, org.eclipse.bpmn2.Error.class);
         ItemDefinition itemDef = createItemDefinition(definitions, imp, exceptionType);
         error.setName(exceptionType.getElementName());
         error.setStructureRef(itemDef);
@@ -1148,7 +1184,6 @@ public class ImportUtil {
             return e;
 
         definitions.getRootElements().add(error);
-        ModelUtil.setID(error);
         
         return error;
     }
@@ -1161,13 +1196,10 @@ public class ImportUtil {
 	 * @return the Error if it already exists, null if not 
 	 */
 	public static org.eclipse.bpmn2.Error findError(Definitions definitions, org.eclipse.bpmn2.Error error) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(error);
-		if (adapter!=null) {
-			List<org.eclipse.bpmn2.Error> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Error.class);
-			for (org.eclipse.bpmn2.Error e : list) {
-				if (adapter.getObjectDescriptor().similar(e))
-					return (org.eclipse.bpmn2.Error)e;
-			}
+		List<org.eclipse.bpmn2.Error> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Error.class);
+		for (org.eclipse.bpmn2.Error e : list) {
+			if (equals(e, error))
+				return (org.eclipse.bpmn2.Error)e;
 		}
 		return null;
 	}
@@ -1234,7 +1266,13 @@ public class ImportUtil {
 	 * @return the newly created object, or an existing ItemDefinition that is identical to the given String type
 	 */
 	public ItemDefinition createItemDefinition(Definitions definitions, Import imp, EObject structureRef, ItemKind kind) {
-		ItemDefinition itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
+		Resource resource = definitions.eResource();
+		String prefix = NamespaceUtil.getPrefixForObject(resource, structureRef);
+		String namespace = NamespaceUtil.getNamespaceForPrefix(resource, prefix);
+		if (namespace==null) {
+			namespace = NamespaceUtil.addNamespaceForObject(resource, structureRef);
+		}
+		ItemDefinition itemDef = createBpmn2Object(definitions, ItemDefinition.class);
 		itemDef.setImport(imp);
 		if (kind==null) {
 			// try to determine the ItemKind based on the type of Process:
@@ -1251,13 +1289,15 @@ public class ImportUtil {
 				kind = ItemKind.INFORMATION;
 		}
 		itemDef.setItemKind(kind);
+		if (structureRef instanceof Fault) {
+			structureRef = ((Fault)structureRef).getEMessage();
+		}
 		itemDef.setStructureRef(structureRef);
 		ItemDefinition i = findItemDefinition(definitions, itemDef);
 		if (i!=null)
 			return i;
 
 		definitions.getRootElements().add(itemDef);
-		ModelUtil.setID(itemDef);
 		
 		return itemDef;
 	}
@@ -1272,7 +1312,7 @@ public class ImportUtil {
 	 * @return the ItemDefinition object if found, or null
 	 */
 	public static ItemDefinition findItemDefinition(Definitions definitions, Import imp, EObject structureRef, ItemKind kind) {
-		ItemDefinition itemDef = Bpmn2ModelerFactory.create(ItemDefinition.class);
+		ItemDefinition itemDef = createBpmn2Object(definitions, ItemDefinition.class);
 		itemDef.setImport(imp);
 		itemDef.setItemKind(kind);
 		itemDef.setStructureRef(structureRef);
@@ -1287,13 +1327,10 @@ public class ImportUtil {
 	 * @return the ItemDefinition if it already exists, null if not 
 	 */
 	public static ItemDefinition findItemDefinition(Definitions definitions, ItemDefinition itemDef) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(itemDef);
-		if (adapter!=null) {
-			List<ItemDefinition> list = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
-			for (ItemDefinition i : list) {
-				if (adapter.getObjectDescriptor().similar(i))
-					return (ItemDefinition)i;
-			}
+		List<ItemDefinition> list = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
+		for (ItemDefinition i : list) {
+			if ( equals(i, itemDef))
+				return (ItemDefinition)i;
 		}
 		return null;
 	}
@@ -1344,5 +1381,133 @@ public class ImportUtil {
 				EcoreUtil.delete(itemDef);
 			}
 		}
+	}
+	
+	private static boolean equals(Object object1, Object object2) {
+		if (object1==object2)
+			return true;
+		if (object1==null || object2==null)
+			return false;
+
+		// Compare BPMN2 object types
+		if (object1 instanceof Interface && object2 instanceof Interface) {
+			Interface i1 = (Interface) object1;
+			Interface i2 = (Interface) object2;
+			return equals(i1.getImplementationRef(), i2.getImplementationRef()) &&
+					equals(i1.getName(), i2.getName()) &&
+					equals(i1.getOperations(), i2.getOperations());
+		}
+		if (object1 instanceof org.eclipse.bpmn2.Operation && object2 instanceof org.eclipse.bpmn2.Operation) {
+			org.eclipse.bpmn2.Operation o1 = (org.eclipse.bpmn2.Operation) object1;
+			org.eclipse.bpmn2.Operation o2 = (org.eclipse.bpmn2.Operation) object2;
+			return equals(o1.getName(), o2.getName()) &&
+					equals(o1.getImplementationRef(), o2.getImplementationRef()) &&
+					equals(o1.getErrorRefs(), o2.getErrorRefs()) &&
+					equals(o1.getInMessageRef(), o2.getInMessageRef()) &&
+					equals(o1.getOutMessageRef(), o2.getOutMessageRef());
+		}
+		if (object1 instanceof org.eclipse.bpmn2.Message && object2 instanceof org.eclipse.bpmn2.Message) {
+			org.eclipse.bpmn2.Message m1 = (org.eclipse.bpmn2.Message) object1;
+			org.eclipse.bpmn2.Message m2 = (org.eclipse.bpmn2.Message) object2;
+			return equals(m1.getItemRef(), m2.getItemRef()) &&
+					equals(m1.getName(), m2.getName());
+		}
+		if (object1 instanceof org.eclipse.bpmn2.Error && object2 instanceof org.eclipse.bpmn2.Error) {
+			org.eclipse.bpmn2.Error e1 = (org.eclipse.bpmn2.Error) object1;
+			org.eclipse.bpmn2.Error e2 = (org.eclipse.bpmn2.Error) object2;
+			return equals(e1.getName(), e2.getName()) &&
+					equals(e1.getStructureRef(), e2.getStructureRef());
+		}
+		if (object1 instanceof ItemDefinition && object2 instanceof ItemDefinition) {
+			ItemDefinition i1 = (ItemDefinition) object1;
+			ItemDefinition i2 = (ItemDefinition) object2;
+			return equals(i1.getItemKind(), i2.getItemKind()) &&
+					equals(i1.getStructureRef(), i2.getStructureRef());
+		}
+		
+		// Compare WSDL types
+		if (object1 instanceof PortType && object2 instanceof PortType) {
+			PortType p1 = (PortType) object1;
+			PortType p2 = (PortType) object2;
+			return equals(p1.getQName(), p2.getQName()) &&
+					equals(p1.getOperations(), p2.getOperations());
+		}
+		if (object1 instanceof Operation && object2 instanceof Operation) {
+			Operation o1 = (Operation) object1;
+			Operation o2 = (Operation) object2;
+			return equals(o1.getName(), o2.getName()) &&
+					equals(o1.getInput(), o2.getInput()) &&
+					equals(o1.getOutput(), o2.getOutput()) &&
+					equals(o1.getFaults(), o2.getFaults()) &&
+					equals(o1.getStyle(), o2.getStyle());					
+					
+		}
+		if (object1 instanceof Message && object2 instanceof Message) {
+			Message m1 = (Message) object1;
+			Message m2 = (Message) object2;
+			return equals(m1.getQName(), m2.getQName());
+		}
+		if (object1 instanceof MessageReference && object2 instanceof MessageReference) {
+			MessageReference m1 = (MessageReference) object1;
+			MessageReference m2 = (MessageReference) object2;
+			return equals(m1.getName(), m2.getName()) &&
+					equals(m1.getEMessage(), m2.getEMessage());
+		}
+		if (object1 instanceof Fault && object2 instanceof Fault) {
+			Fault f1 = (Fault) object1;
+			Fault f2 = (Fault) object2;
+			return equals(f1.getEMessage(), f2.getEMessage());
+		}
+		if (object1 instanceof QName && object2 instanceof QName) {
+			QName m1 = (QName) object1;
+			QName m2 = (QName) object2;
+			return equals(m1.getNamespaceURI(), m2.getNamespaceURI()) &&
+					equals(m1.getLocalPart(), m2.getLocalPart());
+		}
+
+		// Compare XSD types
+		if (object1 instanceof XSDElementDeclaration && object2 instanceof XSDElementDeclaration) {
+			XSDElementDeclaration x1 = (XSDElementDeclaration) object1;
+			XSDElementDeclaration x2 = (XSDElementDeclaration) object2;
+			return equals(x1.getQName(), x2.getQName());
+		}
+
+		// Compare generic objects
+		if (object1 instanceof Map && object2 instanceof Map) {
+			Map m1 = (Map) object1;
+			Map m2 = (Map) object2;
+			if (m1.size()!=m2.size())
+				return false;
+			for (Object k1 : m1.keySet()) {
+				if (!equals(m1.get(k1), m2.get(k1)))
+					return false;
+			}
+			return true;
+		}
+		if (object1 instanceof List && object2 instanceof List) {
+			List l1 = (List) object1;
+			List l2 = (List) object2;
+			if (l1.size()!=l2.size())
+				return false;
+			for (int i=0; i<l1.size(); ++i) {
+				if (!equals(l1.get(i), l2.get(i)))
+					return false;
+			}
+			return true;
+		}
+		if (object1 instanceof String && object2 instanceof String)
+			return object1.equals(object2);
+//		System.out.println("compare: \n  "+object1+"\n  "+object2);
+		return object1.equals(object2);
+	}
+	
+	private static <T extends EObject> T createBpmn2Object(Definitions definitions, Class<T> clazz) {
+		EClassifier eClassifier = Bpmn2Package.eINSTANCE.getEClassifier(clazz.getSimpleName());
+		if (eClassifier instanceof EClass) {
+			T newObject = (T) Bpmn2Factory.eINSTANCE.create((EClass)eClassifier);
+			ModelUtil.setID(newObject, definitions.eResource());
+			return newObject;
+		}
+		return null;
 	}
 }

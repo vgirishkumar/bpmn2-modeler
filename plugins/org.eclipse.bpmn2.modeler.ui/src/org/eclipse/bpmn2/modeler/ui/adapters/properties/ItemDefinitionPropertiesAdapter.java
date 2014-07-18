@@ -187,19 +187,23 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 		if (itemDefinition!=null) {
 			Object value = itemDefinition.getStructureRef();
 			if (value instanceof XSDElementDeclaration) {
+				String prefix = NamespaceUtil.getPrefixForObject(resource, value);
 				XSDElementDeclaration elem = (XSDElementDeclaration)value;
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, elem.getSchema().getTargetNamespace());
 				name = elem.getName();
-				if (prefix!=null && !prefix.isEmpty())
+				if (prefix!=null)
 					name = prefix + ":" + name; //$NON-NLS-1$
 			}
 			else if (value instanceof Message) {
 				Message message = (Message)value;
-				name = NamespaceUtil.normalizeQName(resource,message.getQName());
+				String prefix = NamespaceUtil.getPrefixForObject(resource, value);
+				if (prefix!=null)
+					name = prefix + ":" + message.getQName().getLocalPart(); //$NON-NLS-1$
+				else
+					name = NamespaceUtil.normalizeQName(resource,message.getQName());
 			}
 			else if (value instanceof Fault) {
+				String prefix = NamespaceUtil.getPrefixForObject(resource, value);
 				Fault fault = (Fault)value;
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, fault.getEnclosingDefinition().getTargetNamespace());
 				name = fault.getName();
 				if (prefix!=null && !prefix.isEmpty())
 					name = prefix + ":" + name; //$NON-NLS-1$

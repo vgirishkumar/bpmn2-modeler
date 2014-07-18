@@ -358,7 +358,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			if (obj instanceof BPMNDiagnostic) {
 				BPMNDiagnostic that = (BPMNDiagnostic)obj;
 				return
-						this.message.equals(that.message) &&
+						(this.message!=null && this.message.equals(that.message)) &&
 						this.line==that.line &&
 						this.column==that.column;
 			}
@@ -685,6 +685,11 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 							}
 						}
 					}
+					else if (name.startsWith(XMLResource.XML_NS+":")) {
+						String prefix = name.substring(name.indexOf(':')+1);
+						String namespace = attribs.getValue(i);
+	            		NamespaceUtil.addNamespace(xmlResource, prefix, namespace);
+					}
 				}
 			}
 
@@ -756,7 +761,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 						// this thing is in another namespace, possibly in an external document
 						Import imp = importHandler.findImportForNamespace(helper.getResource(), namespace);
 						if (imp!=null) {
-							value = importHandler.getObjectForLocalname(imp, object, eReference, localname);
+							value = importHandler.getObjectForId(imp, object, eReference, ids);
 						}
 					}
 				}
@@ -1615,18 +1620,11 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			else
 				s = super.getHREF(obj);
 			if (isQNameFeature) {
-				if (s!=null && s.contains("#")) { //$NON-NLS-1$
+				if (s != null && s.contains("#")) { //$NON-NLS-1$
 					// object is a reference possibly to another document
 					Import imp = importHandler.findImportForObject(resource, obj);
-					if (imp!=null) {
-						String localname = importHandler.getLocalnameForObject(obj);
-						if (localname!=null) {
-							String prefix = NamespaceUtil.getPrefixForNamespace(resource, imp.getNamespace());
-							if (prefix!=null) {
-								s = prefix + ":" + localname; //$NON-NLS-1$
-								return s;
-							}
-						}
+					if (imp != null) {
+						return importHandler.getQNameForObject(resource, obj);
 					}
 				}
 			}

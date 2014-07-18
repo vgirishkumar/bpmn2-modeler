@@ -113,8 +113,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 				else if (value instanceof org.eclipse.wst.wsdl.Operation) {
 					org.eclipse.wst.wsdl.Operation operation = (org.eclipse.wst.wsdl.Operation)value;
 					String name = operation.getName();
-					String namespace = operation.getEnclosingDefinition().getTargetNamespace();
-					String prefix = NamespaceUtil.getPrefixForNamespace(resource, namespace);
+					String prefix = NamespaceUtil.getPrefixForObject(resource, operation);
 					if (prefix!=null && !prefix.isEmpty())
 						text = prefix + ":" + name; //$NON-NLS-1$
 					else

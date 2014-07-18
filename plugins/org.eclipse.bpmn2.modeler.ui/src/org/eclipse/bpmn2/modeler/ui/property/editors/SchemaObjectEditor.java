@@ -112,13 +112,11 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 			String value = ""; //$NON-NLS-1$
 			String selectionType = ""; //$NON-NLS-1$
 
+			String prefix = NamespaceUtil.getPrefixForObject(resource, element);
 			if (element instanceof PortType) {
 				// the element is a WSDL PortType
 				PortType portType = (PortType)element;
 				QName qname = portType.getQName();
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
-				if (prefix==null)
-					prefix = NamespaceUtil.addNamespace(resource, qname.getNamespaceURI());
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += qname.getLocalPart();
@@ -156,9 +154,6 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 				// the element is a WSDL Message
 				Message message = (Message)element;
 				QName qname = message.getQName();
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, qname.getNamespaceURI());
-				if (prefix==null)
-					prefix = NamespaceUtil.addNamespace(resource, qname.getNamespaceURI());
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += qname.getLocalPart();
@@ -180,25 +175,18 @@ public class SchemaObjectEditor extends TextAndButtonObjectEditor {
 						ns = type.getSchema().getTargetNamespace();
 					}
 				}
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, ns);
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += selectionPath;
 			}
 			if (element instanceof XSDTypeDefinition) {
 				// the element is a XSD type
-				XSDTypeDefinition type = (XSDTypeDefinition)element;
-				XSDSchema schema = getContainingSchema(type);
-				String ns = schema.getTargetNamespace();
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, ns);
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += selectionPath;
 			}
 			if (element instanceof XSDSchema) {
 				// the element is a XSD schema
-				XSDSchema schema = (XSDSchema)element;
-				String prefix = NamespaceUtil.getPrefixForNamespace(resource, schema.getTargetNamespace());
 				if (prefix!=null)
 					value = prefix + ":"; //$NON-NLS-1$
 				value += "schema"; //$NON-NLS-1$
