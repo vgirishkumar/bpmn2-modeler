@@ -94,7 +94,6 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 		decorateShape(context, containerShape, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
 		return containerShape;
 	}

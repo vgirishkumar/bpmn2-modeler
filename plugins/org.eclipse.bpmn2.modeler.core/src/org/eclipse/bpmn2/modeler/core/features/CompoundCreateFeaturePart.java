@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EFactory;
@@ -282,10 +283,10 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 			if (target==null)
 				target = ((ICreateConnectionContext)context).getTargetPictogramElement();
 			
-			Point sp = AnchorUtil.getCenterPoint((Shape)source);
-			Point tp = AnchorUtil.getCenterPoint((Shape)target);
-			FixPointAnchor sourceAnchor = AnchorUtil.findNearestAnchor((Shape)source, tp);
-			FixPointAnchor targetAnchor = AnchorUtil.findNearestAnchor((Shape)target, sp);
+			Point sp = GraphicsUtil.getShapeCenter((Shape)source);
+			Point tp = GraphicsUtil.getShapeCenter((Shape)target);
+			FixPointAnchor sourceAnchor = AnchorUtil.createAnchor((Shape)source, tp);
+			FixPointAnchor targetAnchor = AnchorUtil.createAnchor((Shape)target, sp);
 			cc.setSourcePictogramElement(source);
 			cc.setTargetPictogramElement(target);
 			cc.setSourceAnchor(sourceAnchor);

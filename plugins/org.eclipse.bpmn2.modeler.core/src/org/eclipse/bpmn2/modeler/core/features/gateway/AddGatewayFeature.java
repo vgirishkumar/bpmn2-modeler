@@ -77,7 +77,6 @@ public abstract class AddGatewayFeature<T extends Gateway>
 		// hook for subclasses to inject extra code
 		decorateShape(context, containerShape, businessObject);
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, gatewayPolygon);
 		
 		splitConnection(context, containerShape);
 		

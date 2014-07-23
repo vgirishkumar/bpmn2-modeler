@@ -13,11 +13,19 @@
 
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
+import java.util.List;
+
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.RootElementComparator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -78,6 +86,55 @@ public class RootElementPropertiesAdapter<T extends RootElement> extends Extende
 			if (definitions!=null) {
 				try {
 					definitions.getRootElements().add(rootElement);
+					if (rootElement instanceof Collaboration) {
+						// The new object is a Collaboration: all Participants must
+						// be contained in the Collaboration, and all Processes
+						// must be referenced by Participants.
+			        	Collaboration collaboration = (Collaboration) rootElement;
+			        	
+			        	// Find the Default Process if there is one.
+			        	// This will be a Process that has a BPMNDiagram
+			        	List<Process> processes = ModelUtil.getAllRootElements(definitions, Process.class);
+			        	for (Process process : processes) {
+			        		if (DIUtils.findBPMNDiagram(process)!=null) {
+				        		// create a Participant for the Default Process so we can add it to the Collaboration
+								Participant defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
+								defaultParticipant.setProcessRef(process);
+								defaultParticipant.setName(process.getName() +  " Pool");
+					        	collaboration.getParticipants().add(defaultParticipant);
+			        			break;
+			        		}
+			        	}
+					}
+					else if (rootElement instanceof Process) {
+						// The new object is a Process: if this is a Collaboration diagram
+						// make the new Process a Participant.
+						Process process = (Process) rootElement;
+						
+						List<Collaboration> collaborations = ModelUtil.getAllRootElements(definitions, Collaboration.class);
+						for (Collaboration collaboration : collaborations) {
+							BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(collaboration);
+							if (bpmnDiagram!=null) {
+								bpmnDiagram.getPlane().setBpmnElement(process);
+								Participant defaultParticipant = null;
+								// does this Collaboration have a default Participant?
+								// i.e. a Participant that does not have a Pool shape.
+								for (Participant participant : collaboration.getParticipants()) {
+									if (DIUtils.findBPMNShape(participant)==null && participant.getProcessRef()==null) {
+										defaultParticipant = participant;
+										break;
+									}
+								}
+								if (defaultParticipant==null)
+									defaultParticipant = Bpmn2ModelerFactory.create(resource, Participant.class);
+								defaultParticipant.setProcessRef(process);
+								defaultParticipant.setName(process.getName() +  " Pool");
+					        	collaboration.getParticipants().add(defaultParticipant);
+			        			break;
+							}
+						}
+					}
+					
 					ECollections.sort((EList<RootElement>)definitions.getRootElements(), new RootElementComparator());
 				}
 				catch (IllegalStateException e) {

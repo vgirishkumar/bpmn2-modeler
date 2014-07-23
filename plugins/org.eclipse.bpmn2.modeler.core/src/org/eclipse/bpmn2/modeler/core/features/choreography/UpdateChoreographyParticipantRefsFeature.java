@@ -252,7 +252,6 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 		addBandLabel(bandShape, w, h);
 
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
-		AnchorUtil.addFixedPointAnchors(bandShape, band);
 		peService.setPropertyValue(bandShape, ChoreographyUtil.PARTICIPANT_BAND, Boolean.toString(true));
 		peService.setPropertyValue(bandShape, ChoreographyUtil.MESSAGE_VISIBLE,
 				Boolean.toString(bpmnShape.isIsMessageVisible()));
@@ -288,7 +287,6 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 		addBandLabel(bandShape, w, h);
 
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
-		AnchorUtil.addFixedPointAnchors(bandShape, band);
 		peService.setPropertyValue(bandShape, ChoreographyUtil.PARTICIPANT_BAND, Boolean.toString(true));
 		peService.setPropertyValue(bandShape, ChoreographyUtil.MESSAGE_VISIBLE,
 				Boolean.toString(bpmnShape.isIsMessageVisible()));
@@ -324,7 +322,6 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 		addBandLabel(bandShape, w, h);
 
 		Graphiti.getPeCreateService().createChopboxAnchor(bandShape);
-		AnchorUtil.addFixedPointAnchors(bandShape, band);
 		peService.setPropertyValue(bandShape, ChoreographyUtil.PARTICIPANT_BAND, Boolean.toString(true));
 		peService.setPropertyValue(bandShape, ChoreographyUtil.MESSAGE_VISIBLE,
 				Boolean.toString(bpmnShape.isIsMessageVisible()));
@@ -371,7 +368,7 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			y += hAcc;
 			resizeParticipantBandChildren(container, w);
 			DIUtils.updateDIShape(container);
-			AnchorUtil.relocateFixPointAnchors(container, w, (int) bounds.getHeight());
+			AnchorUtil.relocateAnchors(container, w, (int) bounds.getHeight());
 		}
 
 		Collections.reverse(bottom); // start from bottom towards center
@@ -383,7 +380,7 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			gaService.setLocationAndSize(container.getGraphicsAlgorithm(), x, y, w, (int) bounds.getHeight());
 			resizeParticipantBandChildren(container, w);
 			DIUtils.updateDIShape(container);
-			AnchorUtil.relocateFixPointAnchors(container, w, (int) bounds.getHeight());
+			AnchorUtil.relocateAnchors(container, w, (int) bounds.getHeight());
 		}
 	}
 

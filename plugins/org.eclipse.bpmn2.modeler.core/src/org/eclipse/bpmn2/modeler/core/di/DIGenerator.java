@@ -294,7 +294,10 @@ public class DIGenerator {
 						}
 					}
 				}
-				if (isMissingDIElement(p) && p.getProcessRef()!=null && !isParticipantBand) {
+				if (isMissingDIElement(p) && 
+						p.getProcessRef()!=null && 
+						isMissingDIElement(p.getProcessRef()) && 
+						!isParticipantBand) {
 					if (parentNode==null)
 						parentNode = missing.addChild(container);
 					parentNode.addChild(p);
@@ -656,26 +659,26 @@ public class DIGenerator {
 				// we know the PictogramElements for these can be found in our elements map
 				Shape sourceShape = (Shape)elements.get(sourceElement);
 				Shape targetShape = (Shape)elements.get(targetElement);
-				if (sourceShape!=null && targetShape!=null) {
-					Tuple<FixPointAnchor,FixPointAnchor> anchors =
-							AnchorUtil.getSourceAndTargetBoundaryAnchors(sourceShape, targetShape, null);
-					org.eclipse.graphiti.mm.algorithms.styles.Point sourceLoc = GraphicsUtil.createPoint(anchors.getFirst());
-					org.eclipse.graphiti.mm.algorithms.styles.Point targetLoc = GraphicsUtil.createPoint(anchors.getSecond());
-					Point point = DcFactory.eINSTANCE.createPoint();
-					point.setX(sourceLoc.getX());
-					point.setY(sourceLoc.getY());
-					bpmnEdge.getWaypoint().add(point);
-			
-					point = DcFactory.eINSTANCE.createPoint();
-					point.setX(targetLoc.getX());
-					point.setY(targetLoc.getY());
-					bpmnEdge.getWaypoint().add(point);
-					
-					plane.getPlaneElement().add(bpmnEdge);
-					
-					ModelUtil.setID(bpmnEdge);
-					importer.importConnection(bpmnEdge);
-				}
+//				if (sourceShape!=null && targetShape!=null) {
+//					Tuple<FixPointAnchor,FixPointAnchor> anchors =
+//							AnchorUtil.getSourceAndTargetBoundaryAnchors(sourceShape, targetShape, null);
+//					org.eclipse.graphiti.mm.algorithms.styles.Point sourceLoc = GraphicsUtil.createPoint(anchors.getFirst());
+//					org.eclipse.graphiti.mm.algorithms.styles.Point targetLoc = GraphicsUtil.createPoint(anchors.getSecond());
+//					Point point = DcFactory.eINSTANCE.createPoint();
+//					point.setX(sourceLoc.getX());
+//					point.setY(sourceLoc.getY());
+//					bpmnEdge.getWaypoint().add(point);
+//			
+//					point = DcFactory.eINSTANCE.createPoint();
+//					point.setX(targetLoc.getX());
+//					point.setY(targetLoc.getY());
+//					bpmnEdge.getWaypoint().add(point);
+//					
+//					plane.getPlaneElement().add(bpmnEdge);
+//					
+//					ModelUtil.setID(bpmnEdge);
+//					importer.importConnection(bpmnEdge);
+//				}
 			}
 		}
 		

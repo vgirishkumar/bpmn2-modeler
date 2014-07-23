@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -28,6 +29,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -72,12 +74,16 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		TargetRuntime.getCurrentRuntime().notify(event);
 		return event.doit;
 	}
+	
 	public void delete(IDeleteContext context) {
 		PictogramElement pe = context.getPictogramElement();
+		List<AnchorContainer> shapes = new ArrayList<AnchorContainer>();
+		
+		List<Connection> connections = new ArrayList<Connection>();
 		if (pe instanceof Connection) {
-			// If the connection has other connections connected to it,
-			// remove those as well.
-			List<Connection> connections = new ArrayList<Connection>();
+			// The PE being deleted is a Connection:
+			// if it has other connections connected to it,
+			// delete those as well.
 			for (Shape shape : AnchorUtil.getConnectionPoints((Connection)pe)) {
 				for (Anchor a : shape.getAnchors()) {
 					connections.addAll(a.getIncomingConnections());
@@ -89,8 +95,25 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 				IDeleteFeature f = getFeatureProvider().getDeleteFeature(dc);
 				f.delete(dc);
 			}
+			
+			Connection connection = (Connection) pe;
+			shapes.add(connection.getStart().getParent());
+			shapes.add(connection.getEnd().getParent());
 		}
+		
 		super.delete(context);
+
+		// If the deleted PE was a Connection, update all of the remaining
+		// Connections for the source and target shapes
+		connections.clear();
+		for (AnchorContainer shape : shapes) {
+			for (Anchor a : shape.getAnchors()) {
+				connections.addAll(a.getIncomingConnections());
+				connections.addAll(a.getOutgoingConnections());
+			}
+		}
+		for (Connection connection : connections)
+			FeatureSupport.updateConnection(getFeatureProvider(), connection);
 	}
 	
 	/* (non-Javadoc)
@@ -126,11 +149,12 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 	protected void deletePeEnvironment(PictogramElement pictogramElement){
 		if (pictogramElement instanceof ContainerShape) {
 			ContainerShape containerShape = (ContainerShape) pictogramElement;
-			EList<Anchor> anchors = containerShape.getAnchors();
-			for (Anchor anchor : anchors) {
-				deleteConnections(getFeatureProvider(), anchor.getIncomingConnections());
-				deleteConnections(getFeatureProvider(), anchor.getOutgoingConnections());
+			List<Connection> connections = new ArrayList<Connection>();
+			for (Anchor anchor : containerShape.getAnchors()) {
+				connections.addAll(anchor.getIncomingConnections());
+				connections.addAll(anchor.getOutgoingConnections());
 			}
+			deleteConnections(getFeatureProvider(), connections);
 			deleteContainer(getFeatureProvider(), containerShape);
 		}
 	}
@@ -164,7 +188,7 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 	 * @param fp the fp
 	 * @param connections the connections
 	 */
-	protected void deleteConnections(IFeatureProvider fp, EList<Connection> connections) {
+	protected void deleteConnections(IFeatureProvider fp, List<Connection> connections) {
 		List<Connection> allConnections = new ArrayList<Connection>();
 		allConnections.addAll(connections);
 		for (Connection connection : allConnections) {

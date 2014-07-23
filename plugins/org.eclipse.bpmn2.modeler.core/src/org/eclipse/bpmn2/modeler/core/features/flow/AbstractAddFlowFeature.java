@@ -74,52 +74,10 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		AnchorContainer targetContainer = addContext.getTargetAnchor().getParent();
 
 		FreeFormConnection connection = peService.createFreeFormConnection(getDiagram());
-		
-		if (AnchorUtil.useAdHocAnchors(sourceContainer, connection)) {
-			Point p = (Point)addContext.getProperty(GraphitiConstants.CONNECTION_SOURCE_LOCATION);
-			if (p!=null) {
-				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION,
-						AnchorUtil.pointToString(p));
-			}
-		}
-		
-		if (AnchorUtil.useAdHocAnchors(targetContainer, connection)) {
-			// Fetch the source and target locations of the connection copied from the
-			// CreateConnectionContext and copy them as String properties to the Connection
-			// @see AbstractCreateFlowFeature.create()
-			Point p = (Point)addContext.getProperty(GraphitiConstants.CONNECTION_TARGET_LOCATION);
-			if (p!=null) {
-				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
-						AnchorUtil.pointToString(p));
-			}
-		}
-		
-		if (addContext.getProperty(GraphitiConstants.CONNECTION_CREATED)!=null) {
-			peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_CREATED, "true"); //$NON-NLS-1$
-		}
-		
 		Anchor sourceAnchor = addContext.getSourceAnchor();
 		Anchor targetAnchor = addContext.getTargetAnchor();
-		if (isImporting) {
-			connection.setStart(sourceAnchor);
-			connection.setEnd(targetAnchor);
-		} else {
-			if (sourceAnchor==null || targetAnchor==null) {
-				Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
-					sourceContainer, targetContainer, null);
-				sourceAnchor = anchors.getFirst();
-				targetAnchor = anchors.getSecond();
-			}
-			else {
-				Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(
-						sourceContainer, targetContainer, connection);
-					sourceAnchor = anchors.getFirst();
-					targetAnchor = anchors.getSecond();
-			}
-
-			connection.setStart(sourceAnchor);
-			connection.setEnd(targetAnchor);
-		}
+		connection.setStart(sourceAnchor);
+		connection.setEnd(targetAnchor);
 
 		createDIEdge(connection, businessObject);
 		createConnectionLine(connection);

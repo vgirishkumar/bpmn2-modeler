@@ -30,16 +30,15 @@ import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.choreography.Messages;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.Envelope;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil.Envelope;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -57,6 +56,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -133,14 +133,17 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottom = FeatureSupport.getTopAndBottomBands(bandShapes);
 		List<ContainerShape> shapesWithVisibleMessages = new ArrayList<ContainerShape>();
 
-		Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape);
-		BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
-		BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
+		List<FixPointAnchor> topBoundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape, AnchorLocation.TOP);
+		List<FixPointAnchor> bottomBoundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape, AnchorLocation.BOTTOM);
+		FixPointAnchor topBoundaryAnchor = null;
+		FixPointAnchor bottomBoundaryAnchor = null;
 		int topConnectionIndex = 0;
 		int bottomConnectionIndex = 0;
 
 		boolean hasTopMessage = false;
-		EList<Connection> topConnections = topBoundaryAnchor.anchor.getOutgoingConnections();
+		List<Connection> topConnections = new ArrayList<Connection>();
+		for (FixPointAnchor anchor : topBoundaryAnchors)
+			topConnections.addAll(anchor.getOutgoingConnections());
 		for (int i = 0; i < topConnections.size(); i++) {
 			Connection connection = topConnections.get(i);
 			EObject container = connection.getEnd().eContainer();
@@ -149,13 +152,16 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 				if (Boolean.parseBoolean(property)) {
 					topConnectionIndex = i;
 					hasTopMessage = true;
+					topBoundaryAnchor = (FixPointAnchor) connection.getEnd();
 					break;
 				}
 			}
 		}
 
 		boolean hasBottomMessage = false;
-		EList<Connection> bottomConnections = bottomBoundaryAnchor.anchor.getOutgoingConnections();
+		List<Connection> bottomConnections = new ArrayList<Connection>();
+		for (FixPointAnchor anchor : bottomBoundaryAnchors)
+			topConnections.addAll(anchor.getOutgoingConnections());
 		for (int i = 0; i < bottomConnections.size(); i++) {
 			Connection connection = bottomConnections.get(i);
 			EObject container = connection.getEnd().eContainer();
@@ -164,6 +170,7 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 				if (Boolean.parseBoolean(property)) {
 					bottomConnectionIndex = i;
 					hasBottomMessage = true;
+					bottomBoundaryAnchor = (FixPointAnchor) connection.getEnd();
 					break;
 				}
 			}
@@ -350,8 +357,8 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		return null;
 	}
 
-	private ContainerShape drawMessageLink(String name, BoundaryAnchor boundaryAnchor, int x, int y, boolean filled) {
-		Diagram diagram = peService.getDiagramForAnchor(boundaryAnchor.anchor);
+	private ContainerShape drawMessageLink(String name, FixPointAnchor boundaryAnchor, int x, int y, boolean filled) {
+		Diagram diagram = peService.getDiagramForAnchor(boundaryAnchor);
 
 		FreeFormConnection connection = peService.createFreeFormConnection(diagram);
 		Polyline connectionLine = gaService.createPolyline(connection);
@@ -371,7 +378,6 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		envelopeGa.rect.setBackground(gaService.manageColor(diagram, color));
 		envelopeGa.rect.setForeground(gaService.manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
 		envelopeGa.line.setForeground(gaService.manageColor(diagram, StyleUtil.CLASS_FOREGROUND));
-		AnchorUtil.addFixedPointAnchors(envelope, envelopeGa.rect);
 
 		Shape textShape = peService.createShape(envelope, false);
 		Text text = gaService.createDefaultText(diagram, textShape);
@@ -382,14 +388,14 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		gaService.setSize(invisibleRectangle, ChoreographyUtil.ENV_W + size.getWidth() + 3, ChoreographyUtil.ENV_H);
 
 		AnchorLocation envelopeAnchorLoc = null;
-		if (boundaryAnchor.locationType == AnchorLocation.TOP) {
-			envelopeAnchorLoc = AnchorLocation.BOTTOM;
-		} else {
-			envelopeAnchorLoc = AnchorLocation.TOP;
-		}
+//		if (boundaryAnchor.locationType == AnchorLocation.TOP) {
+//			envelopeAnchorLoc = AnchorLocation.BOTTOM;
+//		} else {
+//			envelopeAnchorLoc = AnchorLocation.TOP;
+//		}
 
-		connection.setStart(boundaryAnchor.anchor);
-		connection.setEnd(AnchorUtil.getBoundaryAnchors(envelope).get(envelopeAnchorLoc).anchor);
+		connection.setStart(boundaryAnchor);
+//		connection.setEnd(AnchorUtil.getBoundaryAnchors(envelope).get(envelopeAnchorLoc).anchor);
 		peService.setPropertyValue(envelope, ChoreographyUtil.MESSAGE_LINK, Boolean.toString(true));
 		return envelope;
 	}

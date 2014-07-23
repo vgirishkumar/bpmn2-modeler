@@ -122,7 +122,6 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddFeature<BoundaryEve
 
 		ChopboxAnchor anchor = peService.createChopboxAnchor(containerShape);
 		anchor.setReferencedGraphicsAlgorithm(ellipse);
-		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
 		return containerShape;
 	}

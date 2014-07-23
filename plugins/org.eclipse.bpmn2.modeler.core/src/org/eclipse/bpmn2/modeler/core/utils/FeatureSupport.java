@@ -588,7 +588,7 @@ public class FeatureSupport {
 						while (!(shape.getContainer() instanceof Diagram)) {
 							shape = shape.getContainer();
 						}
-						if (!list.contains(shape)) {
+						if (!list.contains(shape) && shape!=groupShape) {
 							list.add(shape);
 						}
 					}
@@ -753,7 +753,7 @@ public class FeatureSupport {
 			updateFeature.update(updateContext);
 			updateChanged = updateFeature.hasDoneChanges();
 		}
-		
+
 		if (layoutChanged)
 			FeatureSupport.updateLabel(fp, connection, null);
 		
@@ -806,6 +806,7 @@ public class FeatureSupport {
 			}
 		}
 		updateConnections(fp, ac, alreadyUpdated);
+		AnchorUtil.relocateAnchors((Shape)ac);
 	}
 
 	public static void updateCategoryValues(IFeatureProvider fp, List<ContainerShape> shapes) {

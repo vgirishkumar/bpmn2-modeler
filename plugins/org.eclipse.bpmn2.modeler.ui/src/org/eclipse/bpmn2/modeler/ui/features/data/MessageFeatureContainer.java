@@ -210,7 +210,6 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			decorateShape(context, containerShape, businessObject);
 
 			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 			
 			return containerShape;
 		}

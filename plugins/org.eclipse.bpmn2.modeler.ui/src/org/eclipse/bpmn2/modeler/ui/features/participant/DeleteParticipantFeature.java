@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.participant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
@@ -83,12 +84,22 @@ public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 	@Override
 	public void delete(IDeleteContext context) {
 		// Delete the pool's process and the BPMNDiagram page (if any).
+		Collaboration collaboration = null;
 		PictogramElement pe = context.getPictogramElement();
 		if (pe instanceof ContainerShape) {
 			ContainerShape poolShape = (ContainerShape) pe;
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (bo instanceof Participant) {
 				Participant pool = (Participant) bo;
+				Definitions definitions = ModelUtil.getDefinitions(pool);
+				List<Collaboration> collaborations = ModelUtil.getAllRootElements(definitions, Collaboration.class);
+				for (Collaboration c : collaborations) {
+					if (c.getParticipants().contains(pool)) {
+						collaboration = c;
+						break;
+					}
+				}
+
 				// also delete any contained Lanes and their children
 				List<PictogramElement> children = new ArrayList<PictogramElement>();
 				FeatureSupport.collectChildren(poolShape, children, true);
@@ -115,5 +126,17 @@ public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 			}
 		}		
 		super.delete(context);
+
+		if (collaboration!=null && collaboration.getParticipants().size()==1) {
+			Participant lastParticipant = collaboration.getParticipants().get(0);
+			if (lastParticipant.getProcessRef()!=null && DIUtils.findBPMNShape(lastParticipant)==null) {
+				// can delete the final Participant and Collaboration
+				// as long as the Participant has a Process and does
+				// not have a Pool shape. The Participant's Process
+				// will become the Default Process - the entire diagram
+				EcoreUtil.delete(lastParticipant);
+				EcoreUtil.delete(collaboration);
+			}
+		}
 	}
 }

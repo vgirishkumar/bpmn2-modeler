@@ -183,14 +183,6 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			// NOTE: We do not want a Group Shape to be a graphiti shape container for
 			// anything that is added or moved into the Group, so instead of using a
 			// rectangle for the Group shape, we'll use a polyline instead.
-//			RoundedRectangle rect = gaService.createRoundedRectangle(containerShape, 5, 5);
-//			rect.setFilled(false);
-//			rect.setLineWidth(2);
-//			rect.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
-//			rect.setLineStyle(LineStyle.DASHDOT);
-//			gaService.setLocationAndSize(rect, x, y, width, height);
-//			peService.createChopboxAnchor(containerShape);
-//			AnchorUtil.addFixedPointAnchors(containerShape, rect);
 			int xy[] = new int[] {0, 0, width, 0, width, height, 0, height, 0, 0};
 			Polyline rect = gaService.createPolyline(containerShape, xy);
 			rect.setLineWidth(3);
@@ -198,9 +190,7 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 			rect.setLineStyle(LineStyle.DASHDOT);
 			gaService.setLocationAndSize(rect, x, y, width, height);
 			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, rect);
-//
-			
+
 			boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 			createDIShape(containerShape, businessObject, !isImport);
 			

@@ -14,12 +14,9 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -27,16 +24,15 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * Router for connections that can have user-settable bendpoints.
  */
 public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
-	/** The minimum distance between a bendpoint and a shape when rerouting to avoid collisions. */
-	protected static final int margin = 10;
 	/** The connection, must be a {@code FreeFormConnection}. */
 	protected FreeFormConnection ffc;
 	/** The moved or added bendpoint (if any). */
@@ -45,8 +41,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	protected Point removedBendpoint;
 	/** The list of old connection cuts (including the end cuts) for determining if a route has changed */
 	protected List<Point> oldPoints;
-	/** flag to disable automatic collision avoidance and optimization. */
-	protected boolean manual = true;
 	
 	/**
 	 * Instantiates a new bendpoint connection router.
@@ -64,40 +58,21 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	public boolean route(Connection connection) {
 		super.route(connection);
 		
-		if (connection instanceof FreeFormConnection)
+		boolean changed = false;
+		if (connection instanceof FreeFormConnection) {
 			ffc = (FreeFormConnection)connection;
-		else
-			return false;
-		
-		initialize();
-		ConnectionRoute route = calculateRoute();
-		boolean changed = isRouteChanged(route);
-		if (changed) {
-			applyRoute(route);
+			initialize();
+			ConnectionRoute route = calculateRoute();
+			if (route!=null) {
+				changed = isRouteChanged(route);
+				applyRoute(route);
+			}
+			dispose();
 		}
-		dispose();
-
+		
 		return changed;
 	}
-	
-	/**
-	 * Sets the manual routing.
-	 *
-	 * @param manual the new manual routing
-	 */
-	public void setManualRouting(boolean manual) {
-		this.manual = manual;
-	}
-	
-	/**
-	 * Checks if is manual routing.
-	 *
-	 * @return true, if is manual routing
-	 */
-	public boolean isManualRouting() {
-		return manual;
-	}
-	
+
 	/**
 	 * Initialize the newPoints list and set the new start and end anchors.
 	 */
@@ -109,7 +84,17 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		if (movedBendpoint==null)
 			movedBendpoint = getAddedBendpoint(ffc);
 		removedBendpoint = getRemovedBendpoint(ffc);
-	
+
+		findAllShapes();
+		if (movedBendpoint!=null) {
+			for (ContainerShape shape : allShapes) {
+				if (GraphicsUtil.contains(shape, movedBendpoint)) {
+					movedBendpoint = null;
+					break;
+				}
+			}
+		}
+
 		/**
 		 * Save the connection's start/end anchors, and their locations as well as
 		 * the bendpoints. This is used to compare against the new ConnectionRoute
@@ -134,66 +119,19 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
 		ConnectionRoute route = new ConnectionRoute(this, 1, source, target);
 		
-		Point pStart;
-		Point pEnd;
-		if (sourceAnchor==null) {
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(source, oldPoints.get(1));
-			pStart = GraphicsUtil.createPoint(ba.anchor);
-		}
-		else {
-			// can't move the original AdHoc anchor - this is our starting point
-			pStart = oldPoints.get(0);
-		}
-		if (targetAnchor==null) {
-			BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, oldPoints.get(oldPoints.size()-2));
-			pEnd = GraphicsUtil.createPoint(ba.anchor);
-		}
-		else {
-			// can't move the original target AdHoc anchor - this is our end 
-			pEnd = oldPoints.get( oldPoints.size()-1 );
-		}
-
-		route.add(pStart);
-		if (!manual) {
-			oldPoints.clear();
-			oldPoints.add(pStart);
-			if (movedBendpoint!=null)
-				oldPoints.add(movedBendpoint);
-			oldPoints.add(pEnd);
-		}
+		// relocate the source and target anchors for closest proximity to their
+		// opposite shapes' centers
+		AnchorUtil.moveAnchor(sourceAnchor, GraphicsUtil.getShapeCenter(target));
+		AnchorUtil.moveAnchor(targetAnchor, GraphicsUtil.getShapeCenter(source));
 		
-		Point p1 = pStart;
-		Point p2;
-		for (int i=1; i<oldPoints.size() - 1; ++i) {
-			p2 = oldPoints.get(i);
-			ContainerShape shape = getCollision(p1,p2);
-			if (shape!=null && !manual) {
-				if (shape==target) {
-					// find a better target anchor if possible
-					if (targetAnchor==null) {
-						BoundaryAnchor ba = AnchorUtil.findNearestBoundaryAnchor(target, p1);
-						pEnd = GraphicsUtil.createPoint(ba.anchor);
-					}
-					// and we're done
-					break;
-				}
-				// navigate around this shape
-				DetourPoints detour = new DetourPoints(shape, margin);
-				for (Point d : detour.calculateDetour(p1, p2)) {
-					if (!route.add(d)) {
-						++i;
-						break;
-					}
-					p2 = d;
-				}
-				--i;
-			}
-			else
-				route.add(p2);
-			p1 = p2;
-		}
+		Point start = GraphicsUtil.createPoint(sourceAnchor);
+		Point end = GraphicsUtil.createPoint(targetAnchor);
 
-		route.add(pEnd);
+		route.add(start);
+		for (int i=1; i<oldPoints.size() -1; ++i) {
+			route.add(oldPoints.get(i));
+		}
+		route.add(end);
 		
 		oldPoints.clear();
 		
@@ -223,23 +161,29 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			}
 		}
 		
-		Map<AnchorLocation, BoundaryAnchor> targetBoundaryAnchors = AnchorUtil.getBoundaryAnchors(target);
-		BoundaryAnchor targetTop = targetBoundaryAnchors.get(AnchorLocation.TOP);
-		BoundaryAnchor targetRight = targetBoundaryAnchors.get(AnchorLocation.RIGHT);
+		ILocation loc = peService.getLocationRelativeToDiagram(target);
+		IDimension size = GraphicsUtil.calculateSize(target);
+		Point p;
+		
+		p = Graphiti.getCreateService().createPoint(loc.getX()+size.getWidth()/2, loc.getY());
+		FixPointAnchor topAnchor = (FixPointAnchor) ffc.getEnd();
+		AnchorUtil.moveAnchor(topAnchor, p);
+
+		p = Graphiti.getCreateService().createPoint(loc.getX()+size.getWidth(), loc.getY()+size.getHeight()/2);
+		FixPointAnchor rightAnchor = (FixPointAnchor) ffc.getStart();
+		AnchorUtil.moveAnchor(rightAnchor, p);
 
 		// create the bendpoints that loop the connection around the top-right corner of the figure
-		ILocation loc = peService.getLocationRelativeToDiagram((Shape)target);
-		IDimension size = GraphicsUtil.calculateSize(target);
-		int x1 = loc.getX() + size.getWidth() + 20;
-		int y1 = loc.getY() + size.getHeight() / 2;
-		int x2 = loc.getX() + size.getWidth() / 2;
-		int y2 = loc.getY() - 20;
-		Point right = gaService.createPoint(x1, y1); // the point to the right of the node
-		Point corner = gaService.createPoint(x1, y2); // point above the top-right corner 
-		Point top = gaService.createPoint(x2, y2); // point above the node
+		Point right = GraphicsUtil.createPoint(rightAnchor); // the point to the right of the node
+		right.setX(right.getX() + 20);
+		
+		Point top = GraphicsUtil.createPoint(topAnchor); // point above the node
+		top.setY(top.getY() - 20);
+
+		Point corner = Graphiti.getCreateService().createPoint(right.getX(), top.getY()); // point above the top-right corner 
 		
 		// adjust these cuts to the moved or added bendpoint if possible
-		Point p = movedBendpoint;
+		p = movedBendpoint;
 		if (p!=null) {
 			int x = p.getX();
 			int y = p.getY();
@@ -255,11 +199,11 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
 		// and add them to the new Route
 		ConnectionRoute route = new ConnectionRoute(this,1,source,target);
-		route.add(GraphicsUtil.createPoint(targetRight.anchor));
+		route.add(GraphicsUtil.createPoint(rightAnchor));
 		route.add(right);
 		route.add(corner);
 		route.add(top);
-		route.add(GraphicsUtil.createPoint(targetTop.anchor));
+		route.add(GraphicsUtil.createPoint(topAnchor));
 
 		return route;
 	}
@@ -297,31 +241,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	protected void applyRoute(ConnectionRoute route) {
 		route.apply(ffc, sourceAnchor, targetAnchor);
 		DIUtils.updateDIEdge(ffc);
-	}
-
-	/**
-	 * Gets the detour points.
-	 *
-	 * @param shape the shape
-	 * @return the detour points
-	 */
-	protected DetourPoints getDetourPoints(ContainerShape shape) {
-		DetourPoints detour = new DetourPoints(shape, margin);
-//		if (allShapes==null)
-//			findAllShapes();
-//
-//		for (int i=0; i<allShapes.size(); ++i) {
-//			ContainerShape s = allShapes.get(i);
-//			if (shape==s)
-//				continue;
-//			DetourPoints d = new DetourPoints(s, margin);
-//			if (detour.intersects(d) && !detour.contains(d)) {
-//				detour.merge(d);
-//				i = -1;
-//			}
-//		}
-
-		return detour;
 	}
 
 	/**

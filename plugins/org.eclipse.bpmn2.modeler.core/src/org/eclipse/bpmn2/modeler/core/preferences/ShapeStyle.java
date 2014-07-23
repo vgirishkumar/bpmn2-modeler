@@ -94,7 +94,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	Font labelFont;
 	IColorConstant labelForeground;
 	IColorConstant labelBackground;
-	RoutingStyle routingStyle = RoutingStyle.Manhattan;
+	RoutingStyle routingStyle = RoutingStyle.MANHATTAN;
 	boolean useDefaultSize;
 	// the useDefault doubles as the flag for "snap to grid" in the Canvas ShapeStyle
 //	boolean snapToGrid = true;
@@ -132,9 +132,9 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	};
 	
 	public static enum RoutingStyle {
-		ManualBendpoint(Messages.ShapeStyle_RoutingStyle_Direct),
-		AutomaticBendpoint(Messages.ShapeStyle_RoutingStyle_Automatic),
-		Manhattan(Messages.ShapeStyle_RoutingStyle_Manhattan);
+		MANUAL(Messages.ShapeStyle_RoutingStyle_Manual),
+		AUTOMATIC(Messages.ShapeStyle_RoutingStyle_Automatic),
+		MANHATTAN(Messages.ShapeStyle_RoutingStyle_Manhattan);
 		
 		private String string;
 		private RoutingStyle(String string) {
@@ -212,7 +212,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		if (routingStyle!=null && !routingStyle.isEmpty())
 			this.routingStyle = RoutingStyle.valueOf(labelPosition);
 		else
-			this.routingStyle = RoutingStyle.Manhattan;
+			this.routingStyle = RoutingStyle.MANHATTAN;
 		this.useDefaultSize = Boolean.parseBoolean(useDefaultSize);
 		try { this.defaultHeight = Integer.parseInt(defaultHeight); } catch (Exception e1) {}
 		try { this.defaultWidth = Integer.parseInt(defaultWidth); } catch (Exception e1) {}
@@ -245,11 +245,11 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 				routingStyle = RoutingStyle.values()[Integer.parseInt(a[7])];
 			}
 			catch (Exception e) {
-				routingStyle = RoutingStyle.ManualBendpoint;
+				routingStyle = RoutingStyle.MANUAL;
 			}
 		}
 		else
-			routingStyle = RoutingStyle.ManualBendpoint;
+			routingStyle = RoutingStyle.MANUAL;
 		
 		if (a.length>8) {
 			useDefaultSize = stringToBoolean(a[8]);

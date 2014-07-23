@@ -467,6 +467,9 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public boolean canStartConnection(ICreateConnectionContext context) {
+			if (!super.canStartConnection(context))
+				return false;
+			
 			BaseElement source = getSourceBo(context);
 			if (source instanceof Activity || source instanceof CatchEvent)
 				return true;

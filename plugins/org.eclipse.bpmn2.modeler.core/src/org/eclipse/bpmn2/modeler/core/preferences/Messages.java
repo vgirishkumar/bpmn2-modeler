@@ -62,7 +62,7 @@ public class Messages extends NLS {
 	public static String ShapeStyle_Category_Canvas;
 	public static String ShapeStyle_Category_Grid;
 
-	public static String ShapeStyle_RoutingStyle_Direct;
+	public static String ShapeStyle_RoutingStyle_Manual;
 	public static String ShapeStyle_RoutingStyle_Automatic;
 	public static String ShapeStyle_RoutingStyle_Manhattan;
 

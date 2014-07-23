@@ -70,6 +70,20 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				else {
 					sectionClass = (AbstractBpmn2PropertySection) e.createExecutableExtension("class"); //$NON-NLS-1$
 				}
+				
+				if (sectionClass!=null) {
+					if (e.getAttribute("features")!=null) { //$NON-NLS-1$
+						String value = e.getAttribute("features");
+						if (value==null || value.isEmpty()) {
+							((DefaultPropertySection)sectionClass).setProperties(new String[0]);
+						}
+						else {
+							String[] properties = value.split(" "); //$NON-NLS-1$ //$NON-NLS-2$
+							((DefaultPropertySection)sectionClass).setProperties(properties);
+						}
+					}
+				}
+				
 				filterClassName = e.getAttribute("filter"); //$NON-NLS-1$
 				if (filterClassName==null || filterClassName.isEmpty())
 					filterClassName = "org.eclipse.bpmn2.modeler.core.runtime.PropertySectionFilter"; //$NON-NLS-1$

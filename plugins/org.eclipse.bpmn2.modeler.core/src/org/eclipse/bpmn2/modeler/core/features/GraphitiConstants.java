@@ -253,17 +253,13 @@ public interface GraphitiConstants {
 
 	public static final String BOUNDARY_EVENT_RELATIVE_POS = "boundary.event.relative.pos"; //$NON-NLS-1$
 
-	public static final String BOUNDARY_FIXPOINT_ANCHOR = "boundary.fixpoint.anchor"; //$NON-NLS-1$
-
-	public static final String BOUNDARY_ADHOC_ANCHOR = "boundary.adhoc.anchor"; //$NON-NLS-1$
-
-	public static final String CONNECTION_SOURCE_LOCATION = "connection.source.location"; //$NON-NLS-1$
-
-	public static final String CONNECTION_TARGET_LOCATION = "connection.target.location"; //$NON-NLS-1$
 	public static final String CONNECTION_BENDPOINTS = "connection.bendpoints"; //$NON-NLS-1$
 
-	public static final String CONNECTION_CREATED = "connection.created"; //$NON-NLS-1$
-
+	// the Anchor Type, one of the string values defined by {@see AnchorUtil$AnchorType}
+	public static final String ANCHOR_TYPE = "anchor.type";
+	// the edge at which an anchor is located, one of the AnchorLocation enum values
+	public static final String ANCHOR_LOCATION = "anchor.location";
+	
 	// values for connection points
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
 

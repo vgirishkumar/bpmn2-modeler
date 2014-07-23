@@ -1197,7 +1197,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		public RoutingStyle getValue() {
 			RoutingStyle value = (RoutingStyle) super.getValue();
 			if (value==null)
-				value = RoutingStyle.Manhattan;
+				value = RoutingStyle.MANHATTAN;
 			return value;
 		}
 	}

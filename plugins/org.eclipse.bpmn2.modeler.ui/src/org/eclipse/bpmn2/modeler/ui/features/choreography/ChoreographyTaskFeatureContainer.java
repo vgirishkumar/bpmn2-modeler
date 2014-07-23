@@ -84,7 +84,7 @@ public class ChoreographyTaskFeatureContainer extends AbstractChoreographyFeatur
 			}
 
 			@Override
-			protected void deleteConnections(IFeatureProvider fp, EList<Connection> connections) {
+			protected void deleteConnections(IFeatureProvider fp, List<Connection> connections) {
 				List<Connection> con = new ArrayList<Connection>();
 				con.addAll(connections);
 				for (Connection connection : con) {

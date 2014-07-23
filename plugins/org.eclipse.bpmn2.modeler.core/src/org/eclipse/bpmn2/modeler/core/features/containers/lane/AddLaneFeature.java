@@ -149,7 +149,6 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		decorateShape(context, containerShape, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
 	}

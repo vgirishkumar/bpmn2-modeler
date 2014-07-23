@@ -101,7 +101,6 @@ public abstract class AbstractAddActivityFeature<T extends Activity>
 		decorateShape(context, containerShape, businessObject);
 		
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rectShape.getGraphicsAlgorithm());
 
 		splitConnection(context, containerShape);
 		

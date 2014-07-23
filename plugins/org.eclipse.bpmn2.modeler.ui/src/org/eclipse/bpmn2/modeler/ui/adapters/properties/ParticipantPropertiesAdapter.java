@@ -87,17 +87,13 @@ public class ParticipantPropertiesAdapter extends ExtendedPropertiesAdapter<Part
 		        // Collaboration diagrams to be created, this will be the specific diagram
 		        // that is being rendered on the current page.
 				if (definitions!=null) {
-			        List<RootElement> rootElements = definitions.getRootElements();
-			        for (RootElement element : rootElements) {
-			            if (element instanceof Collaboration || element instanceof Choreography) {
-			            	((Collaboration)element).getParticipants().add(participant);
-			                break;
-			            }
-			        }
+					List<Collaboration> collaborations = ModelUtil.getAllRootElements(definitions, Collaboration.class);
+					if (collaborations.size()>0) {
+						collaborations.get(0).getParticipants().add(participant);
+					}
 			        if (participant.eContainer()==null) {
 			        	// no Collaboration element found - create one
 			        	Collaboration collaboration = Bpmn2ModelerFactory.create(resource, Collaboration.class);
-			        	definitions.getRootElements().add(collaboration);
 			        	collaboration.getParticipants().add(participant);
 			        }
 				}

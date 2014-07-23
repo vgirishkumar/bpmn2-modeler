@@ -12,26 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.bpmn2.ChoreographyActivity;
-import org.eclipse.bpmn2.ChoreographyTask;
-import org.eclipse.bpmn2.MessageFlow;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DirectEditBaseElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.PropertyBasedFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
@@ -51,11 +37,8 @@ import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.impl.AbstractMoveShapeFeature;
 import org.eclipse.graphiti.features.impl.DefaultMoveConnectionDecoratorFeature;
 import org.eclipse.graphiti.features.impl.DefaultResizeShapeFeature;
-import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 
 public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatureContainer {
 
@@ -165,53 +148,53 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 			@Override
 			public void delete(IDeleteContext context) {
 				ContainerShape envelope = (ContainerShape) context.getPictogramElement();
-				Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(envelope);
-				BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
-				BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
-				modifyAffectedBands(topBoundaryAnchor);
-				modifyAffectedBands(bottomBoundaryAnchor);
+//				Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(envelope);
+//				BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
+//				BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
+//				modifyAffectedBands(topBoundaryAnchor);
+//				modifyAffectedBands(bottomBoundaryAnchor);
 				super.delete(context);
 			}
 
-			private void modifyAffectedBands(BoundaryAnchor anchor) {
-
-				for (Connection connection : anchor.anchor.getIncomingConnections()) {
-
-					EObject start = connection.getStart().eContainer();
-
-					if (!(start instanceof ContainerShape)) {
-						continue;
-					}
-
-					ChoreographyActivity ca = BusinessObjectUtil.getFirstElementOfType((PictogramElement)start, ChoreographyActivity.class);
-					if (ca==null) {
-						continue;
-					}
-					MessageFlow mf = (MessageFlow)BusinessObjectUtil.getBusinessObjectForPictogramElement(connection);
-
-					List<ContainerShape> bands = FeatureSupport
-							.getParticipantBandContainerShapes((ContainerShape) start);
-
-					Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = FeatureSupport
-							.getTopAndBottomBands(bands);
-
-					List<ContainerShape> affectedBands = anchor.locationType == AnchorLocation.BOTTOM ? topAndBottomBands
-							.getFirst() : topAndBottomBands.getSecond();
-
-					for (ContainerShape bottomBand : affectedBands) {
-						BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(bottomBand, BPMNShape.class);
-						bpmnShape.setIsMessageVisible(false);
-					}
-
-					ChoreographyUtil.removeChoreographyMessageLink(connection);
-					
-					if (ca instanceof ChoreographyTask) {
-						ChoreographyTask ct = (ChoreographyTask) ca;
-						ct.getMessageFlowRef().remove(mf);
-					}
-					break;
-				}
-			}
+//			private void modifyAffectedBands(BoundaryAnchor anchor) {
+//
+//				for (Connection connection : anchor.anchor.getIncomingConnections()) {
+//
+//					EObject start = connection.getStart().eContainer();
+//
+//					if (!(start instanceof ContainerShape)) {
+//						continue;
+//					}
+//
+//					ChoreographyActivity ca = BusinessObjectUtil.getFirstElementOfType((PictogramElement)start, ChoreographyActivity.class);
+//					if (ca==null) {
+//						continue;
+//					}
+//					MessageFlow mf = (MessageFlow)BusinessObjectUtil.getBusinessObjectForPictogramElement(connection);
+//
+//					List<ContainerShape> bands = FeatureSupport
+//							.getParticipantBandContainerShapes((ContainerShape) start);
+//
+//					Tuple<List<ContainerShape>, List<ContainerShape>> topAndBottomBands = FeatureSupport
+//							.getTopAndBottomBands(bands);
+//
+//					List<ContainerShape> affectedBands = anchor.locationType == AnchorLocation.BOTTOM ? topAndBottomBands
+//							.getFirst() : topAndBottomBands.getSecond();
+//
+//					for (ContainerShape bottomBand : affectedBands) {
+//						BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(bottomBand, BPMNShape.class);
+//						bpmnShape.setIsMessageVisible(false);
+//					}
+//
+//					ChoreographyUtil.removeChoreographyMessageLink(connection);
+//					
+//					if (ca instanceof ChoreographyTask) {
+//						ChoreographyTask ct = (ChoreographyTask) ca;
+//						ct.getMessageFlowRef().remove(mf);
+//					}
+//					break;
+//				}
+//			}
 		};
 	}
 

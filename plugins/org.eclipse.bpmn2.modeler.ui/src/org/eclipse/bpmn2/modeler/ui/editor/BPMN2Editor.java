@@ -1389,7 +1389,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 								if (pe instanceof Shape && FeatureSupport.isLabelShape((Shape)pe)) {
 									UpdateContext context = new UpdateContext(pe);
 									IUpdateFeature feature = fp.getUpdateFeature(context);
-									if (feature!=null) {
+									if (feature!=null && feature.canUpdate(context)) {
 										feature.update(context);
 									}
 								}

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
@@ -41,8 +40,6 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.BoundaryAnchor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -56,15 +53,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
-import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
-import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
@@ -658,24 +652,11 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		
 		Anchor newStart;
 		Anchor newEnd;
-		if (AnchorUtil.isBoundaryAnchor(oldStart)) {
-			AnchorLocation al = AnchorUtil.getBoundaryAnchorLocation(oldStart);
-			Map<AnchorLocation, BoundaryAnchor> bas = AnchorUtil.getBoundaryAnchors(newSource);
-			newStart = bas.get(al).anchor;
-		}
-		else {
-			ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(oldStart);
-			newStart = AnchorUtil.createAdHocAnchor(newSource, loc.getX(), loc.getY());
-		}
-		if (AnchorUtil.isBoundaryAnchor(oldEnd)) {
-			AnchorLocation al = AnchorUtil.getBoundaryAnchorLocation(oldEnd);
-			Map<AnchorLocation, BoundaryAnchor> bas = AnchorUtil.getBoundaryAnchors(newTarget);
-			newEnd = bas.get(al).anchor;
-		}
-		else {
-			ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(oldEnd);
-			newEnd = AnchorUtil.createAdHocAnchor(newTarget, loc.getX(), loc.getY());
-		}
+		ILocation loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(oldStart);
+		newStart = AnchorUtil.createAnchor(newSource, loc.getX(), loc.getY());
+
+		loc = Graphiti.getLayoutService().getLocationRelativeToDiagram(oldEnd);
+		newEnd = AnchorUtil.createAnchor(newTarget, loc.getX(), loc.getY());
 
 		BaseElement newSourceObject = BusinessObjectUtil.getFirstBaseElement(newSource);
 		BaseElement newTargetObject = BusinessObjectUtil.getFirstBaseElement(newTarget);

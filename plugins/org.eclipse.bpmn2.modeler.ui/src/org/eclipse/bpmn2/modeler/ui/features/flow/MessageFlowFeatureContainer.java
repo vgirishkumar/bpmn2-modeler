@@ -458,12 +458,19 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public boolean canCreate(ICreateConnectionContext context) {
-			if (ChoreographyUtil.isChoreographyParticipantBand(context.getSourcePictogramElement()))
+			PictogramElement sourcePE = context.getSourcePictogramElement();
+			PictogramElement targetPE = context.getTargetPictogramElement();
+			
+			if (ChoreographyUtil.isChoreographyParticipantBand(sourcePE))
 				return false;
-			if (context.getTargetPictogramElement()!=null) {
-				if (ChoreographyUtil.isChoreographyParticipantBand(context.getTargetPictogramElement()))
+			if (targetPE!=null) {
+				if (ChoreographyUtil.isChoreographyParticipantBand(targetPE))
 					return false;
 			}
+			// The source and target of a Message Flow can't be the same 
+			if (sourcePE == targetPE)
+				return false;
+			
 			InteractionNode source = getSourceBo(context);
 			// Special case for End Event: only allow Message Flows if the End Event
 			// has a Message Event Definition.
@@ -512,8 +519,8 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			Participant targetParticipant = mh.getParticipant(target);
 			if (sourceParticipant==null) {
 				if (targetParticipant==null)
-					return true;
-				return false;
+					return false;
+				return true;
 			}
 			different = !sourceParticipant.equals(targetParticipant);
 

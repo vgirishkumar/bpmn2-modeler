@@ -76,7 +76,6 @@ public abstract class AddConversationNodeFeature<T extends ConversationNode> ext
 		decorateShape(context, containerShape, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
 	}

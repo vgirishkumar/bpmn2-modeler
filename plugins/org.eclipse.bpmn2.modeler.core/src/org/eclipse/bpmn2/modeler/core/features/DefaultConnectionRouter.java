@@ -21,7 +21,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -31,7 +30,6 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.impl.AbstractAddShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
@@ -42,6 +40,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -69,7 +68,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	protected Shape target;
 	
 	/** The target anchor. */
-	protected Anchor sourceAnchor, targetAnchor;
+	protected FixPointAnchor sourceAnchor, targetAnchor;
 	
 	/**
 	 * Instantiates a new default connection router.
@@ -86,20 +85,21 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	@Override
 	public boolean route(Connection connection) {
 		this.connection = connection;
-		this.source = (Shape) connection.getStart().getParent();
-		this.target = (Shape) connection.getEnd().getParent();
-
-		if (AnchorUtil.useAdHocAnchors(source, connection) && AnchorUtil.isAdHocAnchor(connection.getStart()))
-			sourceAnchor = connection.getStart();
-		else
-			sourceAnchor = null;
-		if (AnchorUtil.useAdHocAnchors(target, connection) && AnchorUtil.isAdHocAnchor(connection.getEnd()))
-			targetAnchor = connection.getEnd();
-		else
-			targetAnchor = null;
+		this.sourceAnchor = (FixPointAnchor) connection.getStart();
+		this.targetAnchor = (FixPointAnchor) connection.getEnd();
+		this.source = (Shape) sourceAnchor.getParent();
+		this.target = (Shape) targetAnchor.getParent();
 		return false;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#needsUpdate(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
+	@Override
+	public boolean needsLayout(Connection connection) {
+		return false;
+	}
+
 	/**
 	 * Initialize.
 	 */
@@ -308,13 +308,13 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 			Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
 			for (int i=0; i<allRoutes.size(); ++i) {
 				ConnectionRoute r = allRoutes.get(i);
-				Anchor sa = AnchorUtil.findNearestAnchor(source, r.get(0));
-				Anchor ta = AnchorUtil.findNearestAnchor(target, r.get( r.size()-1 ));
-				AddConnectionContext context = new AddConnectionContext(sa, ta);
-				context.setTargetContainer(diagram);
-				context.setNewObject(r);
-				AddRoutingConnectionFeature feature = new AddRoutingConnectionFeature(fp);
-				feature.add(context);
+//				Anchor sa = AnchorUtil.createFixedAnchor(source, r.get(0));
+//				Anchor ta = AnchorUtil.createFixedAnchor(target, r.get( r.size()-1 ));
+//				AddConnectionContext context = new AddConnectionContext(sa, ta);
+//				context.setTargetContainer(diagram);
+//				context.setNewObject(r);
+//				AddRoutingConnectionFeature feature = new AddRoutingConnectionFeature(fp);
+//				feature.add(context);
 				
 				GraphicsUtil.dump(r.toString());
 			}

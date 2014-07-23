@@ -23,12 +23,11 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
-import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
@@ -325,18 +324,8 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 			connections.addAll(oldAnchor.getIncomingConnections());
 			connections.addAll(oldAnchor.getOutgoingConnections());
 			for (Connection connection : connections) {
-				Anchor newAnchor = newShape.getAnchors().get(0);
 				ILocation oldLocation = Graphiti.getPeService().getLocationRelativeToDiagram(oldAnchor);
-				if (AnchorUtil.isAdHocAnchor(oldAnchor)) {
-					// old anchor is an ad-hoc anchor
-					newAnchor = AnchorUtil.createAdHocAnchor(newShape, oldLocation.getX(), oldLocation.getY());
-				}
-				else if (AnchorUtil.isBoundaryAnchor(oldAnchor)) {
-					// must be a boundary anchor
-					AnchorLocation oldLoc = AnchorUtil.getBoundaryAnchorLocation(oldAnchor);
-					newAnchor = AnchorUtil.getBoundaryAnchors(newShape).get(oldLoc).anchor;
-
-				}
+				Anchor newAnchor = AnchorUtil.createAnchor(newShape, oldLocation.getX(), oldLocation.getY());
 
 				ReconnectionContext reconnectContext = new ReconnectionContext(connection, oldAnchor, newAnchor, oldLocation);
 				reconnectContext.setTargetPictogramElement(newShape);

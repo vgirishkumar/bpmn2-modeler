@@ -19,8 +19,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -33,7 +31,6 @@ import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -155,6 +152,17 @@ public class GraphicsUtil {
 		public Point getEnd() {
 			return end;
 		}
+		public Point getMiddle() {
+			if (isHorizontal()) {
+				int x = Math.abs(end.getX() - start.getX()) / 2;
+				return Graphiti.getCreateService().createPoint(x, start.getY());
+			}
+			else {
+				int y = Math.abs(end.getY() - start.getY()) / 2;
+				return Graphiti.getCreateService().createPoint(start.getX(), y);
+			}
+		}
+		
 		public double getDistance(Point p) {
 			// for vertical and horizontal line segments, the distance to a point
 			// is the orthogonal distance if the point lies between the start and end
@@ -540,18 +548,27 @@ public class GraphicsUtil {
 			ILocation loc = peService.getLocationRelativeToDiagram(anchor);
 			System.out.print(" at "+loc.getX()+", "+loc.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 			GraphicsUtil.dump(" parent=", (ContainerShape)anchor.getParent()); //$NON-NLS-1$
-			if (AnchorUtil.isBoundaryAnchor(anchor)) {
-				String property = Graphiti.getPeService().getPropertyValue(
-						anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
-				if (property != null && anchor instanceof FixPointAnchor) {
-					System.out.println(" location="+AnchorLocation.getLocation(property)); //$NON-NLS-1$
-				}
-			}
+//			if (AnchorUtil.isBoundaryAnchor(anchor)) {
+//				String property = Graphiti.getPeService().getPropertyValue(
+//						anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
+//				if (property != null && anchor instanceof FixPointAnchor) {
+//					System.out.println(" location="+AnchorLocation.getLocation(property)); //$NON-NLS-1$
+//				}
+//			}
 		}
 	}
 
 	public static void dump(String label, ContainerShape shape) {
 		GraphicsUtil.dump(0, label,shape,0,0);
+	}
+
+	public static void dump(String label, Connection c) {
+		System.out.print(label+" connection="); //$NON-NLS-1$
+		ContainerShape source = (ContainerShape) c.getStart().getParent();
+		ContainerShape target = (ContainerShape) c.getEnd().getParent();
+		String sourceName = GraphicsUtil.getDebugText(source);
+		String targetName = GraphicsUtil.getDebugText(target);
+		System.out.println(sourceName+" -> "+targetName);
 	}
 
 	public static void dump(int level, String label, ContainerShape shape) {
@@ -571,7 +588,7 @@ public class GraphicsUtil {
 				System.out.println(""); //$NON-NLS-1$
 		}
 	}
-
+	
 	public static String getDebugText(ContainerShape shape) {
 		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 		String id = ""; //$NON-NLS-1$

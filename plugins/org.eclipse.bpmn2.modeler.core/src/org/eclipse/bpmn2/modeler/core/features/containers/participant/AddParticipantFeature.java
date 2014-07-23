@@ -107,7 +107,6 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 		decorateShape(context, containerShape, businessObject);
 		
 		peCreateService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
 	}

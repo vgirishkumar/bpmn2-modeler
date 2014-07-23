@@ -96,15 +96,6 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnota
 		decorateShape(context, containerShape, businessObject);
 
 		peCreateService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
-
-		// prepare the AddContext to create a Label
-//		prepareAddContext(context, containerShape, width, height);
-//		IFeatureContainer fc = new LabelFeatureContainer();
-//		fc.getAddFeature(getFeatureProvider()).add(context);
-//		
-//		updatePictogramElement(context, containerShape);
-//		layoutPictogramElement(containerShape);
 
 		return containerShape;
 	}

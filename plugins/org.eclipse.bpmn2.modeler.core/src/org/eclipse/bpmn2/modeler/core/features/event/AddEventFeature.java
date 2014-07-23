@@ -78,7 +78,6 @@ public abstract class AddEventFeature<T extends Event>
 		decorateShape(context, containerShape, businessObject);
 
 		peService.createChopboxAnchor(containerShape);
-		AnchorUtil.addFixedPointAnchors(containerShape, ellipse);
 
 		splitConnection(context, containerShape);
 		

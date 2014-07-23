@@ -11,7 +11,6 @@
 package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface IConnectionRouter.
  */
@@ -36,6 +35,8 @@ public interface IConnectionRouter {
 	 * @return true, if successful
 	 */
 	public boolean route(Connection connection);
+	
+	public boolean needsLayout(Connection connection);
 	
 	/**
 	 * Dispose.

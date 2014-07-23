@@ -339,7 +339,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					ReconnectionContext rc = null;
 					if (association instanceof DataInputAssociation) {
 						Point p = GraphicsUtil.createPoint(connection.getStart());
-						Anchor a = AnchorUtil.findNearestAnchor((AnchorContainer) dataShape, p);
+						Anchor a = AnchorUtil.createAnchor((AnchorContainer) dataShape, p);
 						rc = new ReconnectionContext(connection, connection.getStart(), a, null);
 						rc.setTargetPictogramElement(dataShape);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
@@ -347,7 +347,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					}
 					else {
 						Point p = GraphicsUtil.createPoint(connection.getEnd());
-						Anchor a = AnchorUtil.findNearestAnchor(dataShape, p);
+						Anchor a = AnchorUtil.createAnchor(dataShape, p);
 						rc = new ReconnectionContext(connection, a, connection.getEnd(), null);
 						rc.setTargetPictogramElement(dataShape);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
@@ -372,9 +372,9 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 				// is some kind of data object shape, so we need to create a connection between the Activity
 				// (or Throw/Catch Event) that owns the DataAssociation, and the new data object shape.
 				Point p = GraphicsUtil.createPoint((AnchorContainer) dataShape);
-				Anchor ownerAnchor = AnchorUtil.findNearestAnchor(taskShape, p);
+				Anchor ownerAnchor = AnchorUtil.createAnchor(taskShape, p);
 				p = GraphicsUtil.createPoint(taskShape);
-				Anchor peAnchor = AnchorUtil.findNearestAnchor((AnchorContainer) dataShape, p);
+				Anchor peAnchor = AnchorUtil.createAnchor((AnchorContainer) dataShape, p);
 				AddConnectionContext ac = null;
 				if (association instanceof DataOutputAssociation) {
 					ac = new AddConnectionContext(ownerAnchor, peAnchor);

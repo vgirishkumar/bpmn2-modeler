@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
@@ -31,7 +32,6 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
@@ -65,6 +65,10 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		if (FeatureSupport.isLabelShape(targetContainer))
 			return false; // can't move a shape into a label
 		
+		if (BusinessObjectUtil.getFirstBaseElement(targetContainer) instanceof Group) {
+			// can't move ANYTHING into a Group
+			return false;
+		}
 		if (Graphiti.getPeService().getProperty(targetContainer, RoutingNet.LANE)!=null) {
 			int x = context.getX();
 			int y = context.getY();

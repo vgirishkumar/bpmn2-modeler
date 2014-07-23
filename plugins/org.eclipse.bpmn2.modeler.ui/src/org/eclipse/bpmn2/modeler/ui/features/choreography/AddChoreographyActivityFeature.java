@@ -110,8 +110,6 @@ public abstract class AddChoreographyActivityFeature<T extends ChoreographyActiv
 		createDIShape(containerShape, businessObject, !isImport);
 		
 		decorateShape(context, containerShape, businessObject);
-		
-		AnchorUtil.addFixedPointAnchors(containerShape, rect);
 
 		return containerShape;
 	}

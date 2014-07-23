@@ -53,6 +53,7 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
@@ -396,13 +397,18 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 	}
 	
 	protected Connection createNewConnection(ContainerShape oldShape, ContainerShape newShape) {
-		Tuple<FixPointAnchor, FixPointAnchor> anchors = AnchorUtil.getSourceAndTargetBoundaryAnchors(oldShape, newShape, null);
+		Point p;
+		
+		p = GraphicsUtil.getShapeCenter(newShape);
+		FixPointAnchor sa = AnchorUtil.createAnchor(oldShape, p);
+		p = GraphicsUtil.getShapeCenter(oldShape);
+		FixPointAnchor ta = AnchorUtil.createAnchor(newShape, p);
 
 		CreateConnectionContext ccc = new CreateConnectionContext();
 		ccc.setSourcePictogramElement(oldShape);
 		ccc.setTargetPictogramElement(newShape);
-		ccc.setSourceAnchor(anchors.getFirst());
-		ccc.setTargetAnchor(anchors.getSecond());
+		ccc.setSourceAnchor(sa);
+		ccc.setTargetAnchor(ta);
 
 		FlowNode oldObject = BusinessObjectUtil.getFirstElementOfType(oldShape, FlowNode.class);
 		FlowNode newObject = BusinessObjectUtil.getFirstElementOfType(newShape, FlowNode.class);

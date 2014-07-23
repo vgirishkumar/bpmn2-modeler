@@ -166,7 +166,6 @@ public class DataStoreReferenceFeatureContainer extends BaseElementFeatureContai
 			decorateShape(context, containerShape, businessObject);
 
 			peService.createChopboxAnchor(containerShape);
-			AnchorUtil.addFixedPointAnchors(containerShape, invisibleRect);
 
 			return containerShape;
 		}

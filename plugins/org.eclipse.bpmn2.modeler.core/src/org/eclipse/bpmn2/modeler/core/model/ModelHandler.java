@@ -672,26 +672,6 @@ public class ModelHandler {
 		return collaboration;
 	}
 	
-	private Collaboration getOrCreateCollaboration() {
-		Collaboration c = getCollaboration();
-		if (c!=null)
-			return c;
-		
-		final List<RootElement> rootElements = getDefinitions().getRootElements();
-		TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(resource);
-		final Collaboration collaboration = create(Collaboration.class);
-		if (domain != null) {
-			domain.getCommandStack().execute(new RecordingCommand(domain) {
-
-				@Override
-				protected void doExecute() {
-					addCollaborationToRootElements(rootElements, collaboration);
-				}
-			});
-		}
-		return collaboration;
-	}
-	
 	private Collaboration getParticipantContainer(BPMNDiagram bpmnDiagram) {
 		if (bpmnDiagram==null) {
 			// return the first Collaboration or Choreography in the model hierarchy
@@ -724,30 +704,6 @@ public class ModelHandler {
 		Choreography choreography = create(Choreography.class);
 		getDefinitions().getRootElements().add(choreography);
 		return choreography;
-	}
-
-	private void addCollaborationToRootElements(final List<RootElement> rootElements, final Collaboration collaboration) {
-		Participant participant = create(Participant.class);
-		for (RootElement element : rootElements) {
-			if (element instanceof Process) {
-				participant.setProcessRef((Process) element);
-				break;
-			}
-		}
-		collaboration.getParticipants().add(participant);
-		rootElements.add(collaboration);
-	}
-
-	private void addChoreographyToRootElements(final List<RootElement> rootElements, final Choreography choreography) {
-		Participant participant = create(Participant.class);
-		for (RootElement element : rootElements) {
-			if (element instanceof Process) {
-				participant.setProcessRef((Process) element);
-				break;
-			}
-		}
-		choreography.getParticipants().add(participant);
-		rootElements.add(choreography);
 	}
 
 	public Bpmn2ResourceImpl getResource() {

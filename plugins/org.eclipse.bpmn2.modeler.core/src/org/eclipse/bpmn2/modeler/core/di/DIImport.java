@@ -877,15 +877,6 @@ public class DIImport {
 			context.putProperty(GraphitiConstants.CONNECTION_BENDPOINTS, bendpoints);
 			Connection connection = (Connection) featureProvider.addIfPossible(context);
 			
-			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
-				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_SOURCE_LOCATION,
-						AnchorUtil.pointToString(sourceAnchor.getLocation()));
-			}
-			if (AnchorUtil.useAdHocAnchors(targetPE, connection)) {
-				peService.setPropertyValue(connection, GraphitiConstants.CONNECTION_TARGET_LOCATION,
-						AnchorUtil.pointToString(targetAnchor.getLocation()));
-			}
-			
 			featureProvider.link(connection, new Object[] { bpmnElement, bpmnEdge });
 			return connection;
 		} else {
@@ -895,18 +886,16 @@ public class DIImport {
 	}
 
 	private FixPointAnchor createAnchor(PictogramElement pictogramElement, BPMNEdge bpmnEdge, boolean isSource) {
-		FixPointAnchor sa;
+		FixPointAnchor anchor;
 		
 		if (pictogramElement instanceof FreeFormConnection) {
 			Shape connectionPointShape = AnchorUtil.createConnectionPoint(featureProvider,
 					(FreeFormConnection)pictogramElement,
 					Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)pictogramElement, 0.5));
-			sa = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
+			anchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
 		}
 		else
 		{
-			BaseElement baseElement = BusinessObjectUtil.getFirstBaseElement(pictogramElement);
-			BaseElement flowElement = bpmnEdge.getBpmnElement();
 			Point waypoint = null;
 			if (isSource) {
 				waypoint = bpmnEdge.getWaypoint().get(0);
@@ -947,38 +936,29 @@ public class DIImport {
 				}
 			}
 			
-			if (AnchorUtil.useAdHocAnchors(baseElement, flowElement)) {
-				ILocation loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram((Shape)pictogramElement);
-				anchorPoint.setX(x - loc.getX());
-				anchorPoint.setY(y - loc.getY());
-				sa = AnchorUtil.createAdHocAnchor((AnchorContainer)pictogramElement, anchorPoint);
-				setAnchorLocation(pictogramElement, sa, waypoint);
-			}
-			else {
-				sa = AnchorUtil.findNearestAnchor((AnchorContainer)pictogramElement, anchorPoint);
-			}
+			anchor = AnchorUtil.createAnchor((AnchorContainer)pictogramElement, anchorPoint);
 		}
-		return sa;
+		return anchor;
 	}
 
-	private void setAnchorLocation(PictogramElement elem, FixPointAnchor anchor, Point point) {
-		org.eclipse.graphiti.mm.algorithms.styles.Point p = gaService.createPoint((int) point.getX(),
-				(int) point.getY());
-
-		ILocation loc;
-		if (elem instanceof Connection)
-			loc = Graphiti.getPeLayoutService().getConnectionMidpoint((Connection)elem, 0.5);
-		else
-			loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram((Shape) elem);
-
-		int x = p.getX() - loc.getX();
-		int y = p.getY() - loc.getY();
-
-		p.setX(x);
-		p.setY(y);
-
-		anchor.setLocation(p);
-	}
+//	private void setAnchorLocation(PictogramElement elem, FixPointAnchor anchor, Point point) {
+//		org.eclipse.graphiti.mm.algorithms.styles.Point p = gaService.createPoint((int) point.getX(),
+//				(int) point.getY());
+//
+//		ILocation loc;
+//		if (elem instanceof Connection)
+//			loc = Graphiti.getPeLayoutService().getConnectionMidpoint((Connection)elem, 0.5);
+//		else
+//			loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram((Shape) elem);
+//
+//		int x = p.getX() - loc.getX();
+//		int y = p.getY() - loc.getY();
+//
+//		p.setX(x);
+//		p.setY(y);
+//
+//		anchor.setLocation(p);
+//	}
 	
 	private boolean canAdd(IAddFeature addFeature, AddContext context) {
 		if (addFeature==null)
