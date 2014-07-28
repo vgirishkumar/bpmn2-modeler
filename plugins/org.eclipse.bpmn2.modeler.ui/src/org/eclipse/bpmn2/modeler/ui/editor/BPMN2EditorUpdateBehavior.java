@@ -13,6 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import java.util.Map;
+
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
@@ -21,11 +23,14 @@ import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.impl.EMFCommandTransaction;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.WorkspaceEditingDomainFactory;
@@ -114,7 +119,20 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 		// Bpmn2ModelerResourceSetImpl instead of using a ResourceSetImpl.
 		final ResourceSet resourceSet = new Bpmn2ModelerResourceSetImpl();
 		final IWorkspaceCommandStack workspaceCommandStack = new GFWorkspaceCommandStackImpl(
-				new DefaultOperationHistory());
+				new DefaultOperationHistory()) {
+
+					@Override
+					public EMFCommandTransaction createTransaction(Command command, Map<?, ?> options)
+							throws InterruptedException {
+						// Need to disable Live Validation after a CreateFeature because some of
+						// the CompountCreateFeatures will construct elements that are not valid
+						// until fleshed out by the user. These errors will still be reported
+						// during Batch Validation once the Create operation is complete.
+						((Map<Object,Object>)options).put(Transaction.OPTION_NO_VALIDATION, Boolean.TRUE);
+						return super.createTransaction(command, options);
+					}
+			
+		};
 
 		final TransactionalEditingDomainImpl editingDomain = new TransactionalEditingDomainImpl(
 				new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE),
