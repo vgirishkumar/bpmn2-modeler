@@ -56,7 +56,6 @@ import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -85,7 +84,6 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -888,33 +886,26 @@ public class DIImport {
 	private FixPointAnchor createAnchor(PictogramElement pictogramElement, BPMNEdge bpmnEdge, boolean isSource) {
 		FixPointAnchor anchor;
 		
-		if (pictogramElement instanceof FreeFormConnection) {
-			Shape connectionPointShape = AnchorUtil.createConnectionPoint(featureProvider,
-					(FreeFormConnection)pictogramElement,
-					Graphiti.getPeLayoutService().getConnectionMidpoint((FreeFormConnection)pictogramElement, 0.5));
-			anchor = AnchorUtil.getConnectionPointAnchor(connectionPointShape);
+		Point waypoint = null;
+		if (isSource) {
+			waypoint = bpmnEdge.getWaypoint().get(0);
 		}
-		else
-		{
-			Point waypoint = null;
-			if (isSource) {
-				waypoint = bpmnEdge.getWaypoint().get(0);
-			}
-			else {
-				waypoint = bpmnEdge.getWaypoint().get(bpmnEdge.getWaypoint().size()-1);
-			}
-			
-			int x = (int)waypoint.getX();
-			int y = (int)waypoint.getY();
-			org.eclipse.graphiti.mm.algorithms.styles.Point anchorPoint = gaService.createPoint(x,y);
-			
-			// Some tools generate Edges that have their origin or destination waypoint at the center
-			// of the source/target shape. Adjust these locations so that they are at the edge of
-			// the shape.
-			//
-			// TODO: Figure out a way to maintain the original waypoint locations and still
-			// support the connection line routers. This will require a major rewrite of the
-			// whole anchor management ("anger management"?) scheme.
+		else {
+			waypoint = bpmnEdge.getWaypoint().get(bpmnEdge.getWaypoint().size()-1);
+		}
+		
+		int x = (int)waypoint.getX();
+		int y = (int)waypoint.getY();
+		org.eclipse.graphiti.mm.algorithms.styles.Point anchorPoint = gaService.createPoint(x,y);
+		
+		// Some tools generate Edges that have their origin or destination waypoint at the center
+		// of the source/target shape. Adjust these locations so that they are at the edge of
+		// the shape.
+		//
+		// TODO: Figure out a way to maintain the original waypoint locations and still
+		// support the connection line routers. This will require a major rewrite of the
+		// whole anchor management ("anger management"?) scheme.
+		if (pictogramElement instanceof Shape) {
 			if (GraphicsUtil.contains((Shape)pictogramElement, anchorPoint)) {
 				// Only do this if the waypoint is "near" the center; "near" was arbitrarily chosen
 				// to mean within 3/4 of the shape's smallest dimension
@@ -935,30 +926,12 @@ public class DIImport {
 					anchorPoint = gaService.createPoint(x,y);
 				}
 			}
-			
-			anchor = AnchorUtil.createAnchor((AnchorContainer)pictogramElement, anchorPoint);
 		}
+		
+		anchor = AnchorUtil.createAnchor((AnchorContainer)pictogramElement, anchorPoint);
+		
 		return anchor;
 	}
-
-//	private void setAnchorLocation(PictogramElement elem, FixPointAnchor anchor, Point point) {
-//		org.eclipse.graphiti.mm.algorithms.styles.Point p = gaService.createPoint((int) point.getX(),
-//				(int) point.getY());
-//
-//		ILocation loc;
-//		if (elem instanceof Connection)
-//			loc = Graphiti.getPeLayoutService().getConnectionMidpoint((Connection)elem, 0.5);
-//		else
-//			loc = Graphiti.getPeLayoutService().getLocationRelativeToDiagram((Shape) elem);
-//
-//		int x = p.getX() - loc.getX();
-//		int y = p.getY() - loc.getY();
-//
-//		p.setX(x);
-//		p.setY(y);
-//
-//		anchor.setLocation(p);
-//	}
 	
 	private boolean canAdd(IAddFeature addFeature, AddContext context) {
 		if (addFeature==null)

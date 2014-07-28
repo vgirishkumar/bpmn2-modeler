@@ -758,9 +758,9 @@ public class FeatureSupport {
 			FeatureSupport.updateLabel(fp, connection, null);
 		
 		// also update any Connections that are connected to this Connection
-		for (Shape shape : AnchorUtil.getConnectionPoints(connection)) {
-			updateConnections(fp, shape);
-		}
+//		for (Shape shape : AnchorUtil.getConnectionPoints(connection)) {
+//			updateConnections(fp, shape);
+//		}
 		return layoutChanged || updateChanged;
 	}
 
@@ -806,7 +806,7 @@ public class FeatureSupport {
 			}
 		}
 		updateConnections(fp, ac, alreadyUpdated);
-		AnchorUtil.relocateAnchors((Shape)ac);
+//		AnchorUtil.relocateAnchors((Shape)ac);
 	}
 
 	public static void updateCategoryValues(IFeatureProvider fp, List<ContainerShape> shapes) {

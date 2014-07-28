@@ -79,6 +79,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -511,10 +512,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			Anchor anchor = getSourceAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
-				Connection conn = AnchorUtil.getConnectionPointOwner(shape);
-				if (conn!=null) {
-					return BusinessObjectUtil.getFirstElementOfType(conn, getTargetClass());
-				}
 				return BusinessObjectUtil.getFirstElementOfType(shape, getTargetClass());
 			}
 			return null;
@@ -525,10 +522,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			Anchor anchor = getTargetAnchor(context);
 			if (anchor != null && anchor.getParent() instanceof Shape) {
 				Shape shape = (Shape) anchor.getParent();
-				Connection conn = AnchorUtil.getConnectionPointOwner(shape);
-				if (conn!=null) {
-					return BusinessObjectUtil.getFirstElementOfType(conn, getTargetClass());
-				}
 				return BusinessObjectUtil.getFirstElementOfType(shape, getTargetClass());
 			}
 			return null;
@@ -845,20 +838,6 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 		@Override
 		public void preReconnect(IReconnectionContext context) {
 			startTransaction();
-			
-			PictogramElement targetPictogramElement = context.getTargetPictogramElement();
-			if (targetPictogramElement instanceof FreeFormConnection) {
-				Shape connectionPointShape = AnchorUtil.createConnectionPoint(
-						getFeatureProvider(),
-						(FreeFormConnection)targetPictogramElement,
-						context.getTargetLocation());
-				
-				if (context instanceof ReconnectionContext) {
-					ReconnectionContext rc = (ReconnectionContext) context;
-					rc.setNewAnchor(AnchorUtil.getConnectionPointAnchor(connectionPointShape));
-					rc.setTargetPictogramElement(connectionPointShape);
-				}
-			}
 			super.preReconnect(context);
 		}
 

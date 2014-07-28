@@ -18,14 +18,22 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.graphiti.datatypes.IDimension;
+import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -36,6 +44,7 @@ import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -69,6 +78,10 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	
 	/** The target anchor. */
 	protected FixPointAnchor sourceAnchor, targetAnchor;
+
+	AnchorSite sourceAnchorSites[];
+
+	AnchorSite targetAnchorSites[];
 	
 	/**
 	 * Instantiates a new default connection router.
@@ -87,16 +100,31 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		this.connection = connection;
 		this.sourceAnchor = (FixPointAnchor) connection.getStart();
 		this.targetAnchor = (FixPointAnchor) connection.getEnd();
-		this.source = (Shape) sourceAnchor.getParent();
-		this.target = (Shape) targetAnchor.getParent();
+		this.source = (Shape) AnchorUtil.getAnchorContainer(sourceAnchor);
+		this.target = (Shape) AnchorUtil.getAnchorContainer(targetAnchor);
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#canRoute(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
+	@Override
+	public boolean canRoute(Connection connection) {
+		// don't touch Choreography Task Message Links.
+		AnchorContainer ac = AnchorUtil.getAnchorContainer(connection.getStart());
+		if (AnchorType.getType(ac) == AnchorType.MESSAGELINK)
+			return false;
+		ac = AnchorUtil.getAnchorContainer(connection.getEnd());
+		if (AnchorType.getType(ac) == AnchorType.MESSAGELINK)
+			return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#needsUpdate(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */
 	@Override
-	public boolean needsLayout(Connection connection) {
+	public boolean routingNeeded(Connection connection) {
 		return false;
 	}
 
@@ -246,38 +274,45 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	}
 	
 	/**
-	 * Find crossings.
+	 * Find Connection line crossings. This will return a list of all
+	 * Connections on the Diagram that intersect any line segment of the given
+	 * Connection. Connections that are attached to the given Connection are
+	 * ignored.
 	 *
-	 * @param start the start
-	 * @param end the end
-	 * @return the list
+	 * @param connection the Connection to test.
+	 * @param start the starting point of a line segment on the connection.
+	 * @param end the ending point of the line segment.
+	 * @return a list of Connections that cross over the line segment.
 	 */
-	protected List<Connection> findCrossings(Point start, Point end) {
+	protected List<Connection> findCrossings(Connection connection, Point start, Point end) {
 		// TODO: figure out why this isn't working!
 		List<Connection> crossings = new ArrayList<Connection>();
 		List<Connection> allConnections = fp.getDiagramTypeProvider().getDiagram().getConnections();
-		for (Connection connection : allConnections) {
-			if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
+		List<FixPointAnchor> connectionAnchors = AnchorUtil.getAnchors(connection);
+		for (Connection c : allConnections) {
+			if (Graphiti.getPeService().getProperty(c, RoutingNet.CONNECTION)!=null) {
 				continue;
 			}
-			Point p1 = GraphicsUtil.createPoint(connection.getStart());
-			Point p3 = GraphicsUtil.createPoint(connection.getEnd());
-			if (connection instanceof FreeFormConnection) {
-				FreeFormConnection ffc = (FreeFormConnection) connection;
+			if (connectionAnchors.contains(c.getStart()) || connectionAnchors.contains(c.getEnd()))
+				continue;
+			Point p1 = GraphicsUtil.createPoint(c.getStart());
+			Point p3 = GraphicsUtil.createPoint(c.getEnd());
+			if (c instanceof FreeFormConnection) {
+				FreeFormConnection ffc = (FreeFormConnection) c;
 				Point p2 = p1;
 				for (Point p : ffc.getBendpoints()) {
 					if (GraphicsUtil.intersects(start, end, p1, p)) {
-						crossings.add(connection);
+						crossings.add(c);
 						break;
 					}
 					p2 = p1 = p;
 				}
 				if (GraphicsUtil.intersects(start, end, p2, p3)) {
-					crossings.add(connection);
+					crossings.add(c);
 				}
 			}
 			else if (GraphicsUtil.intersects(start, end, p1, p3)) {
-				crossings.add(connection);
+				crossings.add(c);
 			}
 		}
 		return crossings;
@@ -321,6 +356,229 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		}
 	}
 	
+	protected void calculateAllowedAnchorSites() {
+		
+		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(source);
+		if (bo instanceof BoundaryEvent) {
+			sourceAnchorSites = calculateBoundaryEventAnchorSites(source);
+		}
+		bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(target);
+		if (bo instanceof BoundaryEvent) {
+			targetAnchorSites = calculateBoundaryEventAnchorSites(target);
+		}
+		if (AnchorType.getType(source) == AnchorType.CONNECTION) {
+			sourceAnchorSites = new AnchorSite[1];
+			sourceAnchorSites[0] = AnchorSite.CENTER;
+		}
+		if (AnchorType.getType(target) == AnchorType.CONNECTION) {
+			targetAnchorSites = new AnchorSite[1];
+			targetAnchorSites[0] = AnchorSite.CENTER;
+		}
+		ILocation sPos = Graphiti.getPeService().getLocationRelativeToDiagram(source);
+		IDimension sSize = GraphicsUtil.calculateSize(source);
+		ILocation tPos = Graphiti.getPeService().getLocationRelativeToDiagram(target);
+		IDimension tSize = GraphicsUtil.calculateSize(target);
+		// find relative locations
+		if (sPos.getX()+sSize.getWidth() < tPos.getX()) {
+			// source shape is to left of target
+			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+				// source shape is to left and above target:
+				// omit the two opposite sides of both source and target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+				}
+			}
+			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+				// source shape is to left and below target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+			}
+			else {
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[3];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+					sourceAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[3];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+					targetAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+			}
+		}
+		else if (sPos.getX() > tPos.getX()+tSize.getWidth()) {
+			// source shape is to right of target
+			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+				// source shape is to right and above target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+				}
+			}
+			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+				// source shape is to right and below target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+			}
+			else {
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[3];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+					sourceAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[3];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+					targetAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+			}
+		}
+		else if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+			// source shape is above target
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[3];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.BOTTOM;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[3];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.TOP;
+			}
+		}
+		else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+			// source shape is below target
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[3];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.TOP;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[3];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.BOTTOM;
+			}
+		}
+		else {
+			// source and target overlap
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[4];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.TOP;
+				sourceAnchorSites[3] = AnchorSite.BOTTOM;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[4];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.TOP;
+				targetAnchorSites[3] = AnchorSite.BOTTOM;
+			}
+		}
+	}
+
+	protected AnchorSite[] calculateBoundaryEventAnchorSites(Shape shape) {
+		AnchorSite sites[];
+		PositionOnLine pol = BoundaryEventPositionHelper.getPositionOnLineProperty(shape);
+		switch (pol.getLocationType()) {
+		case BOTTOM:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.BOTTOM;
+			break;
+		case BOTTOM_LEFT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.BOTTOM;
+			sites[1] = AnchorSite.LEFT;
+			break;
+		case BOTTOM_RIGHT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.BOTTOM;
+			sites[1] = AnchorSite.RIGHT;
+			break;
+		case LEFT:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.LEFT;
+			break;
+		case RIGHT:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.RIGHT;
+			break;
+		case TOP:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.TOP;
+			break;
+		case TOP_LEFT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.LEFT;
+			break;
+		case TOP_RIGHT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.RIGHT;
+			break;
+		default:
+			sites = new AnchorSite[4];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.LEFT;
+			sites[2] = AnchorSite.BOTTOM;
+			sites[3] = AnchorSite.RIGHT;
+			break;
+		}
+		return sites;
+	}
+
+	protected boolean shouldCalculate(AnchorSite sourceSite, AnchorSite targetSite) {
+		for (int i=0; i<sourceAnchorSites.length; ++i) {
+			if (sourceSite == sourceAnchorSites[i]) {
+				for (int j=0; j<targetAnchorSites.length; ++j) {
+					if (targetSite == targetAnchorSites[j]) {
+						return true;
+					}
+				}				
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * The Class AddRoutingConnectionFeature.
 	 */
@@ -365,7 +623,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				connection.getBendpoints().add(route.get(i));
 			}
 
-			peService.setPropertyValue(connection, CONNECTION, "" + route.id); //$NON-NLS-1$
+			peService.setPropertyValue(connection, CONNECTION, "" + route.getId()); //$NON-NLS-1$
 
 			Polyline connectionLine = Graphiti.getGaService().createPolyline(
 					connection);

@@ -13,10 +13,8 @@
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
 import java.util.Collection;
-import java.util.Iterator;
 
-import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
-import org.eclipse.graphiti.mm.PropertyContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -26,16 +24,11 @@ import org.eclipse.graphiti.services.Graphiti;
 public class ChoreographySelectionBehavior {
 
 	public static boolean canApplyTo(PictogramElement pe) {
-		if (!(pe instanceof PropertyContainer)) {
-			return false;
+		if (pe instanceof ContainerShape) {
+			String property = Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.MESSAGE_LINK);
+			return Boolean.parseBoolean(property);
 		}
-
-		String property = Graphiti.getPeService().getPropertyValue(pe, ChoreographyUtil.MESSAGE_LINK);
-		if (property == null) {
-			return false;
-		}
-
-		return new Boolean(property);
+		return false;
 	}
 
 	public static GraphicsAlgorithm[] getClickArea(PictogramElement element) {

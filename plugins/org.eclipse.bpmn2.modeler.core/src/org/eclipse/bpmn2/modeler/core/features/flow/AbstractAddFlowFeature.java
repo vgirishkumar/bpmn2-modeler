@@ -15,18 +15,12 @@ package org.eclipse.bpmn2.modeler.core.features.flow;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.EventDefinition;
-import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.label.AddConnectionLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
@@ -34,9 +28,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -55,7 +47,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 	@Override
 	public boolean canAdd(IAddContext context) {
 		if (context instanceof IAddConnectionContext) {
-			IAddConnectionContext acc = (IAddConnectionContext) context;
 			return getBusinessObjectType().isAssignableFrom(getBusinessObject(context).getClass());
 		}
 		return false;
@@ -70,8 +61,6 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 
 		T businessObject = getBusinessObject(context);
 		IAddConnectionContext addContext = (IAddConnectionContext) context;
-		AnchorContainer sourceContainer = addContext.getSourceAnchor().getParent();
-		AnchorContainer targetContainer = addContext.getTargetAnchor().getParent();
 
 		FreeFormConnection connection = peService.createFreeFormConnection(getDiagram());
 		Anchor sourceAnchor = addContext.getSourceAnchor();

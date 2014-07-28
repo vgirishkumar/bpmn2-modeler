@@ -53,9 +53,9 @@ public class BusinessObjectUtil {
 			return false;
 		}
 		// if this is a connection point, look at business objects of the connection
-		if (AnchorUtil.isConnectionPoint(elem)) {
-			elem = AnchorUtil.getConnectionPointOwner((Shape)elem);
-		}
+//		if (AnchorUtil.isConnectionPoint(elem)) {
+//			elem = AnchorUtil.getConnectionPointOwner((Shape)elem);
+//		}
 		EList<EObject> businessObjs = elem.getLink().getBusinessObjects();
 		for (EObject eObject : businessObjs) {
 			if (clazz.isInstance(eObject)) {
@@ -67,9 +67,9 @@ public class BusinessObjectUtil {
 	
 	@SuppressWarnings("rawtypes")
 	public static boolean containsChildElementOfType(PictogramElement root, Class clazz) {
-		if (AnchorUtil.isConnectionPoint(root)) {
-			root = AnchorUtil.getConnectionPointOwner((Shape)root);
-		}
+//		if (AnchorUtil.isConnectionPoint(root)) {
+//			root = AnchorUtil.getConnectionPointOwner((Shape)root);
+//		}
 		if (root instanceof ContainerShape) {
 			ContainerShape rootContainer = (ContainerShape) root;
 			for (Shape currentShape : rootContainer.getChildren()) {
@@ -96,9 +96,9 @@ public class BusinessObjectUtil {
 				return null;
 		}
 		// if this is a connection point, look at business objects of the connection
-		if (AnchorUtil.isConnectionPoint(elem)) {
-			elem = AnchorUtil.getConnectionPointOwner((Shape)elem);
-		}
+//		if (AnchorUtil.isConnectionPoint(elem)) {
+//			elem = AnchorUtil.getConnectionPointOwner((Shape)elem);
+//		}
 		EList<EObject> businessObjs = elem.getLink().getBusinessObjects();
 		for (EObject eObject : businessObjs) {
 			if (clazz.isInstance(eObject)) {

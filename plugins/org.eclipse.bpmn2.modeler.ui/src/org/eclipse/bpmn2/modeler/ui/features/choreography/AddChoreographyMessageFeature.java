@@ -18,20 +18,22 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyTask;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
+import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -48,7 +50,7 @@ import org.eclipse.swt.widgets.Display;
 public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 
 	protected boolean changesDone = false;
-	
+
 	private static ILabelProvider labelProvider = new ILabelProvider() {
 
 		public void removeListener(ILabelProviderListener listener) {
@@ -67,7 +69,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 		}
 
 		public String getText(Object element) {
-			return ChoreographyUtil.getMessageName((Message)element);
+			return ChoreographyUtil.getMessageName((Message) element);
 		}
 
 		public Image getImage(Object element) {
@@ -82,15 +84,15 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 	public AddChoreographyMessageFeature(IFeatureProvider fp) {
 		super(fp);
 	}
-	
+
 	@Override
 	public String getName() {
-	    return Messages.AddChoreographyMessageFeature_Name;
+		return Messages.AddChoreographyMessageFeature_Name;
 	}
-	
+
 	@Override
 	public String getDescription() {
-	    return Messages.AddChoreographyMessageFeature_Description;
+		return Messages.AddChoreographyMessageFeature_Description;
 	}
 
 	@Override
@@ -110,107 +112,101 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof Participant) {
-				Participant participant = (Participant)bo;
-				
-				Object parent = getBusinessObjectForPictogramElement(((ContainerShape)pe).getContainer());
+				Participant participant = (Participant) bo;
+
+				Object parent = getBusinessObjectForPictogramElement(((ContainerShape) pe).getContainer());
 				if (parent instanceof ChoreographyTask) {
-					
-					// Check if choreography task already associated with MessageFlow
-					// with this participant as the source
-					ChoreographyTask ct=(ChoreographyTask)parent;
-					
-					if (ct.getParticipantRefs().size() >= 2) {
-						boolean canAdd=true;
-						
-						for (MessageFlow mf : ct.getMessageFlowRef()) {
-							if (mf.getSourceRef() != null &&
-									mf.getSourceRef().equals(participant)) {
-								canAdd = false;
-								break;
+
+					ChoreographyTask choreographyTask = (ChoreographyTask) parent;
+
+					// Check if choreography task already associated with
+					// MessageFlow with this Participant as the source
+					if (choreographyTask.getParticipantRefs().size() == 2) {
+						for (MessageFlow mf : choreographyTask.getMessageFlowRef()) {
+							if (mf.getSourceRef() != null && mf.getSourceRef().equals(participant)) {
+								return false;
 							}
 						}
-						
-						return (canAdd);
+						return true;
 					}
 				}
 			}
 		}
 		return false;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			PictogramElement pe = pes[0];
-			Object bo = getBusinessObjectForPictogramElement(pe);
-			if (pe instanceof ContainerShape && bo instanceof Participant) {
-				ModelHandler mh = ModelHandler.getInstance(getDiagram());
+		PictogramElement pe = context.getPictogramElements()[0];
+		ContainerShape participantShape = (ContainerShape) pe;
+		ContainerShape choreographyTaskShape  = (ContainerShape) participantShape.eContainer();
+		Participant participant = (Participant) getBusinessObjectForPictogramElement(participantShape);
+		ChoreographyTask choreographyTask = (ChoreographyTask) getBusinessObjectForPictogramElement(choreographyTaskShape);
+		Definitions definitions = ModelUtil.getDefinitions(choreographyTask);
+		ModelHandler mh = ModelHandler.getInstance(choreographyTask);
 
-				ContainerShape containerShape = (ContainerShape)pe;
-				Participant participant = (Participant)bo;
-				
-				Object parent = getBusinessObjectForPictogramElement(containerShape.getContainer());
-				if (parent instanceof ChoreographyTask) {
-					ChoreographyTask ct=(ChoreographyTask)parent;
-											
-					Message message = null;
-					List<Message> messageList = new ArrayList<Message>();
-					message = mh.create(Message.class);
-					message.setName(message.getId());
-					
-					messageList.add(message);
-					for (RootElement re : mh.getDefinitions().getRootElements()) {
-						if (re instanceof Message) {
-							messageList.add((Message)re);
-						}
-					}
+		Message message = Bpmn2ModelerFactory.create(Message.class);
+		String oldName = message.getName();
+		message.setName(Messages.AddChoreographyMessageFeature_New);
+		message.setId(null);
 
-					Message result = message;
-	
-					if (messageList.size()>1) {
-						PopupMenu popupMenu = new PopupMenu(messageList, labelProvider);
-						changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
-						if (changesDone) {
-							result = (Message) popupMenu.getResult();
-						}
-					}
-					else
-						changesDone = true;
-					
-					if (changesDone) {
-						if (result==message) { // the new one
-							message.setName( ExtendedPropertiesProvider.getTextValue(message)); // ModelUtil.toDisplayName(message.getId()) );
-							
-							mh.getDefinitions().getRootElements().add(result);
-						}
-						
-						java.util.List<Participant> parts=new java.util.ArrayList<Participant>(
-												ct.getParticipantRefs());
-						parts.remove(participant);
-						
-						if (parts.size() == 1) {
-							MessageFlow mf=mh.createMessageFlow(participant, parts.get(0));
-							mf.setName(ModelUtil.toCanonicalString(mf.getId()));
-							
-							Choreography choreography = (Choreography)ct.eContainer();
-							choreography.getMessageFlows().add(mf);
+		List<Message> messageList = new ArrayList<Message>();
+		messageList.add(message);
+		messageList.addAll( ModelUtil.getAllRootElements(definitions, Message.class) );
 
-							mf.setMessageRef(result);
-							ct.getMessageFlowRef().add(mf);
-							
-							BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
-							bpmnShape.setIsMessageVisible(true);
-
-						} else {
-							// TODO: REPORT ERROR??
-						}
-					}
-				}
+		Message result = message;
+		if (messageList.size() > 1) {
+			PopupMenu popupMenu = new PopupMenu(messageList, labelProvider);
+			changesDone = popupMenu.show(Display.getCurrent().getActiveShell());
+			if (changesDone) {
+				result = (Message) popupMenu.getResult();
+			} else {
+				EcoreUtil.delete(message);
+				message = null;
 			}
+		} else
+			changesDone = true;
+
+		if (changesDone) {
+			if (result == message) {
+				// the new one
+				definitions.getRootElements().add(message);
+				message.setId(null);
+				ModelUtil.setID(message);
+				message.setName(oldName);
+			} else {
+				// and existing one
+				message = result;
+			}
+
+			// get the other Participant to which this Participant will be sending the Message
+			// Note that we have already checked (in canExecute()) that this Choreography Task
+			// has only two Participants.
+			Participant otherParticipant;
+			if (choreographyTask.getParticipantRefs().get(0)==participant)
+				otherParticipant = choreographyTask.getParticipantRefs().get(1);
+			else
+				otherParticipant = choreographyTask.getParticipantRefs().get(0);
+			
+			MessageFlow messageFlow = mh.createMessageFlow(participant, otherParticipant);
+			messageFlow.setName(ModelUtil.toCanonicalString(messageFlow.getId()));
+
+			Choreography choreography = (Choreography) choreographyTask.eContainer();
+			choreography.getMessageFlows().add(messageFlow);
+
+			messageFlow.setMessageRef(message);
+			choreographyTask.getMessageFlowRef().add(messageFlow);
+
+			BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(participantShape, BPMNShape.class);
+			bpmnShape.setIsMessageVisible(true);
+			
+			UpdateContext updateContext = new UpdateContext(choreographyTaskShape);
+			getFeatureProvider().updateIfPossible(updateContext);
 		}
 	}
 

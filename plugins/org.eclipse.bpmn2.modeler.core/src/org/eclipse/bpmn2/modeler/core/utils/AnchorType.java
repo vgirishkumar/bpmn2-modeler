@@ -22,10 +22,11 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.services.Graphiti;
 
 public enum AnchorType {
-	ACTIVITY("activity"), POOL("pool"), GATEWAY("gateway"), CONNECTION("connection");
+	ACTIVITY("activity"), POOL("pool"), GATEWAY("gateway"), MESSAGELINK("messagelink"), CONNECTION("connection");
 	
 	private final String key;
 	
@@ -45,11 +46,17 @@ public enum AnchorType {
 		}
 		return null;
 	}
+	
 	public static AnchorType getType(AnchorContainer ac) {
+		if (ac instanceof ConnectionDecorator)
+			return CONNECTION;
+		
 		BaseElement be = BusinessObjectUtil.getFirstBaseElement(ac);
-		if (be instanceof Participant) {
-			if (FeatureSupport.isChoreographyParticipantBand(ac))
-				return ACTIVITY;
+		String property = Graphiti.getPeService().getPropertyValue(ac, GraphitiConstants.MESSAGE_LINK);
+		if (Boolean.parseBoolean(property)) {
+			return MESSAGELINK;
+		}
+		else if (be instanceof Participant) {
 			return POOL;
 		}
 		else if (be instanceof Group) {
@@ -64,7 +71,7 @@ public enum AnchorType {
 		else if (be != null) {
 			return ACTIVITY;
 		}
-		return null;
+		throw new IllegalArgumentException("Cannot determine Anchor Type for business object "+be);
 	}
 	
 	public static AnchorType getType(Anchor anchor) {
@@ -73,6 +80,5 @@ public enum AnchorType {
 	
 	public static void setType(Anchor anchor, AnchorType at) {
 		Graphiti.getPeService().setPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE, at.getKey());
-
 	}
 }

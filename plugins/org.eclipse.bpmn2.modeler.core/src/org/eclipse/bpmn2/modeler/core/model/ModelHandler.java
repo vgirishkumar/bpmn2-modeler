@@ -355,14 +355,14 @@ public class ModelHandler {
 					choreography.setName(name+Messages.ModelHandler_Choreography);
 					
 					Participant initiatingParticipant = create(Participant.class);
-					initiatingParticipant.setName(name+Messages.ModelHandler_Initiating_Participant);
+					initiatingParticipant.setName(Messages.ModelHandler_Initiating_Participant);
 
 //					Process initiatingProcess = createProcess();
 //					initiatingProcess.setName(name+" Initiating Process");
 //					initiatingParticipant.setProcessRef(initiatingProcess);
 					
 					Participant nonInitiatingParticipant = create(Participant.class);
-					nonInitiatingParticipant.setName(name+Messages.ModelHandler_Non_Initiating_Participant);
+					nonInitiatingParticipant.setName(Messages.ModelHandler_Non_Initiating_Participant);
 
 //					Process nonInitiatingProcess = createProcess();
 //					nonInitiatingProcess.setName(name+" Non-initiating Process");
@@ -372,7 +372,7 @@ public class ModelHandler {
 					choreography.getParticipants().add(nonInitiatingParticipant);
 					
 					ChoreographyTask task = create(ChoreographyTask.class);
-					task.setName(name+Messages.ModelHandler_Choreography_Task);
+					task.setName(Messages.ModelHandler_Choreography_Task);
 					task.getParticipantRefs().add(initiatingParticipant);
 					task.getParticipantRefs().add(nonInitiatingParticipant);
 					task.setInitiatingParticipantRef(initiatingParticipant);

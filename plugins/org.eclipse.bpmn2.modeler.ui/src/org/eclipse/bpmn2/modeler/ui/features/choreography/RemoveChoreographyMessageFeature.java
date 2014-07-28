@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -43,15 +44,15 @@ public class RemoveChoreographyMessageFeature extends AbstractCustomFeature {
 	public RemoveChoreographyMessageFeature(IFeatureProvider fp) {
 		super(fp);
 	}
-	
+
 	@Override
 	public String getName() {
-	    return Messages.RemoveChoreographyMessageFeature_Name;
+		return Messages.RemoveChoreographyMessageFeature_Name;
 	}
-	
+
 	@Override
 	public String getDescription() {
-	    return Messages.RemoveChoreographyMessageFeature_Description;
+		return Messages.RemoveChoreographyMessageFeature_Description;
 	}
 
 	@Override
@@ -71,64 +72,62 @@ public class RemoveChoreographyMessageFeature extends AbstractCustomFeature {
 			PictogramElement pe = pes[0];
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (pe instanceof ContainerShape && bo instanceof Participant) {
-				Participant participant = (Participant)bo;
-				
-				Object parent = getBusinessObjectForPictogramElement(((ContainerShape)pe).getContainer());
+				Participant participant = (Participant) bo;
+
+				Object parent = getBusinessObjectForPictogramElement(((ContainerShape) pe).getContainer());
 				if (parent instanceof ChoreographyTask) {
-					
-					// Check if choreography task is not associated with MessageFlow
-					// with this participant as the source
-					ChoreographyTask ct=(ChoreographyTask)parent;
-					boolean canRemove=false;
-					
+
+					// Check if choreography task is not associated with
+					// MessageFlow with this participant as the source
+					ChoreographyTask ct = (ChoreographyTask) parent;
+					boolean canRemove = false;
+
 					for (MessageFlow mf : ct.getMessageFlowRef()) {
 						if (participant.equals(mf.getSourceRef())) {
 							canRemove = true;
 							break;
 						}
 					}
-					
+
 					return (canRemove);
 				}
 			}
 		}
 		return false;
 	}
-	
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		PictogramElement[] pes = context.getPictogramElements();
-		if (pes != null && pes.length == 1) {
-			PictogramElement pe = pes[0];
-			Object bo = getBusinessObjectForPictogramElement(pe);
-			if (pe instanceof ContainerShape && bo instanceof Participant) {
-				ContainerShape containerShape = (ContainerShape)pe;
-				Participant participant = (Participant)bo;
-				
-				Object parent = getBusinessObjectForPictogramElement(containerShape.getContainer());
-				if (parent instanceof ChoreographyTask) {
-					ChoreographyTask ct=(ChoreographyTask)parent;
-					Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
-											
-					for (MessageFlow mf : ct.getMessageFlowRef()) {
-						if (participant.equals(mf.getSourceRef())) {
-							// remove the visuals first
-							Connection connection = (Connection)Graphiti.getLinkService().getPictogramElements(diagram, mf).get(0);
-							if (ChoreographyUtil.removeChoreographyMessageLink(connection)) {
-								// now remove the MessageFlow from the ChoreographyTask
-								ct.getMessageFlowRef().remove(mf);
-								EcoreUtil.delete(mf);
+		PictogramElement pe = context.getPictogramElements()[0];
+		ContainerShape participantShape = (ContainerShape) pe;
+		ContainerShape choreographyTaskShape = (ContainerShape) participantShape.getContainer();
+		Participant participant = (Participant) getBusinessObjectForPictogramElement(participantShape);
+		ChoreographyTask choreographyTask = (ChoreographyTask) getBusinessObjectForPictogramElement(choreographyTaskShape);
+		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
 
-								BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(containerShape, BPMNShape.class);
-								bpmnShape.setIsMessageVisible(false);
-							}
-							break;
-						}
-					}
+		for (MessageFlow mf : choreographyTask.getMessageFlowRef()) {
+			if (participant.equals(mf.getSourceRef())) {
+				// remove the visuals first
+				Connection connection = (Connection) Graphiti.getLinkService()
+						.getPictogramElements(diagram, mf).get(0);
+				if (ChoreographyUtil.removeChoreographyMessageLink(connection)) {
+					// now remove the MessageFlow from the ChoreographyTask
+					choreographyTask.getMessageFlowRef().remove(mf);
+					EcoreUtil.delete(mf);
+
+					BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(participantShape, BPMNShape.class);
+					bpmnShape.setIsMessageVisible(false);
+					
+					UpdateContext updateContext = new UpdateContext(choreographyTaskShape);
+					getFeatureProvider().updateIfPossible(updateContext);
 				}
+				break;
 			}
 		}
 	}

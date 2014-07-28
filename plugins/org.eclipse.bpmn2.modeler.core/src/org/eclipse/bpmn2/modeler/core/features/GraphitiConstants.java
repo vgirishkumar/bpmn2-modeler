@@ -255,15 +255,27 @@ public interface GraphitiConstants {
 
 	public static final String CONNECTION_BENDPOINTS = "connection.bendpoints"; //$NON-NLS-1$
 
-	// the Anchor Type, one of the string values defined by {@see AnchorUtil$AnchorType}
+	/**
+	 * The {@link FixPointAnchor} property key that indicates the Anchor Type,
+	 * one of the string values defined by {@see AnchorUtil$AnchorType}
+	 **/
 	public static final String ANCHOR_TYPE = "anchor.type";
-	// the edge at which an anchor is located, one of the AnchorLocation enum values
+
+	/**
+	 * The {@link FixPointAnchor} property key that indicates the edge on which
+	 * anchor is located, one of the {@see AnchorSite} enum values
+	 **/
 	public static final String ANCHOR_LOCATION = "anchor.location";
+
+	/**
+	 * The {@link IContext} property key used by the {@link LayoutFeature} to
+	 * indicate that a new Shape or Connection PictogramElement is first
+	 * created. An initial update may require special handling.
+	 **/
+	public static final String INITIAL_UPDATE = "initial.update";
 	
 	// values for connection points
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
-
-	public static final String CONNECTION_POINT_KEY = "connection.point.key"; //$NON-NLS-1$
 
 	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
 
@@ -273,4 +285,10 @@ public interface GraphitiConstants {
 
 	public static final String TRIGGERED_BY_EVENT = "triggered.by.event"; //$NON-NLS-1$
 
+	/**
+	 * The {@link PictogramElement} property key that indicates the Shape or
+	 * Connection is part of a Choreography Task Message Link i.e. an image of
+	 * an envelope connected to a Participant band in a Choreography Task
+	 **/
+	public final static String MESSAGE_LINK = "choreography.messageLink"; //$NON-NLS-1$
 }

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.utils.AnchorLocation;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -54,6 +54,9 @@ public class AutomaticConnectionRouter extends BendpointConnectionRouter {
 			return calculateSelfConnectionRoute();
 		}
 		
+GraphicsUtil.debug = false;
+		
+		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		Point start = null;
 		Point end = null;
 		Point middle = null;
@@ -66,70 +69,59 @@ public class AutomaticConnectionRouter extends BendpointConnectionRouter {
 		
 		// Calculate all possible routes: this iterates over every permutation
 		// of 4 sides for both source and target shape
+		AnchorSite sourceSite = AnchorSite.getSite(sourceAnchor);
+		AnchorSite targetSite = AnchorSite.getSite(targetAnchor);
+		AnchorSite initialSourceSite = sourceSite;
+		AnchorSite initialTargetSite = targetSite;
 		for (int i=0; i<16; ++i) {
-			ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
-			route.setSourceAnchor(sourceAnchor);
-			route.setTargetAnchor(targetAnchor);
-
-			start = GraphicsUtil.createPoint(sourceAnchor);
-			end = GraphicsUtil.createPoint(targetAnchor);
-			
-			// if either the source or target anchor is a "Pool" anchor (i.e. attached to a Pool)
-			// then try to move it so it lines up either vertically or horizontally with the other
-			// anchor.
-			if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
-				AnchorUtil.moveAnchor(sourceAnchor, middle==null ? end : middle);
+			if (shouldCalculate(sourceSite, targetSite)) {
+				AnchorSite.setSite(sourceAnchor, sourceSite);
+				AnchorUtil.adjustAnchors(source);
+				AnchorSite.setSite(targetAnchor, targetSite);
+				AnchorUtil.adjustAnchors(target);
+	
+				ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
+	
 				start = GraphicsUtil.createPoint(sourceAnchor);
-			}
-			else if (AnchorType.getType(targetAnchor) == AnchorType.POOL) {
-				AnchorUtil.moveAnchor(targetAnchor, start);
 				end = GraphicsUtil.createPoint(targetAnchor);
-			}
-			
-			calculateRoute(route, start,middle,end);
-			allRoutes.add(route);
-			
-			if ((i % 4)==0) {
-				switch (AnchorLocation.getLocation(sourceAnchor)) {
-				case BOTTOM:
-					AnchorLocation.setLocation(sourceAnchor, AnchorLocation.LEFT);
-					break;
-				case CENTER:
-					break;
-				case LEFT:
-					AnchorLocation.setLocation(sourceAnchor, AnchorLocation.RIGHT);
-					break;
-				case RIGHT:
-					AnchorLocation.setLocation(sourceAnchor, AnchorLocation.TOP);
-					break;
-				case TOP:
-					AnchorLocation.setLocation(sourceAnchor, AnchorLocation.BOTTOM);
-					break;
-				default:
-					break;
+				
+				// If either the source or target anchor is a "Pool" anchor
+				// (i.e. attached to a Pool) then try to move it so it lines
+				// up either vertically or horizontally with the other anchor.
+				// This is only done for these conditions:
+				// 1. this is an initial update, i.e. the Connection has just been created
+				// 2. the Connection was manually moved
+				// 3. the edge to which the Connection was attached has changed
+				if (initialUpdate || middle!=null ||
+						sourceSite!=initialSourceSite || targetSite!=initialTargetSite) {
+					if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
+						if (middle!=null)
+							AnchorUtil.moveAnchor(sourceAnchor, middle);
+						else
+							AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
+						start = GraphicsUtil.createPoint(sourceAnchor);
+						route.setRank(sourceSite!=initialSourceSite ? 3 : 0);
+					}
+					if (AnchorType.getType(targetAnchor) == AnchorType.POOL) {
+						if (middle!=null)
+							AnchorUtil.moveAnchor(targetAnchor, middle);
+						else
+							AnchorUtil.moveAnchor(targetAnchor, sourceAnchor);
+						end = GraphicsUtil.createPoint(targetAnchor);
+						route.setRank(targetSite!=initialTargetSite ? 3 : 0);
+					}
 				}
-				AnchorUtil.relocateAnchors(source);
+				route.setSourceAnchor(sourceAnchor);
+				route.setTargetAnchor(targetAnchor);
+				
+				calculateRoute(route, start,middle,end);
+				allRoutes.add(route);
+			}				
+			if ((i % 4)==0) {
+				sourceSite = getNextAnchorSite(sourceSite);
 			}
 			else {
-				switch (AnchorLocation.getLocation(targetAnchor)) {
-				case BOTTOM:
-					AnchorLocation.setLocation(targetAnchor, AnchorLocation.LEFT);
-					break;
-				case CENTER:
-					break;
-				case LEFT:
-					AnchorLocation.setLocation(targetAnchor, AnchorLocation.RIGHT);
-					break;
-				case RIGHT:
-					AnchorLocation.setLocation(targetAnchor, AnchorLocation.TOP);
-					break;
-				case TOP:
-					AnchorLocation.setLocation(targetAnchor, AnchorLocation.BOTTOM);
-					break;
-				default:
-					break;
-				}
-				AnchorUtil.relocateAnchors(target);
+				targetSite = getNextAnchorSite(targetSite);
 			}
 		}
 		
@@ -148,7 +140,7 @@ public class AutomaticConnectionRouter extends BendpointConnectionRouter {
 				Point p1 = r.getPoints().get(0);
 				for (int i=1; i<r.getPoints().size(); ++i) {
 					Point p2 = r.getPoints().get(i);
-					List<Connection> crossings = findCrossings(p1, p2);
+					List<Connection> crossings = findCrossings(connection, p1, p2);
 					for (Connection c : crossings) {
 						if (c!=this.connection)
 							r.addCrossing(c, p1, p2);
@@ -170,7 +162,8 @@ public class AutomaticConnectionRouter extends BendpointConnectionRouter {
 		
 		drawConnectionRoutes(allRoutes);
 
-		route = allRoutes.get(0);
+		if (allRoutes.size()>0)
+			route = allRoutes.get(0);
 		
 		return route;
 	}
@@ -202,7 +195,8 @@ public class AutomaticConnectionRouter extends BendpointConnectionRouter {
 			// navigate around this shape
 			DetourPoints detour = new DetourPoints(shape, margin);
 			for (Point d : detour.calculateDetour(p1, p2)) {
-				route.add(d);
+				if (!route.add(d))
+					return route;
 			}
 			p1 = route.get(route.size() - 1);
 		}

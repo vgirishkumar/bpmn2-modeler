@@ -803,8 +803,10 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 			
 			if (le!=null) {
 				((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);
-				if (!DIImport.isImporting(context))
+				if (!DIImport.isImporting(context)) {
+					context.putProperty(GraphitiConstants.INITIAL_UPDATE, Boolean.TRUE);
 					((AbstractBpmn2AddFeature)addElementFeature).layoutPictogramElement(context, pe);
+				}
 			}
 		}		
 		return pe;

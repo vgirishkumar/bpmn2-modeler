@@ -25,6 +25,8 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.dd.dc.Bounds;
@@ -37,9 +39,10 @@ import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.LayoutContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.PropertyContainer;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -57,7 +60,6 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	public final static String INITIATING_PARTICIPANT_REF = "choreography.activity.initiating.participant.ref"; //$NON-NLS-1$
 	public final static String MESSAGE_VISIBLE = "choreography.activity.band.message.visible"; //$NON-NLS-1$
 	public final static String PARTICIPANT_BAND = "choreography.activity.band"; //$NON-NLS-1$
-	public final static String MESSAGE_LINK = "choreography.messageLink"; //$NON-NLS-1$
 	public final static String MESSAGE_NAME = "choreography.messageName"; //$NON-NLS-1$
 	public final static String MESSAGE_REF_IDS = "choreography.message.ref.ids"; //$NON-NLS-1$
 
@@ -135,9 +137,9 @@ public class ChoreographyUtil implements ChoreographyProperties {
 		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		if (o instanceof MessageFlow && pe instanceof Connection) {
 			Connection c = (Connection)pe;
-			if (c.getStart()!=null && peService.getPropertyValue(c.getStart().getParent(),ChoreographyUtil.MESSAGE_LINK) != null)
+			if (c.getStart()!=null && peService.getPropertyValue(c.getStart().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
-			if (c.getEnd()!=null && peService.getPropertyValue(c.getEnd().getParent(),ChoreographyUtil.MESSAGE_LINK) != null)
+			if (c.getEnd()!=null && peService.getPropertyValue(c.getEnd().getParent(),GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
 		}
 		return false;
@@ -152,7 +154,7 @@ public class ChoreographyUtil implements ChoreographyProperties {
 	public static boolean isChoreographyMessage(PictogramElement pe) {
 		EObject o = BusinessObjectUtil.getFirstElementOfType(pe, BaseElement.class);
 		if (o instanceof Message && pe instanceof ContainerShape) {
-			if (peService.getPropertyValue(pe,ChoreographyUtil.MESSAGE_LINK) != null)
+			if (peService.getPropertyValue(pe,GraphitiConstants.MESSAGE_LINK) != null)
 				return true;
 		}
 		return false;
@@ -232,31 +234,18 @@ public class ChoreographyUtil implements ChoreographyProperties {
 			Bounds bounds = bpmnShape.getBounds();
 			int x = (int) ((bounds.getX() + bounds.getWidth() / 2) - (ChoreographyUtil.ENV_W / 2));
 	
-//			Map<AnchorLocation, BoundaryAnchor> boundaryAnchors = AnchorUtil.getBoundaryAnchors(choreographyTaskShape);
-//			BoundaryAnchor topBoundaryAnchor = boundaryAnchors.get(AnchorLocation.TOP);
-//			BoundaryAnchor bottomBoundaryAnchor = boundaryAnchors.get(AnchorLocation.BOTTOM);
-	
-//			for (Connection connection : topBoundaryAnchor.anchor.getOutgoingConnections()) {
-			for (Anchor anchor : choreographyTaskShape.getAnchors()) {
-				for (Connection connection : anchor.getOutgoingConnections()) {
-					EObject container = connection.getEnd().eContainer();
-					if (container instanceof PropertyContainer) {
-						String property = peService.getPropertyValue((PropertyContainer) container, ChoreographyUtil.MESSAGE_LINK);
-						if (property != null && new Boolean(property)) {
-							int y = (int) (bounds.getY() - ChoreographyUtil.ENVELOPE_HEIGHT_MODIFIER - ChoreographyUtil.ENV_H);
-							gaService.setLocation(((ContainerShape) container).getGraphicsAlgorithm(), x, y);
-							break;
-						}
-					}
-				}
-		
-				for (Connection connection : anchor.getOutgoingConnections()) {
-					EObject container = connection.getEnd().eContainer();
-					if (container instanceof PropertyContainer) {
-						String property = peService.getPropertyValue((PropertyContainer) container, ChoreographyUtil.MESSAGE_LINK);
-						if (property != null && new Boolean(property)) {
-							int y = (int) (bounds.getY() + bounds.getHeight() + ChoreographyUtil.ENVELOPE_HEIGHT_MODIFIER);
-							gaService.setLocation(((ContainerShape) container).getGraphicsAlgorithm(), x, y);
+			for (FixPointAnchor anchor : AnchorUtil.getAnchors(choreographyTaskShape)) {
+				AnchorSite site = AnchorSite.getSite(anchor);
+				if (site == AnchorSite.TOP || site == AnchorSite.BOTTOM) {
+					for (Connection connection : anchor.getOutgoingConnections()) {
+						AnchorContainer container = connection.getEnd().getParent();
+						if (isChoreographyMessage(container)) {
+							int y;
+							if (site == AnchorSite.TOP)
+								y =  (int) (bounds.getY() - ChoreographyUtil.ENVELOPE_HEIGHT_MODIFIER - ChoreographyUtil.ENV_H);
+							else
+								y = (int) (bounds.getY() + bounds.getHeight() + ChoreographyUtil.ENVELOPE_HEIGHT_MODIFIER);
+							gaService.setLocation(container.getGraphicsAlgorithm(), x, y);
 							break;
 						}
 					}

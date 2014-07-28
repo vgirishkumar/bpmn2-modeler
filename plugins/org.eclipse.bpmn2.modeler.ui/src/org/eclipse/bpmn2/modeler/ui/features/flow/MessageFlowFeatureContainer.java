@@ -30,8 +30,10 @@ import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -53,6 +55,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
@@ -62,6 +65,7 @@ import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -130,6 +134,22 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		return multiUpdate;
 	}
 	
+	@Override
+	public ILayoutFeature getLayoutFeature(IFeatureProvider fp) {
+		return new DefaultLayoutBPMNConnectionFeature(fp) {
+			@Override
+			public boolean layout(ILayoutContext context) {
+				if (super.layout(context)) {
+//					PictogramElement pe = context.getPictogramElement();
+//					if (pe instanceof Connection)
+//						adjustMessageDecorator(getFeatureProvider(), (Connection)pe);
+					return true;
+				}
+				return false;
+			}
+		};
+	}
+
 	@Override
 	public IReconnectionFeature getReconnectionFeature(IFeatureProvider fp) {
 		return new ReconnectMessageFlowFeature(fp);
@@ -611,19 +631,22 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 	}
 
-	public static class UpdateMessageFlowFeature extends UpdateLabelFeature {
+	public static class UpdateMessageFlowFeature extends AbstractBpmn2UpdateFeature {
 
-		boolean isUpdating = false;
-		
 		public UpdateMessageFlowFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.func.IUpdate#canUpdate(org.eclipse.graphiti.features.context.IUpdateContext)
+		 */
+		@Override
+		public boolean canUpdate(IUpdateContext context) {
+			return true;
+		}
+
 		@Override
 		public IReason updateNeeded(IUpdateContext context) {
-			if (isUpdating)
-				return Reason.createFalseReason();
-			
 			if (context.getPictogramElement() instanceof Connection) {
 				Connection connection = (Connection) context.getPictogramElement();
 				MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
@@ -647,35 +670,29 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 		
 		@Override
 		public boolean update(IUpdateContext context) {
-			try {
-				isUpdating = true;
-				Connection connection = (Connection) context.getPictogramElement();
-				MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
-				Message message = messageFlow.getMessageRef();
-				String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
-				if (oldMessageRef==null)
-					oldMessageRef = ""; //$NON-NLS-1$
-				
-				String newMessageRef = messageToString(messageFlow.getMessageRef());
-				
-				if (!oldMessageRef.equals(newMessageRef)) {
-					removeMessageDecorator(getFeatureProvider(), connection);
-					if (message!=null) {
-						Shape messageShape = (Shape) context.getProperty(MESSAGE_REF);
-						addMessageDecorator(getFeatureProvider(), connection, message, messageShape);
-					}
-					peService.setPropertyValue(connection, MESSAGE_REF, newMessageRef);
+			Connection connection = (Connection) context.getPictogramElement();
+			MessageFlow messageFlow = (MessageFlow) BusinessObjectUtil.getFirstBaseElement(connection);
+			Message message = messageFlow.getMessageRef();
+			String oldMessageRef = peService.getPropertyValue(connection, MESSAGE_REF);
+			if (oldMessageRef==null)
+				oldMessageRef = ""; //$NON-NLS-1$
+			
+			String newMessageRef = messageToString(messageFlow.getMessageRef());
+			
+			if (!oldMessageRef.equals(newMessageRef)) {
+				removeMessageDecorator(getFeatureProvider(), connection);
+				if (message!=null) {
+					Shape messageShape = (Shape) context.getProperty(MESSAGE_REF);
+					addMessageDecorator(getFeatureProvider(), connection, message, messageShape);
 				}
-				else {
-					// move the message decorator
-					adjustMessageDecorator(getFeatureProvider(), connection);
-				}
-
-				return super.update(context);
+				peService.setPropertyValue(connection, MESSAGE_REF, newMessageRef);
 			}
-			finally {
-				isUpdating = false;
+			else {
+				// move the message decorator
+				adjustMessageDecorator(getFeatureProvider(), connection);
 			}
+			
+			return true;
 		}
 	}
 	

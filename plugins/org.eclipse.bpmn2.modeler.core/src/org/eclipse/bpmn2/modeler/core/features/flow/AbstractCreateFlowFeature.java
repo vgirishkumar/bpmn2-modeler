@@ -92,40 +92,28 @@ public abstract class AbstractCreateFlowFeature<
 		Connection connection = null;
 		CONNECTION businessObject = createBusinessObject(context);
 		if (businessObject!=null) {
-			IPeService peService = Graphiti.getPeService();
-			
 			AnchorContainer source = (AnchorContainer) context.getSourcePictogramElement();
 			AnchorContainer target = (AnchorContainer) context.getTargetPictogramElement();
-			FixPointAnchor sourceAnchor = null;
-			FixPointAnchor targetAnchor = null;
+			Anchor sourceAnchor = context.getSourceAnchor();
+			Anchor targetAnchor = context.getTargetAnchor();
 			ILocation loc = context.getSourceLocation();
 			if (loc==null) {
-				Anchor a = context.getSourceAnchor();
-				if (a instanceof ChopboxAnchor) {
-					Point p = GraphicsUtil.getShapeCenter(target);
+				if (sourceAnchor instanceof ChopboxAnchor) {
+					Point p = GraphicsUtil.createPoint(context.getTargetAnchor());
 					sourceAnchor = AnchorUtil.createAnchor(source, p);	
 				}
-				else if (a instanceof FixPointAnchor) {
-					loc = peService.getLocationRelativeToDiagram(a);
-					sourceAnchor = AnchorUtil.createAnchor(source, loc.getX(), loc.getY());
-				}
 			}
-			else
+			else if (sourceAnchor==null || sourceAnchor instanceof ChopboxAnchor)
 				sourceAnchor = AnchorUtil.createAnchor(source, loc.getX(), loc.getY());
 			
 			loc = context.getTargetLocation();
 			if (loc==null) {
-				Anchor a = context.getTargetAnchor();
-				if (a instanceof ChopboxAnchor) {
-					Point p = GraphicsUtil.getShapeCenter(source);
+				if (targetAnchor instanceof ChopboxAnchor) {
+					Point p = GraphicsUtil.createPoint(context.getSourceAnchor());
 					targetAnchor = AnchorUtil.createAnchor(target, p);	
 				}
-				else if (a instanceof FixPointAnchor) {
-					loc = peService.getLocationRelativeToDiagram(a);
-					targetAnchor = AnchorUtil.createAnchor(source, loc.getX(), loc.getY());
-				}
 			}
-			else
+			else if (targetAnchor==null || targetAnchor instanceof ChopboxAnchor)
 				targetAnchor = AnchorUtil.createAnchor(target, loc.getX(), loc.getY());
 
 			((CreateConnectionContext)context).setSourceAnchor(sourceAnchor);

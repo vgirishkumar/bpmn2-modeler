@@ -31,19 +31,18 @@ import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ReconnectBaseElementFeature.
  */
 public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 
-	/** The changes done. */
+	/** This flag will be set TRUE if changes were made and need to be committed. */
 	protected boolean changesDone = false;
 	
 	/**
-	 * Instantiates a new reconnect base element feature.
+	 * Instantiates a new Reconnect Feature.
 	 *
-	 * @param fp the fp
+	 * @param fp the FeatureProvider
 	 */
 	public ReconnectBaseElementFeature(IFeatureProvider fp) {
 		super(fp);
@@ -81,22 +80,23 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 		Connection connection = context.getConnection();
 		FixPointAnchor newAnchor = null;
 
-		AnchorContainer source = connection.getStart().getParent();
-		AnchorContainer target = connection.getEnd().getParent();
-		if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-			target = (AnchorContainer) context.getTargetPictogramElement();
-			ILocation targetLoc = context.getTargetLocation();
-			newAnchor = AnchorUtil.createAnchor(target, targetLoc.getX(), targetLoc.getY());
-		}
-		else {
-			source = (AnchorContainer) context.getTargetPictogramElement();
-			ILocation targetLoc = context.getTargetLocation();
-			newAnchor = AnchorUtil.createAnchor(source, targetLoc.getX(), targetLoc.getY());
-		}
-
-		if (newAnchor!=null)
-			((ReconnectionContext)context).setNewAnchor(newAnchor);
-		
+		if (!(context.getNewAnchor() instanceof FixPointAnchor)) {
+			AnchorContainer source = connection.getStart().getParent();
+			AnchorContainer target = connection.getEnd().getParent();
+			if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
+				target = (AnchorContainer) context.getTargetPictogramElement();
+				ILocation targetLoc = context.getTargetLocation();
+				newAnchor = AnchorUtil.createAnchor(target, targetLoc.getX(), targetLoc.getY());
+			}
+			else {
+				source = (AnchorContainer) context.getTargetPictogramElement();
+				ILocation targetLoc = context.getTargetLocation();
+				newAnchor = AnchorUtil.createAnchor(source, targetLoc.getX(), targetLoc.getY());
+			}
+	
+			if (newAnchor!=null)
+				((ReconnectionContext)context).setNewAnchor(newAnchor);
+		}		
 		super.preReconnect(context);
 	}
 

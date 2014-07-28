@@ -34,7 +34,6 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 
@@ -84,11 +83,9 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			// The PE being deleted is a Connection:
 			// if it has other connections connected to it,
 			// delete those as well.
-			for (Shape shape : AnchorUtil.getConnectionPoints((Connection)pe)) {
-				for (Anchor a : shape.getAnchors()) {
-					connections.addAll(a.getIncomingConnections());
-					connections.addAll(a.getOutgoingConnections());
-				}
+			for (Anchor a : AnchorUtil.getAnchors((Connection)pe)) {
+				connections.addAll(a.getIncomingConnections());
+				connections.addAll(a.getOutgoingConnections());
 			}
 			for  (Connection c : connections) {
 				DeleteContext dc = new DeleteContext(c);
@@ -97,8 +94,13 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			}
 			
 			Connection connection = (Connection) pe;
-			shapes.add(connection.getStart().getParent());
-			shapes.add(connection.getEnd().getParent());
+			AnchorContainer ac;
+			ac = connection.getStart()==null ? null : connection.getStart().getParent();
+			if (ac!=null)
+				shapes.add(ac);
+			ac = connection.getEnd()==null ? null : connection.getEnd().getParent();
+			if (ac!=null)
+				shapes.add(ac);
 		}
 		
 		super.delete(context);

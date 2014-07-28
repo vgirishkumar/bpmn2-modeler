@@ -29,14 +29,29 @@ public interface IConnectionRouter {
 	public static final String ROUTING_INFO_BENDPOINT = "bendpoint"; //$NON-NLS-1$
 	
 	/**
-	 * Route.
+	 * Perform connection routing.
 	 *
-	 * @param connection the connection
+	 * @param connection the Connection
 	 * @return true, if successful
 	 */
 	public boolean route(Connection connection);
 	
-	public boolean needsLayout(Connection connection);
+	/**
+	 * Check if the Connection allows routing.
+	 * 
+	 * @param connection the Connection
+	 * @return true if the Connection can be routed, false otherwise.
+	 */
+	public boolean canRoute(Connection connection);
+	
+	/**
+	 * Check if the Connection needs to be rerouted after the
+	 * source or target shapes have been moved.
+	 * 
+	 * @param connection the Connection
+	 * @return true if the Connection routing needs to be recalculated.
+	 */
+	public boolean routingNeeded(Connection connection);
 	
 	/**
 	 * Dispose.

@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.features.choreography.messages"; //$NON-NLS-1$
 	public static String AddChoreographyMessageFeature_Description;
 	public static String AddChoreographyMessageFeature_Name;
+	public static String AddChoreographyMessageFeature_New;
 	public static String AddChoreographyParticipantFeature_Description;
 	public static String AddChoreographyParticipantFeature_Name;
 	public static String AddChoreographyParticipantFeature_New_Participant;

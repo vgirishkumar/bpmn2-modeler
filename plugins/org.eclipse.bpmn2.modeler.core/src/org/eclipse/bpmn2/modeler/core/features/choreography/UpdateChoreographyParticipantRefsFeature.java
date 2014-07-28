@@ -368,7 +368,6 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			y += hAcc;
 			resizeParticipantBandChildren(container, w);
 			DIUtils.updateDIShape(container);
-			AnchorUtil.relocateAnchors(container, w, (int) bounds.getHeight());
 		}
 
 		Collections.reverse(bottom); // start from bottom towards center
@@ -380,7 +379,6 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			gaService.setLocationAndSize(container.getGraphicsAlgorithm(), x, y, w, (int) bounds.getHeight());
 			resizeParticipantBandChildren(container, w);
 			DIUtils.updateDIShape(container);
-			AnchorUtil.relocateAnchors(container, w, (int) bounds.getHeight());
 		}
 	}
 

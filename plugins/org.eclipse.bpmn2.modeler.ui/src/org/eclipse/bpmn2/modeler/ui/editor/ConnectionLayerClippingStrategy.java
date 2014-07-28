@@ -66,12 +66,6 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 					Object model = part.getModel();
 					if (model instanceof Connection) {
 						Connection connection = (Connection)model;
-						AnchorContainer source = connection.getStart().getParent();
-						AnchorContainer target = connection.getEnd().getParent();
-						if (source.eContainer() != target.eContainer()) {
-							// don't clip the connection if source and target are not in the same container
-							return new Rectangle[] {childFigure.getBounds()};
-						}
 						BaseElement businessObject = BusinessObjectUtil.getFirstBaseElement(connection);
 						if (businessObject instanceof MessageFlow) {
 							ContainerShape messageShape = MessageFlowFeatureContainer.findMessageShape(connection);
@@ -82,6 +76,12 @@ public class ConnectionLayerClippingStrategy implements IClippingStrategy {
 							}
 						}
 						else if (businessObject!=null) {
+							AnchorContainer source = connection.getStart().getParent();
+							AnchorContainer target = connection.getEnd().getParent();
+							if (source.eContainer() != target.eContainer()) {
+								// don't clip the connection if source and target are not in the same container
+								return new Rectangle[] {childFigure.getBounds()};
+							}
 							EObject container = businessObject.eContainer();
 							if (container instanceof SubProcess) {
 								// don't clip if contents of SubProcess have been moved to a different

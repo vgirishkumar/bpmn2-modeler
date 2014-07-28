@@ -86,7 +86,7 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 		super.resizeShape(context);
 		
 		if (shape!=null) {
-			AnchorUtil.relocateAnchors(shape, context.getWidth(), context.getHeight());
+			AnchorUtil.adjustAnchors(shape);
 		}
 		
 		DIUtils.updateDIShape(context.getPictogramElement());

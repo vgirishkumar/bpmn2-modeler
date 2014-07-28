@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -105,6 +105,7 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			oldPoints.add(GraphicsUtil.createPoint(p));
 		}
 		oldPoints.add(GraphicsUtil.createPoint(ffc.getEnd()));
+		calculateAllowedAnchorSites();
 	}
 	
 	/**
@@ -240,7 +241,22 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 */
 	protected void applyRoute(ConnectionRoute route) {
 		route.apply(ffc, sourceAnchor, targetAnchor);
-		DIUtils.updateDIEdge(ffc);
+	}
+
+	protected AnchorSite getNextAnchorSite(AnchorSite site) {
+		switch (site) {
+		case BOTTOM:
+			return AnchorSite.LEFT;
+		case LEFT:
+			return AnchorSite.RIGHT;
+		case RIGHT:
+			return AnchorSite.TOP;
+		case TOP:
+			return AnchorSite.BOTTOM;
+		case CENTER:
+			return AnchorSite.CENTER;
+		}
+		return site;
 	}
 
 	/**

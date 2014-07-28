@@ -323,7 +323,7 @@ public class GraphicsUtil {
 				p2End.getX(), p2End.getY()
 		);
 	}
-
+	
 	/**
 	 * Check if two line segments intersects. Integer domain.
 	 * 
@@ -548,13 +548,6 @@ public class GraphicsUtil {
 			ILocation loc = peService.getLocationRelativeToDiagram(anchor);
 			System.out.print(" at "+loc.getX()+", "+loc.getY()); //$NON-NLS-1$ //$NON-NLS-2$
 			GraphicsUtil.dump(" parent=", (ContainerShape)anchor.getParent()); //$NON-NLS-1$
-//			if (AnchorUtil.isBoundaryAnchor(anchor)) {
-//				String property = Graphiti.getPeService().getPropertyValue(
-//						anchor, GraphitiConstants.BOUNDARY_FIXPOINT_ANCHOR);
-//				if (property != null && anchor instanceof FixPointAnchor) {
-//					System.out.println(" location="+AnchorLocation.getLocation(property)); //$NON-NLS-1$
-//				}
-//			}
 		}
 	}
 
@@ -605,29 +598,29 @@ public class GraphicsUtil {
 		}
 	}
 
-	public static GraphicsUtil.LineSegment[] getEdges(Shape shape) {
+	public static LineSegment[] getEdges(Shape shape) {
 		ILocation loc = peService.getLocationRelativeToDiagram(shape);
 		IDimension size = calculateSize(shape);
-		GraphicsUtil.LineSegment top = new GraphicsUtil.LineSegment(loc.getX(),loc.getY(),
+		LineSegment top = new LineSegment(loc.getX(),loc.getY(),
 				loc.getX()+size.getWidth(), loc.getY());
-		GraphicsUtil.LineSegment left = new GraphicsUtil.LineSegment(loc.getX(),loc.getY(), loc.getX(),
+		LineSegment left = new LineSegment(loc.getX(),loc.getY(), loc.getX(),
 				loc.getY()+size.getHeight());
-		GraphicsUtil.LineSegment bottom = new GraphicsUtil.LineSegment(loc.getX(), loc.getY()+size.getHeight(),
+		LineSegment bottom = new LineSegment(loc.getX(), loc.getY()+size.getHeight(),
 				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
-		GraphicsUtil.LineSegment right = new GraphicsUtil.LineSegment(loc.getX()+size.getWidth(), loc.getY(),
+		LineSegment right = new LineSegment(loc.getX()+size.getWidth(), loc.getY(),
 				loc.getX()+size.getWidth(), loc.getY()+size.getHeight());
-		return new GraphicsUtil.LineSegment[] {top, bottom, left, right};
+		return new LineSegment[] {top, bottom, left, right};
 	}
 
-	public static GraphicsUtil.LineSegment findNearestEdge(Shape shape, Point p) {
-		GraphicsUtil.LineSegment edges[] = getEdges(shape);
-		GraphicsUtil.LineSegment top = edges[0];
-		GraphicsUtil.LineSegment bottom = edges[1];
-		GraphicsUtil.LineSegment left = edges[2];
-		GraphicsUtil.LineSegment right = edges[3];
+	public static LineSegment findNearestEdge(Shape shape, Point p) {
+		LineSegment edges[] = getEdges(shape);
+		LineSegment top = edges[0];
+		LineSegment bottom = edges[1];
+		LineSegment left = edges[2];
+		LineSegment right = edges[3];
 		double minDist;
 		double dist;
-		GraphicsUtil.LineSegment result;
+		LineSegment result;
 		
 		minDist = top.getDistance(p);
 		result = top;
@@ -643,6 +636,37 @@ public class GraphicsUtil {
 			result = left;
 		}
 		dist = right.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = right;
+		}
+		return result;
+	}
+
+	public static LineSegment findNearestEdge(Shape shape, Point p1, Point p2) {
+		LineSegment edges[] = getEdges(shape);
+		LineSegment top = edges[0];
+		LineSegment bottom = edges[1];
+		LineSegment left = edges[2];
+		LineSegment right = edges[3];
+		double minDist;
+		double dist;
+		LineSegment result;
+		
+		minDist = top.getDistance(p1) + top.getDistance(p2);
+		result = top;
+		
+		dist = bottom.getDistance(p1) + bottom.getDistance(p2);
+		if (dist<minDist) {
+			minDist = dist;
+			result = bottom;
+		}
+		dist = left.getDistance(p1) + left.getDistance(p2);
+		if (dist<minDist) {
+			minDist = dist;
+			result = left;
+		}
+		dist = right.getDistance(p1) + right.getDistance(p2);
 		if (dist<minDist) {
 			minDist = dist;
 			result = right;
