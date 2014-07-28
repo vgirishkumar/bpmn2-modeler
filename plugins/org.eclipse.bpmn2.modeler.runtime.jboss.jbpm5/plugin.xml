@@ -5,7 +5,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <package
             class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage"
-            genModel="model/jBPM5Extensions.genmodel"
+            genModel="model/drools.genmodel"
             uri="http://www.jboss.org/drools">
       </package>
    </extension>
