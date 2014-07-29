@@ -55,19 +55,21 @@ public class ReconnectBaseElementFeature extends DefaultReconnectionFeature {
 	public boolean canReconnect(IReconnectionContext context) {
 		AnchorContainer sourceContainer = null;
 		AnchorContainer targetContainer = null;
+		Connection connection = context.getConnection();
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForPictogramElement(context.getConnection());
 		if (context.getReconnectType().equals(ReconnectionContext.RECONNECT_TARGET)) {
-			sourceContainer = context.getConnection().getStart().getParent();
+			sourceContainer = connection.getStart().getParent();
 			if (context.getTargetPictogramElement() instanceof AnchorContainer)
 				targetContainer = (AnchorContainer) context.getTargetPictogramElement();
 		}
 		else {
-			targetContainer = context.getConnection().getEnd().getParent();
+			targetContainer = connection.getEnd().getParent();
 			if (context.getTargetPictogramElement() instanceof AnchorContainer)
 				sourceContainer = (AnchorContainer) context.getTargetPictogramElement();
 		}
-		if (!AbstractBpmn2CreateConnectionFeature.canCreateConnection(sourceContainer, targetContainer, businessObject.eClass(), context.getReconnectType()))
-			return false;
+		if (sourceContainer!=connection.getStart().getParent() || targetContainer!=connection.getEnd().getParent())
+			if (!AbstractBpmn2CreateConnectionFeature.canCreateConnection(sourceContainer, targetContainer, businessObject.eClass(), context.getReconnectType()))
+				return false;
 
 		return super.canReconnect(context);
 	}

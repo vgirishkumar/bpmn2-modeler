@@ -88,7 +88,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 @SuppressWarnings("restriction")
@@ -102,7 +101,6 @@ public class DIImport {
 	private LinkedHashMap<BaseElement, PictogramElement> elements;
 	private Bpmn2Preferences preferences;
 	private ImportDiagnostics diagnostics;
-	private final IPeService peService = Graphiti.getPeService();
 	private final IGaService gaService = Graphiti.getGaService();
 	
 	public DIImport(DiagramEditor editor) {

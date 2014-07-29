@@ -288,7 +288,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 					return false;
 				}
 			}
-			getPoints().add(newPoint);
+			getPoints().add(GraphicsUtil.createPoint(newPoint));
 			return true;
 		}
 		

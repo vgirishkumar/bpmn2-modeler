@@ -19,10 +19,8 @@ import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -34,16 +32,12 @@ import org.eclipse.emf.transaction.impl.EMFCommandTransaction;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.WorkspaceEditingDomainFactory;
+import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
-import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
-import org.eclipse.graphiti.ui.internal.editor.DomainModelWorkspaceSynchronizerDelegate;
 import org.eclipse.graphiti.ui.internal.editor.GFWorkspaceCommandStackImpl;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 
 /**
  * This overrides the DefaultUpdateBehavior provider class from Graphiti. This
@@ -122,12 +116,17 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 				new DefaultOperationHistory()) {
 
 					@Override
-					public EMFCommandTransaction createTransaction(Command command, Map<?, ?> options)
-							throws InterruptedException {
-						// Need to disable Live Validation after a CreateFeature because some of
-						// the CompountCreateFeatures will construct elements that are not valid
-						// until fleshed out by the user. These errors will still be reported
-						// during Batch Validation once the Create operation is complete.
+					public EMFCommandTransaction createTransaction(Command command, Map<?, ?> options) throws InterruptedException {
+						/*
+						 * We need to disable Live Validation after a CreateFeature
+						 * because some of the {@link CompoundCreateFeature} actions
+						 * will construct elements that are not valid until fleshed out
+						 * by the user. These errors will still be reported during Batch
+						 * Validation once the Create operation is complete.
+						 * 
+						 * If this is not done, the Create action will fail
+						 * validation and will be rolled back by Graphiti.
+						 */
 						((Map<Object,Object>)options).put(Transaction.OPTION_NO_VALIDATION, Boolean.TRUE);
 						return super.createTransaction(command, options);
 					}

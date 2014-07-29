@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.ui.editor;
 import java.util.ArrayList;
 
 import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
@@ -20,6 +21,7 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbenchPart;
 
 public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
@@ -57,6 +59,15 @@ public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
 		return visibleList.toArray(new PictogramElement[visibleList.size()]);
 	}
 
+	@Override
+	protected void selectPictogramElements(PictogramElement[] pictogramElements) {
+		// Avoid NPE when a final selection comes in from the Outline Viewer AFTER
+		// the editor is closed and the workbench is shutting down.
+		Control control = getDiagramContainer().getGraphicalViewer().getControl();
+		if (control==null || control.isDisposed())
+			return;
+		super.selectPictogramElements(pictogramElements);
+	}
 
 	@Override
 	protected ContextMenuProvider createContextMenuProvider() {

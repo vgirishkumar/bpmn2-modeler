@@ -41,7 +41,6 @@ import org.eclipse.graphiti.features.IFeatureAndContext;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
-import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
@@ -50,8 +49,8 @@ import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
@@ -172,6 +171,8 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @return true, if the connection is allowed
 	 */
 	public static boolean canCreateConnection(AnchorContainer sourceContainer, AnchorContainer targetContainer, EClass connectionClass, String reconnectType) {
+		if (sourceContainer instanceof Diagram || targetContainer instanceof Diagram)
+			return false;
 		if (sourceContainer!=null && targetContainer!=null) {
 			// Make sure only one connection of each type is created for the same
 			// source and target objects, i.e. you can't have two SequenceFlows
