@@ -97,8 +97,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			
 			// Workaround for Bug 440796
 			GraphicsAlgorithm labelGA = labelShape.getGraphicsAlgorithm();
-			EStructuralFeature f = labelGA.eClass().getEStructuralFeature("x");
-			if (!labelGA.eIsSet(f)) {
+			int x = labelGA.getX();
+			if (x==0 || x==-90) {
 				Rectangle bounds = getLabelBounds(labelShape, false, null);
 				labelGA.eSetDeliver(false);
 				labelGA.setX(bounds.x);
