@@ -57,6 +57,8 @@ abstract public class AbstractAddLabelFeature extends AbstractAddPictogramElemen
 		// the actual text will be set into the Text GA during the initial update()
 		// which is done immediately after the add()
 		AbstractText text = createText(labelShape, ""); //$NON-NLS-1$
+		text.setX(-1);
+		text.setY(-1);
 		applyStyle(text, businessObject);
 		peService.setPropertyValue(labelShape, GraphitiConstants.LABEL_SHAPE, Boolean.toString(true));
 		

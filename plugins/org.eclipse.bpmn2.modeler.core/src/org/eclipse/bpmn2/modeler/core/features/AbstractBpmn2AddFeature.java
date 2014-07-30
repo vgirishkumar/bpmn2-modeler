@@ -280,8 +280,10 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			return context.getHeight();
 		int h = getHeight();
 		int w = getWidth();
-		if (!isHorizontal(context)) {
-			return Math.max(w, h);
+		if (FeatureSupport.isTargetParticipant(context) || FeatureSupport.isTargetLane(context)) {
+			if (!isHorizontal(context)) {
+				return Math.max(w, h);
+			}
 		}
 		return Math.min(w, h);
 	}
@@ -304,10 +306,12 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			return context.getWidth();
 		int h = getHeight();
 		int w = getWidth();
-		if (isHorizontal(context)) {
-			return Math.max(w, h);
+		if (FeatureSupport.isTargetParticipant(context) || FeatureSupport.isTargetLane(context)) {
+			if (!isHorizontal(context)) {
+				return Math.min(w, h);
+			}
 		}
-		return Math.min(w, h);
+		return Math.max(w, h);
 	}
 	
 	/**

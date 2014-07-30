@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -41,6 +42,7 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -93,6 +95,15 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			if (!newLabel.equals(oldLabel))
 				return Reason.createTrueReason(Messages.UpdateLabelFeature_TextChanged);
 			
+			// Workaround for Bug 440796
+			GraphicsAlgorithm labelGA = labelShape.getGraphicsAlgorithm();
+			EStructuralFeature f = labelGA.eClass().getEStructuralFeature("x");
+			if (!labelGA.eIsSet(f)) {
+				Rectangle bounds = getLabelBounds(labelShape, false, null);
+				labelGA.eSetDeliver(false);
+				labelGA.setX(bounds.x);
+				labelGA.eSetDeliver(true);
+			}
 		}
 		return Reason.createFalseReason();
 	}

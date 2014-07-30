@@ -351,25 +351,26 @@ public class DIUtils {
 	public static BPMNLabelStyle getOrCreateDILabelStyle(BaseElement element, ShapeStyle ss) {
 		BPMNLabelStyle bpmnStyle = null;
 		DiagramElement de = DIUtils.findDiagramElement(element);
-		BPMNLabel bpmnLabel = getOrCreateDILabel(de);
-		if (bpmnLabel!=null) {
-			BPMNDiagram bpmnDiagram = (BPMNDiagram) de.eContainer().eContainer();
-			for (BPMNLabelStyle ls : bpmnDiagram.getLabelStyle()) {
-				if (ss.equals(ls)) {
-					// found a BPMNLabelStyle that matches the given ShapeStyle
-					// so we can reuse it for this BPMNShape or BPMNEdge object.
-					bpmnStyle = ls;
+		if (de!=null) {
+			BPMNLabel bpmnLabel = getOrCreateDILabel(de);
+			if (bpmnLabel!=null) {
+				BPMNDiagram bpmnDiagram = (BPMNDiagram) de.eContainer().eContainer();
+				for (BPMNLabelStyle ls : bpmnDiagram.getLabelStyle()) {
+					if (ss.equals(ls)) {
+						// found a BPMNLabelStyle that matches the given ShapeStyle
+						// so we can reuse it for this BPMNShape or BPMNEdge object.
+						bpmnStyle = ls;
+					}
 				}
+				if (bpmnStyle==null) {
+					// create a new BPMNLabelStyle and add it to the BPMNDiagram
+					bpmnStyle = BpmnDiFactory.eINSTANCE.createBPMNLabelStyle();
+					bpmnStyle.setFont( ShapeStyle.toBPMNFont(ss.getLabelFont()) );
+					bpmnDiagram.getLabelStyle().add(bpmnStyle);
+				}
+				bpmnLabel.setLabelStyle(bpmnStyle);
 			}
-			if (bpmnStyle==null) {
-				// create a new BPMNLabelStyle and add it to the BPMNDiagram
-				bpmnStyle = BpmnDiFactory.eINSTANCE.createBPMNLabelStyle();
-				bpmnStyle.setFont( ShapeStyle.toBPMNFont(ss.getLabelFont()) );
-				bpmnDiagram.getLabelStyle().add(bpmnStyle);
-			}
-			bpmnLabel.setLabelStyle(bpmnStyle);
-		}
-		
+		}		
 		return bpmnStyle;
 	}
 	

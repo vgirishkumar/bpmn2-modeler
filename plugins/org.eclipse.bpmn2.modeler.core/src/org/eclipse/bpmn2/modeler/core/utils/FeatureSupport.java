@@ -982,6 +982,19 @@ public class FeatureSupport {
 		de = BusinessObjectUtil.getFirstElementOfType(cs, DiagramElement.class);
 		if (de!=null)
 			return cs;
+		
+		// Messages attached to MessageFlows do not have a BPMNShape element, their
+		// visibility is controlled by a setting on the BPMNEdge for the MessageFlow
+		Message msg = BusinessObjectUtil.getFirstElementOfType(cs, Message.class);
+		if (msg!=null)
+			return cs;
+		// If this is the ContainerShape of the MessageFlow Message, then it is the label owner.
+		if (pe instanceof ContainerShape) {
+			Shape labelShape = BusinessObjectUtil.getFirstElementOfType(pe, Shape.class);
+			if (FeatureSupport.isLabelShape(labelShape))
+				return pe;
+		}
+
 		Connection c = BusinessObjectUtil.getFirstElementOfType(pe, Connection.class);
 		de = BusinessObjectUtil.getFirstElementOfType(c, DiagramElement.class);
 		if (de!=null)

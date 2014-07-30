@@ -288,14 +288,15 @@ public class ModelHandler {
 					if (horz) {
 						bounds.setX(100);
 						bounds.setY(100);
-						bounds.setWidth(ss.getDefaultWidth());
-						bounds.setHeight(ss.getDefaultHeight());
+						bounds.setHeight(ss.getDefaultWidth());
+						bounds.setWidth(ss.getDefaultHeight());
 					}
-					else {
+					else 
+					{
 						bounds.setX(100);
 						bounds.setY(100);
-						bounds.setWidth(ss.getDefaultHeight());
-						bounds.setHeight(ss.getDefaultWidth());
+						bounds.setHeight(ss.getDefaultHeight());
+						bounds.setWidth(ss.getDefaultWidth());
 					}
 					shape.setBounds(bounds);
 					shape.setIsHorizontal(horz);
@@ -311,14 +312,14 @@ public class ModelHandler {
 					if (horz) {
 						bounds.setX(100);
 						bounds.setY(350);
-						bounds.setWidth(ss.getDefaultWidth());
-						bounds.setHeight(ss.getDefaultHeight());
+						bounds.setHeight(ss.getDefaultWidth());
+						bounds.setWidth(ss.getDefaultHeight());
 					}
 					else {
 						bounds.setX(350);
 						bounds.setY(100);
-						bounds.setWidth(ss.getDefaultHeight());
-						bounds.setHeight(ss.getDefaultWidth());
+						bounds.setHeight(ss.getDefaultHeight());
+						bounds.setWidth(ss.getDefaultWidth());
 					}
 					shape.setBounds(bounds);
 					shape.setIsHorizontal(horz);

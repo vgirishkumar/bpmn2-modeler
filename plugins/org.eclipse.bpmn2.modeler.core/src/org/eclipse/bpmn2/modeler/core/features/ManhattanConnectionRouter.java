@@ -133,8 +133,12 @@ GraphicsUtil.debug = false;
 		AnchorSite targetSite = AnchorSite.getSite(targetAnchor);
 		AnchorSite initialSourceSite = sourceSite;
 		AnchorSite initialTargetSite = targetSite;
+		Point initialSourceLocation = GraphicsUtil.createPoint(sourceAnchor);
+		Point initialTargetLocation = GraphicsUtil.createPoint(targetAnchor);
 		for (int i=0; i<16; ++i) {
 			if (shouldCalculate(sourceSite, targetSite)) {
+				AnchorUtil.moveAnchor(sourceAnchor, initialSourceLocation);
+				AnchorUtil.moveAnchor(targetAnchor, initialTargetLocation);
 				AnchorSite.setSite(sourceAnchor, sourceSite);
 				AnchorUtil.adjustAnchors(source);
 				AnchorSite.setSite(targetAnchor, targetSite);
@@ -171,22 +175,26 @@ GraphicsUtil.debug = false;
 				// 3. the edge to which the Connection was attached has changed
 				if (initialUpdate || middle!=null ||
 						sourceSite!=initialSourceSite || targetSite!=initialTargetSite) {
-					if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
-						if (middle!=null)
-							AnchorUtil.moveAnchor(sourceAnchor, middle);
-						else
-							AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
-						start = GraphicsUtil.createPoint(sourceAnchor);
-						route.setRank(sourceSite!=initialSourceSite ? 3 : 0);
-					}
+					int rank = 0;
 					if (AnchorType.getType(targetAnchor) == AnchorType.POOL) {
 						if (middle!=null)
 							AnchorUtil.moveAnchor(targetAnchor, middle);
 						else
 							AnchorUtil.moveAnchor(targetAnchor, sourceAnchor);
 						end = GraphicsUtil.createPoint(targetAnchor);
-						route.setRank(targetSite!=initialTargetSite ? 3 : 0);
+						if (targetSite!=initialTargetSite)
+							++rank;
 					}
+					if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
+						if (middle!=null)
+							AnchorUtil.moveAnchor(sourceAnchor, middle);
+						else
+							AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
+						start = GraphicsUtil.createPoint(sourceAnchor);
+						if (sourceSite!=initialSourceSite)
+							++rank;
+					}
+					route.setRank(rank);
 				}
 				route.setSourceAnchor(sourceAnchor);
 				route.setTargetAnchor(targetAnchor);

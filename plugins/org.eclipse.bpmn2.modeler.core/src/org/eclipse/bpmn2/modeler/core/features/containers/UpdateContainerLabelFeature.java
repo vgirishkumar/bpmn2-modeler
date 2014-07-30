@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
@@ -73,7 +74,7 @@ public class UpdateContainerLabelFeature extends UpdateLabelFeature {
 		boolean isHorizontal = FeatureSupport.isHorizontal((ContainerShape)ownerPE);
 		Shape labelShape = FeatureSupport.getLabelShape(ownerPE);
 		AbstractText textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
-		textGA.setAngle(isHorizontal ? -90 : 0);
+		textGA.setRotation(isHorizontal ? -90.0 : 0.0);
 
 		ContainerShape rootContainer = FeatureSupport.getRootContainer((ContainerShape)ownerPE);
 		super.adjustLabelLocation(rootContainer, isAdding, offset);
@@ -97,7 +98,7 @@ public class UpdateContainerLabelFeature extends UpdateLabelFeature {
 				if (FeatureSupport.isLane(pe)) {
 					labelShape = FeatureSupport.getLabelShape(pe);
 					textGA = (AbstractText) labelShape.getGraphicsAlgorithm();
-					textGA.setAngle(isHorizontal ? -90 : 0);
+					textGA.setRotation(isHorizontal ? -90.0 : 0.0);
 					super.adjustLabelLocation(pe, isAdding, offset);
 				}
 				else {

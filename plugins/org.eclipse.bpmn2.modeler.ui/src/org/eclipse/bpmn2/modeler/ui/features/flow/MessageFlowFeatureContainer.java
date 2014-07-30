@@ -30,10 +30,12 @@ import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultLayoutBPMNConnectionFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.MultiUpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
@@ -291,8 +293,11 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 			addContext.setX(x);
 			addContext.setY(y);
 			addContext.setTargetContainer(diagram);
-			IAddFeature addFeature = fp.getAddFeature(addContext);
-			messageShape = (Shape) addFeature.add(addContext);
+			// adds the Label to the Message:
+			messageShape = (Shape) fp.addIfPossible(addContext);
+			// use this instead if Message labels are not desired (possible User Preference?)
+//			IAddFeature addFeature = fp.getAddFeature(addContext);
+//			messageShape = (Shape) addFeature.add(addContext);
 		}
 		else {
 			MoveShapeContext moveContext = new MoveShapeContext(messageShape);
@@ -471,6 +476,8 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public boolean canStartConnection(ICreateConnectionContext context) {
+			if (!super.canStartConnection(context))
+				return false;
 			if (ChoreographyUtil.isChoreographyParticipantBand(context.getSourcePictogramElement()))
 				return false;
 			return true;
@@ -597,17 +604,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 					EcoreUtil.delete(message, true);
 				}
 	
-				ConnectionDecorator decorator = findMessageDecorator(messageFlowConnection);
-				if (decorator!=null) {
-					ContainerShape messageShape = BusinessObjectUtil.getFirstElementOfType(decorator, ContainerShape.class);
-					if (messageShape!=null) {
-						ContainerShape labelShape = BusinessObjectUtil.getFirstElementOfType(messageShape, ContainerShape.class);
-						if (labelShape!=null)
-							peService.deletePictogramElement(labelShape);
-						peService.deletePictogramElement(messageShape);
-					}
-					peService.deletePictogramElement(decorator);
-				}
+				removeMessageDecorator(getFeatureProvider(), messageFlowConnection);
 			}
 			
 			super.delete(context);

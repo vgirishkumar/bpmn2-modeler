@@ -52,6 +52,7 @@ import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
@@ -84,8 +85,8 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 	public Object getApplyObject(IContext context) {
 		Object object = super.getApplyObject(context);
 		if (object instanceof Message &&
-				!isChoreographyMessage(context) &&
-				!isMessageFlowMessage(context)) {
+				!isChoreographyMessage(context)) { // &&
+//				!isMessageFlowMessage(context)) {
 			return object;
 		}
 		return null;
@@ -354,6 +355,13 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 		}
 
 		@Override
+		public boolean canMoveShape(IMoveShapeContext context) {
+			if (isMessageFlowMessage(context)) 
+				return false;
+			return super.canMoveShape(context);
+		}
+
+		@Override
 		protected void postMoveShape(IMoveShapeContext context) {
 			super.postMoveShape(context);
 			
@@ -379,6 +387,21 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 
 		public DeleteMessageFeature(IFeatureProvider fp) {
 			super(fp);
+		}
+
+		@Override
+		public boolean canDelete(IDeleteContext context) {
+			if (isMessageFlowMessage(context)) 
+				return false;
+			return super.canDelete(context);
+		}
+
+		@Override
+		protected void deletePeEnvironment(PictogramElement pictogramElement) {
+			PictogramElement labelShape = FeatureSupport.getLabelShape(pictogramElement);
+			if (labelShape!=null)
+				Graphiti.getPeService().deletePictogramElement(labelShape);
+			super.deletePeEnvironment(pictogramElement);
 		}
 
 		@Override

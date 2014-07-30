@@ -96,26 +96,49 @@ public abstract class AbstractCreateFlowFeature<
 			AnchorContainer target = (AnchorContainer) context.getTargetPictogramElement();
 			Anchor sourceAnchor = context.getSourceAnchor();
 			Anchor targetAnchor = context.getTargetAnchor();
-			ILocation loc = context.getSourceLocation();
-			if (loc==null) {
-				if (sourceAnchor instanceof ChopboxAnchor) {
-					Point p = GraphicsUtil.createPoint(context.getTargetAnchor());
-					sourceAnchor = AnchorUtil.createAnchor(source, p);	
+			ILocation sourceLoc = context.getSourceLocation();
+			ILocation targetLoc = context.getTargetLocation();
+			Point p;
+			// need to create a source anchor?
+			if (sourceAnchor==null || sourceAnchor instanceof ChopboxAnchor) {
+				if (sourceLoc!=null) {
+					// use the source location if available
+					p = GraphicsUtil.createPoint(sourceLoc);
 				}
+				else if (targetLoc!=null) {
+					// or the target location
+					p = GraphicsUtil.createPoint(targetLoc);
+				}
+				else if (targetAnchor!=null) {
+					// the target anchor as a reference point
+					p = GraphicsUtil.createPoint(targetAnchor);
+				}
+				else {
+					// fallback is to use the center point of the
+					// target PE as the reference point
+					p = GraphicsUtil.getShapeCenter(target);
+				}
+				sourceAnchor = AnchorUtil.createAnchor(source, p);	
 			}
-			else if (sourceAnchor==null || sourceAnchor instanceof ChopboxAnchor)
-				sourceAnchor = AnchorUtil.createAnchor(source, loc.getX(), loc.getY());
 			
-			loc = context.getTargetLocation();
-			if (loc==null) {
-				if (targetAnchor instanceof ChopboxAnchor) {
-					Point p = GraphicsUtil.createPoint(context.getSourceAnchor());
-					targetAnchor = AnchorUtil.createAnchor(target, p);	
+			// same thing for target anchor
+			if (targetAnchor==null || targetAnchor instanceof ChopboxAnchor) {
+				if (targetLoc!=null) {
+					p = GraphicsUtil.createPoint(targetLoc);
 				}
+				else if (sourceLoc!=null) {
+					p = GraphicsUtil.createPoint(sourceLoc);
+				}
+				else if (sourceAnchor!=null) {
+					// the target anchor as a reference point
+					p = GraphicsUtil.createPoint(sourceAnchor);
+				}
+				else {
+					p = GraphicsUtil.getShapeCenter(source);
+				}
+				targetAnchor = AnchorUtil.createAnchor(target, p);	
 			}
-			else if (targetAnchor==null || targetAnchor instanceof ChopboxAnchor)
-				targetAnchor = AnchorUtil.createAnchor(target, loc.getX(), loc.getY());
-
+			
 			((CreateConnectionContext)context).setSourceAnchor(sourceAnchor);
 			((CreateConnectionContext)context).setTargetAnchor(targetAnchor);
 			AddConnectionContext addContext = createAddConnectionContext(context, businessObject);
