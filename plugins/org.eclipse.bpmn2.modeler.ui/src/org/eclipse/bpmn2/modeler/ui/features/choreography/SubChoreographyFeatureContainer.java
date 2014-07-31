@@ -66,15 +66,16 @@ public class SubChoreographyFeatureContainer extends AbstractChoreographyFeature
 
 	@Override
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
-		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
-		ICustomFeature[] thisFeatures = new ICustomFeature[4 + superFeatures.length];
-		thisFeatures[0] = new ExpandFlowNodeFeature(fp);
-		thisFeatures[1] = new CollapseFlowNodeFeature(fp);
-		thisFeatures[2] = new PushdownFeature(fp);
-		thisFeatures[3] = new PullupFeature(fp);
-		for (int i=0; i<superFeatures.length; ++i)
-			thisFeatures[4+i] = superFeatures[i];
-		return thisFeatures;
+		return super.getCustomFeatures(fp);
+	
+// FIXME: a SubChoreography should allow pushdown to a new Choreography top-level diagram
+//		ICustomFeature[] superFeatures = super.getCustomFeatures(fp);
+//		ICustomFeature[] thisFeatures = new ICustomFeature[2 + superFeatures.length];
+//		thisFeatures[0] = new PushdownFeature(fp);
+//		thisFeatures[1] = new PullupFeature(fp);
+//		for (int i=0; i<superFeatures.length; ++i)
+//			thisFeatures[2+i] = superFeatures[i];
+//		return thisFeatures;
 	}
 
 	public static class CreateSubChoreographyFeature extends AbstractCreateChoreographyActivityFeature<SubChoreography> {

@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
+import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
@@ -38,7 +39,12 @@ public abstract class AbstractCreateChoreographyActivityFeature<T extends Choreo
 	
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
+		if (context.getTargetContainer() instanceof Diagram) {
+			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(context.getTargetContainer(), BPMNDiagram.class);
+			if (bpmnDiagram.getPlane().getBpmnElement() instanceof Choreography)
+				return true;
+		}
+		return false;
 	}
 	
 	@Override
