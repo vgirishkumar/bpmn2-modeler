@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -393,14 +394,11 @@ public class DesignEditor extends BPMN2Editor {
 
 			@Override
 			protected boolean calculateEnabled() {
-				BPMNDiagram bpmnDiagram = getBpmnDiagram();
+				final BPMNDiagram bpmnDiagram = getBpmnDiagram();
 				BPMNPlane plane = bpmnDiagram.getPlane();
-				BaseElement process = plane.getBpmnElement();
-				List<Participant> participants = getModelHandler().getAll(Participant.class);
-				for (Participant p : participants) {
-					if (p.getProcessRef() == process)
-						return false;
-				}
+				BaseElement bpmnElement = plane.getBpmnElement();
+				if (bpmnElement instanceof SubProcess)
+					return false;
 				return true;
 			}
 
@@ -554,12 +552,14 @@ public class DesignEditor extends BPMN2Editor {
 						}
 						for (int i=0; i<multipageEditor.getPageCount(); ++i) {
 							BPMNDiagram bpmnDiagram = multipageEditor.getBpmnDiagram(i);
-							if (bpmnDiagram == notifier) {
-								CTabItem item = multipageEditor.getTabItem(i);
-								String text = n.getNewStringValue();
-								if (text==null || text.isEmpty())
-									text = "Unnamed"; //$NON-NLS-1$
-								item.setText(text);
+							if (bpmnDiagram!=null) {
+								if (bpmnDiagram==notifier || bpmnDiagram.getPlane().getBpmnElement() == notifier) {
+									CTabItem item = multipageEditor.getTabItem(i);
+									String text = n.getNewStringValue();
+									if (text==null || text.isEmpty())
+										text = "Unnamed"; //$NON-NLS-1$
+									item.setText(text);
+								}
 							}
 						}
 					}

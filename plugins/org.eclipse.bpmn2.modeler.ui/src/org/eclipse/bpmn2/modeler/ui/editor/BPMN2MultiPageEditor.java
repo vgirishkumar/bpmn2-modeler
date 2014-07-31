@@ -14,11 +14,12 @@
 package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -217,7 +218,11 @@ public class BPMN2MultiPageEditor extends MultiPageEditorPart implements IGotoMa
 					CTabItem oldItem = tabFolder.getItem(pageIndex-1);
 					CTabItem newItem = tabFolder.getItem(pageIndex);
 					newItem.setControl( oldItem.getControl() );
-					setPageText(pageIndex,ExtendedPropertiesProvider.getTextValue(bpmnDiagram));
+					BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+					String name = ModelUtil.getName(bpmnElement);
+					if (name==null)
+						name = ExtendedPropertiesProvider.getTextValue(bpmnDiagram);
+					setPageText(pageIndex,name);
 		
 					setActivePage(pageIndex);
 					updateTabs();

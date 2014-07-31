@@ -603,7 +603,7 @@ GraphicsUtil.debug = false;
 		}
 		
 		if (route.isValid()){
-			if (!calculateEnroute(route,p,end,Orientation.NONE))
+			if (!calculateEnroute(route,p,end,orientation))
 				return false;
 		}
 		
