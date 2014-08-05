@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.property.dialogs.ShowHideElementsDialog;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
@@ -50,6 +51,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -458,6 +460,33 @@ public class DesignEditor extends BPMN2Editor {
 					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
 				}
 				catch (Exception e) {}
+			}
+		};
+		registry.registerAction(action);
+		
+		action = new WorkbenchPartAction(multipageEditor.getDesignEditor()) {
+
+			@Override
+			protected void init() {
+				super.init();
+				setId("show.hide.elements"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getText() {
+				return "Show or Hide Elements...";
+			}
+
+			@Override
+			protected boolean calculateEnabled() {
+				return true;
+			}
+
+			public void run() {
+				ShowHideElementsDialog dialog = new ShowHideElementsDialog(getEditorSite().getShell());
+				if (dialog.open()==Window.OK) {
+					
+				}
 			}
 		};
 		registry.registerAction(action);

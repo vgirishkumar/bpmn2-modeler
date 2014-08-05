@@ -26,6 +26,14 @@ public class Messages extends NLS {
 	public static String SchemaSelectionDialog_Loaded;
 	public static String SchemaSelectionDialog_Structure;
 	public static String SchemaSelectionDialog_TItle;
+	public static String ShowHideElementsDialog_Event_Labels;
+	public static String ShowHideElementsDialog_Gateway_Labels;
+	public static String ShowHideElementsDialog_Message_Flows;
+	public static String ShowHideElementsDialog_Message_Icons;
+	public static String ShowHideElementsDialog_Message_Labels;
+	public static String ShowHideElementsDialog_SequenceFlow_Labels;
+	public static String ShowHideElementsDialog_Prompt;
+	public static String ShowHideElementsDialog_Title;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

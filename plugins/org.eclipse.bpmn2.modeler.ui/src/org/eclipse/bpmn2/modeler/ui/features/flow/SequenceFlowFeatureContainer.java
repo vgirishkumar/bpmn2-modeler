@@ -115,7 +115,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		return null;
 	}
 
-	public class AddSequenceFlowFeature extends AbstractAddFlowFeature<SequenceFlow> {
+	public static class AddSequenceFlowFeature extends AbstractAddFlowFeature<SequenceFlow> {
 		public AddSequenceFlowFeature(IFeatureProvider fp) {
 			super(fp);
 		}

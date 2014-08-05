@@ -184,6 +184,16 @@ public class AnchorUtil {
 		}
 		return result;
 	}
+	
+	public static int countAnchors(AnchorContainer ac, AnchorSite site) {
+		int count = 0;
+		for (Anchor anchor : ac.getAnchors()) {
+			if (peService.getPropertyValue(anchor, GraphitiConstants.ANCHOR_TYPE)!=null &&
+				AnchorSite.getSite((FixPointAnchor)anchor)==site)
+				++count;
+		}
+		return count;
+	}
 
 	public static void moveAnchor(FixPointAnchor anchor, int x, int y) {
 		moveAnchor(anchor, GraphicsUtil.createPoint(x,y));
