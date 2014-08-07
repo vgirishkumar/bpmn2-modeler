@@ -402,7 +402,8 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			// location for the BPMNLabel coordinates.
 			ILocation absloc = Graphiti.getPeService().getLocationRelativeToDiagram(labelShape);
 			DIUtils.updateDILabel(ownerPE, absloc.getX(), absloc.getY(), w, h);
-			labelShape.setVisible(!text.isEmpty());
+			if (!FeatureSupport.isHidden(labelShape))
+				labelShape.setVisible(!text.isEmpty());
 			Graphiti.getPeService().removeProperty(labelShape, GraphitiConstants.LABEL_CHANGED);
 		}
 	}

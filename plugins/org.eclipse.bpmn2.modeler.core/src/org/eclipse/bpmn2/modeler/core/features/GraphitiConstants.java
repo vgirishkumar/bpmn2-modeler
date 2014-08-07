@@ -55,6 +55,12 @@ public interface GraphitiConstants {
 	public static final String LABEL_CHANGED = "label.changed"; //$NON-NLS-1$
 	
 	/**
+	 * The {@link Shape} property key that indicates if a Label has been set
+	 * invisible by a user preference selection.
+	 **/
+	public static final String IS_HIDDEN = "hidden"; //$NON-NLS-1$
+	
+	/**
 	 * The {@link IContext} property key that holds a reference to a
 	 * {@link Point} object, which represents an offset (x,y) distance a Label
 	 * should be moved when its {@link Shape} is updated.

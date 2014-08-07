@@ -29,13 +29,11 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptTy
 import org.eclipse.bpmn2.modeler.ui.property.ExtensionValueListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityDetailComposite;
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
-import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.Section;
@@ -79,7 +77,6 @@ public class JbpmActivityDetailComposite extends ActivityDetailComposite {
 //		onEntryScriptTable = new ScriptTableComposite(this);
 //		onEntryScriptTable.bindList(be, DroolsPackage.eINSTANCE.getDocumentRoot_OnEntryScript());
 //		onEntryScriptTable.setTitle("On Entry Scripts");
-		boolean enable = isModelObjectEnabled(be.eClass().getName(), "onEntryScript"); //$NON-NLS-1$
 		onEntryScriptEditor = new JbpmScriptTaskDetailComposite(this, SWT.NONE);
 		OnEntryScriptType onEntryScript = getOrCreateEntryExitScript((Activity)be, OnEntryScriptType.class);
 		onEntryScriptEditor.setBusinessObject(onEntryScript);

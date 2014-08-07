@@ -1069,7 +1069,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			fig.setBorder(new MarginBorder(50));
 		}
 		
-		ConnectionLayerClippingStrategy.applyTo(getGraphicalViewer());
+		ConnectionLayerClippingStrategy.applyTo(viewer);
 		
 		getDiagramBehavior().refreshContent();
 		

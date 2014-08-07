@@ -376,7 +376,7 @@ public class ModelEnablements {
 					return true;
 				
 				HashSet<String> features = classes.get(className);
-				if (features.contains(featureName))
+				if (features.contains(featureName) || features.isEmpty())
 					return true;
 				
 				// check all supertypes of the requested EClass

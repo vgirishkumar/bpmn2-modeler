@@ -33,6 +33,8 @@ public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 	
 	public ModelDescriptor(IConfigurationElement e) {
 		super(e);
+		ModelDescriptor defaultModelDescriptor = TargetRuntime.getDefaultRuntime().getModelDescriptor();
+
 		// must have at least a namespace URI to associate with this Model Descriptor
 		uri = e.getAttribute("uri"); //$NON-NLS-1$
 		try {
@@ -44,15 +46,19 @@ public class ModelDescriptor extends BaseRuntimeExtensionDescriptor {
 				if (e.getAttribute("resourceFactory")!=null) { //$NON-NLS-1$
 					setResourceFactory((ResourceFactoryImpl) e.createExecutableExtension("resourceFactory")); //$NON-NLS-1$
 				}
+				else {
+					// this MUST be a Bpmn2ModelerResourceFactory.
+					setResourceFactory(defaultModelDescriptor.getResourceFactory());
+				}
 			}
 		}
 		catch (Exception e1) {
+			e1.printStackTrace();
 		}
 		
 		if (getEPackage()==null) {
 			// The plugin does not define its own EPackage, but we still need one
 			// to be able to create model objects.
-			ModelDescriptor defaultModelDescriptor = TargetRuntime.getDefaultRuntime().getModelDescriptor();
 			setEPackage(defaultModelDescriptor.getEPackage());
 			setEFactory(defaultModelDescriptor.getEFactory());
 			setResourceFactory(defaultModelDescriptor.getResourceFactory());

@@ -935,6 +935,28 @@ public class FeatureSupport {
 		return Graphiti.getPeService().getPropertyValue(shape, GraphitiConstants.LABEL_SHAPE) != null;
 	}
 
+	public static boolean isHidden(PictogramElement pe) {
+		if (Graphiti.getPeService().getPropertyValue(pe, GraphitiConstants.IS_HIDDEN)!=null)
+			return true;
+		return false;
+	}
+
+	public static boolean setHidden(PictogramElement pe, boolean hidden) {
+		if (hidden) {
+			pe.eSetDeliver(false);
+			Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.IS_HIDDEN, Boolean.TRUE.toString());
+			pe.setVisible(false);
+			pe.eSetDeliver(true);
+		}
+		else {
+			pe.eSetDeliver(false);
+			Graphiti.getPeService().removeProperty(pe, GraphitiConstants.IS_HIDDEN);
+			pe.setVisible(true);
+			pe.eSetDeliver(true);
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets the owner {@link PictogramElement} of a Label from a given IContext
 	 * object. Label shapes are added by Feature Containers using a

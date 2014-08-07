@@ -10,6 +10,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 
 public class ShowHideElementsDialog extends ListSelectionDialog {
+	
+	public final static int MESSAGE_LABELS = 0;
+	public final static int MESSAGE_ICONS = 1;
+	public final static int MESSAGE_FLOWS = 2;
+	public final static int GATEWAY_LABELS = 3;
+	public final static int EVENT_LABELS = 4;
+	public final static int SEQUENCEFLOW_LABELS = 5;
+	
 	static private List<String> elements = new ArrayList<String>();
 	static {
 		elements.add(Messages.ShowHideElementsDialog_Message_Labels);
@@ -23,15 +31,10 @@ public class ShowHideElementsDialog extends ListSelectionDialog {
 
 		@Override
 		public void dispose() {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
-		public void inputChanged(Viewer viewer, Object oldInput,
-				Object newInput) {
-			// TODO Auto-generated method stub
-			
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 
 		@Override
@@ -41,6 +44,20 @@ public class ShowHideElementsDialog extends ListSelectionDialog {
 		
 	};
 	static private LabelProvider labelProvider = new LabelProvider();
+
+	public List<Integer> getSelections() {
+		Object result[] = super.getResult();
+		List<Integer> indexes = new ArrayList<Integer>();
+		int index = 0;
+		for (String e : elements) {
+			for (Object r : result) {
+				if (e.equals(r))
+					indexes.add(new Integer(index));
+			}
+			++index;
+		}
+		return indexes;
+	}
 
 	public ShowHideElementsDialog(Shell shell) {
 		super(shell, elements, contentProvider, labelProvider,
