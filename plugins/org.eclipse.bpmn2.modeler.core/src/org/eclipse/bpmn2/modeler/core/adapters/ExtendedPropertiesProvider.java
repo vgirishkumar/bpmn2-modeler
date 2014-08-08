@@ -304,14 +304,15 @@ public class ExtendedPropertiesProvider {
 	 * See {@link ExtendedPropertiesAdapter.UI_CAN_SET_NULL}
 	 */
 	public static boolean canSetNull(EObject object, EStructuralFeature feature) {
-		if (feature != null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
-			if (adapter != null) {
-				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
-				if (result instanceof Boolean)
-					return ((Boolean) result);
-			}
-			return true;
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		Object result = null;
+		if (adapter != null) {
+			result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
+			if (result instanceof Boolean && ((Boolean)result)==true)
+				return true;
+		}
+		if (feature != null && feature.getEType() instanceof EClass && result instanceof Boolean) {
+			return (Boolean) result;
 		}
 		return false;
 	}

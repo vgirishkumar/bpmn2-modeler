@@ -402,6 +402,7 @@ public class ModelUtil {
 	public static String toCanonicalString(String anyName) {
 		// get rid of the "Impl" java suffix
 		anyName = anyName.replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		
 		String displayName = ""; //$NON-NLS-1$
 		boolean first = true;
 		char[] chars = anyName.toCharArray();
@@ -415,8 +416,10 @@ public class ModelUtil {
 				c = Character.toUpperCase(c);
 				first = false;
 			}
-			if (c=='_')
+			if (!Character.isLetterOrDigit(c))
 				c = ' ';
+			if (c==' ')
+				first = true;
 			displayName += c;
 		}
 		return displayName.trim();
