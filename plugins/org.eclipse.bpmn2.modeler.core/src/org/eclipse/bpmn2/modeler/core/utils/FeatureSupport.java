@@ -126,12 +126,14 @@ public class FeatureSupport {
 	}
 
 	public static boolean isChoreographyParticipantBand(PictogramElement element) {
-		EObject container = element.eContainer();
-		if (container instanceof PictogramElement) {
-			PictogramElement containerElem = (PictogramElement) container;
-			Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(containerElem);
-			if (bo instanceof ChoreographyActivity) {
-				return true;
+		if (element!=null) {
+			EObject container = element.eContainer();
+			if (container instanceof PictogramElement) {
+				PictogramElement containerElem = (PictogramElement) container;
+				Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(containerElem);
+				if (bo instanceof ChoreographyActivity) {
+					return true;
+				}
 			}
 		}
 		return false;

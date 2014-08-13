@@ -933,7 +933,6 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			list.put(eClass,features);
 		}
 		for (Property p : med.getProperties()) {
-			EStructuralFeature feature = med.createEFeature(eClass, p);
 			if (bpmn2type instanceof EClass) {
 				// ignore structural features that are already defined in
 				// the BPMN2 package. These <property> elements are used
@@ -942,6 +941,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 				if (((EClass) bpmn2type).getEStructuralFeature(p.name)!=null)
 					continue;
 			}
+			EStructuralFeature feature = med.createEFeature(eClass, p);
 			if (feature!=null && !features.contains(feature))
 				features.add(feature);
 			for (Object v : p.getValues()) {
