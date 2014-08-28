@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features.containers.participant;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
@@ -21,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
+import org.eclipse.dd.dc.Bounds;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -109,6 +111,36 @@ public class AddParticipantFeature extends AbstractBpmn2AddFeature<Participant> 
 		peCreateService.createChopboxAnchor(containerShape);
 
 		return containerShape;
+	}
+	
+	/**
+	 * Gets the height of the new Pool based on User Preferences for size orientation.
+	 *
+	 * @param context the AddContext for the new shape
+	 * @return the height
+	 */
+	protected int getHeight(IAddContext context) {
+		int h = super.getHeight(context);
+		int w = super.getWidth(context);
+		if (!isHorizontal(context)) {
+			return Math.max(w, h);
+		}
+		return Math.min(w, h);
+	}
+	
+	/**
+	 * Gets the width of the new Pool based on User Preferences for size orientation.
+	 *
+	 * @param context the AddContext for the new shape
+	 * @return the width
+	 */
+	protected int getWidth(IAddContext context) {
+		int h = super.getHeight(context);
+		int w = super.getWidth(context);
+		if (!isHorizontal(context)) {
+			return Math.min(w, h);
+		}
+		return Math.max(w, h);
 	}
 
 	/* (non-Javadoc)

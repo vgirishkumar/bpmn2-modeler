@@ -278,14 +278,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		}
 		if (context.getHeight() > 0)
 			return context.getHeight();
-		int h = getHeight();
-		int w = getWidth();
-		if (FeatureSupport.isTargetParticipant(context) || FeatureSupport.isTargetLane(context)) {
-			if (!isHorizontal(context)) {
-				return Math.max(w, h);
-			}
-		}
-		return Math.min(w, h);
+		return getHeight();
 	}
 	
 	/**
@@ -304,14 +297,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		}
 		if (context.getWidth() > 0)
 			return context.getWidth();
-		int h = getHeight();
-		int w = getWidth();
-		if (FeatureSupport.isTargetParticipant(context) || FeatureSupport.isTargetLane(context)) {
-			if (!isHorizontal(context)) {
-				return Math.min(w, h);
-			}
-		}
-		return Math.max(w, h);
+		return getWidth();
 	}
 	
 	/**
@@ -319,7 +305,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 *
 	 * @return the height
 	 */
-	private int getHeight() {
+	protected int getHeight() {
 		ShapeStyle ss = preferences.getShapeStyle(getBusinessObjectType());
 		return ss.getDefaultHeight();
 	}
@@ -329,7 +315,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 *
 	 * @return the width
 	 */
-	private int getWidth() {
+	protected int getWidth() {
 		ShapeStyle ss = preferences.getShapeStyle(getBusinessObjectType());
 		return ss.getDefaultWidth();
 	}
