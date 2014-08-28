@@ -403,7 +403,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		if (notification.getEventType() == -1 || (notification.getFeature()==feature) && itemsChanged()) {
+		if ((notification.getEventType() == -1 || notification.getFeature()==feature) && itemsChanged()) {
 			fillCombo();
 		}
 	}
