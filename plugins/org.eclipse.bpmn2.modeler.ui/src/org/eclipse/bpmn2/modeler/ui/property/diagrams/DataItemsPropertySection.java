@@ -12,7 +12,6 @@ package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -32,10 +31,9 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (
-				be instanceof Participant ||
-				be instanceof Process
-				) {
+		if (be instanceof Participant)
+			be = ((Participant)be).getProcessRef();
+		if (be instanceof Process) {
 			return ModelUtil.getDefinitions(be);
 		}
 		return null;

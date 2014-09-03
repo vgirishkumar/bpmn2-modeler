@@ -643,6 +643,30 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		return columnProvider.getColumns().size();
 	}
 
+	protected int getVisibleRowCount(Table table) {
+		int rowCount = table.getItemCount();
+		if (rowCount<2)
+			rowCount = 2;
+		if (rowCount>8)
+			rowCount = 8;
+		return rowCount;
+	}
+	
+	private Point calculateTableSize(Table table) {
+		Composite tableComposite = (Composite) table.getParent();
+		Rectangle area = tableComposite.getClientArea();
+		Rectangle trim = table.computeTrim(0,0,0,0);
+		int width = area.width - trim.width;
+		int actualRows = table.getItemCount();
+		int visibleRows = getVisibleRowCount(table);
+		if (actualRows > visibleRows) {
+			ScrollBar vBar = table.getVerticalBar();
+			width -= vBar.getSize().x;
+		}
+		int height = 2*table.getBorderWidth() + table.getHeaderHeight() + visibleRows * table.getItemHeight() - trim.height;
+		return new Point(width, height);
+	}
+	
 	private Section createListSection(Composite parent, String label) {
 		final Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE |
@@ -656,44 +680,38 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		
 		table = toolkit.createTable(tableComposite, SWT.FULL_SELECTION | SWT.V_SCROLL);
 		final GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, true, 1, 1);
-		gridData.heightHint = 100;
-		gridData.widthHint = 50;
 		table.setLayoutData(gridData);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
+		Point size = calculateTableSize(table);
+		gridData.heightHint = size.y;
+		gridData.widthHint = 50;
 
 		// make the table resizing behave a little better:
 		// adjust table columns so they are all equal width,
 		// grow and shrink table height based on number of rows
 		tableComposite.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
+				// When the tableComposite is laid out the table size
+				// will be changed anyway; this just keeps the table
+				// scrollbars from flickering on/off during the layout.
 				Rectangle area = tableComposite.getClientArea();
-				ScrollBar vBar = table.getVerticalBar();
-				int vBarSize = vBar.isVisible() ? vBar.getSize().x : 0;
-				ScrollBar hBar = table.getHorizontalBar();
-				int hBarSize = hBar.isVisible() ? hBar.getSize().y : 0;
-				Rectangle trim = table.computeTrim(0,0,0,0);
-				int width = area.width - trim.width - vBarSize;
-				int remainingWidth = width;
-				int columnCount = table.getColumnCount();
-				// adjust number of visible rows
-				int rowCount = table.getItemCount();
-				if (rowCount<2)
-					rowCount = 2;
-				if (rowCount>8)
-					rowCount = 8;
-				int height = trim.height + table.getHeaderHeight() + hBarSize + rowCount * table.getItemHeight();
-				gridData.heightHint = height;
-				gridData.widthHint = 50;
 				table.setSize(area.width, area.height);
+				// calculate new table size
+				Point size = calculateTableSize(table);
+				int remainingWidth = size.x;
+				int columnCount = table.getColumnCount();
 				for (int index=0; index<columnCount; ++index) {
 					org.eclipse.swt.widgets.TableColumn tc = table.getColumn(index);
 					if (index==columnCount-1)
 						tc.setWidth(remainingWidth + 7);
 					else
-						tc.setWidth(width/columnCount);
+						tc.setWidth(size.x/columnCount);
 					remainingWidth -= tc.getWidth();
 				}
+				
+				gridData.heightHint = size.y;
+				gridData.widthHint = 50;
 			}
 		});
 		

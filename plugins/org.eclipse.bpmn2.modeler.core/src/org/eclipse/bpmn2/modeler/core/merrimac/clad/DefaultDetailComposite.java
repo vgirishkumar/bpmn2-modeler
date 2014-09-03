@@ -109,6 +109,17 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 		String[] featureAndClassArray = prop0.split("#"); //$NON-NLS-1$
 		String featureName = featureAndClassArray[0];
 		EStructuralFeature feature = getFeature(be,featureName);
+		// FIXME: This is a quick hack to prevent extension elements from causing
+		// an IllegalArgumentException if not set. This only happens when opening
+		// the Property Dialog (not in Property View).
+		if (feature!=null) {
+			try {
+				be.eGet(feature);
+			}
+			catch (IllegalArgumentException e) {
+				feature = null;
+			}
+		}
 		EClass eclass = null;
 		if (featureAndClassArray.length>1) {
 			String className = featureAndClassArray[1];
