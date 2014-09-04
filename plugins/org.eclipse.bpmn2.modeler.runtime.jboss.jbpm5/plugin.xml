@@ -815,6 +815,7 @@
 			<enable object="Lane" feature="id"/>
 			<enable object="Lane" feature="name"/>
 			<enable object="LaneSet" feature="name"/>
+			<enable object="LinkEventDefinition"/>
 			<enable object="ManualTask" feature="dataInputAssociations"/>
 			<enable object="ManualTask" feature="dataOutputAssociations"/>
 			<enable object="ManualTask" feature="extensionValues"/>
@@ -1081,7 +1082,7 @@
 				<tool name="%tool.name.15" object="ExclusiveGateway"/>
 				<tool name="%tool.name.16" object="ParallelGateway"/>
 			</category>
-			<category id="org.jboss.runtime.jbpm5.toolpalette.full.CatchEvents" name="%category.name.4">
+			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.CatchEvents" name="%category.name.4">
 				<tool name="%tool.name.17" object="IntermediateCatchEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
 				<tool name="%tool.name.18" object="IntermediateCatchEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
 			</category>
@@ -1174,6 +1175,7 @@
 			</category>
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.CatchEvents" name="%category.name.16">
 				<tool name="%tool.name.65" object="IntermediateCatchEvent+ConditionalEventDefinition" icon="ConditionalCatchEvent.png"/>
+				<tool name="%tool.name.link" object="IntermediateCatchEvent+LinkEventDefinition" icon="LinkCatchEvent.png"/>
 				<tool name="%tool.name.66" object="IntermediateCatchEvent+MessageEventDefinition" icon="MessageCatchEvent.png"/>
 				<tool name="%tool.name.67" object="IntermediateCatchEvent+SignalEventDefinition" icon="SignalCatchEvent.png"/>
 				<tool name="%tool.name.68" object="IntermediateCatchEvent+TimerEventDefinition" icon="TimerCatchEvent.png"/>
@@ -1182,6 +1184,7 @@
 				<tool name="%tool.name.69" object="IntermediateThrowEvent+CompensateEventDefinition" icon="CompensationEndEvent.png"/>
 				<tool name="%tool.name.70" object="IntermediateThrowEvent+EscalationEventDefinition" icon="EscalationThrowEvent.png"/>
 				<tool name="%tool.name.71" object="IntermediateThrowEvent" icon="IntermediateEvent.png"/>
+				<tool name="%tool.name.link" object="IntermediateThrowEvent+LinkEventDefinition" icon="LinkThrowEvent.png"/>
 				<tool name="%tool.name.72" object="IntermediateThrowEvent+MessageEventDefinition" icon="MessageThrowEvent.png"/>
 				<tool name="%tool.name.73" object="IntermediateThrowEvent+SignalEventDefinition" icon="SignalThrowEvent.png"/>
 			</category>
