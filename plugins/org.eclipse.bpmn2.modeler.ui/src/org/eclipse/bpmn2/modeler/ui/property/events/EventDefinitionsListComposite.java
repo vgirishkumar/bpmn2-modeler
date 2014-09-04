@@ -31,6 +31,8 @@ import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LinkEventDefinition;
@@ -62,12 +64,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
@@ -279,7 +275,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						}
 						if (element instanceof TimerEventDefinition) {
 						}
-						return ""; //$NON-NLS-1$
+						return super.getText(element); //$NON-NLS-1$
 					}
 
 					@Override
@@ -306,8 +302,26 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				List<EClass> filteredItems = new ArrayList<EClass>();
 				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event, null);
 				for (EClass eclass : items) {
-					if (allowedItems.contains(eclass))
-						filteredItems.add(eclass);
+					if (allowedItems.contains(eclass)) {
+						boolean skip = false;
+						if (eclass.getInstanceClass() == LinkEventDefinition.class) {
+							// only allow one Link Event Definition
+							if (businessObject instanceof IntermediateCatchEvent) {
+								for (EventDefinition ed : ((IntermediateCatchEvent) businessObject).getEventDefinitions()) {
+									if (ed instanceof LinkEventDefinition)
+										skip = true;
+								}
+							}
+							else if (businessObject instanceof IntermediateThrowEvent) {
+								for (EventDefinition ed : ((IntermediateThrowEvent) businessObject).getEventDefinitions()) {
+									if (ed instanceof LinkEventDefinition)
+										skip = true;
+								}
+							}
+						}
+						if (!skip)
+							filteredItems.add(eclass);
+					}
 				}
 				items.clear();
 				items.addAll(filteredItems);

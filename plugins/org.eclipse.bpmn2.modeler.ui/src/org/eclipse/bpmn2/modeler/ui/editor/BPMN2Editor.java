@@ -14,10 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -245,77 +242,6 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	
 	static {
 		TargetRuntime.createTargetRuntimes();
-		PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class);
-		PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class);
-		PropertiesCompositeFactory.register(EObject.class, DefaultDialogComposite.class);
-		PropertiesCompositeFactory.register(Message.class, MessageDetailComposite.class);
-		PropertiesCompositeFactory.register(Message.class, MessageListComposite.class);
-		PropertiesCompositeFactory.register(MessageFlow.class, MessageFlowDetailComposite.class);
-		PropertiesCompositeFactory.register(Property.class, ItemAwareElementDetailComposite.class);
-		PropertiesCompositeFactory.register(CallActivity.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(GlobalTask.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(GlobalBusinessRuleTask.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(GlobalManualTask.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(GlobalScriptTask.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(GlobalUserTask.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(Import.class, ImportDetailComposite.class);
-		PropertiesCompositeFactory.register(Category.class, CategoryDetailComposite.class);
-		PropertiesCompositeFactory.register(TextAnnotation.class, TextAnnotationDetailComposite.class);
-		PropertiesCompositeFactory.register(SequenceFlow.class, SequenceFlowDetailComposite.class);
-		PropertiesCompositeFactory.register(DataObject.class, DataObjectDetailComposite.class);
-		PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectDetailComposite.class);
-		PropertiesCompositeFactory.register(Assignment.class, DataAssignmentDetailComposite.class);
-		PropertiesCompositeFactory.register(Expression.class, ExpressionDetailComposite.class);
-		PropertiesCompositeFactory.register(FormalExpression.class, ExpressionDetailComposite.class);
-		PropertiesCompositeFactory.register(ResourceAssignmentExpression.class, ResourceAssignmentExpressionDetailComposite.class);
-		PropertiesCompositeFactory.register(ResourceParameterBinding.class, ResourceParameterBindingDetailComposite.class);
-		PropertiesCompositeFactory.register(PotentialOwner.class, ResourceRoleDetailComposite.class);
-		PropertiesCompositeFactory.register(HumanPerformer.class, ResourceRoleDetailComposite.class);
-		PropertiesCompositeFactory.register(Performer.class, ResourceRoleDetailComposite.class);
-		PropertiesCompositeFactory.register(DataObjectReference.class, DataObjectReferenceDetailComposite.class);
-		PropertiesCompositeFactory.register(DataStore.class, DataStoreDetailComposite.class);
-		PropertiesCompositeFactory.register(DataStoreReference.class, DataStoreReferenceDetailComposite.class);
-		PropertiesCompositeFactory.register(Interface.class, InterfaceDetailComposite.class);
-		PropertiesCompositeFactory.register(Operation.class, OperationDetailComposite.class);
-		PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionDetailComposite.class);
-		PropertiesCompositeFactory.register(ItemDefinition.class, ItemDefinitionListComposite.class);
-		PropertiesCompositeFactory.register(CorrelationPropertyRetrievalExpression.class, CorrelationPropertyREListComposite.class);
-		PropertiesCompositeFactory.register(Property.class, PropertyListComposite.class);
-		PropertiesCompositeFactory.register(ResourceRole.class, ResourceRoleListComposite.class);
-		PropertiesCompositeFactory.register(Event.class, CommonEventDetailComposite.class);
-		PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class);
-		PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class);
-		PropertiesCompositeFactory.register(CatchEvent.class, CatchEventDetailComposite.class);
-		PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class);
-		PropertiesCompositeFactory.register(BoundaryEvent.class, BoundaryEventDetailComposite.class);
-		PropertiesCompositeFactory.register(TimerEventDefinition.class, TimerEventDefinitionDetailComposite.class);
-		PropertiesCompositeFactory.register(ConditionalEventDefinition.class, ConditionalEventDefinitionDetailComposite.class);
-		PropertiesCompositeFactory.register(CompensateEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(ConditionalEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(ErrorEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(EscalationEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(LinkEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(MessageEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(SignalEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(TimerEventDefinition.class, EventDefinitionDialogComposite.class);
-		PropertiesCompositeFactory.register(Process.class, ProcessDiagramDetailComposite.class);
-		PropertiesCompositeFactory.register(EndEvent.class, EndEventDetailComposite.class);
-		PropertiesCompositeFactory.register(StartEvent.class, StartEventDetailComposite.class);
-		PropertiesCompositeFactory.register(ThrowEvent.class, ThrowEventDetailComposite.class);
-		PropertiesCompositeFactory.register(StandardLoopCharacteristics.class, StandardLoopCharacteristicsDetailComposite.class);
-		PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, MultiInstanceLoopCharacteristicsDetailComposite.class);
-		PropertiesCompositeFactory.register(Gateway.class, GatewayDetailComposite.class);
-		PropertiesCompositeFactory.register(Activity.class, ActivityInputDetailComposite.class);
-		PropertiesCompositeFactory.register(InputOutputSpecification.class, ActivityInputDetailComposite.class);
-		PropertiesCompositeFactory.register(Activity.class, ActivityOutputDetailComposite.class);
-		PropertiesCompositeFactory.register(CallChoreography.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(InputOutputSpecification.class, IoParametersDetailComposite.class);
-		PropertiesCompositeFactory.register(DataInput.class, DataAssociationDetailComposite.class);
-		PropertiesCompositeFactory.register(DataOutput.class, DataAssociationDetailComposite.class);
-		PropertiesCompositeFactory.register(ManualTask.class, ManualTaskDetailComposite.class);
-		PropertiesCompositeFactory.register(ScriptTask.class, ScriptTaskDetailComposite.class);
-		PropertiesCompositeFactory.register(SubProcess.class, ActivityDetailComposite.class);
-		PropertiesCompositeFactory.register(Task.class, TaskDetailComposite.class);
 	}
 
 	public static final String EDITOR_ID = "org.eclipse.bpmn2.modeler.ui.bpmn2editor"; //$NON-NLS-1$

@@ -189,9 +189,12 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	 * @param editor - the DiagramEditor initializing us.
 	 */
 	public void notify(LifecycleEvent event) {
-		for (TargetRuntime rt : targetRuntimes) {
-			if (rt.getId().equals(this.id)) {
-				rt.getRuntimeExtension().notify(event);
+		TargetRuntime.getDefaultRuntime().getRuntimeExtension().notify(event);
+		if (this!=TargetRuntime.getDefaultRuntime()) {
+			for (TargetRuntime rt : targetRuntimes) {
+				if (rt.getId().equals(this.id)) {
+					rt.getRuntimeExtension().notify(event);
+				}
 			}
 		}
 	}

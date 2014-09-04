@@ -176,6 +176,7 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_16_INFO = "org.eclipse.bpmn2.modeler.icons." + "info" + dot16; //$NON-NLS-1$ //$NON-NLS-2$
 
 	public static final String IMG_16_MORPH = PREFIX + "morph" + dot16; //$NON-NLS-1$
+	public static final String IMG_16_FOLLOW_LINK = PREFIX + "link" + dot16; //$NON-NLS-1$
 
 	@Override
 	protected void addAvailableImages() {
@@ -260,6 +261,7 @@ public class ImageProvider extends AbstractImageProvider {
 		addImageFilePath(IMG_16_PULLUP, ICONS_16 + "pullup.png"); //$NON-NLS-1$
 
 		addImageFilePath(IMG_16_MORPH, ICONS_16 + "morph.png"); //$NON-NLS-1$
+		addImageFilePath(IMG_16_FOLLOW_LINK, ICONS_16 + "link.png"); //$NON-NLS-1$
 	}
 
 }

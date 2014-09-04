@@ -138,7 +138,8 @@ public class DesignEditor extends BPMN2Editor {
 					if (object instanceof BaseElement) {
 						// If the selection came from the ContentOutline then navigate to
 						// diagram page corresponds to this flowElementsContainer if one exists
-						if (part instanceof ContentOutline) {
+//						if (part instanceof ContentOutline)
+						{
 							newBpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)object, true);
 							Object o = DIUtils.findBPMNDiagram((BaseElement)object, false);
 							if (o==newBpmnDiagram)

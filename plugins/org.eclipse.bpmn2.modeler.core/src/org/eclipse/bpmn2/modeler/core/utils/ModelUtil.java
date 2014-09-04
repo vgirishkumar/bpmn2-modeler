@@ -398,7 +398,16 @@ public class ModelUtil {
 			feature = ModelDecorator.getAnyAttribute(obj,"name"); //$NON-NLS-1$
 		return feature!=null;
 	}
-
+	
+	public static String getCanonicalName(BaseElement element) {
+		if (element==null)
+			return "";
+		String name = getName(element);
+		if (name==null || name.isEmpty())
+			name = element.getId();
+		return name;
+	}
+	
 	public static String toCanonicalString(String anyName) {
 		// get rid of the "Impl" java suffix
 		anyName = anyName.replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$

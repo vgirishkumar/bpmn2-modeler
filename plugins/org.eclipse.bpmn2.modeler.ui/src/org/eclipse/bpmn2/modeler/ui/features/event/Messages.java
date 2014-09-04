@@ -14,6 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.features.event.messages"; //$NON-NLS-1$
+	public static String FollowLinkFeature_name;
 	public static String AppendEventFeature_Description;
 	public static String AppendEventFeature_Name;
 	public static String CreateBoundaryEventFeature_0;
