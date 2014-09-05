@@ -701,6 +701,9 @@ public class ModelUtil {
 			@Override
 			public boolean equals(Object that) {
 				String thisValue = this.toString();
+				if (that==null) {
+					return thisValue==null || thisValue.isEmpty();
+				}
 				String thatValue = that.toString();
 				if (thisValue==null) {
 					return thatValue==null;

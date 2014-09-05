@@ -46,6 +46,7 @@ import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
@@ -93,7 +94,13 @@ public abstract class AbstractCreateFlowFeature<
 		CONNECTION businessObject = createBusinessObject(context);
 		if (businessObject!=null) {
 			AnchorContainer source = (AnchorContainer) context.getSourcePictogramElement();
+			// If source shape is a Label, replace it with its owner.
+			if (FeatureSupport.isLabelShape(source))
+				source = (AnchorContainer) FeatureSupport.getLabelOwner(source);
 			AnchorContainer target = (AnchorContainer) context.getTargetPictogramElement();
+			// Same for target shape
+			if (FeatureSupport.isLabelShape(target))
+				target = (AnchorContainer) FeatureSupport.getLabelOwner(target);
 			Anchor sourceAnchor = context.getSourceAnchor();
 			Anchor targetAnchor = context.getTargetAnchor();
 			ILocation sourceLoc = context.getSourceLocation();

@@ -38,6 +38,11 @@ public class AddShapeLabelFeature extends AbstractAddLabelFeature {
 		if (labelOwner instanceof ContainerShape) {
 			labelShape = peService.createShape(targetContainer, true);
 			createText(labelOwner, labelShape, businessObject);
+			// The Label Shape needs an anchor so that it can be a
+			// valid source for creating connections.
+			// Graphiti will only allow connections to be started
+			// if the source shape has an anchor.
+			peService.createChopboxAnchor(labelShape);
 		}
 		
 		// force an update of the label
