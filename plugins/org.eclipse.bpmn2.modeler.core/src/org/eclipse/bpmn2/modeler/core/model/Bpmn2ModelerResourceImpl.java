@@ -833,7 +833,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 //		    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 //		    	rt.createModelExtensions(peekObject.eResource());
 //		    }
-            if (peekObject!=null && peekObject.eClass() == Bpmn2Package.eINSTANCE.getExpression()) {
+            if (peekObject!=null && peekObject.getClass()==Expression.class) {
             	// If the element is an Expression (not a FormalExpression) then use the CDATA
             	// as the body of a Formal Expression (because Expression does not have a body)
                 text = new StringBuffer();
@@ -843,7 +843,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 		@Override
         public void endElement(String uri, String localName, String name) {
             EObject peekObject = objects.peek();
-            if (peekObject instanceof Expression) {
+            if (peekObject!=null && peekObject.getClass()==Expression.class) {
             	// if the element is an Expression, replace it with a FormalExpression and set
             	// its body using the CDATA of the Expression element.
    				FormalExpression fe = Bpmn2Factory.eINSTANCE.createFormalExpression();

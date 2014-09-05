@@ -62,7 +62,13 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage implem
 
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor) {
-					doSelectionChanged(part, currentSelection);
+					try {
+						doSelectionChanged(part, currentSelection);
+					}
+					catch (Exception e) {
+						// this can happen if the editor is already
+						// closed by the time the UI thread runs - ignore
+					}
 					return Status.OK_STATUS;
 				}
 				
