@@ -407,6 +407,8 @@ public class GraphicsUtil {
 	public static Point createPoint(AnchorContainer ac) {
 		if (ac instanceof Shape)
 			return GraphicsUtil.createPoint(peService.getLocationRelativeToDiagram((Shape)ac));
+		if (ac instanceof Connection)
+			return createPoint(Graphiti.getPeService().getConnectionMidpoint((Connection)ac, 0.5));
 		return null;
 	}
 
