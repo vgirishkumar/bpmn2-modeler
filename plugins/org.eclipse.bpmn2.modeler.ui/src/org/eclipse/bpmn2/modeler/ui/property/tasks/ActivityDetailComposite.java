@@ -546,7 +546,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			}
 			if (operationChanged || messageChanged) {
 				ItemDefinition id = outMessage.getItemRef();
-				if (id!=null && id!=input.getItemSubjectRef()) {
+				if (id!=null && id!=output.getItemSubjectRef()) {
 					output.setItemSubjectRef(id);
 					output.setIsCollection(id.isIsCollection());
 				}
