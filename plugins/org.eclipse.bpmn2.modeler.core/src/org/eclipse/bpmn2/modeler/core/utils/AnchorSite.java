@@ -17,7 +17,10 @@ import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -55,7 +58,7 @@ public enum AnchorSite {
 	}
 	
 	/**
-	 * Return the AnchorSide value of the shape's edge that is nearest
+	 * Return the AnchorSite value of the shape's edge that is nearest
 	 * to the given point.
 	 * 
 	 * @param shape
@@ -84,16 +87,83 @@ public enum AnchorSite {
 	}
 	
 	/**
-	 * Return the AnchorSide value of the shape's edge that is nearest
-	 * to the given point.
+	 * Return the AnchorSite value of the shape's edge that is nearest
+	 * to the given points.
 	 * 
 	 * @param shape
-	 * @param p
+	 * @param p1
+	 * @param p2
 	 * @return
 	 */
 	public static AnchorSite getNearestEdge(Shape shape, Point p1, Point p2) {
-		LineSegment edge = GraphicsUtil.findNearestEdge(shape, p1, p2);
 		ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+		if (shape instanceof ConnectionDecorator) {
+			Point pm = GraphicsUtil.getMidpoint(p1, p2);
+			Connection c = ((ConnectionDecorator)shape).getConnection();
+			LineSegment lineSegment = null;
+			Point start = GraphicsUtil.createPoint(c.getStart());
+			Point end = GraphicsUtil.createPoint(c.getEnd());
+			if (c instanceof FreeFormConnection) {
+				double minDistance = Double.MAX_VALUE;
+				double d;
+				LineSegment ls;
+				FreeFormConnection ffc = (FreeFormConnection) c;
+				Point p0 = start;
+				for (Point p : ffc.getBendpoints()) {
+					ls = new LineSegment(p0,p);
+					d = ls.getDistance(pm);
+					if (d<minDistance) {
+						minDistance = d;
+						lineSegment = ls;
+					}
+					p0 = p;
+				}
+				ls = new LineSegment(p0,end);
+				d = ls.getDistance(pm);
+				if (d<minDistance) {
+					minDistance = d;
+					lineSegment = ls;
+				}
+			}
+			if (lineSegment==null) {
+				lineSegment = new LineSegment(start,end);
+			}
+			if (lineSegment.isVertical()) {
+				if (pm.getX() > lineSegment.getMiddle().getX()) {
+					return RIGHT;
+				}
+				else {
+					return LEFT;
+				}
+			}
+			else if (lineSegment.isHorizontal()) {
+				if (pm.getY() > lineSegment.getMiddle().getY()) {
+					return BOTTOM;
+				}
+				else {
+					return TOP;
+				}
+			}
+			int dx =  Math.abs(pm.getX() - lineSegment.getMiddle().getX());
+			int dy =  Math.abs(pm.getY() - lineSegment.getMiddle().getY());
+			if (dx<dy) {
+				if (pm.getY() > lineSegment.getMiddle().getY()) {
+					return BOTTOM;
+				}
+				else {
+					return TOP;
+				}
+			}
+			else {
+				if (pm.getX() > lineSegment.getMiddle().getX()) {
+					return RIGHT;
+				}
+				else {
+					return LEFT;
+				}
+			}
+		}
+		LineSegment edge = GraphicsUtil.findNearestEdge(shape, p1, p2);
 		AnchorSite site;
 		if (edge.isHorizontal()) {
 			int y = edge.getStart().getY();

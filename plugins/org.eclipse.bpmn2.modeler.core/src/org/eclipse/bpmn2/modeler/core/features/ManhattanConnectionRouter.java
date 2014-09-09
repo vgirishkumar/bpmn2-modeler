@@ -402,7 +402,7 @@ GraphicsUtil.debug = false;
 		
 		Point p = GraphicsUtil.createPoint(end);
 		Point m = start;
-		
+
 		switch (targetSite) {
 		case TOP:
 		case BOTTOM:
@@ -648,7 +648,7 @@ GraphicsUtil.debug = false;
 				if (GraphicsUtil.isVertical(p0, p1) && p0.getX()==x)
 					route.setRank(3);
 			}
-			else {
+			else if (sourceSite==AnchorSite.TOP || sourceSite==AnchorSite.BOTTOM) {
 				int y = sourceEdges[sourceSite.ordinal()].getStart().getY();
 				if (GraphicsUtil.isHorizontal(p0, p1) && p0.getY()==y)
 					route.setRank(3);
@@ -661,7 +661,7 @@ GraphicsUtil.debug = false;
 						if (GraphicsUtil.isVertical(p0, p1))
 							route.setRank(3);
 					}
-					else {
+					else if (sourceSite==AnchorSite.TOP || sourceSite==AnchorSite.BOTTOM) {
 						if (GraphicsUtil.isHorizontal(p0, p1))
 							route.setRank(3);
 					}
@@ -676,7 +676,7 @@ GraphicsUtil.debug = false;
 					if (GraphicsUtil.isVertical(p0, p1) && p0.getX()==x)
 						route.setRank(3);
 				}
-				else {
+				else if (targetSite==AnchorSite.TOP || targetSite==AnchorSite.BOTTOM) {
 					int y = targetEdges[targetSite.ordinal()].getStart().getY();
 					if (GraphicsUtil.isHorizontal(p0, p1) && p0.getY()==y)
 						route.setRank(3);
@@ -688,7 +688,7 @@ GraphicsUtil.debug = false;
 						if (GraphicsUtil.isVertical(p0, p1))
 							route.setRank(3);
 					}
-					else {
+					else if (targetSite==AnchorSite.TOP || targetSite==AnchorSite.BOTTOM) {
 						if (GraphicsUtil.isHorizontal(p0, p1))
 							route.setRank(3);
 					}
