@@ -622,10 +622,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				Notification n = new ENotificationImpl(null, -1, -1, 0, 0);
 				getAllChildWidgets(parent, kids);
 				for (Control c : kids) {
-					INotifyChangedListener listener = (INotifyChangedListener)c.getData(
-							IConstants.NOTIFY_CHANGE_LISTENER_KEY);
-					if (listener!=null) {
-						listener.notifyChanged(n);
+					if (!c.isDisposed()) {
+						INotifyChangedListener listener = (INotifyChangedListener)c.getData(
+								IConstants.NOTIFY_CHANGE_LISTENER_KEY);
+						if (listener!=null) {
+							listener.notifyChanged(n);
+						}
 					}
 				}
 			}
