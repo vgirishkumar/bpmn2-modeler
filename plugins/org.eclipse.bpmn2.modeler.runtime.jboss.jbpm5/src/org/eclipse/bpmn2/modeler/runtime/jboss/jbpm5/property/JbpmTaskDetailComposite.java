@@ -30,7 +30,9 @@ import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeContentProvider;
@@ -275,6 +277,27 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				};
 			}
 			return contentProvider;
+		}
+
+		public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+			AbstractDetailComposite composite = new DefaultDetailComposite(parent, style) {
+				@Override
+				protected Composite bindFeature(EObject be, EStructuralFeature feature, EClass eItemClass) {
+					Composite composite = null;
+					if (feature!=null && "body".equals(feature.getName())) {
+						super.bindFeature(be, feature, eItemClass);
+					}
+					return composite;
+				}
+				
+				@Override
+				protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
+					TextObjectEditor editor = new TextObjectEditor(this,object,attribute);
+					editor.setMultiLine(false);
+					editor.createControl(parent,Messages.JbpmTaskDetailComposite_Actors_Name_Column);
+				}
+			};
+			return composite;
 		}
 
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
