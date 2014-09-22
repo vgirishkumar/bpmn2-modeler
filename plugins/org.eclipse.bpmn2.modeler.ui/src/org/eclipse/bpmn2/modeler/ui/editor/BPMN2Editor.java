@@ -794,13 +794,14 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				Display.getCurrent().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						propertySheetPage.getControl().addDisposeListener(new DisposeListener() {
-							@Override
-							public void widgetDisposed(DisposeEvent e) {
-								propertySheetPage = null;
-							}
-						});
-						
+						if (!propertySheetPage.getControl().isDisposed()) {
+							propertySheetPage.getControl().addDisposeListener(new DisposeListener() {
+								@Override
+								public void widgetDisposed(DisposeEvent e) {
+									propertySheetPage = null;
+								}
+							});
+						}						
 					}
 				});
 			}
