@@ -301,6 +301,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		else if ("messageRef".equals(reference.getName())) { //$NON-NLS-1$
 			return; // already done
 		}
+		else if ("completionCondition".equals(reference.getName())) { //$NON-NLS-1$
+			super.bindReference(parent, object, reference);
+		}
 		else
 			super.bindReference(parent, object, reference);
 		
