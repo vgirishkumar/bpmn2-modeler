@@ -24,6 +24,7 @@ import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
@@ -187,7 +188,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			if (source==target)
 				return true;
 			
-			if (target instanceof CatchEvent)
+			if (target instanceof StartEvent)
 				return false;
 			
 			EObject sourceContainer = source.eContainer();
@@ -288,7 +289,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			SequenceFlow defaultFlow = getDefaultFlow(flow.getSourceRef());
 			boolean isDefault = defaultFlow == null ? false : defaultFlow.equals(flow);
 			boolean changed = isDefault != new Boolean(property);
-			return changed ? Reason.createTrueReason() : Reason.createFalseReason();
+			return changed ? Reason.createTrueReason("Default Flow") : Reason.createFalseReason();
 		}
 
 		@Override
@@ -351,7 +352,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 					return Reason.createFalseReason();
 				}
 				boolean changed = flow.getConditionExpression() != null != new Boolean(property);
-				return changed ? Reason.createTrueReason() : Reason.createFalseReason();
+				return changed ? Reason.createTrueReason("Conditional Flow") : Reason.createFalseReason();
 			}
 			return Reason.createFalseReason();
 		}
