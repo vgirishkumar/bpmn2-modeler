@@ -31,6 +31,8 @@ import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.IntermediateCatchEvent;
+import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LinkEventDefinition;
@@ -46,6 +48,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ModelSubclassSelectionDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
@@ -65,6 +68,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 public class EventDefinitionsListComposite extends DefaultListComposite {
 	
@@ -83,7 +87,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 	
 	@Override
-	protected EObject addListItem(EObject object, EStructuralFeature feature) {
+	protected EObject addListItem(final EObject object, EStructuralFeature feature) {
 		EObject newItem = super.addListItem(object, feature);
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=417207
 		// the Cancel Activity checkbox should always be TRUE
@@ -106,11 +110,29 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 			param.getFirst().setId(null);
 			ModelUtil.setID(param.getFirst(), object.eResource());
 		}
+		
+//		Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+//		IFeatureProvider fp = getDiagramEditor().getDiagramTypeProvider().getFeatureProvider();
+//		PictogramElement pe = Graphiti.getLinkService().getPictogramElements(diagram, object).get(0);
+//		AddContext context = new AddContext();
+//		context.setTargetContainer((ContainerShape) pe);
+//		context.setNewObject(newItem);
+//		fp.addIfPossible(context);
+
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (getPropertySection()!=null)
+					getPropertySection().getSectionRoot().setBusinessObject(object);
+			}
+			
+		});
 		return newItem;
 	}
 
 	@Override
-	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
+	protected Object removeListItem(final EObject object, EStructuralFeature feature, int index) {
 		Object oldItem = getListItem(object,feature,index);
 		if (hasItemDefinition((EventDefinition)oldItem)) {
 			// remove this DataInput or DataOutput
@@ -130,6 +152,15 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				((AbstractDetailComposite)getParent()).refresh();
 			}
 		}
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (getPropertySection()!=null)
+					getPropertySection().getSectionRoot().setBusinessObject(object);
+			}
+			
+		});
 		return newItem;
 	}
 
@@ -243,7 +274,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						}
 						if (element instanceof TimerEventDefinition) {
 						}
-						return ""; //$NON-NLS-1$
+						return super.getText(element); //$NON-NLS-1$
 					}
 
 					@Override
@@ -270,8 +301,26 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				List<EClass> filteredItems = new ArrayList<EClass>();
 				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event);
 				for (EClass eclass : items) {
-					if (allowedItems.contains(eclass))
+					if (allowedItems.contains(eclass)) {
+						boolean skip = false;
+						if (eclass.getInstanceClass() == LinkEventDefinition.class) {
+							// only allow one Link Event Definition
+							if (businessObject instanceof IntermediateCatchEvent) {
+								for (EventDefinition ed : ((IntermediateCatchEvent) businessObject).getEventDefinitions()) {
+									if (ed instanceof LinkEventDefinition)
+										skip = true;
+								}
+							}
+							else if (businessObject instanceof IntermediateThrowEvent) {
+								for (EventDefinition ed : ((IntermediateThrowEvent) businessObject).getEventDefinitions()) {
+									if (ed instanceof LinkEventDefinition)
+										skip = true;
+								}
+							}
+						}
+						if (!skip)
 						filteredItems.add(eclass);
+					}
 				}
 				items.clear();
 				items.addAll(filteredItems);
@@ -431,6 +480,16 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 	}
 
 	public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
+		AbstractDetailComposite detailComposite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(eClass, parent, style);
+		if (detailComposite!=null)
+			return detailComposite;
+		
+		if (eClass==TimerEventDefinition.class) {
+			return new TimerEventDefinitionDetailComposite(parent, style);
+		}
+		if (eClass==ConditionalEventDefinition.class){
+			return new ConditionalEventDefinitionDetailComposite(parent, style);
+		}
 		return new EventDefinitionsDetailComposite(parent, (Event)getBusinessObject());
 	}
 	
