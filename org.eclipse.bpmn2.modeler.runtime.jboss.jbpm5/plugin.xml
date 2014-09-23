@@ -612,7 +612,7 @@
 					</property>
 					<property name="dataInputs">
 						<value>
-							<property name="name" value="GroupId" type="ID"/>
+							<property name="name" value="GroupId" type="EString"/>
 						</value>
 					</property>
 					<property name="dataInputs">
