@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -142,6 +143,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_PROPAGATE_GROUP_CATEGORIES_LABEL = Messages.Bpmn2Preferences_Propagate_Group_Categories;
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS = "allow.multiple.connections"; //$NON-NLS-1$
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL = Messages.Bpmn2Preferences_Allow_Mutliple_Connections;
+	public final static String PREF_SERVICE_IMPLEMENTATIONS = "service.implementations"; //$NON-NLS-1$
 
 	private static Hashtable<IProject,Bpmn2Preferences> projectInstances = null;
 	private static Bpmn2Preferences globalInstance = null;
@@ -1549,6 +1551,46 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	}
 
+	public List<String> getServiceImplementations() {
+		String value = get(PREF_SERVICE_IMPLEMENTATIONS, "");
+		List<String> impls = new ArrayList<String>();
+		for (String s : value.split("\t")) {
+			if (!s.isEmpty())
+				impls.add(s);
+		}
+		return impls;
+	}
+	
+	private void putServiceImplementations(List<String> impls) {
+		String value = "";
+		Iterator<String> iter = impls.iterator();
+		while (iter.hasNext()) {
+			String s = iter.next();
+			if (!s.isEmpty()) {
+				value += s;
+				if (iter.hasNext())
+					value += "\t";
+			}
+		}
+		put(PREF_SERVICE_IMPLEMENTATIONS, value);
+	}
+	
+	public void addServiceImplementation(String impl) {
+		List<String> impls = getServiceImplementations();
+		if (!impls.contains(impl)) {
+			impls.add(impl);
+			putServiceImplementations(impls);
+		}
+	}
+	
+	public void removeServiceImplementation(String impl) {
+		List<String> impls = getServiceImplementations();
+		if (impls.contains(impl)) {
+			impls.remove(impl);
+			putServiceImplementations(impls);
+		}
+	}
+	
 	public BPMNDIAttributeDefault getBPMNDIAttributeDefault(String key, BPMNDIAttributeDefault defaultValue) {
 		PreferencesHelper helper = new PreferencesHelper(key, false);
 		String str = helper.getString(defaultValue.name());

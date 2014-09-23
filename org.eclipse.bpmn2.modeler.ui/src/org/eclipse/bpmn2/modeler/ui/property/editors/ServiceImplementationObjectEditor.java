@@ -11,12 +11,14 @@
 package org.eclipse.bpmn2.modeler.ui.property.editors;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -87,8 +89,12 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 				getDiagramEditor().getEditorSite().getShell(), 
 				Messages.ServiceImplementationObjectEditor_Create_New_Title, 
 				choices, null);
-		if ( dialog.open() == Window.OK)
-			return ModelUtil.createStringWrapper( dialog.getValue() );
+		if ( dialog.open() == Window.OK) {
+			Bpmn2Preferences prefs = (Bpmn2Preferences) getDiagramEditor().getAdapter(Bpmn2Preferences.class);
+			String value = dialog.getValue();
+			prefs.addServiceImplementation(value);
+			return ModelUtil.createStringWrapper( value );
+		}
 		throw new OperationCanceledException(Messages.ServiceImplementationObjectEditor_Dialog_Cancelled);
 	}
 	
@@ -123,7 +129,10 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 					});
 				}
 	
-				return ModelUtil.createStringWrapper( dialog.getValue() );
+				Bpmn2Preferences prefs = (Bpmn2Preferences) getDiagramEditor().getAdapter(Bpmn2Preferences.class);
+				prefs.removeServiceImplementation(oldValue);
+				prefs.addServiceImplementation(newValue);
+				return ModelUtil.createStringWrapper(newValue);
 			}
 		}
 		throw new OperationCanceledException(Messages.ServiceImplementationObjectEditor_Dialog_Cancelled);
@@ -133,9 +142,6 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 		Hashtable<String, Object> choices = new Hashtable<String, Object>();
 		choices.put(UNSPECIFIED_LABEL, ModelUtil.createStringWrapper(UNSPECIFIED_VALUE));
 		choices.put(WEBSERVICE_LABEL, ModelUtil.createStringWrapper(WEBSERVICE_VALUE));
-		Hashtable<String, Object> otherChoices = ModelUtil.getChoiceOfValues(object, feature);
-		if (otherChoices!=null)
-			choices.putAll(otherChoices);
 
 		Definitions definitions = ModelUtil.getDefinitions(object);
 		if (definitions!=null) {
@@ -152,6 +158,13 @@ public class ServiceImplementationObjectEditor extends ComboObjectEditor {
 						}
 					}
 				}
+			}
+		}
+		Bpmn2Preferences prefs = (Bpmn2Preferences) getDiagramEditor().getAdapter(Bpmn2Preferences.class);
+		List<String> impls = prefs.getServiceImplementations();
+		for (String implementation : impls) {
+			if (!choices.containsKey(implementation)) {
+				choices.put(implementation, ModelUtil.createStringWrapper(implementation));
 			}
 		}
 		return choices;
