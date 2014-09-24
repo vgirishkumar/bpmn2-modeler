@@ -14,6 +14,8 @@
 package org.eclipse.bpmn2.modeler.core.features;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Collaboration;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
@@ -70,6 +72,26 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	public boolean isAvailable(IContext context) {
 		return isModelObjectEnabled();
 	}
+	
+	@Override
+	public boolean canCreate(ICreateContext context) {
+		if (context.getTargetContainer().equals(getDiagram())) {
+			// Only Participants are allowed in a Conversation
+			BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(getDiagram(), BPMNDiagram.class);
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			if (bpmnElement instanceof Collaboration) {
+				// If this is a Collaboration and it already contains ConversationNodes
+				// then this is a Conversation Diagram - it can't contain any FlowNodes,
+				// Data items, or Lanes.
+				Collaboration collaboration = (Collaboration) bpmnElement;
+				if (!collaboration.getConversations().isEmpty()) {
+					return false;
+				}
+			}
+		}
+		// otherwise, we can create a Default Process
+		return true;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateDescription()
@@ -77,7 +99,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	@Override
 	public String getCreateDescription() {
-		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toDisplayName(getBusinessObjectClass().getName()));
+		return NLS.bind(Messages.AbstractBpmn2CreateFeature_Create, ModelUtil.toCanonicalString(getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)
@@ -148,8 +170,8 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 		// copy properties into the new context
 		Object value = context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
 		newContext.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
-		value = context.getProperty(DIImport.IMPORT_PROPERTY);
-		newContext.putProperty(DIImport.IMPORT_PROPERTY, value);
+		value = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
+		newContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, value);
 		value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
 		newContext.putProperty(ContextConstants.BUSINESS_OBJECT, value);
 		return newContext;

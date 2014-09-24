@@ -12,15 +12,13 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import static org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyProperties.TEXT_H;
-
 import java.util.List;
 
 import org.eclipse.bpmn2.SubChoreography;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.AbstractText;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 
 public class AddSubChoreographyFeature extends AddChoreographyActivityFeature<SubChoreography> {

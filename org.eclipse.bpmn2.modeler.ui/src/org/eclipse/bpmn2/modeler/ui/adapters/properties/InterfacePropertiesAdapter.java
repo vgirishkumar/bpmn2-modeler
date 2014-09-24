@@ -56,7 +56,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 				Interface intf = adopt(context);
 				Operation operation = Bpmn2ModelerFactory.create(Operation.class);
 				ModelUtil.setID(operation, resource);
-				operation.setName( ModelUtil.toDisplayName(operation.getId()) );
+				operation.setName( ModelUtil.toCanonicalString(operation.getId()) );
 //				InsertionAdapter.add(intf, Bpmn2Package.eINSTANCE.getInterface_Operations(), operation);
 				intf.getOperations().add(operation);
 				return operation;

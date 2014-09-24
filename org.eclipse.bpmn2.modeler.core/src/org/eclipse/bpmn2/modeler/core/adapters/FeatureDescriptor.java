@@ -66,7 +66,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				if (feature instanceof EReference && (feature.getEType().getInstanceClass()!=EObject.class))
 					label = ModelUtil.getLabel(feature.getEType());
 				else
-					label = ModelUtil.toDisplayName(feature.getName());
+					label = ModelUtil.toCanonicalString(feature.getName());
 			}
 		}
 		return label;
@@ -200,7 +200,7 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eObject);
 			if (adapter!=null)
 				return adapter.getObjectDescriptor().getDisplayName(eObject);
-			return ModelUtil.toDisplayName( eObject.eClass().getName() );
+			return ModelUtil.toCanonicalString( eObject.eClass().getName() );
 		}
 		return value.toString();
 	}

@@ -844,7 +844,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private void loadCategory(CategoryDescriptor cd, Class c) {
-		ToolDescriptor td = new ToolDescriptor(cd, null, ModelUtil.toDisplayName(c.getSimpleName()),null,null);
+		ToolDescriptor td = new ToolDescriptor(cd, null, ModelUtil.toCanonicalString(c.getSimpleName()),null,null);
 		cd.getTools().add(td);
 		ToolPart tp = new ToolPart(td,c.getSimpleName());
 		td.getToolParts().add(tp);

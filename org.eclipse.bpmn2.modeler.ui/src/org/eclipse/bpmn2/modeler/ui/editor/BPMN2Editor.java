@@ -921,6 +921,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
 		getPreferences().removePreferenceChangeListener(this);
 		
+		// cancel the Property Sheet Page job
+		if (propertySheetPage!=null)
+			propertySheetPage.selectionChanged(this, null);
+
 		// get rid of cached Property Tab Descriptors
 		if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)
 			((PropertyTabDescriptorProvider)tabDescriptorProvider).disposeTabDescriptors(bpmnResource);

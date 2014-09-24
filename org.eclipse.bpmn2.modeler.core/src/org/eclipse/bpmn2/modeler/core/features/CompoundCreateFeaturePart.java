@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Factory;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.ToolPaletteDescriptor;
@@ -37,28 +39,90 @@ import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.PictogramLink;
+import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
+/**
+ * This is a Graphiti CreateFeature child component of {@link CompoundCreateFeature}.
+ *
+ * @param <CONTEXT> a subclass of a Graphiti {@link IContext}.
+ */
 public class CompoundCreateFeaturePart<CONTEXT> {
 	
+	/** The Graphiti CreateFeature. */
 	IFeature feature;
+	
+	/** The CreateFeature children. */
 	List<CompoundCreateFeaturePart<CONTEXT>> children = new ArrayList<CompoundCreateFeaturePart<CONTEXT>>();
+	
+	/** The list of properties parsed from the Tool Palette tool definition. */
 	Hashtable<String, String> properties = null;
 	
+	/**
+	 * Instantiates a new compound create feature part.
+	 *
+	 * @param feature the feature
+	 */
 	public CompoundCreateFeaturePart(IFeature feature) {
 		this.feature = feature;
 	}
 	
+	/**
+	 * Check if all children can be executed.
+	 *
+	 * @param context the Graphiti Context
+	 * @return true, if all children can create their component parts
+	 */
 	public boolean canCreate(IContext context) {
 		if (feature instanceof ICreateFeature && context instanceof ICreateContext) {
 			if (!((ICreateFeature)feature).canCreate((ICreateContext)context))
 				return false;
+			if (children.size()>0) {
+				/*
+				 * Some types of objects have constraints on the target
+				 * container e.g. a StartEvent with a CompensateEventDefinition
+				 * MAY NOT be created within a Process, but MAY be created in a
+				 * SubProcess. The restriction here is not imposed by the
+				 * StartEvent, but by the CompensateEventDefinition which is a
+				 * child of the StartEvent CompoundCreateFeaturePart. This bit
+				 * of code ensures that this constraint is checked correctly.
+				 */
+				
+				PictogramElement parentContainer = ((ICreateContext)context).getTargetContainer();
+				// create a throw-away CreateContext for this child feature part
+				CreateContext childContext = new CreateContext();
+				// make the target container this feature part (e.g. the StartEvent)
+				ContainerShape targetContainer = PictogramsFactory.eINSTANCE.createContainerShape();
+				childContext.setTargetContainer(targetContainer);
+				// create a throw-away BPMN2 object so we can link it to the container shape
+				EClass eClass = ((AbstractBpmn2CreateFeature)feature).getBusinessObjectClass();
+				EObject businessObject = Bpmn2Factory.eINSTANCE.create(eClass);
+				// do the linking
+				PictogramLink link = PictogramsFactory.eINSTANCE.createPictogramLink();
+				link.setPictogramElement(targetContainer);
+				link.getBusinessObjects().add(businessObject);
+				targetContainer.setLink(link);
+				
+				// Set the parent business object. This is required by {@link
+				// org.eclipse.bpmn2.modeler.core.utils.FeatureSupport#getAllowedEventDefinitions()}
+				// when doing validation for target Events & Event Definitions.
+				childContext.putProperty(GraphitiConstants.PARENT_CONTAINER,
+						BusinessObjectUtil.getBusinessObjectForPictogramElement(parentContainer));
+				
+				// test the children feature parts
+				for (CompoundCreateFeaturePart<CONTEXT> child : children) {
+					if (!child.canCreate(childContext))
+						return false;
+				}
+			}
 		}
 		else if (feature instanceof ICreateConnectionFeature && context instanceof ICreateConnectionContext) {
 			if (!((ICreateConnectionFeature)feature).canCreate((ICreateConnectionContext)context))
@@ -67,6 +131,12 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return true;
 	}
 
+	/**
+	 * Creates the parent object.
+	 *
+	 * @param context the context
+	 * @return the list
+	 */
 	public List<Object> create(IContext context) {
 		// Create the parent element.
 		// For ICreateContext this will result in a BaseElement and a ContainerShape;
@@ -115,6 +185,14 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return businessObjects;
 	}
 
+	/**
+	 * Creates the.
+	 *
+	 * @param context the context
+	 * @param targetContainer the target container
+	 * @param pictogramElements the pictogram elements
+	 * @param businessObjects the business objects
+	 */
 	public void create(IContext context, ContainerShape targetContainer, List<PictogramElement> pictogramElements, List<Object> businessObjects) {
 		IContext childContext = null;
 		String value;
@@ -261,6 +339,7 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		// "Undo" can be used to delete all pictogram elements without having
 		// to cycle through each transaction created by an Update.
 		if (updatePE!=null) {
+			addPictogramElementToContext(context, updatePE);
 			UpdateContext updateContext = new UpdateContext(updatePE);
 			IUpdateFeature updateFeature = feature.getFeatureProvider().getUpdateFeature(updateContext);
 			if ( updateFeature.updateNeeded(updateContext).toBoolean() )
@@ -270,6 +349,13 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		businessObjects.add(result);
 	}
 	
+	private void addPictogramElementToContext(IContext context, PictogramElement pe) {
+		List<PictogramElement> pes = (List<PictogramElement>) context.getProperty(GraphitiConstants.PICTOGRAM_ELEMENTS);
+		if (pes!=null) {
+			pes.add(pe);
+		}
+	}
+	
 	private void applyBusinessObjectProperties(BaseElement be) {
 		if (be!=null && properties!=null) {
 			ModelDescriptor md = TargetRuntime.getCurrentRuntime().getModelDescriptor();
@@ -277,16 +363,17 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 				if (entry.getKey().startsWith("$")) { //$NON-NLS-1$
 					String featureName = entry.getKey().substring(1);
 					EStructuralFeature feature = md.getFeature(be.eClass().getName(), featureName);
+					ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(be);
 					String value = entry.getValue();
 					if (value.startsWith("$")) { //$NON-NLS-1$
 						String name = value.substring(1);
 						EClassifier eClass = md.getClassifier(name);
 						EFactory factory = eClass.getEPackage().getEFactoryInstance();
 						EObject object = factory.create((EClass)eClass);
-						be.eSet(feature, object);
+						adapter.getFeatureDescriptor(feature).setValue(object);
 					}
 					else {
-						md.setValueFromString(be, feature, value, true);
+						adapter.getFeatureDescriptor(feature).setValue(value);
 					}
 				}
 			}
@@ -294,6 +381,12 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 
 	}
 	
+	/**
+	 * Checks if this CreateFeature is available.
+	 *
+	 * @param context the context
+	 * @return true, if is available
+	 */
 	public boolean isAvailable(IContext context) {
 		if (feature!=null && !feature.isAvailable(context))
 			return false;
@@ -304,12 +397,23 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return true;
 	}
 	
+	/**
+	 * Adds the child.
+	 *
+	 * @param feature the feature
+	 * @return the compound create feature part
+	 */
 	public CompoundCreateFeaturePart<CONTEXT> addChild(IFeature feature) {
 		CompoundCreateFeaturePart<CONTEXT> node = new CompoundCreateFeaturePart<CONTEXT>(feature);
 		children.add(node);
 		return node;
 	}
 
+	/**
+	 * Gets the business object class.
+	 *
+	 * @return the business object class
+	 */
 	public EClass getBusinessObjectClass() {
 		EClass eClass = null;
 		if (feature instanceof AbstractBpmn2CreateFeature) {
@@ -330,6 +434,11 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		return eClass;
 	}
 
+	/**
+	 * Gets the creates the name.
+	 *
+	 * @return the creates the name
+	 */
 	public String getCreateName() {
 		String createName = null;
 		if (feature!=null)
@@ -341,28 +450,60 @@ public class CompoundCreateFeaturePart<CONTEXT> {
 		}
 		return createName;
 	}
+	
+	/**
+	 * Gets the feature.
+	 *
+	 * @return the feature
+	 */
 	public IFeature getFeature() {
 		return feature;
 	}
 
+	/**
+	 * Sets the feature.
+	 *
+	 * @param feature the new feature
+	 */
 	public void setFeature(IFeature feature) {
 		this.feature = feature;
 	}
 
+	/**
+	 * Gets the children.
+	 *
+	 * @return the children
+	 */
 	public List<CompoundCreateFeaturePart<CONTEXT>> getChildren() {
 		return children;
 	}
 
+	/**
+	 * Sets the properties.
+	 *
+	 * @param properties the properties
+	 */
 	public void setProperties(Hashtable<String, String> properties) {
 		getProperties().putAll(properties);
 	}
 	
+	/**
+	 * Gets the properties.
+	 *
+	 * @return the properties
+	 */
 	public Hashtable<String, String> getProperties() {
 		if (properties==null)
 			properties = new Hashtable<String, String>();
 		return properties;
 	}
 	
+	/**
+	 * Gets the property.
+	 *
+	 * @param name the name
+	 * @return the property
+	 */
 	public String getProperty(String name) {
 		if (properties==null)
 			return null;

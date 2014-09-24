@@ -18,8 +18,8 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.label.UpdateLabelFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -112,7 +112,7 @@ public abstract class AbstractAddFlowFeature<T extends BaseElement>
 		
 		Anchor sourceAnchor = addContext.getSourceAnchor();
 		Anchor targetAnchor = addContext.getTargetAnchor();
-		Object importProp = context.getProperty(DIImport.IMPORT_PROPERTY);
+		Object importProp = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
 		if (importProp != null && (Boolean) importProp) {
 			connection.setStart(sourceAnchor);
 			connection.setEnd(targetAnchor);

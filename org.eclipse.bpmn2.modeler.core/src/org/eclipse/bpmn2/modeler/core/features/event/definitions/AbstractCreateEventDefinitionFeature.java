@@ -17,23 +17,34 @@ import java.util.List;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefinition> extends AbstractBpmn2CreateFeature<T> {
 
 	public AbstractCreateEventDefinitionFeature(IFeatureProvider fp, String name, String description) {
-		super(fp, name, description);
+		super(fp,name,description);
+	}
+
+	public AbstractCreateEventDefinitionFeature(IFeatureProvider fp) {
+		super(fp,"","");
 	}
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
+		if (!super.canCreate(context))
+			return false;
+
 		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
 		if (bo instanceof Event) {
-			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions((Event) bo);
+			List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(
+					(Event) bo,
+					context.getProperty(GraphitiConstants.PARENT_CONTAINER));
 			if (allowedItems.contains(getBusinessObjectClass()))
 				return true;
 		}
@@ -46,9 +57,9 @@ public abstract class AbstractCreateEventDefinitionFeature<T extends EventDefini
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(e);
 		EventDefinition definition = createBusinessObject(context);
 		eventDefinitions.add(definition);
-		addGraphicalRepresentation(context, definition);
+		PictogramElement pe = addGraphicalRepresentation(context, definition);
 		ModelUtil.setID(definition);
-		return new Object[] { definition };
+		return new Object[] { definition, pe };
 	}
 
 	protected abstract String getStencilImageId();

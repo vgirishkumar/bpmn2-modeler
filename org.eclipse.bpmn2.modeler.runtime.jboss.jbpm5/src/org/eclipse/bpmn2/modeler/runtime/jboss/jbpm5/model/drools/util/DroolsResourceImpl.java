@@ -12,19 +12,17 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
@@ -47,9 +45,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProces
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
-import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -428,7 +424,8 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 					// since these are (theoretically) supposed to be unique; but it is what it is...
 					if (childObject instanceof Property ||
 							childObject instanceof DataObject ||
-							childObject instanceof Message) {
+							childObject instanceof Message ||
+							(childObject instanceof DataInput && childObject.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
 						if (nameFeature!=null) {
 							Object value = childObject.eGet(nameFeature);

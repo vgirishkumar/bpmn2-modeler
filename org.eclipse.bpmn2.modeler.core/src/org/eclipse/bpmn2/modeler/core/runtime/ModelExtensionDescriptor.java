@@ -238,10 +238,10 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 		EStructuralFeature feature = eObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null) {
 			if (id!=null)
-				eObject.eSet(feature, ModelUtil.toDisplayName(id));
+				eObject.eSet(feature, ModelUtil.toCanonicalString(id));
 			else
 				eObject.eSet(feature, NLS.bind(Messages.ModelExtensionDescriptor_Create,
-					ModelUtil.toDisplayName(eObject.eClass().getName())));
+					ModelUtil.toCanonicalString(eObject.eClass().getName())));
 		}
 
 		return eObject;

@@ -299,7 +299,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 			@Override
 			protected void filterList(List<EClass> items) {
 				List<EClass> filteredItems = new ArrayList<EClass>();
-				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event);
+				List<EClass> allowedItems = FeatureSupport.getAllowedEventDefinitions(event, null);
 				for (EClass eclass : items) {
 					if (allowedItems.contains(eclass)) {
 						boolean skip = false;

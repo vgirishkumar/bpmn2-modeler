@@ -148,7 +148,7 @@ public class AddChoreographyParticipantFeature extends AbstractCustomFeature {
 				}
 				if (changesDone) {
 					if (result==participant) { // the new one
-						participant.setName( ModelUtil.toDisplayName(participant.getId()) );
+						participant.setName( ModelUtil.toCanonicalString(participant.getId()) );
 						Choreography choreography = (Choreography)task.eContainer();
 						choreography.getParticipants().add(result);
 						/*

@@ -192,7 +192,7 @@ public class AddChoreographyMessageFeature extends AbstractCustomFeature {
 							
 							if (parts.size() == 1) {
 								MessageFlow mf=mh.createMessageFlow(participant, parts.get(0));
-								mf.setName(ModelUtil.toDisplayName(mf.getId()));
+								mf.setName(ModelUtil.toCanonicalString(mf.getId()));
 								
 								Choreography choreography = (Choreography)ct.eContainer();
 								choreography.getMessageFlows().add(mf);

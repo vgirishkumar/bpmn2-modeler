@@ -13,8 +13,8 @@
 package org.eclipse.bpmn2.modeler.core.features.data;
 
 import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -87,7 +87,7 @@ public abstract class AddDataFeature<T extends ItemAwareElement> extends Abstrac
 
 			Graphiti.getPeService().setPropertyValue(containerShape, Properties.COLLECTION_PROPERTY, value);
 		}
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 
 		// hook for subclasses to inject extra code

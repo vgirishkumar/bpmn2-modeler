@@ -12,8 +12,8 @@ package org.eclipse.bpmn2.modeler.core.features.label;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -94,7 +94,7 @@ public class AddLabelFeature extends AbstractAddShapeFeature {
 	}
 	
 	private boolean isImport(IAddContext context) {
-		return context.getProperty(DIImport.IMPORT_PROPERTY) == null ? false : (Boolean) context.getProperty(DIImport.IMPORT_PROPERTY);
+		return context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null ? false : (Boolean) context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
 	}
 	
 	/**

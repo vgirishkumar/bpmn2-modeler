@@ -19,11 +19,11 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageFlow;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.DefaultMoveBPMNShapeFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.data.AbstractCreateRootElementFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
@@ -46,7 +46,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -203,7 +202,7 @@ public class MessageFeatureContainer extends BaseElementFeatureContainer {
 			envelope.line.setForeground(manageColor(StyleUtil.CLASS_FOREGROUND));
 
 			if (context.getProperty(IS_REFERENCE)==null) {
-				boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+				boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 				createDIShape(containerShape, businessObject, !isImport);
 			}
 			else {

@@ -377,9 +377,10 @@ public class ModelUtil {
 		return toDisplayName(object.eClass().getName());
 	}
 */	
-	public static String toDisplayName(String anyName) {
+	public static String toCanonicalString(String anyName) {
 		// get rid of the "Impl" java suffix
 		anyName = anyName.replaceAll("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		
 		String displayName = ""; //$NON-NLS-1$
 		boolean first = true;
 		char[] chars = anyName.toCharArray();
@@ -393,11 +394,64 @@ public class ModelUtil {
 				c = Character.toUpperCase(c);
 				first = false;
 			}
-			if (c=='_')
+			if (!Character.isLetterOrDigit(c))
 				c = ' ';
+			if (c==' ')
+				first = true;
 			displayName += c;
 		}
 		return displayName.trim();
+	}
+	
+	/*
+	 * Fallbacks in case a property provider does not exist
+	 */
+	public static String toCanonicalString(EObject object) {
+		if (object==null)
+			return ""; //$NON-NLS-1$
+		
+		String objName = null;
+		if (object instanceof BPMNDiagram) {
+			Bpmn2DiagramType type = getDiagramType((BPMNDiagram)object); 
+			if (type == Bpmn2DiagramType.CHOREOGRAPHY) {
+				objName = Messages.ModelUtil_Choreography_Diagram;
+			}
+			else if (type == Bpmn2DiagramType.COLLABORATION) {
+				objName = Messages.ModelUtil_Collaboration_Diagram;
+			}
+			else if (type == Bpmn2DiagramType.PROCESS) {
+				objName = Messages.ModelUtil_Process_Diagram;
+			}
+		}
+		if (objName==null){
+			objName = toCanonicalString( object.eClass().getName() );
+		}
+		EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+		if (feature!=null) {
+			String name = (String)object.eGet(feature);
+			if (name==null || name.isEmpty())
+				name = NLS.bind(Messages.ModelUtil_Unnamed_Object, objName);
+			else
+				name = objName + " \"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+			return name;
+		}
+		feature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+		if (feature!=null) {
+			String id = (String)object.eGet(feature);
+			if (id==null || id.isEmpty())
+				id = Messages.ModelUtil_Unknown_Object + objName;
+			else
+				id = objName + " \"" + id + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+			return id;
+		}
+		feature = object.eClass().getEStructuralFeature("qName"); //$NON-NLS-1$
+		if (feature!=null) {
+			Object qName = object.eGet(feature);
+			if (qName!=null) {
+				return qName.toString();
+			}
+		}
+		return objName;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1331,7 +1385,7 @@ public class ModelUtil {
 			if (adapter!=null)
 				label = adapter.getObjectDescriptor().getLabel(eObject);
 			else
-				label = toDisplayName( eObject.eClass().getName() );
+				label = toCanonicalString( eObject.eClass().getName() );
 		}
 		else
 			label = object.toString();
@@ -1353,7 +1407,7 @@ public class ModelUtil {
 		if (adapter!=null)
 			label = adapter.getFeatureDescriptor(feature).getLabel(object);
 		else
-			label = toDisplayName( feature.getName() );
+			label = toCanonicalString( feature.getName() );
 		label = label.replaceAll(" Ref$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		return label;
 	}
@@ -1369,7 +1423,7 @@ public class ModelUtil {
 					return text;
 				}
 			}
-			return getLongDisplayName(eObject);
+			return toCanonicalString(eObject);
 		}
 		return object==null ? null : object.toString();
 	}
@@ -1577,54 +1631,6 @@ public class ModelUtil {
 		}
 
 		return getChoiceOfValues(object,feature) != null;
-	}
-
-	/*
-	 * Fallbacks in case a property provider does not exist
-	 */
-	public static String getLongDisplayName(EObject object) {
-		String objName = null;
-		if (object instanceof BPMNDiagram) {
-			Bpmn2DiagramType type = getDiagramType((BPMNDiagram)object); 
-			if (type == Bpmn2DiagramType.CHOREOGRAPHY) {
-				objName = Messages.ModelUtil_Choreography_Diagram;
-			}
-			else if (type == Bpmn2DiagramType.COLLABORATION) {
-				objName = Messages.ModelUtil_Collaboration_Diagram;
-			}
-			else if (type == Bpmn2DiagramType.PROCESS) {
-				objName = Messages.ModelUtil_Process_Diagram;
-			}
-		}
-		if (objName==null){
-			objName = toDisplayName( object.eClass().getName() );
-		}
-		EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
-		if (feature!=null) {
-			String name = (String)object.eGet(feature);
-			if (name==null || name.isEmpty())
-				name = NLS.bind(Messages.ModelUtil_Unnamed_Object, objName);
-			else
-				name = objName + " \"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
-			return name;
-		}
-		feature = object.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
-		if (feature!=null) {
-			String id = (String)object.eGet(feature);
-			if (id==null || id.isEmpty())
-				id = Messages.ModelUtil_Unknown_Object + objName;
-			else
-				id = objName + " \"" + id + "\""; //$NON-NLS-1$ //$NON-NLS-2$
-			return id;
-		}
-		feature = object.eClass().getEStructuralFeature("qName"); //$NON-NLS-1$
-		if (feature!=null) {
-			Object qName = object.eGet(feature);
-			if (qName!=null) {
-				return qName.toString();
-			}
-		}
-		return objName;
 	}
 
 	public static String getLongDisplayName(EObject object, EStructuralFeature feature) {

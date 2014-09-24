@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.modeler.core.features.choreography.LayoutChoreographyFe
 import org.eclipse.bpmn2.modeler.core.features.choreography.UpdateChoreographyNameFeature;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractDefaultDeleteFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;

@@ -156,7 +156,7 @@ public class DefaultDetailComposite extends AbstractDetailComposite {
 									NLS.bind(
 										Messages.DefaultDetailComposite_List_Title,
 										getPropertiesProvider().getLabel((EObject)o,feature),
-										ModelUtil.getLongDisplayName((EObject)o)
+										ModelUtil.toCanonicalString((EObject)o)
 									)
 								);
 							}

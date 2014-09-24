@@ -74,7 +74,7 @@ public class FlowElementPropertiesAdapter<T extends FlowElement> extends Extende
 							String className = flowElement.eClass().getName();
 							String idString = id.toString();
 							if (!idString.contains(className)) {
-								text = ModelUtil.toDisplayName(className) + " '" + id + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+								text = ModelUtil.toCanonicalString(className) + " '" + id + "'"; //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							else
 								text = idString;

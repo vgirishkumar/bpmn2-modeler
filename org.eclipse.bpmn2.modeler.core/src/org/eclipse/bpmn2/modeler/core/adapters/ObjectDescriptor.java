@@ -62,7 +62,7 @@ public class ObjectDescriptor<T extends EObject> {
 				(EClass)object :
 				object.eClass();
 		if (label==null) {
-			label = ModelUtil.toDisplayName(eclass.getName());
+			label = ModelUtil.toCanonicalString(eclass.getName());
 		}
 		return label;
 	}
@@ -79,7 +79,7 @@ public class ObjectDescriptor<T extends EObject> {
 			// to use the "name" attribute if there is one;
 			// if not, use the "id" attribute;
 			// fallback is to use the feature's toString()
-			String text = ModelUtil.toDisplayName(object.eClass().getName());
+			String text = ModelUtil.toCanonicalString(object.eClass().getName());
 			Object value = null;
 			EStructuralFeature f = null;
 			f = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
@@ -262,9 +262,9 @@ public class ObjectDescriptor<T extends EObject> {
 		EStructuralFeature feature = newObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null && !newObject.eIsSet(feature)) {
 			if (id!=null)
-				newObject.eSet(feature, ModelUtil.toDisplayName(id));
+				newObject.eSet(feature, ModelUtil.toCanonicalString(id));
 			else {
-				String name = ModelUtil.toDisplayName(newObject.eClass().getName());
+				String name = ModelUtil.toCanonicalString(newObject.eClass().getName());
 				newObject.eSet(feature, NLS.bind(Messages.ObjectDescriptor_New, name));
 			}
 		}

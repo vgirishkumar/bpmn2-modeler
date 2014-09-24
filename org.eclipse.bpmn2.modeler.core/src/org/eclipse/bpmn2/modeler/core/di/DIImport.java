@@ -52,6 +52,7 @@ import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.ModelHandler;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -76,6 +77,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
@@ -94,12 +96,9 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.swt.widgets.Display;
 
 @SuppressWarnings("restriction")
 public class DIImport {
-
-	public static final String IMPORT_PROPERTY = DIImport.class.getSimpleName().concat(".import"); //$NON-NLS-1$
 
 	private DiagramEditor editor;
 //	private Diagram diagram;
@@ -426,7 +425,7 @@ public class DIImport {
 				context.setY(yMin-10);
 				context.setWidth(width+20);
 				context.setHeight(height+20);
-				context.putProperty(IMPORT_PROPERTY, true);
+				context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 				// determine the container into which to place the new Lane
 				handleLane(lane, context, null);
 				IAddFeature addFeature = featureProvider.getAddFeature(context);
@@ -450,6 +449,17 @@ public class DIImport {
 	private void importConnections(List<DiagramElement> ownedElement) {
 		for (DiagramElement diagramElement : ownedElement) {
 			if (diagramElement instanceof BPMNEdge) {
+				// Since Associations can have other connections as sources/targets
+				// handle these last.
+				if (((BPMNEdge) diagramElement).getBpmnElement() instanceof Association)
+					continue;
+				createEdge((BPMNEdge) diagramElement);
+			}
+		}
+		for (DiagramElement diagramElement : ownedElement) {
+			if (diagramElement instanceof BPMNEdge) {
+				if (!(((BPMNEdge) diagramElement).getBpmnElement() instanceof Association))
+					continue;
 				createEdge((BPMNEdge) diagramElement);
 			}
 		}
@@ -501,7 +511,7 @@ public class DIImport {
 		}
 
 		Diagram diagram = getDiagram(shape);
-		context.putProperty(IMPORT_PROPERTY, true);
+		context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 		context.setNewObject(bpmnElement);
 		boolean defaultSize = false;
 		ShapeStyle ss = preferences.getShapeStyle(bpmnElement);
@@ -869,7 +879,7 @@ public class DIImport {
 
 		IAddFeature addFeature = featureProvider.getAddFeature(context);
 		if (canAdd(addFeature,context)) {
-			context.putProperty(IMPORT_PROPERTY, true);
+			context.putProperty(GraphitiConstants.IMPORT_PROPERTY, true);
 			Connection connection = (Connection) addFeature.add(context);
 			if (AnchorUtil.useAdHocAnchors(sourcePE, connection)) {
 				peService.setPropertyValue(connection, AnchorUtil.CONNECTION_SOURCE_LOCATION,
@@ -991,5 +1001,12 @@ public class DIImport {
 				featureProvider.getDiagramTypeProvider().init(diagram, editor);
 		}
 		return addFeature.canAdd(context);
+	}
+	
+	public static boolean isImporting(IContext context) {
+		Object o = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
+		if (o instanceof Boolean)
+			return (Boolean)o;
+		return false;
 	}
 }

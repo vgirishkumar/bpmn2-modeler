@@ -19,20 +19,21 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil.FillStyle;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
-public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdateFeature {
+public abstract class AbstractUpdateEventDefinitionFeature extends AbstractBpmn2UpdateFeature {
 
 	public AbstractUpdateEventDefinitionFeature(IFeatureProvider fp) {
 		super(fp);
@@ -47,16 +48,22 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 		List<EventDefinition> eventDefinitions = ModelUtil.getEventDefinitions(event);
 		int size = eventDefinitions.size();
 
-		GraphicsUtil.deleteEventShape(container);
+		ShapeDecoratorUtil.deleteEventShape(container);
 		
 		if (size==1) {
 			Shape addedShape = getDecorationAlgorithm(event).draw(container);
 			link(addedShape, eventDefinitions.get(0));
+			Graphiti.getPeService().setPropertyValue(addedShape,
+					GraphitiConstants.EVENT_DEFINITION_SHAPE,
+					Boolean.toString(true));
 		}
 		else if (size > 1) {
 			Shape multipleShape = Graphiti.getPeService().createShape(container, false);
 			drawForEvent(event, multipleShape);
 			link(multipleShape, eventDefinitions.toArray(new EventDefinition[size]));
+			Graphiti.getPeService().setPropertyValue(multipleShape,
+					GraphitiConstants.EVENT_DEFINITION_SHAPE,
+					Boolean.toString(true));
 		}
 	}
 
@@ -70,9 +77,9 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 		}
 	}
 	
-	private void drawMultiple(Event event, Shape shape) {
+	public static void drawMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
-		Polygon pentagon = GraphicsUtil.createEventPentagon(shape);
+		Polygon pentagon = ShapeDecoratorUtil.createEventPentagon(shape);
 		if (event instanceof ThrowEvent) {
 			StyleUtil.setFillStyle(pentagon, FillStyle.FILL_STYLE_FOREGROUND);
 		} else {
@@ -81,9 +88,9 @@ public abstract class AbstractUpdateEventDefinitionFeature extends AbstractUpdat
 		StyleUtil.applyStyle(pentagon, be);
 	}
 	
-	private void drawParallelMultiple(Event event, Shape shape) {
+	public static void drawParallelMultiple(Event event, Shape shape) {
 		BaseElement be = BusinessObjectUtil.getFirstElementOfType(shape, BaseElement.class, true);
-		Polygon cross = GraphicsUtil.createEventParallelMultiple(shape);
+		Polygon cross = ShapeDecoratorUtil.createEventParallelMultiple(shape);
 		StyleUtil.setFillStyle(cross, FillStyle.FILL_STYLE_BACKGROUND);
 		StyleUtil.applyStyle(cross, be);
 	}

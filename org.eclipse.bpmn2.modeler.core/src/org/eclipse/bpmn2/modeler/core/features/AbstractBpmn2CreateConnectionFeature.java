@@ -195,7 +195,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	@Override
 	public String getCreateDescription() {
 		return NLS.bind(Messages.AbstractBpmn2CreateConnectionFeature_Create,
-				ModelUtil.toDisplayName( getBusinessObjectClass().getName()));
+				ModelUtil.toCanonicalString( getBusinessObjectClass().getName()));
 	}
 	
 	/* (non-Javadoc)
@@ -279,8 +279,8 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		// copy properties into the new context
 		Object value = context.getProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID);
 		newContext.putProperty(ICustomElementFeatureContainer.CUSTOM_ELEMENT_ID, value);
-		value = context.getProperty(DIImport.IMPORT_PROPERTY);
-		newContext.putProperty(DIImport.IMPORT_PROPERTY, value);
+		value = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
+		newContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, value);
 		value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
 		newContext.putProperty(ContextConstants.BUSINESS_OBJECT, value);
 		return newContext;

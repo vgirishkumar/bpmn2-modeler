@@ -159,7 +159,8 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			isSequentialEditor = new BooleanObjectEditor(this, getBO(), PACKAGE.getMultiInstanceLoopCharacteristics_IsSequential()) {
 				
 				protected boolean setValue(final Object result) {
-					if (!object.eGet(feature).equals(result)) {
+					Object oldValue = object.eGet(feature);
+					if (oldValue!=result && oldValue!=null && !oldValue.equals(result)) {
 						TransactionalEditingDomain editingDomain = getDiagramEditor().getEditingDomain();
 						editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 							@Override

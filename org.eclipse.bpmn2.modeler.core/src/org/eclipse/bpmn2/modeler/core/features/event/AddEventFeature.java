@@ -15,8 +15,8 @@ package org.eclipse.bpmn2.modeler.core.features.event;
 import static org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.createEventShape;
 
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
@@ -78,7 +78,7 @@ public class AddEventFeature<T extends Event>
 		peService.setPropertyValue(containerShape, GraphicsUtil.EVENT_MARKER_CONTAINER, Boolean.toString(true));
 		Ellipse ellipse = createEventShape(ellipseShape, width, height);
 		StyleUtil.applyStyle(ellipse, businessObject);
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		createDIShape(containerShape, businessObject, !isImport);
 		
 		decorateShape(context, containerShape, businessObject);

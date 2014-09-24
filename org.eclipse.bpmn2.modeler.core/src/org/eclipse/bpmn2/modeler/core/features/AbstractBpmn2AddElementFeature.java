@@ -172,7 +172,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	}
 	
 	protected void adjustLocation(IAddContext context, int width, int height) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) != null) {
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null) {
 			return;
 		}
 		
@@ -188,7 +188,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	}
 
 	protected void splitConnection(IAddContext context, ContainerShape containerShape) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) != null) {
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null) {
 			return;
 		}
 		
@@ -294,7 +294,7 @@ public abstract class AbstractBpmn2AddElementFeature<T extends BaseElement>
 	}
 
 	protected boolean isHorizontal(ITargetContext context) {
-		if (context.getProperty(DIImport.IMPORT_PROPERTY) == null) {
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
 			// not importing - set isHorizontal to be the same as copied element or parent
 			Object copiedBpmnShape = context.getProperty(DefaultPasteBPMNElementFeature.COPIED_BPMN_SHAPE);
 			if (copiedBpmnShape instanceof BPMNShape) {

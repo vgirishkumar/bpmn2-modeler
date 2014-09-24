@@ -90,7 +90,7 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 				text = ModelUtil.getLabel(eclass, feature);
 			}
 			else
-				text = ModelUtil.toDisplayName(feature.getName());
+				text = ModelUtil.toCanonicalString(feature.getName());
 		}
 		return text;
 	}

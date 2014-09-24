@@ -16,18 +16,15 @@ import static org.eclipse.bpmn2.modeler.ui.features.event.BoundaryEventFeatureCo
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.IFeatureContainer;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.event.AbstractUpdateEventFeature;
-import org.eclipse.bpmn2.modeler.core.features.label.LabelFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
 import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
@@ -56,7 +53,7 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<Boun
 			return false;
 		}
 
-		Object prop = context.getProperty(DIImport.IMPORT_PROPERTY);
+		Object prop = context.getProperty(GraphitiConstants.IMPORT_PROPERTY);
 		if (prop != null && (Boolean) prop) {
 			return true;
 		}
@@ -69,7 +66,7 @@ public class AddBoundaryEventFeature extends AbstractBpmn2AddElementFeature<Boun
 	public PictogramElement add(IAddContext context) {
 		BoundaryEvent businessObject = getBusinessObject(context);
 
-		boolean isImport = context.getProperty(DIImport.IMPORT_PROPERTY) != null;
+		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
 		// FIXME: what's going on here?
 		ContainerShape target = isImport ? context.getTargetContainer() : (ContainerShape) context
 		        .getTargetContainer().eContainer();

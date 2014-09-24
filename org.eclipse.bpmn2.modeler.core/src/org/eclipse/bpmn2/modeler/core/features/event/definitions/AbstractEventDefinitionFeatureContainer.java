@@ -23,7 +23,6 @@ import org.eclipse.bpmn2.modeler.core.features.BaseElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
-import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IMoveShapeFeature;
@@ -76,41 +75,17 @@ public abstract class AbstractEventDefinitionFeatureContainer extends BaseElemen
 
 	protected abstract Shape drawForBoundary(DecorationAlgorithm algorithm, ContainerShape shape);
 
-	public class AddEventDefinitionFeature extends AbstractAddEventDefinitionFeature<EventDefinition> {
+	public static class AddEventDefinitionFeature extends AbstractAddEventDefinitionFeature<EventDefinition> {
 
 		public AddEventDefinitionFeature(IFeatureProvider fp) {
 			super(fp);
 		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.bpmn2.modeler.core.features.event.definitions.AbstractAddEventDefinitionFeature#decorateShape(org.eclipse.graphiti.features.context.IAddContext, org.eclipse.graphiti.mm.pictograms.ContainerShape, org.eclipse.bpmn2.EventDefinition)
+		 */
 		@Override
-		public DecorationAlgorithm getDecorationAlgorithm(final Event event) {
-			return new DecorationAlgorithm() {
-
-				@Override
-				public Shape draw(ContainerShape shape) {
-					if (event instanceof BoundaryEvent) {
-						return drawForBoundary(this, shape);
-					}
-					if (event instanceof IntermediateCatchEvent) {
-						return drawForCatch(this, shape);
-					}
-					if (event instanceof IntermediateThrowEvent) {
-						return drawForThrow(this, shape);
-					}
-					if (event instanceof StartEvent) {
-						return drawForStart(this, shape);
-					}
-					if (event instanceof EndEvent) {
-						return drawForEnd(this, shape);
-					}
-					return null;
-				}
-
-				@Override
-				public Color manageColor(IColorConstant colorConstant) {
-					return AddEventDefinitionFeature.this.manageColor(colorConstant);
-				}
-			};
+		protected void decorateShape(IAddContext context, ContainerShape containerShape, EventDefinition businessObject) {
 		}
 	}
 

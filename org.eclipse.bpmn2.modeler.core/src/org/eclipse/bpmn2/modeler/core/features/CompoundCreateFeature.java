@@ -40,32 +40,57 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
- * A Create Feature class that can be used to create multiple objects.
- * @author Bob Brodt
+ * This is a Graphiti CreateFeature class that can be used to create multiple objects.
+ * Each of the objects created is defined in a {@link CompoundCreateFeaturePart}.
+ *
+ * @param <CONTEXT> a subclass of a Graphiti {@link IContext}.
  */
 public class CompoundCreateFeature<CONTEXT extends IContext>
 		extends AbstractCreateFeature
-		implements IBpmn2CreateFeature<BaseElement, CONTEXT>,
-		ICreateConnectionFeature {
+		implements IBpmn2CreateFeature<BaseElement, CONTEXT>, ICreateConnectionFeature {
 	
+	/** The {@code CompoundCreateFeaturePart} children. */
 	protected List<CompoundCreateFeaturePart<CONTEXT>> children = new ArrayList<CompoundCreateFeaturePart<CONTEXT>>();
+	
+	/** The ToolDescriptor that defined this {@code CompoundCreateFeature}. */
 	protected ToolDescriptor tool;
 	
+	/**
+	 * Instantiates a new compound create feature.
+	 *
+	 * @param fp the Feature Provider
+	 * @param tool the tool
+	 */
 	public CompoundCreateFeature(IFeatureProvider fp, ToolDescriptor tool) {
 		super(fp, tool.getName(), tool.getDescription());
 		this.tool = tool;
 	}
 	
+	/**
+	 * Instantiates a new compound create feature.
+	 *
+	 * @param fp the Feature Provider
+	 */
 	public CompoundCreateFeature(IFeatureProvider fp) {
 		super(fp, null, null);
 	}
 	
+	/**
+	 * Adds the child CreateFeature. This constructs a
+	 * {@code CompoundCreateFeaturePart} and adds it to our list of children.
+	 *
+	 * @param feature the Create Feature
+	 * @return the compound create feature part
+	 */
 	public CompoundCreateFeaturePart<CONTEXT> addChild(IFeature feature) {
 		CompoundCreateFeaturePart<CONTEXT> node = new CompoundCreateFeaturePart<CONTEXT>(feature);
 		children.add(node);
 		return node;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#canExecute(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public boolean canExecute(IContext context) {
 		boolean ret = false;
@@ -76,14 +101,25 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return ret;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#execute(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public void execute(IContext context) {
+		// create a list for PEs that are created during execution
+		List<PictogramElement> pes = new ArrayList<PictogramElement>();
+		context.putProperty(GraphitiConstants.PICTOGRAM_ELEMENTS, pes);
+
 		if (context instanceof ICreateContext)
 			create((ICreateContext) context);
 		else if (context instanceof ICreateConnectionContext)
 			create((ICreateConnectionContext)context);
+		getDiagramEditor().selectPictogramElements(pes.toArray(new PictogramElement[pes.size()]));
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
+	 */
 	@Override
 	public boolean canCreate(ICreateContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -93,6 +129,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#canCreate(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+	 */
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -102,6 +141,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
+	 */
 	@Override
 	public Object[] create(ICreateContext context) {
 		List<Object> businessObjects = new ArrayList<Object>();
@@ -112,8 +154,8 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		
 		PictogramElement[] selection = getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
 		int index = 0;
-		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
-			String optional = ft.getProperty(ToolPaletteDescriptor.TOOLPART_OPTIONAL);
+		for (CompoundCreateFeaturePart<CONTEXT> fp : children) {
+			String optional = fp.getProperty(ToolPaletteDescriptor.TOOLPART_OPTIONAL);
 			if ("true".equals(optional)) { //$NON-NLS-1$
 				if (index<selection.length) {
 					boolean replace = true;
@@ -121,11 +163,11 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 					if (pe instanceof Diagram) {
 						replace = false;
 					}
-					else if (ft.feature instanceof ICreateFeature) {
+					else if (fp.feature instanceof ICreateFeature) {
 						if (!(pe instanceof ContainerShape))
 							replace = false;
 					}
-					else if (ft.feature instanceof ICreateConnectionFeature) {
+					else if (fp.feature instanceof ICreateConnectionFeature) {
 						if (!(pe instanceof Connection))
 							replace = false;
 					}
@@ -134,7 +176,7 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 						Object bo = BusinessObjectUtil.getFirstBaseElement(pe);
 						pictogramElements.add(pe);
 						businessObjects.add(bo);
-						String id = ft.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
+						String id = fp.getProperty(ToolPaletteDescriptor.TOOLPART_ID);
 						if (id!=null) {
 							Graphiti.getPeService().setPropertyValue(pe, ToolPaletteDescriptor.TOOLPART_ID, id);
 						}
@@ -142,11 +184,14 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 					}
 				}
 			}
-			ft.create(context, targetContainer, pictogramElements, businessObjects);
+			fp.create(context, targetContainer, pictogramElements, businessObjects);
 		}
 		return businessObjects.toArray();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#create(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+	 */
 	@Override
 	public Connection create(ICreateConnectionContext context) {
 		List<Object> businessObjects = new ArrayList<Object>();
@@ -163,6 +208,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateImageId()
+	 */
 	@Override
 	public String getCreateImageId() {
 		String icon = tool.getIcon();
@@ -170,9 +218,18 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			TargetRuntime rt = tool.getParent().getParent().getRuntime();
 			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.SMALL);
 		}
+		// use the create image from the first child toolpart
+		IFeature feature = getChildren().get(0).getFeature();
+		if (feature instanceof ICreateFeature)
+			return ((ICreateFeature)feature).getCreateImageId();
+		if (feature instanceof ICreateConnectionFeature)
+			return ((ICreateConnectionFeature)feature).getCreateImageId();
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractCreateFeature#getCreateLargeImageId()
+	 */
 	@Override
 	public String getCreateLargeImageId() {
 		String icon = tool.getIcon();
@@ -180,9 +237,17 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 			TargetRuntime rt = tool.getParent().getParent().getRuntime();
 			return CustomTaskImageProvider.getImageId(rt, icon, IconSize.LARGE);
 		}
+		IFeature feature = getChildren().get(0).getFeature();
+		if (feature instanceof ICreateFeature)
+			return ((ICreateFeature)feature).getCreateLargeImageId();
+		if (feature instanceof ICreateConnectionFeature)
+			return ((ICreateConnectionFeature)feature).getCreateLargeImageId();
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.features.impl.AbstractFeature#isAvailable(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public boolean isAvailable(IContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -192,6 +257,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#createBusinessObject(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public BaseElement createBusinessObject(CONTEXT context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -205,6 +273,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#getBusinessObject(org.eclipse.graphiti.features.context.IContext)
+	 */
 	@Override
 	public BaseElement getBusinessObject(CONTEXT context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -218,6 +289,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#putBusinessObject(org.eclipse.graphiti.features.context.IContext, org.eclipse.emf.ecore.EObject)
+	 */
 	@Override
 	public void putBusinessObject(CONTEXT context, BaseElement businessObject) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -228,6 +302,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#getBusinessObjectClass()
+	 */
 	@Override
 	public EClass getBusinessObjectClass() {
 		if (children.size()==1) {
@@ -236,6 +313,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature#postExecute(org.eclipse.graphiti.IExecutionInfo)
+	 */
 	@Override
 	public void postExecute(IExecutionInfo executionInfo) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -246,10 +326,18 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 	}
 
+	/**
+	 * Gets the list of {@code CompoundCreateFeaturePart} children.
+	 *
+	 * @return the children
+	 */
 	public List<CompoundCreateFeaturePart<CONTEXT>> getChildren() {
 		return children;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#canStartConnection(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+	 */
 	@Override
 	public boolean canStartConnection(ICreateConnectionContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
@@ -262,6 +350,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#startConnecting()
+	 */
 	public void startConnecting() {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
@@ -271,6 +362,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#endConnecting()
+	 */
 	public void endConnecting() {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
@@ -280,6 +374,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#attachedToSource(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+	 */
 	public void attachedToSource(ICreateConnectionContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
@@ -289,6 +386,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.graphiti.func.ICreateConnection#canceledAttaching(org.eclipse.graphiti.features.context.ICreateConnectionContext)
+	 */
 	public void canceledAttaching(ICreateConnectionContext context) {
 		for (CompoundCreateFeaturePart<CONTEXT> ft : children) {
 			if (ft.getFeature() instanceof ICreateConnectionFeature) {
@@ -296,5 +396,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 				f.canceledAttaching(context);
 			}
 		}
+	}
+	
+	public EClass getFeatureClass() {
+		return null;
 	}
 }
