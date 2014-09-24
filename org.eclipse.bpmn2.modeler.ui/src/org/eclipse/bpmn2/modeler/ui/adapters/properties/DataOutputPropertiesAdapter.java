@@ -85,7 +85,14 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 	}
 
 	public static DataOutput createDataOutput(Resource resource, List<DataOutput> dataOutputs) {
+		DataOutput dataOutput = Bpmn2ModelerFactory.create(resource,DataOutput.class);
+		dataOutput.setName( generateName(dataOutputs) );
+		dataOutputs.add(dataOutput);
 	
+		return dataOutput;
+	}
+
+	public static String generateName(List<DataOutput> dataOutputs) {
 		String base = "output"; //$NON-NLS-1$
 		int suffix = 1;
 		String name = base + suffix;
@@ -101,12 +108,7 @@ public class DataOutputPropertiesAdapter extends ItemAwareElementPropertiesAdapt
 				break;
 			name = base + ++suffix;
 		}
-		
-		DataOutput dataOutput = Bpmn2ModelerFactory.create(resource,DataOutput.class);
-		dataOutput.setName(name);
-		dataOutputs.add(dataOutput);
-	
-		return dataOutput;
+		return name;
 	}
 
 }

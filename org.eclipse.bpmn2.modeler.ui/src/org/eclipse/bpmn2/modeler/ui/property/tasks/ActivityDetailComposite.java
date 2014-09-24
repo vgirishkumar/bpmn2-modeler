@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
@@ -38,6 +39,7 @@ import org.eclipse.bpmn2.StandardLoopCharacteristics;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -48,6 +50,8 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataOutputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ServiceImplementationObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
@@ -330,19 +334,23 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 								operationRef, operation,
 								messageRef, message);
 						
-						if (implementationEditor!=null) {
-							String imp = null;
-							if ( operation!=null) {
-								// If the Interface is defined by a WSDL set the default
-								// service implementation as ##WebService, otherwise
-								// use ##unspecified
-								if (operation.getImplementationRef() instanceof WSDLElement)
-									imp = ServiceImplementationObjectEditor.WEBSERVICE_VALUE;
-								else
-									imp = ServiceImplementationObjectEditor.UNSPECIFIED_VALUE;
-							}
-							implementationEditor.setValue(imp);
-						}
+						// This was me, trying to be too smart:
+						// if the selected Operation is a WSDL Operation,
+						// then set the service implementation to ##WebService.
+						// This is not always desired behavior.
+//						if (implementationEditor!=null) {
+//							String imp = null;
+//							if ( operation!=null) {
+//								// If the Interface is defined by a WSDL set the default
+//								// service implementation as ##WebService, otherwise
+//								// use ##unspecified
+//								if (operation.getImplementationRef() instanceof WSDLElement)
+//									imp = ServiceImplementationObjectEditor.WEBSERVICE_VALUE;
+//								else
+//									imp = ServiceImplementationObjectEditor.UNSPECIFIED_VALUE;
+//							}
+//							implementationEditor.setValue(imp);
+//						}
 					}
 				});
 				return true;
@@ -406,13 +414,14 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		Operation oldOperation = (Operation) activity.eGet(operationRef);
 		boolean operationChanged = (oldOperation != operation);
 		boolean messageChanged = false;
+		ExtendedPropertiesAdapter activityAdapter = ExtendedPropertiesAdapter.adapt(activity);
 		if (operationChanged) {
-			activity.eSet(operationRef, operation);
+			activityAdapter.getFeatureDescriptor(operationRef).setValue(operation);
 			if (operation!=null) {
 				if (activity instanceof ReceiveTask)
-					activity.eSet(messageRef, operation.getInMessageRef());
+					activityAdapter.getFeatureDescriptor(messageRef).setValue(operation.getInMessageRef());
 				else if (activity instanceof SendTask)
-					activity.eSet(messageRef, operation.getOutMessageRef());
+					activityAdapter.getFeatureDescriptor(messageRef).setValue(operation.getOutMessageRef());
 			}
 		}
 		
@@ -420,7 +429,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			Message oldMessage = (Message) activity.eGet(messageRef);
 			messageChanged = (oldMessage != message);
 			if (messageChanged)
-				activity.eSet(messageRef, message);
+				activityAdapter.getFeatureDescriptor(messageRef).setValue(message);
 		}
 
 		if (inputComposite==null) {
@@ -466,15 +475,6 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		DataInput input = null;
 		DataOutput output = null;
-		if (operationChanged || messageChanged) {
-			activity.getDataInputAssociations().clear();
-			activity.getDataOutputAssociations().clear();
-			ioSpec.getDataInputs().clear();
-			ioSpec.getDataOutputs().clear();
-			ioSpec.getInputSets().get(0).getDataInputRefs().clear();
-			ioSpec.getOutputSets().get(0).getDataOutputRefs().clear();
-		}
-
 		Message inMessage = null;
 		Message outMessage = null;
 		if (operation!=null) {
@@ -489,9 +489,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		else {
 			if (activity instanceof SendTask)
-				inMessage = ((SendTask) activity).getMessageRef();
+				message = inMessage = ((SendTask) activity).getMessageRef();
 			else if (activity instanceof ReceiveTask)
-				outMessage = ((ReceiveTask) activity).getMessageRef();
+				message = outMessage = ((ReceiveTask) activity).getMessageRef();
 		}
 		
 		if (activity instanceof SendTask)
@@ -501,40 +501,66 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 
 		if (inMessage!=null) {
 			// display the "From" association widgets
-			input = Bpmn2ModelerFactory.create(resource, DataInput.class);
-			if (inMessage.getItemRef()!=null) {
-				input.setItemSubjectRef(inMessage.getItemRef());
-				input.setIsCollection(inMessage.getItemRef().isIsCollection());
-			}
-			if (operationChanged || messageChanged || ioSpec.eContainer()==null)
-			{
-				ioSpec.getDataInputs().add(input);
-				ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
+			boolean newInput = false;
+			if (ioSpec.getDataInputs().size()>0) {
+				input = ioSpec.getDataInputs().get(0);
 			}
 			else {
-				InsertionAdapter.add(ioSpec,
-						Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs(), input);
-				InsertionAdapter.add(ioSpec.getInputSets().get(0),
-						Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs(), input);
+				input = Bpmn2ModelerFactory.create(resource, DataInput.class);
+				input.setName( DataInputPropertiesAdapter.generateName(ioSpec.getDataInputs()) );
+				newInput = true;
+			}
+			if (operationChanged || messageChanged) {
+				ItemDefinition id = inMessage.getItemRef();
+				if (id!=null && id!=input.getItemSubjectRef()) {
+					input.setItemSubjectRef(id);
+					input.setIsCollection(id.isIsCollection());
+				}
+			}
+			if (newInput) {
+				if (operationChanged || messageChanged || ioSpec.eContainer()==null)
+				{
+					ioSpec.getDataInputs().add(input);
+					ioSpec.getInputSets().get(0).getDataInputRefs().add(input);
+				}
+				else {
+					InsertionAdapter.add(ioSpec,
+							Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs(), input);
+					InsertionAdapter.add(ioSpec.getInputSets().get(0),
+							Bpmn2Package.eINSTANCE.getInputSet_DataInputRefs(), input);
+				}
 			}
 		}
 		
 		if (outMessage!=null) {
-			output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
-			if (outMessage.getItemRef()!=null) {
-				output.setItemSubjectRef(outMessage.getItemRef());
-				output.setIsCollection(outMessage.getItemRef().isIsCollection());
-			}
-			if (operationChanged || messageChanged ||ioSpec.eContainer()==null)
-			{
-				ioSpec.getDataOutputs().add(output);
-				ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
+			boolean newOutput = false;
+			if (ioSpec.getDataOutputs().size()>0) {
+				output = ioSpec.getDataOutputs().get(0);
 			}
 			else {
-				InsertionAdapter.add(ioSpec,
-						Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs(), output);
-				InsertionAdapter.add(ioSpec.getOutputSets().get(0),
-						Bpmn2Package.eINSTANCE.getOutputSet_DataOutputRefs(), output);
+				output = Bpmn2ModelerFactory.create(resource, DataOutput.class);
+				output.setName( DataOutputPropertiesAdapter.generateName(ioSpec.getDataOutputs()) );
+				newOutput = true;
+			}
+			if (operationChanged || messageChanged) {
+				ItemDefinition id = outMessage.getItemRef();
+				if (id!=null && id!=output.getItemSubjectRef()) {
+					output.setItemSubjectRef(id);
+					output.setIsCollection(id.isIsCollection());
+				}
+			}
+			if (newOutput) {
+				if (operationChanged || messageChanged ||ioSpec.eContainer()==null)
+				{
+					ioSpec.getDataOutputs().add(output);
+					ioSpec.getOutputSets().get(0).getDataOutputRefs().add(output);
+				}
+				else {
+					InsertionAdapter.add(ioSpec,
+							Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs(), output);
+					InsertionAdapter.add(ioSpec.getOutputSets().get(0),
+							Bpmn2Package.eINSTANCE.getOutputSet_DataOutputRefs(), output);
+				}
 			}
 		}
 		
@@ -555,7 +581,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		}
 		if (ioSpec.getDataOutputs().size()>0) {
 			output = ioSpec.getDataOutputs().get(0);
-			// fix missing InputSet
+			// fix missing OutputSet
 			final OutputSet outputSet = ioSpec.getOutputSets().get(0);
 			if (!outputSet.getDataOutputRefs().contains(output)) {
 				final DataOutput o = output;
@@ -611,8 +637,9 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 				outputComposite.setVisible(false);
 		}
 
-		if (operationChanged || messageChanged)
+		if (operationChanged || messageChanged) {
 			redrawPage();
+		}
 	}
 	
 	private void createNewDiagram(final BaseElement bpmnElement) {
