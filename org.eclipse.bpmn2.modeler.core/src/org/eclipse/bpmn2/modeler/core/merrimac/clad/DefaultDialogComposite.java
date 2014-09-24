@@ -43,6 +43,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 	protected IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
 	protected EObject businessObject;
 	protected List<AbstractDetailComposite> details = new ArrayList<AbstractDetailComposite>();
+	protected List<AbstractBpmn2PropertySection> sections = new ArrayList<AbstractBpmn2PropertySection>();
 	protected TabFolder folder;
 	protected Composite control;
 	protected ITabDescriptor[] tabDescriptors;
@@ -69,16 +70,12 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 			ITabDescriptor[] tabDescriptors = getTabDescriptors();
 			int detailsCount = getDetailsCount();
 			
-			if (detailsCount>0) {
+			if (detailsCount>1) {
 				folder = new TabFolder(this, SWT.NONE);
 				folder.setLayout(new FormLayout());
 				folder.setBackground(parent.getBackground());
 	
 				for (ITabDescriptor td : tabDescriptors) {
-					if (td instanceof Bpmn2TabDescriptor && !((Bpmn2TabDescriptor)td).isPopup()) {
-						// exclude this tab if not intended for popup dialog
-						continue;
-					}
 					for (Object o : td.getSectionDescriptors()) {
 						if (o instanceof Bpmn2SectionDescriptor) {
 							Bpmn2SectionDescriptor sd = (Bpmn2SectionDescriptor)o;
@@ -115,6 +112,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 							tab.setText(td.getLabel());
 							tab.setControl(form);
 							details.add(detail);
+							sections.add(section);
 						}
 					}
 				}
@@ -137,18 +135,30 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
 		control.setLayoutData(data);
+		layout(true);
 	}
 	
 	protected ITabDescriptor[] getTabDescriptors() {
 		if (tabDescriptors==null) {
 			IWorkbenchPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPartService().getActivePart();
 			part.getAdapter(ITabDescriptorProvider.class);
-			ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
-			ITabDescriptorProvider tabDescriptorProvider = (ITabDescriptorProvider)part.getAdapter(ITabDescriptorProvider.class);
-			if (selection.isEmpty()) {
+			ISelection selection;
+			if (businessObject==null) {
+				selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
+			}
+			else {
 				selection = new StructuredSelection(businessObject);
 			}
-			tabDescriptors = tabDescriptorProvider.getTabDescriptors(part,selection);
+			ITabDescriptorProvider tabDescriptorProvider = (ITabDescriptorProvider)part.getAdapter(ITabDescriptorProvider.class);
+			List<ITabDescriptor> list = new ArrayList<ITabDescriptor>();
+			for (ITabDescriptor td : tabDescriptorProvider.getTabDescriptors(part,selection)) {
+				if (td instanceof Bpmn2TabDescriptor && !((Bpmn2TabDescriptor)td).isPopup()) {
+					// exclude this tab if not intended for popup dialog
+					continue;
+				}
+				list.add(td);
+			}
+			tabDescriptors = list.toArray(new ITabDescriptor[list.size()]);
 		}
 		return tabDescriptors;
 	}
@@ -189,9 +199,13 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		init();
 		
 		if (details!=null && details.size()>0) {
-			for (AbstractDetailComposite detail : details) {
+			for (int i=0; i<details.size(); ++i) {
+				AbstractDetailComposite detail = details.get(i);
+				AbstractBpmn2PropertySection section = sections.get(i);
 				detail.setIsPopupDialog(true);
-				detail.setBusinessObject(businessObject);
+				StructuredSelection selection = new StructuredSelection(businessObject);
+				EObject bo = section.getBusinessObjectForSelection(selection);
+				detail.setBusinessObject(bo);
 			}
 		}
 		else if (control instanceof AbstractDetailComposite) {
