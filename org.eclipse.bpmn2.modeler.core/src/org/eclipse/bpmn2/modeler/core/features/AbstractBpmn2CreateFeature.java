@@ -17,7 +17,6 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -36,6 +35,7 @@ import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.osgi.util.NLS;
@@ -141,6 +141,20 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
 	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
 		}
+	}
+
+	@Override
+	protected Object getBusinessObjectForPictogramElement(PictogramElement pe) {
+		// the Graphiti {@link
+		// org.eclipse.graphiti.features.impl.AbstractFeature#getBusinessObjectForPictogramElement()}
+		// will return null if the pictogram element is not "active". In some
+		// cases we also want to check
+		// the business object if the PE has not yet been realized {@see
+		// org.eclipse.bpmn2.modeler.core.features.CompoundCreateFeaturePart#canCreate(IContext)}
+		Object bo = super.getBusinessObjectForPictogramElement(pe);
+		if (bo!=null)
+			return bo;
+		return BusinessObjectUtil.getFirstBaseElement(pe);
 	}
 
 	/* (non-Javadoc)

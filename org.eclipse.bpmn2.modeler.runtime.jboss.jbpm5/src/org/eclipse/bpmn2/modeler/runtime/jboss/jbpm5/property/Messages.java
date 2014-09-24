@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc.
+ * All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.osgi.util.NLS;
@@ -13,7 +23,8 @@ public class Messages extends NLS {
 	public static String JbpmCommonEventDetailComposite_Error_Message;
 	public static String JbpmCommonEventDetailComposite_Error_Title;
 	public static String JbpmCommonEventDetailComposite_Title;
-	public static String JbpmDataItemsDetailComposite_Title;
+	public static String JbpmDataItemsDetailComposite_GlobalVariablesTitle;
+	public static String JbpmDataItemsDetailComposite_LocalVariablesTitle;
 	public static String JbpmDataItemsPropertySection_Dialog_Cancelled;
 	public static String JbpmDataItemsPropertySection_Duplicate_Import;
 	public static String JbpmDefinitionsPropertyComposite_Imports_Title;

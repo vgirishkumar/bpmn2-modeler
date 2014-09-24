@@ -17,6 +17,8 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.Messages;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.PropertyPropertiesAdapter;
@@ -77,6 +79,14 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 				}
 			}
     	);
+		
+		setObjectDescriptor(new ObjectDescriptor<Property>(adapterFactory,object) {
+			
+			@Override
+			public String getLabel(Object context) {
+				return Messages.JbpmDataItemsDetailComposite_LocalVariablesTitle;
 	}
+		});
 
+	}
 }
