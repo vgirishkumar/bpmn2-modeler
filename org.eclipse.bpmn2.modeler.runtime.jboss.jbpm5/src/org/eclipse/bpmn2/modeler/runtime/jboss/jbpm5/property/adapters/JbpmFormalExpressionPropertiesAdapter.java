@@ -17,8 +17,10 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -64,6 +66,16 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 				
 			}
     	);
+    	
+    	setObjectDescriptor(new ObjectDescriptor<FormalExpression>(adapterFactory, object) {
+			@Override
+			public String getLabel(Object context) {
+				FormalExpression object = adopt(context);
+				if (object.eContainer() instanceof ResourceAssignmentExpression)
+					return Messages.JbpmFormalExpressionPropertiesAdapter_Actor;
+				return Messages.JbpmFormalExpressionPropertiesAdapter_Expression;
+			}
+    	});
 	}
 
 }
