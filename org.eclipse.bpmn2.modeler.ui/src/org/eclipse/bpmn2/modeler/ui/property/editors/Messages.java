@@ -25,6 +25,8 @@ public class Messages extends NLS {
 	public static String ServiceImplementationObjectEditor_Invalid_URI;
 	public static String ServiceImplementationObjectEditor_Unspecified_Label;
 	public static String ServiceImplementationObjectEditor_Web_Service_Label;
+	public static String ServiceImplementationObjectEditor_Implementation_Name_Label;
+	public static String ServiceImplementationObjectEditor_Implementation_URI_Label;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

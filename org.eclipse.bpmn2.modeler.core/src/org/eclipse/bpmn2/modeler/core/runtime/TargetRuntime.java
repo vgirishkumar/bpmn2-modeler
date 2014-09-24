@@ -72,6 +72,7 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	protected ArrayList<PropertyExtensionDescriptor> propertyExtensions;
 	protected ArrayList<FeatureContainerDescriptor> featureContainers;
 	protected ArrayList<ToolPaletteDescriptor> toolPalettes;
+	protected List<ServiceImplementationDescriptor> serviceImplementationDescriptors;
 	protected HashMap<Class, ShapeStyle> shapeStyles;
 	protected Bpmn2Resource bpmnResource;
 	protected String problemMarkerId;
@@ -350,6 +351,10 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 							}
 							toolPalette.create(e);
 						}
+						else if (e.getName().equals("serviceImplementation")) { //$NON-NLS-1$
+							ServiceImplementationDescriptor sid = new ServiceImplementationDescriptor(currentRuntime, e);
+							currentRuntime.getServiceImplementationDescriptors().add(sid);
+						}
 					}
 				}
 
@@ -476,6 +481,12 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 	public void setModelDescriptor(ModelDescriptor md) {
 		md.setRuntime(this);
 		this.modelDescriptor = md;
+	}
+	
+	public List<ServiceImplementationDescriptor> getServiceImplementationDescriptors() {
+		if (serviceImplementationDescriptors==null)
+			serviceImplementationDescriptors = new ArrayList<ServiceImplementationDescriptor>();
+		return serviceImplementationDescriptors;
 	}
 	
 	public String getName() {

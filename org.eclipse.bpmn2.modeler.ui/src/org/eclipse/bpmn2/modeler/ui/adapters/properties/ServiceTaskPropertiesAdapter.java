@@ -14,16 +14,25 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.runtime.ServiceImplementationDescriptor;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
- * @author Bob Brodt
- *
+ * Extended Properties Adapter for Service Tasks.
+ * <p>
+ * This adapter initializes Service Task Operation features and provides Service
+ * Implementation selection choices for the UI.
  */
 public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceTask> {
 
@@ -39,10 +48,50 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
     	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 
-		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(adapterFactory,object,feature));
+		setFeatureDescriptor(feature, new OperationRefFeatureDescriptor<ServiceTask>(adapterFactory,object,feature) {
+    		
+    		@Override
+    		public void setValue(Object context, final Object value) {
+    			if (context instanceof ServiceTask && (value instanceof Operation || value==null)) {
+					setOperationRef((ServiceTask)context, (Operation)value);
+    			}
+    		}
+   		
+    	});
 
     	feature = Bpmn2Package.eINSTANCE.getServiceTask_Implementation();
     	setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
+    	
+    	setFeatureDescriptor(feature,
+			new FeatureDescriptor<ServiceTask>(adapterFactory,object,feature) {
+
+				@Override
+				public Hashtable<String, Object> getChoiceOfValues(Object object) {
+					return ServiceTaskPropertiesAdapter.getChoiceOfValues((EObject)object);
+				}
+			}
+    	);
 	}
 
+	public static Hashtable<String, Object> getChoiceOfValues(EObject object) {
+		Hashtable<String,Object> choices = new Hashtable<String,Object>();
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		for (ServiceImplementationDescriptor eld : rt.getServiceImplementationDescriptors()) {
+			choices.put(eld.getName(), ModelUtil.createStringWrapper(eld.getUri()));
+		}
+		
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(object);
+		for (Entry<String, String> entry : prefs.getServiceImplementations().entrySet()) {
+			if (!choices.containsKey(entry.getKey())) {
+				choices.put(entry.getKey(), ModelUtil.createStringWrapper(entry.getValue()));
+			}
+		}
+		return choices;
+	}
+
+	private void setOperationRef(ServiceTask serviceTask, Operation operation) {
+		if (serviceTask.getOperationRef()!=operation) {
+			serviceTask.setOperationRef(operation);
+		}
+	}
 }

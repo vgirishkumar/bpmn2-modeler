@@ -1132,6 +1132,9 @@
 		<style object="Transaction" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 		<style object="UserTask" foreground="546778" background="D4E7F8" textColor="546778" font="arial,10,-,-"/>
 
+		<serviceImplementation name="Web Service" uri="##WebService"/>
+		<serviceImplementation name="Unspecified" uri="##unspecified"/>
+
 	</extension>
 	
 	<!-- menu commands -->

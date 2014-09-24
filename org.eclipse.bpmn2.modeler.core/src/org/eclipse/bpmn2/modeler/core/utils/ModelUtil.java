@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Choreography;
 import org.eclipse.bpmn2.ChoreographyActivity;
@@ -51,6 +49,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
@@ -86,7 +85,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -1010,6 +1008,11 @@ public class ModelUtil {
 		return false;
 	}
 	
+	public static String getStringWrapperTextValue(Object wrapper) {
+		String value = ModelUtil.getStringWrapperValue(wrapper);
+		return SyntaxCheckerUtils.fromXMLString(value);
+	}
+
 	public static boolean isStringWrapper(Object wrapper) {
 		return wrapper instanceof DynamicEObjectImpl;
 	}

@@ -134,47 +134,35 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 		}
 		
 		public ToolPart parseToolObjectString(String object) {
-			ToolPart parentToolPart = null;
+			List<ToolPart> currentParts = toolParts;
 			ToolPart toolPart = null;
 			String toolPartName = ""; //$NON-NLS-1$
-			Stack<ToolPart> toolPartStack = new Stack<ToolPart>();
+			Stack<List<ToolPart>> stack = new Stack<List<ToolPart>>();
 			ToolPart result = null;
 			char chars[] = object.toCharArray();
 			for (int i=0; i<chars.length; ++i) {
 				char c = chars[i];
 				if (c=='+') {
+					stack.push(currentParts);
 					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
-						if (parentToolPart==null) {
-							toolParts.add(toolPart);
+						currentParts.add(toolPart);
 						}
-						else {
-							parentToolPart.children.add(toolPart);
-						}
-						parentToolPart = toolPart;
+					currentParts = toolPart.children;
 						if (result==null)
 							result = toolPart;
-					}
-					else if (parentToolPart==null)
-						parentToolPart = toolPart;
-					toolPartStack.push(parentToolPart);
 					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c=='-') {
 					if (!"".equals(toolPartName)) //$NON-NLS-1$
-						parentToolPart.children.add( new ToolPart(this, toolPartName) );
-					parentToolPart = toolPartStack.pop();
+						currentParts.add( new ToolPart(this, toolPartName) );
+					currentParts = stack.pop();
 					toolPartName = ""; //$NON-NLS-1$
 				}
 				else if (c==',') {
 					if (!"".equals(toolPartName)) { //$NON-NLS-1$
 						toolPart = new ToolPart(this, toolPartName);
-						if (parentToolPart==null) {
-							toolParts.add(toolPart);
-						}
-						else {
-							parentToolPart.children.add(toolPart);
-						}
+						currentParts.add(toolPart);
 						if (result==null)
 							result = toolPart;
 						toolPartName = ""; //$NON-NLS-1$
@@ -182,12 +170,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 				}
 				else if (c=='[') {
 					toolPart = new ToolPart(this, toolPartName);
-					if (parentToolPart==null) {
-						toolParts.add(toolPart);
-					}
-					else {
-						parentToolPart.children.add(toolPart);
-					}
+					currentParts.add(toolPart);
 					if (result==null)
 						result = toolPart;
 					toolPartName = ""; //$NON-NLS-1$
@@ -236,12 +219,7 @@ public class ToolPaletteDescriptor extends BaseRuntimeDescriptor {
 				
 				if (i==chars.length-1 && !toolPartName.isEmpty()) {
 					toolPart = new ToolPart(this, toolPartName);
-					if (parentToolPart==null) {
-						toolParts.add(toolPart);
-					}
-					else {
-						parentToolPart.children.add(toolPart);
-					}
+					currentParts.add(toolPart);
 					if (result==null)
 						result = toolPart;
 				}
