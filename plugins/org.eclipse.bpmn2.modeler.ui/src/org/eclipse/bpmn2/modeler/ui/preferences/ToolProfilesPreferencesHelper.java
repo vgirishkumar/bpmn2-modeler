@@ -21,21 +21,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2FeatureMap;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.ENamedElement;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.osgi.service.prefs.BackingStoreException;
@@ -86,8 +84,15 @@ public class ToolProfilesPreferencesHelper {
 //				}
 //			}
 //			elementSet.addAll(elements);
-			for (Class c : Bpmn2FeatureMap.ALL_SHAPES) {
-				elementSet.add((EClass)Bpmn2Package.eINSTANCE.getEClassifier(c.getSimpleName()));
+//			for (Class c : Bpmn2FeatureMap.ALL_SHAPES) {
+//				EClass eclass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(c.getSimpleName());
+//				elementSet.add(eclass);
+//			}
+			
+			for (EClassifier ec : Bpmn2Package.eINSTANCE.getEClassifiers()) {
+				if (ec instanceof EClass) {
+					elementSet.add((EClass)ec);
+				}
 			}
 			
 //			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
@@ -143,6 +148,8 @@ public class ToolProfilesPreferencesHelper {
 		ArrayList<ModelEnablementTreeEntry> ret = new ArrayList<ModelEnablementTreeEntry>();
 
 		for (EClass eClass : elementSet) {
+//			if (eClass.getName().startsWith("StandardLoop"))
+//				System.out.println();
 			ModelEnablementTreeEntry entry = new ModelEnablementTreeEntry();
 			entry.setElement(eClass);
 			boolean enable = isEnabled(eClass);
@@ -168,7 +175,8 @@ public class ToolProfilesPreferencesHelper {
 				possibleFeatures.add(a);
 			}
 
-			if (enable) {
+//			if (enable)
+			{
 				for (EStructuralFeature feature : possibleFeatures) {
 					ModelEnablementTreeEntry child = new ModelEnablementTreeEntry(feature, entry);
 					enable = isEnabled(eClass, feature);

@@ -206,17 +206,18 @@ public class ModelEnablements {
 			// and enable all of its contained and referenced types
 			if (eClass!=null) {
 				HashSet<String> features = classes.get(name);
-				
-				for (EAttribute a : eClass.getEAllAttributes()) {
-					features.add(a.getName());
-				}
-				for (EReference a : eClass.getEAllContainments()) {
-					features.add(a.getName());
-//					setEnabledSingle(a.getEReferenceType(), true);
-				}
-				for (EReference a : eClass.getEAllReferences()) {
-					features.add(a.getName());
-//					setEnabledSingle(a.getEReferenceType(), true);
+				if (features.isEmpty()) {
+					for (EAttribute a : eClass.getEAllAttributes()) {
+						features.add(a.getName());
+					}
+					for (EReference a : eClass.getEAllContainments()) {
+						features.add(a.getName());
+//						setEnabledSingle(a.getEReferenceType(), true);
+					}
+					for (EReference a : eClass.getEAllReferences()) {
+						features.add(a.getName());
+//						setEnabledSingle(a.getEReferenceType(), true);
+					}
 				}
 			}
 		}
