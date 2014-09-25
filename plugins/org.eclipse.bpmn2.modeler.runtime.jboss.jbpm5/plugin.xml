@@ -675,8 +675,9 @@
 
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				id="profile.1"
+				id="org.jboss.runtime.jbpm5.Full"
 				profile="Full">
+			<disable object="all"/>
 			<enable object="AdHocSubProcess" feature="cancelRemainingInstances"/>
 			<enable object="AdHocSubProcess" feature="completionCondition"/>
 			<enable object="AdHocSubProcess" feature="flowElements"/>
@@ -921,9 +922,9 @@
 		
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				id="profile.2"
+				id="org.jboss.runtime.jbpm5.Simple"
 				profile="Simple"
-				ref="org.jboss.runtime.jbpm5:profile.1">
+				ref="org.jboss.runtime.jbpm5:Full">
 			<!-- copy the enablements from "Full" profile -->
 			<!-- and then disable these objects and features -->
 			<disable object="AdHocSubProcess"/>
@@ -974,7 +975,7 @@
 		
 		<modelEnablement
 				runtimeId="org.jboss.runtime.jbpm5"
-				id="profile.3"
+				id="org.jboss.runtime.jbpm5.RuleFlow"
 				profile="RuleFlow">
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
@@ -1048,8 +1049,8 @@
 <!-- Tool Palettes -->
 
 		<toolPalette
-			id="org.jboss.runtime.jbpm5.toolpalette.simple"
 			runtimeId="org.jboss.runtime.jbpm5"
+			id="org.jboss.runtime.jbpm5.toolpalette.Simple"
 			profile="Simple">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.simple.Tasks" name="%category.name">
@@ -1089,8 +1090,8 @@
 		</toolPalette>
 		
 		<toolPalette
-			id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow"
 			runtimeId="org.jboss.runtime.jbpm5"
+			id="org.jboss.runtime.jbpm5.toolpalette.RuleFlow"
 			profile="RuleFlow">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.ruleFlow.Tasks" name="%category.name.5">
@@ -1113,8 +1114,8 @@
 		</toolPalette>
 		
 		<toolPalette
-			id="org.jboss.runtime.jbpm5.toolpalette.full"
 			runtimeId="org.jboss.runtime.jbpm5"
+			id="org.jboss.runtime.jbpm5.toolpalette.Full"
 			profile="Full">
 			
 			<category id="org.jboss.runtime.jbpm5.toolpalette.full.Tasks" name="%category.name.9">

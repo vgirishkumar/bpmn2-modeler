@@ -546,20 +546,20 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 	
 	public ModelEnablements getModelEnablements() {
-		String profileId = getPreferences().getDefaultToolProfile(getTargetRuntime());
+		String profileName = getPreferences().getDefaultToolProfile(getTargetRuntime());
 		if (modelEnablements!=null) {
-			if (!modelEnablements.getId().equals(profileId)) {
+			if (!modelEnablements.getId().equals(profileName)) {
 				modelEnablements = null;
 			}
 				
 		}
 		if (modelEnablements==null) {
-			modelEnablements = getPreferences().getModelEnablements(getTargetRuntime(), profileId);
+			modelEnablements = getPreferences().getModelEnablements(getTargetRuntime(), profileName);
 			if (modelEnablements.size()==0) {
 				// This Target Runtime doesn't define a Tool Profile
 				// so we'll use the one for Default Runtime
-				profileId = getPreferences().getDefaultToolProfile(TargetRuntime.getDefaultRuntime());
-				ModelEnablements defaultEnablements = getPreferences().getModelEnablements(TargetRuntime.getDefaultRuntime(), profileId);
+				profileName = getPreferences().getDefaultToolProfile(TargetRuntime.getDefaultRuntime());
+				ModelEnablements defaultEnablements = getPreferences().getModelEnablements(TargetRuntime.getDefaultRuntime(), profileName);
 				modelEnablements.copy(defaultEnablements);
 			}
 		}
@@ -827,8 +827,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			return getModelEnablements();
 		}
 		if (required == ToolPaletteDescriptor.class) {
-			String profileId = getPreferences().getDefaultToolProfile(getTargetRuntime());
-			return getTargetRuntime().getToolPalette(profileId);
+			String profileName = getPreferences().getDefaultToolProfile(getTargetRuntime());
+			return getTargetRuntime().getToolPalette(profileName);
 		}
 		if (required == NotificationFilter.class) {
 			if (saveInProgress)

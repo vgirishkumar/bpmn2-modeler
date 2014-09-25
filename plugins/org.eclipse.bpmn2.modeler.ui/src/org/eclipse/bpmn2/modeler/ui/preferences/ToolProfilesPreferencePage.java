@@ -75,7 +75,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	
 	private Bpmn2Preferences preferences;
 	private TargetRuntime currentRuntime;
-	private String currentProfileId;
+	private String currentProfileName;
 	private final List<ModelEnablementTreeEntry> bpmnEntries = new ArrayList<ModelEnablementTreeEntry>();
 	private final List<ModelEnablementTreeEntry> extensionEntries = new ArrayList<ModelEnablementTreeEntry>();
 	
@@ -108,11 +108,11 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	 * of the Target Runtime ID and profile name string.
 	 **/
 	private static class ToolProfilesHelperMap extends Hashtable<String, ToolProfilesPreferencesHelper> {
-		public ToolProfilesPreferencesHelper get(TargetRuntime rt, String profileId) {
-			return get(rt.getId() + "\n" + profileId);
+		public ToolProfilesPreferencesHelper get(TargetRuntime rt, String profileName) {
+			return get(rt.getId() + "\n" + profileName);
 		}
-		public ToolProfilesPreferencesHelper put(TargetRuntime rt, String profileId, ToolProfilesPreferencesHelper helper) {
-			return put(rt.getId() + "\n" + profileId, helper);
+		public ToolProfilesPreferencesHelper put(TargetRuntime rt, String profileName, ToolProfilesPreferencesHelper helper) {
+			return put(rt.getId() + "\n" + profileName, helper);
 		}
 	}
 	private ToolProfilesHelperMap helpers = new ToolProfilesHelperMap();
@@ -130,20 +130,20 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		ToolProfilesPreferencesHelper.setEnableIdAttribute(preferences.getShowIdAttribute());
 	}
 
-	private ToolProfilesPreferencesHelper getHelper(TargetRuntime rt, String profileId) {
-		ToolProfilesPreferencesHelper helper = helpers.get(rt, profileId);
+	private ToolProfilesPreferencesHelper getHelper(TargetRuntime rt, String profileName) {
+		ToolProfilesPreferencesHelper helper = helpers.get(rt, profileName);
 		
 		if (helper==null) {
-			helper = new ToolProfilesPreferencesHelper(rt, profileId);
-			ModelEnablements me = preferences.getModelEnablements(rt, profileId);
+			helper = new ToolProfilesPreferencesHelper(rt, profileName);
+			ModelEnablements me = preferences.getModelEnablements(rt, profileName);
 			helper.setModelEnablements(me);
-			helpers.put(rt, profileId, helper);
+			helpers.put(rt, profileName, helper);
 		}
 		else {
 			ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
 			ModelEnablements me = helper.getModelEnablements();
 			if (me==null) {
-				me = preferences.getModelEnablements(rt, profileId);
+				me = preferences.getModelEnablements(rt, profileName);
 			}
 			helper.setModelEnablements(me);
 		}
@@ -151,8 +151,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		return helper;
 	}
 
-	private boolean hasHelper(TargetRuntime rt, String profileId) {
-		return helpers.get(rt, profileId) != null;
+	private boolean hasHelper(TargetRuntime rt, String profileName) {
+		return helpers.get(rt, profileName) != null;
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		container.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
 
 		currentRuntime = TargetRuntime.getCurrentRuntime();
-		currentProfileId = ""; //$NON-NLS-1$
+		currentProfileName = ""; //$NON-NLS-1$
 		
 		final Label lblRuntime = new Label(container, SWT.NONE);
 		lblRuntime.setText(Messages.ToolProfilesPreferencePage_TargetRuntime_Label);
@@ -199,7 +199,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			public void widgetSelected(SelectionEvent e) {
 				String text = cboProfiles.getText();
 				ModelEnablementDescriptor med = (ModelEnablementDescriptor)cboProfiles.getData(text);
-				currentProfileId = med.getId();
+				currentProfileName = med.getProfileName();
 				fillModelEnablementTrees();
 				fillPaletteTree();
 			}
@@ -228,21 +228,21 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				if (dlg.open() == Window.OK) {
 					String profileName = dlg.getValue();
 					String description = dlg.getDescription();
-					currentProfileId = "profile." + profileName.replaceAll(" ", ".");
-					preferences.createToolProfile(currentRuntime, currentProfileId, profileName, description);
-					preferences.setDefaultToolProfile(currentRuntime, currentProfileId);
+					currentProfileName = "profile." + profileName.replaceAll(" ", ".");
+					preferences.createToolProfile(currentRuntime, currentProfileName, profileName, description);
+					preferences.setDefaultToolProfile(currentRuntime, currentProfileName);
 					if (dlg.getCopyProfile()!=null) {
 						// make a copy of an existing Tool Profile: get the Model Enablements to be copied
 						ModelEnablementDescriptor med = dlg.getCopyProfile();
-						ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, med.getId());
+						ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, med.getProfileName());
 						ModelEnablements copyMe = helper.getModelEnablements();
 
 						// create a helper for the new Tool Profile
-						helper = getHelper(currentRuntime, currentProfileId);
+						helper = getHelper(currentRuntime, currentProfileName);
 						
 						// and copy the ModelEnablements into it
 						helper.copyModelEnablements(copyMe);
-						preferences.setModelEnablements(currentRuntime, currentProfileId, helper.getModelEnablements());
+						preferences.setModelEnablements(currentRuntime, currentProfileName, helper.getModelEnablements());
 					}					
 					fillProfilesCombo();
 					fillModelEnablementTrees();
@@ -261,7 +261,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 						Messages.ToolProfilesPreferencePage_DeleteProfile_Title,
 						Messages.ToolProfilesPreferencePage_DeleteProfile_Message)) {
 					
-					preferences.deleteToolProfile(currentRuntime, currentProfileId);
+					preferences.deleteToolProfile(currentRuntime, currentProfileName);
 					fillProfilesCombo();
 					fillModelEnablementTrees();
 					fillPaletteTree();
@@ -307,7 +307,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ToolProfilesPreferencesHelper.setEnableIdAttribute(btnShowIds.getSelection());
-				getHelper(currentRuntime, currentProfileId);
+				getHelper(currentRuntime, currentProfileName);
 				fillModelEnablementTrees();
 				fillPaletteTree();
 			}
@@ -323,7 +323,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				Object element = event.getElement();
 				if (element instanceof ModelEnablementTreeEntry) {
 					ModelEnablementTreeEntry entry = (ModelEnablementTreeEntry)element;
-					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
+					ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileName);
 					helper.setEnabled(entry, checked);
 					if (entry.hasChildren()) {
 						for (ModelEnablementTreeEntry c : entry.getChildren()) {
@@ -405,7 +405,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 					try {
 						bpmnEntries.clear();
 						extensionEntries.clear();
-						getHelper(currentRuntime, currentProfileId).importProfile(path);
+						getHelper(currentRuntime, currentProfileName).importProfile(path);
 						fillModelEnablementTrees();
 						fillPaletteTree();
 					} catch (Exception e1) {
@@ -424,7 +424,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				String path = dialog.open();
 				if (path != null) {
 					try {
-						getHelper(currentRuntime, currentProfileId).exportProfile(path);
+						getHelper(currentRuntime, currentProfileName).exportProfile(path);
 					} catch (Exception e1) {
 						Activator.showErrorWithLogging(e1);
 					}
@@ -457,17 +457,17 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		if (cboProfiles!=null) {
 			int i = 0;
 			int iSelected = -1;
-			currentProfileId = preferences.getDefaultToolProfile(currentRuntime);
+			currentProfileName = preferences.getDefaultToolProfile(currentRuntime);
 	
 			cboProfiles.removeAll();
-			for (String profileId : preferences.getAllToolProfiles(currentRuntime)) {
-				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileId);
+			for (String profileName : preferences.getAllToolProfiles(currentRuntime)) {
+				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileName);
 				String text = med.getProfileName();
 				if (text==null || text.isEmpty())
 					text = Messages.ToolProfilePreferencePage_Unnamed + (i+1);
 				cboProfiles.add(text);
 				cboProfiles.setData(text, med);
-				if (iSelected<0 && (currentProfileId!=null && currentProfileId.equals(profileId)))
+				if (iSelected<0 && (currentProfileName!=null && currentProfileName.equals(profileName)))
 					cboProfiles.select(iSelected = i);
 				++i;
 			}
@@ -491,7 +491,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private boolean isEnabled(ToolDescriptor td) {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileName);
 		for (ToolPart tp : td.getToolParts()) {
 			if (!isEnabled(helper, tp))
 				return false;
@@ -500,7 +500,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	}
 	
 	private boolean isEnabled(ToolPart tp) {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileName);
 		return isEnabled(helper,tp);
 	}
 	
@@ -522,7 +522,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			return;
 		
 		loadPalette();
-		ToolPaletteDescriptor toolPaletteDescriptor = currentRuntime.getToolPalette(currentProfileId);
+		ToolPaletteDescriptor toolPaletteDescriptor = currentRuntime.getToolPalette(currentProfileName);
 		if (toolPaletteDescriptor==null)
 			toolPaletteDescriptor = defaultToolPalette;
 		
@@ -703,21 +703,21 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		super.performDefaults();
 		String path = Bpmn2Preferences.getToolProfilePath(currentRuntime);
 		preferences.setToDefault(path);
-		path = Bpmn2Preferences.getModelEnablementsPath(currentRuntime, currentProfileId);
+		path = Bpmn2Preferences.getModelEnablementsPath(currentRuntime, currentProfileName);
 		preferences.setToDefault(path);
 		fillProfilesCombo();
 		// force the helper's Model Enablements to be reloaded from default preferences
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileName);
 		helper.setModelEnablements(null);
 		fillModelEnablementTrees();
 		fillPaletteTree();
 	}
 
 	private void loadModelEnablements() {
-		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileId);
+		ToolProfilesPreferencesHelper helper = getHelper(currentRuntime, currentProfileName);
 
 		loadModelEnablements(helper, bpmnEntries, null, null);
-		ModelEnablementDescriptor med = currentRuntime.getModelEnablements(currentProfileId);
+		ModelEnablementDescriptor med = currentRuntime.getModelEnablements(currentProfileName);
 		if (med!=null)
 			loadModelEnablements(helper, extensionEntries, bpmnEntries, med);
 	}
@@ -773,17 +773,17 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 		setErrorMessage(null);
 		try {
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
-				for (String profileId : preferences.getAllToolProfiles(rt)) {
-					if (hasHelper(rt, profileId)) {
-						ToolProfilesPreferencesHelper helper = getHelper(rt, profileId);
-						preferences.setModelEnablements(rt, profileId, helper.getModelEnablements());
+				for (String profileName : preferences.getAllToolProfiles(rt)) {
+					if (hasHelper(rt, profileName)) {
+						ToolProfilesPreferencesHelper helper = getHelper(rt, profileName);
+						preferences.setModelEnablements(rt, profileName, helper.getModelEnablements());
 					}
 				}
 			}
 
 			preferences.setShowIdAttribute(btnShowIds.getSelection());
 			if (btnUseAsDefaultProfile.getSelection())
-				preferences.setDefaultToolProfile(currentRuntime, currentProfileId);
+				preferences.setDefaultToolProfile(currentRuntime, currentProfileName);
 
 			preferences.flush();
 		} catch (BackingStoreException e) {
@@ -860,8 +860,8 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			});
 			
 			int i=1;
-			for (String profileId : preferences.getAllToolProfiles(currentRuntime)) {
-				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileId);
+			for (String profileName : preferences.getAllToolProfiles(currentRuntime)) {
+				ModelEnablementDescriptor med = currentRuntime.getModelEnablements(profileName);
 				String text = med.getProfileName();
 				if (text==null || text.isEmpty())
 					text = Messages.ToolProfilePreferencePage_Unnamed + i++;

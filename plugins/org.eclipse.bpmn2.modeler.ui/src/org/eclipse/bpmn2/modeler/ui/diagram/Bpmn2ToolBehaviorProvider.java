@@ -173,7 +173,6 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 
 		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
 		int size = 0;
-
 		for (String profileId : editor.getPreferences().getAllToolProfiles(rt)) {
 			drawer.add(new ProfileSelectionToolEntry(editor, profileId));
 			++size;

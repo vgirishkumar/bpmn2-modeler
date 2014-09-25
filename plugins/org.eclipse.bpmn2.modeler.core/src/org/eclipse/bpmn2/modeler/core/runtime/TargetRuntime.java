@@ -555,18 +555,18 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return list;
 	}
 	
-	public ModelEnablementDescriptor getModelEnablements(String profileId)
+	public ModelEnablementDescriptor getModelEnablements(String profileName)
 	{
-		if (profileId!=null && profileId.isEmpty())
-			profileId = null;
+		if (profileName!=null && profileName.isEmpty())
+			profileName = null;
 		
 		for (ModelEnablementDescriptor me : getModelEnablementDescriptors()) {
-			if (profileId==null || profileId.equalsIgnoreCase(me.getId()))
+			if (profileName==null || profileName.equalsIgnoreCase(me.getProfileName()))
 				return me;
 		}
 		if (this != getDefaultRuntime()) {
 			// fall back to enablements from Default Runtime
-			return getDefaultRuntime().getModelEnablements(profileId);
+			return getDefaultRuntime().getModelEnablements(profileName);
 		}
 		return null;
 	}
@@ -584,7 +584,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return (ToolPaletteDescriptor) diagramEditor.getAdapter(ToolPaletteDescriptor.class);
 	}
 	
-	public ToolPaletteDescriptor getToolPalette(String profileId) {
+	public ToolPaletteDescriptor getToolPalette(String profileName) {
 		ToolPaletteDescriptor defaultToolPalette = null;
 		// search from the end of the ToolPaletteDescriptors list so that
 		// we'll find the most recently defined ToolPalette, which may be
@@ -592,10 +592,10 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		List<ToolPaletteDescriptor> allToolPalettes = getToolPaletteDescriptors();
 		for (int i = allToolPalettes.size() - 1; i >= 0; --i) {
 			ToolPaletteDescriptor tp = allToolPalettes.get(i);
-			if (profileId == null)
+			if (profileName == null)
 				return tp;
 			for (String p : tp.getProfileIds()) {
-				if (profileId.equalsIgnoreCase(p))
+				if (profileName.equalsIgnoreCase(p))
 					return tp;
 			}
 			if (defaultToolPalette==null)
@@ -607,7 +607,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 
 		if (this != getDefaultRuntime()) {
 			// fall back to toolPalettes from Default Runtime
-			return getDefaultRuntime().getToolPalette(profileId);
+			return getDefaultRuntime().getToolPalette(profileName);
 		}
 		return null;
 	}

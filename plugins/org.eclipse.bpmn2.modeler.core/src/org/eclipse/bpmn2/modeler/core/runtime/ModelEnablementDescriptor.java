@@ -55,13 +55,12 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 		description = e.getAttribute("description"); //$NON-NLS-1$
 		String ref = e.getAttribute("ref"); //$NON-NLS-1$
 
-		modelEnablements = new ModelEnablements(rt, id);
+		modelEnablements = new ModelEnablements(rt, profileName);
 		
 		if (ref!=null) {
 			String a[] = ref.split(":"); //$NON-NLS-1$
 			rt = TargetRuntime.getRuntime(a[0]);
-			String id = a[1];
-			initializeFromTargetRuntime(rt, id);
+			initializeFromTargetRuntime(rt, a[1]);
 		}
 		
 		for (IConfigurationElement c : e.getChildren()) {
@@ -80,10 +79,12 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 		return EXTENSION_NAME;
 	}
 
-	public ModelEnablementDescriptor(TargetRuntime rt, String id) {
+	public ModelEnablementDescriptor(TargetRuntime rt, String id, String profileName, String description) {
 		super(rt);
 		this.id = id;
-		modelEnablements = new ModelEnablements(rt, id);
+		this.profileName = profileName;
+		this.description = description;
+		modelEnablements = new ModelEnablements(rt, profileName);
 	}
 	
 	public void setEnabled(EClass eClass, boolean enabled) {
@@ -98,10 +99,10 @@ public class ModelEnablementDescriptor extends BaseRuntimeExtensionDescriptor {
 		modelEnablements.setEnabled(className,  featureName, enabled);
 	}
 
-	public void initializeFromTargetRuntime(TargetRuntime rt, String id) {
+	public void initializeFromTargetRuntime(TargetRuntime rt, String profileName) {
 		
 		for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-			if (id.equals(med.getId())) {
+			if (profileName.equals(med.getProfileName())) {
 				Collection<String> enabledClasses = med.modelEnablements.getAllEnabledClasses();
 				for (String c : enabledClasses) {
 					Collection<String> enabledFeatures = med.modelEnablements.getAllEnabledFeatures(c);

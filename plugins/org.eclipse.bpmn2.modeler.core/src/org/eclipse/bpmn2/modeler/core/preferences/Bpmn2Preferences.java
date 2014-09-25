@@ -387,9 +387,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				String path = getToolProfilePath(rt);
 				Preferences prefs = defaultPreferences.node(path);
 				if (defaultProfile == null)
-					prefs.putBoolean(defaultProfile = med.getId(), true);
+					prefs.putBoolean(defaultProfile = med.getProfileName(), true);
 				else
-					prefs.putBoolean(med.getId(), false);
+					prefs.putBoolean(med.getProfileName(), false);
 			}
 		}
 		else if (key.equals(PREF_MODEL_ENABLEMENT)) {
@@ -409,7 +409,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			}
 			else {
 				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-					String path = getModelEnablementsPath(rt, med.getId());
+					String path = getModelEnablementsPath(rt, med.getProfileName());
 					Preferences prefs = defaultPreferences.node(path);
 					for (String s : med.getAllEnabled()) {
 						prefs.putBoolean(s, Boolean.TRUE);
@@ -446,7 +446,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			}
 			else if (key.equals(PREF_MODEL_ENABLEMENT)) {
 				for (ModelEnablementDescriptor med : rt.getModelEnablements()) {
-					String path = getModelEnablementsPath(rt, med.getId());
+					String path = getModelEnablementsPath(rt, med.getProfileName());
 					Preferences prefs = defaultPreferences.node(path);
 					for (String s : med.getAllEnabled()) {
 						prefs.remove(s);
@@ -735,7 +735,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		try {
 			Preferences prefs = null;
 			String path = getToolProfilePath(rt);
-			if (projectPreferences!=null && projectPreferences.nodeExists(path))
+			if (projectPreferences!=null && useProjectPreferences && projectPreferences.nodeExists(path))
 				prefs = projectPreferences.node(path);
 			else if (instancePreferences.nodeExists(path))
 				prefs = instancePreferences.node(path);
@@ -744,8 +744,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 			if (prefs!=null) {
 				for (String p : prefs.keys()) {
-					if (prefs.getBoolean(p, false))
+					if (prefs.getBoolean(p, false)) {
 						return p;
+					}
 				}
 			}
 		}
@@ -755,9 +756,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return ""; //$NON-NLS-1$
 	}
 	
-	public boolean setDefaultToolProfile(TargetRuntime rt, String profileId) {
+	public boolean setDefaultToolProfile(TargetRuntime rt, String profileName) {
 		boolean result = false;
-		if (profileId!=null && !profileId.isEmpty()) {
+		if (profileName!=null && !profileName.isEmpty()) {
 			try {
 				Preferences prefs = null;
 				String path = getToolProfilePath(rt);
@@ -777,7 +778,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					keys = prefs.keys();
 
 				for (String p : keys) {
-					if (profileId.equals(p)) {
+					if (profileName.equals(p)) {
 						prefs.putBoolean(p, true);
 						result = true;
 					}
@@ -785,8 +786,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 						prefs.putBoolean(p, false);
 					}
 				}
-				
-				firePreferenceEvent(prefs, path, null, profileId);
+				firePreferenceEvent(prefs, path, null, profileName);
 			}
 			catch (BackingStoreException e) {
 				// TODO Auto-generated catch block
@@ -796,10 +796,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return result;
 	}
 
-	public ModelEnablementDescriptor createToolProfile(TargetRuntime rt, String profileId, String profileName, String description) {
+	public ModelEnablementDescriptor createToolProfile(TargetRuntime rt, String id, String profileName, String description) {
 		ModelEnablementDescriptor med = null;
 		boolean createNew = false;
-		if (profileId!=null && !profileId.isEmpty()) {
+		if (id!=null && !id.isEmpty() && profileName!=null && !profileName.isEmpty()) {
 			try {
 				Preferences prefs = null;
 				String path = getToolProfilePath(rt);
@@ -825,20 +825,18 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 				createNew = true;
 				for (String p : keys) {
-					if (profileId.equals(p)) {
-						if (rt.getModelEnablements(profileId)!=null)
+					if (profileName.equals(p)) {
+						if (rt.getModelEnablements(profileName)!=null)
 							createNew = false;
 					}
 					if (populate)
 						prefs.putBoolean(p, false);
 				}
 				if (createNew) {
-					med = new ModelEnablementDescriptor(rt, profileId);
-					med.setProfileName(profileName);
-					med.setDescription(description);
+					med = new ModelEnablementDescriptor(rt, id, profileName, description);
 					rt.getModelEnablementDescriptors().add(med);
-					prefs.putBoolean(profileId, true);
-					firePreferenceEvent(prefs, path, null, profileId);
+					prefs.putBoolean(profileName, true);
+					firePreferenceEvent(prefs, path, null, profileName);
 				}
 			}
 			catch (BackingStoreException e) {
@@ -848,9 +846,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return med;
 	}
 
-	public boolean deleteToolProfile(TargetRuntime rt, String profileId) {
+	public boolean deleteToolProfile(TargetRuntime rt, String profileName) {
 		boolean result = false;
-		if (profileId!=null && !profileId.isEmpty()) {
+		if (profileName!=null && !profileName.isEmpty()) {
 			try {
 				Preferences prefs = null;
 				String path = getToolProfilePath(rt);
@@ -877,14 +875,14 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				for (String p : keys) {
 					if (populate)
 						prefs.putBoolean(p, false);
-					if (profileId.equals(p)) {
+					if (profileName.equals(p)) {
 						result = true;
 						prefs.remove(p);
 					}
 				}
 				if (result && prefs.keys().length>0) {
 					prefs.putBoolean(prefs.keys()[0], true);
-					firePreferenceEvent(prefs, path, profileId, null);
+					firePreferenceEvent(prefs, path, profileName, null);
 				}
 			}
 			catch (BackingStoreException e) {
@@ -899,7 +897,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		try {
 			Preferences prefs = null;
 			String path = getToolProfilePath(rt);
-			if (projectPreferences!=null && projectPreferences.nodeExists(path))
+			if (projectPreferences!=null && useProjectPreferences && projectPreferences.nodeExists(path))
 				prefs = projectPreferences.node(path);
 			else if (instancePreferences.nodeExists(path))
 				prefs = instancePreferences.node(path);
@@ -907,10 +905,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				prefs = defaultPreferences.node(path);
 		
 			if (prefs!=null) {
-				for (String profileId : prefs.keys()) {
-					profiles.add(profileId);
-					if (rt.getModelEnablements(profileId) == null) {
-						getModelEnablements(rt, profileId);
+				for (String profileName : prefs.keys()) {
+					profiles.add(profileName);
+					if (rt.getModelEnablements(profileName) == null) {
+						getModelEnablements(rt, profileName);
 					}
 				}
 				Collections.sort(profiles);
@@ -927,21 +925,21 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for Model Enablements
 	////////////////////////////////////////////////////////////////////////////////
 
-	public static String getModelEnablementsPath(TargetRuntime rt, String profileId) {
-		if (profileId==null || profileId.isEmpty())
-			profileId = "default";
-		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + profileId; //$NON-NLS-1$ //$NON-NLS-2$
+	public static String getModelEnablementsPath(TargetRuntime rt, String profileName) {
+		if (profileName==null || profileName.isEmpty())
+			profileName = "default";
+		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + profileName; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	public ModelEnablements getModelEnablements(String profileId) {
-		return getModelEnablements(getRuntime(), profileId);
+	public ModelEnablements getModelEnablements(String profileName) {
+		return getModelEnablements(getRuntime(), profileName);
 	}
 	
-	public ModelEnablements getModelEnablements(TargetRuntime rt, String profileId) {
-		ModelEnablements me = new ModelEnablements(rt, profileId);
+	public ModelEnablements getModelEnablements(TargetRuntime rt, String profileName) {
+		ModelEnablements me = new ModelEnablements(rt, profileName);
 		try {
 			Preferences prefs = null;
-			String path = getModelEnablementsPath(rt, profileId);
+			String path = getModelEnablementsPath(rt, profileName);
 			if (projectPreferences!=null && projectPreferences.nodeExists(path))
 				prefs = projectPreferences.node(path);
 			else if (instancePreferences.nodeExists(path))
@@ -951,11 +949,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			
 			if (prefs!=null) {
 				boolean create = false;
-				ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+				ModelEnablementDescriptor med = rt.getModelEnablements(profileName);
 				if (med==null) {
-					String profileName = prefs.get("name","Unnamed Profile");
 					String description = prefs.get("description","");
-					med = createToolProfile(rt, profileId, profileName, description);
+					med = createToolProfile(rt, rt.getId()+"."+profileName, profileName, description);
 					create = true;
 				}
 
@@ -976,11 +973,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return me;
 	}
 	
-	public boolean setModelEnablements(TargetRuntime rt, String profileId, ModelEnablements me) {
+	public boolean setModelEnablements(TargetRuntime rt, String profileName, ModelEnablements me) {
 		if (me!=null && me.size()>0) {
 			try {
 				Preferences prefs = null;
-				String path = getModelEnablementsPath(rt, profileId);
+				String path = getModelEnablementsPath(rt, profileName);
 				if (projectPreferences!=null && useProjectPreferences) {
 					prefs = projectPreferences.node(path);
 					prefs.removeNode();
@@ -992,7 +989,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					prefs = instancePreferences.node(path);
 				}
 			
-				ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
+				ModelEnablementDescriptor med = rt.getModelEnablements(profileName);
 				if (med!=null) {
 					prefs.put("name", med.getProfileName());
 					prefs.put("description", med.getDescription());
@@ -1000,7 +997,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				for (String s : me.getAllEnabled()) {
 					prefs.putBoolean(s, true);
 				}
-				firePreferenceEvent(prefs, path, null, profileId);
+				firePreferenceEvent(prefs, path, null, profileName);
 				return true;
 			}
 			catch (BackingStoreException e) {
