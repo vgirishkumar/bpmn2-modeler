@@ -14,14 +14,13 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
@@ -45,6 +44,7 @@ public class SimulationPropertySection extends DefaultPropertySection {
 		// and all this other stuff...
 		EObject object = BusinessObjectUtil.getBusinessObjectForSelection(selection);
 		return object instanceof BPMNDiagram ||
+				object instanceof Process ||
 				object instanceof Task ||
 				object instanceof Event ||
 				object instanceof SequenceFlow;
