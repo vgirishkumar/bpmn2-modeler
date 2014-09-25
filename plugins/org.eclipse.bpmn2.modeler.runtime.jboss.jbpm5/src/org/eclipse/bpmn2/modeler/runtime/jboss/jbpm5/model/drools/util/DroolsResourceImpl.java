@@ -33,6 +33,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
@@ -45,6 +46,7 @@ import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
@@ -516,6 +518,8 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 					if (childObject instanceof Property ||
 							childObject instanceof DataObject ||
 							childObject instanceof Message ||
+							childObject instanceof Signal ||
+							childObject instanceof Escalation ||
 							(childObject instanceof DataInput && childObject.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
 						if (nameFeature!=null) {

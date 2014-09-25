@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Interface;
@@ -37,10 +37,10 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.ThrowEvent;
-import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -48,7 +48,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -75,8 +74,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension.RootElementParser;
-import org.eclipse.bpmn2.modeler.ui.property.data.InterfaceDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ItemDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -88,20 +85,15 @@ import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
 import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.RollbackException;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
@@ -530,25 +522,34 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 	@Override
 	public void resourceSetChanged(ResourceSetChangeEvent event) {
 		for (Notification n : event.getNotifications()) {
+			EObject object = null;
 			if (n.getEventType() == Notification.ADD) {
 				if (n.getNewValue() instanceof EObject) {
-					EObject object = (EObject)n.getNewValue();
-					if (object instanceof org.eclipse.bpmn2.Property ||
-							object instanceof DataObject ||
-							object instanceof Message ||
-							object instanceof GlobalType) {
-						boolean found = false;
-						for (Adapter a : ((EObject)object).eAdapters()) {
-							if (a instanceof ProcessVariableNameChangeAdapter) {
-								found = true;
-								break;
-							}
-						}
-						if (!found) {
-							ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-							object.eAdapters().add(a);
-						}
+					object = (EObject)n.getNewValue();
+				}
+			}
+			else {
+				if (n.getNotifier() instanceof EObject) {
+					object = (EObject)n.getNotifier();
+				}
+			}
+			if (object instanceof org.eclipse.bpmn2.Property ||
+					object instanceof DataObject ||
+					object instanceof Message ||
+					object instanceof Signal ||
+					object instanceof Escalation ||
+					object instanceof GlobalType ||
+					(object instanceof DataInput && object.eContainer() instanceof MultiInstanceLoopCharacteristics) ) {
+				boolean found = false;
+				for (Adapter a : ((EObject)object).eAdapters()) {
+					if (a instanceof ProcessVariableNameChangeAdapter) {
+						found = true;
+						break;
 					}
+				}
+				if (!found) {
+					ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
+					object.eAdapters().add(a);
 				}
 			}
 		}
