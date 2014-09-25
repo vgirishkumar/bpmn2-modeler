@@ -26,8 +26,9 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.IntObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FloatObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ControlParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.CostParameters;
@@ -41,7 +42,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.ResourceParamet
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.Scenario;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.TimeParameters;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.UniformDistributionType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil.DistributionType;
 import org.eclipse.emf.ecore.EObject;
@@ -190,7 +190,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 		if (costParams!=null) {
 			param = costParams.getUnitCost();
 			final FloatingParameterType decimalValue = (FloatingParameterType)param.getParameterValue().get(0);
-			editor = new IntObjectEditor(this,decimalValue,BpsimPackage.eINSTANCE.getFloatingParameterType_Value()) {
+			editor = new FloatObjectEditor(this,decimalValue,BpsimPackage.eINSTANCE.getFloatingParameterType_Value()) {
 
 				@Override
 				protected boolean setValue(final Object result) {
@@ -236,14 +236,34 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 					@Override
 					protected boolean setValue(Object result) {
 						final DistributionType dt = (DistributionType)result;
-						TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
-						domain.getCommandStack().execute(new RecordingCommand(domain) {
-							@Override
-							protected void doExecute() {
-								timeParams.setProcessingTime( JbpmModelUtil.createParameter(dt, 0.0, 0.0) ); 
-							}
-						});
-						setBusinessObject( getBusinessObject() );
+						ParameterValue value = timeParams.getProcessingTime().getParameterValue().get(0);
+						boolean changed = true;
+						switch (dt) {
+						case Normal:
+							if (value instanceof NormalDistributionType)
+								changed = false;
+							break;
+						case Poisson:
+							if (value instanceof PoissonDistributionType)
+								changed = false;
+							break;
+						case Uniform:
+							if (value instanceof UniformDistributionType)
+								changed = false;
+							break;
+						default:
+							break;
+						}
+						if (changed) {
+							TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
+							domain.getCommandStack().execute(new RecordingCommand(domain) {
+								@Override
+								protected void doExecute() {
+									timeParams.setProcessingTime( JbpmModelUtil.createParameter(dt, 0.0, 0.0) ); 
+								}
+							});
+							setBusinessObject( getBusinessObject() );
+						}
 						return true;
 					}
 
