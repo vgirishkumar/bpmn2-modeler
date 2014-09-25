@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -121,7 +122,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 	@Override
 	public void createBindings(EObject be) {
 		setTitle( ExtendedPropertiesProvider.getLabel(be.eClass())+Messages.SimulationDetailComposite_Title);
-		if (be instanceof BPMNDiagram)
+		if (be instanceof BPMNDiagram || be instanceof Process)
 		{
 			BPSimDataType pad = JbpmModelUtil.getBPSimData(be);
 			Scenario scenario = pad.getScenario().get(0);

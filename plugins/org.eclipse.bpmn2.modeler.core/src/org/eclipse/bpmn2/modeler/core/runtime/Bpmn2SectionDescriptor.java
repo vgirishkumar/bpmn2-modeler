@@ -155,7 +155,6 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 		
 		@Override
 		public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-
 			if (sectionClass==null) {
 				// this was defined as "empty" in the plugin, which means we should hide this tab.
 				return false;
