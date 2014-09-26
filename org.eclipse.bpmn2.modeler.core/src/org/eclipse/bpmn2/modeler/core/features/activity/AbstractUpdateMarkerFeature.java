@@ -12,12 +12,10 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
-import java.util.Iterator;
-
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.ContextConstants;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -26,7 +24,6 @@ import org.eclipse.graphiti.features.impl.AbstractUpdateFeature;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
@@ -45,7 +42,7 @@ public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends
 	@Override
     public IReason updateNeeded(IUpdateContext context) {
 		Object value = context.getProperty(ContextConstants.BUSINESS_OBJECT);
-		if (value instanceof EObject) {
+		if (value instanceof EObject || DIImport.isImporting(context)) {
 			// if the UpdateContext has a "businessObject" property, then this update is needed
 			// as part of the the CreateFeature ("businessObject" is only set in the CreateFeature)
 			return Reason.createTrueReason("Initial update");
