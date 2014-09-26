@@ -13,7 +13,6 @@ package org.eclipse.bpmn2.modeler.ui.property.tasks;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
-import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -28,14 +27,12 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
@@ -46,6 +43,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -757,42 +755,34 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		}
 	}
 	
-	public class DataInputOutputItemEditor extends TextAndButtonObjectEditor {
-
-		public DataInputOutputItemEditor(MultiInstanceLoopCharacteristics object, EStructuralFeature feature) {
-			super(MultiInstanceLoopCharacteristicsDetailComposite.this, object, feature);
-		}
-
-		@Override
-		protected void buttonClicked(int buttonId) {
-			if (buttonId==ID_DEFAULT_BUTTON) {
-				FeatureEditingDialog dlg = new DataInputOutputItemDialog(getDiagramEditor(), object, feature);
-				dlg.open();
-				updateText();
-			}
-		}
+	public class DataInputOutputItemEditor extends TextObjectEditor {
 		
-		@Override
-		protected boolean setValue(final Object result) {
-			return true;
-		}
+		MultiInstanceLoopCharacteristics milc;
+		boolean isInput;
 		
-		protected void updateText() {
-			// update the read-only text for this DataInput or DataOutput editor:
-			// this will be in the form "Parameter Name (Data Type)"
-			ItemAwareElement item = (ItemAwareElement) object.eGet(feature);
-			String newText = ""; //$NON-NLS-1$
-			if (item!=null) {
-				String name = ModelUtil.getName(item);
-				String type = ExtendedPropertiesProvider.getTextValue(item.getItemSubjectRef());
-				if (name!=null)
-					newText = name;
-				if (type!=null)
-					newText += "  (" + type + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-			}
+		public DataInputOutputItemEditor(MultiInstanceLoopCharacteristics milc, EStructuralFeature feature) {
+			super(MultiInstanceLoopCharacteristicsDetailComposite.this, milc, feature);
 			
-			if (!text.getText().equals(newText)) {
-				setText(newText);
+			// The object passed in to this constructor is a MultiInstanceLoopCharacteristics
+			// but what we really want as the target for this text editor is the "name" feature
+			// of either the InputDataItem or OutputDataItem it contains (depending on @param feature).
+			// If the target object does not yet exist, create it and attach it to the MILC
+			// using an InsertionAdapter.
+			if (feature == PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem()) {
+				object = milc.getInputDataItem();
+				if (object==null) {
+					object = getBusinessObjectDelegate().createObject(PACKAGE.getDataInput());
+					InsertionAdapter.add(milc, feature, object);
+				}
+				this.feature = PACKAGE.getDataInput_Name();
+			}
+			else {
+				object = milc.getOutputDataItem();
+				if (object==null) {
+					object = getBusinessObjectDelegate().createObject(PACKAGE.getDataOutput());
+					InsertionAdapter.add(milc, feature, object);
+				}
+				this.feature = PACKAGE.getDataOutput_Name();
 			}
 		}
 	}

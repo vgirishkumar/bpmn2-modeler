@@ -603,6 +603,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		}
 		return tableComposite;
 	}
+	
+	@Override
+	public void notifyChanged(Notification notification) {
+		super.notifyChanged(notification);
+		refresh();
+	}
 
 	public void refresh() {
 		Display.getDefault().asyncExec( new Runnable() {

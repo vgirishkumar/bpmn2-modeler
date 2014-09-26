@@ -12,15 +12,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallableElement;
@@ -33,34 +30,28 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
-import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
-import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -509,42 +500,12 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						}
 					}
 					
-					// Some objects, like Property, DataObject and Message use the "id" attribute instead
-					// of "name". We need to copy this "id" to "name" so that the UI can deal with them.
-					// The "name" feature will not be saved when the file is saved, but the jBPM Runtime Extension
-					// will keep the "id" in sync with the name during editing.
-					// Editorial: I don't agree with the decision to allow users to change model object IDs,
-					// since these are (theoretically) supposed to be unique; but it is what it is...
-					if (childObject instanceof Property ||
-							childObject instanceof DataObject ||
-							childObject instanceof Message ||
-							childObject instanceof Signal ||
-							childObject instanceof Escalation ||
-							(childObject instanceof DataInput && childObject.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
-						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
-						if (nameFeature!=null) {
-							Object value = childObject.eGet(nameFeature);
-							if (value==null || value.toString().isEmpty()) {
-								EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id");
-								if (idFeature!=null) {
-									value = childObject.eGet(idFeature);
-									if (value!=null && !value.toString().isEmpty()) {
-										childObject.eSet(nameFeature, value);
-									}
-								}
-							}
-							ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-							childObject.eAdapters().add(a);
-						}
-					}
-					else if (childObject instanceof GlobalType) {
+					if (childObject instanceof GlobalType) {
 						// The BaseElement feature "id" is not saved, but it MUST be kept in sync with the
 						// GlobalType feature "identifier" - this acts like the "name" feature of other
 						// ItemAwareElements that treat "name" like an ID.
 						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
 						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
-						ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-						childObject.eAdapters().add(a);
 					}
 				}
 				catch(Exception e) {

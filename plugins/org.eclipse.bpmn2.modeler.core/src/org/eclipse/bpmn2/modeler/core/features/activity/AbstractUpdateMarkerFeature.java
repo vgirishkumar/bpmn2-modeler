@@ -12,12 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.FlowElement;
-import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.AbstractUpdateBaseElementFeature;
-import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -25,7 +21,6 @@ import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IPeService;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -33,7 +28,7 @@ import org.eclipse.graphiti.services.IPeService;
  *
  * @param <T> the generic type
  */
-public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractUpdateBaseElementFeature<Activity> {
+public abstract class AbstractUpdateMarkerFeature<T extends FlowElement> extends AbstractUpdateBaseElementFeature<FlowElement> {
 
 	/**
 	 * Instantiates a new abstract update marker feature.

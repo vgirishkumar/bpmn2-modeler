@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5;
 
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
@@ -24,6 +26,15 @@ import org.eclipse.emf.validation.model.EvaluationMode;
 import org.eclipse.emf.validation.service.IValidator;
 import org.eclipse.emf.validation.service.ModelValidationService;
 
+/*
+ * jBPM uses certain objects' IDs instead of names because...well, I don't know why...bad decision maybe?
+ * Anyway, it means that the names and IDs MUST be kept in sync because our UI does not allow IDs to be
+ * edited directly since that would be a VERY BAD THING. IDs MUST be unique, and allowing the user to edit
+ * them could violate that constraint, e.g. I should be able to create a org.eclipse.bpmn2.Property named
+ * "counter" in every SubProcess in my file, but that would violate the ID constraint.
+ * 
+ * But, it is what it is...
+ */
 public class ProcessVariableNameChangeAdapter implements Adapter {
 
 	@Override
@@ -31,6 +42,15 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 		if (notification.getNotifier() instanceof EObject) {
 			EObject object = (EObject)notification.getNotifier();
             if (notification.getEventType()==Notification.SET) {
+				// DataInput objects are a special case: Only keep the name and
+				// ID in sync if the DataInput is being used as the instance
+				// parameter for MultiInstanceLoopCharacteristics.
+				if (object instanceof DataInput) {
+					if (!(object.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
+						return;
+					}
+				}
+
 				Object f = notification.getFeature();
 				if (f instanceof EStructuralFeature) {
 					EStructuralFeature feature = (EStructuralFeature)f;
@@ -42,7 +62,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
                     if ("name".equals(feature.getName()) || "identifier".equals(feature.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
-						if (newValue!=oldValue && newValue!=null && oldValue!=null && !newValue.equals(oldValue))
+						if (newValue!=null && !newValue.equals(oldValue))
 						{
 							if (idFeature!=null) {
 								newValue = SyntaxCheckerUtils.toNCName((String)newValue);
@@ -69,7 +89,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
                     else if ("id".equals(feature.getName())) { //$NON-NLS-1$
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
-						if (newValue!=oldValue && newValue!=null && oldValue!=null && !newValue.equals(oldValue)) 
+						if (newValue!=null && !newValue.equals(oldValue)) 
 						{
 							if (nameFeature!=null) {
 								boolean deliver = object.eDeliver();
