@@ -1,0 +1,15 @@
+./examples/plugins/org.eclipse.bpmn2.modeler.examples.customtask/target
+./examples/plugins/org.eclipse.bpmn2.modeler.examples.datatypes/target
+./examples/plugins/org.eclipse.bpmn2.modeler.examples.dynamic/target
+./examples/plugins/org.eclipse.bpmn2.modeler.examples.modelreader/target
+./features/org.eclipse.bpmn2.modeler/target
+./features/org.eclipse.bpmn2.modeler.examples/target
+./features/org.eclipse.bpmn2.modeler.runtime.jboss/target
+./features/org.eclipse.bpmn2.modeler.sdk/target
+./features/org.eclipse.bpmn2.modeler.updatesite/target
+./features/org.eclipse.bpmn2.modeler.wsil/target
+./plugins/org.eclipse.bpmn2.modeler.core/target
+./plugins/org.eclipse.bpmn2.modeler.help/target
+./plugins/org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5/target
+./plugins/org.eclipse.bpmn2.modeler.ui/target
+./plugins/org.eclipse.bpmn2.modeler.wsil/target
