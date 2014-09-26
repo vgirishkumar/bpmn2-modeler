@@ -83,11 +83,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
@@ -98,7 +95,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	
 	private static final String DROOLS_NAMESPACE = "http://www.jboss.org/drools"; //$NON-NLS-1$
 	private List<WorkItemDefinition> workItemDefinitions;
-	private static boolean initialized = false;
 	
 	/* (non-Javadoc)
 	 * Check if the given input file is a drools-generated (jBPM) process file.
@@ -136,29 +132,26 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	@Override
 	public void notify(LifecycleEvent event) {
 		if (event.eventType == EventType.EDITOR_INITIALIZED) {
-			if (!initialized) {
-				// Register all of our Property Tab Detail overrides here. 
-		        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
-		        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
-		        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
-		        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
-		        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
-		        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
-		        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
-		        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
-		        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
-		        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
-		        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
-		        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
-		        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
-		        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
-		        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
-		        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
-		        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
-				PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
-				PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
-		        initialized = true;
-			}
+			// Register all of our Property Tab Detail overrides here. 
+	        PropertiesCompositeFactory.register(Activity.class, JbpmActivityDetailComposite.class);
+	        PropertiesCompositeFactory.register(DataInput.class, JbpmDataAssociationDetailComposite.class);
+	        PropertiesCompositeFactory.register(DataOutput.class, JbpmDataAssociationDetailComposite.class);
+	        PropertiesCompositeFactory.register(Event.class, JbpmCommonEventDetailComposite.class);
+	        PropertiesCompositeFactory.register(Gateway.class, JbpmGatewayDetailComposite.class);
+	        PropertiesCompositeFactory.register(GlobalType.class, GlobalTypeDetailComposite.class);
+	        PropertiesCompositeFactory.register(ImportType.class, JbpmImportTypeDetailComposite.class);
+	        PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionListComposite.class);
+	        PropertiesCompositeFactory.register(ManualTask.class, JbpmManualTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageDetailComposite.class);
+	        PropertiesCompositeFactory.register(Message.class, JbpmMessageListComposite.class);
+	        PropertiesCompositeFactory.register(MultiInstanceLoopCharacteristics.class, JbpmMultiInstanceDetailComposite.class);
+	        PropertiesCompositeFactory.register(ReceiveTask.class, JbpmReceiveTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(ScriptTask.class, JbpmScriptTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(SendTask.class, JbpmSendTaskDetailComposite.class);
+	        PropertiesCompositeFactory.register(SequenceFlow.class, JbpmSequenceFlowDetailComposite.class);
+	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
+			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
+			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
 			
 			// TODO: if file was opened from a Guvnor Repository view (or git in jBPM 6)
 			// we may want to explicitly make the editor read-only
