@@ -617,7 +617,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public static String getShapeStylePath(TargetRuntime rt) {
-		return PREF_SHAPE_STYLE + "/" + rt.getId(); //$NON-NLS-1$
+		// quick hack for Bug 445230 - Appearance preferences not persisted between sessions
+		return PREF_SHAPE_STYLE; // + "/" + rt.getId(); //$NON-NLS-1$
 	}
 
 	public ShapeStyle getShapeStyle(EObject object) {
