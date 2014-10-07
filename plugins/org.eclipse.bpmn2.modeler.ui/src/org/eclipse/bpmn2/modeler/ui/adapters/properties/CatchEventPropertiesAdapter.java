@@ -57,16 +57,5 @@ public class CatchEventPropertiesAdapter extends EventPropertiesAdapter<CatchEve
 				return dataOutput;
 			}
     	});
-    	
-    	if (object instanceof StartEvent) {
-	    	feature = Bpmn2Package.eINSTANCE.getStartEvent_IsInterrupting();
-	    	setFeatureDescriptor(feature, new FeatureDescriptor<CatchEvent>(this, object, feature) {
-
-				@Override
-				public String getLabel() {
-					return "Cancel Activity";
-				}
-	    	});
-    	}
 	}
 }
