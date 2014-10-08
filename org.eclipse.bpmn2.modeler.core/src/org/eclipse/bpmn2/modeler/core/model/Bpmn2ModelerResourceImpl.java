@@ -1256,9 +1256,22 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		public String getIDREF(EObject obj) {
 			// convert the element ID references to a QName
-			String s = super.getIDREF(obj);
-			if (isQNameFeature && !ModelUtil.isStringWrapper(obj))
-				s = convertToQName(s);
+			String s = null;
+			if (ModelUtil.isStringWrapper(obj)) {
+				s = ModelUtil.getStringWrapperValue(obj);
+			}
+			else {
+				s = super.getIDREF(obj);
+				if (isQNameFeature) {
+					// Don't use targetNamespace prefixes for BPMN2 object ID references
+					// See https://bugzilla.redhat.com/show_bug.cgi?id=1150060
+					EPackage ePackage = obj.eClass().getEPackage();
+					if (!Bpmn2Package.class.isInstance(ePackage) &&
+							!DiPackage.class.isInstance(ePackage) &&
+							!DcPackage.class.isInstance(ePackage))
+						s = convertToQName(s);
+				}
+			}
 			return s;
 		}
 
