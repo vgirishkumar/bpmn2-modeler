@@ -121,6 +121,15 @@
 		</propertyTab>
 
 		<propertyTab
+			id="bpmn2.jbpm.AdHocSubProcess.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.adHocSubProcess.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmAdHocSubProcessPropertySection"
+			type="org.eclipse.bpmn2.AdHocSubProcess"
+			label="%propertyTab.label.AdHocSubProcess">
+		</propertyTab>
+
+		<propertyTab
 	        id="bpmn2.jbpm.scriptTask.tab"
 	        replaceTab="org.eclipse.bpmn2.modeler.scriptTask.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"

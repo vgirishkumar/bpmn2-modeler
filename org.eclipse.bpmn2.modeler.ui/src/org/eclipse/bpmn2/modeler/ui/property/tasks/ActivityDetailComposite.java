@@ -119,13 +119,12 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 						//"startQuantity", // these are "MultipleAssignments" features and should be used
 						//"completionQuantity", // with caution, according to the BPMN 2.0 spec
 						"triggeredByEvent", //$NON-NLS-1$
-						"cancelRemainingInstances", //$NON-NLS-1$
+						"isForCompensation", //$NON-NLS-1$
 						"ordering", //$NON-NLS-1$
+						"cancelRemainingInstances", //$NON-NLS-1$
 						"completionCondition", //$NON-NLS-1$
 						"method", //$NON-NLS-1$
 						"protocol", //$NON-NLS-1$
-
-						"isForCompensation", //$NON-NLS-1$
 						"loopCharacteristics", //$NON-NLS-1$
 						"properties", //$NON-NLS-1$
 						"resources", //$NON-NLS-1$
