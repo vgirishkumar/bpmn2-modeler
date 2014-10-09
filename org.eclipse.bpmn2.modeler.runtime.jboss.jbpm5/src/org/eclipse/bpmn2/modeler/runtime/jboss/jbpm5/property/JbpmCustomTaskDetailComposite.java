@@ -24,4 +24,9 @@ public class JbpmCustomTaskDetailComposite extends JbpmTaskDetailComposite {
 	public JbpmCustomTaskDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
+
+	@Override
+	protected boolean isModelObjectEnabled(String className, String featureName) {
+		return !"anyAttribute".equals(featureName);
+	}
 }

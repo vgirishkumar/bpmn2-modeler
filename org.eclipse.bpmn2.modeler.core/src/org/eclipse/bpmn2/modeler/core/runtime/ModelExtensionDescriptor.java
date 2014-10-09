@@ -551,7 +551,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	}
 	
 	private void addModelExtensionAdapter(EObject object) {
-		if (!object.eAdapters().contains(this))
+		if (getModelExtensionAdapter(object)==null)
 			object.eAdapters().add( new ModelExtensionAdapter(this) );
 	}
 }
