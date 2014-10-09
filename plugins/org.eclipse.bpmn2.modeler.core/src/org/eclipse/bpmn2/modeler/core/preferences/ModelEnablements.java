@@ -21,7 +21,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -42,6 +41,7 @@ public class ModelEnablements {
 	private int enableIdAttribute = -1;
 	
 	// require a TargetRuntime!
+	@SuppressWarnings("unused")
 	private ModelEnablements() {
 	}
 
@@ -304,6 +304,8 @@ public class ModelEnablements {
 	}
 	
 	public void setEnabled(String className, String featureName, boolean enabled) {
+		if ("Resource".equals(className))
+			System.out.println();
 		if ("all".equals(className)) { //$NON-NLS-1$
 			// enable all model objects
 			if (featureName==null)
@@ -353,6 +355,8 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className, String featureName) {
+		if ("Resource".equals(className))
+			System.out.println();
 		// this needs to happen very late in the lifecycle of this class because we don't want
 		// to force loading of the Bpmn2Preferences (and setting up default preference values)
 		// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
@@ -363,8 +367,7 @@ public class ModelEnablements {
 		}
 		
 		if ("id".equals(featureName)) { //$NON-NLS-1$
-			if (!getEnableIdAttribute())
-				return false;
+			return getEnableIdAttribute();
 		}
 
 		if (className==null)

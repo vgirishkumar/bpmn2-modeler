@@ -55,6 +55,7 @@ public class JbpmDefinitionsPropertyComposite extends DefinitionsPropertyComposi
 						"name", //$NON-NLS-1$
 						"imports", //$NON-NLS-1$
 						"rootElements#Resource", //$NON-NLS-1$
+						"rootElements#ItemDefinition", //$NON-NLS-1$
 						"rootElements#Message", //$NON-NLS-1$
 						"rootElements#Error", //$NON-NLS-1$
 						"rootElements#Signal", //$NON-NLS-1$

@@ -215,13 +215,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 						added.add(a1);
 					}
 				}
-				else {
-					
-					if (a1!=nameAttribute) {
-						if (a1!=idAttribute || getPreferences().getShowIdAttribute()) {
-							columnProvider.add(object, listItemClass, a1);
-							added.add(a1);
-						}
+				else if (a1!=nameAttribute) {
+					if (a1!=idAttribute) {
+						columnProvider.add(object, listItemClass, a1);
+						added.add(a1);
 					}
 				}
 			}
@@ -237,7 +234,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 			}
 			if (columnProvider.getColumns().size()==0) {
 				if (idAttribute!=null)
-					columnProvider.addRaw(object, idAttribute);
+					columnProvider.addRaw(object, idAttribute).setEditable(false);;
 			}
 		}
 		return columnProvider;

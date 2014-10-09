@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Gateway;
@@ -221,6 +222,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 					object instanceof DataObject ||
 					object instanceof Message ||
 					object instanceof Signal ||
+					object instanceof Error ||
 					object instanceof Escalation ||
 					object instanceof GlobalType ||
 					object instanceof DataInput) {

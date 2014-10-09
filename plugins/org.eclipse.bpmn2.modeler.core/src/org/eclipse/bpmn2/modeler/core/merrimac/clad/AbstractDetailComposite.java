@@ -434,6 +434,8 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			else if (String.class.equals(eTypeClass)) {
 				ObjectEditor editor = new TextObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
+				if (attribute.getName().equals("id"))
+					editor.setEditable(false);
 			} else if (Boolean.class.equals(eTypeClass) ||
 					boolean.class.equals(eTypeClass)
 			) {
@@ -655,10 +657,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					List<String> list = new ArrayList<String>();
 					EClass c = object.eClass();
 					// add name and id attributes first (if any)
-					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
-						list.add("name"); //$NON-NLS-1$
 					if (c.getEStructuralFeature("id")!=null) //$NON-NLS-1$
 						list.add("id"); //$NON-NLS-1$
+					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
+						list.add("name"); //$NON-NLS-1$
 					for (EStructuralFeature attribute : object.eClass().getEStructuralFeatures()) {
 						if (!list.contains(attribute.getName()))
 							list.add(attribute.getName());

@@ -958,11 +958,27 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				}
 
 				me.setEnabledAll(false);
+				// Because ModelEnablements#setEnabled(String,boolean) affects all
+				// contained features of a class if the String contains only a class name,
+				// we need to process all keys that have the form "className.featureName" 
+				// first to ensure that only the defined features are enabled.
 				for (String k : prefs.keys()) {
 					if (prefs.getBoolean(k, false)) {
-						me.setEnabled(k, true);
-						if (create) {
-							med.setEnabled(k, true);
+						if (k.contains(".")) {
+							me.setEnabled(k, true);
+							if (create) {
+								med.setEnabled(k, true);
+							}
+						}
+					}
+				}
+				for (String k : prefs.keys()) {
+					if (prefs.getBoolean(k, false)) {
+						if (!k.contains(".")) {
+							me.setEnabled(k, true);
+							if (create) {
+								med.setEnabled(k, true);
+							}
 						}
 					}
 				}
