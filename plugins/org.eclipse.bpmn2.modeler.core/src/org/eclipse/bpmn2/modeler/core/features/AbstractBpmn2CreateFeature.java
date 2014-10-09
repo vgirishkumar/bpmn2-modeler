@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
+import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -170,6 +171,12 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	public void putBusinessObject(ICreateContext context, T businessObject) {
 		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, businessObject);
+		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+		if (id!=null) {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
+	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
+		}
 		
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));

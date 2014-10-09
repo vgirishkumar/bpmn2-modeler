@@ -13,31 +13,15 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskPropertySection;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IWorkbenchPart;
 
 /**
  * @author Bob Brodt
  *
  */
 public class JbpmTaskPropertySection extends TaskPropertySection {
-
-	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (super.appliesTo(part, selection)) {
-			EObject be = getBusinessObjectForSelection(selection);
-			if (Bpmn2Package.eINSTANCE.getTask().isInstance(be)) {
-				return ModelDecorator.getAnyAttribute(be, "displayName") == null;
-			}
-		}
-		return false;
-	}
 
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
