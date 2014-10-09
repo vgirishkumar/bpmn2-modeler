@@ -118,6 +118,10 @@ public class TextObjectEditor extends ObjectEditor {
 	
 	public void setEditable(boolean editable) {
 		text.setEditable(editable);
+		text.setEditable(editable);
+		text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		text.setForeground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+		text.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
 	}
 	
 	@Override

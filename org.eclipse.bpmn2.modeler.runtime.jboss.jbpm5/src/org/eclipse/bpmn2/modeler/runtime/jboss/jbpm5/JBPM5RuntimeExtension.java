@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Gateway;
@@ -40,6 +41,9 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension2;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
@@ -85,7 +89,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.ResourceSetChangeEvent;
-import org.eclipse.emf.transaction.ResourceSetListener;
 import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -97,7 +100,7 @@ import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
 
 @SuppressWarnings("restriction")
-public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSetListener {
+public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, IBpmn2RuntimeExtension2 {
 	
 	public final static String JBPM5_RUNTIME_ID = "org.jboss.runtime.jbpm5"; //$NON-NLS-1$
 	
@@ -250,8 +253,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 				e.printStackTrace();
 			}
 		}
-		
-		editor.getEditingDomain().addResourceSetListener(this);
 	}
 	
 	/*
@@ -522,40 +523,21 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 			return iconResources;
 		}
 	}
-
+	
 	@Override
-	public NotificationFilter getFilter() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Command transactionAboutToCommit(ResourceSetChangeEvent event) throws RollbackException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void resourceSetChanged(ResourceSetChangeEvent event) {
-		for (Notification n : event.getNotifications()) {
-			EObject object = null;
-			if (n.getEventType() == Notification.ADD) {
-				if (n.getNewValue() instanceof EObject) {
-					object = (EObject)n.getNewValue();
-				}
-			}
-			else {
-				if (n.getNotifier() instanceof EObject) {
-					object = (EObject)n.getNotifier();
-				}
-			}
+	public void notify(LifecycleEvent event) {
+		if (event.eventType == EventType.BUSINESSOBJECT_CREATED) {
+			EObject object = (EObject) event.target;
+			// Add a name change adapter to every one of these objects.
+			// See my rant in ProcessVariableNameChangeAdapter...
 			if (object instanceof org.eclipse.bpmn2.Property ||
 					object instanceof DataObject ||
 					object instanceof Message ||
 					object instanceof Signal ||
+					object instanceof Error ||
 					object instanceof Escalation ||
 					object instanceof GlobalType ||
-					(object instanceof DataInput && object.eContainer() instanceof MultiInstanceLoopCharacteristics) ) {
+					object instanceof DataInput) {
 				boolean found = false;
 				for (Adapter a : ((EObject)object).eAdapters()) {
 					if (a instanceof ProcessVariableNameChangeAdapter) {
@@ -569,25 +551,6 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, ResourceSe
 				}
 			}
 		}
-		
-	}
-
-	@Override
-	public boolean isAggregatePrecommitListener() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isPrecommitOnly() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isPostcommitOnly() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

@@ -30,6 +30,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.InputSet;
@@ -503,42 +504,12 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						}
 					}
 					
-					// Some objects, like Property, DataObject and Message use the "id" attribute instead
-					// of "name". We need to copy this "id" to "name" so that the UI can deal with them.
-					// The "name" feature will not be saved when the file is saved, but the jBPM Runtime Extension
-					// will keep the "id" in sync with the name during editing.
-					// Editorial: I don't agree with the decision to allow users to change model object IDs,
-					// since these are (theoretically) supposed to be unique; but it is what it is...
-					if (childObject instanceof Property ||
-							childObject instanceof DataObject ||
-							childObject instanceof Message ||
-							childObject instanceof Signal ||
-							childObject instanceof Escalation ||
-							(childObject instanceof DataInput && childObject.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
-						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name");
-						if (nameFeature!=null) {
-							Object value = childObject.eGet(nameFeature);
-							if (value==null || value.toString().isEmpty()) {
-								EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id");
-								if (idFeature!=null) {
-									value = childObject.eGet(idFeature);
-									if (value!=null && !value.toString().isEmpty()) {
-										childObject.eSet(nameFeature, value);
-									}
-								}
-							}
-							ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-							childObject.eAdapters().add(a);
-						}
-					}
-					else if (childObject instanceof GlobalType) {
+					if (childObject instanceof GlobalType) {
 						// The BaseElement feature "id" is not saved, but it MUST be kept in sync with the
 						// GlobalType feature "identifier" - this acts like the "name" feature of other
 						// ItemAwareElements that treat "name" like an ID.
 						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
 						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
-						ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-						childObject.eAdapters().add(a);
 					}
 				}
 				catch(Exception e) {

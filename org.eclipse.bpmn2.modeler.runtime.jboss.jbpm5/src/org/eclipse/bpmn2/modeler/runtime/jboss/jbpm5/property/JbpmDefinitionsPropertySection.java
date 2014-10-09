@@ -71,6 +71,7 @@ public class JbpmDefinitionsPropertySection extends DefinitionsPropertySection {
 				propertiesProvider = new AbstractPropertiesProvider(object) {
 					String[] properties = new String[] {
 							"id", //$NON-NLS-1$
+							"name", //$NON-NLS-1$
 							"itemRef" //$NON-NLS-1$
 					};
 					
@@ -81,13 +82,6 @@ public class JbpmDefinitionsPropertySection extends DefinitionsPropertySection {
 				};
 			}
 			return propertiesProvider;
-		}
-		
-		@Override
-		protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
-			if ("id".equals(attribute.getName())) //$NON-NLS-1$
-				label = Messages.JbpmDefinitionsPropertySection_Name;
-			super.bindAttribute(parent, object, attribute, label);
 		}
 		
 		@Override

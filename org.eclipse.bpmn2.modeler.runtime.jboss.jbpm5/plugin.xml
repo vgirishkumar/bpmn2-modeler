@@ -854,6 +854,7 @@
 			<enable object="ReceiveTask" feature="messageRef"/>
 			<enable object="ReceiveTask" feature="name"/>
 			<enable object="ReceiveTask" feature="operationRef"/>
+			<enable object="Resource" feature="name"/>
 			<enable object="RootElement" feature="extensionValues"/>
 			<enable object="ScriptTask" feature="isForCompensation"/>
 			<enable object="ScriptTask" feature="name"/>

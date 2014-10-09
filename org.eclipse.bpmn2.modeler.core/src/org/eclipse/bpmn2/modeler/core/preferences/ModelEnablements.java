@@ -32,6 +32,7 @@ public class ModelEnablements {
 	private int enableIdAttribute = -1;
 	
 	// require a TargetRuntime!
+	@SuppressWarnings("unused")
 	private ModelEnablements() {
 	}
 
@@ -358,8 +359,7 @@ public class ModelEnablements {
 				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(targetRuntime.getResource());
 				setEnableIdAttribute(prefs.getShowIdAttribute());
 			}
-			if (!getEnableIdAttribute())
-				return false;
+			return getEnableIdAttribute();
 		}
 		if (className==null)
 			return true;

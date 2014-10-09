@@ -15,13 +15,15 @@ package org.eclipse.bpmn2.modeler.core.model;
 
 import java.util.Map;
 
-import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
 import org.eclipse.bpmn2.impl.Bpmn2FactoryImpl;
 import org.eclipse.bpmn2.impl.DocumentRootImpl;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
+import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension2;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
@@ -31,7 +33,6 @@ import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -116,30 +117,34 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
     }
 
 	@Override
-    public EObject create(EClass eClass) {
-    	EObject object = super.create(eClass);
-//    	if (enableModelExtensions)
-    	{
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-	    	if (rt!=null) {
-    			String className = eClass.getName();
-	    		if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName()) && 
-	    			rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE &&
-	    			rt.getModelDescriptor().getEPackage().getEClassifier(className) != null ) {
-    				EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
-	    			object = rt.getModelDescriptor().getEFactory().create(clazz);
-    			}
-	    		
-		    	for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
-		    		if (className.equals(med.getType())) {
-		    			med.populateObject(object, eResource(), enableModelExtensions);
-		    			break;
-		    		}
-		    	}
-	    	}
-    	}
-    	return object;
-    }
+	public EObject create(EClass eClass) {
+		EObject object = super.create(eClass);
+		// if (enableModelExtensions)
+		{
+			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			if (rt != null) {
+				String className = eClass.getName();
+				if (!className.equals(Bpmn2Package.eINSTANCE.getDocumentRoot().getName())
+						&& rt.getModelDescriptor().getEPackage() != Bpmn2Package.eINSTANCE
+						&& rt.getModelDescriptor().getEPackage().getEClassifier(className) != null) {
+					EClass clazz = (EClass) rt.getModelDescriptor().getEPackage().getEClassifier(className);
+					object = rt.getModelDescriptor().getEFactory().create(clazz);
+				}
+
+				for (ModelExtensionDescriptor med : rt.getModelExtensions()) {
+					if (className.equals(med.getType())) {
+						med.populateObject(object, eResource(),enableModelExtensions);
+						break;
+					}
+				}
+				IBpmn2RuntimeExtension rte = rt.getRuntimeExtension();
+				if (rte instanceof IBpmn2RuntimeExtension2) {
+					((IBpmn2RuntimeExtension2)rte).notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
+				}
+			}
+		}
+		return object;
+	}
 
     public static void setEnableModelExtensions(boolean enable) {
     	enableModelExtensions = enable;

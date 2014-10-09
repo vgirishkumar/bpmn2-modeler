@@ -439,8 +439,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				editor.createControl(parent,label);
 			}
 			else if (String.class.equals(eTypeClass)) {
-				ObjectEditor editor = new TextObjectEditor(this,object,attribute);
+				TextObjectEditor editor = new TextObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
+				if (attribute.getName().equals("id"))
+					editor.setEditable(false);
 			} else if (Boolean.class.equals(eTypeClass) ||
 					boolean.class.equals(eTypeClass)
 			) {
@@ -569,6 +571,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		return tableComposite;
 	}
 
+	@Override
+	public void notifyChanged(Notification notification) {
+		super.notifyChanged(notification);
+		refresh();
+	}
+
 	public void refresh() {
 		Display.getDefault().asyncExec( new Runnable() {
 			public void run() {
@@ -587,10 +595,12 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				Notification n = new ENotificationImpl(null, -1, -1, 0, 0);
 				getAllChildWidgets(parent, kids);
 				for (Control c : kids) {
-					INotifyChangedListener listener = (INotifyChangedListener)c.getData(
-							IConstants.NOTIFY_CHANGE_LISTENER_KEY);
-					if (listener!=null) {
-						listener.notifyChanged(n);
+					if (!c.isDisposed()) {
+						INotifyChangedListener listener = (INotifyChangedListener)c.getData(
+								IConstants.NOTIFY_CHANGE_LISTENER_KEY);
+						if (listener!=null) {
+							listener.notifyChanged(n);
+						}
 					}
 				}
 			}
@@ -613,10 +623,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 					List<String> list = new ArrayList<String>();
 					EClass c = o.eClass();
 					// add name and id attributes first (if any)
-					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
-						list.add("name"); //$NON-NLS-1$
 					if (c.getEStructuralFeature("id")!=null) //$NON-NLS-1$
 						list.add("id"); //$NON-NLS-1$
+					if (c.getEStructuralFeature("name")!=null) //$NON-NLS-1$
+						list.add("name"); //$NON-NLS-1$
 					for (EStructuralFeature attribute : o.eClass().getEStructuralFeatures()) {
 						if (!list.contains(attribute.getName()))
 							list.add(attribute.getName());

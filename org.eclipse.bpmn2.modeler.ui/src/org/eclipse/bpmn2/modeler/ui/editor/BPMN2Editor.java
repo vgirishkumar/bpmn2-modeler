@@ -187,7 +187,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.NotificationFilter;
 import org.eclipse.emf.transaction.RecordingCommand;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.TransactionalEditingDomain.Lifecycle;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.gef.EditPart;
@@ -212,6 +211,8 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFPaletteRoot;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -834,15 +835,19 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public Object getAdapter(Class required) {
+		if (required==DiagramEditor.class) {
+			return this;
+		}
 		if (required==ITabDescriptorProvider.class) {
 			if (tabDescriptorProvider==null) {
-				IWorkbenchPage page = getEditorSite().getPage();
-				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
-				try {
-					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
-					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
-				}
-				catch (Exception e) {}
+				tabDescriptorProvider = new PropertyTabDescriptorProvider();
+//				IWorkbenchPage page = getEditorSite().getPage();
+//				String viewID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
+//				try {
+//					page.showView(viewID, null, IWorkbenchPage.VIEW_CREATE);
+//					page.showView(viewID, null,  IWorkbenchPage.VIEW_ACTIVATE);
+//				}
+//				catch (Exception e) {}
 			}
 			return tabDescriptorProvider;
 		}
@@ -853,6 +858,19 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		if (required == IPropertySheetPage.class) {
 			if (propertySheetPage==null) {
 				propertySheetPage = new Bpmn2TabbedPropertySheetPage(this);
+				Display.getCurrent().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						if (!propertySheetPage.getControl().isDisposed()) {
+							propertySheetPage.getControl().addDisposeListener(new DisposeListener() {
+								@Override
+								public void widgetDisposed(DisposeEvent e) {
+									propertySheetPage = null;
+								}
+							});
+						}						
+					}
+				});
 			}
 			return propertySheetPage;
 		}
@@ -885,6 +903,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				return filterNone;
 			else
 				return null;
+		}
+		if (required==GraphicalViewer.class) {
+			return getGraphicalViewer();
 		}
 		
 		return super.getAdapter(required);
