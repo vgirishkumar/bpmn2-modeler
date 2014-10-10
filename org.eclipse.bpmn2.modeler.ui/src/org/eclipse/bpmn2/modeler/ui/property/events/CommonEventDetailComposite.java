@@ -106,17 +106,24 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 					public void notifyChanged(Notification notification) {
 						super.notifyChanged(notification);
 						if (notification.getEventType() == -1) {
+							boolean cancel = be.isCancelActivity();
 							if (hasEventDefinition(be,ErrorEventDefinition.class)) {
-								setCancel(be,true);
-								this.setVisible(true);
+								if (cancel!=true) {
+									setCancel(be,true);
+									this.setVisible(true);
+								}
 							}
 							else if (hasEventDefinition(be,CompensateEventDefinition.class)) {
-								setCancel(be,false);
-								this.setVisible(false);
+								if (cancel!=false) {
+									setCancel(be,false);
+									this.setVisible(false);
+								}
 							}
 							else {
-								setCancel(be,button.getSelection());
-								this.setVisible(true);
+								if (cancel!=button.getSelection()) {
+									setCancel(be,button.getSelection());
+									this.setVisible(true);
+								}
 							}
 						}
 					}
