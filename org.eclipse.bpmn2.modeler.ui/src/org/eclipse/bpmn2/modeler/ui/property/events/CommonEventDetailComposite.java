@@ -15,21 +15,29 @@
 package org.eclipse.bpmn2.modeler.ui.property.events;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.ConditionalEventDefinition;
 import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -38,7 +46,6 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 
 public class CommonEventDetailComposite extends DefaultDetailComposite {
 
@@ -65,22 +72,6 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 		eventsTable = null;
 	}
 
-	@Override
-	public void createBindings(EObject bo) {
-
-		if (bo instanceof BoundaryEvent) {
-			// Use a read-only text field to show which Activity this Boundary Event is attached to.
-			// This prevents the Attributes section from being empty when/if a Compensate Event Definition
-			// is added and the Cancel Activity checkbox is hidden.
-			final BoundaryEvent be = (BoundaryEvent) bo;
-			ObjectEditor editor = new TextObjectEditor(this,be, Bpmn2Package.eINSTANCE.getBoundaryEvent_AttachedToRef());
-			Text text = (Text) editor.createControl(getAttributesParent(),Messages.CommonEventDetailComposite_Attached_To_Label);
-			text.setEditable(false);
-		}
-		
-		super.createBindings(bo);
-	}
-	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
 
 		if (isModelObjectEnabled(object.eClass(), attribute)) {
@@ -157,22 +148,38 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 	}
 
 	@Override
-	public AbstractPropertiesProvider getPropertiesProvider(EObject object) {
+	public AbstractPropertiesProvider getPropertiesProvider(final EObject object) {
 		if (propertiesProvider==null) {
 			propertiesProvider = new AbstractPropertiesProvider(object) {
-				String[] properties = new String[] {
-						"isInterrupting", //$NON-NLS-1$
-						"parallelMultiple", //$NON-NLS-1$
-						"cancelActivity", //$NON-NLS-1$
-						"eventDefinitions", //$NON-NLS-1$
-//						"dataInputs",
-//						"dataOutputs",
-						"properties" //$NON-NLS-1$
-				};
-				
 				@Override
 				public String[] getProperties() {
-					return properties; 
+					List<String> result = new ArrayList<String>();
+					if (object instanceof StartEvent && object.eContainer() instanceof SubProcess) {
+						SubProcess sp = (SubProcess)object.eContainer();
+						if (sp.isTriggeredByEvent()) {
+							result.add("isInterrupting");
+						}
+					}
+					if (object instanceof CatchEvent) {
+						CatchEvent ce = (CatchEvent)object;
+						if (ce.getEventDefinitions().size()>1)
+							result.add("parallelMultiple");
+					}
+					if (object instanceof BoundaryEvent) {
+						boolean add = true;
+						BoundaryEvent be = (BoundaryEvent)object;
+						for (EventDefinition ed : be.getEventDefinitions()) {
+							if (ed instanceof ErrorEventDefinition || ed instanceof CompensateEventDefinition) {
+								add = false;
+								break;
+							}
+						}
+						if (add)
+							result.add("cancelActivity");
+					}
+					result.add("eventDefinitions");
+					result.add("properties");
+					return result.toArray(new String[result.size()]); 
 				}
 			};
 		}
