@@ -4,7 +4,7 @@
 		<available file="${WORKSPACE}/results" />
 	</condition>
 
-	<property name="update.site.source.dir" value="${output.dir}/target/site" />
+	<property name="update.site.source.dir" value="${output.dir}/target/repository" />
 
 	<!-- load properties from default (or alternate) properties file -->
 	<property name="associate.properties" value="${platform-version-name}-sites.properties" />
@@ -73,33 +73,44 @@
 	</target>
 
 	<target name="unpack.zip">
-		<unzip src="${output.dir}/target/site_assembly.zip" dest="${update.site.source.dir}" />
+		<unzip src="${updateSitePath}" dest="${update.site.source.dir}" />
 	</target>
 
 	<target name="pack.zip">
-		<zip destfile="${output.dir}/target/site_assembly.zip" update="true" basedir="${update.site.source.dir}" includes="content.* index.html, web/*.css, README*" />
+		<zip destfile="${updateSitePath}" update="true" basedir="${update.site.source.dir}" includes="content.* index.html, web/*.css, README*" />
 	</target>
 
 	<target name="check.target">
-		<if>
-			<or>
-				<not>
-					<available file="${output.dir}/target/site" type="dir" />
-				</not>
-				<not>
-					<available file="${output.dir}/target/site_assembly.zip" type="file" />
-				</not>
-			</or>
-			<then>
-				<fail>
+	  <pathconvert property="updateSitePath" setonempty="false" pathsep=" ">
+	    <path>
+	      <fileset dir="${output.dir}/target/" includes="org.eclipse.bpmn2.modeler.updatesite*.zip" />
+	    </path>
+	  </pathconvert>
+	  <condition property="updateSiteExists">
+	    <resourcecount when="greater" count="0">
+	      <fileset file="${updateSitePath}"/>
+	    </resourcecount>
+	  </condition>
+	  <if>
+        <or>
+          <not>
+            <available file="${output.dir}/target/repository" type="dir" />
+          </not>
+          <not>
+            <istrue value="${updateSiteExists}"/>
+          </not>
+        </or>
+          <then>
+            <fail>
 --
+Target repository or generated update site zip not found.
 This script must ONLY be called via the pom.xml in this directory, not run directly. 
 Cannot adjust an update site w/o first building it!
 --
 To run this build, use Tycho. Try `mvn3 clean install -fae -e -B`
-</fail>
-			</then>
-		</if>
+            </fail>
+        </then>
+      </if>
 	</target>
 
 </project>
