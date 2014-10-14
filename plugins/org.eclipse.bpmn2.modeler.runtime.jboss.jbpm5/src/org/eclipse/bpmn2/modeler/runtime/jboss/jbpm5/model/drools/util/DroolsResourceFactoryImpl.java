@@ -41,9 +41,6 @@ public class DroolsResourceFactoryImpl extends ResourceFactoryImpl {
 	@Override
 	public Resource createResource(URI uri) {
     	DroolsResourceImpl result = new DroolsResourceImpl(uri);
-        ExtendedMetaData extendedMetadata = new XmlExtendedMetadata();
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
-        result.getDefaultLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, extendedMetadata);
 
         result.getDefaultSaveOptions().put(XMLResource.OPTION_SAVE_TYPE_INFORMATION,
         		// this is only a workaround to allow round-tripping with the jbpm web designer.
