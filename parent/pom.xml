@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -231,8 +233,8 @@
 		</pluginRepository>
 
 		<pluginRepository>
-			<!-- need maven-findbugs-2.3.2-SNAPSHOT, see http://jira.codehaus.org/browse/MFINDBUGS-122 
-				remove this when this version is released -->
+			<!-- need maven-findbugs-2.3.2-SNAPSHOT, see http://jira.codehaus.org/browse/MFINDBUGS-122 remove this when this version 
+				is released -->
 			<id>codehaus.snapshots</id>
 			<url>http://snapshots.repository.codehaus.org/</url>
 		</pluginRepository>
@@ -245,52 +247,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-             <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-source-feature-plugin</artifactId>
-             <version>${tycho-extras-version}</version>
-             <executions>
-               <execution>
-                 <id>source-feature</id>
-                 <phase>package</phase>
-                 <goals>
-                   <goal>source-feature</goal>
-                 </goals>
-               </execution>
-             </executions>
-             <configuration>
-               <excludes>
-                 <plugin id="org.eclipse.bpmn2.modeler.core.source"/>
-                 <plugin id="org.eclipse.bpmn2.modeler.ui.source"/>
-                 <plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source"/>
-                 <feature id="org.eclipse.bpmn2.modeler.sdk"/>
-               </excludes>
-             </configuration>
-           </plugin>
-
-           <plugin>
-             <groupId>org.eclipse.tycho</groupId>
-             <artifactId>tycho-p2-plugin</artifactId>
-             <version>${tycho-version}</version>
-             <executions>
-               <execution>
-                 <id>attached-p2-metadata</id>
-                 <phase>package</phase>
-                 <goals>
-                   <goal>p2-metadata</goal>
-                 </goals>
-               </execution>
-             </executions>
-             <configuration>
-               <excludes>
-                 <plugin id="org.eclipse.bpmn2.modeler.core.source"/>
-                 <plugin id="org.eclipse.bpmn2.modeler.ui.source"/>
-                 <plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source"/>
-                 <feature id="org.eclipse.bpmn2.modeler.sdk"/>
-               </excludes>
-             </configuration>
-           </plugin>
-
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -307,8 +263,53 @@
 					<includePackedArtifacts>true</includePackedArtifacts>
 				</configuration>
 			</plugin>
+<!-- 
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<version>${tycho-extras-version}</version>
+				<executions>
+					<execution>
+						<id>source-feature</id>
+						<phase>package</phase>
+						<goals>
+							<goal>source-feature</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<plugin id="org.eclipse.bpmn2.modeler.core.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.ui.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source" />
+						<feature id="org.eclipse.bpmn2.modeler.sdk" />
+					</excludes>
+				</configuration>
+			</plugin>
 
-
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<executions>
+					<execution>
+						<id>attach-p2-metadata</id>
+						<phase>package</phase>
+						<goals>
+							<goal>p2-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<plugin id="org.eclipse.bpmn2.modeler.core.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.ui.source" />
+						<plugin id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.source" />
+						<feature id="org.eclipse.bpmn2.modeler.sdk" />
+					</excludes>
+				</configuration>
+			</plugin>
+ -->
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-pack200a-plugin</artifactId>
@@ -351,23 +352,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-p2-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<executions>
-					<execution>
-						<id>p2-metadata</id>
-						<goals>
-							<goal>p2-metadata</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<defaultP2Metadata>false</defaultP2Metadata>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-source-plugin</artifactId>
@@ -451,6 +435,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
-
 </project>
