@@ -25,10 +25,10 @@
    <feature url="features/org.eclipse.bpmn2.modeler.examples_0.0.0.jar" id="org.eclipse.bpmn2.modeler.examples" version="0.0.0">
       <category name="Eclipse BPMN2 Modeler"/>
    </feature>
-   <feature url="org.eclipse.bpmn2.modeler.wsil_1.1.0.qualifier" id="org.eclipse.bpmn2.modeler.wsil" version="1.1.0.qualifier">
+   <feature url="org.eclipse.bpmn2.modeler.wsil_0.0.0.jar" id="org.eclipse.bpmn2.modeler.wsil" version="0.0.0">
       <category name="Eclipse BPMN2 Modeler"/>
    </feature>
-   <feature url="features/org.eclipse.bpmn2.modeler.sdk_1.1.0.qualifier.jar" id="org.eclipse.bpmn2.modeler.sdk" version="1.1.0.qualifier">
+   <feature url="features/org.eclipse.bpmn2.modeler.sdk_0.0.0.jar" id="org.eclipse.bpmn2.modeler.sdk" version="0.0.0">
       <category name="Eclipse BPMN2 Modeler"/>
    </feature>
 
