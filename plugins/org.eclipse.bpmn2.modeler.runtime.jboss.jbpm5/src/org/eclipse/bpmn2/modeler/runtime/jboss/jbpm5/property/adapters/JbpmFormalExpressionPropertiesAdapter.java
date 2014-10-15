@@ -58,8 +58,6 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 					for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
 						choiceOfValues.put(el.getName(), el.getUri());
 					}
-					if (!(object.eContainer() instanceof SequenceFlow))
-						choiceOfValues.remove(Messages.JbpmFormalExpressionPropertiesAdapter_Rule);
 					return choiceOfValues;
 				}
 				
