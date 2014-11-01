@@ -77,17 +77,16 @@ public class CreateDiagramCommand extends AbstractHandler {
 				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
 					protected void doExecute() {
-						Class clazz = null;
+						RootElement bpmnElement = null;
 						if (ID_CREATE_PROCESS.equals(id)) {
-							clazz = Process.class;
+							bpmnElement = Bpmn2ModelerFactory.eINSTANCE.createProcess();
 						}
 						else if (ID_CREATE_CHOREOGRAPHY.equals(id)) {
-							clazz = Choreography.class;
+							bpmnElement = Bpmn2ModelerFactory.eINSTANCE.createChoreography();
 						}
 						else if (ID_CREATE_COLLABORATION.equals(id)) {
-							clazz = Collaboration.class;
+							bpmnElement = Bpmn2ModelerFactory.eINSTANCE.createCollaboration();
 						}
-						RootElement bpmnElement = Bpmn2ModelerFactory.create(clazz);
 						EStructuralFeature f = bpmnElement.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 						bpmnElement.eSet(f, name);
 						definitions.getRootElements().add(bpmnElement);
