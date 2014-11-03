@@ -18,7 +18,8 @@ import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EList;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
@@ -28,6 +29,7 @@ import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.operation.IThreadListener;
 import org.eclipse.swt.widgets.Display;
 
 public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
@@ -67,27 +69,54 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 			final Map<Resource, Map<?, ?>> saveOptions) {
 		// Do the work within an operation because this is a long running
 		// activity that modifies the workbench.
-		final IRunnableWithProgress operation = new IRunnableWithProgress() {
-			// This is the method that gets invoked when the operation runs.
-			public void run(final IProgressMonitor monitor) {
-				// Save the resources to the file system.
-				try {
-					savedResources.addAll(save(diagramBehavior.getEditingDomain(), saveOptions, monitor));
-				} catch (final WrappedException e) {
-					String emsg = e.getMessage().replaceAll("\tat .*", "").replaceFirst(".*Exception: ","").trim(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					final String msg = emsg.replace("\r\n\r\n", "").replace("\n\n", "");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.BPMN2PersistencyBehavior_Cannot_Save_Title, msg);
-							monitor.setCanceled(true);
-						}
-					});
-					throw e;
-				}
-			}
-		};
+		final IRunnableWithProgress operation = new SaveOperation(saveOptions, savedResources);
 		return operation;
+	}
+
+	/**
+	 * The workspace operation used to do the actual save.
+	 */
+	protected final class SaveOperation implements IRunnableWithProgress, IThreadListener {
+		private final Map<Resource, Map<?, ?>> saveOptions;
+		private final Set<Resource> savedResources;
+
+		private SaveOperation(Map<Resource, Map<?, ?>> saveOptions, Set<Resource> savedResources) {
+			this.saveOptions = saveOptions;
+			this.savedResources = savedResources;
+		}
+
+		// This is the method that gets invoked when the operation runs.
+		public void run(final IProgressMonitor monitor) {
+			// Save the resources to the file system.
+			try {
+				savedResources.addAll(save(diagramBehavior.getEditingDomain(), saveOptions, monitor));
+			} catch (final WrappedException e) {
+				String emsg = e.getMessage().replaceAll("\tat .*", "").replaceFirst(".*Exception: ","").trim(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				final String msg = emsg.replace("\r\n\r\n", "").replace("\n\n", "");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.BPMN2PersistencyBehavior_Cannot_Save_Title, msg);
+						monitor.setCanceled(true);
+					}
+				});
+				throw e;
+			}
+		}
+
+		/*
+		 * Transfer the rule from the calling thread to the callee. This should
+		 * be invoked before executing the callee and after the callee has
+		 * executed, thus transferring the rule back to the calling thread. See
+		 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=391046
+		 */
+		@Override
+		public void threadChange(Thread thread) {
+			ISchedulingRule rule = Job.getJobManager().currentRule();
+			if (rule != null) {
+				Job.getJobManager().transferRule(rule, thread);
+			}
+		}
 	}
 
 }
