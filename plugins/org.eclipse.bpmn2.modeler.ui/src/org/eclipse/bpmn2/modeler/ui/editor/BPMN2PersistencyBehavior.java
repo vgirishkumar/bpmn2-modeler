@@ -86,7 +86,7 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 		}
 
 		// This is the method that gets invoked when the operation runs.
-		public void run(IProgressMonitor monitor) {
+		public void run(final IProgressMonitor monitor) {
 			// Save the resources to the file system.
 			try {
 				savedResources.addAll(save(diagramBehavior.getEditingDomain(), saveOptions, monitor));
