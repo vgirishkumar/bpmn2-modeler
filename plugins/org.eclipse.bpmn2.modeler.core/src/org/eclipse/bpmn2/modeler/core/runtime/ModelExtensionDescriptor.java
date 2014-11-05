@@ -396,6 +396,17 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return null;
 	}
 
+    /**
+     * Invoke the default EFactory to create an object of the given EClass.
+     * 
+     * @param eClass EClass of the object create.
+     * @return the new object.
+     */
+    public EObject basicCreateObject(EClass eClass) {
+        EPackage pkg = eClass.getEPackage();
+        return pkg.getEFactoryInstance().create(eClass);
+    }
+    
 	/**
 	 * Create and initialize an object of the given EClass. Initialization consists
 	 * of assigning an ID and setting a default name if the EClass has those features.
@@ -628,7 +639,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
                 if (reftype == null || !(reftype instanceof EClass)) {
                     reftype = ref.getEReferenceType();
                 }
-                childObject = createObject((EClass) reftype);
+                childObject = basicCreateObject((EClass) reftype);
                 if (property.label!=null) {
                 	ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(childObject);
                 	if (adapter!=null)
