@@ -51,6 +51,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
@@ -1198,7 +1199,9 @@ public class ModelDecorator {
 			}
 			else {
 				FeatureMap map = oldItem.getValue();
-				if (!feature.isMany()) {
+				// treat unspecified multiplicity as unbounded
+				// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=448073
+				if (!(feature.isMany() || feature.getUpperBound()==ETypedElement.UNSPECIFIED_MULTIPLICITY)) {
 					// only one of these features is allowed: remove existing one(s)
 					for (int i=0; i<map.size(); ++i) {
 						Entry entry = map.get(i);
