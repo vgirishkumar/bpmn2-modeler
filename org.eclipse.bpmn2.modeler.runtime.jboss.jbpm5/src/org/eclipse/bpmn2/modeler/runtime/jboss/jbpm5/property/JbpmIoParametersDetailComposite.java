@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.ModelExtensionAdapter;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -96,6 +97,18 @@ public class JbpmIoParametersDetailComposite extends IoParametersDetailComposite
 		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(activity);
 		if (adapter!=null) {
 			props = adapter.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
+			if (props!=null) {
+				for (Property p : props) {
+					Object propName = p.getFirstStringValue();
+					if (propName!=null && name.equals(propName)) {
+						return true;
+					}
+				}
+			}
+		}
+		ModelExtensionDescriptor med = TargetRuntime.getCurrentRuntime().getModelExtensionDescriptor(activity);
+		if (med!=null) {
+			props = med.getProperties("ioSpecification/dataInputs/name"); //$NON-NLS-1$
 			if (props!=null) {
 				for (Property p : props) {
 					Object propName = p.getFirstStringValue();
