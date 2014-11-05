@@ -11,10 +11,17 @@
 package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.Diagnostic;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.ui.editor.DefaultMarkerBehavior;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
@@ -22,6 +29,7 @@ import org.eclipse.graphiti.ui.editor.DiagramEditorContextMenuProvider;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
 public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
@@ -44,6 +52,10 @@ public class BPMN2EditorDiagramBehavior extends DiagramBehavior {
     protected DefaultPersistencyBehavior createPersistencyBehavior() {
     	return new BPMN2PersistencyBehavior(this);
     }
+    
+	protected DefaultMarkerBehavior createMarkerBehavior() {
+		return new BPMN2EditorMarkerBehavior(this);
+	}
 	
 	@Override
 	protected PictogramElement[] getPictogramElementsForSelection() {

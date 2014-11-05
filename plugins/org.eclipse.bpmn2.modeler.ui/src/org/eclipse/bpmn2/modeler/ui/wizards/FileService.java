@@ -37,6 +37,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -326,6 +327,38 @@ public class FileService {
 		File file = new File(uri.toFileString());
 		if (file.exists())
 			file.delete();
+	}
+
+	public static IFile getFile(URI uri) {
+		if (uri == null) {
+			return null;
+		}
+
+		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+
+		// File URIs
+		final String filePath = getWorkspaceFilePath(uri.trimFragment());
+		if (filePath == null) {
+			final IPath location = Path.fromOSString(uri.toString());
+			final IFile file = workspaceRoot.getFileForLocation(location);
+			if (file != null) {
+				return file;
+			}
+			return null;
+		}
+
+		// Platform resource URIs
+		else {
+			final IResource workspaceResource = workspaceRoot.findMember(filePath);
+			return (IFile) workspaceResource;
+		}
+	}
+
+	private static String getWorkspaceFilePath(URI uri) {
+		if (uri.isPlatform()) {
+			return uri.toPlatformString(true);
+		}
+		return null;
 	}
 	
 //	public static IFile getFileFromInput(IEditorSite site, IEditorInput input) {
