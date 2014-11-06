@@ -30,17 +30,21 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Error;
+import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
@@ -501,6 +505,20 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						// ItemAwareElements that treat "name" like an ID.
 						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
 						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
+					}
+					else if (childObject instanceof org.eclipse.bpmn2.Property ||
+							childObject instanceof DataObject ||
+							childObject instanceof Message ||
+							childObject instanceof Signal ||
+							childObject instanceof Error ||
+							childObject instanceof Escalation ||
+							childObject instanceof DataInput) {
+						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+						String n = (String) childObject.eGet(nameFeature);
+						if (n==null || n.isEmpty()) {
+							EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+							childObject.eSet(nameFeature, childObject.eGet(idFeature));
+						}
 					}
 				}
 				catch(Exception e) {
