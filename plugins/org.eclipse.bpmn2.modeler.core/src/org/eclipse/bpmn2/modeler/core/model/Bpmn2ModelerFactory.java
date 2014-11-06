@@ -294,6 +294,8 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 				newObject = pkg.getEFactoryInstance().create(eClass);
 			}
 		}
+    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
 		return newObject;
 	}
 

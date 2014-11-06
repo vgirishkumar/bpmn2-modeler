@@ -130,12 +130,7 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				
 				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
 					return false;
-				// don't save the "name" feature of Property objects.
-				// see DroolsXmlHandler.processElement() for details...
-				if (o instanceof Property) {
-					if (f.getName().equals("name"))
-						return false;
-				}
+
 				if (f==Bpmn2Package.eINSTANCE.getDefinitions_Relationships()) {
 					if (!JbpmPreferencePage.isEnableSimulation())
 						return false;
