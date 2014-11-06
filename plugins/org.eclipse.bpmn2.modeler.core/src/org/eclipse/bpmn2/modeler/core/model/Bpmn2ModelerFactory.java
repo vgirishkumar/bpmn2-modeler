@@ -197,17 +197,18 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 	@SuppressWarnings("unchecked")
 	public static <T extends EObject> T create(Resource resource, Class<T> clazz) {
 		EClass eClass = getEClass(clazz);
+		T newObject = null;
 		if (eClass!=null) {
-			return (T) create(resource, eClass);
+			newObject = (T) create(resource, eClass);
 		}
 		else {
 			// maybe it's a DI object type?
 			EClassifier eClassifier = BpmnDiPackage.eINSTANCE.getEClassifier(clazz.getSimpleName());
 			if (eClassifier instanceof EClass) {
-				BpmnDiFactory.eINSTANCE.create((EClass)eClassifier);
+				newObject = (T) BpmnDiFactory.eINSTANCE.create((EClass)eClassifier);
 			}
 		}
-		return null;
+		return newObject;
 	}
 	
 	public static EObject create(Resource resource, EClass eClass) {
@@ -226,6 +227,10 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 			if (!isBpmnPackage(pkg)) {
 				newObject = pkg.getEFactoryInstance().create(eClass);
 			}
+		}
+		if (newObject!=null) {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
 		}
 		return newObject;
 	}
@@ -294,8 +299,10 @@ public class Bpmn2ModelerFactory extends Bpmn2FactoryImpl {
 				newObject = pkg.getEFactoryInstance().create(eClass);
 			}
 		}
-    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
+		if (newObject!=null) {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			rt.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, newObject));
+		}
 		return newObject;
 	}
 
