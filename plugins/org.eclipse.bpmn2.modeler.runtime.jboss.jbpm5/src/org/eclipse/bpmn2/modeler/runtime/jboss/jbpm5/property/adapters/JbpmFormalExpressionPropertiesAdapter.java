@@ -40,6 +40,7 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 	public JbpmFormalExpressionPropertiesAdapter(AdapterFactory adapterFactory, FormalExpression object) {
 		super(adapterFactory, object);
 
+    	final EStructuralFeature body = Bpmn2Package.eINSTANCE.getFormalExpression_Body();
     	final EStructuralFeature language = Bpmn2Package.eINSTANCE.getFormalExpression_Language();
     	setFeatureDescriptor(language,
     		new FeatureDescriptor<FormalExpression>(this,object,language) {
@@ -70,6 +71,11 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 				if (object.eContainer() instanceof ResourceAssignmentExpression)
 					return Messages.JbpmFormalExpressionPropertiesAdapter_Actor;
 				return Messages.JbpmFormalExpressionPropertiesAdapter_Expression;
+			}
+			
+			@Override
+			public String getTextValue() {
+				return getFeatureDescriptor(body).getTextValue();
 			}
     	});
 	}

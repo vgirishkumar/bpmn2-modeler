@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemDefinition;
@@ -59,6 +60,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataAssociatio
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataItemsPropertySection.GlobalTypeDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection.JbpmMessageDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection.JbpmMessageListComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmExpressionDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmGatewayDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmImportTypeDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmInterfaceDetailComposite;
@@ -153,7 +155,8 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
 			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
 			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
-			
+			PropertiesCompositeFactory.register(Expression.class, JbpmExpressionDetailComposite.class);
+
 			// TODO: if file was opened from a Guvnor Repository view (or git in jBPM 6)
 			// we may want to explicitly make the editor read-only
 	
