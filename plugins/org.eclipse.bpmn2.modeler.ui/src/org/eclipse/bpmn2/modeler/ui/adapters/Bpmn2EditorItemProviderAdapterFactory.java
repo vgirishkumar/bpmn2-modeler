@@ -76,6 +76,15 @@ import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
+import org.eclipse.bpmn2.impl.CatchEventImpl;
+import org.eclipse.bpmn2.impl.ChoreographyActivityImpl;
+import org.eclipse.bpmn2.impl.EventImpl;
+import org.eclipse.bpmn2.impl.FlowElementImpl;
+import org.eclipse.bpmn2.impl.FlowElementsContainerImpl;
+import org.eclipse.bpmn2.impl.FlowNodeImpl;
+import org.eclipse.bpmn2.impl.GatewayImpl;
+import org.eclipse.bpmn2.impl.LoopCharacteristicsImpl;
+import org.eclipse.bpmn2.impl.ThrowEventImpl;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
@@ -217,69 +226,81 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 		@Override
 		public ExtendedPropertiesAdapter defaultCase(EObject object) {
         	ExtendedPropertiesAdapter adapter = null;
-        	if (object instanceof EClass) {
-        		EClass eclass = (EClass)object;
-        		// this is an EClass: search the current target runtime for an adapter that
-        		// can handle this thing.
-        	    adapter = getTargetRuntimeAdapter(eclass);
-        	    if (adapter==null) {
-        	    	// if none is found, create a dummy EObject and cache it
-        	    	if (eclass.getInstanceClass()==CatchEvent.class) {
-        	    		adapter = new CatchEventPropertiesAdapter(adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==ChoreographyActivity.class) {
-        	    		adapter = new ExtendedPropertiesAdapter<CallChoreography> (adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==Event.class) {
-        	    		adapter = new EventPropertiesAdapter(adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==FlowElement.class) {
-        	    		adapter = new FlowElementPropertiesAdapter(adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==FlowElementsContainer.class) {
-        	    		adapter = new ExtendedPropertiesAdapter<CallChoreography> (adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==FlowNode.class) {
-        	    		adapter = new ExtendedPropertiesAdapter<CallChoreography> (adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==Gateway.class) {
-        	    		adapter = new ExtendedPropertiesAdapter<CallChoreography> (adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==LoopCharacteristics.class) {
-        	    		adapter = new ExtendedPropertiesAdapter<CallChoreography> (adapterFactory, null);
-        	    	}
-        	    	else if (eclass.getInstanceClass()==ThrowEvent.class) {
-        	    		adapter = new ThrowEventPropertiesAdapter(adapterFactory, null);
-        	    	}
-        	    	else {
-	   		    		object = ExtendedPropertiesAdapter.getDummyObject(eclass);
-	   		    		adapter = doSwitch(object);
-        	    	}
-        	    }
-        	}
-        	else
-        		adapter = getTargetRuntimeAdapter(object);
-        	
-        	if (adapter==null) {
-	        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
-	        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter,object) {
-					@Override
-					public String getLabel() {
-						if (ModelUtil.isStringWrapper(object)) {
-							return Messages.CommonLabels_Data_Type;
+        	try {
+	        	if (object instanceof EClass) {
+	        		EClass eclass = (EClass)object;
+	        		// this is an EClass: search the current target runtime for an adapter that
+	        		// can handle this thing.
+	        	    adapter = getTargetRuntimeAdapter(eclass);
+	        	    if (adapter==null) {
+	        	    	// if none is found, create a dummy EObject and cache it
+	        	    	if (eclass.getInstanceClass()==CatchEvent.class) {
+	        	    		object = new CatchEventImpl() {};
+	        	    		adapter = new CatchEventPropertiesAdapter(adapterFactory, (CatchEvent)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==Event.class) {
+	        	    		object = new EventImpl() {};
+	        	    		adapter = new EventPropertiesAdapter(adapterFactory, (Event)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==ThrowEvent.class) {
+	        	    		object = new ThrowEventImpl() {};
+	        	    		adapter = new ThrowEventPropertiesAdapter(adapterFactory, (ThrowEvent)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==FlowElement.class) {
+	        	    		object = new FlowElementImpl() {};
+	        	    		adapter = new FlowElementPropertiesAdapter(adapterFactory, (FlowElement)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==ChoreographyActivity.class) {
+	        	    		object = new ChoreographyActivityImpl() {};
+	        	    		adapter = new ExtendedPropertiesAdapter<ChoreographyActivity> (adapterFactory, (ChoreographyActivity)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==FlowElementsContainer.class) {
+	        	    		object = new FlowElementsContainerImpl() {};
+	        	    		adapter = new ExtendedPropertiesAdapter<FlowElementsContainer> (adapterFactory, (FlowElementsContainer)null);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==FlowNode.class) {
+	        	    		object = new FlowNodeImpl() {};
+	        	    		adapter = new ExtendedPropertiesAdapter<FlowNode> (adapterFactory, (FlowNode)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==Gateway.class) {
+	        	    		object = new GatewayImpl() {};
+	        	    		adapter = new ExtendedPropertiesAdapter<Gateway> (adapterFactory, (Gateway)object);
+	        	    	}
+	        	    	else if (eclass.getInstanceClass()==LoopCharacteristics.class) {
+	        	    		object = new LoopCharacteristicsImpl() {};
+	        	    		adapter = new ExtendedPropertiesAdapter<LoopCharacteristics> (adapterFactory, (LoopCharacteristics)object);
+	        	    	}
+	        	    	else {
+		   		    		object = ExtendedPropertiesAdapter.getDummyObject(eclass);
+		   		    		adapter = doSwitch(object);
+	        	    	}
+	        	    }
+	        	}
+	        	else
+	        		adapter = getTargetRuntimeAdapter(object);
+	        	
+	        	if (adapter==null) {
+		        	adapter = new ExtendedPropertiesAdapter(adapterFactory,object);
+		        	adapter.setObjectDescriptor(new ObjectDescriptor(adapter,object) {
+						@Override
+						public String getLabel() {
+							if (ModelUtil.isStringWrapper(object)) {
+								return Messages.CommonLabels_Data_Type;
+							}
+							return super.getLabel();
 						}
-						return super.getLabel();
-					}
-	
-					@Override
-					public String getTextValue() {
-						if (ModelUtil.isStringWrapper(object)) {
-							return ModelUtil.getStringWrapperTextValue(object);
+		
+						@Override
+						public String getTextValue() {
+							if (ModelUtil.isStringWrapper(object)) {
+								return ModelUtil.getStringWrapperTextValue(object);
+							}
+							return super.getTextValue();
 						}
-						return super.getTextValue();
-					}
-	        	});
+		        	});
+	        	}
         	}
+        	catch (Exception e) {}
         	return adapter;
 		}
 
