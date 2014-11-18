@@ -225,10 +225,12 @@ public class ModelExtensionDescriptor extends BaseRuntimeDescriptor {
 	private EObject createObject(EClass eClass) {
 		EObject eObject = null;
 		EPackage pkg = eClass.getEPackage();
-		if (pkg==Bpmn2Package.eINSTANCE) {
-			eObject = Bpmn2ModelerFactory.create(containingResource, eClass);
-		}
-		else {
+		// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=447659
+//		if (pkg==Bpmn2Package.eINSTANCE) {
+//			eObject = Bpmn2ModelerFactory.create(containingResource, eClass);
+//		}
+//		else
+		{
 			eObject = pkg.getEFactoryInstance().create(eClass);
 		}
 		

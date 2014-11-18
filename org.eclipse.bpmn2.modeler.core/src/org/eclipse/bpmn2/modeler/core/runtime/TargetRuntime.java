@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.AbstractPropertyChangeListenerProvider;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -681,7 +682,33 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		getModelEnablements().add(me);
 	}
 	
-	
+	public List<ModelExtensionDescriptor> getModelExtensionDescriptors()
+	{
+		if (modelExtensions==null) {
+			modelExtensions = new ArrayList<ModelExtensionDescriptor>();
+		}
+		return modelExtensions;
+	}
+
+	public ModelExtensionDescriptor getModelExtensionDescriptor(EObject object) {
+		EClass eClass = (EClass) ((object instanceof EClass) ? object : object.eClass());
+		
+		for (ModelExtensionDescriptor md : getModelExtensionDescriptors()) {
+			String type = eClass.getName();
+			if (md.getType().equals(type))
+				return md;
+			for (EClass ec : eClass.getESuperTypes()) {
+				type = ec.getName();
+				if (md.getType().equals(type))
+					return md;
+				ModelExtensionDescriptor md2 = getModelExtensionDescriptor(ec);
+				if (md2!=null)
+					return md2;
+			}
+		}
+		return null;
+	}
+
 	//////////////////////
 
 	public ArrayList<ToolPaletteDescriptor> getToolPalettes()

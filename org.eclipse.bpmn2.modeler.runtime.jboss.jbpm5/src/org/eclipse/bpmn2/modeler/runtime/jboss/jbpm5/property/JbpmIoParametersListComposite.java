@@ -65,6 +65,17 @@ public class JbpmIoParametersListComposite extends IoParametersListComposite {
 	}
 
 	@Override
+	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
+		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		ItemAwareElement element = (ItemAwareElement)list.get(index);
+		while (JbpmIoParametersDetailComposite.isCustomTaskIOParameter(element)) {
+			++index;
+			element = (ItemAwareElement)list.get(index);
+		}
+		return super.removeListItem(object, feature, index);
+	}
+
+	@Override
 	public void setBusinessObject(EObject object) {
 		super.setBusinessObject(object);
 		// if the owning Activity is a Custom Task, then make this table read-only
