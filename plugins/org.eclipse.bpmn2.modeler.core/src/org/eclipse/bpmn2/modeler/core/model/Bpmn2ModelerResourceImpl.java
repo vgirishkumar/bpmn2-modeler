@@ -655,7 +655,16 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 		@Override
 		protected void handleObjectAttribs(EObject obj) {
+			if (obj instanceof BPMNShape) {
+				// Enable immediate ID resolution because we need to link up
+				// the BPMNShape's "bpmnElement" reference. This is required
+				// by the Bpmn2Preferences so it can determine how to handle
+				// certain DI attributes, e.g. isHorizontal, isExpanded, etc.
+				deferIDREFResolution = false;
+			}
+
 			super.handleObjectAttribs(obj);
+
 			if (attribs != null) {
 				for (int i = 0, size = attribs.getLength(); i < size; ++i) {
 					String name = attribs.getQName(i);
@@ -694,8 +703,10 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 			}
 
 			if (obj instanceof BPMNShape) {
+				// Defer ID resolution until after resource is loaded.
+				// See above.
+				deferIDREFResolution = true;
 				BPMNShape bpmnShape = (BPMNShape)obj;
-
 				Hashtable<String,String> map = new Hashtable<String,String>();
 				if (attribs != null) {
 					for (int i = 0, size = attribs.getLength(); i < size; ++i) {

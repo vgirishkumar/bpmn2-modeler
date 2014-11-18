@@ -47,7 +47,6 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelEnablementDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;

@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -173,6 +174,7 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			int h = multiple ? 40 : 20;
 
 			BPMNShape bpmnShape = DIUtils.createDIShape(bandShape, participant, 0, y + h, w, h, fp, diagram);
+			Bpmn2Preferences.getInstance(choreographyActivity).applyBPMNDIDefaults(bpmnShape, null);
 			bpmnShape.setChoreographyActivityShape(BusinessObjectUtil.getFirstElementOfType(choreographyActivityShape,
 					BPMNShape.class));
 			bpmnShape.setIsMarkerVisible(multiple);

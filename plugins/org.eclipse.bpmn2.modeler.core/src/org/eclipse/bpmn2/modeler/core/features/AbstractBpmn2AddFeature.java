@@ -274,10 +274,19 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
 			if (b!=null)
+				if (isHorizontal(context))
+					return (int) b.getWidth();
 				return (int) b.getHeight();
 		}
-		if (context.getHeight() > 0)
-			return context.getHeight();
+		if (isHorizontal(context)) {
+			if (context.getWidth() > 0)
+				return context.getWidth();
+			return getWidth();
+		}
+		else {
+			if (context.getHeight() > 0)
+				return context.getHeight();
+		}
 		return getHeight();
 	}
 	
@@ -292,11 +301,21 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 		Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
 		if (copiedBpmnShape instanceof BPMNShape) {
 			Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
-			if (b!=null)
+			if (b!=null) {
+				if (isHorizontal(context))
+					return (int) b.getHeight();
 				return (int) b.getWidth();
+			}
 		}
-		if (context.getWidth() > 0)
-			return context.getWidth();
+		if (isHorizontal(context)) {
+			if (context.getHeight() > 0)
+				return context.getHeight();
+			return getHeight();
+		}
+		else {
+			if (context.getWidth() > 0)
+				return context.getWidth();
+		}
 		return getWidth();
 	}
 	
@@ -327,6 +346,12 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return true, if is horizontal
 	 */
 	protected boolean isHorizontal(ITargetContext context) {
+		// isHorizontal only applies to Lanes and Pools
+		if (context instanceof IAddContext) {
+			Object newObject = ((IAddContext)context).getNewObject();
+			if (!(newObject instanceof Lane) && !(newObject instanceof Participant))
+				return false;
+		}
 		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
 			// not importing - set isHorizontal to be the same as copied element or parent
 			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
@@ -347,7 +372,7 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 					return laneShape.isIsHorizontal();
 			}
 		}
-		return preferences.isHorizontalDefault();
+		return FeatureSupport.isHorizontal(context);
 	}
 
 	public abstract Class<? extends BaseElement> getBusinessObjectType();

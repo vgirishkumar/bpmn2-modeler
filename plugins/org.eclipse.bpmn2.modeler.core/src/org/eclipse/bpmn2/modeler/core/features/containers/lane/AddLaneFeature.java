@@ -27,7 +27,6 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -94,12 +93,13 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 		StyleUtil.applyStyle(rect, businessObject);
 		
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
-		
+		boolean isCopy = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE) != null;
+
 		int width = this.getWidth(context);
 		int height = this.getHeight(context);
 		
 		gaService.setLocationAndSize(rect, context.getX(), context.getY(), width, height);
-		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !isImport);
+		BPMNShape bpmnShape = createDIShape(containerShape, businessObject, !(isImport || isCopy));
 		
 		if (FeatureSupport.isTargetLane(context)) {
 			Lane targetLane = FeatureSupport.getTargetLane(context);
@@ -219,61 +219,28 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 	}
 	
 	
-	@Override
 	protected int getHeight(IAddContext context) {
-		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
-			ContainerShape targetContainer = context.getTargetContainer();
-			if (targetContainer instanceof Diagram) {
-				return super.getHeight(context);
-			}
-			if (FeatureSupport.isLane(targetContainer)) {
-				if (FeatureSupport.getPoolOrLaneChildren(targetContainer).size()==0)
-					return super.getHeight(context);
-			}
-			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
-			if (copiedBpmnShape instanceof BPMNShape) {
-				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
-				if (b!=null)
-					return (int) b.getHeight();
-			}
-			
-			int height = targetContainer.getGraphicsAlgorithm().getHeight();
-			
-			Bounds bounds = getPreviousBounds(context);
-			if (bounds != null) {
-				height = (int) bounds.getHeight();
-			}
-			return height;
+		int h = super.getHeight(context);
+		int w = super.getWidth(context);
+		if (!isHorizontal(context)) {
+			return Math.max(w, h);
 		}
-		return super.getHeight(context);
+		return Math.min(w, h);
 	}
 	
-	@Override
-	public int getWidth(IAddContext context) {
-		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null){
-			ContainerShape targetContainer = context.getTargetContainer();
-			if (targetContainer instanceof Diagram) {
-				return super.getWidth(context);
-			}
-			if (FeatureSupport.isLane(targetContainer)) {
-				if (FeatureSupport.getPoolOrLaneChildren(targetContainer).size()==0)
-					return super.getWidth(context);
-			}
-			Object copiedBpmnShape = context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
-			if (copiedBpmnShape instanceof BPMNShape) {
-				Bounds b = ((BPMNShape)copiedBpmnShape).getBounds();
-				if (b!=null)
-					return (int) b.getWidth();
-			}
-			int width = targetContainer.getGraphicsAlgorithm().getWidth();
-			
-			Bounds bounds = getPreviousBounds(context);
-			if (bounds != null) {
-				width = (int) bounds.getWidth();
-			}
-			return width;
+	/**
+	 * Gets the width of the new Pool based on User Preferences for size orientation.
+	 *
+	 * @param context the AddContext for the new shape
+	 * @return the width
+	 */
+	protected int getWidth(IAddContext context) {
+		int h = super.getHeight(context);
+		int w = super.getWidth(context);
+		if (!isHorizontal(context)) {
+			return Math.min(w, h);
 		}
-		return super.getWidth(context);
+		return Math.max(w, h);
 	}
 
 	/* (non-Javadoc)

@@ -126,8 +126,6 @@ public class DIUtils {
 				bpmnShape.setBounds(bounds);
 				getOrCreateDILabel(bpmnShape);
 
-				Bpmn2Preferences.getInstance(bpmnDiagram.eResource()).applyBPMNDIDefaults(bpmnShape, null);
-
 				addDIElement(bpmnShape,bpmnDiagram);
 				ModelUtil.setID(bpmnShape);
 

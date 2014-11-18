@@ -276,8 +276,8 @@ public class FeatureSupport {
 	public static boolean isHorizontal(IContext context) {
 		Object v = context.getProperty(GraphitiConstants.IS_HORIZONTAL_PROPERTY);
 		if (v==null) {
-			// TODO: get default orientation from preferences
-			return true;
+			Bpmn2Preferences preferences = Bpmn2Preferences.getInstance();
+			return preferences.isHorizontalDefault();
 		}
 		return (Boolean)v;
 	}
