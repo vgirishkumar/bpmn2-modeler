@@ -100,13 +100,15 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 							return null;
 						}
 						EObject result = super.addListItem(object, feature);
-						if (event instanceof ThrowEvent) {
-							DataInput input = ((ThrowEvent)event).getDataInputs().get(0);
-							input.setName("event");
-						}
-						else if  (event instanceof CatchEvent) {
-							DataOutput output = ((CatchEvent)event).getDataOutputs().get(0);
-							output.setName("event");
+						if (hasItemDefinition((EventDefinition)result)) {
+							if (event instanceof ThrowEvent) {
+								DataInput input = ((ThrowEvent)event).getDataInputs().get(0);
+								input.setName("event");
+							}
+							else if  (event instanceof CatchEvent) {
+								DataOutput output = ((CatchEvent)event).getDataOutputs().get(0);
+								output.setName("event");
+							}
 						}
 						return result;
 					}
