@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
@@ -28,7 +30,6 @@ import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite.EventDefinitionsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite.MapType;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -98,7 +99,18 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 							);
 							return null;
 						}
-						return super.addListItem(object, feature);
+						EObject result = super.addListItem(object, feature);
+						if (hasItemDefinition((EventDefinition)result)) {
+							if (event instanceof ThrowEvent) {
+								DataInput input = ((ThrowEvent)event).getDataInputs().get(0);
+								input.setName("event");
+							}
+							else if  (event instanceof CatchEvent) {
+								DataOutput output = ((CatchEvent)event).getDataOutputs().get(0);
+								output.setName("event");
+							}
+						}
+						return result;
 					}
 				};
 				eventsTable.bindList(object, feature);
