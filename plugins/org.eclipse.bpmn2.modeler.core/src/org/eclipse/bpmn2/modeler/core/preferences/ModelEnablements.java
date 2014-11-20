@@ -304,8 +304,6 @@ public class ModelEnablements {
 	}
 	
 	public void setEnabled(String className, String featureName, boolean enabled) {
-		if ("Resource".equals(className))
-			System.out.println();
 		if ("all".equals(className)) { //$NON-NLS-1$
 			// enable all model objects
 			if (featureName==null)
@@ -355,8 +353,6 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className, String featureName) {
-		if ("Resource".equals(className))
-			System.out.println();
 		// this needs to happen very late in the lifecycle of this class because we don't want
 		// to force loading of the Bpmn2Preferences (and setting up default preference values)
 		// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
