@@ -752,12 +752,12 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 									tableViewer.setSelection(new StructuredSelection(item));
 							}
 							
-							Display.getDefault().asyncExec( new Runnable() {
-								@Override
-								public void run() {
-									showDetails(false);
-								}
-							});
+//							Display.getDefault().asyncExec( new Runnable() {
+//								@Override
+//								public void run() {
+//									showDetails(false);
+//								}
+//							});
 						}
 					});
 				}

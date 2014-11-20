@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite {
 
+	protected FormalExpression expression = null;
 	protected Button timeDateButton;
 	protected Button timeCycleButton;
 	protected Button timeDurationButton;
@@ -85,8 +86,6 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 		layout.spacing = 20;
 		buttonComposite.setLayout(layout);
 		
-		FormalExpression exp = null;
-		
 		timeDateButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Time_Date, SWT.RADIO);
 		timeCycleButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Interval, SWT.RADIO);
 		timeDurationButton = toolkit.createButton(buttonComposite, Messages.TimerEventDefinitionDetailComposite_Duration, SWT.RADIO);
@@ -99,26 +98,26 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 			timeDurationButton.setVisible(false);
 		
 		if (event.getTimeDate()!=null) {
-			exp = (FormalExpression)event.getTimeDate();
+			expression = (FormalExpression)event.getTimeDate();
 			timeDateButton.setSelection(true);
 			timerType = TimerType.TIMEDATE;
 		}
 		else if (event.getTimeCycle()!=null) {
-			exp = (FormalExpression)event.getTimeCycle();
+			expression = (FormalExpression)event.getTimeCycle();
 			timeCycleButton.setSelection(true);
 			timerType = TimerType.TIMECYCLE;
 		}
 		else if (event.getTimeDuration()!=null) {
-			exp = (FormalExpression)event.getTimeDuration();
+			expression = (FormalExpression)event.getTimeDuration();
 			timeDurationButton.setSelection(true);
 			timerType = TimerType.TIMEDURATION;
 		}
 		else{
 			timerType = TimerType.NONE;
-			exp = createModelObject(FormalExpression.class);
+			expression = createModelObject(FormalExpression.class);
 		}
 		
-		timeValueEditor = new TextObjectEditor(this, exp, PACKAGE.getFormalExpression_Body());
+		timeValueEditor = new TextObjectEditor(this, expression, PACKAGE.getFormalExpression_Body());
 		
 		timeDateButton.addSelectionListener(new SelectionAdapter() {
 			

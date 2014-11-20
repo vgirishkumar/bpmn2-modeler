@@ -47,6 +47,7 @@ import org.eclipse.emf.validation.service.ModelValidationService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -141,15 +142,11 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 	}
 
 	public void redrawPage() {
-		if (getPropertySection()!=null) {
-			getPropertySection().layout();
-			getParent().layout();
-			layout();
+		Composite root = getParent();
+		while (!(root instanceof ScrolledComposite) && root.getParent()!=null) {
+			root = root.getParent();
 		}
-		else
-		{
-			ModelUtil.recursivelayout(getParent());
-		}
+		ModelUtil.recursivelayout(root);
 	}
 	
 	public void setVisible(boolean visible) {

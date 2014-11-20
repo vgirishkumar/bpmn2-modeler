@@ -75,6 +75,11 @@ public class JbpmFormalExpressionPropertiesAdapter extends FormalExpressionPrope
 					return Messages.JbpmFormalExpressionPropertiesAdapter_Actor;
 				return Messages.JbpmFormalExpressionPropertiesAdapter_Expression;
 			}
+			
+			@Override
+			public String getDisplayName(Object context) {
+				return getFeatureDescriptor(Bpmn2Package.eINSTANCE.getFormalExpression_Body()).getDisplayName(context);
+			}
     	});
 	}
 
