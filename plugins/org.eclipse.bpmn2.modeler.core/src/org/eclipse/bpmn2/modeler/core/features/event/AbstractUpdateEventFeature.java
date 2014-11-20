@@ -19,6 +19,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractUpdateMarkerFeature;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -83,6 +84,9 @@ public abstract class AbstractUpdateEventFeature<T extends Event> extends Abstra
 				// make sure this thing has a GraphicsAlgorithm so the GraphicalViewer doesn't
 				// throw an NPE if a refresh happens while we're still doing the update.
 				Graphiti.getCreateService().createRectangle(eventDefinitionShape);
+				Graphiti.getPeService().setPropertyValue(eventDefinitionShape,
+						GraphitiConstants.EVENT_DEFINITION_SHAPE,
+						Boolean.toString(true));
 				link(eventDefinitionShape,eventDefinition);
 			}
 			// ...so we can create an UpdateContext...

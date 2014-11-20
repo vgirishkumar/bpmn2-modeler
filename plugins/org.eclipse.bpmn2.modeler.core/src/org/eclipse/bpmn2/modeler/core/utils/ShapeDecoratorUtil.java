@@ -641,11 +641,12 @@ public class ShapeDecoratorUtil {
 	}
 
 	public static void deleteEventShape(ContainerShape containerShape) {
-		for (PictogramElement shape : containerShape.getChildren()) {
+		List<PictogramElement> shapes = new ArrayList<PictogramElement>();
+		shapes.addAll(containerShape.getChildren());
+		for (PictogramElement shape : shapes) {
 			String property = peService.getPropertyValue(shape, GraphitiConstants.EVENT_DEFINITION_SHAPE);
 			if (property != null) {
 				peService.deletePictogramElement(shape);
-				break;
 			}
 		}
 	}
