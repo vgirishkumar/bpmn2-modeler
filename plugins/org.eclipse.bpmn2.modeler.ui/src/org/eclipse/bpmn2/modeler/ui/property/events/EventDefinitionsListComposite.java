@@ -30,6 +30,8 @@ import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.EscalationEventDefinition;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.Expression;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
@@ -44,6 +46,8 @@ import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
+import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -120,15 +124,15 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 //		context.setNewObject(newItem);
 //		fp.addIfPossible(context);
 
-		Display.getDefault().asyncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				if (getPropertySection()!=null)
-					getPropertySection().getSectionRoot().setBusinessObject(object);
-			}
-			
-		});
+//		Display.getDefault().asyncExec(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				if (getPropertySection()!=null)
+//					getPropertySection().getSectionRoot().setBusinessObject(object);
+//			}
+//			
+//		});
 		return newItem;
 	}
 
@@ -244,36 +248,71 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 				new TableColumn(object,object.eClass().getEStructuralFeature("id")) { //$NON-NLS-1$
 					public String getText(Object element) {
 						if (element instanceof CancelEventDefinition) {
+							CancelEventDefinition cancel = (CancelEventDefinition)element;
+							EObject txn = cancel.eContainer();
+							while (!(txn instanceof Transaction) && txn.eContainer()!=null) {
+								txn = txn.eContainer();
+							}
+							return getTextValue(txn);
 						}
 						if (element instanceof CompensateEventDefinition) {
 							if (((CompensateEventDefinition)element).getActivityRef()!=null)
-								return ((CompensateEventDefinition)element).getActivityRef().getId();
+								return ((CompensateEventDefinition)element).getActivityRef().getName();
 						}
 						if (element instanceof ConditionalEventDefinition) {
 							if (((ConditionalEventDefinition)element).getCondition()!=null)
-								return ExtendedPropertiesProvider.getTextValue(((ConditionalEventDefinition)element).getCondition());
+								return getTextValue(((ConditionalEventDefinition)element).getCondition());
 						}
 						if (element instanceof ErrorEventDefinition) {
 							if (((ErrorEventDefinition)element).getErrorRef()!=null)
-								return ((ErrorEventDefinition)element).getErrorRef().getId();
+								return ((ErrorEventDefinition)element).getErrorRef().getName();
 						}
 						if (element instanceof EscalationEventDefinition) {
 							if (((EscalationEventDefinition)element).getEscalationRef()!=null)
-								return ((EscalationEventDefinition)element).getEscalationRef().getId();
+								return ((EscalationEventDefinition)element).getEscalationRef().getName();
 						}
 						if (element instanceof LinkEventDefinition) {
+							String text = "";
+							LinkEventDefinition link = (LinkEventDefinition)element;
+							int size = link.getSource().size();
+							for (int i=0; i<size; ++i) {
+								LinkEventDefinition source = link.getSource().get(i);
+								text += getTextValue(source.eContainer());
+								if (i<size-1)
+									text += ", ";
+							}
+							if (!text.isEmpty())
+								text += " -> ";
+							text += getTextValue(link.eContainer());
+							LinkEventDefinition target = link.getTarget();
+							if (target!=null) {
+								text += " -> " + getTextValue(target.eContainer());
+							}
+							return text;
 						}
 						if (element instanceof MessageEventDefinition) {
 							if (((MessageEventDefinition)element).getMessageRef()!=null)
-								return ((MessageEventDefinition)element).getMessageRef().getId();
+								return ((MessageEventDefinition)element).getMessageRef().getName();
 						}
 						if (element instanceof SignalEventDefinition) {
 							if (((SignalEventDefinition)element).getSignalRef()!=null)
-								return ((SignalEventDefinition)element).getSignalRef().getId();
+								return ((SignalEventDefinition)element).getSignalRef().getName();
 						}
 						if (element instanceof TerminateEventDefinition) {
 						}
 						if (element instanceof TimerEventDefinition) {
+							Expression exp = ((TimerEventDefinition)element).getTimeDate();
+							if (exp!=null)
+								return Messages.TimerEventDefinitionDetailComposite_Time_Date + ": " +
+										getTextValue(exp);
+							exp = ((TimerEventDefinition)element).getTimeCycle();
+							if (exp!=null)
+								return Messages.TimerEventDefinitionDetailComposite_Interval + ": " +
+									getTextValue(exp);
+							exp = ((TimerEventDefinition)element).getTimeDuration();
+							if (exp!=null)
+								return Messages.TimerEventDefinitionDetailComposite_Duration + ": " +
+									getTextValue(exp);
 						}
 						return super.getText(element); //$NON-NLS-1$
 					}
@@ -288,6 +327,11 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						// need to override this to avoid any problems
 						return super.createCellEditor(parent);
 					}
+					
+					private String getTextValue(EObject object) {
+						return ExtendedPropertiesProvider.getTextValue(object);
+					}
+					
 				}
 			).setEditable(false);
 		return columnProvider;

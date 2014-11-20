@@ -17,6 +17,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -91,6 +92,8 @@ public class ExtendedPropertiesProvider {
 			if (text != null && !text.isEmpty()) {
 				return text;
 			}
+			if (object instanceof FormalExpression)
+				return ""; 
 		}
 		return ModelUtil.toCanonicalString(object);
 	}

@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite;
@@ -67,7 +68,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 					@Override
 					public AbstractDetailComposite createDetailComposite(Class eClass, Composite parent, int style) {
 						if (eClass==TimerEventDefinition.class) {
-							return new TimerEventDefinitionDetailComposite(parent, style);
+							return new JbpmTimerEventDefinitionDetailComposite(parent, style);
 						}
 						if (eClass==ConditionalEventDefinition.class){
 							return new ConditionalEventDefinitionDetailComposite(parent, style);
@@ -120,5 +121,30 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 			return super.bindList(object, feature, listItemClass);
 		}
 		return null;
+	}
+	
+	public static class JbpmTimerEventDefinitionDetailComposite extends TimerEventDefinitionDetailComposite {
+
+		protected TextObjectEditor scriptLanguageEditor;
+
+		public JbpmTimerEventDefinitionDetailComposite(Composite parent, int style) {
+			super(parent, style);
+			// TODO Auto-generated constructor stub
+		}
+
+		/**
+		 * @param section
+		 */
+		public JbpmTimerEventDefinitionDetailComposite(AbstractBpmn2PropertySection section) {
+			super(section);
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public void createBindings(EObject be) {
+			super.createBindings(be);
+			scriptLanguageEditor = new TextObjectEditor(this, expression, PACKAGE.getFormalExpression_Language());
+			scriptLanguageEditor.createControl(getAttributesParent(), Messages.JbpmCallActivityDetailComposite_TimerScriptLanguage);
+		}
 	}
 }

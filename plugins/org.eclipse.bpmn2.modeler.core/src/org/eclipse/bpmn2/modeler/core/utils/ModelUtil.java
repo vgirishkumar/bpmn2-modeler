@@ -1015,12 +1015,18 @@ public class ModelUtil {
 	 * @param parent
 	 */
 	public static void recursivelayout(Composite parent) {
+		parent.setRedraw(false);
+		internalRecursivelayout(parent);
+		parent.setRedraw(true);
+	}
+	
+	private static void internalRecursivelayout(Composite parent) {
 		Control[] kids = parent.getChildren();
 		for (Control k : kids) {
 			if (k.isDisposed())
 				Activator.logError(new SWTException("Widget is disposed.")); //$NON-NLS-1$
 			if (k instanceof Composite) {
-				recursivelayout((Composite)k);
+				internalRecursivelayout((Composite)k);
 				((Composite)k).layout(true);
 			}
 		}
