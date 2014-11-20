@@ -144,7 +144,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 		public void createBindings(EObject be) {
 			super.createBindings(be);
 			scriptLanguageEditor = new TextObjectEditor(this, expression, PACKAGE.getFormalExpression_Language());
-			scriptLanguageEditor.createControl(getAttributesParent(), Messages.JbpmCallActivityDetailComposite_TimerScriptLanguage);
+			scriptLanguageEditor.createControl(getAttributesParent(), Messages.JbpmCommonEventDetailComposite_TimerScriptLanguage);
 		}
 	}
 }
