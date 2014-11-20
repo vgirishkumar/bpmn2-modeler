@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012, 2013, 2014 Red Hat, Inc.
+ * All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.preferences;
 
 import java.util.ArrayList;
@@ -156,29 +166,26 @@ public class ModelEnablements {
 			eClass = (EClass)Bpmn2Package.eINSTANCE.getEClassifier(className);
 		if (eClass==null)
 			eClass = (EClass)BpmnDiPackage.eINSTANCE.getEClassifier(className);
-		
-		// TODO: do we need these?
-//		if (eClass==null)
-//			eClass = (EClass)DcPackage.eINSTANCE.getEClassifier(className);
-//		if (eClass==null)
-//			eClass = (EClass)DiPackage.eINSTANCE.getEClassifier(className);
-		return eClass;
+		return null;
 	}
 	
 	private void setEnabledSingle(EClass eClass, boolean enabled) {
 		if (isValid(eClass)) {
-			String className = eClass.getName();
-			if (enabled) {
-				if (classes.containsKey(className))
-					return;
-				HashSet<String> features = new HashSet<String>();
-				classes.put(className, features);
-			}
-			else {
-				if (!classes.containsKey(className))
-					return;
-				classes.remove(className);
-			}
+			setEnabledSingle(eClass.getName(), enabled);
+		}
+	}
+	
+	private void setEnabledSingle(String className, boolean enabled) {
+		if (enabled) {
+			if (classes.containsKey(className))
+				return;
+			HashSet<String> features = new HashSet<String>();
+			classes.put(className, features);
+		}
+		else {
+			if (!classes.containsKey(className))
+				return;
+			classes.remove(className);
 		}
 	}
 	
@@ -198,23 +205,24 @@ public class ModelEnablements {
 		}
 		// enable or disable just the class
 		EClass eClass = getEClass(name);
-		setEnabledSingle(eClass, enabled);
+		setEnabledSingle(name, enabled);
 		
 		if (enabled) {
 			// and enable all of its contained and referenced types
 			if (eClass!=null) {
 				HashSet<String> features = classes.get(name);
-				
-				for (EAttribute a : eClass.getEAllAttributes()) {
-					features.add(a.getName());
-				}
-				for (EReference a : eClass.getEAllContainments()) {
-					features.add(a.getName());
-//					setEnabledSingle(a.getEReferenceType(), true);
-				}
-				for (EReference a : eClass.getEAllReferences()) {
-					features.add(a.getName());
-//					setEnabledSingle(a.getEReferenceType(), true);
+				if (features.isEmpty()) {
+					for (EAttribute a : eClass.getEAllAttributes()) {
+						features.add(a.getName());
+					}
+					for (EReference a : eClass.getEAllContainments()) {
+						features.add(a.getName());
+	//					setEnabledSingle(a.getEReferenceType(), true);
+					}
+					for (EReference a : eClass.getEAllReferences()) {
+						features.add(a.getName());
+	//					setEnabledSingle(a.getEReferenceType(), true);
+					}
 				}
 			}
 		}
@@ -350,28 +358,53 @@ public class ModelEnablements {
 	}
 
 	public boolean isEnabled(String className, String featureName) {
+		// this needs to happen very late in the lifecycle of this class because we don't want
+		// to force loading of the Bpmn2Preferences (and setting up default preference values)
+		// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
+		// See Bpmn2Preferences#loadDefaults()
+		if (enableIdAttribute== -1) {
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance();
+			setEnableIdAttribute(prefs.getShowIdAttribute());
+		}
+		
 		if ("id".equals(featureName)) { //$NON-NLS-1$
-			// this needs to happen very late in the lifecycle of this class because we don't want
-			// to force loading of the Bpmn2Preferences (and setting up default preference values)
-			// before all of the TargetRuntimes have been loaded by TargetRuntime.getAllRuntimes().
-			// See Bpmn2Preferences#loadDefaults()
-			if (enableIdAttribute== -1) {
-				Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(targetRuntime.getResource());
-				setEnableIdAttribute(prefs.getShowIdAttribute());
-			}
 			return getEnableIdAttribute();
 		}
 		if (className==null)
 			return true;
 		if (classes.containsKey(className)) { // && isOverride()) {
 			if (featureName!=null && !featureName.isEmpty()) {
+				// the "anyAttribute" FeatureMap should always be enabled,
+				// although the features contained in the map may not be
+				if ("anyAttribute".equals(featureName)) //$NON-NLS-1$
+					return true;
+				
 				HashSet<String> features = classes.get(className);
-				return features.contains(featureName);
+				if (features.contains(featureName) || features.isEmpty())
+					return true;
+				
+				// check all supertypes of the requested EClass
+				EClass eClass = getEClass(className);
+				if (eClass!=null) {
+					for (EClass st : eClass.getEAllSuperTypes()) {
+						String cn = st.getName();
+						if (classes.containsKey(cn)) { // && isOverride()) {
+							if (featureName!=null && !featureName.isEmpty()) {
+								features = classes.get(cn);
+								if (features.contains(featureName))
+									return true;
+								break;
+							}
+							return true;
+						}
+					}
+				}
+				return false;
 			}
 			return true;
 		}
 		
-		return false; //!isOverride();
+		return false;
 	}
 	
 	public boolean isEnabled(EClass eClass, EStructuralFeature feature) {
@@ -383,6 +416,9 @@ public class ModelEnablements {
 	public boolean isEnabled(EClass eClass) {
 		if (eClass==null)
 			return false;
+		EPackage pkg = eClass.getEPackage();
+		if (pkg instanceof BpmnDiPackage)
+			return true;
 		return isEnabled(eClass.getName());
 	}
 

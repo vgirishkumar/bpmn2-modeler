@@ -816,6 +816,8 @@
 			<enable object="ItemAwareElement" feature="itemSubjectRef"/>
 			<enable object="ItemDefinition" feature="id"/>
 			<enable object="ItemDefinition" feature="structureRef"/>
+			<disable object="ItemDefinition" feature="itemKind"/>
+			<disable object="ItemDefinition" feature="isCollection"/>
 			<enable object="Lane" feature="flowNodeRefs"/>
 			<enable object="Lane" feature="id"/>
 			<enable object="Lane" feature="name"/>

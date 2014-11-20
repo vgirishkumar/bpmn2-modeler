@@ -1465,6 +1465,12 @@ public class ModelUtil {
 		if (feature==null)
 			return null;
 		
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		try {
+			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
+		}
+		catch (Exception e) {}
+		
 		if (feature.getEType() instanceof EEnum) {
 			EEnum en = (EEnum)feature.getEType();
 			Hashtable<String,Object> choices = new Hashtable<String,Object>();
@@ -1473,10 +1479,7 @@ public class ModelUtil {
 			}
 			return choices;
 		}
-		
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
-		if (adapter!=null)
-			return adapter.getFeatureDescriptor(feature).getChoiceOfValues(object);
+
 		return null;
 	}
 
