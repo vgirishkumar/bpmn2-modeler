@@ -297,4 +297,12 @@ public interface GraphitiConstants {
 	 * an envelope connected to a Participant band in a Choreography Task
 	 **/
 	public final static String MESSAGE_LINK = "choreography.messageLink"; //$NON-NLS-1$
+	
+	/**
+	 * The {@link IContext} property key used by {@link Bpmn2ToolBehaviorProvider#getContextMenu()}
+	 * to pass a {@link IContextMenuEntry} object to custom features. This gives the custom
+	 * feature a chance to construct cascading menu entries and submenus if necessary before
+	 * the context menu is actually shown.
+	 **/
+	public final static String CONTEXT_MENU_ENTRY = "context.menu.entry."; //$NON-NLS-1$
 }
