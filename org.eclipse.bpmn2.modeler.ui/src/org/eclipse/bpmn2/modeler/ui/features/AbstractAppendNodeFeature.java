@@ -63,6 +63,8 @@ import org.eclipse.graphiti.palette.IToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.tb.ContextMenuEntry;
+import org.eclipse.graphiti.tb.IContextMenuEntry;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.internal.util.ui.PopupMenu;
@@ -117,6 +119,44 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 
 	};
 
+	public static class SubMenuCustomFeature extends AbstractCustomFeature {
+
+		AbstractCustomFeature customFeature;
+		ICreateFeature feature;
+		/**
+		 * @param fp
+		 */
+		public SubMenuCustomFeature(AbstractCustomFeature customFeature, ICreateFeature feature) {
+			super(customFeature.getFeatureProvider());
+			this.customFeature = customFeature;
+			this.feature = feature;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+		 */
+		@Override
+		public void execute(ICustomContext context) {
+			context.putProperty("create.feature", feature);
+			customFeature.execute(context);
+		}
+
+		public boolean canExecute(ICustomContext context) {
+			return customFeature.canExecute(context);
+		}
+
+		@Override
+		public String getDescription() {
+			return feature.getDescription();
+		}
+
+		@Override
+		public String getName() {
+			return customFeature.getName() + "/" + feature.getName();
+		}
+	}
+	
+
 	/**
 	 * @param fp
 	 */
@@ -138,6 +178,58 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 			ICreateFeature feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
 			if (!feature.canCreate(createContext))
 				return false;
+		}
+		
+		// build submenu features
+		String key = GraphitiConstants.CONTEXT_MENU_ENTRY + this.getName();
+		IContextMenuEntry contextMenuEntry = (IContextMenuEntry) context.getProperty(key);
+		if (contextMenuEntry!=null) {
+			if (contextMenuEntry.getChildren().length == 0) {
+				BPMNToolBehaviorProvider toolProvider = getToolProvider();
+				LinkedHashMap<IPaletteCompartmentEntry, ContextMenuEntry> categories = new LinkedHashMap<IPaletteCompartmentEntry, ContextMenuEntry>();
+				ContextMenuEntry cme = null;
+	
+				for (IToolEntry tool : tools) {
+					IPaletteCompartmentEntry ce = toolProvider.getCategory(tool);
+					if (ce!=null) {
+						if (categories.containsKey(ce)) {
+							cme = categories.get(ce);
+						}
+						else {
+							cme = new ContextMenuEntry(this, context);
+							cme.setText(ce.getLabel());
+							categories.put(ce, cme);
+						}
+					}
+				}
+				if (categories.size()>1) {
+					List<ContextMenuEntry> entries = new ArrayList<ContextMenuEntry>();
+					for (IToolEntry tool : tools) {
+						IPaletteCompartmentEntry ce = toolProvider.getCategory(tool);
+						if (ce!=null) {
+							ICreateFeature feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+							SubMenuCustomFeature submenuFeature = new SubMenuCustomFeature(this, feature);
+							cme = categories.get(ce);
+							ContextMenuEntry e = new ContextMenuEntry(submenuFeature, context);
+							e.setText(tool.getLabel());
+							cme.add(e);
+							if (!entries.contains(cme)) {
+								contextMenuEntry.add(cme);
+								entries.add(cme);
+							}
+						}
+					}
+				}
+				else {
+					for (IToolEntry tool : tools) {
+						ICreateFeature feature = ((ObjectCreationToolEntry)tool).getCreateFeature();
+						SubMenuCustomFeature submenuFeature = new SubMenuCustomFeature(this, feature);
+						cme = new ContextMenuEntry(submenuFeature, context);
+						cme.setText(tool.getLabel());
+						contextMenuEntry.add(cme);
+					}
+				}
+			}
 		}
 		return true;
 	}
@@ -165,7 +257,10 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 				// AbstractAppendNodeNodeFeature specializations; for example the class
 				// AppendActivityFeature will construct a popup list of all Activity subclasses
 				// e.g. Task, ScriptTask, SubProcess, etc. 
-				ICreateFeature createFeature = selectNewShape();
+				ICreateFeature createFeature = (ICreateFeature) context.getProperty("create.feature");
+				if (createFeature==null)
+					createFeature = selectNewShape();
+				
 				if (createFeature!=null) {
 					CreateContext createContext = prepareCreateContext(context);
 
@@ -463,7 +558,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 		return changesDone;
 	}
 
-	private CreateContext prepareCreateContext(ICustomContext context) {
+	protected CreateContext prepareCreateContext(ICustomContext context) {
 		CreateContext cc = new CreateContext();
 		PictogramElement[] pes = context.getPictogramElements();
 		if (pes==null || pes.length!=1)
