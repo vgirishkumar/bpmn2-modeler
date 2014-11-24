@@ -31,13 +31,12 @@ public class Messages extends NLS {
 	public static String SchemaObjectEditor_WSDL_Output;
 	public static String SchemaObjectEditor_WSDL_Port;
 	public static String SchemaObjectEditor_XML_Attribute;
-	public static String ServiceImplementationObjectEditor_Create_New_Title;
-	public static String ServiceImplementationObjectEditor_Dialog_Cancelled;
-	public static String ServiceImplementationObjectEditor_Edit_Title;
-	public static String ServiceImplementationObjectEditor_Implementation_URI_Label;
-	public static String ServiceImplementationObjectEditor_Implementation_Name_Label;
-	public static String ServiceImplementationObjectEditor_Invalid_Duplicate;
-	public static String ServiceImplementationObjectEditor_Invalid_Empty;
+	public static String NameAndURIObjectEditor_Create_New_Title;
+	public static String NameAndURIObjectEditor_Edit_Title;
+	public static String NameAndURIObjectEditor_Dialog_Cancelled;
+	public static String NameAndURIObjectEditor_URI_Label;
+	public static String NameAndURIObjectEditor_Name_Label;
+	public static String NameAndURIObjectEditor_Invalid_Empty;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

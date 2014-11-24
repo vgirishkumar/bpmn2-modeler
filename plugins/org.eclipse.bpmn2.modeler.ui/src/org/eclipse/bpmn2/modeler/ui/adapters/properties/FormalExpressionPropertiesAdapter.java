@@ -14,18 +14,22 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.Hashtable;
+import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.ExpressionLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
@@ -63,7 +67,9 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 				@Override
 				public String getLabel() {
 					if (object.eContainer() instanceof SequenceFlow)
-						return Messages.FormalExpressionPropertiesAdapter_Constraint;
+						return Messages.FormalExpressionPropertiesAdapter_Condition;
+					if (object.eContainer() instanceof ResourceAssignmentExpression)
+						return Messages.FormalExpressionPropertiesAdapter_Actor;
 					return Messages.FormalExpressionPropertiesAdapter_Script;
 				}
 
@@ -83,19 +89,14 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
     		
 				@Override
 				public String getLabel() {
+					if (object.eContainer() instanceof SequenceFlow)
+						return Messages.FormalExpressionPropertiesAdapter_Condition_Language;
 					return Messages.FormalExpressionPropertiesAdapter_Script_Language;
 				}
 	
 				@Override
 				public Hashtable<String, Object> getChoiceOfValues() {
-					if (choiceOfValues==null) {
-						choiceOfValues = new Hashtable<String, Object>();
-						TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-						for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
-							choiceOfValues.put(el.getName(), el.getUri());
-						}
-					}
-					return choiceOfValues;
+					return FormalExpressionPropertiesAdapter.getChoiceOfValues(object);
 				}
 				
 			}
@@ -112,5 +113,20 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 			}
 		});
 	}
-
+	
+	public static Hashtable<String, Object> getChoiceOfValues(EObject object) {
+		Hashtable<String,Object> choices = new Hashtable<String, Object>();
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+		for (ExpressionLanguageDescriptor el : rt.getExpressionLanguageDescriptors()) {
+			choices.put(el.getName(), ModelUtil.createStringWrapper(el.getUri()));
+		}
+		
+		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(object);
+		for (Entry<String, String> entry : prefs.getNameAndURIs(Bpmn2Preferences.PREF_EXPRESSION_LANGUAGE).entrySet()) {
+			if (!choices.containsKey(entry.getKey())) {
+				choices.put(entry.getKey(), ModelUtil.createStringWrapper(entry.getValue()));
+			}
+		}
+		return choices;
+	}
 }

@@ -26,7 +26,8 @@ import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite;
@@ -125,7 +126,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 	
 	public static class JbpmTimerEventDefinitionDetailComposite extends TimerEventDefinitionDetailComposite {
 
-		protected TextObjectEditor scriptLanguageEditor;
+		protected ObjectEditor scriptLanguageEditor;
 
 		public JbpmTimerEventDefinitionDetailComposite(Composite parent, int style) {
 			super(parent, style);
@@ -143,7 +144,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 		@Override
 		public void createBindings(EObject be) {
 			super.createBindings(be);
-			scriptLanguageEditor = new TextObjectEditor(this, expression, PACKAGE.getFormalExpression_Language());
+			scriptLanguageEditor = new ExpressionLanguageObjectEditor(this, expression, PACKAGE.getFormalExpression_Language());
 			scriptLanguageEditor.createControl(getAttributesParent(), Messages.JbpmCommonEventDetailComposite_TimerScriptLanguage);
 		}
 	}

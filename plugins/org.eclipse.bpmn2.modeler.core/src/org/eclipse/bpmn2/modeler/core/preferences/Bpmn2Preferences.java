@@ -146,7 +146,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public final static String PREF_PROPAGATE_GROUP_CATEGORIES_LABEL = Messages.Bpmn2Preferences_Propagate_Group_Categories;
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS = "allow.multiple.connections"; //$NON-NLS-1$
 	public final static String PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL = Messages.Bpmn2Preferences_Allow_Mutliple_Connections;
-	public final static String PREF_SERVICE_IMPLEMENTATIONS = "service.implementations"; //$NON-NLS-1$
+	
+	// Keys for name/URI pairs
+	public final static String PREF_SERVICE_IMPLEMENTATIONS = "service.implementation"; //$NON-NLS-1$
+	public final static String PREF_EXPRESSION_LANGUAGE = "expression.language"; //$NON-NLS-1$
+	public final static String PREF_DATA_TYPE = "data.type"; //$NON-NLS-1$
 
 	public final static String PREF_RESOLVE_EXTERNALS = "resolve.externals"; //$NON-NLS-1$
 	public final static String PREF_RESOLVE_EXTERNALS_LABEL = Messages.Bpmn2Preferences_Resolve_Externals;
@@ -1777,8 +1781,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	}
 
-	public Hashtable<String,String> getServiceImplementations() {
-		String value = get(PREF_SERVICE_IMPLEMENTATIONS, ""); //$NON-NLS-1$
+	public Hashtable<String,String> getNameAndURIs(String key) {
+		String value = get(key, ""); //$NON-NLS-1$
 		Hashtable<String,String> impls = new Hashtable<String,String>();
 		for (String s : value.split("\t")) { //$NON-NLS-1$
 			if (!s.isEmpty()) {
@@ -1792,7 +1796,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		return impls;
 	}
 	
-	private void putServiceImplementations(Hashtable<String,String> impls) {
+	private void putNameAndURIs(String key, Hashtable<String,String> impls) {
 		String value = ""; //$NON-NLS-1$
 		Iterator<Entry<String, String>> iter = impls.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -1803,22 +1807,22 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					value += "\t"; //$NON-NLS-1$
 			}
 		}
-		put(PREF_SERVICE_IMPLEMENTATIONS, value);
+		put(key, value);
 	}
 	
-	public void addServiceImplementation(String name, String uri) {
-		Hashtable<String,String> impls = getServiceImplementations();
+	public void addNameAndURI(String key, String name, String uri) {
+		Hashtable<String,String> impls = getNameAndURIs(key);
 		if (!impls.contains(name)) {
 			impls.put(name, uri);
-			putServiceImplementations(impls);
+			putNameAndURIs(key, impls);
 		}
 	}
 	
-	public void removeServiceImplementation(String name) {
-		Hashtable<String,String> impls = getServiceImplementations();
+	public void removeNameAndURI(String key, String name) {
+		Hashtable<String,String> impls = getNameAndURIs(key);
 		if (impls.containsKey(name)) {
 			impls.remove(name);
-			putServiceImplementations(impls);
+			putNameAndURIs(key, impls);
 		}
 	}
 	
