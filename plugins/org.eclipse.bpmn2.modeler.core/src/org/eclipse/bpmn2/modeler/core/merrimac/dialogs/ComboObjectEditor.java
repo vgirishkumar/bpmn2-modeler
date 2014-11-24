@@ -158,15 +158,14 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 					}
 				});
 			}
-			if (canEdit) {
-				editButton = getToolkit().createButton(buttons, null, SWT.PUSH);
-				editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
-				editButton.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						buttonClicked(ID_EDIT_BUTTON);
-					}
-				});
-			}
+			editButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+			editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
+			editButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					buttonClicked(ID_EDIT_BUTTON);
+				}
+			});
+			editButton.setEnabled(canEdit());
 		}
 
 		fillCombo();

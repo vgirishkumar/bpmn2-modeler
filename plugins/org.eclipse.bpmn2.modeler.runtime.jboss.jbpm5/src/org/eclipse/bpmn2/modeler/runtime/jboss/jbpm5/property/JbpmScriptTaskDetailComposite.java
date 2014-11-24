@@ -13,14 +13,11 @@
 
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
-import java.util.Hashtable;
-
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -52,16 +49,8 @@ public class JbpmScriptTaskDetailComposite extends JbpmTaskDetailComposite {
 
 	@Override
 	public void createBindings(EObject be) {
-		scriptFormatEditor = new ComboObjectEditor(this,be,be.eClass().getEStructuralFeature("scriptFormat")) { //$NON-NLS-1$
+		scriptFormatEditor = new ExpressionLanguageObjectEditor(this,be,be.eClass().getEStructuralFeature("scriptFormat")) { //$NON-NLS-1$
 
-			@Override
-			protected Hashtable<String, Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
-				Hashtable<String, Object> choiceOfValues = new Hashtable<String, Object>();
-				choiceOfValues.put("Java", "http://www.java.com/java"); //$NON-NLS-1$ //$NON-NLS-2$
-				choiceOfValues.put("MVEL", "http://www.mvel.org/2.0"); //$NON-NLS-1$ //$NON-NLS-2$
-				return choiceOfValues;
-			}
-			
 			@Override
 			protected boolean canSetNull() {
 				return true;

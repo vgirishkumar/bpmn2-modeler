@@ -81,7 +81,7 @@ public class ServiceTaskPropertiesAdapter extends TaskPropertiesAdapter<ServiceT
 		}
 		
 		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(object);
-		for (Entry<String, String> entry : prefs.getServiceImplementations().entrySet()) {
+		for (Entry<String, String> entry : prefs.getNameAndURIs(Bpmn2Preferences.PREF_SERVICE_IMPLEMENTATIONS).entrySet()) {
 			if (!choices.containsKey(entry.getKey())) {
 				choices.put(entry.getKey(), ModelUtil.createStringWrapper(entry.getValue()));
 			}

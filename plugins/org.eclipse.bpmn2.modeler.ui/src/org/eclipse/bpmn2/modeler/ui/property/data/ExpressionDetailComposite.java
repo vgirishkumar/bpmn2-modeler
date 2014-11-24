@@ -15,8 +15,8 @@ package org.eclipse.bpmn2.modeler.ui.property.data;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
@@ -64,7 +64,7 @@ public class ExpressionDetailComposite extends DefaultDetailComposite {
 			if (label==null)
 				label = getBusinessObjectDelegate().getLabel(object, attribute);
 			
-			ObjectEditor editor = new ComboObjectEditor(this,object,attribute) {
+			ObjectEditor editor = new ExpressionLanguageObjectEditor(this,object,attribute) {
 				
 				@Override
 				protected boolean canSetNull() {
