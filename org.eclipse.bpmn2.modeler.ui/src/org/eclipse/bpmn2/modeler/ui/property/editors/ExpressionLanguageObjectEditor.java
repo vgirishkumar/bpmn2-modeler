@@ -17,9 +17,7 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.runtime.ServiceImplementationDescriptor;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.ui.adapters.properties.ServiceTaskPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.FormalExpressionPropertiesAdapter;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -27,16 +25,16 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 /**
  *
  */
-public class ServiceImplementationObjectEditor extends NameAndURIObjectEditor {
+public class ExpressionLanguageObjectEditor extends NameAndURIObjectEditor {
 
 	/**
 	 * @param parent
 	 * @param object
 	 * @param feature
 	 */
-	public ServiceImplementationObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+	public ExpressionLanguageObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
-		setPreferenceKey(Bpmn2Preferences.PREF_SERVICE_IMPLEMENTATIONS);
+		setPreferenceKey(Bpmn2Preferences.PREF_EXPRESSION_LANGUAGE);
 	}
 
 	/**
@@ -45,14 +43,14 @@ public class ServiceImplementationObjectEditor extends NameAndURIObjectEditor {
 	 * @param feature
 	 * @param featureEType
 	 */
-	public ServiceImplementationObjectEditor(AbstractDetailComposite parent, EObject object,
+	public ExpressionLanguageObjectEditor(AbstractDetailComposite parent, EObject object,
 			EStructuralFeature feature, EClass featureEType) {
 		super(parent, object, feature, featureEType);
-		setPreferenceKey(Bpmn2Preferences.PREF_SERVICE_IMPLEMENTATIONS);
+		setPreferenceKey(Bpmn2Preferences.PREF_EXPRESSION_LANGUAGE);
 	}
 
 	@Override
 	protected Hashtable<String,Object> getChoiceOfValues(EObject object, EStructuralFeature feature) {
-		return ServiceTaskPropertiesAdapter.getChoiceOfValues(object);
+		return FormalExpressionPropertiesAdapter.getChoiceOfValues(object);
 	}
 }

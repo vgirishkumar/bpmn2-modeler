@@ -170,35 +170,34 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 					}
 				});
 			}
-			if (canEdit) {
-				editButton = getToolkit().createButton(buttons, null, SWT.PUSH);
-				editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
-				editButton.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						ISelection selection = comboViewer.getSelection();
-						if (selection instanceof StructuredSelection) {
-							String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
-							if ((firstElement != null && firstElement.isEmpty())) {
-								// nothing to edit
-								firstElement = null;
+			editButton = getToolkit().createButton(buttons, null, SWT.PUSH);
+			editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
+			editButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					ISelection selection = comboViewer.getSelection();
+					if (selection instanceof StructuredSelection) {
+						String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
+						if ((firstElement != null && firstElement.isEmpty())) {
+							// nothing to edit
+							firstElement = null;
+						}
+						if (firstElement != null && comboViewer.getData(firstElement) instanceof EObject) {
+							EObject value = (EObject) comboViewer.getData(firstElement);
+							try {
+								value = editObject(value);
+								setValue(value);
+								fillCombo();
 							}
-							if (firstElement != null && comboViewer.getData(firstElement) instanceof EObject) {
-								EObject value = (EObject) comboViewer.getData(firstElement);
-								try {
-									value = editObject(value);
-									setValue(value);
-									fillCombo();
-								}
-								catch (OperationCanceledException ex1) {
-								}
-								catch (Exception ex2) {
-									Activator.logError(ex2);
-								}
+							catch (OperationCanceledException ex1) {
+							}
+							catch (Exception ex2) {
+								Activator.logError(ex2);
 							}
 						}
 					}
-				});
-			}
+				}
+			});
+			editButton.setEnabled(canEdit());
 		}
 
 		fillCombo();

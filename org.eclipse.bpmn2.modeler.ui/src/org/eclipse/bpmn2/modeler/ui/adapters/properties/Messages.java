@@ -11,9 +11,11 @@ public class Messages extends NLS {
 	public static String ErrorPropertiesAdapter_ID;
 	public static String EscalationPropertiesAdapter_Escalation_Code;
 	public static String EscalationPropertiesAdapter_ID;
-	public static String FormalExpressionPropertiesAdapter_Constraint;
+	public static String FormalExpressionPropertiesAdapter_Condition;
+	public static String FormalExpressionPropertiesAdapter_Actor;
 	public static String FormalExpressionPropertiesAdapter_Script;
 	public static String FormalExpressionPropertiesAdapter_Script_Language;
+	public static String FormalExpressionPropertiesAdapter_Condition_Language;
 	public static String ImportPropertiesAdapter_Import;
 	public static String ItemAwareElementPropertiesAdapter_ID;
 	public static String ItemDefinitionPropertiesAdapter_Data_Type;
