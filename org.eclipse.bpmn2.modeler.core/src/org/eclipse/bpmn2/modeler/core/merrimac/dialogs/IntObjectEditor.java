@@ -100,8 +100,12 @@ public class IntObjectEditor extends TextObjectEditor {
 				if (Long.class.equals(eTypeClass) || long.class.equals(eTypeClass)) {
 					setValue(Long.valueOf((long)i));
 				}
-				else
+				else if (Integer.class.equals(eTypeClass) || int.class.equals(eTypeClass)) {
 					setValue(Integer.valueOf((int)i));
+				}
+				else {
+					setValue(Long.toString(i));
+				}
 			}
 		});
 
