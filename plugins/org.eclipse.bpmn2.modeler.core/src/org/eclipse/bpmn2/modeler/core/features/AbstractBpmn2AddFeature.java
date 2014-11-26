@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -53,6 +54,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -124,7 +126,15 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return the BPMNShape
 	 */
 	protected BPMNShape createDIShape(Shape shape, BaseElement elem, boolean applyDefaults) {
-		BPMNShape bpmnShape = DIUtils.createDIShape(shape, elem, findDIShape(elem), getFeatureProvider());
+		BPMNShape bpmnShape = null;
+		Diagram diagram = Graphiti.getPeService().getDiagramForShape(shape);
+		if (diagram!=null) {
+			BPMNDiagram bpmnDiagram = (BPMNDiagram) BusinessObjectUtil.getBusinessObjectForPictogramElement(diagram);
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, elem);
+		}
+		else
+			bpmnShape = findDIShape(elem);
+		bpmnShape = DIUtils.createDIShape(shape, elem, bpmnShape, getFeatureProvider());
 		if (applyDefaults && bpmnShape!=null)
 			preferences.applyBPMNDIDefaults(bpmnShape, null);
 		return bpmnShape;
@@ -139,7 +149,8 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 	 * @return the BPMNEdge
 	 */
 	protected BPMNEdge createDIEdge(Connection connection, BaseElement elem) {
-		BPMNEdge edge = DIUtils.findBPMNEdge(elem);
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
+		BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, elem);
 		return DIUtils.createDIEdge(connection, elem, edge, getFeatureProvider());
 	}
 
@@ -278,14 +289,14 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 					return (int) b.getWidth();
 				return (int) b.getHeight();
 		}
-		if (isHorizontal(context)) {
-			if (context.getWidth() > 0)
-				return context.getWidth();
-			return getWidth();
-		}
-		else {
-			if (context.getHeight() > 0)
-				return context.getHeight();
+		if (context.getHeight() > 0)
+			return context.getHeight();
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
+			if (isHorizontal(context)) {
+				if (context.getWidth() > 0)
+					return context.getWidth();
+				return getWidth();
+			}
 		}
 		return getHeight();
 	}
@@ -307,14 +318,14 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 				return (int) b.getWidth();
 			}
 		}
-		if (isHorizontal(context)) {
-			if (context.getHeight() > 0)
-				return context.getHeight();
-			return getHeight();
-		}
-		else {
-			if (context.getWidth() > 0)
-				return context.getWidth();
+		if (context.getWidth() > 0)
+			return context.getWidth();
+		if (context.getProperty(GraphitiConstants.IMPORT_PROPERTY) == null) {
+			if (isHorizontal(context)) {
+				if (context.getHeight() > 0)
+					return context.getHeight();
+				return getHeight();
+			}
 		}
 		return getWidth();
 	}

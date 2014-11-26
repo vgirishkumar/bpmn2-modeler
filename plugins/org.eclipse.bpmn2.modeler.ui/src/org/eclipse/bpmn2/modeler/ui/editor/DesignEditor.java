@@ -136,12 +136,10 @@ public class DesignEditor extends BPMN2Editor {
 					BPMNDiagram newBpmnDiagram = null;
 					boolean showSelection = true;
 					if (object instanceof BaseElement) {
-						// If the selection came from the ContentOutline then navigate to
-						// diagram page corresponds to this flowElementsContainer if one exists
-//						if (part instanceof ContentOutline)
-						{
-							newBpmnDiagram = DIUtils.findBPMNDiagram((BaseElement)object, true);
-							Object o = DIUtils.findBPMNDiagram((BaseElement)object, false);
+						BaseElement baseElement = (BaseElement) object;
+						if (!DIUtils.isBPMNDiagramChild(getBpmnDiagram(), baseElement)) {
+							newBpmnDiagram = DIUtils.findBPMNDiagram(baseElement, true);
+							Object o = DIUtils.findBPMNDiagram(baseElement, false);
 							if (o==newBpmnDiagram)
 								showSelection = false;
 						}
@@ -150,6 +148,7 @@ public class DesignEditor extends BPMN2Editor {
 						newBpmnDiagram = (BPMNDiagram)object;
 						showSelection = false;
 					}
+					
 					if (newBpmnDiagram!=null && getBpmnDiagram() != newBpmnDiagram) {
 						multipageEditor.showDesignPage(newBpmnDiagram);
 						final BPMNDiagram d = newBpmnDiagram;

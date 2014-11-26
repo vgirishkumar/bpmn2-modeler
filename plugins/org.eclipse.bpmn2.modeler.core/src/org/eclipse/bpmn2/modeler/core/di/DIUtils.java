@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
@@ -248,7 +249,8 @@ public class DIUtils {
 	public static void updateDIEdge(Connection connection) {
 		ILayoutService layoutService = Graphiti.getLayoutService();
 		EObject be = BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-		BPMNEdge edge = DIUtils.findBPMNEdge(be);
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
+		BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, be);
 		if (edge!=null) {
 			Point point = DcFactory.eINSTANCE.createPoint();
 
@@ -536,6 +538,12 @@ public class DIUtils {
 		}	
 	}
 	
+	public static BPMNDiagram findBPMNDiagram(PictogramElement pe) {
+		Diagram diagram = Graphiti.getPeService().getDiagramForPictogramElement(pe);
+		BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
+		return bpmnDiagram;
+	}
+	
 	/**
 	 * Find the BPMNDiagram in the editor's Resource Set that corresponds to the given BaseElement.
 	 * The BaseElement is expected be some kind of container class such as a Process or SubProcess.
@@ -546,6 +554,77 @@ public class DIUtils {
 	 */
 	public static BPMNDiagram findBPMNDiagram(final BaseElement baseElement) {
 		return findBPMNDiagram(baseElement, false);
+	}
+
+	/**
+	 * Check if the given BPMNDiagram object contains a BPMNShape or BPMNEdge
+	 * that references the given BaseElement.
+	 * 
+	 * @param bpmnDiagram the BPMNDiagram to check
+	 * @param baseElement a BaseElement that will be referenced by a child object of bpmnDiagram
+	 * @return true if the baseElement is referenced by a child of bpmnDiagram
+	 */
+	public static boolean isBPMNDiagramChild(BPMNDiagram bpmnDiagram, BaseElement baseElement) {
+		BaseElement bpmnElement;
+		for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+			if (de instanceof BPMNShape)
+				bpmnElement = ((BPMNShape)de).getBpmnElement();
+			else if (de instanceof BPMNEdge)
+				bpmnElement = ((BPMNEdge)de).getBpmnElement();
+			else
+				continue;
+			if (bpmnElement == baseElement)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Return a list of all defined BPMNDiagrams. 
+	 * 
+	 * @param object a reference EObject that belongs to the same ResourceSet as
+	 * the Bpmn2Resource being edited.
+	 * @param type a flag indicating the types of diagrams to include:
+	 *              0 = include all
+	 *              1 = include main diagrams (i.e. Collaborations and Processes)
+	 *              2 = include sub diagrams (SubProcesses only)
+	 * @return a list of BPMNDiagram objects.
+	 */
+	public static List<BPMNDiagram> getBPMNDiagrams(EObject object, int type) {
+		List<BPMNDiagram> result = new ArrayList<BPMNDiagram>();
+		if (object==null || object.eResource()==null)
+			return result;
+		ResourceSet resourceSet = object.eResource().getResourceSet();
+		if (resourceSet==null)
+			return result;
+		for (Resource r : resourceSet.getResources()) {
+			if (r instanceof Bpmn2Resource) {
+				for (EObject o : r.getContents()) {
+					if (o instanceof DocumentRoot) {
+						DocumentRoot root = (DocumentRoot)o;
+						Definitions defs = root.getDefinitions();
+						for (BPMNDiagram d : defs.getDiagrams()) {
+							BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
+							BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+							if (type==0) {
+								result.add(bpmnDiagram);
+							}
+							if ((type & 1)!=0) {
+								if (!(bpmnElement instanceof SubProcess)) {
+									result.add(bpmnDiagram);
+								}
+							}
+							if ((type & 2)!=0) {
+								if (bpmnElement instanceof SubProcess) {
+									result.add(bpmnDiagram);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 	
 	/**
@@ -650,15 +729,19 @@ public class DIUtils {
 		Definitions definitions = ModelUtil.getDefinitions(baseElement);
 		if (definitions!=null) {
 			for (BPMNDiagram d : definitions.getDiagrams()) {
-				BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-				BaseElement bpmnElement = null;
-				for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-					if (de instanceof BPMNShape) {
-						bpmnElement = ((BPMNShape)de).getBpmnElement();
-						if (bpmnElement == baseElement)
-							return (BPMNShape)de;
-					}
-				}
+				BPMNShape bpmnShape = findBPMNShape(d, baseElement);
+				if (bpmnShape!=null)
+					return bpmnShape;
+			}
+		}
+		return null;
+	}
+	
+	public static BPMNShape findBPMNShape(BPMNDiagram bpmnDiagram, BaseElement baseElement) {
+		for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+			if (de instanceof BPMNShape) {
+				if (((BPMNShape)de).getBpmnElement() == baseElement)
+					return (BPMNShape)de;
 			}
 		}
 		return null;
@@ -668,15 +751,19 @@ public class DIUtils {
 		Definitions definitions = ModelUtil.getDefinitions(baseElement);
 		if (definitions!=null) {
 			for (BPMNDiagram d : definitions.getDiagrams()) {
-				BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-				BaseElement bpmnElement = null;
-				for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-					if (de instanceof BPMNEdge) {
-						bpmnElement = ((BPMNEdge)de).getBpmnElement();
-						if (bpmnElement == baseElement)
-							return (BPMNEdge)de;
-					}
-				}
+				BPMNEdge bpmnEdge = findBPMNEdge(d, baseElement);
+				if (bpmnEdge!=null)
+					return bpmnEdge;
+			}
+		}
+		return null;
+	}
+	
+	public static BPMNEdge findBPMNEdge(BPMNDiagram bpmnDiagram, EObject baseElement) {
+		for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+			if (de instanceof BPMNEdge) {
+				if (((BPMNEdge)de).getBpmnElement() == baseElement)
+					return (BPMNEdge)de;
 			}
 		}
 		return null;
@@ -686,22 +773,25 @@ public class DIUtils {
 		Definitions definitions = ModelUtil.getDefinitions(object);
 		if (definitions!=null) {
 			for (BPMNDiagram d : definitions.getDiagrams()) {
-				BPMNDiagram bpmnDiagram = (BPMNDiagram)d;
-				BaseElement bpmnElement = null;
-				for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
-					EStructuralFeature f = de.eClass().getEStructuralFeature("bpmnElement"); //$NON-NLS-1$
-					if (f!=null) {
-						bpmnElement = (BaseElement) de.eGet(f);
-						if (bpmnElement == object)
-							return de;
-					}
-				}
+				DiagramElement de = findDiagramElement(d, object);
+				if (de!=null)
+					return de;
 			}
 		}
 		return null;
 	}
 	
-
+	public static DiagramElement findDiagramElement(BPMNDiagram bpmnDiagram, EObject object) {
+		for (DiagramElement de : bpmnDiagram.getPlane().getPlaneElement()) {
+			EStructuralFeature f = de.eClass().getEStructuralFeature("bpmnElement"); //$NON-NLS-1$
+			if (f!=null) {
+				if (de.eGet(f) == object)
+					return de;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Returns the BPMNDiagram element that owns the given DiagramElement.
 	 * 

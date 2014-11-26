@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -101,7 +102,8 @@ public class ExpandFlowNodeFeature extends ShowDiagramPageFeature {
 				ContainerShape containerShape = (ContainerShape)pe0;
 				FlowNode flowNode = (FlowNode)bo;
 				try {
-					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
+					BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(pe0);
+					BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, flowNode);
 					if (!bpmnShape.isIsExpanded()) {
 						
 						// SubProcess is collapsed - resize to minimum size such that all children are visible

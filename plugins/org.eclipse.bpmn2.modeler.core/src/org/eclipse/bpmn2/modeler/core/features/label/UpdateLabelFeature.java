@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.di.BPMNLabel;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -33,7 +34,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -47,6 +47,7 @@ import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -238,13 +239,14 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 			LabelPosition vpos = getVerticalLabelPosition(labelGA);
 
 			if (isAddingLabel) {
+				BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(ownerPE);
 				BPMNLabel bpmnLabel = null;
 				if (ownerPE instanceof Connection) {
-					BPMNEdge bpmnEdge = DIUtils.findBPMNEdge(element);
+					BPMNEdge bpmnEdge = DIUtils.findBPMNEdge(bpmnDiagram, element);
 					if (bpmnEdge!=null)
 						bpmnLabel = bpmnEdge.getLabel();
 				} else {
-					BPMNShape bpmnShape = DIUtils.findBPMNShape(element);
+					BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, element);
 					if (bpmnShape!=null)
 						bpmnLabel = bpmnShape.getLabel();
 				}

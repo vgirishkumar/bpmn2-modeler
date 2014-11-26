@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.OutputSet;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -37,6 +38,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 
 public class IoParametersListComposite extends DefaultListComposite {
@@ -167,7 +169,9 @@ public class IoParametersListComposite extends DefaultListComposite {
 				for (DataInputAssociation da : dataInputAssociations) {
 					if (da.getTargetRef()!=null && da.getTargetRef().equals(item)) {
 						dataAssociationsRemoved.add(da);
-						BPMNEdge edge = DIUtils.findBPMNEdge(da);
+						Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+						BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(diagram);
+						BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, da);
 						if (edge!=null) {
 							edgesRemoved.add(edge);
 						}

@@ -15,14 +15,13 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.SubProcess;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.activity.AbstractAddActivityFeature;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
-import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -45,7 +44,8 @@ public abstract class AddExpandableActivityFeature<T extends Activity>
 			SubProcess subprocess = (SubProcess) businessObject;
 			isTriggeredByEvent = subprocess.isTriggeredByEvent();
 
-			BPMNShape bpmnShape = DIUtils.findBPMNShape(subprocess);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
+			BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, subprocess);
 			if (bpmnShape != null) {
 				isExpanded = bpmnShape.isIsExpanded();
 			}

@@ -131,13 +131,14 @@ public class PullupFeature extends AbstractCustomFeature {
 		ContainerShape shape = (ContainerShape)context.getPictogramElements()[0];
 		Object bo = getBusinessObjectForPictogramElement(shape);
 
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(shape);
 		BPMNShape bpmnShape = null;
 		if (bo instanceof Participant) {
-			bpmnShape = DIUtils.findBPMNShape((Participant)bo);
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (Participant)bo);
 			bo = ((Participant)bo).getProcessRef();
 		}
 		else if (bo instanceof FlowElementsContainer) {
-			bpmnShape = DIUtils.findBPMNShape((FlowElementsContainer)bo);
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (FlowElementsContainer)bo);
 		}
 		FlowElementsContainer container = (FlowElementsContainer)bo;
 		
