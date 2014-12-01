@@ -56,7 +56,7 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
     		
 				@Override
 				public String getLabel() {
-					return Messages.CallActivityPropertiesAdapter_Called_Activity;
+					return Messages.CallActivityPropertiesAdapter_Called_Element;
 				}
 				
 				@Override
