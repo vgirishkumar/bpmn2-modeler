@@ -68,7 +68,7 @@ public class FlowElementTreeEditPart extends AbstractGraphicsTreeEditPart {
 			retList.addAll(ca.getParticipantRefs());
 		}
 		else if (elem instanceof CallActivity) {
-			// render a Call Activity with its called activity target
+			// render a Call Activity with its called element target
 			// (a Process or Global Task) as the child node.
 			CallableElement target = ((CallActivity)elem).getCalledElementRef();
 			if (target!=null) {

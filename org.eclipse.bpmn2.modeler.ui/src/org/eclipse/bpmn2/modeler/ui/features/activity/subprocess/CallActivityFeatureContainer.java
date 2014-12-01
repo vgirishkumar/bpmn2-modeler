@@ -141,7 +141,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 				super.delete(context);
 				
 				if (canDeleteCalledActivity) {
-					// if the called activity is a Process, it may have its own
+					// if the called element is a Process, it may have its own
 					// diagram page which needs to be removed as well.
 					BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(calledActivity);
 					if (bpmnDiagram != null) {

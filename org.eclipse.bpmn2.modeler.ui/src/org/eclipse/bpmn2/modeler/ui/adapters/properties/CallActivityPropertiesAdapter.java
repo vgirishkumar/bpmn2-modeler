@@ -54,7 +54,7 @@ public class CallActivityPropertiesAdapter extends ActivityPropertiesAdapter<Cal
 			new RootElementRefFeatureDescriptor<CallActivity>(adapterFactory,object,ce) {
 				@Override
 				public String getLabel(Object context) {
-					return Messages.CallActivityPropertiesAdapter_Called_Activity;
+					return Messages.CallActivityPropertiesAdapter_Called_Element;
 				}
 				
 				@Override

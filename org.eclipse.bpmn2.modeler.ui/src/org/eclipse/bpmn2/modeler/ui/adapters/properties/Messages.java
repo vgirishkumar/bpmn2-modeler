@@ -4,7 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.adapters.properties.messages"; //$NON-NLS-1$
-	public static String CallActivityPropertiesAdapter_Called_Activity;
+	public static String CallActivityPropertiesAdapter_Called_Element;
 	public static String DataAssociationPropertiesAdapter_Source;
 	public static String DataAssociationPropertiesAdapter_Target;
 	public static String ErrorPropertiesAdapter_Error_Code;
