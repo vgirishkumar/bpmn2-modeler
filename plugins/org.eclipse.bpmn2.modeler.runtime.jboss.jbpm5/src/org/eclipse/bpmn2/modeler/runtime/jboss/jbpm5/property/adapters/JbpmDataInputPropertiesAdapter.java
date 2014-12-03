@@ -35,7 +35,8 @@ public class JbpmDataInputPropertiesAdapter extends DataInputPropertiesAdapter {
 				
 	    		@Override
 	    		protected void internalSet(DataInput dataInput, EStructuralFeature feature, Object value, int index) {
-					dataInput.setItemSubjectRef(JbpmModelUtil.getDataType(dataInput, value));
+	    			value = JbpmModelUtil.getDataType(dataInput, value);
+	    			super.internalSet(object, feature, value, index);
 				}
 				
 				@Override

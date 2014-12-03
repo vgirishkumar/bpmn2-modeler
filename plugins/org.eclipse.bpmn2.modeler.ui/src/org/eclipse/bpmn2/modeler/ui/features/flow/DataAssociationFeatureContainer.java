@@ -28,10 +28,8 @@ import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.OutputSet;
-import org.eclipse.bpmn2.ReceiveTask;
-import org.eclipse.bpmn2.SendTask;
-import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -43,7 +41,6 @@ import org.eclipse.bpmn2.modeler.core.features.flow.AbstractAddFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractCreateFlowFeature;
 import org.eclipse.bpmn2.modeler.core.features.flow.AbstractReconnectFlowFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -79,8 +76,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -759,8 +754,30 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 				DataAssociation businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 						DataAssociation.class);
 				setAssociationDirection(connection, businessObject);
+				reconcileDataTypes(connection, businessObject);
 			}
 			return true;
+		}
+
+		/**
+		 * @param connection
+		 * @param businessObject
+		 */
+		private void reconcileDataTypes(Connection connection, DataAssociation assoc) {
+			if (assoc.getSourceRef().size()==1 && assoc.getTargetRef()!=null) {
+				ItemAwareElement source = assoc.getSourceRef().get(0);
+				ItemAwareElement target = assoc.getTargetRef();
+				ItemDefinition sourceType = source.getItemSubjectRef();
+				ItemDefinition targetType = target.getItemSubjectRef();
+				if (sourceType!=null) {
+//					if (target.getItemSubjectRef()==null)
+						target.setItemSubjectRef(sourceType);
+					
+				}
+				else if (targetType!=null) {
+					source.setItemSubjectRef(targetType);
+				}
+			}
 		}
 	}
 

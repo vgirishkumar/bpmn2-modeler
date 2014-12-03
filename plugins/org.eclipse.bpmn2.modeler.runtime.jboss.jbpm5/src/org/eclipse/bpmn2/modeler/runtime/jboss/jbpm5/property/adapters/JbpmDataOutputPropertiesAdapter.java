@@ -34,8 +34,9 @@ public class JbpmDataOutputPropertiesAdapter extends DataOutputPropertiesAdapter
 			new ItemDefinitionRefFeatureDescriptor<DataOutput>(this,object,feature) {
 				
 	    		@Override
-	    		protected void internalSet(DataOutput dataInput, EStructuralFeature feature, Object value, int index) {
-					dataInput.setItemSubjectRef(JbpmModelUtil.getDataType(dataInput, value));
+	    		protected void internalSet(DataOutput dataOutput, EStructuralFeature feature, Object value, int index) {
+	    			value = JbpmModelUtil.getDataType(dataOutput, value);
+	    			super.internalSet(object, feature, value, index);
 				}
 				
 				@Override
