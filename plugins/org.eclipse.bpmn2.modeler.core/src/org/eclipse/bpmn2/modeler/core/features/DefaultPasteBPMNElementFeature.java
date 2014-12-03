@@ -528,7 +528,8 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 
 		BPMNShape oldBpmnShape = null;
 		if (oldObject instanceof BaseElement) {
-			oldBpmnShape = DIUtils.findBPMNShape((BaseElement)oldObject);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(oldShape);
+			oldBpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (BaseElement)oldObject);
 			ac.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, oldBpmnShape);
 		}
 		ac.putProperty(GraphitiConstants.COPIED_BPMN_OBJECT, oldObject);
@@ -701,9 +702,11 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		
 		// also copy the BPMNEdge properties
 		if (oldObject instanceof BaseElement) {
-			BPMNEdge oldBpmnEdge = DIUtils.findBPMNEdge((BaseElement)oldObject);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(oldConnection);
+			BPMNEdge oldBpmnEdge = DIUtils.findBPMNEdge(bpmnDiagram, (BaseElement)oldObject);
 			if (oldBpmnEdge!=null) {
-				BPMNEdge newBpmnEdge = DIUtils.findBPMNEdge((BaseElement)newObject);
+				bpmnDiagram = DIUtils.findBPMNDiagram(newConnection);
+				BPMNEdge newBpmnEdge = DIUtils.findBPMNEdge(bpmnDiagram, (BaseElement)newObject);
 				newBpmnEdge.setMessageVisibleKind(oldBpmnEdge.getMessageVisibleKind());
 			}
 		}

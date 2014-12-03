@@ -219,29 +219,29 @@ public class AddLaneFeature extends AbstractBpmn2AddFeature<Lane> {
 	}
 	
 	
-	protected int getHeight(IAddContext context) {
-		int h = super.getHeight(context);
-		int w = super.getWidth(context);
-		if (!isHorizontal(context)) {
-			return Math.max(w, h);
-		}
-		return Math.min(w, h);
-	}
-	
-	/**
-	 * Gets the width of the new Pool based on User Preferences for size orientation.
-	 *
-	 * @param context the AddContext for the new shape
-	 * @return the width
-	 */
-	protected int getWidth(IAddContext context) {
-		int h = super.getHeight(context);
-		int w = super.getWidth(context);
-		if (!isHorizontal(context)) {
-			return Math.min(w, h);
-		}
-		return Math.max(w, h);
-	}
+//	protected int getHeight(IAddContext context) {
+//		int h = super.getHeight(context);
+//		int w = super.getWidth(context);
+//		if (!isHorizontal(context)) {
+//			return Math.max(w, h);
+//		}
+//		return Math.min(w, h);
+//	}
+//	
+//	/**
+//	 * Gets the width of the new Pool based on User Preferences for size orientation.
+//	 *
+//	 * @param context the AddContext for the new shape
+//	 * @return the width
+//	 */
+//	protected int getWidth(IAddContext context) {
+//		int h = super.getHeight(context);
+//		int w = super.getWidth(context);
+//		if (!isHorizontal(context)) {
+//			return Math.min(w, h);
+//		}
+//		return Math.max(w, h);
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature#getBusinessObjectType()

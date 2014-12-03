@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features.bendpoint;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -36,7 +37,8 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 		try {
 			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			BPMNEdge edge = DIUtils.findBPMNEdge(element);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
+			BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, element);
 			return edge!=null;
 		} catch (Exception e) {
 			Activator.logError(e);
@@ -56,7 +58,8 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 			p.setX(context.getX());
 			p.setY(context.getY());
 
-			BPMNEdge edge = DIUtils.findBPMNEdge(element);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
+			BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, element);
 			int index = context.getBendpointIndex() + 1;
 			edge.getWaypoint().add(index, p);
 			BendpointConnectionRouter.setAddedBendpoint(connection, context.getBendpointIndex());

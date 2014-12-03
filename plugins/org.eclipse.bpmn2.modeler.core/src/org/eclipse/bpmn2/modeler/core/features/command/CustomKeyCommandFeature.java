@@ -31,6 +31,8 @@ import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 
 public class CustomKeyCommandFeature extends AbstractCustomFeature implements ICustomCommandFeature {
 
+	private String name = Messages.CustomKeyCommandFeature_MoveOrDuplicate;
+	
 	public CustomKeyCommandFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -38,10 +40,14 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 	@Override
 	public boolean isAvailable(String hint) {
 		if (hint!=null) {
-			if (hint.startsWith("move")) //$NON-NLS-1$
+			if (hint.startsWith("move")) { //$NON-NLS-1$
+				name = Messages.CustomKeyCommandFeature_Move;
 				return true;
-			if (hint.startsWith("duplicate")) //$NON-NLS-1$
+			}
+			if (hint.startsWith("duplicate")) { //$NON-NLS-1$
+				name = Messages.CustomKeyCommandFeature_Duplicate;
 				return true;
+			}
 		}
 		return false;
 	}
@@ -112,6 +118,16 @@ public class CustomKeyCommandFeature extends AbstractCustomFeature implements IC
 		}
 	}
 	
+	@Override
+	public String getDescription() {
+		return super.getDescription();
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
 	private void executeMove(ICustomContext context) {
 		int dx = 0;
 		int dy = 0;

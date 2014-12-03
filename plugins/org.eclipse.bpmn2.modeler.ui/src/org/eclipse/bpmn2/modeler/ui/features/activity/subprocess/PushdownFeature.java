@@ -131,14 +131,14 @@ public class PushdownFeature extends AbstractCustomFeature {
 		// a ContainerShape for an expandable activity
 		ContainerShape shape = (ContainerShape)context.getPictogramElements()[0];
 		Object bo = getBusinessObjectForPictogramElement(shape);
-		
+		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(shape);
 		BPMNShape bpmnShape = null;
 		if (bo instanceof Participant) {
-			bpmnShape = DIUtils.findBPMNShape((Participant)bo);
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (Participant)bo);
 			bo = ((Participant)bo).getProcessRef();
 		}
 		else if (bo instanceof FlowElementsContainer) {
-			bpmnShape = DIUtils.findBPMNShape((FlowElementsContainer)bo);
+			bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, (FlowElementsContainer)bo);
 		}
 		FlowElementsContainer container = (FlowElementsContainer)bo;
 		Definitions definitions = ModelUtil.getDefinitions(container);
@@ -155,7 +155,7 @@ public class PushdownFeature extends AbstractCustomFeature {
 		List <EObject> moved = new ArrayList<EObject>();
 		
 		for (FlowElement fe : container.getFlowElements()) {
-			DiagramElement de = DIUtils.findDiagramElement(fe);
+			DiagramElement de = DIUtils.findDiagramElement(bpmnDiagram, fe);
 			if (de==null)
 				continue; // Diagram Element does not exist
 			

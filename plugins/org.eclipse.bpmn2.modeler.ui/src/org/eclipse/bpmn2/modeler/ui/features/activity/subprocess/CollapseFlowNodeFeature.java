@@ -14,13 +14,13 @@ package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -83,7 +83,8 @@ public class CollapseFlowNodeFeature extends AbstractCustomFeature {
 				ContainerShape containerShape = (ContainerShape)pe0;
 				FlowNode flowNode = (FlowNode)bo;
 				try {
-					BPMNShape bpmnShape = DIUtils.findBPMNShape(flowNode);
+					BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(pe0);
+					BPMNShape bpmnShape = DIUtils.findBPMNShape(bpmnDiagram, flowNode);
 					if (bpmnShape.isIsExpanded()) {
 						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(getDiagram());
 						ShapeStyle ss = preferences.getShapeStyle("TASKS");

@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
+import org.eclipse.bpmn2.modeler.core.features.SubMenuCustomFeature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -119,43 +120,6 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 
 	};
 
-	public static class SubMenuCustomFeature extends AbstractCustomFeature {
-
-		AbstractCustomFeature customFeature;
-		ICreateFeature feature;
-		/**
-		 * @param fp
-		 */
-		public SubMenuCustomFeature(AbstractCustomFeature customFeature, ICreateFeature feature) {
-			super(customFeature.getFeatureProvider());
-			this.customFeature = customFeature;
-			this.feature = feature;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
-		 */
-		@Override
-		public void execute(ICustomContext context) {
-			context.putProperty("create.feature", feature);
-			customFeature.execute(context);
-		}
-
-		public boolean canExecute(ICustomContext context) {
-			return customFeature.canExecute(context);
-		}
-
-		@Override
-		public String getDescription() {
-			return feature.getDescription();
-		}
-
-		@Override
-		public String getName() {
-			return customFeature.getName() + "/" + feature.getName();
-		}
-	}
-	
 	/**
 	 * @param fp
 	 */
@@ -255,7 +219,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 				// be from a list of subtypes of <code>T</code> as defined by the various
 				// AbstractAppendNodeNodeFeature specializations; for example the class
 				// AppendActivityFeature will construct a popup list of all Activity subclasses
-				// e.g. Task, ScriptTask, SubProcess, etc. 
+				// e.g. Task, ScriptTask, SubProcess, etc.
 				ICreateFeature createFeature = (ICreateFeature) context.getProperty("create.feature");
 				if (createFeature==null)
 					createFeature = selectNewShape();

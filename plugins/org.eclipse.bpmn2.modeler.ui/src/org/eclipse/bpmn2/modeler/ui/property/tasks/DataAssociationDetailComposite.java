@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
@@ -139,12 +140,43 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	
 	public class DataInputOutputDetailComposite extends ItemAwareElementDetailComposite {
 
+		private List<DataAssociation> associations = null;
+
 		public DataInputOutputDetailComposite(Composite parent, int style) {
 			super(parent, style);
 		}
 		
 		public Composite getAttributesParent() {
 			return this;
+		}
+
+		@Override
+		protected void bindReference(Composite parent, EObject object, EReference reference) {
+			if (reference.getName().equals("itemSubjectRef")) {
+				String displayName = getBusinessObjectDelegate().getLabel(object, reference);
+				ObjectEditor editor = null;
+				editor = new ComboObjectEditor(this,object,reference) {
+
+					@Override
+					protected boolean setValue(Object result) {
+						if (super.setValue(result)) {
+							return true;
+						}
+						return false;
+					}
+				};
+				editor.createControl(parent,displayName);
+			}
+			else
+				super.bindReference(parent, object, reference);
+		}
+		
+		public void setAssociations(List<? extends DataAssociation> associations) {
+			if (associations!=null && !associations.isEmpty()) {
+				if (this.associations==null)
+					this.associations = new ArrayList<DataAssociation>();
+				this.associations.addAll(associations);
+			}
 		}
 	}
 	
@@ -223,6 +255,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 		Activity activity = null;
 		List<? extends DataAssociation> associations = null;
 		EObject container = ModelUtil.getContainer(be);
+		DataInputOutputDetailComposite details = null;
 		if (container instanceof InputOutputSpecification || container instanceof MultiInstanceLoopCharacteristics) {
 			EObject containerContainer = ModelUtil.getContainer(container);
 			if (containerContainer instanceof Activity) {
@@ -236,7 +269,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				super.createBindings(be);
 				return;
 			}
-			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
+			details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = (isInput ? Messages.DataAssociationDetailComposite_Input_Data_Mapping_Title : Messages.DataAssociationDetailComposite_Output_Data_Mapping_Title);
 		}
@@ -248,7 +281,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				association.setTargetRef((ItemAwareElement) be);
 				InsertionAdapter.add(throwEvent, PACKAGE.getThrowEvent_DataInputAssociation(), association);
 			}
-			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
+			details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = Messages.DataAssociationDetailComposite_Data_Input_Mapping_Title;
 		}
@@ -260,7 +293,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 				association.getSourceRef().add((ItemAwareElement) be);
 				InsertionAdapter.add(catchEvent, PACKAGE.getCatchEvent_DataOutputAssociation(), association);
 			}
-			DataInputOutputDetailComposite details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
+			details = createDataInputOutputDetailComposite(be, group,SWT.NONE);
 			details.setBusinessObject(be);
 			sectionTitle = Messages.DataAssociationDetailComposite_Data_Output_Mapping_Title;
 		}
@@ -269,6 +302,8 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 			return;
 		}
 		
+		if (details!=null)
+			details.setAssociations(associations);
 		
 		// set section title
 		if (getParent() instanceof Section) {

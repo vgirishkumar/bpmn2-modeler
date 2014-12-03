@@ -13,8 +13,6 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -45,8 +43,7 @@ public abstract class AbstractCreateExpandableFlowNodeFeature<T extends FlowNode
 		Object[] elems = super.create(context);
 		try {
 			
-			BPMNShape shape = DIUtils.findBPMNShape((T)elems[0]);
-			
+//			BPMNShape shape = DIUtils.findBPMNShape((T)elems[0]);
 			// if the Activity is expandable, set "isExpanded" to true because
 			// this feature will always create an expanded BPMNShape.
 //			EStructuralFeature feature = ((EObject)shape).eClass().getEStructuralFeature("isExpanded");

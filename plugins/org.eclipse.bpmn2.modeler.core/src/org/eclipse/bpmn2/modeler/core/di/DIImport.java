@@ -102,6 +102,7 @@ public class DIImport {
 	private Bpmn2Preferences preferences;
 	private ImportDiagnostics diagnostics;
 	private final IGaService gaService = Graphiti.getGaService();
+	private BPMNDiagram currentBPMNDiagram;
 	
 	public DIImport(DiagramEditor editor) {
 		this.editor = editor;
@@ -153,10 +154,12 @@ public class DIImport {
 					
 					// do the import
 					for (BPMNDiagram d : bpmnDiagrams) {
+						currentBPMNDiagram = d;
 						diagram = DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(),d);
 					}
 					for (BPMNDiagram d : bpmnDiagrams) {
 						
+						currentBPMNDiagram = d;
 						diagram = DIUtils.findDiagram(editor.getDiagramBehavior(),d);
 						editor.getDiagramTypeProvider().init(diagram, editor);
 	
@@ -835,10 +838,10 @@ public class DIImport {
 		}
 		
 		if (sourceElement == null) {
-			bpmnEdge.setSourceElement(DIUtils.findBPMNShape((BaseElement) source));
+			bpmnEdge.setSourceElement(DIUtils.findBPMNShape(currentBPMNDiagram, (BaseElement) source));
 		}
 		if (targetElement == null) {
-			bpmnEdge.setTargetElement(DIUtils.findBPMNShape((BaseElement) target));
+			bpmnEdge.setTargetElement(DIUtils.findBPMNShape(currentBPMNDiagram, (BaseElement) target));
 		}
 	}
 

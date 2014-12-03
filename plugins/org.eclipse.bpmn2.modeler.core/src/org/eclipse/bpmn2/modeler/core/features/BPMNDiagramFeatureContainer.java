@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
+import org.eclipse.bpmn2.modeler.core.features.containers.participant.CreateParticipantReferenceFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
@@ -137,7 +138,8 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return new ICustomFeature[] {
 				new EnableConnectionRoutingFeature(fp),
-				new LayoutConnectionsFeature(fp)
+				new LayoutConnectionsFeature(fp),
+				new CreateParticipantReferenceFeature(fp)
 			};
 	}
 

@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.features.bendpoint;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
@@ -37,8 +38,9 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 	    super.removeBendpoint(context);
 		FreeFormConnection connection = context.getConnection();
 	    try {
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-			BPMNEdge edge = DIUtils.findBPMNEdge(element);
+			BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, element);
 			edge.getWaypoint().remove(context.getBendpointIndex() + 1);
 		} catch (Exception e) {
 			Activator.logError(e);

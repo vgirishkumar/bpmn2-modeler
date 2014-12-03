@@ -14,20 +14,16 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import java.util.Hashtable;
+import java.util.Stack;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.CatchEvent;
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
-import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.InputOutputSpecification;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
@@ -97,49 +93,50 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 			// if there are any DataInputAssociations or DataOutputAssociations that map to this object
 			// then change their ItemDefinitions to match.
 			if (definitions!=null) {
-				TreeIterator<EObject> iter = definitions.eAllContents();
-				while (iter.hasNext()) {
-					EObject o = iter.next();
-					if (o instanceof DataInput) {
-						DataInput input = (DataInput) o;
-						if (input.eContainer() instanceof InputOutputSpecification) {
-							InputOutputSpecification ioSpec = (InputOutputSpecification) input.eContainer();
-							if (ioSpec.eContainer() instanceof Activity) {
-								Activity activity = (Activity) ioSpec.eContainer();
-								for (DataInputAssociation dia : activity.getDataInputAssociations()) {
-									if (!dia.getSourceRef().isEmpty() && dia.getSourceRef().get(0) == object) {
-										input.setItemSubjectRef(itemDefinition);
+				// We use a stack to track the ItemAwareElements that were changed as
+				// a result of this object's change. 
+				Stack<ItemAwareElement> changedObjects = new Stack<ItemAwareElement>();
+				changedObjects.push((ItemAwareElement)object);
+				while (!changedObjects.isEmpty()) {
+					ItemAwareElement element = changedObjects.pop();
+					TreeIterator<EObject> iter = definitions.eAllContents();
+					while (iter.hasNext()) {
+						EObject o = iter.next();
+						if (o instanceof DataInputAssociation) {
+							DataInputAssociation da = (DataInputAssociation) o;
+							if (da.getSourceRef().contains(element)) {
+								if (da.getTargetRef()!=null) {
+									if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
+										da.getTargetRef().setItemSubjectRef(itemDefinition);
+										changedObjects.push(da.getTargetRef());
+									}
+								}
+							}
+							else if (da.getTargetRef()==element) {
+								for (ItemAwareElement e : da.getSourceRef()) {
+									if (e.getItemSubjectRef()!=itemDefinition) {
+										e.setItemSubjectRef(itemDefinition);
+										changedObjects.push(e);
 									}
 								}
 							}
 						}
-						else if (input.eContainer() instanceof ThrowEvent) {
-							ThrowEvent event = (ThrowEvent) input.eContainer();
-							for (DataInputAssociation dia : event.getDataInputAssociation()) {
-								if (!dia.getSourceRef().isEmpty() && dia.getSourceRef().get(0) == object) {
-									input.setItemSubjectRef(itemDefinition);
-								}
-							}
-						}
-					}
-					else if (o instanceof DataOutput) {
-						DataOutput output = (DataOutput) o;
-						if (output.eContainer() instanceof InputOutputSpecification) {
-							InputOutputSpecification ioSpec = (InputOutputSpecification) output.eContainer();
-							if (ioSpec.eContainer() instanceof Activity) {
-								Activity activity = (Activity) ioSpec.eContainer();
-								for (DataOutputAssociation doa : activity.getDataOutputAssociations()) {
-									if (doa.getTargetRef() == object) {
-										output.setItemSubjectRef(itemDefinition);
+						else if (o instanceof DataOutputAssociation) {
+							DataOutputAssociation da = (DataOutputAssociation) o;
+							if (da.getSourceRef().contains(element)) {
+								if (da.getTargetRef()!=null) {
+									if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
+										da.getTargetRef().setItemSubjectRef(itemDefinition);
+										changedObjects.push(da.getTargetRef());
 									}
 								}
 							}
-						}
-						else if (output.eContainer() instanceof CatchEvent) {
-							CatchEvent event = (CatchEvent) output.eContainer();
-							for (DataOutputAssociation doa : event.getDataOutputAssociation()) {
-								if (doa.getTargetRef() == object) {
-									output.setItemSubjectRef(itemDefinition);
+							else if (da.getTargetRef()==element) {
+								for (ItemAwareElement e : da.getSourceRef()) {
+									if (e.getItemSubjectRef()!=itemDefinition) {
+										e.setItemSubjectRef(itemDefinition);
+										changedObjects.push(e);
+									}
 								}
 							}
 						}

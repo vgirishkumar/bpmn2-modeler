@@ -19,7 +19,10 @@ import org.eclipse.bpmn2.Collaboration;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.di.BPMNPlane;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -41,6 +44,8 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 
+	boolean isReference = false;
+	
 	public DeleteParticipantFeature(IFeatureProvider fp) {
 		super(fp);
 	}
@@ -91,37 +96,47 @@ public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 			Object bo = getBusinessObjectForPictogramElement(pe);
 			if (bo instanceof Participant) {
 				Participant pool = (Participant) bo;
-				Definitions definitions = ModelUtil.getDefinitions(pool);
-				List<Collaboration> collaborations = ModelUtil.getAllRootElements(definitions, Collaboration.class);
-				for (Collaboration c : collaborations) {
-					if (c.getParticipants().contains(pool)) {
-						collaboration = c;
-						break;
-					}
+				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(poolShape, BPMNShape.class);
+				BPMNPlane plane = (BPMNPlane) bpmnShape.eContainer();
+				if (plane.getBpmnElement() instanceof SubProcess) {
+					// can't delete this Participant - it is only a
+					// reference to the original on the main diagram.
+					isReference = true;
 				}
 
-				// also delete any contained Lanes and their children
-				List<PictogramElement> children = new ArrayList<PictogramElement>();
-				FeatureSupport.collectChildren(poolShape, children, true);
-				for (PictogramElement child : children) {
-					if (child instanceof Connection) {
-						// don't bother with Connections, these will
-						// be deleted by their source/target shapes
-						continue;
+				if (!isReference) {
+					Definitions definitions = ModelUtil.getDefinitions(pool);
+					List<Collaboration> collaborations = ModelUtil.getAllRootElements(definitions, Collaboration.class);
+					for (Collaboration c : collaborations) {
+						if (c.getParticipants().contains(pool)) {
+							collaboration = c;
+							break;
+						}
 					}
-					IDeleteContext dc = new DeleteContext(child);
-					IDeleteFeature df = getFeatureProvider().getDeleteFeature(dc);
-					if (df.canDelete(dc)) {
-						df.delete(dc);
+	
+					// also delete any contained Lanes and their children
+					List<PictogramElement> children = new ArrayList<PictogramElement>();
+					FeatureSupport.collectChildren(poolShape, children, true);
+					for (PictogramElement child : children) {
+						if (child instanceof Connection) {
+							// don't bother with Connections, these will
+							// be deleted by their source/target shapes
+							continue;
+						}
+						IDeleteContext dc = new DeleteContext(child);
+						IDeleteFeature df = getFeatureProvider().getDeleteFeature(dc);
+						if (df.canDelete(dc)) {
+							df.delete(dc);
+						}
 					}
-				}
-				bo = pool.getProcessRef();
-				if (bo instanceof FlowElementsContainer) {
-					BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram((FlowElementsContainer)bo);
-					if (bpmnDiagram != null) {
-						DIUtils.deleteDiagram(getDiagramBehavior(), bpmnDiagram);
+					bo = pool.getProcessRef();
+					if (bo instanceof FlowElementsContainer) {
+						BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram((FlowElementsContainer)bo);
+						if (bpmnDiagram != null) {
+							DIUtils.deleteDiagram(getDiagramBehavior(), bpmnDiagram);
+						}
+						EcoreUtil.delete((FlowElementsContainer)bo, true);
 					}
-					EcoreUtil.delete((FlowElementsContainer)bo, true);
 				}
 			}
 		}		
@@ -139,4 +154,18 @@ public class DeleteParticipantFeature extends AbstractDefaultDeleteFeature {
 			}
 		}
 	}
+	
+	@Override
+	protected void deleteBusinessObjects(Object[] businessObjects) {
+		if (businessObjects != null) {
+			for (Object bo : businessObjects) {
+				if (bo instanceof Participant) {
+					if (isReference)
+						continue;
+				}
+				deleteBusinessObject(bo);
+			}
+		}
+	}
+
 }

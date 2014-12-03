@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.activity.LayoutActivityFeature;
@@ -37,7 +38,8 @@ public class LayoutExpandableActivityFeature extends LayoutActivityFeature {
 		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		try {
-			BPMNShape shape = DIUtils.findBPMNShape(activity);
+			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
+			BPMNShape shape = DIUtils.findBPMNShape(bpmnDiagram, activity);
 			
 			if (shape.isIsExpanded()) {
 				
