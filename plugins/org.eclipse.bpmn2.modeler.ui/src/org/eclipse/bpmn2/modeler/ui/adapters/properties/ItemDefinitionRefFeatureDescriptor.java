@@ -94,53 +94,60 @@ public class ItemDefinitionRefFeatureDescriptor<T extends BaseElement> extends F
 			// then change their ItemDefinitions to match.
 			if (definitions!=null) {
 				// We use a stack to track the ItemAwareElements that were changed as
-				// a result of this object's change. 
-				Stack<ItemAwareElement> changedObjects = new Stack<ItemAwareElement>();
-				changedObjects.push((ItemAwareElement)object);
-				while (!changedObjects.isEmpty()) {
-					ItemAwareElement element = changedObjects.pop();
-					TreeIterator<EObject> iter = definitions.eAllContents();
-					while (iter.hasNext()) {
-						EObject o = iter.next();
-						if (o instanceof DataInputAssociation) {
-							DataInputAssociation da = (DataInputAssociation) o;
-							if (da.getSourceRef().contains(element)) {
-								if (da.getTargetRef()!=null) {
-									if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
-										da.getTargetRef().setItemSubjectRef(itemDefinition);
-										changedObjects.push(da.getTargetRef());
+				// a result of this object's change.
+				if (object instanceof ItemAwareElement) {
+					Stack<ItemAwareElement> changedObjects = new Stack<ItemAwareElement>();
+					changedObjects.push((ItemAwareElement)object);
+					while (!changedObjects.isEmpty()) {
+						ItemAwareElement element = changedObjects.pop();
+						TreeIterator<EObject> iter = definitions.eAllContents();
+						while (iter.hasNext()) {
+							EObject o = iter.next();
+							if (o instanceof DataInputAssociation) {
+								DataInputAssociation da = (DataInputAssociation) o;
+								if (da.getSourceRef().contains(element)) {
+									if (da.getTargetRef()!=null) {
+										if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
+											da.getTargetRef().setItemSubjectRef(itemDefinition);
+											changedObjects.push(da.getTargetRef());
+										}
+									}
+								}
+								else if (da.getTargetRef()==element) {
+									for (ItemAwareElement e : da.getSourceRef()) {
+										if (e.getItemSubjectRef()!=itemDefinition) {
+											e.setItemSubjectRef(itemDefinition);
+											changedObjects.push(e);
+										}
 									}
 								}
 							}
-							else if (da.getTargetRef()==element) {
-								for (ItemAwareElement e : da.getSourceRef()) {
-									if (e.getItemSubjectRef()!=itemDefinition) {
-										e.setItemSubjectRef(itemDefinition);
-										changedObjects.push(e);
+							else if (o instanceof DataOutputAssociation) {
+								DataOutputAssociation da = (DataOutputAssociation) o;
+								if (da.getSourceRef().contains(element)) {
+									if (da.getTargetRef()!=null) {
+										if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
+											da.getTargetRef().setItemSubjectRef(itemDefinition);
+											changedObjects.push(da.getTargetRef());
+										}
 									}
 								}
-							}
-						}
-						else if (o instanceof DataOutputAssociation) {
-							DataOutputAssociation da = (DataOutputAssociation) o;
-							if (da.getSourceRef().contains(element)) {
-								if (da.getTargetRef()!=null) {
-									if (da.getTargetRef().getItemSubjectRef()!=itemDefinition) {
-										da.getTargetRef().setItemSubjectRef(itemDefinition);
-										changedObjects.push(da.getTargetRef());
-									}
-								}
-							}
-							else if (da.getTargetRef()==element) {
-								for (ItemAwareElement e : da.getSourceRef()) {
-									if (e.getItemSubjectRef()!=itemDefinition) {
-										e.setItemSubjectRef(itemDefinition);
-										changedObjects.push(e);
+								else if (da.getTargetRef()==element) {
+									for (ItemAwareElement e : da.getSourceRef()) {
+										if (e.getItemSubjectRef()!=itemDefinition) {
+											e.setItemSubjectRef(itemDefinition);
+											changedObjects.push(e);
+										}
 									}
 								}
 							}
 						}
 					}
+				}
+				else if (object instanceof RootElement) {
+					// find all references to this root element:
+					// for event definitions, correlate the input/output association with the event definition
+					// that references this object, and change the ItemDefinition of that data input/output.
 				}
 			}
 		}

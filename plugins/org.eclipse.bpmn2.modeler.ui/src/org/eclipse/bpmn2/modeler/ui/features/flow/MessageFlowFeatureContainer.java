@@ -18,6 +18,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.InteractionNode;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
@@ -28,6 +29,7 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.ServiceTask;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
@@ -449,16 +451,17 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 
 		@Override
 		public boolean isAvailable(IContext context) {
-			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getMessageFlow()))
-				return false;
-			
 			if (context instanceof ICreateConnectionContext) {
 				ICreateConnectionContext ccc = (ICreateConnectionContext) context;
 				if (ccc.getSourcePictogramElement() != null) {
-					Object obj = BusinessObjectUtil.getFirstElementOfType(
-							ccc.getSourcePictogramElement(), BaseElement.class);
-					if (obj instanceof EndEvent) {
-						List<EventDefinition> eventDefinitions = ((EndEvent) obj)
+					InteractionNode source = getSourceBo(ccc);
+					if (source instanceof SubProcess) {
+						SubProcess subProcess = (SubProcess) source;
+						if (subProcess.isTriggeredByEvent())
+							return false;
+					}
+					else if (source instanceof EndEvent) {
+						List<EventDefinition> eventDefinitions = ((EndEvent) source)
 								.getEventDefinitions();
 						for (EventDefinition eventDefinition : eventDefinitions) {
 							if (eventDefinition instanceof MessageEventDefinition) {
@@ -466,7 +469,7 @@ public class MessageFlowFeatureContainer extends BaseElementConnectionFeatureCon
 							}
 						}
 					}
-					else if (obj instanceof StartEvent){
+					else if (source instanceof StartEvent){
 						return false;
 					}
 				}

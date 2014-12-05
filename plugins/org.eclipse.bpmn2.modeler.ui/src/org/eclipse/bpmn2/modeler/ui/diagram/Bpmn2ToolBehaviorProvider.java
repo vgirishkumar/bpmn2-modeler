@@ -659,7 +659,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		// 2. set the expand & collapse buttons
 		CustomContext cc = new CustomContext(new PictogramElement[] { pe });
 		for (ICustomFeature cf : fp.getCustomFeatures(cc)) {
-			if (cf.canExecute(cc)) {
+			if (cf.isAvailable(cc) && cf.canExecute(cc)) {
 				ContextButtonEntry button = new ContextButtonEntry(cf, cc);
 				button.setText(cf.getName()); //$NON-NLS-1$
 				button.setIconId(cf.getImageId());

@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.SequenceFlow;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
 import org.eclipse.bpmn2.modeler.core.features.SubMenuCustomFeature;
@@ -45,6 +46,7 @@ import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
+import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
@@ -199,6 +201,19 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 
 	@Override
 	public boolean isAvailable(IContext context) {
+		if (context instanceof ICustomContext) {
+			ICustomContext cc = (ICustomContext) context;
+			PictogramElement pes[] = cc.getPictogramElements();
+			if (pes.length!=1) {
+				return false;
+			}
+			BaseElement source = BusinessObjectUtil.getBusinessObject(context, BaseElement.class);
+			if (source instanceof SubProcess) {
+				SubProcess subProcess = (SubProcess) source;
+				if (subProcess.isTriggeredByEvent())
+					return false;
+			}
+		}
 		return getTools().size()>0;
 	}
 
