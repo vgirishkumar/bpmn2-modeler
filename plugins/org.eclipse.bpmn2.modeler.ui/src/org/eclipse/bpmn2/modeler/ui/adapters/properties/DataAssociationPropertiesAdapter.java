@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
@@ -32,20 +31,25 @@ import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.DocumentRoot;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowElementsContainer;
-import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -71,6 +75,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * @author Bob Brodt
@@ -78,7 +83,7 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
  */
 public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<DataAssociation> {
 
-	public final static String UI_SHOW_ITEMS_IN_SCOPE = "show.items.in.scope";
+	public final static String UI_SHOW_ITEMS_IN_SCOPE = Messages.DataAssociationPropertiesAdapter_0;
 	
 	/**
 	 * @param adapterFactory
@@ -113,7 +118,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 
 		@Override
 		public String getLabel() {
-			if (object instanceof DataInputAssociation)
+			if (feature == Bpmn2Package.eINSTANCE.getDataAssociation_SourceRef())
 				return Messages.DataAssociationPropertiesAdapter_Source;
 			return Messages.DataAssociationPropertiesAdapter_Target;
 		}
@@ -267,10 +272,33 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			}
 			if (association.getTargetRef()!=null) {
 				ItemAwareElement targetRef = association.getTargetRef();
-				if (value!=null)
-					targetRef.setItemSubjectRef(value.getItemSubjectRef());
-				else
-					targetRef.setItemSubjectRef(null);
+				if (association.eContainer() instanceof Event) {
+					ErrorUtils.showErrorMessage(null);
+					EventDefinition ed = EventDefinitionsUtil.getEventDefinition(targetRef);
+					if (ed!=null && value!=null) {
+						// this Event Definition may have an Error, Escalation, Signal or Message
+						// associated with it. Make sure the Item Definitions of the new parameter
+						// matches the Event Definition.
+						ItemDefinition id = EventDefinitionsUtil.getItemDefinition(ed);
+						if (id!=null) {
+							if (!ModelUtil.equals(id,value.getItemSubjectRef())) {
+								RootElement re = EventDefinitionsUtil.getEventDefinitionTarget(ed);
+								String sourceLabel = ExtendedPropertiesProvider.getTextValue(value);
+								String targetLabel = ExtendedPropertiesProvider.getTextValue(re);
+								ErrorUtils.showErrorMessage(
+										NLS.bind(Messages.DataAssociationPropertiesAdapter_DataTypeMismatch,
+												sourceLabel, targetLabel)
+								);
+							}
+						}
+					}
+				}
+				else {
+					if (value!=null)
+						targetRef.setItemSubjectRef(value.getItemSubjectRef());
+					else
+						targetRef.setItemSubjectRef(null);
+				}
 				updateConnectionIfNeeded(association, value);
 			}
 		}
@@ -287,12 +315,35 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			association.setTargetRef(value);
 			if (!association.getSourceRef().isEmpty()) {
 				ItemAwareElement sourceRef = association.getSourceRef().get(0);
-				if (value!=null)
-					sourceRef.setItemSubjectRef(value.getItemSubjectRef());
-				else
-					sourceRef.setItemSubjectRef(null);
+				if (association.eContainer() instanceof Event) {
+					ErrorUtils.showErrorMessage(null);
+					EventDefinition ed = EventDefinitionsUtil.getEventDefinition(sourceRef);
+					if (ed!=null && value!=null) {
+						// this Event Definition may have an Error, Escalation, Signal or Message
+						// associated with it. Make sure the Item Definitions of the new parameter
+						// matches the Event Definition.
+						ItemDefinition id = EventDefinitionsUtil.getItemDefinition(ed);
+						if (id!=null) {
+							if (!ModelUtil.equals(id,value.getItemSubjectRef())) {
+								RootElement re = EventDefinitionsUtil.getEventDefinitionTarget(ed);
+								String sourceLabel = ExtendedPropertiesProvider.getTextValue(re);
+								String targetLabel = ExtendedPropertiesProvider.getTextValue(value);
+								ErrorUtils.showErrorMessage(
+										NLS.bind(Messages.DataAssociationPropertiesAdapter_DataTypeMismatch,
+												sourceLabel, targetLabel)
+								);
+							}
+						}
+					}
+				}
+				else {
+					if (value!=null)
+						sourceRef.setItemSubjectRef(value.getItemSubjectRef());
+					else
+						sourceRef.setItemSubjectRef(null);
+				}
+				updateConnectionIfNeeded(association, value);
 			}
-			updateConnectionIfNeeded(association, value);
 		}
 
 		private void updateConnectionIfNeeded(DataAssociation association, ItemAwareElement value) {

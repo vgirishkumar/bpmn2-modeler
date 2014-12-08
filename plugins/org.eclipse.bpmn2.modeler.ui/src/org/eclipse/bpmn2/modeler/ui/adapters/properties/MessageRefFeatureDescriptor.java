@@ -16,6 +16,8 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import java.util.Hashtable;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
@@ -54,5 +56,19 @@ public class MessageRefFeatureDescriptor<T extends BaseElement> extends RootElem
 				choices.put(ExtendedPropertiesProvider.getTextValue(message), message);
 		}
 		return choices;
+	}
+
+	@Override
+	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
+		super.internalSet(object, feature, value, index);
+		EStructuralFeature f = object.eClass().getEStructuralFeature("messageRef");
+		if (f!=null) {
+			Message message = (Message) object.eGet(f);
+			if (message!=null) {
+				ItemDefinition itemDefinition = message.getItemRef();
+				ExtendedPropertiesProvider.setValue(message, Bpmn2Package.eINSTANCE.getMessage_ItemRef(), itemDefinition);
+			}
+		}
+		
 	}
 }

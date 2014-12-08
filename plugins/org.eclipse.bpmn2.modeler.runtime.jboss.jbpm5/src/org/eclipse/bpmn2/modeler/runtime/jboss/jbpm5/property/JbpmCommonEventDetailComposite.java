@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
@@ -102,7 +103,7 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 							return null;
 						}
 						EObject result = super.addListItem(object, feature);
-						if (hasItemDefinition((EventDefinition)result)) {
+						if (EventDefinitionsUtil.hasItemDefinition((EventDefinition)result)) {
 							if (event instanceof ThrowEvent) {
 								DataInput input = ((ThrowEvent)event).getDataInputs().get(0);
 								input.setName("event");

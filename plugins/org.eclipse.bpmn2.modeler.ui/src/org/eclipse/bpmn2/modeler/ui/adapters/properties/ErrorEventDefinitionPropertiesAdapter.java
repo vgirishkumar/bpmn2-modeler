@@ -14,8 +14,13 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
@@ -32,6 +37,21 @@ public class ErrorEventDefinitionPropertiesAdapter extends EventDefinitionProper
 		
     	setProperty(Bpmn2Package.eINSTANCE.getErrorEventDefinition_ErrorRef(), UI_CAN_CREATE_NEW, Boolean.TRUE);
     	setProperty(Bpmn2Package.eINSTANCE.getErrorEventDefinition_ErrorRef(), UI_CAN_EDIT, Boolean.TRUE);
+    	
+		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getErrorEventDefinition_ErrorRef();
+		setFeatureDescriptor(ref, new FeatureDescriptor<ErrorEventDefinition>(this,object,ref) {
+
+			@Override
+			protected void internalSet(ErrorEventDefinition object, EStructuralFeature feature, Object value, int index) {
+				super.internalSet(object, feature, value, index);
+				Error Error = object.getErrorRef();
+				if (Error!=null) {
+					ItemDefinition itemDefinition = Error.getStructureRef();
+					ExtendedPropertiesProvider.setValue(Error, Bpmn2Package.eINSTANCE.getError_StructureRef(), itemDefinition);
+				}
+			}
+
+		});
 	}
 
 }

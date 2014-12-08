@@ -16,9 +16,6 @@ package org.eclipse.bpmn2.modeler.core.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
@@ -62,7 +59,6 @@ import org.eclipse.wst.wsdl.Definition;
 import org.eclipse.wst.wsdl.Fault;
 import org.eclipse.wst.wsdl.Input;
 import org.eclipse.wst.wsdl.Message;
-import org.eclipse.wst.wsdl.MessageReference;
 import org.eclipse.wst.wsdl.Operation;
 import org.eclipse.wst.wsdl.Output;
 import org.eclipse.wst.wsdl.PortType;
@@ -831,7 +827,7 @@ public class ImportUtil {
 	public static Interface findInterface(Definitions definitions, Interface intf) {
 		List <Interface> list = ModelUtil.getAllRootElements(definitions, Interface.class);
 		for (Interface i : list) {
-			if (equals(i, intf))
+			if (ModelUtil.equals(i, intf))
 				return i;
 		}
 		return null;
@@ -1050,7 +1046,7 @@ public class ImportUtil {
 	public static org.eclipse.bpmn2.Operation findOperation(Definitions definitions, org.eclipse.bpmn2.Operation bpmn2op) {
 		List<org.eclipse.bpmn2.Operation> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Operation.class);
 		for (org.eclipse.bpmn2.Operation o : list) {
-			if ( equals(o, bpmn2op))
+			if ( ModelUtil.equals(o, bpmn2op))
 				return (org.eclipse.bpmn2.Operation)o;
 		}
 		return null;
@@ -1132,7 +1128,7 @@ public class ImportUtil {
 	public static org.eclipse.bpmn2.Message findMessage(Definitions definitions, org.eclipse.bpmn2.Message msg) {
 		List<org.eclipse.bpmn2.Message> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Message.class);
 		for (org.eclipse.bpmn2.Message m : list) {
-			if (equals(m, msg))
+			if (ModelUtil.equals(m, msg))
 				return (org.eclipse.bpmn2.Message)m;
 		}
 		return null;
@@ -1198,7 +1194,7 @@ public class ImportUtil {
 	public static org.eclipse.bpmn2.Error findError(Definitions definitions, org.eclipse.bpmn2.Error error) {
 		List<org.eclipse.bpmn2.Error> list = ModelUtil.getAllRootElements(definitions, org.eclipse.bpmn2.Error.class);
 		for (org.eclipse.bpmn2.Error e : list) {
-			if (equals(e, error))
+			if (ModelUtil.equals(e, error))
 				return (org.eclipse.bpmn2.Error)e;
 		}
 		return null;
@@ -1329,7 +1325,7 @@ public class ImportUtil {
 	public static ItemDefinition findItemDefinition(Definitions definitions, ItemDefinition itemDef) {
 		List<ItemDefinition> list = ModelUtil.getAllRootElements(definitions, ItemDefinition.class);
 		for (ItemDefinition i : list) {
-			if ( equals(i, itemDef))
+			if ( ModelUtil.equals(i, itemDef))
 				return (ItemDefinition)i;
 		}
 		return null;
@@ -1381,124 +1377,6 @@ public class ImportUtil {
 				EcoreUtil.delete(itemDef);
 			}
 		}
-	}
-	
-	private static boolean equals(Object object1, Object object2) {
-		if (object1==object2)
-			return true;
-		if (object1==null || object2==null)
-			return false;
-
-		// Compare BPMN2 object types
-		if (object1 instanceof Interface && object2 instanceof Interface) {
-			Interface i1 = (Interface) object1;
-			Interface i2 = (Interface) object2;
-			return equals(i1.getImplementationRef(), i2.getImplementationRef()) &&
-					equals(i1.getName(), i2.getName()) &&
-					equals(i1.getOperations(), i2.getOperations());
-		}
-		if (object1 instanceof org.eclipse.bpmn2.Operation && object2 instanceof org.eclipse.bpmn2.Operation) {
-			org.eclipse.bpmn2.Operation o1 = (org.eclipse.bpmn2.Operation) object1;
-			org.eclipse.bpmn2.Operation o2 = (org.eclipse.bpmn2.Operation) object2;
-			return equals(o1.getName(), o2.getName()) &&
-					equals(o1.getImplementationRef(), o2.getImplementationRef()) &&
-					equals(o1.getErrorRefs(), o2.getErrorRefs()) &&
-					equals(o1.getInMessageRef(), o2.getInMessageRef()) &&
-					equals(o1.getOutMessageRef(), o2.getOutMessageRef());
-		}
-		if (object1 instanceof org.eclipse.bpmn2.Message && object2 instanceof org.eclipse.bpmn2.Message) {
-			org.eclipse.bpmn2.Message m1 = (org.eclipse.bpmn2.Message) object1;
-			org.eclipse.bpmn2.Message m2 = (org.eclipse.bpmn2.Message) object2;
-			return equals(m1.getItemRef(), m2.getItemRef()) &&
-					equals(m1.getName(), m2.getName());
-		}
-		if (object1 instanceof org.eclipse.bpmn2.Error && object2 instanceof org.eclipse.bpmn2.Error) {
-			org.eclipse.bpmn2.Error e1 = (org.eclipse.bpmn2.Error) object1;
-			org.eclipse.bpmn2.Error e2 = (org.eclipse.bpmn2.Error) object2;
-			return equals(e1.getName(), e2.getName()) &&
-					equals(e1.getStructureRef(), e2.getStructureRef());
-		}
-		if (object1 instanceof ItemDefinition && object2 instanceof ItemDefinition) {
-			ItemDefinition i1 = (ItemDefinition) object1;
-			ItemDefinition i2 = (ItemDefinition) object2;
-			return equals(i1.getItemKind(), i2.getItemKind()) &&
-					equals(i1.getStructureRef(), i2.getStructureRef());
-		}
-		
-		// Compare WSDL types
-		if (object1 instanceof PortType && object2 instanceof PortType) {
-			PortType p1 = (PortType) object1;
-			PortType p2 = (PortType) object2;
-			return equals(p1.getQName(), p2.getQName()) &&
-					equals(p1.getOperations(), p2.getOperations());
-		}
-		if (object1 instanceof Operation && object2 instanceof Operation) {
-			Operation o1 = (Operation) object1;
-			Operation o2 = (Operation) object2;
-			return equals(o1.getName(), o2.getName()) &&
-					equals(o1.getInput(), o2.getInput()) &&
-					equals(o1.getOutput(), o2.getOutput()) &&
-					equals(o1.getFaults(), o2.getFaults()) &&
-					equals(o1.getStyle(), o2.getStyle());					
-					
-		}
-		if (object1 instanceof Message && object2 instanceof Message) {
-			Message m1 = (Message) object1;
-			Message m2 = (Message) object2;
-			return equals(m1.getQName(), m2.getQName());
-		}
-		if (object1 instanceof MessageReference && object2 instanceof MessageReference) {
-			MessageReference m1 = (MessageReference) object1;
-			MessageReference m2 = (MessageReference) object2;
-			return equals(m1.getName(), m2.getName()) &&
-					equals(m1.getEMessage(), m2.getEMessage());
-		}
-		if (object1 instanceof Fault && object2 instanceof Fault) {
-			Fault f1 = (Fault) object1;
-			Fault f2 = (Fault) object2;
-			return equals(f1.getEMessage(), f2.getEMessage());
-		}
-		if (object1 instanceof QName && object2 instanceof QName) {
-			QName m1 = (QName) object1;
-			QName m2 = (QName) object2;
-			return equals(m1.getNamespaceURI(), m2.getNamespaceURI()) &&
-					equals(m1.getLocalPart(), m2.getLocalPart());
-		}
-
-		// Compare XSD types
-		if (object1 instanceof XSDElementDeclaration && object2 instanceof XSDElementDeclaration) {
-			XSDElementDeclaration x1 = (XSDElementDeclaration) object1;
-			XSDElementDeclaration x2 = (XSDElementDeclaration) object2;
-			return equals(x1.getQName(), x2.getQName());
-		}
-
-		// Compare generic objects
-		if (object1 instanceof Map && object2 instanceof Map) {
-			Map m1 = (Map) object1;
-			Map m2 = (Map) object2;
-			if (m1.size()!=m2.size())
-				return false;
-			for (Object k1 : m1.keySet()) {
-				if (!equals(m1.get(k1), m2.get(k1)))
-					return false;
-			}
-			return true;
-		}
-		if (object1 instanceof List && object2 instanceof List) {
-			List l1 = (List) object1;
-			List l2 = (List) object2;
-			if (l1.size()!=l2.size())
-				return false;
-			for (int i=0; i<l1.size(); ++i) {
-				if (!equals(l1.get(i), l2.get(i)))
-					return false;
-			}
-			return true;
-		}
-		if (object1 instanceof String && object2 instanceof String)
-			return object1.equals(object2);
-//		System.out.println("compare: \n  "+object1+"\n  "+object2);
-		return object1.equals(object2);
 	}
 	
 	private static <T extends EObject> T createBpmn2Object(Definitions definitions, Class<T> clazz) {
