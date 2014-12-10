@@ -628,6 +628,22 @@ public class DIUtils {
 	}
 	
 	/**
+	 * Check if the given Graphiti Diagram is used to display the contents of a SubProcess.
+	 * 
+	 * @param diagram the Graphiti Diagram
+	 * @return true if the diagram is a SubProcess, false if it is a top-level diagram or
+	 *         if indeterminable because the diagram is not yet linked to a BPMN element.
+	 */
+	public static boolean isSubDiagram(Diagram diagram) {
+		BPMNDiagram bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
+		if (bpmnDiagram!=null) {
+			BaseElement bpmnElement = bpmnDiagram.getPlane().getBpmnElement();
+			return bpmnElement instanceof SubProcess;
+		}
+		return false;
+	}
+	
+	/**
 	 * Find the BPMNDiagram in the editor's Resource Set that references the given BaseElement.
 	 * 
 	 * If the parameter "contains" is TRUE, then the BaseElement's ancestor hierarchy is searched recursively.
