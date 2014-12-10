@@ -46,6 +46,10 @@ public class Messages extends NLS {
 	public static String BPMN2ValidationConstraints_Duplicate_Data_Type;
 	public static String BPMN2ValidationConstraints_Duplicate_Input;
 	public static String BPMN2ValidationConstraints_Duplicate_Output;
+	public static String BPMN2ValidationConstraints_EventSubProcess_HasFlows;
+	public static String BPMN2ValidationConstraints_EventSubProcess_MultipleStartEvents;
+	public static String BPMN2ValidationConstraints_EventSubProcess_NoStartEvent;
+	public static String BPMN2ValidationConstraints_EventSubProcess_NoStartEventDef;
 	public static String LiveValidationListener_Title;
 	static {
 		// initialize resource bundle

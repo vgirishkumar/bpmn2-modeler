@@ -58,7 +58,6 @@ import org.eclipse.bpmn2.MessageFlow;
 import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ParallelGateway;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.ProcessType;
 import org.eclipse.bpmn2.Resource;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
@@ -66,6 +65,7 @@ import org.eclipse.bpmn2.SequenceFlow;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.StartEvent;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
@@ -670,6 +670,39 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			if (fn instanceof CatchEvent)
 				needIncoming = false;
 			
+			if (fn instanceof SubProcess) {
+				SubProcess subProcess = (SubProcess) fn;
+				if (subProcess.isTriggeredByEvent()) {
+					// Event SubProcesses may not be connected
+					// to the rest of the Process
+					if (fn.getOutgoing().size()>0 || fn.getIncoming().size()>0) {
+						ctx.addResult(fn);
+						return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_EventSubProcess_HasFlows);
+					}
+					StartEvent start = null;
+					for (FlowElement fe : subProcess.getFlowElements()) {
+						if (fe instanceof StartEvent) {
+							if (start!=null) {
+								ctx.addResult(fn);
+								return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_EventSubProcess_MultipleStartEvents);
+							}
+							start = (StartEvent) fe;
+						}
+					}
+					if (start!=null) {
+						if (start.getEventDefinitions().size()==0) {
+							ctx.addResult(fn);
+							return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_EventSubProcess_NoStartEventDef);
+						}
+					}
+					else {
+						ctx.addResult(fn);
+						return ctx.createFailureStatus(Messages.BPMN2ValidationConstraints_EventSubProcess_NoStartEvent);
+					}
+				}
+				needIncoming = false;
+				needOutgoing = false;
+			}
 			if (fn.eContainer() instanceof AdHocSubProcess) {
 				needIncoming = false;
 				needOutgoing = false;

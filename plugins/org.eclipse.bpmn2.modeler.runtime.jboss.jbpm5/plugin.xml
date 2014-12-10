@@ -696,6 +696,7 @@
 			<enable object="BusinessRuleTask" feature="isForCompensation"/>
 			<enable object="BusinessRuleTask" feature="name"/>
 			<enable object="BusinessRuleTask" feature="ruleFlowGroup"/>
+			<enable object="BusinessRuleTask" feature="ioSpecification"/>
 <!--			<enable object="CancelEventDefinition"/> -->
 			<enable object="CallActivity" feature="calledElementRef"/>
 			<enable object="CallActivity" feature="dataInputAssociations"/>

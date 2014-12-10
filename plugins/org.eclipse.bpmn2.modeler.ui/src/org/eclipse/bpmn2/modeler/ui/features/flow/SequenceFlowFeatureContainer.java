@@ -210,8 +210,15 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 		
 		@Override
 		public boolean isAvailable(IContext context) {
-			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getSequenceFlow()))
-				return false;
+			if (context instanceof ICreateConnectionContext) {
+				ICreateConnectionContext ccc = (ICreateConnectionContext) context;
+				FlowNode source = getSourceBo(ccc);
+				if (source instanceof SubProcess) {
+					SubProcess subProcess = (SubProcess) source;
+					if (subProcess.isTriggeredByEvent())
+						return false;
+				}
+			}
 			return super.isAvailable(context);
 		}
 		

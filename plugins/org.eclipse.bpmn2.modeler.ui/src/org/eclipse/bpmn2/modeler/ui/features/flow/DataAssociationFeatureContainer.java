@@ -25,11 +25,13 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
+import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.OutputSet;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -458,7 +460,16 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 
 		@Override
 		public boolean isAvailable(IContext context) {
-			return true;
+			if (context instanceof ICreateConnectionContext) {
+				ICreateConnectionContext ccc = (ICreateConnectionContext) context;
+				BaseElement source = getSourceBo(ccc);
+				if (source instanceof SubProcess) {
+					SubProcess subProcess = (SubProcess) source;
+					if (subProcess.isTriggeredByEvent())
+						return false;
+				}
+			}
+			return super.isAvailable(context);
 		}
 
 		@Override

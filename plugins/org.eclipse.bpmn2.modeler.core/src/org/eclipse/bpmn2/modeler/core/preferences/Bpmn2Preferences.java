@@ -508,7 +508,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
-			String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getFirstNonDefaultId());
+			String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getDefaultRuntime().getId());
 			if (id==null || id.isEmpty())
 				id = TargetRuntime.getFirstNonDefaultId();
 			targetRuntime = TargetRuntime.getRuntime(id);

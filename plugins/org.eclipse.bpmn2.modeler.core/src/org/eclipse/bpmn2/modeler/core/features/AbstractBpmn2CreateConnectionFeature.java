@@ -415,6 +415,10 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		if (a != null) {
 			return BusinessObjectUtil.getFirstElementOfType(a.getParent(), getSourceClass());
 		}
+		PictogramElement pe = context.getSourcePictogramElement();
+		if (pe != null) {
+			return BusinessObjectUtil.getFirstElementOfType(pe, getSourceClass());
+		}
 		return null;
 	}
 

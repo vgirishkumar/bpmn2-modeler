@@ -14,8 +14,13 @@
 package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.EscalationEventDefinition;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  * @author Bob Brodt
@@ -29,6 +34,21 @@ public class EscalationEventDefinitionPropertiesAdapter extends EventDefinitionP
 	 */
 	public EscalationEventDefinitionPropertiesAdapter(AdapterFactory adapterFactory, EscalationEventDefinition object) {
 		super(adapterFactory, object);
+		
+		EStructuralFeature ref = Bpmn2Package.eINSTANCE.getEscalationEventDefinition_EscalationRef();
+		setFeatureDescriptor(ref, new FeatureDescriptor<EscalationEventDefinition>(this,object,ref) {
+
+			@Override
+			protected void internalSet(EscalationEventDefinition object, EStructuralFeature feature, Object value, int index) {
+				super.internalSet(object, feature, value, index);
+				Escalation escalation = object.getEscalationRef();
+				if (escalation!=null) {
+					ItemDefinition itemDefinition = escalation.getStructureRef();
+					ExtendedPropertiesProvider.setValue(escalation, Bpmn2Package.eINSTANCE.getEscalation_StructureRef(), itemDefinition);
+				}
+			}
+
+		});
 	}
 
 }
