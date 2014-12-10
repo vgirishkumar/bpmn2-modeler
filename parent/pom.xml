@@ -104,6 +104,20 @@
 				<platform-version-name>luna</platform-version-name>
 			</properties>
 		</profile>
+		<profile>
+			<id>platform-mars</id>
+			<activation>
+				<property>
+					<name>platform-version-name</name>
+					<value>mars</value>
+				</property>
+			</activation>
+			<properties>
+				<eclipse-site>http://download.eclipse.org/releases/mars</eclipse-site>
+				<platform-version>[4.4,5.0]</platform-version>
+				<platform-version-name>mars</platform-version-name>
+			</properties>
+		</profile>
 	</profiles>
 
 	<repositories>
