@@ -10,34 +10,23 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.choreography;
 
-import java.io.IOException;
-
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.Participant;
-import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.ui.IConstants;
-import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CustomFeature;
 import org.eclipse.bpmn2.modeler.core.features.choreography.ChoreographyUtil;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
-import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
+import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2MultiPageEditor;
-import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
-public class ShowDiagramPageFeature extends AbstractCustomFeature {
+public class ShowDiagramPageFeature extends AbstractBpmn2CustomFeature {
 
 	public ShowDiagramPageFeature(IFeatureProvider fp) {
 		super(fp);

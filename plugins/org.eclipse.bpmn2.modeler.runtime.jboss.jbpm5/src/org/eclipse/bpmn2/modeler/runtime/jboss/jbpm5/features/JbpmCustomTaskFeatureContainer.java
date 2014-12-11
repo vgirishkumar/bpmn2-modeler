@@ -229,7 +229,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		 */
 		@Override
 		public boolean canExecute(IContext context) {
-			BPMN2Editor editor = (BPMN2Editor)getFeatureProvider().getDiagramTypeProvider().getDiagramEditor();
+			BPMN2Editor editor = (BPMN2Editor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 			IBpmn2RuntimeExtension rte = editor.getTargetRuntime().getRuntimeExtension();
 			if (rte instanceof JBPM5RuntimeExtension && context instanceof ICustomContext) {
 				PictogramElement[] pes = ((ICustomContext) context).getPictogramElements();
@@ -264,7 +264,7 @@ public class JbpmCustomTaskFeatureContainer extends CustomShapeFeatureContainer 
 		 */
 		@Override
 		public void execute(IContext context) {
-			BPMN2Editor editor = (BPMN2Editor)getFeatureProvider().getDiagramTypeProvider().getDiagramEditor();
+			BPMN2Editor editor = (BPMN2Editor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 			PictogramElement pe = ((ICustomContext) context).getPictogramElements()[0];
 			final Task task = (Task)Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 			String taskName = ""; //$NON-NLS-1$

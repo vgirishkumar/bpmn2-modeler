@@ -185,7 +185,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	@Override
 	public IPaletteCompartmentEntry[] getPalette() {
 
-		editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();
+		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		targetRuntime = editor.getTargetRuntime();
 		modelEnablements = editor.getModelEnablements();
 		featureProvider = (BPMN2FeatureProvider)getFeatureProvider();
@@ -491,7 +491,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	private void createCustomTasks(List<IPaletteCompartmentEntry> ret) {
 
 		PaletteCompartmentEntry compartmentEntry = null;
-		BPMN2Editor editor = (BPMN2Editor) getDiagramTypeProvider().getDiagramEditor();
+		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {

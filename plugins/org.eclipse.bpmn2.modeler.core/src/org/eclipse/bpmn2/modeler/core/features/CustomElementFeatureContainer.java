@@ -135,7 +135,7 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	 */
 	@Override
 	public boolean isAvailable(IFeatureProvider fp) {
-		DiagramEditor editor = (DiagramEditor) fp.getDiagramTypeProvider().getDiagramEditor();
+		DiagramEditor editor = (DiagramEditor) fp.getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		if (editor != null) {
 			ModelEnablements me = (ModelEnablements)editor.getAdapter(ModelEnablements.class);
 			if (me!=null) {
@@ -423,5 +423,4 @@ public class CustomElementFeatureContainer implements ICustomElementFeatureConta
 	public ICustomFeature[] getCustomFeatures(IFeatureProvider fp) {
 		return getFeatureContainer(fp).getCustomFeatures(fp);
 	}
-
 }

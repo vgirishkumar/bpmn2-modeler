@@ -128,10 +128,6 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		return parent;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.graphiti.ui.platform.GFPropertySection#getDiagramEditor()
-	 */
-	@Override
 	protected DiagramEditor getDiagramEditor() {
 		return editor;
 	}

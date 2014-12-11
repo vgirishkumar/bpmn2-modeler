@@ -16,21 +16,19 @@ package org.eclipse.bpmn2.modeler.ui.features.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.LinkEventDefinition;
-import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CustomFeature;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
@@ -46,7 +44,7 @@ import org.eclipse.swt.widgets.Display;
 /**
  *
  */
-public class FollowLinkFeature extends AbstractCustomFeature {
+public class FollowLinkFeature extends AbstractBpmn2CustomFeature {
 
 	ICustomContext context;
 	private static ILabelProvider labelProvider = new ILabelProvider() {
@@ -124,7 +122,7 @@ public class FollowLinkFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		DiagramEditor editor = (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramEditor();
+		DiagramEditor editor = getDiagramEditor();
 		PictogramElement pe = context.getPictogramElements()[0];
 		Event event = BusinessObjectUtil.getFirstElementOfType(pe, Event.class);
 		LinkEventDefinition target = null;

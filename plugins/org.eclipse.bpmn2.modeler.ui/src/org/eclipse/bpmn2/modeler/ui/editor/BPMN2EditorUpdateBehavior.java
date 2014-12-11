@@ -37,6 +37,7 @@ import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 import org.eclipse.graphiti.ui.internal.editor.GFWorkspaceCommandStackImpl;
 
 /**
@@ -63,12 +64,12 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 
 	public TransactionalEditingDomain getEditingDomain() {
 		if (editingDomain == null)
-			createEditingDomain();
+			createEditingDomain(null);
 		return editingDomain;
 	}
 
 	@Override
-	public void createEditingDomain() {
+	public void createEditingDomain(IDiagramEditorInput input) {
 		if (editingDomain == null) {
 			// If another editor window is already open for this BPMN2 file
 			// then reuse its Editing Domain; otherwise create a new one.

@@ -1398,7 +1398,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 
 	@Override
-	protected void configureGraphicalViewer() {
+	public void configureGraphicalViewer() {
 	    super.configureGraphicalViewer();
 	    // add zooming action with "CTRL + Mouse Wheel"
 	    GraphicalViewer viewer = getGraphicalViewer();

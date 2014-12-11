@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CustomFeature;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
@@ -48,7 +49,6 @@ import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.context.impl.DeleteContext;
 import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.Display;
  * @author Bob Brodt
  *
  */
-public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends AbstractCustomFeature {
+public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends AbstractBpmn2CustomFeature {
 
 	protected boolean changesDone = false;;
 	

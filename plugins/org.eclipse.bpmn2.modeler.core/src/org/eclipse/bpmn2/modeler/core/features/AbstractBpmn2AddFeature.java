@@ -62,6 +62,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
 import org.eclipse.graphiti.services.IPeService;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * This is the Graphiti {@code AddFeature} base class for all BPMN2 model elements which
@@ -477,5 +478,9 @@ public abstract class AbstractBpmn2AddFeature<T extends BaseElement>
 			layoutContext.putProperty(key, value);
 		}
 		return getFeatureProvider().layoutIfPossible(layoutContext);
+	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 	}
 }

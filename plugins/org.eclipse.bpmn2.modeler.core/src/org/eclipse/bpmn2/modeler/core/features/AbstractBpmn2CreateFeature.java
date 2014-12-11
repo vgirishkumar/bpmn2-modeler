@@ -285,4 +285,8 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	public boolean hasDoneChanges() {
 		return changesDone;
 	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+	}
 }

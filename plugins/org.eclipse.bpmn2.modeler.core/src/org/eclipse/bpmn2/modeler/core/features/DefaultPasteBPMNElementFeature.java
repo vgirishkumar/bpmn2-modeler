@@ -69,6 +69,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.features.AbstractPasteFeature;
 
 /**
@@ -246,7 +247,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 			newPes[i++] = entry.getValue();
 		}
 		
-		this.getDiagramEditor().setPictogramElementsForSelection(newPes);
+		getDiagramEditor().setPictogramElementsForSelection(newPes);
 	}
 	
 	/* (non-Javadoc)
@@ -755,5 +756,9 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		while (!(container instanceof FlowElementsContainer) && container!=null)
 			container = container.eContainer();
 		return (FlowElementsContainer)container;
+	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 	}
 }

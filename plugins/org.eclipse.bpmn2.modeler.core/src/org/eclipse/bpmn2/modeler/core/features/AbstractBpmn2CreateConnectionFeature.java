@@ -485,4 +485,8 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 */
 	protected abstract Class<TARGET> getTargetClass();
 
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+	}
 }

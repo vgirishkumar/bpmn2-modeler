@@ -29,6 +29,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.notification.DefaultNotificationService;
 import org.eclipse.graphiti.notification.INotificationService;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 	private IToolBehaviorProvider[] toolBehaviorProviders;
@@ -125,5 +126,9 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 			}
 			super.updatePictogramElements(updated.toArray(new PictogramElement[updated.size()]));
 		}
+	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getDiagramBehavior().getDiagramContainer();
 	}
 }

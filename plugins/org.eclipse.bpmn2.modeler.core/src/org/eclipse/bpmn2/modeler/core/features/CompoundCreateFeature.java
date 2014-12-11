@@ -38,6 +38,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * This is a Graphiti CreateFeature class that can be used to create multiple objects.
@@ -400,5 +401,9 @@ public class CompoundCreateFeature<CONTEXT extends IContext>
 	
 	public EClass getFeatureClass() {
 		return null;
+	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 	}
 }

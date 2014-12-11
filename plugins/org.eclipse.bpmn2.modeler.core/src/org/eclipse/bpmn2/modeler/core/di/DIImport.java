@@ -161,7 +161,7 @@ public class DIImport {
 						
 						currentBPMNDiagram = d;
 						diagram = DIUtils.findDiagram(editor.getDiagramBehavior(),d);
-						editor.getDiagramTypeProvider().init(diagram, editor);
+						editor.getDiagramTypeProvider().init(diagram, editor.getDiagramBehavior());
 	
 						BPMNPlane plane = d.getPlane();
 						if (plane.getBpmnElement() == null) {
@@ -941,7 +941,7 @@ public class DIImport {
 		if (context.getTargetContainer() instanceof Diagram) {
 			Diagram diagram = (Diagram)context.getTargetContainer();
 			if (diagram!=featureProvider.getDiagramTypeProvider().getDiagram())
-				featureProvider.getDiagramTypeProvider().init(diagram, editor);
+				featureProvider.getDiagramTypeProvider().init(diagram, editor.getDiagramBehavior());
 		}
 		return addFeature.canAdd(context);
 	}
