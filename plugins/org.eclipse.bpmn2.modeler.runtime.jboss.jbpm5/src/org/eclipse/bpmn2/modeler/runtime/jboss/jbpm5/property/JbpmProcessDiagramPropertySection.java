@@ -15,8 +15,12 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -52,11 +56,20 @@ public class JbpmProcessDiagramPropertySection extends ProcessDiagramPropertySec
 			super(parent, style);
 		}
 
+		@Override
+		protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
+			if ("id".equals(attribute.getName())) {
+				ObjectEditor editor = new TextObjectEditor(this,object,attribute);
+				editor.createControl(parent,label);
+			}
+			else
+				super.bindAttribute(parent, object, attribute, label);
+		}
+
 		protected boolean isModelObjectEnabled(String className, String featureName) {
 			if ("id".equals(featureName)) //$NON-NLS-1$
 					return true;
-			boolean enable = super.isModelObjectEnabled(className,featureName);
-			return enable;
+			return super.isModelObjectEnabled(className,featureName);
 		}
 	};
 }
