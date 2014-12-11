@@ -212,6 +212,18 @@
 		</repository>
 
 		<repository>
+			<id>eclipse-graphiti-mars</id>
+			<url>http://download.eclipse.org/graphiti/updates/milestones/S-0.12.0M3-201411110920/</url>
+			<layout>p2</layout>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+
+		<repository>
 			<id>eclipse-emf</id>
 			<url>http://download.eclipse.org/modeling/emf/updates/releases/</url>
 			<layout>p2</layout>
