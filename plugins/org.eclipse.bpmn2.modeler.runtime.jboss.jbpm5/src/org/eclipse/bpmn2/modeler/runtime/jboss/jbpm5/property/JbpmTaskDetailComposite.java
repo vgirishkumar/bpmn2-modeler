@@ -105,6 +105,9 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	 */
 	protected void createInputParameterBindings(Task task) {
 		
+		// this may no longer be required since populateObject() is now called
+		// in Bpmn2ModelerFactory.create(). See https://issues.jboss.org/browse/SWITCHYARD-2484
+		// for details.
 		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
 		if (adapter==null) {
 			AddContext context = new AddContext(new AreaContext(), task);

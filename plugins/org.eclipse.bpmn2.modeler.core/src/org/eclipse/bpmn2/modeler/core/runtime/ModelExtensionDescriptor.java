@@ -745,6 +745,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		addModelExtensionAdapter(object);
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
+			// See https://issues.jboss.org/browse/SWITCHYARD-2484
+			adapter.setResource(containingResource);
 			adapter.setProperty(this.getClass().getName(), this);
 			if (description!=null)
 				adapter.setProperty(ExtendedPropertiesAdapter.LONG_DESCRIPTION, description);
@@ -769,6 +771,8 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	private void adaptFeature(EObject object, EStructuralFeature feature, Object value, Property property) {
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter!=null) {
+			// See https://issues.jboss.org/browse/SWITCHYARD-2484
+			adapter.setResource(containingResource);
 			// if this is a dynamic feature, delegate access to the feature to the Model Decorator
 			FeatureDescriptor fd = adapter.getFeatureDescriptor(feature);
 			if (object.eClass().getEStructuralFeature(feature.getName())==null)
