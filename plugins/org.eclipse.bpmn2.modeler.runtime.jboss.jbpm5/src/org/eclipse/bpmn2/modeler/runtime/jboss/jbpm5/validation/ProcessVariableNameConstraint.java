@@ -11,10 +11,7 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
@@ -33,30 +30,28 @@ public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 		String id1 = null;
 		if (o1 instanceof GlobalType)
 			id1 = ((GlobalType)o1).getIdentifier();
-		else if (o1 instanceof Property)
-			id1 = ((Property)o1).getId();
-		else if (o1 instanceof Message)
-			id1 = ((Message)o1).getId();
-		else if (o1 instanceof DataObject)
-			id1 = ((DataObject)o1).getId();
+		else if (o1 instanceof BaseElement)
+			id1 = ((BaseElement)o1).getId();
 
-		Definitions definitions = ModelUtil.getDefinitions(o1);
-		TreeIterator<EObject> iter = definitions.eAllContents();
-		while (iter.hasNext()) {
-			EObject o2 = iter.next();
-			if (o2 instanceof BaseElement && o1!=o2) {
-				String id2;
-				if (o2 instanceof GlobalType)
-					id2 = ((GlobalType)o2).getIdentifier();
-				else
-					id2 = ((BaseElement)o2).getId();
-				if (id1!=null && id2!=null) {
-					if (id1.equals(id2)) {
-						String msg = NLS.bind(
-								Messages.ProcessVariableNameConstraint_Duplicate_ID,
-								ExtendedPropertiesProvider.getLabel(o1)+" "+ExtendedPropertiesProvider.getTextValue(o1), //$NON-NLS-1$
-								ExtendedPropertiesProvider.getLabel(o2)+" "+ExtendedPropertiesProvider.getTextValue(o2)); //$NON-NLS-1$
-						return ctx.createFailureStatus(msg);
+		if (id1!=null) {
+			Definitions definitions = ModelUtil.getDefinitions(o1);
+			TreeIterator<EObject> iter = definitions.eAllContents();
+			while (iter.hasNext()) {
+				EObject o2 = iter.next();
+				if (o2 instanceof BaseElement && o1!=o2) {
+					String id2;
+					if (o2 instanceof GlobalType)
+						id2 = ((GlobalType)o2).getIdentifier();
+					else
+						id2 = ((BaseElement)o2).getId();
+					if (id1!=null && id2!=null) {
+						if (id1.equals(id2)) {
+							String msg = NLS.bind(
+									Messages.ProcessVariableNameConstraint_Duplicate_ID,
+									ExtendedPropertiesProvider.getLabel(o1)+" "+ExtendedPropertiesProvider.getTextValue(o1), //$NON-NLS-1$
+									ExtendedPropertiesProvider.getLabel(o2)+" "+ExtendedPropertiesProvider.getTextValue(o2)); //$NON-NLS-1$
+							return ctx.createFailureStatus(msg);
+						}
 					}
 				}
 			}

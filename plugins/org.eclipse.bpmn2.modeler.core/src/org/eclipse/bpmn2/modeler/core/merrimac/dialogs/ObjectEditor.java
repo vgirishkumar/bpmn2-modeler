@@ -223,6 +223,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		        		object, ValidationStatusAdapter.class);
 		        if (statusAdapter != null) {
 		            final IStatus status = statusAdapter.getValidationStatus();
+//		            System.out.println(status.getMessage());
 		            if (status.isMultiStatus()) {
 		            	for (IStatus s : status.getChildren()) {
 		            		if (statusApplies(s)) {
