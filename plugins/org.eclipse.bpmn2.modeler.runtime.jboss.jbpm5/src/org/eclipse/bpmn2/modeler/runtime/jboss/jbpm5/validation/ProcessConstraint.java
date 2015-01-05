@@ -94,8 +94,8 @@ public class ProcessConstraint extends AbstractModelConstraint {
 			
 			feature = ModelDecorator.getAnyAttribute(process, "adHoc"); //$NON-NLS-1$
 			if (feature!=null) {
-				boolean adHoc = (boolean) process.eGet(feature);
-				if (!adHoc) {
+				Boolean adHoc = (Boolean) process.eGet(feature);
+				if (!adHoc.booleanValue()) {
 					// This is not an ad-hoc process:
 					// need to make sure all nodes are connected,
 					// same as core BPMN2
