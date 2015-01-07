@@ -102,6 +102,10 @@ public class ProcessConstraint extends AbstractModelConstraint {
 					new FlowElementsContainerValidator(this).validate(process);
 				}
 			}
+			else {
+				// Default value for missing "adHoc" attribute is "false"
+				new FlowElementsContainerValidator(this).validate(process);
+			}
 			
 			new BaseElementValidator(this).validate(process);
 			

@@ -51,12 +51,17 @@ public class SignalValidator extends AbstractBpmn2ElementValidator<Signal> {
 	@Override
 	public IStatus validate(Signal object) {
 		if (ProcessValidator.isContainingProcessExecutable(object)) {
-			ItemDefinition itemDefinition = object.getStructureRef();
-			if (itemDefinition!=null) {
-				new ItemDefinitionValidator(this).validate(itemDefinition);
+			// Only report problems with this object one time.
+			// This same error should not be reported when validating
+			// other objects that references this object. 
+			if (this.parent==null) {
+				ItemDefinition itemDefinition = object.getStructureRef();
+				if (itemDefinition!=null) {
+					new ItemDefinitionValidator(this).validate(itemDefinition);
+				}
+				else
+					addMissingFeatureStatus(object,"structureRef",Status.ERROR); //$NON-NLS-1$
 			}
-			else
-				addMissingFeatureStatus(object,"structureRef",Status.ERROR); //$NON-NLS-1$
 		}
 		return getResult();
 	}

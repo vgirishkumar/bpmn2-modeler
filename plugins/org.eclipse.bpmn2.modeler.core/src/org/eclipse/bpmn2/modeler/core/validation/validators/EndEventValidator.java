@@ -49,9 +49,6 @@ public class EndEventValidator extends AbstractBpmn2ElementValidator<EndEvent> {
 	 */
 	@Override
 	public IStatus validate(EndEvent object) {
-		if (object.getIncoming().size() < 1) {
-			addMissingFeatureStatus(object,"incoming",Status.ERROR); //$NON-NLS-1$
-		}
 		return getResult();
 	}
 

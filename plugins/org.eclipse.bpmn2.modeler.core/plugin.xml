@@ -17,10 +17,13 @@
          point="org.eclipse.emf.validation.constraintProviders">
       <category
             name="%category.name"
-            id="org.eclipse.bpmn2.modeler.core.validation"/>
+            id="org.eclipse.bpmn2.modeler.core.validation.category"/>
+      <category
+            name="Core Validation Overrides"
+            id="org.eclipse.bpmn2.modeler.core.validation.category.override"/>
       <constraintProvider cache="true">
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
-         <constraints categories="org.eclipse.bpmn2.modeler.core.validation">
+         <constraints categories="org.eclipse.bpmn2.modeler.core.validation.category">
 
 			<constraint
 					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
@@ -58,7 +61,7 @@
          point="org.eclipse.emf.validation.constraintBindings">
       <clientContext
             default="false"
-            id="org.eclipse.bpmn2.modeler.core.validationContext">
+            id="org.eclipse.bpmn2.modeler.core.validation.context">
          <enablement>
             <or>
 	         	<test
@@ -71,13 +74,31 @@
          </enablement>
       </clientContext>
       <binding
-            context="org.eclipse.bpmn2.modeler.core.validationContext"
-            category="org.eclipse.bpmn2.modeler.core.validation"/>
+            context="org.eclipse.bpmn2.modeler.core.validation.context"
+            category="org.eclipse.bpmn2.modeler.core.validation.category"/>
+   </extension>
+
+   <extension
+         point="org.eclipse.emf.validation.constraintBindings">
+      <clientContext
+            default="false"
+            id="org.eclipse.bpmn2.modeler.core.validation.context.override">
+         <enablement>
+            <not>
+	         	<test
+	                property="org.eclipse.bpmn2.modeler.property.targetRuntimeId"
+	                value="org.eclipse.bpmn2.modeler.runtime.none"/>
+            </not>
+         </enablement>
+      </clientContext>
+      <binding
+            context="org.eclipse.bpmn2.modeler.core.validation.context.override"
+            category="org.eclipse.bpmn2.modeler.core.validation.category.override"/>
    </extension>
 	
 	<extension point="org.eclipse.emf.validation.validationListeners">
 		<listener class="org.eclipse.bpmn2.modeler.core.validation.LiveValidationListener">
-			<clientContext id="org.eclipse.bpmn2.modeler.core.validationContext"/>
+			<clientContext id="org.eclipse.bpmn2.modeler.core.validation.context"/>
 		</listener>
 	</extension>
 

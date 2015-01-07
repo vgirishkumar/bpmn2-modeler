@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.core.validation.validators;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -49,12 +50,14 @@ public class CatchEventValidator extends AbstractBpmn2ElementValidator<CatchEven
 	 */
 	@Override
 	public IStatus validate(CatchEvent object) {
-		if (object.getOutgoing().size() < 1) {
-			addMissingFeatureStatus(object,"outgoing",Status.WARNING); //$NON-NLS-1$
-		}
-		EventValidator validator = new EventValidator(this);
-		validator.validate(object);
 		return getResult();
+	}
+	
+	@Override
+	public boolean checkSuperType(EClass eClass, CatchEvent object) {
+		if ("Event".equals(eClass.getName()))
+			return true;
+		return false;
 	}
 
 }

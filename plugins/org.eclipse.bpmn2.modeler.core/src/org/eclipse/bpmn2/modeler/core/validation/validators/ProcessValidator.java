@@ -15,13 +15,16 @@ package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import java.util.List;
 
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.IValidationContext;
 
@@ -64,15 +67,36 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 			addStatus(process, "name", Status.WARNING, "Process {0} has no name", process.getId());
 		}
 		
-		new FlowElementsContainerValidator(this).validate(process);
-		
-		new BaseElementValidator(this).validate(process);
-		
 		return getResult();
 	}
 	
+	@Override
+	public boolean checkSuperType(EClass eClass, Process object) {
+		if ("FlowElementsContainer".equals(eClass.getName()))
+			return true;
+		if ("BaseElement".equals(eClass.getName()))
+			return true;
+		return false;
+	}
+	
 	public static boolean isContainingProcessExecutable(EObject object) {
-		Process process = (Process) ModelUtil.findNearestAncestor(object, new Class[] { Process.class });
+		Process process = null;
+		if (object instanceof Process)
+			process = (Process) object;
+		else if (object instanceof RootElement) {
+			Definitions definitions = ModelUtil.getDefinitions(object);
+			if (definitions!=null) {
+				// return the first Process element found
+				for (RootElement re : definitions.getRootElements()) {
+					if (re instanceof Process) {
+						process = (Process) re;
+						break;
+					}
+				}
+			}
+		}
+		else
+			process = (Process) ModelUtil.findNearestAncestor(object, new Class[] { Process.class });
 		return process!=null && process.isIsExecutable();
 	}
 }

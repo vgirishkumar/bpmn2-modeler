@@ -13,15 +13,28 @@
 
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.ConditionalEventDefinition;
+import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutputAssociation;
+import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.ErrorEventDefinition;
+import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.EscalationEventDefinition;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.FormalExpression;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MessageEventDefinition;
+import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.SignalEventDefinition;
 import org.eclipse.bpmn2.TimerEventDefinition;
-import org.eclipse.bpmn2.modeler.core.validation.Messages;
+import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.validation.IValidationContext;
@@ -57,24 +70,70 @@ public class EventDefinitionValidator extends AbstractBpmn2ElementValidator<Even
 	 */
 	@Override
 	public IStatus validate(EventDefinition ed) {
+		Event event = (Event) ed.eContainer();
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
 			if (ted.getTimeDate() == null && ted.getTimeDuration() == null && ted.getTimeCycle() == null) {
-				addStatus(ed,Status.ERROR,"timeCycle","Timer Event has no Timer definition"); //$NON-NLS-1$
+				addStatus(event,Status.ERROR,"Timer Event has no Timer definition");
 			}
 		} else if (ed instanceof SignalEventDefinition) {
-			new SignalValidator(this).validate(((SignalEventDefinition) ed).getSignalRef());
+			Signal signal = ((SignalEventDefinition) ed).getSignalRef();
+			if (signal==null)
+				addStatus(event,Status.ERROR,"Signal Event has no Signal definition");
+			else
+				new SignalValidator(this).validate(signal);
 		} else if (ed instanceof ErrorEventDefinition) {
-			new ErrorValidator(this).validate(((ErrorEventDefinition) ed).getErrorRef());
+			Error error = ((ErrorEventDefinition) ed).getErrorRef();
+			if (error==null)
+				addStatus(event,Status.ERROR,"Error Event has no Error definition");
+			else
+				new ErrorValidator(this).validate(error);
 		} else if (ed instanceof ConditionalEventDefinition) {
-			new ExpressionValidator(this).validate(((ConditionalEventDefinition) ed).getCondition());
+			FormalExpression expression = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
+			if (expression==null || isEmpty(expression.getBody()))
+				addStatus(event,Status.ERROR,"Conditional Event has no condition expression");
+			else
+				new ExpressionValidator(this).validate(expression);
 		} else if (ed instanceof EscalationEventDefinition) {
-			new EscalationValidator(this).validate(((EscalationEventDefinition) ed).getEscalationRef());
+			Escalation escalation = ((EscalationEventDefinition) ed).getEscalationRef();
+			if (escalation==null)
+				addStatus(event,Status.ERROR,"Escalation Event has no Escalation definition");
+			else
+				new EscalationValidator(this).validate(escalation);
 		} else if (ed instanceof MessageEventDefinition) {
-			new MessageValidator(this).validate(((MessageEventDefinition) ed).getMessageRef());
+			Message message = ((MessageEventDefinition) ed).getMessageRef();
+			if (message==null)
+				addStatus(event,Status.ERROR,"Message Event has no Message definition");
+			else
+				new MessageValidator(this).validate(message);
 		} else if (ed instanceof CompensateEventDefinition) {
-			new ActivityValidator(this).validate(((CompensateEventDefinition) ed).getActivityRef());
+			Activity activity = ((CompensateEventDefinition) ed).getActivityRef();
+			if (activity==null)
+				addStatus(event,Status.ERROR,"Compensate Event does not reference an Activity");
+			else
+				new ActivityValidator(this).validate(activity);
 		}
+		
+		if (EventDefinitionsUtil.hasItemDefinition(ed)) {
+			// get Data Association and make sure both source and target are defined
+			Tuple<ItemAwareElement,DataAssociation> param = EventDefinitionsUtil.getIOParameter(event, ed);
+			DataAssociation da = param.getSecond();
+			int severity = ProcessValidator.isContainingProcessExecutable(event) ? Status.ERROR : Status.WARNING;
+			if (da instanceof DataInputAssociation) {
+				if (((DataInputAssociation)da).getSourceRef().size()==0) {
+					addStatus(event,severity,"Input to {0} defined in {1} is not mapped to a Source data item",
+							ModelUtil.getLabel(ed),
+							ModelUtil.getLabel(event));
+				}
+			}
+			else if (da instanceof DataOutputAssociation) {
+				if (((DataOutputAssociation)da).getTargetRef()==null) {
+					addStatus(event,severity,"Output from {0} is not mapped to a Target data item",
+							ModelUtil.getLabel(ed));
+				}
+			}
+		}
+		
 		return getResult();
 	}
 

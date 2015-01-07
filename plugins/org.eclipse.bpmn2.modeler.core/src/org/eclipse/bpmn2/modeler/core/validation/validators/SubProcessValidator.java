@@ -14,11 +14,13 @@
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
+import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -71,10 +73,16 @@ public class SubProcessValidator extends AbstractBpmn2ElementValidator<SubProces
 				addStatus(object,Status.ERROR,"Event SubProcess has no Start Event");
 			}
 		}
-		if (!(object instanceof AdHocSubProcess)) {
-			new FlowElementsContainerValidator(this).validate(object);
-		}
 		return getResult();
+	}
+	
+	@Override
+	public boolean checkSuperType(EClass eClass, SubProcess object) {
+		if ("FlowElementsContainer".equals(eClass.getName())) {
+			if (!(object instanceof AdHocSubProcess))
+				return true;
+		}
+		return false;
 	}
 
 }

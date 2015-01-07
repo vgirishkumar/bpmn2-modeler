@@ -64,11 +64,7 @@ public class EventValidator extends AbstractBpmn2ElementValidator<Event> {
 				if (!(object instanceof StartEvent || object instanceof EndEvent))
 					addMissingFeatureStatus(object,"eventDefinitions",Status.ERROR); //$NON-NLS-1$
 			}
-			// validate the Event Definitions
-			for (EventDefinition ed : eventdefs) {
-				new EventDefinitionValidator(this).validate(ed);
-			}
-
+			// Note that Event Definitions will be validated by the EventDefinitionsValidator
 		}
 		return getResult();
 	}

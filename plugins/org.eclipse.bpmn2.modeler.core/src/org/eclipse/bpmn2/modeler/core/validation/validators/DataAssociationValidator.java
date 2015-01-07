@@ -14,6 +14,9 @@
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutputAssociation;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.validation.IValidationContext;
@@ -49,8 +52,19 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 	 */
 	@Override
 	public IStatus validate(DataAssociation object) {
-		if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null)
-			addMissingFeatureStatus(object,"targetRef",Status.ERROR);
+		if (!(object.eContainer() instanceof Event)) {
+			// Note that missing source/target of Data Associations for Events
+			// is already handled in EventDefinitionValidator
+			int severity = ProcessValidator.isContainingProcessExecutable(object) ? Status.ERROR : Status.WARNING;
+			if (object instanceof DataOutputAssociation) {
+				if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null)
+					addMissingFeatureStatus(object,"targetRef",severity);
+			}
+			else if (object instanceof DataInputAssociation) {
+				if (isEmpty(object.getSourceRef()) && object.getAssignment().size()==0 && object.getTransformation()==null)
+					addMissingFeatureStatus(object,"sourceRef",severity);
+			}
+		}
 		return getResult();
 	}
 

@@ -15,8 +15,6 @@ package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import org.eclipse.bpmn2.Error;
 import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.validation.IValidationContext;
@@ -53,15 +51,20 @@ public class ErrorValidator extends AbstractBpmn2ElementValidator<Error> {
 	@Override
 	public IStatus validate(Error object) {
 		if (ProcessValidator.isContainingProcessExecutable(object)) {
-			if (isEmpty(object.getErrorCode()))
-				addMissingFeatureStatus(object,"errorCode",Status.ERROR); //$NON-NLS-1$
-			
-			ItemDefinition itemDefinition = object.getStructureRef();
-			if (itemDefinition!=null) {
-				new ItemDefinitionValidator(this).validate(itemDefinition);
+			// Only report problems with this object one time.
+			// This same error should not be reported when validating
+			// other objects that references this object. 
+			if (this.parent==null) {
+				if (isEmpty(object.getErrorCode()))
+					addMissingFeatureStatus(object,"errorCode",Status.ERROR); //$NON-NLS-1$
+				
+				ItemDefinition itemDefinition = object.getStructureRef();
+				if (itemDefinition!=null) {
+					new ItemDefinitionValidator(this).validate(itemDefinition);
+				}
+				else
+					addMissingFeatureStatus(object,"structureRef",Status.ERROR); //$NON-NLS-1$
 			}
-			else
-				addMissingFeatureStatus(object,"structureRef",Status.ERROR); //$NON-NLS-1$
 		}
 		return getResult();
 	}

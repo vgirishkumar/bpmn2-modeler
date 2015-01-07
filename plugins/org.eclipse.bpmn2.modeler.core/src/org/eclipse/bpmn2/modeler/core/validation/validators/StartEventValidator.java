@@ -49,9 +49,6 @@ public class StartEventValidator extends AbstractBpmn2ElementValidator<StartEven
 	 */
 	@Override
 	public IStatus validate(StartEvent object) {
-		if (object.getOutgoing().size() < 1) {
-			addMissingFeatureStatus(object,"outgoing",Status.ERROR); //$NON-NLS-1$
-		}
 		return getResult();
 	}
 

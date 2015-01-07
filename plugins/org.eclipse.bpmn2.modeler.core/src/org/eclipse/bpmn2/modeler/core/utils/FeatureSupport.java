@@ -1105,8 +1105,11 @@ public class FeatureSupport {
 	 */
 	public static LabelPosition getLabelPosition(PictogramElement pe) {
 		BaseElement element = BusinessObjectUtil.getFirstBaseElement(pe);
-		ShapeStyle ss = ShapeStyle.getShapeStyle(element);
-		return ss.getLabelPosition();
+		if (element!=null) {
+			ShapeStyle ss = ShapeStyle.getShapeStyle(element);
+			return ss.getLabelPosition();
+		}
+		return LabelPosition.BOTTOM;
 	}
 	
 	/*
