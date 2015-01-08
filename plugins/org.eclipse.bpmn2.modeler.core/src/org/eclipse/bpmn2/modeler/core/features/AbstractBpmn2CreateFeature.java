@@ -171,12 +171,14 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 */
 	public void putBusinessObject(ICreateContext context, T businessObject) {
 		context.putProperty(GraphitiConstants.BUSINESS_OBJECT, businessObject);
-		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
-		if (id!=null) {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
-	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
-		}
+		// ModelExtensionDescriptor#populateObject() is already called in Bpmn2ModelerFactory
+		// See https://issues.jboss.org/browse/SWITCHYARD-2484
+//		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+//		if (id!=null) {
+//	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+//	    	CustomTaskDescriptor ctd = rt.getCustomTask(id);
+//	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
+//		}
 		
 		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));

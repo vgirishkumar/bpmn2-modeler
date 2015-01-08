@@ -1222,22 +1222,19 @@
 		
 	</extension>
 
- <extension
+    <extension
        point="org.eclipse.graphiti.ui.imageProviders">
-    <imageProvider
+       <imageProvider
           class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5ImageProvider"
           id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5ImageProvider">
-    </imageProvider>
- </extension>
+       </imageProvider>
+    </extension>
 	
- <extension
-         point="org.eclipse.emf.validation.constraintProviders">
-      <category
-            name="%category.name.20"
-            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory"/>
+   <extension point="org.eclipse.emf.validation.constraintProviders">
+      <!-- These constraints override the ones in BPMN2 Modeler Core Validation -->
       <constraintProvider cache="true">
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
-         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
+         <constraints categories="org.eclipse.bpmn2.modeler.core.validation.category.override">
             <constraint
                   lang="Java"
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessConstraint"
@@ -1254,6 +1251,15 @@
                </message>
                <target class="Process"/>
             </constraint>
+         </constraints>
+      </constraintProvider>
+            
+      <category
+            name="%category.name.20"
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category"/>
+      <constraintProvider cache="true">
+         <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
+         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category">
             <constraint
                   lang="Java"
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.BusinessRuleTaskConstraint"
@@ -1288,38 +1294,6 @@
             </constraint>
             <constraint
                   lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.TaskConstraint"
-                  severity="WARNING"
-                  mode="Batch"
-                  name="%constraint.name.2"
-                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Task"
-                  statusCode="1">
-               <description>
-                  %constraint.description.2
-               </description>
-               <message>
-                  %constraint.message.2
-               </message>
-               <target class="Task"/>
-            </constraint>
-            <constraint
-                  lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.GatewayConstraint"
-                  severity="WARNING"
-                  mode="Batch"
-                  name="%constraint.name.3"
-                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Gateway"
-                  statusCode="1">
-               <description>
-                  %constraint.description.3
-               </description>
-               <message>
-                  %constraint.message.3
-               </message>
-               <target class="Gateway"/>
-            </constraint>
-            <constraint
-                  lang="Java"
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.CallActivityConstraint"
                   severity="WARNING"
                   mode="Batch"
@@ -1341,14 +1315,11 @@
 					lang="Java"
 					mode="Live"
 					name="%constraint.name.5"
-					severity="INFO"
+					severity="ERROR"
 					statusCode="1">
 				<message>%constraint.message.5</message>
 				<description>%constraint.description.5</description>
 				<target class="BaseElement"/>
-				<target class="Property"/>
-				<target class="Message"/>
-				<target class="DataObject"/>
 			</constraint>
          </constraints>
       </constraintProvider>
@@ -1358,7 +1329,7 @@
          point="org.eclipse.emf.validation.constraintBindings">
       <clientContext
             default="false"
-            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext">
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.context">
          <enablement>
          	<test
                 property="org.eclipse.bpmn2.modeler.property.targetRuntimeId"
@@ -1366,8 +1337,8 @@
          </enablement>
       </clientContext>
       <binding
-            context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext"
-            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
+            context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.context"
+            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category">
       </binding>
    </extension>
   

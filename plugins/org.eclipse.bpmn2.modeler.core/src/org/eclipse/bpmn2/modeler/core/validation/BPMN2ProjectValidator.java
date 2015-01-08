@@ -78,7 +78,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         }
     	modelFile = (IFile) file;
     	try {
-			modelFile.deleteMarkers(null, false, IProject.DEPTH_INFINITE);
+			modelFile.deleteMarkers(null, true, IProject.DEPTH_INFINITE);
 		} catch (CoreException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

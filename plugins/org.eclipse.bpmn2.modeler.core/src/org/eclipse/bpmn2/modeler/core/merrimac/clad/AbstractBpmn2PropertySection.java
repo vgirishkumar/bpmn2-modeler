@@ -128,6 +128,11 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		return parent;
 	}
 
+	/**
+	 * This was deprecated in Graphiti 0.12 - no longer an Override
+	 * 
+	 * @return the Diagram Editor
+	 */
 	protected DiagramEditor getDiagramEditor() {
 		return editor;
 	}

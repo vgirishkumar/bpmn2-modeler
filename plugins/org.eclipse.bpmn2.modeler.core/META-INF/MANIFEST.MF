@@ -65,7 +65,8 @@ Export-Package: org.eclipse.bpmn2.modeler.core,
  org.eclipse.bpmn2.modeler.core.preferences,
  org.eclipse.bpmn2.modeler.core.runtime,
  org.eclipse.bpmn2.modeler.core.utils,
- org.eclipse.bpmn2.modeler.core.validation
+ org.eclipse.bpmn2.modeler.core.validation,
+ org.eclipse.bpmn2.modeler.core.validation.validators
 Import-Package: org.eclipse.bpmn2.modeler.help,
  org.eclipse.graphiti.ui.features,
  org.eclipse.jface.preference,

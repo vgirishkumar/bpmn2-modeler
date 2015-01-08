@@ -632,6 +632,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		} catch (ClassNotFoundException e) {
 			return getShapeStyle(object.getClass());
 		}
+		catch (Exception e2) {
+		}
+		return null;
 	}
 	
 	public ShapeStyle getShapeStyle(Class clazz) {
@@ -1590,8 +1593,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	// TODO: use CNF for indigo & future - keep ResourceNavigator for backward compatibility
 	public static IProject getActiveProject() {
-		if (activeProject!=null)
-			return activeProject;
+		if (activeProject!=null) {
+			if (activeProject.isOpen())
+				return activeProject;
+		}
 		
 		IWorkbench workbench = PlatformUI.getWorkbench(); 
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
