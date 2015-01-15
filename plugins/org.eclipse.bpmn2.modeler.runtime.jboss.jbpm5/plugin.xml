@@ -651,6 +651,20 @@
 			</property>
 			<property name="dataInputAssociations">
 				<value>
+					<property name="assignment">
+						<value>
+							<property name="from" type="FormalExpression">
+								<value>
+									<property name="body" value="true"/>
+								</value>
+							</property>
+							<property name="to" type="FormalExpression">
+								<value>
+									<property name="body" ref="ioSpecification/dataInputs#4"/>
+								</value>
+							</property>
+						</value>
+					</property>
 					<property name="targetRef" ref="ioSpecification/dataInputs#4"/>
 				</value>
 			</property>

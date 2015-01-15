@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.SimpleTreeIterator;
 import org.eclipse.core.resources.IFile;
@@ -555,7 +556,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 			if (property.getValues().get(0) instanceof Property)
 				isAttribute = false;
 		}
-		if (property.ref!=null) {
+		if (property.ref!=null && !(feature instanceof EAttribute)) {
 			isAttribute = false;
 		}
 		boolean isMany = property.isMany;
@@ -588,6 +589,31 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		return createEFeature(object.eClass(), property);
 	}
 
+	private EObject derefenceProperty(EObject object, Property property) {
+		EStructuralFeature childFeature = null;
+		EObject childObject = null;
+		if (property.ref!=null) {
+			// navigate down the newly created custom task to find the object reference
+			childObject = object;
+			String[] segments = property.ref.split("/"); //$NON-NLS-1$
+			for (String s : segments) {
+				// is the feature an Elist?
+				int index = s.indexOf('#');
+				if (index>0) {
+					index = Integer.parseInt(s.substring(index+1));
+					s = s.split("#")[0]; //$NON-NLS-1$
+				}
+				// run all of the initializers that apply to the current child object
+				// so that references can be resolved
+				if (initializers.execute(childObject)) {
+					childFeature = childObject.eClass().getEStructuralFeature(s);
+					childObject = (EObject)getValue(childObject, childFeature, index);
+				}
+			}
+		}
+		return childObject;
+	}
+	
 	/**
 	 * Populate the given EObject from the Property tree defined in this runtime
 	 * plugin's "modelObject" extension point.
@@ -598,33 +624,21 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 	private EStructuralFeature populateObject(EObject object, Property property) {
 
 		EObject childObject = null;
-		EStructuralFeature childFeature = null;
 		EStructuralFeature feature = getFeature(object, property);
 		Object firstValue = property.getValues().isEmpty() ? null : property.getValues().get(0);
 
 		if (feature instanceof EAttribute) {
+			childObject = derefenceProperty(modelObject,property);
+			if (childObject!=null) {
+				firstValue = ModelUtil.getID(childObject);
+			}
 			adaptFeature(object, feature, firstValue, property);
 		}
 		else if (feature instanceof EReference) {
 			EReference ref = (EReference)feature;
 			if (property.ref!=null) {
 				// navigate down the newly created custom task to find the object reference
-				childObject = modelObject;
-				String[] segments = property.ref.split("/"); //$NON-NLS-1$
-				for (String s : segments) {
-					// is the feature an Elist?
-					int index = s.indexOf('#');
-					if (index>0) {
-						index = Integer.parseInt(s.substring(index+1));
-						s = s.split("#")[0]; //$NON-NLS-1$
-					}
-					// run all of the initializers that apply to the current child object
-					// so that references can be resolved
-					if (initializers.execute(childObject)) {
-						childFeature = childObject.eClass().getEStructuralFeature(s);
-						childObject = (EObject)getValue(childObject, childFeature, index);
-					}
-				}
+				childObject = derefenceProperty(modelObject,property);
 				adaptFeature(object, feature, childObject, property);
 			}
 			else if (firstValue instanceof Property)
