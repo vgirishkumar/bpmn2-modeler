@@ -1197,7 +1197,7 @@
 			<type name="Object" qname="java.lang.Object"/>
 		</typeLanguage>
 		
-		<expressionLanguage name="XPath" uri="http://www.w3.org/1999/XPath"/>
+		<expressionLanguage name="XPath 1.0" uri="http://www.w3.org/1999/XPath"/>
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
 
 		<serviceImplementation name="Web Service" uri="##WebService"/>

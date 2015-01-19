@@ -1228,6 +1228,7 @@
 		<expressionLanguage name="mvel" uri="http://www.mvel.org/2.0"/>
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
 		<expressionLanguage name="Rule" uri="http://www.jboss.org/drools/rule"/>
+		<expressionLanguage name="XPath 1.0" uri="http://www.w3.org/1999/XPath"/>
 
 		<serviceImplementation name="Java" uri="Java"/>
 		<serviceImplementation name="SwitchYard Service" uri="##SwitchYard"/>
