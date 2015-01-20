@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
@@ -440,14 +441,14 @@ public class ListAndDetailCompositeBase extends Composite implements ResourceSet
 		this.isPopupDialog = isPopupDialog;
 	}
 
-	public void validate() {
+	public IStatus validate() {
     	Notification n = new ENotificationImpl((InternalEObject) businessObject, 0, null, null, null, false);
-    	validate(n);
+    	return validate(n);
 	}
 	
-	protected void validate(Notification notification) {
+	protected IStatus validate(Notification notification) {
 		IValidator<Notification> validator = ModelValidationService.getInstance().newValidator(EvaluationMode.LIVE);
-		validator.validate(notification);
+		return validator.validate(notification);
 	}
 	
 	@Override

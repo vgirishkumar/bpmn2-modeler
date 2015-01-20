@@ -78,6 +78,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -154,6 +155,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	public final static String PREF_RESOLVE_EXTERNALS = "resolve.externals"; //$NON-NLS-1$
 	public final static String PREF_RESOLVE_EXTERNALS_LABEL = Messages.Bpmn2Preferences_Resolve_Externals;
+
+	public final static String PREF_TEXT_LIMIT = "text.limit"; //$NON-NLS-1$
+	public final static String PREF_TEXT_LIMIT_LABEL = Messages.Bpmn2Preferences_Text_Limit;
 	
 	private static Hashtable<IProject,Bpmn2Preferences> projectPreferenceCacheMap = null;
 	private static Bpmn2Preferences instancePreferenceCache = null;
@@ -195,6 +199,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private int popupConfigDialog;
 	private boolean popupConfigDialogFor[] = new boolean[6];
 	private int resolveExternals;
+	private int textLimit;
 
 	private HashMap<String, ShapeStyle> shapeStyles = new HashMap<String, ShapeStyle>();
 
@@ -374,6 +379,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 			defaultPreferences.putInt(PREF_CONNECTION_TIMEOUT, 60000);
 			defaultPreferences.putInt(PREF_RESOLVE_EXTERNALS, 2);
+			defaultPreferences.putInt(PREF_TEXT_LIMIT, 255);
 			
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				loadDefaults(rt, PREF_TOOL_PROFILE);
@@ -525,6 +531,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			saveBPMNLabels = getBoolean(PREF_SAVE_BPMNLABELS, true);
 			connectionTimeout = getInt(PREF_CONNECTION_TIMEOUT, 60000); //$NON-NLS-1$
 			resolveExternals = getInt(PREF_RESOLVE_EXTERNALS, 2); //$NON-NLS-1$
+			textLimit = getInt(PREF_TEXT_LIMIT, 255); //$NON-NLS-1$
 			
 			popupConfigDialog = getInt(PREF_POPUP_CONFIG_DIALOG, 0); // tri-state checkbox
 			popupConfigDialogFor[0] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, false);
@@ -566,6 +573,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				
 				putInt(PREF_CONNECTION_TIMEOUT, connectionTimeout);
 				putInt(PREF_RESOLVE_EXTERNALS, resolveExternals);
+				putInt(PREF_TEXT_LIMIT, textLimit);
 	
 				putInt(PREF_POPUP_CONFIG_DIALOG, popupConfigDialog);
 				putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_ACTIVITIES, popupConfigDialogFor[0]);
@@ -1278,6 +1286,17 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	public void setResolveExternals(int value) {
 		putInt(PREF_RESOLVE_EXTERNALS, value);
 		resolveExternals = value;
+	}
+
+	public int getTextLimit() {
+		if (textLimit<=0)
+			return Text.LIMIT;
+		return textLimit;
+	}
+	
+	public void setTextLimit(int value) {
+		putInt(PREF_TEXT_LIMIT, value);
+		textLimit = value;
 	}
 	
 	// this is temporary until the connection routing has been proven reliable

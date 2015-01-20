@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.TristateCheckboxFieldEditor;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -92,6 +93,12 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 				Bpmn2Preferences.PREF_ALLOW_MULTIPLE_CONNECTIONS_LABEL,
 				getFieldEditorParent());
 		addField(doCoreValidation);
+		
+		IntegerFieldEditor textLimit = new IntegerFieldEditor(
+				Bpmn2Preferences.PREF_TEXT_LIMIT,
+				Bpmn2Preferences.PREF_TEXT_LIMIT_LABEL,
+				getFieldEditorParent());
+		addField(textLimit);
 
 		//////////////////////////////////////////////////////////////////////////////
 		

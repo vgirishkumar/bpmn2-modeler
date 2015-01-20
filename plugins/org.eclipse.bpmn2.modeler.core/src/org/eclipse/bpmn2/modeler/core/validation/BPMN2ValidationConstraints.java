@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.AbstractModelConstraint;
+import org.eclipse.emf.validation.EMFEventType;
 import org.eclipse.emf.validation.IValidationContext;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.osgi.framework.Bundle;
@@ -75,12 +76,17 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 				if (validator!=null) {
 					if (baseValidator==null) {
 						baseValidator = validator;
+						if (isLiveValidation(ctx) && !validator.doLiveValidation())
+							continue;
 						addStatus(validator.validate(object));
 					}
-					else if (baseValidator.checkSuperType(eClass, object))
+					else if (baseValidator.checkSuperType(eClass, object)) {
 						// The subclass validator wants to invoke the validator
 						// for this super class.
+						if (isLiveValidation(ctx) && !validator.doLiveValidation())
+							continue;
 						addStatus(validator.validate(object));
+					}
 				}
 			}
 		}
@@ -159,6 +165,17 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			return result.get(0);
 		return ConstraintStatus.createMultiStatus(ctx, result);
 	}
+	
+	/**
+	 * Check if the Validation Context indicates a Live validation.
+	 * 
+	 * @param ctx the Validation Context
+	 * @return true if the Validation Context has a non-null EMF Event type,
+	 *         indicating this is a Live validation.
+	 */
+	protected boolean isLiveValidation(IValidationContext ctx) {
+		return ctx.getEventType() != EMFEventType.NULL;
+	}
 
 	/**
 	 * Check if the Target Runtime defined for the given object's Resource wants
@@ -213,8 +230,14 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 								for (IConfigurationElement e2 : e1.getChildren("constraint")) {
 									for (IConfigurationElement e3 : e2.getChildren("target")) {
 										String className = e3.getAttribute("class");
-										if (object.eClass().getName().equals(className))
-											return true;
+										if (object.eClass().getName().equals(className)) {
+											String mode = isLiveValidation(ctx) ? "Live" : "Batch";
+											String m = e2.getAttribute("mode");
+											if (m==null)
+												m = "Batch";
+											if (mode.equals(m))
+												return true;
+										}
 									}
 								}
 							}

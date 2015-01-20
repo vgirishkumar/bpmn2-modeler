@@ -17,10 +17,15 @@ import java.util.HashSet;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -61,12 +66,35 @@ public class BaseElementValidator extends AbstractBpmn2ElementValidator<BaseElem
 				addStatus(object, "id", Status.ERROR, "The {0} ID can not be empty", object.eClass().getName());
 			}
 			else if (!SyntaxCheckerUtils.isNCName(id)) {
-				addStatus(object, "id", Status.ERROR, "The {0} ID is invalid", object.eClass().getName());
+				addStatus(object, "id", Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
 			}
+			
+			Definitions definitions = ModelUtil.getDefinitions(object);
+			TreeIterator<EObject> iter = definitions.eAllContents();
+			while (iter.hasNext()) {
+				EObject o2 = iter.next();
+				if (o2 instanceof BaseElement && object!=o2) {
+					String id2;
+					id2 = ((BaseElement)o2).getId();
+					if (id!=null && id2!=null) {
+						if (id.equals(id2)) {
+							addStatus(object, Status.ERROR,
+								"{0} and {1} have the same ID",
+								ExtendedPropertiesProvider.getLabel(object)+" "+ExtendedPropertiesProvider.getTextValue(object), //$NON-NLS-1$
+								ExtendedPropertiesProvider.getLabel(o2)+" "+ExtendedPropertiesProvider.getTextValue(o2) //$NON-NLS-1$
+							);
+						}
+					}
+				}
+			}
+
 		}
-//		addStatus(object, Status.INFO, "Validated {0}", object.eClass().getName());
 		
 		return getResult();
+	}
+	
+	public boolean doLiveValidation() {
+		return true;
 	}
 
 }

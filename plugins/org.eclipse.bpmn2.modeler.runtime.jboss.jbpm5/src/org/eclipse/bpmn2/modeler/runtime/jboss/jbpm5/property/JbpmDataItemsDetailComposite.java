@@ -17,10 +17,13 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
@@ -107,6 +110,12 @@ public class JbpmDataItemsDetailComposite extends DataItemsDetailComposite {
 							GlobalType newGlobal = (GlobalType)DroolsFactory.eINSTANCE.create(listItemClass);
 							newGlobal.setIdentifier(name);
 							newGlobal.setId(name);
+							
+							// This editor lifecycle event is normally triggered by the Bpmn2ModelerFactory
+							// when an object is created. We need to send this event from here to make sure
+							// a {@see ProcessVariableNameChangeAdapter} is attached to the object.
+							LifecycleEvent.notify(EventType.BUSINESSOBJECT_CREATED, newGlobal);
+							
 							addExtensionValue(newGlobal);
 							return newGlobal;
 						}

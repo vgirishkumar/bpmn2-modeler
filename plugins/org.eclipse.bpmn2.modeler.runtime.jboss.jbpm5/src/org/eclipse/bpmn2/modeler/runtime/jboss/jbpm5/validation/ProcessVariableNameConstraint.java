@@ -14,6 +14,7 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -34,6 +35,9 @@ public class ProcessVariableNameConstraint extends AbstractModelConstraint {
 			id1 = ((BaseElement)o1).getId();
 
 		if (id1!=null) {
+			if (!SyntaxCheckerUtils.isNCName(id1)) {
+				return ctx.createFailureStatus("The {0} ID is invalid: {1}", o1.eClass().getName(), id1);
+			}
 			Definitions definitions = ModelUtil.getDefinitions(o1);
 			TreeIterator<EObject> iter = definitions.eAllContents();
 			while (iter.hasNext()) {

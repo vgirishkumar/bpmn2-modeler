@@ -15,13 +15,11 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -68,6 +66,10 @@ public class TextObjectEditor extends ObjectEditor {
 			data.heightHint = 100;
 		}
 		text.setLayoutData(data);
+		
+		int textLimit = Bpmn2Preferences.getInstance(object).getTextLimit();
+		text.setTextLimit(textLimit);
+
 		text.addTraverseListener(new TraverseListener() {
 
 			@Override
@@ -84,17 +86,6 @@ public class TextObjectEditor extends ObjectEditor {
 			public void modifyText(ModifyEvent e) {
 				if (!isWidgetUpdating)
 					setValue(text.getText());
-			}
-		});
-		text.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
 			}
 		});
 

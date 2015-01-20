@@ -20,9 +20,11 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.validation.EMFEventType;
 import org.eclipse.emf.validation.IValidationContext;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 
@@ -85,7 +87,7 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		try {
 			Class<?> validatorClass = AbstractBpmn2ElementValidator.class.getClassLoader().loadClass(className);
 			if (validatorClass != null) {
-				return (AbstractBpmn2ElementValidator<?>) validatorClass.getConstructor(IValidationContext.class)
+				return (AbstractBpmn2ElementValidator<?>) validatorClass.getConstructor(AbstractBpmn2ElementValidator.class)
 						.newInstance(parent);
 			}
 		} catch (Exception e) {
@@ -135,7 +137,8 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 	}
 
 	protected void addStatus(IStatus status) {
-		result.add(status);
+		if (status.getSeverity()!=Status.OK)
+			result.add(status);
 	}
 
 	/* (non-Javadoc)
@@ -189,6 +192,24 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 	 * @see org.eclipse.bpmn2.modeler.core.validation.validators.IBpmn2ElementValidator#checkSuperType(org.eclipse.emf.ecore.EClass, java.lang.Object)
 	 */
 	public boolean checkSuperType(EClass eClass, T object) {
+		return false;
+	}
+	
+	/**
+	 * Check if the Validation Context indicates a Live validation.
+	 * 
+	 * @param ctx the Validation Context
+	 * @return true if the Validation Context has a non-null EMF Event type,
+	 *         indicating this is a Live validation.
+	 */
+	protected boolean isLiveValidation() {
+		return ctx.getEventType() != EMFEventType.NULL;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.validation.validators.IBpmn2ElementValidator#doLiveValidation()
+	 */
+	public boolean doLiveValidation() {
 		return false;
 	}
 }

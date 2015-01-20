@@ -12,10 +12,8 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
@@ -31,17 +29,12 @@ import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeFactory;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.DataTypeRegistry;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.EnumDataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.drools.process.core.datatype.impl.type.UndefinedDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage;
@@ -574,5 +567,23 @@ public class JbpmModelUtil {
 		timeParams.setProcessingTime( createParameter(dt, v1, v2) ); 
 //		timeParams.setTimeUnit(tu);
 		return timeParams;
+	}
+	
+	public static boolean isValidPackageName(String name) {
+		if (name==null || name.isEmpty())
+			return false;
+		if (! Character.isJavaIdentifierStart(name.charAt(0)))
+			return false;
+		char last = 0;
+		for (char c : name.toCharArray()) {
+			if (c=='.') {
+				if (last=='.')
+					return false;
+			}
+			else if ( !Character.isJavaIdentifierPart(c))
+				return false;
+			last = c;
+		}
+		return true;
 	}
 }

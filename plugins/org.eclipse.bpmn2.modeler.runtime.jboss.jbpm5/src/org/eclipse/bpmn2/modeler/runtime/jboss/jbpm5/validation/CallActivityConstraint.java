@@ -15,11 +15,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.AbstractModelConstraint;
 import org.eclipse.emf.validation.IValidationContext;
-import org.eclipse.osgi.util.NLS;
 
 public class CallActivityConstraint extends AbstractModelConstraint {
 	private IDiagramProfile profile;
@@ -27,11 +29,26 @@ public class CallActivityConstraint extends AbstractModelConstraint {
 
 	@Override
 	public IStatus validate(IValidationContext ctx) {
-		EObject eObj = ctx.getTarget();
-		if (eObj instanceof CallActivity) {
-			CallActivity ca = (CallActivity) eObj;
+		EObject object = ctx.getTarget();
+		if (object instanceof Process) {
+			return new CallActivityValidator(ctx).validate((CallActivity) object);
+		}
+		return ctx.createSuccessStatus();
+	}
+
+	public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallActivity> {
+
+		/**
+		 * @param ctx
+		 */
+		public CallActivityValidator(IValidationContext ctx) {
+			super(ctx);
+		}
+
+		@Override
+		public IStatus validate(CallActivity ca) {
 			if (ca.getCalledElementRef() == null) {
-				ctx.createFailureStatus(Messages.CallActivityConstraint_No_Called_Element);
+				addStatus(ca, Status.ERROR, Messages.CallActivityConstraint_No_Called_Element);
 			} else {
 				String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
 				String packageName = packageAssetInfo[0];
@@ -49,16 +66,11 @@ public class CallActivityConstraint extends AbstractModelConstraint {
 				}
 				foundCalledElementProcess = true; // TODO: remove this
 				if (!foundCalledElementProcess) {
-					ctx.createFailureStatus(
-						NLS.bind(
-							Messages.CallActivityConstraint_No_Process,
-							ca.getCalledElementRef()
-						)
-					);
+					addStatus(ca, Status.ERROR, Messages.CallActivityConstraint_No_Process, ca.getCalledElementRef());
 				}
 			}
+			return getResult();
 		}
-		return ctx.createSuccessStatus();
 	}
 
 }
