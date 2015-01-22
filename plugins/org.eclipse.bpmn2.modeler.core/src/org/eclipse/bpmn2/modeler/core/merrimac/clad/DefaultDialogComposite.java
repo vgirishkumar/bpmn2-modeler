@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.PropertyTabDescriptor;
 import org.eclipse.emf.ecore.EClass;
@@ -109,7 +110,10 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 		
 							form.setContent(body);
 							
-							tab.setText(td.getLabel());
+							String label = td.getLabel();
+							if (label==null)
+								label = ExtendedPropertiesProvider.getLabel(businessObject);
+							tab.setText(label);
 							tab.setControl(form);
 							details.add(detail);
 							sections.add(section);

@@ -65,7 +65,8 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 						if (newValue!=null && !newValue.equals(oldValue))
 						{
 							if (idFeature!=null) {
-								newValue = SyntaxCheckerUtils.toNCName((String)newValue);
+								if (!SyntaxCheckerUtils.isJavaIdentifier((String)newValue))
+									newValue = SyntaxCheckerUtils.toJavaIdentifier((String)newValue);
 								boolean deliver = object.eDeliver();
 								try {
 									if (deliver)

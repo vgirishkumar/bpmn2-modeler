@@ -129,10 +129,12 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		// change error message slightly for connections
 		String message;
 		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = "{0} has no {1} Connections";
+			message = "{0} {1} has no {2} Connections";
 		else
-			message = "{0} has missing or incomplete {1}";
-		addStatus(object, featureName, severity, message, ExtendedPropertiesProvider.getLabel(object),
+			message = "{0} {1} has missing or incomplete {2}";
+		addStatus(object, featureName, severity, message,
+				ExtendedPropertiesProvider.getLabel(object),
+				ExtendedPropertiesProvider.getTextValue(object),
 				ExtendedPropertiesProvider.getLabel(object, feature));
 	}
 

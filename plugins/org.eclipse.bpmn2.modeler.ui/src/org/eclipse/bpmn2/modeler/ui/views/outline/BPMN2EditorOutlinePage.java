@@ -197,8 +197,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 					if (p instanceof AbstractGraphicsTreeEditPart) {
 						Object model = ((AbstractGraphicsTreeEditPart)p).getModel();
 						if (model instanceof EObject) {
-							EObject businessObject = (EObject) model;
-							ObjectEditingDialog dialog = new ObjectEditingDialog(diagramEditor, businessObject);
+							ObjectEditingDialog dialog = new ObjectEditingDialog(diagramEditor, (EObject) model);
 							dialog.open();
 						}
 					}
