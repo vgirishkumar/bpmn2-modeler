@@ -297,7 +297,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected boolean setValue(final Object result) {
 		boolean success = getBusinessObjectDelegate().setValue(object, feature, result);
 		if (!success) {
-			ErrorUtils.showErrorMessage(
+			showErrorMessage(
 				NLS.bind(
 					Messages.ObjectEditor_Set_Error_Message,
 					new Object[] {
@@ -313,6 +313,10 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		return true;
 	}
 
+	protected void showErrorMessage(String message) {
+		ErrorUtils.showErrorMessage(message);
+	}
+	
 	public abstract Object getValue();
 	
 	@Override

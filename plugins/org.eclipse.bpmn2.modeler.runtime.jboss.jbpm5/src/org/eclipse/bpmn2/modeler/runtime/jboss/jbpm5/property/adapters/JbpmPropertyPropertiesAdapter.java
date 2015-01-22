@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaVariableNameObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.Messages;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
@@ -62,6 +63,9 @@ public class JbpmPropertyPropertiesAdapter extends PropertyPropertiesAdapter {
 				}
 			}
     	);
+
+		feature = Bpmn2Package.eINSTANCE.getProperty_Name();
+		setProperty(feature, UI_OBJECT_EDITOR_CLASS, JavaVariableNameObjectEditor.class);
 		
 		setObjectDescriptor(new ObjectDescriptor<Property>(this,object) {
 			

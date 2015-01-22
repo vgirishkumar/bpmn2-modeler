@@ -73,6 +73,14 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	 * Comob box or similar selection widget)
 	 */ 
 	public final static String UI_IS_MULTI_CHOICE = "ui.is.multi.choice"; //$NON-NLS-1$
+	/**
+	 * Property key that defines the ObjectEditor class that should be used for
+	 * the given feature instead of the default based on the feature type. A new
+	 * instance of this ObjectEditor type is constructed by
+	 * {@see AbstractDetailComposite#bindAttribute(Composite,EObject,EAttribute,String)}
+	 * and displayed in the Property Sheets to edit the object feature.
+	 */
+	public final static String UI_OBJECT_EDITOR_CLASS = "ui.object.editor.class"; //$NON-NLS-1$
 	/** Property key for the the {@code ObjectDescriptor} object */
 	public static final String OBJECT_DESCRIPTOR = "object.descriptor"; //$NON-NLS-1$
 	/** Property key for the {@code FeatureDescriptor} object */

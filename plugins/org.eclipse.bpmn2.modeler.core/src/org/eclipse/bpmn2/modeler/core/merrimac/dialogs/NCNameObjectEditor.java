@@ -61,10 +61,14 @@ public class NCNameObjectEditor extends TextObjectEditor {
 			 */
 			@Override
 			public void verifyText(VerifyEvent e) {
-				if (Character.isISOControl(e.character))
+				if (Character.isISOControl(e.character)) {
 					return;
+				}
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isNCName(s);
+				if (!e.doit) {
+					showErrorMessage("The character '"+e.text+"' is not valid");
+				}
 			}
 		});
 

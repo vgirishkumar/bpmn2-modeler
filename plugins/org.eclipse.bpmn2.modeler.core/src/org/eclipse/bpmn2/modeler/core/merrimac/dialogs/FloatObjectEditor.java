@@ -68,6 +68,7 @@ public class FloatObjectEditor extends TextObjectEditor {
 				for (int i = 0; i < chars.length; i++) {
 					if (!('0' <= chars[i] && chars[i] <= '9') && chars[i]!='.') {
 						e.doit = false;
+						showErrorMessage("The character '"+e.text+"' is not valid");
 						return;
 					}
 				}

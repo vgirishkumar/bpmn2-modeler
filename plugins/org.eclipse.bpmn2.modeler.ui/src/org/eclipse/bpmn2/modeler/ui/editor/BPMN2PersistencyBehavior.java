@@ -61,11 +61,13 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
     @Override
 	public void saveDiagram(IProgressMonitor monitor) {
     	Resource resource = editor.getResource();
-		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
-		if (dups.size()>0) {
-			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
-			dlg.open();
-		}
+    	// this is no longer needed since BaseElementValidator does the job
+    	// during Live validation (below)
+//		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
+//		if (dups.size()>0) {
+//			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
+//			dlg.open();
+//		}
 		
 		// Perform a Live validation first: if there are any ERRORs, the model should be
 		// considered to be corrupt (because of such things as invalid IDs, duplicate IDs, etc.)
