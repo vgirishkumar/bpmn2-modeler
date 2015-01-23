@@ -15,8 +15,10 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -50,7 +52,12 @@ public class DataAssociationValidator extends org.eclipse.bpmn2.modeler.core.val
 	 */
 	@Override
 	public IStatus validate(DataAssociation object) {
-		if (!(object.eContainer() instanceof UserTask)) {
+		EObject container = object.eContainer();
+		if (container!=null) {
+			if (ModelDecorator.getAnyAttribute(container, "taskName")!=null)
+				return getResult();
+		}
+		if (!(container instanceof UserTask)) {
 			// Ignore missing Sources for User Task parameters.
 			super.validate(object);
 		}

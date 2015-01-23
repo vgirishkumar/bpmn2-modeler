@@ -1393,11 +1393,22 @@
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
                   severity="ERROR"
                   mode="Batch"
-                  name="Data Association"
-                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataAssociation"
+                  name="Data Input Association"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataInputAssociation"
                   statusCode="1">
                <message>{0}</message>
                <target class="DataInputAssociation"/>
+            </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Data Output Association"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataOutputAssociation"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="DataOutputAssociation"/>
             </constraint>
          </constraints>
       </constraintProvider>
