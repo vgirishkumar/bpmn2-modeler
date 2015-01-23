@@ -744,6 +744,14 @@
 			features="itemSubjectRef dataState"
 			type="org.eclipse.bpmn2.ItemAwareElement">
 		</propertyTab>
+				
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.property.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="itemSubjectRef dataState"
+			type="org.eclipse.bpmn2.Property">
+		</propertyTab>
 		
 		<!-- ============  Other ============ -->
 		<propertyTab
