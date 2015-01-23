@@ -198,7 +198,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 						Object model = ((AbstractGraphicsTreeEditPart)p).getModel();
 						if (model instanceof EObject) {
 							ObjectEditingDialog dialog = new ObjectEditingDialog(diagramEditor, (EObject) model);
-							dialog.open();
+							ObjectEditingDialog.openWithTransaction(dialog);
 						}
 					}
 				}
@@ -221,7 +221,6 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 
 			@Override
 			public void menuAboutToShow(IMenuManager manager) {
-				System.out.println(viewer.getSelection());
 				contextMenu.add(new AboutAction(diagramEditor.getSite().getWorkbenchWindow()));
 			}
 		});

@@ -632,10 +632,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
         final PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(target);
         if (pe == null) {
 			ObjectEditingDialog dialog = new ObjectEditingDialog(this, target);
-			dialog.open();
-            return;
+			ObjectEditingDialog.openWithTransaction(dialog);
         }
-        selectPictogramElements(new PictogramElement[] {pe });
+        else
+        	selectPictogramElements(new PictogramElement[] {pe});
     }
 
     private void loadMarkers() {
