@@ -14,6 +14,7 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -261,12 +262,12 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			}
 		}
 		String packageName = packageText.getText();
-		if (!isValidPackageName(packageName)) {
+		if (!JbpmModelUtil.isValidPackageName(packageName)) {
 			updateStatus(Messages.NewJbpmProcessWizardPage1_Error_Package_Invalid);
 			return;
 		}
 		String processId = processIdText.getText();
-		if (!isValidPackageName(processId)) {
+		if (!JbpmModelUtil.isValidPackageName(processId)) {
 			updateStatus(Messages.NewJbpmProcessWizardPage1_Error_Process_ID_Invalid);
 			return;
 		}
@@ -289,24 +290,6 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 		}
 
 		updateStatus(null);
-	}
-	
-	private boolean isValidPackageName(String name) {
-		if (name==null || name.isEmpty())
-			return false;
-		if (! Character.isJavaIdentifierStart(name.charAt(0)))
-			return false;
-		char last = 0;
-		for (char c : name.toCharArray()) {
-			if (c=='.') {
-				if (last=='.')
-					return false;
-			}
-			else if ( !Character.isJavaIdentifierPart(c))
-				return false;
-			last = c;
-		}
-		return true;
 	}
 
 	private void updateStatus(String message) {

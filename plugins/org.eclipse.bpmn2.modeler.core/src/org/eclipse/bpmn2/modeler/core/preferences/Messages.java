@@ -46,6 +46,7 @@ public class Messages extends NLS {
 	public static String Bpmn2Preferences_Timeout;
 	public static String Bpmn2Preferences_True_if_not_set;
 	public static String Bpmn2Preferences_Resolve_Externals;
+	public static String Bpmn2Preferences_Text_Limit;
 	
 	public static String ShapeStyle_Category_Connections;
 	public static String ShapeStyle_Category_Shapes;

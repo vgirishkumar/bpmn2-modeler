@@ -11,23 +11,24 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.core.validation.validators;
+package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
-import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Signal;
+import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
  *
  */
-public class ActivityValidator extends AbstractBpmn2ElementValidator<Activity> {
+public class SignalValidator extends AbstractBpmn2ElementValidator<Signal> {
 
 	/**
 	 * Construct a BPMN2 Element Validator from a Validation Context.
 	 *
 	 * @param ctx
 	 */
-	public ActivityValidator(IValidationContext ctx) {
+	public SignalValidator(IValidationContext ctx) {
 		super(ctx);
 	}
 
@@ -39,7 +40,7 @@ public class ActivityValidator extends AbstractBpmn2ElementValidator<Activity> {
 	 * @param parent a parent Validator class
 	 */
 	@SuppressWarnings("rawtypes")
-	public ActivityValidator(AbstractBpmn2ElementValidator parent) {
+	public SignalValidator(AbstractBpmn2ElementValidator parent) {
 		super(parent);
 	}
 
@@ -47,7 +48,8 @@ public class ActivityValidator extends AbstractBpmn2ElementValidator<Activity> {
 	 * @see org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator#validate(org.eclipse.bpmn2.BaseElement)
 	 */
 	@Override
-	public IStatus validate(Activity object) {
+	public IStatus validate(Signal object) {
+		// jBPM Signal definitions do not have an ItemDefinition
 		return getResult();
 	}
 

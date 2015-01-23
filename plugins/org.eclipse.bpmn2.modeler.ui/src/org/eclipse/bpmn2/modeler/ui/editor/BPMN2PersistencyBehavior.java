@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +19,10 @@ import java.util.Set;
 import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.Tuple;
+import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
@@ -56,13 +61,45 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
     @Override
 	public void saveDiagram(IProgressMonitor monitor) {
     	Resource resource = editor.getResource();
-		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
-		if (dups.size()>0) {
-			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
-			dlg.open();
+    	// this is no longer needed since BaseElementValidator does the job
+    	// during Live validation (below)
+//		List<Tuple<EObject,EObject>> dups = ModelUtil.findDuplicateIds(resource);
+//		if (dups.size()>0) {
+//			FixDuplicateIdsDialog dlg = new FixDuplicateIdsDialog(dups);
+//			dlg.open();
+//		}
+		
+		// Perform a Live validation first: if there are any ERRORs, the model should be
+		// considered to be corrupt (because of such things as invalid IDs, duplicate IDs, etc.)
+		// and saving it in its current state MAY render the file unreadable.
+		IStatus status = BPMN2ProjectValidator.validateLive(ModelUtil.getDefinitions(resource));
+		if (status.getSeverity() >= Status.ERROR) {
+			String statusList = "";
+			for (IStatus s : collectStatus(status)) {
+				statusList += "  " + s.getMessage() + "\n";
+			}
+			MessageDialog.openError(editor.getEditorSite().getShell(), "Save Error",
+				"The file can not be saved because the current state of the model is invalid.\nPlease resolve the following issues before saving:\n\n"+
+				statusList);
+			monitor.setCanceled(true);
+			return;
 		}
 
     	super.saveDiagram(monitor);
+    }
+    
+    List<IStatus> collectStatus(IStatus status) {
+    	if (status.getChildren().length==0)
+    		return Collections.singletonList(status);
+
+    	List<IStatus> result = new ArrayList<IStatus>();
+    	for (IStatus child : status.getChildren()) {
+    		for (IStatus s : collectStatus(child)) {
+    			if (!result.contains(s))
+    				result.add(s);
+    		}
+    	}
+    	return result;
     }
     
 	protected IRunnableWithProgress createOperation(final Set<Resource> savedResources,

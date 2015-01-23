@@ -53,8 +53,8 @@ public class SyntaxCheckerUtils {
 		// Check the rest of the characters
 		for (int i = 1; i < nameLength; i++) {
 			c = name.charAt(i);
-			if (Character.isWhitespace(c))
-				continue;
+//			if (Character.isWhitespace(c))
+//				continue;
 			if (!isNCNameChar(c)) {
 				c = '_';
 			}
@@ -66,6 +66,56 @@ public class SyntaxCheckerUtils {
 	public static final boolean isNCNameChar(char c) {
 		return _isAsciiBaseChar(c) || _isAsciiDigit(c) || c == '.' || c == '-' || c == '_' || _isNonAsciiBaseChar(c)
 				|| _isNonAsciiDigit(c) || isIdeographic(c) || isCombiningChar(c) || isExtender(c);
+	}
+
+	public static final boolean isJavaIdentifier(String name) {
+		if (name==null || name.isEmpty())
+			return false;
+		
+		int nameLength = name.length();
+
+		// Check first character
+		char c = name.charAt(0);
+
+		if (Character.isJavaIdentifierStart(c)) {
+			// Check the rest of the characters
+			for (int i = 1; i < nameLength; i++) {
+				c = name.charAt(i);
+				if (!Character.isJavaIdentifierPart(c)) {
+					return false;
+				}
+			}
+
+			// All characters have been checked
+			return true;
+		}
+
+		return false;
+	}
+
+	public static final String toJavaIdentifier(String name) {
+		if (name==null || name.isEmpty())
+			return "_"; //$NON-NLS-1$
+		
+		StringBuffer ncname = new StringBuffer();
+		int nameLength = name.length();
+
+		// Check first character
+		char c = name.charAt(0);
+
+		if (Character.isJavaIdentifierStart(c))
+			ncname.append(c);
+		else
+			ncname.append('_');
+		// Check the rest of the characters
+		for (int i = 1; i < nameLength; i++) {
+			c = name.charAt(i);
+			if (!Character.isJavaIdentifierPart(c)) {
+				c = '_';
+			}
+			ncname.append(c);
+		}
+		return ncname.toString();
 	}
 
 	public static final boolean isLetter(char c) {

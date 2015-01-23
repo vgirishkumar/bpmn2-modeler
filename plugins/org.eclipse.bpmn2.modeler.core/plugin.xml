@@ -25,32 +25,31 @@
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
          <constraints categories="org.eclipse.bpmn2.modeler.core.validation.category">
 
+			<!-- Live validation constraints -->
+			<constraint
+					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
+					id="org.eclipse.bpmn2.modeler.core.live.validation.error"
+					lang="Java"
+					mode="Live"
+					name="%constraint.name.live"
+					statusCode="3" isEnabledByDefault="true">
+				<description>%constraint.description.live</description>
+				<message>%constraint.message.live</message>
+				<target class="BaseElement" />
+			</constraint>
+
+			<!-- Batch validation constraints -->
 			<constraint
 					class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ValidationConstraints"
 					id="org.eclipse.bpmn2.modeler.core.validation.error"
 					isEnabledByDefault="true"
 					lang="Java"
 					mode="Batch"
-					name="%constraint.name.3"
+					name="%constraint.name.batch"
 					statusCode="0">
-		        <message>%constraint.message.3</message>
+				<description>%constraint.description.batch</description>
+		        <message>%constraint.message.batch</message>
 				<target class="BaseElement"/>
-			</constraint>
-
-			<!-- Live validation constraints -->
-			<constraint
-			        lang="OCL"
-			         severity="WARNING"
-			         mode="Live"
-			         name="%constraint.name.2"
-			         id="org.eclipse.bpmn2.modeler.core.validation.BaseElement.id"
-			         statusCode="3" isEnabledByDefault="true">
-			      <description>%constraint.description.2</description>
-			      <message>%constraint.message.2</message>
-			      <target class="BaseElement" />
-					<![CDATA[
-						self.id->notEmpty() implies bpmn2::BaseElement.allInstances()->select(s | s.id = self.id)->size() <= 1
-					]]>
 			</constraint>
 		 
          </constraints>

@@ -738,6 +738,23 @@
 		</propertyTab>
 		
 		<propertyTab
+			id="org.eclipse.bpmn2.modeler.itemawareelement.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="itemSubjectRef dataState"
+			type="org.eclipse.bpmn2.ItemAwareElement">
+		</propertyTab>
+				
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.property.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="itemSubjectRef dataState"
+			type="org.eclipse.bpmn2.Property">
+		</propertyTab>
+		
+		<!-- ============  Other ============ -->
+		<propertyTab
 			id="org.eclipse.bpmn2.modeler.advanced.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.AdvancedPropertySection"
@@ -1197,7 +1214,7 @@
 			<type name="Object" qname="java.lang.Object"/>
 		</typeLanguage>
 		
-		<expressionLanguage name="XPath" uri="http://www.w3.org/1999/XPath"/>
+		<expressionLanguage name="XPath 1.0" uri="http://www.w3.org/1999/XPath"/>
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
 
 		<serviceImplementation name="Web Service" uri="##WebService"/>

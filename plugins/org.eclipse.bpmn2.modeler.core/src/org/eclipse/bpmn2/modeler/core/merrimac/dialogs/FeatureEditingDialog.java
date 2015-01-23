@@ -81,7 +81,6 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	
 	protected EObject createNewObject(final EObject object, final EStructuralFeature feature, final EClass eclass) {
 		final EObject[] result = new EObject[1];
-		final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 		if (domain!=null) {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
@@ -126,7 +125,6 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	private void undoCreateNewObject() {
 		if (createNew && newObject!=null) {
 			ModelUtil.unsetID(newObject, object.eResource());
-			final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 			if (domain!=null) {
 				if (domain.getCommandStack().canUndo()) {
 					domain.getCommandStack().undo();

@@ -14,6 +14,7 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Escalation;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaVariableNameObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.EscalationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
@@ -35,6 +36,9 @@ public class JbpmEscalationPropertiesAdapter extends EscalationPropertiesAdapter
     		}
 	
     	});
+
+		feature = Bpmn2Package.eINSTANCE.getEscalation_Name();
+		setProperty(feature, UI_OBJECT_EDITOR_CLASS, JavaVariableNameObjectEditor.class);
 	}
 
 }

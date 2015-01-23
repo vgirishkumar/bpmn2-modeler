@@ -17,6 +17,8 @@ import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.validation.IValidationContext;
@@ -57,12 +59,28 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 			// is already handled in EventDefinitionValidator
 			int severity = ProcessValidator.isContainingProcessExecutable(object) ? Status.ERROR : Status.WARNING;
 			if (object instanceof DataOutputAssociation) {
-				if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null)
-					addMissingFeatureStatus(object,"targetRef",severity);
+				if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
+					ItemAwareElement source = object.getSourceRef().size()>0 ? object.getSourceRef().get(0) : null;
+					if (source!=null) {
+						addStatus(object, severity, "Output Parameter {0} is uninitialized",
+							ExtendedPropertiesProvider.getTextValue(source));
+					}
+					else {
+						addMissingFeatureStatus(object,"targetRef",severity);
+					}
+				}
 			}
 			else if (object instanceof DataInputAssociation) {
-				if (isEmpty(object.getSourceRef()) && object.getAssignment().size()==0 && object.getTransformation()==null)
-					addMissingFeatureStatus(object,"sourceRef",severity);
+				if (isEmpty(object.getSourceRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
+					ItemAwareElement target = object.getTargetRef();
+					if (target!=null) {
+						addStatus(object, severity, "Input Parameter {0} is uninitialized",
+							ExtendedPropertiesProvider.getTextValue(target));
+					}
+					else {
+						addMissingFeatureStatus(object,"sourceRef",severity);
+					}
+				}
 			}
 		}
 		return getResult();

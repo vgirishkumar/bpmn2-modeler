@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -424,7 +426,23 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			
 			if (label==null)
 				label = getBusinessObjectDelegate().getLabel(object, attribute);
-			
+
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+			if (adapter!=null) {
+				Object o = adapter.getProperty(attribute,ExtendedPropertiesAdapter.UI_OBJECT_EDITOR_CLASS);
+				if (o instanceof Class) {
+					try {
+						Constructor ctor = ((Class)o).getConstructor(AbstractDetailComposite.class,EObject.class,EStructuralFeature.class);
+						ObjectEditor editor = (ObjectEditor) ctor.newInstance(this,object,attribute);
+						editor.createControl(parent,label);
+						// success!
+						return;
+					} catch (Exception e) {
+						// otherwise fall through and create a default ObjectEditor...
+						e.printStackTrace();
+					}
+				}
+			}
 			EClassifier eTypeClassifier = attribute.getEType();
 			Class eTypeClass = eTypeClassifier.getInstanceClass();
 			if (getBusinessObjectDelegate().isMultiChoice(object, attribute)) {
@@ -468,7 +486,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 				}
 				
 				// add the Extension Attributes
-				ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 				if (adapter!=null) {
 					List<EStructuralFeature> extensionFeatures = adapter.getExtensionFeatures();
 					for (EStructuralFeature feature : extensionFeatures) {

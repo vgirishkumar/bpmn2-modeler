@@ -13,8 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
-import java.lang.reflect.Field;
-
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
@@ -22,10 +20,10 @@ import org.eclipse.bpmn2.modeler.core.merrimac.IBusinessObjectDelegate;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
-import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -34,9 +32,12 @@ import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -69,6 +70,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected int style;
 	protected boolean isWidgetUpdating = false;
 	private IBusinessObjectDelegate boDelegate;
+	private boolean valueChanged = false;
 
 	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
@@ -94,15 +96,35 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	}
 	
 	public Control createControl(Composite composite, String label) {
-		Control c = createControl(composite,label,style);
+		final Control c = createControl(composite,label,style);
 		c.setData(IConstants.NOTIFY_CHANGE_LISTENER_KEY, this);
-		return c; 
+		c.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				valueChanged = false;
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (valueChanged) {
+					IStatus status = parent.validate();
+					if (status.getSeverity() >= Status.ERROR) {
+						if (statusApplies(status)) {
+							MessageDialog.openError(parent.getShell(), "Validation Error", status.getMessage());
+							if (!c.isDisposed())
+								c.setFocus();
+						}
+					}
+				}
+				ErrorUtils.showErrorMessage(null);
+ 			}
+		});
+		return c;
 	}
 	
 	public Control createControl(String label) {
-		Control c = createControl(parent,label,style);
-		c.setData(IConstants.NOTIFY_CHANGE_LISTENER_KEY, this);
-		return c; 
+		return createControl(parent,label);
 	}
 
 	public IBusinessObjectDelegate getBusinessObjectDelegate() {
@@ -223,6 +245,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		        		object, ValidationStatusAdapter.class);
 		        if (statusAdapter != null) {
 		            final IStatus status = statusAdapter.getValidationStatus();
+//		            System.out.println(status.getMessage());
 		            if (status.isMultiStatus()) {
 		            	for (IStatus s : status.getChildren()) {
 		            		if (statusApplies(s)) {
@@ -274,7 +297,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected boolean setValue(final Object result) {
 		boolean success = getBusinessObjectDelegate().setValue(object, feature, result);
 		if (!success) {
-			ErrorUtils.showErrorMessage(
+			showErrorMessage(
 				NLS.bind(
 					Messages.ObjectEditor_Set_Error_Message,
 					new Object[] {
@@ -286,9 +309,14 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			);
 			return false;
 		}
+		valueChanged = true;
 		return true;
 	}
 
+	protected void showErrorMessage(String message) {
+		ErrorUtils.showErrorMessage(message);
+	}
+	
 	public abstract Object getValue();
 	
 	@Override

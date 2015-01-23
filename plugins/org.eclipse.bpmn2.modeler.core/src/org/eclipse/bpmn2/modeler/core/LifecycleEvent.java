@@ -13,6 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core;
 
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -441,6 +442,13 @@ public class LifecycleEvent {
 		this.featureProvider = featureProvider;
 		this.context = context;
 		this.target = target;
+	}
+	
+	public static void notify(EventType eventType, Object target) {
+		if (target!=null) {
+	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+			rt.notify(new LifecycleEvent(eventType, target));
+		}
 	}
 	
 	@Override

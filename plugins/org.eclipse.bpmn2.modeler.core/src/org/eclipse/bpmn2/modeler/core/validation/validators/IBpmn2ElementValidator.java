@@ -40,11 +40,19 @@ public interface IBpmn2ElementValidator<T> {
 	boolean checkSuperType(EClass eClass, T object);
 	
 	/**
+	 * Returns true if this validator can handle Live validations.
+	 * 
+	 * @return true if Live validations are handled, false if this validator
+	 *         should only be used in Batch mode.
+	 */
+	boolean doLiveValidation();
+	
+	/**
 	 * Returns the result of the validation after validate() has been called.
 	 * Note that IStatus may be a multi-Status object.
 	 * 
 	 * @return the IStatus of the validation result. If no validation errors were
 	 * detected, this will be an IStatus object with severity Status.OK
 	 */
-	public IStatus getResult();
+	IStatus getResult();
 }

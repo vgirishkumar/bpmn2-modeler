@@ -86,6 +86,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandlerLocator;
@@ -628,12 +629,13 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
         if (target == null) {
             return;
         }
-        final PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(
-                target);
+        final PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(target);
         if (pe == null) {
-            return;
+			ObjectEditingDialog dialog = new ObjectEditingDialog(this, target);
+			ObjectEditingDialog.openWithTransaction(dialog);
         }
-        selectPictogramElements(new PictogramElement[] {pe });
+        else
+        	selectPictogramElements(new PictogramElement[] {pe });
     }
 
     private void loadMarkers() {
