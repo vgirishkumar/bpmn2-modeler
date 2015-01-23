@@ -230,6 +230,10 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 								for (IConfigurationElement e2 : e1.getChildren("constraint")) {
 									for (IConfigurationElement e3 : e2.getChildren("target")) {
 										String className = e3.getAttribute("class");
+										int i = className.indexOf(':');
+										if (i>0) {
+											className = className.substring(0,i);
+										}
 										if (object.eClass().getName().equals(className)) {
 											String mode = isLiveValidation(ctx) ? "Live" : "Batch";
 											String m = e2.getAttribute("mode");

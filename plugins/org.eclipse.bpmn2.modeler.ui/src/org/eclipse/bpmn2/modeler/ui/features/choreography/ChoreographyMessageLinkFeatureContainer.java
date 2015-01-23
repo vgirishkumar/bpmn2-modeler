@@ -166,9 +166,6 @@ public class ChoreographyMessageLinkFeatureContainer extends PropertyBasedFeatur
 				for (FixPointAnchor anchor : AnchorUtil.getAnchors(envelope)) 
 					modifyAffectedBands(anchor);
 				super.delete(context);
-				
-				
-				System.out.println();
 			}
 
 			private void modifyAffectedBands(FixPointAnchor anchor) {

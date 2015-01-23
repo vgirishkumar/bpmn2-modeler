@@ -128,14 +128,16 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
 		// change error message slightly for connections
 		String message;
-		if (feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
+		if (feature!=null && feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
 			message = "{0} {1} has no {2} Connections";
 		else
-			message = "{0} {1} has missing or incomplete {2}";
+			message = "{0} {1} has no {2}";
+		if (feature!=null)
+			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
 		addStatus(object, featureName, severity, message,
 				ExtendedPropertiesProvider.getLabel(object),
 				ExtendedPropertiesProvider.getTextValue(object),
-				ExtendedPropertiesProvider.getLabel(object, feature));
+				featureName);
 	}
 
 	protected void addStatus(IStatus status) {

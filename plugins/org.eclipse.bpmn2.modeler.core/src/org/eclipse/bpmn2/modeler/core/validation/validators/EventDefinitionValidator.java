@@ -74,42 +74,42 @@ public class EventDefinitionValidator extends AbstractBpmn2ElementValidator<Even
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
 			if (ted.getTimeDate() == null && ted.getTimeDuration() == null && ted.getTimeCycle() == null) {
-				addStatus(event,Status.ERROR,"Timer Event has no Timer definition");
+				addMissingFeatureStatus(event,"Timer definition", Status.ERROR);
 			}
 		} else if (ed instanceof SignalEventDefinition) {
 			Signal signal = ((SignalEventDefinition) ed).getSignalRef();
 			if (signal==null)
-				addStatus(event,Status.ERROR,"Signal Event has no Signal definition");
+				addMissingFeatureStatus(event,"Signal definition", Status.ERROR);
 			else
 				new SignalValidator(this).validate(signal);
 		} else if (ed instanceof ErrorEventDefinition) {
 			Error error = ((ErrorEventDefinition) ed).getErrorRef();
 			if (error==null)
-				addStatus(event,Status.ERROR,"Error Event has no Error definition");
+				addMissingFeatureStatus(event,"Error definition", Status.ERROR);
 			else
 				new ErrorValidator(this).validate(error);
 		} else if (ed instanceof ConditionalEventDefinition) {
 			FormalExpression expression = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
 			if (expression==null || isEmpty(expression.getBody()))
-				addStatus(event,Status.ERROR,"Conditional Event has no condition expression");
+				addMissingFeatureStatus(event,"condition expression", Status.ERROR);
 			else
 				new ExpressionValidator(this).validate(expression);
 		} else if (ed instanceof EscalationEventDefinition) {
 			Escalation escalation = ((EscalationEventDefinition) ed).getEscalationRef();
 			if (escalation==null)
-				addStatus(event,Status.ERROR,"Escalation Event has no Escalation definition");
+				addMissingFeatureStatus(event,"Escalation definition", Status.ERROR);
 			else
 				new EscalationValidator(this).validate(escalation);
 		} else if (ed instanceof MessageEventDefinition) {
 			Message message = ((MessageEventDefinition) ed).getMessageRef();
 			if (message==null)
-				addStatus(event,Status.ERROR,"Message Event has no Message definition");
+				addMissingFeatureStatus(event,"Message definition", Status.ERROR);
 			else
 				new MessageValidator(this).validate(message);
 		} else if (ed instanceof CompensateEventDefinition) {
 			Activity activity = ((CompensateEventDefinition) ed).getActivityRef();
 			if (activity==null)
-				addStatus(event,Status.ERROR,"Compensate Event does not reference an Activity");
+				addMissingFeatureStatus(event,"Called Activity", Status.ERROR);
 			else
 				new ActivityValidator(this).validate(activity);
 		}
