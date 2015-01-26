@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.validation.StatusList;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClass;
@@ -35,7 +36,7 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 
 	protected AbstractBpmn2ElementValidator<?> parent;
 	protected IValidationContext ctx;
-	protected List<IStatus> result = new ArrayList<IStatus>();
+	protected StatusList result = new StatusList();
 
 	public AbstractBpmn2ElementValidator(IValidationContext ctx) {
 		this.ctx = ctx;
