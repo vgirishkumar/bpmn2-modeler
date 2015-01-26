@@ -23,6 +23,8 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.FlowNode;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.CustomShapeFeatureContainer.CreateCustomShapeFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.IBpmn2CreateFeature;
@@ -132,7 +134,7 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 			if (pe.length==1) {
 				EObject o = BusinessObjectUtil.getBusinessObjectForPictogramElement(pe[0]);
 				if (o!=null) {
-					return o.eClass() == getBusinessObjectClass();
+					return getBusinessObjectClass().isInstance(o);
 				}
 			}
 		}
@@ -305,6 +307,8 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 		createContext.setLocation(x, y);
 		createContext.setSize(w, h);
 		createContext.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
+		BPMNShape oldBpmnShape = BusinessObjectUtil.getFirstElementOfType(oldShape, BPMNShape.class);
+		createContext.putProperty(GraphitiConstants.COPIED_BPMN_SHAPE, oldBpmnShape);
 
 		Object[] created = createFeature.create(createContext);
 		FlowElement newObject = (FlowElement) created[0];

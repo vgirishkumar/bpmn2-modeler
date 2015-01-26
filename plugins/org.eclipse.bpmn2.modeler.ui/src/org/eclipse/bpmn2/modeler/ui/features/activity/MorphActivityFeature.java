@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.activity;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractMorphNodeFeature;
 import org.eclipse.emf.ecore.EClass;
@@ -63,7 +64,9 @@ public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
 		newObject.setIoSpecification( oldObject.getIoSpecification() );
 		newObject.setIsForCompensation( oldObject.isIsForCompensation() );
 		newObject.setLoopCharacteristics( oldObject.getLoopCharacteristics() );
-		newObject.setName( oldObject.getName() );
+		String defaultName = ModelUtil.toCanonicalString(oldObject.getId());
+		if (!defaultName.equals(oldObject.getName()))
+			newObject.setName( oldObject.getName() );
 		newObject.setStartQuantity( oldObject.getStartQuantity() );
 	}
 }
