@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -58,15 +59,16 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 			// Note that missing source/target of Data Associations for Events
 			// is already handled in EventDefinitionValidator
 			int severity = ProcessValidator.isContainingProcessExecutable(object) ? Status.ERROR : Status.WARNING;
+			EObject[] resultLocus = new EObject[] {object.eContainer()};
 			if (object instanceof DataOutputAssociation) {
 				if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
 					ItemAwareElement source = object.getSourceRef().size()>0 ? object.getSourceRef().get(0) : null;
 					if (source!=null) {
-						addStatus(object, severity, "Output Parameter {0} is uninitialized",
+						addStatus(object, resultLocus, severity, "Output Parameter {0} is uninitialized",
 							ExtendedPropertiesProvider.getTextValue(source));
 					}
 					else {
-						addMissingFeatureStatus(object,"targetRef",severity);
+						addMissingFeatureStatus(object, "targetRef", resultLocus, severity);
 					}
 				}
 			}
@@ -74,11 +76,11 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 				if (isEmpty(object.getSourceRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
 					ItemAwareElement target = object.getTargetRef();
 					if (target!=null) {
-						addStatus(object, severity, "Input Parameter {0} is uninitialized",
+						addStatus(object, resultLocus, severity, "Input Parameter {0} is uninitialized",
 							ExtendedPropertiesProvider.getTextValue(target));
 					}
 					else {
-						addMissingFeatureStatus(object,"sourceRef",severity);
+						addMissingFeatureStatus(object, "sourceRef", resultLocus, severity);
 					}
 				}
 			}
