@@ -68,5 +68,6 @@ public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
 		if (!defaultName.equals(oldObject.getName()))
 			newObject.setName( oldObject.getName() );
 		newObject.setStartQuantity( oldObject.getStartQuantity() );
+		newObject.getBoundaryEventRefs().addAll(oldObject.getBoundaryEventRefs());
 	}
 }
