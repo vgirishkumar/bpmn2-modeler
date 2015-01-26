@@ -13,10 +13,11 @@
 package org.eclipse.bpmn2.modeler.core.features.gateway;
 
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2AddFeature;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.label.AddShapeLabelFeature;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences.BPMNDIAttributeDefault;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -72,7 +73,20 @@ public abstract class AddGatewayFeature<T extends Gateway>
 		gaService.setLocationAndSize(gatewayPolygon, 0, 0, width, height);
 
 		boolean isImport = context.getProperty(GraphitiConstants.IMPORT_PROPERTY) != null;
-		createDIShape(containerShape, businessObject, !isImport);
+		BPMNShape newBpmnShape = createDIShape(containerShape, businessObject, !isImport);
+		if (preferences.getIsMarkerVisible()==BPMNDIAttributeDefault.ALWAYS_TRUE ||
+				preferences.getIsMarkerVisible()==BPMNDIAttributeDefault.DEFAULT_TRUE) {
+			newBpmnShape.setIsMarkerVisible(true);
+		}
+		else if (preferences.getIsMarkerVisible()==BPMNDIAttributeDefault.ALWAYS_FALSE) {
+			newBpmnShape.setIsMarkerVisible(false);
+		}
+		else {
+			BPMNShape oldBpmnShape = (BPMNShape)context.getProperty(GraphitiConstants.COPIED_BPMN_SHAPE);
+			if (oldBpmnShape!=null) {
+				newBpmnShape.setIsMarkerVisible( oldBpmnShape.isIsMarkerVisible() );
+			}
+		}
 		
 		// hook for subclasses to inject extra code
 		decorateShape(context, containerShape, businessObject);

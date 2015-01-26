@@ -14,11 +14,13 @@
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.core.validation.StatusList;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EClass;
@@ -35,7 +37,7 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 
 	protected AbstractBpmn2ElementValidator<?> parent;
 	protected IValidationContext ctx;
-	protected List<IStatus> result = new ArrayList<IStatus>();
+	protected StatusList result = new StatusList();
 
 	public AbstractBpmn2ElementValidator(IValidationContext ctx) {
 		this.ctx = ctx;
@@ -98,29 +100,36 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 	protected AbstractBpmn2ElementValidator() {
 	}
 
+	protected void addStatus(EObject object, EObject[] resultLocus, int severity, String messagePattern, Object... messageArguments) {
+		IStatus status = ConstraintStatus.createStatus(ctx, object, Arrays.asList(resultLocus), severity, 0, messagePattern, messageArguments);
+		addStatus(status);
+	}
+	
 	protected void addStatus(EObject object, int severity, String messagePattern, Object... messageArguments) {
-		List<EObject> resultLocus = null;
-		if (ctx.getTarget()!=object) {
-			resultLocus = new ArrayList<EObject>();
-			resultLocus.add(ctx.getTarget());
-		}
-		IStatus status = ConstraintStatus.createStatus(ctx, object, resultLocus, severity, 0, messagePattern, messageArguments);
+		IStatus status = ConstraintStatus.createStatus(ctx, object, null, severity, 0, messagePattern, messageArguments);
 		addStatus(status);
 	}
 
 	protected void addStatus(EObject object, String featureName, int severity, String messagePattern, Object... messageArguments) {
 		List<EObject> resultLocus = null;
-		if (ctx.getTarget()!=object) {
-			resultLocus = new ArrayList<EObject>();
-			resultLocus.add(ctx.getTarget());
-		}
+		resultLocus = new ArrayList<EObject>();
 		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
 		if (feature != null) {
-			if (resultLocus==null)
-				resultLocus = new ArrayList<EObject>();
 			resultLocus.add(feature);
 		}
 		IStatus status = ConstraintStatus.createStatus(ctx, object, resultLocus, severity, 0, messagePattern, messageArguments);
+		addStatus(status);
+	}
+
+	protected void addStatus(EObject object, String featureName, EObject[] resultLocus, int severity, String messagePattern, Object... messageArguments) {
+		List<EObject> rsltLocus = null;
+		rsltLocus = new ArrayList<EObject>();
+		rsltLocus.addAll(Arrays.asList(resultLocus));
+		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+		if (feature != null) {
+			rsltLocus.add(feature);
+		}
+		IStatus status = ConstraintStatus.createStatus(ctx, object, rsltLocus, severity, 0, messagePattern, messageArguments);
 		addStatus(status);
 	}
 
@@ -135,6 +144,22 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		if (feature!=null)
 			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
 		addStatus(object, featureName, severity, message,
+				ExtendedPropertiesProvider.getLabel(object),
+				ExtendedPropertiesProvider.getTextValue(object),
+				featureName);
+	}
+
+	protected void addMissingFeatureStatus(EObject object, String featureName, EObject[] resultLocus, int severity) {
+		EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
+		// change error message slightly for connections
+		String message;
+		if (feature!=null && feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
+			message = "{0} {1} has no {2} Connections";
+		else
+			message = "{0} {1} has no {2}";
+		if (feature!=null)
+			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
+		addStatus(object, featureName, resultLocus, severity, message,
 				ExtendedPropertiesProvider.getLabel(object),
 				ExtendedPropertiesProvider.getTextValue(object),
 				featureName);

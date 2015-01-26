@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.features.gateway;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.features.AbstractMorphNodeFeature;
 import org.eclipse.emf.ecore.EClass;
@@ -59,6 +60,8 @@ public class MorphGatewayFeature extends AbstractMorphNodeFeature<Gateway> {
 	@Override
 	public void copyBusinessObject(Gateway oldObject, Gateway newObject) {
 		newObject.setGatewayDirection( oldObject.getGatewayDirection() );
-		newObject.setName( oldObject.getName() );
+		String defaultName = ModelUtil.toCanonicalString(oldObject.getId());
+		if (!defaultName.equals(oldObject.getName()))
+			newObject.setName( oldObject.getName() );
 	}
 }

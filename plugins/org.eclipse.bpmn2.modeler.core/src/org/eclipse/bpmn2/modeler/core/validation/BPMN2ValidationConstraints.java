@@ -42,7 +42,7 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 
 	public final static String CATEGORY_ID = "org.eclipse.bpmn2.modeler.core.validation.category.override"; //$NON-NLS-1$
 
-	protected List<IStatus> result = new ArrayList<IStatus>();
+	protected StatusList result = new StatusList();
 	
 	public BPMN2ValidationConstraints() {
 	}

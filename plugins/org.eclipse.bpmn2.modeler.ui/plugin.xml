@@ -736,7 +736,7 @@
 			type="org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression"
 			label="%propertyTab.label.Correlation">
 		</propertyTab>
-		
+	<!--	
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.itemawareelement.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"
@@ -744,7 +744,7 @@
 			features="itemSubjectRef dataState"
 			type="org.eclipse.bpmn2.ItemAwareElement">
 		</propertyTab>
-				
+	-->			
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.property.tab"
 			afterTab="org.eclipse.bpmn2.modeler.description.tab"

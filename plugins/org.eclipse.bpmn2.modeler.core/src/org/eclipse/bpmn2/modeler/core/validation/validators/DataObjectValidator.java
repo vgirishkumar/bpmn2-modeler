@@ -16,6 +16,7 @@ package org.eclipse.bpmn2.modeler.core.validation.validators;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -54,5 +55,8 @@ public class DataObjectValidator extends AbstractBpmn2ElementValidator<DataObjec
 		return getResult();
 	}
 
+	public boolean checkSuperType(EClass eClass, DataObject object) {
+		return true;
+	}
 }
 

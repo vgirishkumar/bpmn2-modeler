@@ -21,10 +21,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -70,24 +68,24 @@ public class BPMN2ValidationStatusLoader {
             IStatus status = convertMarker(marker, markedObject);
 
             // also add an adapter to each affected EObject in the result locus
-            // TODO: do we need this? it causes duplicate messages to be created for each marker
-            // better to have the constraint handler create additional error messages as needed.
-//            if (status instanceof ConstraintStatus) {
-//            	ConstraintStatus cs = (ConstraintStatus) status;
-//            	for (EObject result : cs.getResultLocus()) {
-//            		// CAUTION: the result locus WILL contain references to object
-//            		// features (EStructuralFeatures) that identify the feature in
-//            		// error for the Property Sheets. We don't want to add a validation
-//            		// status adapter to these EObjects.
-//            		EPackage pkg = result.eClass().getEPackage();
-//            		if (pkg != EcorePackage.eINSTANCE) {
-//            			ValidationStatusAdapter sa = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
-//                            result, ValidationStatusAdapter.class);
-//            			sa.addValidationStatus(status);
-//            			touched.add(result);
-//            		}
-//            	}
-//            }
+            if (status instanceof ConstraintStatus) {
+            	ConstraintStatus cs = (ConstraintStatus) status;
+            	for (EObject result : cs.getResultLocus()) {
+            		// CAUTION: the result locus WILL contain references to object
+            		// features (EStructuralFeatures) that identify the feature in
+            		// error for the Property Sheets. We don't want to add a validation
+            		// status adapter to these EObjects.
+            		if (result!=markedObject) {
+	            		EPackage pkg = result.eClass().getEPackage();
+	            		if (pkg != EcorePackage.eINSTANCE) {
+	            			ValidationStatusAdapter sa = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+	                            result, ValidationStatusAdapter.class);
+	            			sa.addValidationStatus(status);
+	            			touched.add(result);
+	            		}
+            		}
+            	}
+            }
             
             statusAdapter.addValidationStatus(status);
             touched.add(markedObject);
