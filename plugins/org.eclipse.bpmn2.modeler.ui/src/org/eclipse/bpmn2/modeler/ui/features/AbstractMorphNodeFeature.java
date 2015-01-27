@@ -403,4 +403,8 @@ public abstract class AbstractMorphNodeFeature<T extends FlowNode> extends Abstr
 	public boolean hasDoneChanges() {
 		return changesDone;
 	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+	}
 }
