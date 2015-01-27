@@ -21,12 +21,15 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor.ObjectEditorEvent;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor.ObjectEditorEventListener;
 import org.eclipse.bpmn2.modeler.core.utils.EventDefinitionsUtil;
 import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
@@ -147,6 +150,15 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 			super.createBindings(be);
 			scriptLanguageEditor = new ExpressionLanguageObjectEditor(this, expression, PACKAGE.getFormalExpression_Language());
 			scriptLanguageEditor.createControl(getAttributesParent(), Messages.JbpmCommonEventDetailComposite_TimerScriptLanguage);
+			
+			timeValueEditor.addListener(new ObjectEditorEventListener() {
+				@Override
+				public void notify(ObjectEditorEvent eventType, Object data) {
+					if (eventType==ObjectEditorEvent.OBJECT_CHANGED) {
+						scriptLanguageEditor.setObject((EObject)data);
+					}
+				}
+			});
 		}
 	}
 }

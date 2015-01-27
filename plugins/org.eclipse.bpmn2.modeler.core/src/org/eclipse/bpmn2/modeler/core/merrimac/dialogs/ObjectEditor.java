@@ -13,6 +13,10 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
+
 import org.eclipse.bpmn2.modeler.core.ToolTipProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.DefaultBusinessObjectDelegate;
@@ -61,6 +65,13 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	public static int ID_EDIT_BUTTON = 2;
 	public static int ID_DELETE_BUTTON = 3;
 	public static int ID_OTHER_BUTTONS = 4;
+	
+	public static enum ObjectEditorEvent {
+		OBJECT_CHANGED, FEATURE_CHANGED, VALUE_CHANGED, VISIBILITY_CHANGED, DISPOSED, EDITABLE_CHANGED
+	}
+	public static interface ObjectEditorEventListener {
+		void notify(ObjectEditorEvent eventType, Object data);
+	}
 
 	protected EObject object;
 	protected EStructuralFeature feature;
@@ -71,6 +82,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected boolean isWidgetUpdating = false;
 	private IBusinessObjectDelegate boDelegate;
 	private boolean valueChanged = false;
+	private List<ObjectEditorEventListener> listeners = new ArrayList<ObjectEditorEventListener>();
 
 	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
@@ -159,11 +171,14 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 
 	public void setObject(EObject object) {
 		this.object = object;
+		notifyListeners(ObjectEditorEvent.OBJECT_CHANGED, object);
 	}
 	
 	public void setObject(EObject object, EStructuralFeature feature) {
 		this.object = object;
 		this.feature = feature;
+		notifyListeners(ObjectEditorEvent.OBJECT_CHANGED, object);
+		notifyListeners(ObjectEditorEvent.FEATURE_CHANGED, feature);
 	}
 	
 	protected FormToolkit getToolkit() {
@@ -310,6 +325,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			return false;
 		}
 		valueChanged = true;
+		notifyListeners(ObjectEditorEvent.VALUE_CHANGED, result);
 		return true;
 	}
 
@@ -329,6 +345,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		GridData data = (GridData)label.getLayoutData();
 		data.exclude = !visible;
 		updateLabelDecorator();
+		notifyListeners(ObjectEditorEvent.VISIBILITY_CHANGED, visible);
 	}
 	
 	public boolean isVisible() {
@@ -345,6 +362,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			decoration.dispose();
 			decoration = null;
 		}
+		notifyListeners(ObjectEditorEvent.DISPOSED, null);
 	}
 	
 	public Control getControl() {
@@ -386,6 +404,22 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			control.setBackground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 			control.setForeground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 			control.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
+			notifyListeners(ObjectEditorEvent.EDITABLE_CHANGED, editable);
+		}
+	}
+	
+	public void addListener(ObjectEditorEventListener listener) {
+		if (!listeners.contains(listener))
+			listeners.add(listener);
+	}
+	
+	public void removeListener(ObjectEditorEventListener listener) {
+		listeners.remove(listener);
+	}
+	
+	protected void notifyListeners(ObjectEditorEvent eventType, Object data) {
+		for (ObjectEditorEventListener l : listeners) {
+			l.notify(eventType, data);
 		}
 	}
 }
