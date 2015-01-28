@@ -118,6 +118,16 @@ public class SyntaxCheckerUtils {
 		return ncname.toString();
 	}
 
+	public static boolean isJavaPackageName(String name) {
+		if (name==null || name.isEmpty())
+			return false;
+		for (String part : name.split("\\.")) {
+			if (!isJavaIdentifier(part))
+				return false;
+		}
+		return true;
+	}
+
 	public static final boolean isLetter(char c) {
 		return _isAsciiBaseChar(c) || _isNonAsciiBaseChar(c) || isIdeographic(c);
 	}

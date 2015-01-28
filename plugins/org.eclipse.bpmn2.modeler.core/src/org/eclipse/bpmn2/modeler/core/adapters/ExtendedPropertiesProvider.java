@@ -64,7 +64,7 @@ public class ExtendedPropertiesProvider {
 	 */
 	public static String getLabel(EObject object, EStructuralFeature feature) {
 		String label = ""; //$NON-NLS-1$
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null)
 			label = adapter.getFeatureDescriptor(feature).getLabel();
 		else
@@ -77,7 +77,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link FeatureDescriptor#setLabel()}
 	 */
 	public static void setLabel(EObject object, EStructuralFeature feature, String label) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null)
 			adapter.getFeatureDescriptor(feature).setLabel(label);
 	}
@@ -147,7 +147,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link FeatureDescriptor#getValue(int)}
 	 */
 	public static Object getValue(final EObject object, final EStructuralFeature feature, int index) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		Object value = adapter == null ? object.eGet(feature) : adapter.getFeatureDescriptor(feature).getValue(index);
 		return value;
 	}
@@ -163,7 +163,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link FeatureDescriptor#setValue(Object,int)}
 	 */
 	public static boolean setValue(EObject object, EStructuralFeature feature, Object value, int index) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		return adapter.getFeatureDescriptor(feature).setValue(value, index);
 	}
 
@@ -174,7 +174,7 @@ public class ExtendedPropertiesProvider {
 		if (feature == null)
 			return false;
 
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null)
 			return adapter.getFeatureDescriptor(feature).isMultiLine();
 		return false;
@@ -184,7 +184,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link FeatureDescriptor#setMultiLine(boolean)}
 	 */
 	public static boolean setMultiLineText(EObject object, EStructuralFeature feature, boolean multiLine) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null) {
 			adapter.getFeatureDescriptor(feature).setMultiLine(multiLine);
 			return true;
@@ -228,7 +228,7 @@ public class ExtendedPropertiesProvider {
 			return true;
 		}
 
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		if (adapter != null) {
 			Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_IS_MULTI_CHOICE);
 			if (result instanceof Boolean)
@@ -247,7 +247,7 @@ public class ExtendedPropertiesProvider {
 	 */
 	public static boolean canEdit(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter != null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT);
 				if (result instanceof Boolean)
@@ -272,7 +272,7 @@ public class ExtendedPropertiesProvider {
 	 */
 	public static boolean canCreateNew(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter != null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_CREATE_NEW);
 				if (result instanceof Boolean)
@@ -295,7 +295,7 @@ public class ExtendedPropertiesProvider {
 	 */
 	public static boolean canEditInline(EObject object, EStructuralFeature feature) {
 		if (feature != null && feature.getEType() instanceof EClass) {
-			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 			if (adapter != null) {
 				Object result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_EDIT_INLINE);
 				if (result instanceof Boolean)
@@ -309,7 +309,7 @@ public class ExtendedPropertiesProvider {
 	 * See {@link ExtendedPropertiesAdapter.UI_CAN_SET_NULL}
 	 */
 	public static boolean canSetNull(EObject object, EStructuralFeature feature) {
-		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object, feature);
+		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		Object result = null;
 		if (adapter != null) {
 			result = adapter.getProperty(feature, ExtendedPropertiesAdapter.UI_CAN_SET_NULL);

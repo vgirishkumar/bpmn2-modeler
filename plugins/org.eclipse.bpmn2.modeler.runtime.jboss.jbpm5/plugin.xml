@@ -353,6 +353,13 @@
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmSignalPropertiesAdapter">
 		</propertyExtension>
 		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.MultiInstanceLoopCharacteristics"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.MultiInstanceLoopCharacteristics"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter">
+		</propertyExtension>
+		
 <!-- Graphiti Feature Container Overrides -->
 		
 		<featureContainer
@@ -851,8 +858,6 @@
 			<enable object="Documentation" feature="extensionValues"/>
 			<enable object="Documentation" feature="text"/>
 			<enable object="Documentation" feature="textFormat"/>
-			<enable object="EndEvent" feature="dataInputAssociation"/>
-			<enable object="EndEvent" feature="dataInputs"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
 			<enable object="EndEvent" feature="name"/>
 			<enable object="Error" feature="errorCode"/>
@@ -1094,7 +1099,7 @@
 			<enable object="DataInput" feature="name"/>
 			<enable object="DataOutput" feature="name"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
-			<enable object="EndEvent" feature="inputSet"/>
+			<enable object="EndEvent" feature="name"/>
 			<enable object="ExclusiveGateway" feature="default"/>
 			<enable object="ExclusiveGateway" feature="gatewayDirection"/>
 			<enable object="ExclusiveGateway" feature="id"/>
@@ -1343,6 +1348,21 @@
       <constraintProvider cache="true">
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
          <constraints categories="org.eclipse.bpmn2.modeler.core.validation.category.override">
+
+            <!-- Live Validation Constraints -->
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Live"
+                  name="Definitions"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Definitions"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="Definitions"/>
+            </constraint>
+
+            <!-- Batch Validation Constraints -->
             <constraint
                   lang="Java"
                   class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"

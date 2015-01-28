@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
@@ -137,48 +136,6 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 	protected boolean expressionWidgetsShowing = false;
 	protected boolean transformationWidgetsShowing = false;
 	protected boolean assignmentsWidgetsShowing = false;
-	
-	public class DataInputOutputDetailComposite extends ItemAwareElementDetailComposite {
-
-		private List<DataAssociation> associations = null;
-
-		public DataInputOutputDetailComposite(Composite parent, int style) {
-			super(parent, style);
-		}
-		
-		public Composite getAttributesParent() {
-			return this;
-		}
-
-		@Override
-		protected void bindReference(Composite parent, EObject object, EReference reference) {
-			if (reference.getName().equals("itemSubjectRef")) {
-				String displayName = getBusinessObjectDelegate().getLabel(object, reference);
-				ObjectEditor editor = null;
-				editor = new ComboObjectEditor(this,object,reference) {
-
-					@Override
-					protected boolean setValue(Object result) {
-						if (super.setValue(result)) {
-							return true;
-						}
-						return false;
-					}
-				};
-				editor.createControl(parent,displayName);
-			}
-			else
-				super.bindReference(parent, object, reference);
-		}
-		
-		public void setAssociations(List<? extends DataAssociation> associations) {
-			if (associations!=null && !associations.isEmpty()) {
-				if (this.associations==null)
-					this.associations = new ArrayList<DataAssociation>();
-				this.associations.addAll(associations);
-			}
-		}
-	}
 	
 	public DataAssociationDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);

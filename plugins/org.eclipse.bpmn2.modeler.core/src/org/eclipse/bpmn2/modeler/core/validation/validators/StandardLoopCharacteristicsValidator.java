@@ -13,8 +13,7 @@
 
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
-import org.eclipse.bpmn2.InputOutputSpecification;
-import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.StandardLoopCharacteristics;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
@@ -23,14 +22,14 @@ import org.eclipse.emf.validation.IValidationContext;
 /**
  *
  */
-public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<ItemAwareElement> {
+public class StandardLoopCharacteristicsValidator extends AbstractBpmn2ElementValidator<StandardLoopCharacteristics> {
 
 	/**
 	 * Construct a BPMN2 Element Validator from a Validation Context.
 	 *
 	 * @param ctx
 	 */
-	public ItemAwareElementValidator(IValidationContext ctx) {
+	public StandardLoopCharacteristicsValidator(IValidationContext ctx) {
 		super(ctx);
 	}
 
@@ -42,7 +41,7 @@ public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<Ite
 	 * @param parent a parent Validator class
 	 */
 	@SuppressWarnings("rawtypes")
-	public ItemAwareElementValidator(AbstractBpmn2ElementValidator parent) {
+	public StandardLoopCharacteristicsValidator(AbstractBpmn2ElementValidator parent) {
 		super(parent);
 	}
 
@@ -50,16 +49,10 @@ public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<Ite
 	 * @see org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator#validate(org.eclipse.bpmn2.BaseElement)
 	 */
 	@Override
-	public IStatus validate(ItemAwareElement object) {
-		if (ProcessValidator.isContainingProcessExecutable(object)) {
-			if (isEmpty(object.getItemSubjectRef())) {
-				EObject container = object.eContainer();
-				if (container instanceof InputOutputSpecification) {
-					container = container.eContainer();
-				}
-				
-				addMissingFeatureStatus(object,"itemSubjectRef",new EObject[] {container},Status.ERROR); //$NON-NLS-1$
-			}
+	public IStatus validate(StandardLoopCharacteristics object) {
+		EObject resultLocus[] = new EObject[] {object.eContainer()};
+		if (isEmpty(object.getLoopCondition())) {
+			addStatus(object,resultLocus,Status.ERROR,"Loop Condition is undefined");
 		}
 		return getResult();
 	}

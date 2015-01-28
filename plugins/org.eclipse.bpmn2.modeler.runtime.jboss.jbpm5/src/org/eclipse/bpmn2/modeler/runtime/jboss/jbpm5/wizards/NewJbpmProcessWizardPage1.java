@@ -14,7 +14,6 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.JBPM5RuntimeExtension;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -262,12 +261,12 @@ public class NewJbpmProcessWizardPage1 extends WizardPage {
 			}
 		}
 		String packageName = packageText.getText();
-		if (!JbpmModelUtil.isValidPackageName(packageName)) {
+		if (!SyntaxCheckerUtils.isJavaPackageName(packageName)) {
 			updateStatus(Messages.NewJbpmProcessWizardPage1_Error_Package_Invalid);
 			return;
 		}
 		String processId = processIdText.getText();
-		if (!JbpmModelUtil.isValidPackageName(processId)) {
+		if (!SyntaxCheckerUtils.isJavaPackageName(processId)) {
 			updateStatus(Messages.NewJbpmProcessWizardPage1_Error_Process_ID_Invalid);
 			return;
 		}

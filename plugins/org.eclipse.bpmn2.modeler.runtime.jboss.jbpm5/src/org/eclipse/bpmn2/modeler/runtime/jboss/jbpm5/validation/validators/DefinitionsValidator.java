@@ -11,26 +11,30 @@
  * @author Bob Brodt
  ******************************************************************************/
 
-package org.eclipse.bpmn2.modeler.core.validation.validators;
+package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
-import org.eclipse.bpmn2.InputOutputSpecification;
-import org.eclipse.bpmn2.ItemAwareElement;
+import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.validation.IValidationContext;
+
 
 /**
  *
  */
-public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<ItemAwareElement> {
+public class DefinitionsValidator extends org.eclipse.bpmn2.modeler.core.validation.validators.DefinitionsValidator {
+
 
 	/**
 	 * Construct a BPMN2 Element Validator from a Validation Context.
 	 *
 	 * @param ctx
 	 */
-	public ItemAwareElementValidator(IValidationContext ctx) {
+	public DefinitionsValidator(IValidationContext ctx) {
 		super(ctx);
 	}
 
@@ -41,28 +45,24 @@ public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<Ite
 	 *
 	 * @param parent a parent Validator class
 	 */
-	@SuppressWarnings("rawtypes")
-	public ItemAwareElementValidator(AbstractBpmn2ElementValidator parent) {
-		super(parent);
+	public DefinitionsValidator(AbstractBpmn2ElementValidator<?> other) {
+		super(other);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator#validate(org.eclipse.bpmn2.BaseElement)
-	 */
 	@Override
-	public IStatus validate(ItemAwareElement object) {
-		if (ProcessValidator.isContainingProcessExecutable(object)) {
-			if (isEmpty(object.getItemSubjectRef())) {
-				EObject container = object.eContainer();
-				if (container instanceof InputOutputSpecification) {
-					container = container.eContainer();
+	public IStatus validate(Definitions object) {
+		if (object.getTargetNamespace()==null || object.getTargetNamespace().isEmpty()) {
+			addStatus(object, Status.ERROR, "No targetNamespace defined");
+		}
+		if (isLiveValidation()) {
+			TreeIterator<EObject> iter = object.eAllContents();
+			while (iter.hasNext()) {
+				EObject o = iter.next();
+				if (o instanceof BaseElement) {
+					addStatus(new ProcessVariableNameValidator(this).validate((BaseElement)o));
 				}
-				
-				addMissingFeatureStatus(object,"itemSubjectRef",new EObject[] {container},Status.ERROR); //$NON-NLS-1$
 			}
 		}
 		return getResult();
 	}
-
 }
-

@@ -20,14 +20,12 @@ import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
-import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -65,8 +63,10 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 
 							@Override
 							public String isValid(String newText) {
-								if (newText==null || newText.isEmpty())
-									return Messages.JbpmCallActivityDetailComposite_Invalid_Empty;
+								if (newText==null ||newText.isEmpty())
+									return Messages.JbpmCallActivityDetailComposite_Error_Empty;
+								if (!SyntaxCheckerUtils.isJavaPackageName(newText))
+									return Messages.JbpmCallActivityDetailComposite_Error_Invalid;
 								return null;
 							}
 							

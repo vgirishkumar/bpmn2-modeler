@@ -568,22 +568,4 @@ public class JbpmModelUtil {
 //		timeParams.setTimeUnit(tu);
 		return timeParams;
 	}
-	
-	public static boolean isValidPackageName(String name) {
-		if (name==null || name.isEmpty())
-			return false;
-		if (! Character.isJavaIdentifierStart(name.charAt(0)))
-			return false;
-		char last = 0;
-		for (char c : name.toCharArray()) {
-			if (c=='.') {
-				if (last=='.')
-					return false;
-			}
-			else if ( !Character.isJavaIdentifierPart(c))
-				return false;
-			last = c;
-		}
-		return true;
-	}
 }
