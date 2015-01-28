@@ -14,7 +14,9 @@ package org.eclipse.bpmn2.modeler.ui.editor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Assignment;
@@ -184,6 +186,7 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -625,11 +628,18 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	
     @Override
     public void gotoMarker(IMarker marker) {
-        final EObject target = getTargetObject(marker);
+        EObject target = getTargetObject(marker);
         if (target == null) {
             return;
         }
-        final PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(target);
+        PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(target);
+        if (pe==null) {
+        	for (EObject o : getRelatedObjects(marker)) {
+        		pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(o);
+        		if (pe!=null)
+        			break;
+        	}
+        }
         if (pe == null) {
 			ObjectEditingDialog dialog = new ObjectEditingDialog(this, target);
 			ObjectEditingDialog.openWithTransaction(dialog);
@@ -660,6 +670,24 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
         return getEditingDomain().getResourceSet().getEObject(uri, false);
     }
 
+    private List<EObject> getRelatedObjects(IMarker marker) {
+    	List<EObject> result = new ArrayList<EObject>();
+    	String targetUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
+    	String uriString = marker.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
+    	if (uriString!=null) {
+    		String[] uris = uriString.split(" ");
+    		for (String s : uris) {
+    			if (s.equals(targetUri))
+    				continue;
+    	        URI uri = URI.createURI(s);
+    	        EObject o = getEditingDomain().getResourceSet().getEObject(uri, false);
+    	        if (!(o instanceof EStructuralFeature))
+    	        	result.add(o);
+    		}
+    	}
+    	return result;
+    }
+    
 	private void removeWorkbenchListener()
 	{
 		if (workbenchListener!=null) {

@@ -20,10 +20,10 @@ import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.bpmn2.modeler.core.validation.validators.BaseElementValidator;
 import org.eclipse.bpmn2.modeler.core.validation.validators.FlowElementsContainerValidator;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -75,7 +75,7 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 		if (name==null || name.isEmpty()) {
 			addStatus(object, "packageName", Status.ERROR, Messages.ProcessConstraint_No_Package_Name, object.getName(), object.getId());
 		}
-		else if (!JbpmModelUtil.isValidPackageName(name)) {
+		else if (!SyntaxCheckerUtils.isJavaPackageName(name)) {
 			addStatus(object, "packageName", Status.ERROR, "Package name is invalid: {0}", name);
 		}
 

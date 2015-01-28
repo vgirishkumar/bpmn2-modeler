@@ -13,6 +13,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Signal;
@@ -21,6 +22,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.BusinessRuleTaskValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.CallActivityValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DataAssociationValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DefinitionsValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.EscalationValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.GlobalTypeValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.ProcessValidator;
@@ -59,6 +61,9 @@ public class JbpmModelConstraint extends AbstractModelConstraint {
 		}	
 		if (object instanceof DataAssociation) {
 			return new DataAssociationValidator(ctx).validate((DataAssociation)object);
+		}	
+		if (object instanceof Definitions) {
+			return new DefinitionsValidator(ctx).validate((Definitions)object);
 		}	
 		return ctx.createSuccessStatus();
 	}

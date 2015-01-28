@@ -249,8 +249,22 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			result = dataInput;
 			// build the popup list
 			List<DataInput> list = new ArrayList<DataInput>();
-			list.add(dataInput);
-			list.addAll(dataInputs);
+			if (target instanceof ThrowEvent) {
+				if (dataInputs.size()==0) {
+					result = dataInput;
+					list.add(dataInput);
+				}
+				else {
+					result = dataInputs.get(0);
+					list.addAll(dataInputs);
+				}
+			}
+			else {
+				result = dataInput;
+				list.add(dataInput);
+				list.addAll(dataInputs);
+			}
+			
 			if (list.size()>1) {
 				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
 				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());
@@ -325,11 +339,23 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 					ExtendedPropertiesProvider.getTextValue(source)
 				)
 			);
-			result = dataOutput;
 			// build the popup list
 			List<DataOutput> list = new ArrayList<DataOutput>();
-			list.add(dataOutput);
-			list.addAll(dataOutputs);
+			if (source instanceof CatchEvent) {
+				if (dataOutputs.size()==0) {
+					result = dataOutput;
+					list.add(dataOutput);
+				}
+				else {
+					result = dataOutputs.get(0);
+					list.addAll(dataOutputs);
+				}
+			}
+			else {
+				result = dataOutput;
+				list.add(dataOutput);
+				list.addAll(dataOutputs);
+			}
 			if (list.size()>1) {
 				PopupMenu popupMenu = new PopupMenu(list, labelProvider);
 				boolean b = popupMenu.show(Display.getCurrent().getActiveShell());

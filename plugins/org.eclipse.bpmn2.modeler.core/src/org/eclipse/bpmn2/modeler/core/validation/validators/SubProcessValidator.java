@@ -14,7 +14,6 @@
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
 import org.eclipse.bpmn2.AdHocSubProcess;
-import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.FlowElement;
 import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;

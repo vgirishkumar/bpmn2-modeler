@@ -66,8 +66,15 @@ public class BPMN2MarkerChangeListener implements IResourceChangeListener {
                 // fall through
             case IResourceDelta.REMOVED:
                 final String uri = markerDelta.getAttribute(EValidator.URI_ATTRIBUTE, null);
+            	String relatedUris = markerDelta.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
                 if (uri != null) {
                     deletedMarkers.add(uri);
+                }
+                if (relatedUris!=null) {
+                	for (String relatedUri : relatedUris.split(" ")) {
+                		if (!deletedMarkers.contains(relatedUri))
+                			deletedMarkers.add(relatedUri);
+                	}
                 }
             }
         }

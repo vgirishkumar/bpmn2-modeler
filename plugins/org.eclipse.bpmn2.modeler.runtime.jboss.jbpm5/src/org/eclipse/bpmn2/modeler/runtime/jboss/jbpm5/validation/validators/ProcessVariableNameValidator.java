@@ -15,10 +15,12 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
 import org.eclipse.core.runtime.IStatus;
@@ -34,6 +36,17 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 	 */
 	public ProcessVariableNameValidator(IValidationContext ctx) {
 		super(ctx);
+	}
+	
+	/**
+	 * Construct a BPMN2 Element Validator with the given Validator as the parent.
+	 * The parent is responsible for collecting all of the validation Status objects
+	 * and reporting them back to the Validation Constraint.
+	 *
+	 * @param parent a parent Validator class
+	 */
+	public ProcessVariableNameValidator(AbstractBpmn2ElementValidator<?> other) {
+		super(other);
 	}
 
 	/*
@@ -58,8 +71,17 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 		if (isEmpty(id)) {
 			addStatus(object, featureName, Status.ERROR, "The {0} ID can not be empty", object.eClass().getName());
 		}
-		else if (!SyntaxCheckerUtils.isNCName(id)) {
-			addStatus(object, featureName, Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+		else {
+			if (object instanceof Process || object instanceof ExternalProcess) {
+				if (!SyntaxCheckerUtils.isJavaPackageName(id)) {
+					addStatus(object, featureName, Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+				}
+			}
+			else {
+				if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
+					addStatus(object, featureName, Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+				}
+			}
 		}
 
 		Definitions definitions = ModelUtil.getDefinitions(object);
