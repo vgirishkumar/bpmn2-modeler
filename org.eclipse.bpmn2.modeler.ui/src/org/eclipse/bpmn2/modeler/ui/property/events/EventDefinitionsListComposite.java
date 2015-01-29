@@ -280,14 +280,15 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								if (i<size-1)
 									text += ", ";
 							}
-							if (!text.isEmpty())
-								text += " -> ";
-							text += getTextValue(link.eContainer());
-							LinkEventDefinition target = link.getTarget();
-							if (target!=null) {
-								text += " -> " + getTextValue(target.eContainer());
+							if (!text.isEmpty()) {
+									text += " -> ";
+								text += getTextValue(link.eContainer());
+								LinkEventDefinition target = link.getTarget();
+								if (target!=null) {
+									text += " -> " + getTextValue(target.eContainer());
+								}
+								return text;
 							}
-							return text;
 						}
 						if (element instanceof MessageEventDefinition) {
 							if (((MessageEventDefinition)element).getMessageRef()!=null)
@@ -313,7 +314,7 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								return Messages.TimerEventDefinitionDetailComposite_Duration + ": " +
 									getTextValue(exp);
 						}
-						return super.getText(element); //$NON-NLS-1$
+						return "<None>";
 					}
 
 					@Override

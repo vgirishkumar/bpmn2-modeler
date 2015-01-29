@@ -127,11 +127,15 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
-							FormalExpression exp = createModelObject(FormalExpression.class);
+							FormalExpression exp = expression; //createModelObject(FormalExpression.class);
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeCycle());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeDate(exp);
+							String body = exp.getBody();
+							if (body==null || "null".equals(body))
+								body = "";
 							exp.setBody(""); //$NON-NLS-1$
+							exp.setBody(body);
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMEDATE;
 						}
@@ -148,11 +152,15 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
-							FormalExpression exp = createModelObject(FormalExpression.class);
+							FormalExpression exp = expression; //createModelObject(FormalExpression.class);
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDate());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeCycle(exp);
+							String body = exp.getBody();
+							if (body==null || "null".equals(body))
+								body = "";
 							exp.setBody(""); //$NON-NLS-1$
+							exp.setBody(body);
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMECYCLE;
 						}
@@ -169,11 +177,15 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
 						protected void doExecute() {
-							FormalExpression exp = createModelObject(FormalExpression.class);
+							FormalExpression exp = expression; //createModelObject(FormalExpression.class);
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDate());
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeCycle());
 							event.setTimeDuration(exp);
+							String body = exp.getBody();
+							if (body==null || "null".equals(body))
+								body = "";
 							exp.setBody(""); //$NON-NLS-1$
+							exp.setBody(body);
 							timeValueEditor.setObject(exp);
 							timerType = TimerType.TIMEDURATION;
 						}
