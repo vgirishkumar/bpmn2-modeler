@@ -1186,8 +1186,8 @@
 		<style object="MessageFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
 		<style object="SequenceFlow" shapeBackground="D4E7F8" defaultWidth="2"/>
 
-		<style object="CANVAS" shapeBackground="FFFFFF"/>
-		<style object="GRID" shapeForeground="E3EEF9" useDefaultSize="true" defaultWidth="10" defaultHeight="10"/>
+		<style object="Canvas" shapeBackground="FFFFFF"/>
+		<style object="Grid" shapeForeground="E3EEF9" useDefaultSize="true" defaultWidth="10" defaultHeight="10"/>
 		
 		<typeLanguage name="XSD Schema" uri="http://www.w3.org/2001/XMLSchema" prefix="xs">
 			<type name="string"/>
