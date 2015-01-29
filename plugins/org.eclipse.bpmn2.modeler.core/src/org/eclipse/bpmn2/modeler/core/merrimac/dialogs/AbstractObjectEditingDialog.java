@@ -44,10 +44,14 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.Twistie;
 
 public abstract class AbstractObjectEditingDialog extends FormDialog implements ValidationErrorHandler {
 
@@ -255,20 +259,24 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	}
 	
 	protected void adapt(Composite content) {
-		
+
 		// The AbstractDetailComposite controls don't actually get constructed until
 		// setBusinessObject() is called - the business object determines which controls
 		// are required. So, this needs to happen very late in the dialog lifecycle.
-		// We can now safely set the background color of all controls to match the dialog.
+		// We can now safely set the background color of all controls to match
+		// the dialog.
 		content.setBackground(form.getBackground());
 		for (Control k : content.getChildren()) {
 			Object data = k.getData(AbstractObjectEditingDialog.DO_NOT_ADAPT);
-			if (data instanceof Boolean && (Boolean)data == true)
+			if (data instanceof Boolean && (Boolean) data == true)
 				continue;
-			
+			if (k instanceof Twistie || k instanceof ToolBar
+					|| (k instanceof Label && k.getParent() instanceof Section)) {
+				continue;
+			}
 			k.setBackground(form.getBackground());
 			if (k instanceof Composite) {
-				adapt((Composite)k);
+				adapt((Composite) k);
 			}
 		}
 	}
