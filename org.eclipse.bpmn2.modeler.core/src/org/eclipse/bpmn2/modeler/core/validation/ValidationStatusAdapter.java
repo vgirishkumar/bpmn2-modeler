@@ -10,9 +10,6 @@
  ************************************************************************************/
 package org.eclipse.bpmn2.modeler.core.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -31,7 +28,7 @@ public class ValidationStatusAdapter extends AdapterImpl {
 		super();
 	}
 
-	private List<IStatus> _validationStatus = new ArrayList<IStatus>();
+	private StatusList _validationStatus = new StatusList();
 
     @Override
     public boolean isAdapterForType(Object type) {
@@ -82,6 +79,9 @@ public class ValidationStatusAdapter extends AdapterImpl {
                 return super.getMessage();
             }
             StringBuffer sb = new StringBuffer();
+            if (getChildren().length > 1) {
+           		sb.append("Multiple problems:\n");
+            }
             for (IStatus status : getChildren()) {
                 if (status.isOK()) {
                     continue;

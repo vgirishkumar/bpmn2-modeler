@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.validation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -21,7 +22,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -51,50 +51,76 @@ public class BPMN2ValidationStatusLoader {
         }
         Set<EObject> touched = new LinkedHashSet<EObject>();
         for (IMarker marker : markers) {
-            final EObject markedObject = getTargetObject(marker);
-            if (markedObject == null) {
-                continue;
-            }
-            ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
-                    markedObject, ValidationStatusAdapter.class);
-    		
-            // add the adapter factory for tracking validation errors
-            if (statusAdapter==null) {
-	            ResourceSet resourceSet = editor.getEditingDomain().getResourceSet();
-	            resourceSet.getAdapterFactories().add(new ValidationStatusAdapterFactory());
-	            statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+            for (EObject markedObject : getAllObjects(marker)) {
+	            if (markedObject == null) {
+	                continue;
+	            }
+	            ValidationStatusAdapter statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
 	                    markedObject, ValidationStatusAdapter.class);
+	    		
+	            // add the adapter factory for tracking validation errors
+	            if (statusAdapter==null) {
+		            ResourceSet resourceSet = editor.getEditingDomain().getResourceSet();
+		            resourceSet.getAdapterFactories().add(new ValidationStatusAdapterFactory());
+		            statusAdapter = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+		                    markedObject, ValidationStatusAdapter.class);
+	            }
+	
+	            // convert the problem marker to an IStatus suitable for the validation status adapter
+	            IStatus status = convertMarker(marker, markedObject);
+	
+	            // also add an adapter to each affected EObject in the result locus
+	            if (status instanceof ConstraintStatus) {
+	            	ConstraintStatus cs = (ConstraintStatus) status;
+	            	for (EObject result : cs.getResultLocus()) {
+	            		// CAUTION: the result locus WILL contain references to object
+	            		// features (EStructuralFeatures) that identify the feature in
+	            		// error for the Property Sheets. We don't want to add a validation
+	            		// status adapter to these EObjects.
+	            		if (result!=markedObject) {
+		            		EPackage pkg = result.eClass().getEPackage();
+		            		if (pkg != EcorePackage.eINSTANCE) {
+		            			ValidationStatusAdapter sa = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
+		                            result, ValidationStatusAdapter.class);
+		            			sa.addValidationStatus(status);
+		            			touched.add(result);
+		            		}
+	            		}
+	            	}
+	            }
+	            
+	            statusAdapter.addValidationStatus(status);
+	            touched.add(markedObject);
             }
-
-            // convert the problem marker to an IStatus suitable for the validation status adapter
-            IStatus status = convertMarker(marker, markedObject);
-
-            // also add an adapter to each affected EObject in the result locus
-            // TODO: do we need this? it causes duplicate messages to be created for each marker
-            // better to have the constraint handler create additional error messages as needed.
-//            if (status instanceof ConstraintStatus) {
-//            	ConstraintStatus cs = (ConstraintStatus) status;
-//            	for (EObject result : cs.getResultLocus()) {
-//            		// CAUTION: the result locus WILL contain references to object
-//            		// features (EStructuralFeatures) that identify the feature in
-//            		// error for the Property Sheets. We don't want to add a validation
-//            		// status adapter to these EObjects.
-//            		EPackage pkg = result.eClass().getEPackage();
-//            		if (pkg != EcorePackage.eINSTANCE) {
-//            			ValidationStatusAdapter sa = (ValidationStatusAdapter) EcoreUtil.getRegisteredAdapter(
-//                            result, ValidationStatusAdapter.class);
-//            			sa.addValidationStatus(status);
-//            			touched.add(result);
-//            		}
-//            	}
-//            }
-            
-            statusAdapter.addValidationStatus(status);
-            touched.add(markedObject);
         }
         return touched;
     }
+    
+    private List<EObject> getAllObjects(IMarker marker) {
+    	List<EObject> result = new ArrayList<EObject>();
+    	result.add(getTargetObject(marker));
+    	result.addAll(getRelatedObjects(marker));
+    	return result;
+    }
 
+    private List<EObject> getRelatedObjects(IMarker marker) {
+    	List<EObject> result = new ArrayList<EObject>();
+    	String targetUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
+    	String uriString = marker.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
+    	if (uriString!=null) {
+    		String[] uris = uriString.split(" ");
+    		for (String s : uris) {
+    			if (s.equals(targetUri))
+    				continue;
+    	        URI uri = URI.createURI(s);
+    	        EObject o = editor.getEditingDomain().getResourceSet().getEObject(uri, false);
+    	        if (!(o instanceof EStructuralFeature))
+    	        	result.add(o);
+    		}
+    	}
+    	return result;
+    }
+    
     private EObject getTargetObject(IMarker marker) {
         final String uriString = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
         final URI uri = uriString == null ? null : URI.createURI(uriString);

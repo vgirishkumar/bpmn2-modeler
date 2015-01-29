@@ -965,7 +965,7 @@ public class ShapeDecoratorUtil {
 			if (isValidationDecorator(pe))
 				return pe;
 		}
-		PictogramElement decorator = Graphiti.getPeCreateService().createShape(containerShape, false);
+		PictogramElement decorator = Graphiti.getPeCreateService().createShape(containerShape, true);
 		peService.setPropertyValue(decorator, GraphitiConstants.VALIDATION_DECORATOR, "true");
 		Rectangle rect = Graphiti.getGaCreateService().createInvisibleRectangle(decorator);
 		rect.setX(-5);
