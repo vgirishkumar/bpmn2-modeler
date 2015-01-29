@@ -1357,7 +1357,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			});
 		}
 		
-		if (event.getKey().contains(ShapeStyle.Category.GRID.name())) { //$NON-NLS-1$
+		if (event.getKey().contains(ShapeStyle.Category.GRID.toString())) { //$NON-NLS-1$
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
@@ -1370,11 +1370,12 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 					IGaService gaService = Graphiti.getGaService();
 					ga.setForeground(gaService.manageColor(diagram, ss.getShapeForeground()));
 					refresh();
+					getGraphicalControl().redraw();
 				}
 			});
 		}
 		
-		if (event.getKey().contains(ShapeStyle.Category.CANVAS.name())) { //$NON-NLS-1$
+		if (event.getKey().contains(ShapeStyle.Category.CANVAS.toString())) { //$NON-NLS-1$
 			getEditingDomain().getCommandStack().execute(new RecordingCommand(getEditingDomain()) {
 				@Override
 				protected void doExecute() {
@@ -1384,6 +1385,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 					IGaService gaService = Graphiti.getGaService();
 					ga.setBackground(gaService.manageColor(diagram, ss.getShapeBackground()));
 					refresh();
+					getGraphicalControl().redraw();
 				}
 			});
 		}

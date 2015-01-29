@@ -650,7 +650,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public ShapeStyle getShapeStyle(ShapeStyle.Category category) {
-		return getShapeStyle(category.name());
+		return getShapeStyle(category.toString());
 	}
 	
 	public ShapeStyle getShapeStyle(String name) {
