@@ -65,5 +65,6 @@ public class MorphActivityFeature extends AbstractMorphNodeFeature<Activity> {
 		newObject.setLoopCharacteristics( oldObject.getLoopCharacteristics() );
 		newObject.setName( oldObject.getName() );
 		newObject.setStartQuantity( oldObject.getStartQuantity() );
+		newObject.getBoundaryEventRefs().addAll(oldObject.getBoundaryEventRefs());
 	}
 }
