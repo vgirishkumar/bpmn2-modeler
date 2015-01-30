@@ -16,7 +16,6 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
@@ -98,10 +97,10 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 					if (id.equals(id2)) {
 						addStatus(object, featureName, Status.ERROR,
 								Messages.ProcessVariableNameConstraint_Duplicate_ID,
-								ExtendedPropertiesProvider.getLabel(object)
-										+ " " + ExtendedPropertiesProvider.getTextValue(object), //$NON-NLS-1$
-								ExtendedPropertiesProvider.getLabel(o2)
-										+ " " + ExtendedPropertiesProvider.getTextValue(o2)); //$NON-NLS-1$
+								getLabel(object)
+										+ " " + getName(object), //$NON-NLS-1$
+								getLabel(o2)
+										+ " " + getName(o2)); //$NON-NLS-1$
 					}
 				}
 			}

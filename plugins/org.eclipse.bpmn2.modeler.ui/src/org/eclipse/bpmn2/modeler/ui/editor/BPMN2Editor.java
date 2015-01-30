@@ -18,65 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.BoundaryEvent;
-import org.eclipse.bpmn2.CallActivity;
-import org.eclipse.bpmn2.CallChoreography;
-import org.eclipse.bpmn2.CatchEvent;
-import org.eclipse.bpmn2.Category;
-import org.eclipse.bpmn2.CompensateEventDefinition;
-import org.eclipse.bpmn2.ConditionalEventDefinition;
-import org.eclipse.bpmn2.CorrelationPropertyRetrievalExpression;
-import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataObject;
-import org.eclipse.bpmn2.DataObjectReference;
-import org.eclipse.bpmn2.DataOutput;
-import org.eclipse.bpmn2.DataStore;
-import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.EndEvent;
-import org.eclipse.bpmn2.ErrorEventDefinition;
-import org.eclipse.bpmn2.EscalationEventDefinition;
-import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.Expression;
-import org.eclipse.bpmn2.FormalExpression;
-import org.eclipse.bpmn2.Gateway;
-import org.eclipse.bpmn2.GlobalBusinessRuleTask;
-import org.eclipse.bpmn2.GlobalManualTask;
-import org.eclipse.bpmn2.GlobalScriptTask;
-import org.eclipse.bpmn2.GlobalTask;
-import org.eclipse.bpmn2.GlobalUserTask;
-import org.eclipse.bpmn2.HumanPerformer;
-import org.eclipse.bpmn2.Import;
-import org.eclipse.bpmn2.InputOutputSpecification;
-import org.eclipse.bpmn2.Interface;
-import org.eclipse.bpmn2.ItemDefinition;
-import org.eclipse.bpmn2.LinkEventDefinition;
-import org.eclipse.bpmn2.ManualTask;
-import org.eclipse.bpmn2.Message;
-import org.eclipse.bpmn2.MessageEventDefinition;
-import org.eclipse.bpmn2.MessageFlow;
-import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
-import org.eclipse.bpmn2.Operation;
-import org.eclipse.bpmn2.Performer;
-import org.eclipse.bpmn2.PotentialOwner;
-import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Property;
-import org.eclipse.bpmn2.ResourceAssignmentExpression;
-import org.eclipse.bpmn2.ResourceParameterBinding;
-import org.eclipse.bpmn2.ResourceRole;
-import org.eclipse.bpmn2.ScriptTask;
-import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.SignalEventDefinition;
-import org.eclipse.bpmn2.StandardLoopCharacteristics;
-import org.eclipse.bpmn2.StartEvent;
-import org.eclipse.bpmn2.SubProcess;
-import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.TextAnnotation;
-import org.eclipse.bpmn2.ThrowEvent;
-import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
@@ -84,10 +27,6 @@ import org.eclipse.bpmn2.modeler.core.builder.BPMN2Builder;
 import org.eclipse.bpmn2.modeler.core.di.DIImport;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
@@ -102,6 +41,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.MarkerUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -112,51 +52,7 @@ import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.diagram.Bpmn2ToolBehaviorProvider;
 import org.eclipse.bpmn2.modeler.ui.property.PropertyTabDescriptorProvider;
-import org.eclipse.bpmn2.modeler.ui.property.artifact.CategoryDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.artifact.TextAnnotationDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.connectors.MessageFlowDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.connectors.SequenceFlowDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.DataAssignmentDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.DataObjectPropertySection.DataObjectDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.DataObjectReferencePropertySection.DataObjectReferenceDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.DataStorePropertySection.DataStoreDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.DataStoreReferencePropertySection.DataStoreReferenceDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ExpressionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.InterfaceDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.MessageDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.MessageListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.OperationDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ResourceAssignmentExpressionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ResourceParameterBindingDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.data.ResourceRoleDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.CorrelationPropertyREListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertyComposite.ImportDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ItemDefinitionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ItemDefinitionListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.PropertyListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.diagrams.ResourceRoleListComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.BoundaryEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.CatchEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventPropertySection.EventDefinitionDialogComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.EndEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.StartEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.ThrowEventDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.gateways.GatewayDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityInputDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.ActivityOutputDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParametersDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.ManualTaskDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.MultiInstanceLoopCharacteristicsDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDetailComposite;
-import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorOutlinePage;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorSelectionSynchronizer;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
@@ -628,24 +524,20 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	
     @Override
     public void gotoMarker(IMarker marker) {
-        EObject target = getTargetObject(marker);
+    	ResourceSet rs = getEditingDomain().getResourceSet();
+        EObject target = MarkerUtils.getTargetObject(rs, marker);
         if (target == null) {
             return;
         }
-        PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(target);
-        if (pe==null) {
-        	for (EObject o : getRelatedObjects(marker)) {
-        		pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(o);
-        		if (pe!=null)
-        			break;
-        	}
-        }
-        if (pe == null) {
+    	IFeatureProvider fp = getDiagramTypeProvider().getFeatureProvider();
+        PictogramElement pe = MarkerUtils.getContainerShape(fp, marker);
+		
+        if (pe!=null)
+        	selectPictogramElements(new PictogramElement[] {pe});
+        if (pe == null || PropertyUtil.getPropertySheetView() == null) {
 			ObjectEditingDialog dialog = new ObjectEditingDialog(this, target);
 			ObjectEditingDialog.openWithTransaction(dialog);
         }
-        else
-        	selectPictogramElements(new PictogramElement[] {pe});
     }
 
     private void loadMarkers() {
@@ -659,33 +551,6 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	            Activator.logStatus(e.getStatus());
 	        }
     	}
-    }
-    
-    private EObject getTargetObject(IMarker marker) {
-        final String uriString = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-        final URI uri = uriString == null ? null : URI.createURI(uriString);
-        if (uri == null) {
-            return null;
-        }
-        return getEditingDomain().getResourceSet().getEObject(uri, false);
-    }
-
-    private List<EObject> getRelatedObjects(IMarker marker) {
-    	List<EObject> result = new ArrayList<EObject>();
-    	String targetUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-    	String uriString = marker.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
-    	if (uriString!=null) {
-    		String[] uris = uriString.split(" ");
-    		for (String s : uris) {
-    			if (s.equals(targetUri))
-    				continue;
-    	        URI uri = URI.createURI(s);
-    	        EObject o = getEditingDomain().getResourceSet().getEObject(uri, false);
-    	        if (!(o instanceof EStructuralFeature))
-    	        	result.add(o);
-    		}
-    	}
-    	return result;
     }
     
 	private void removeWorkbenchListener()

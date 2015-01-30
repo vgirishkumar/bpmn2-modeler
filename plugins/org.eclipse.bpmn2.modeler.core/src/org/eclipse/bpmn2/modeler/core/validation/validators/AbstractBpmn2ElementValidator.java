@@ -142,10 +142,10 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		else
 			message = "{0} {1} has no {2}";
 		if (feature!=null)
-			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
+			featureName = getLabel(object, feature);
 		addStatus(object, featureName, severity, message,
-				ExtendedPropertiesProvider.getLabel(object),
-				ExtendedPropertiesProvider.getTextValue(object),
+				getLabel(object),
+				getName(object),
 				featureName);
 	}
 
@@ -158,10 +158,10 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		else
 			message = "{0} {1} has no {2}";
 		if (feature!=null)
-			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
+			featureName = getLabel(object, feature);
 		addStatus(object, featureName, resultLocus, severity, message,
-				ExtendedPropertiesProvider.getLabel(object),
-				ExtendedPropertiesProvider.getTextValue(object),
+				getLabel(object),
+				getName(object),
 				featureName);
 	}
 
@@ -185,6 +185,18 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		if (parent == null)
 			return this;
 		return parent;
+	}
+
+	protected String getLabel(EObject object) {
+		return ExtendedPropertiesProvider.getLabel(object);
+	}
+
+	protected String getLabel(EObject object, EStructuralFeature feature) {
+		return ExtendedPropertiesProvider.getLabel(object, feature);
+	}
+
+	protected String getName(EObject object) {
+		return ExtendedPropertiesProvider.getTextValue(object);
 	}
 
 	/**

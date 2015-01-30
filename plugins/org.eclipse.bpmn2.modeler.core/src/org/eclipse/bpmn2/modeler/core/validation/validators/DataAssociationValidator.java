@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
@@ -65,7 +64,7 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 					ItemAwareElement source = object.getSourceRef().size()>0 ? object.getSourceRef().get(0) : null;
 					if (source!=null) {
 						addStatus(object, resultLocus, severity, "Output Parameter {0} is uninitialized",
-							ExtendedPropertiesProvider.getTextValue(source));
+							getName(source));
 					}
 					else {
 						addMissingFeatureStatus(object, "targetRef", resultLocus, severity);
@@ -77,7 +76,7 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 					ItemAwareElement target = object.getTargetRef();
 					if (target!=null) {
 						addStatus(object, resultLocus, severity, "Input Parameter {0} is uninitialized",
-							ExtendedPropertiesProvider.getTextValue(target));
+								getName(target));
 					}
 					else {
 						addMissingFeatureStatus(object, "sourceRef", resultLocus, severity);

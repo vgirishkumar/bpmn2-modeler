@@ -18,7 +18,6 @@ import java.util.HashSet;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.runtime.IStatus;
@@ -80,8 +79,8 @@ public class BaseElementValidator extends AbstractBpmn2ElementValidator<BaseElem
 						if (id.equals(id2)) {
 							addStatus(object, Status.ERROR,
 								"{0} and {1} have the same ID",
-								ExtendedPropertiesProvider.getLabel(object)+" "+ExtendedPropertiesProvider.getTextValue(object), //$NON-NLS-1$
-								ExtendedPropertiesProvider.getLabel(o2)+" "+ExtendedPropertiesProvider.getTextValue(o2) //$NON-NLS-1$
+								getLabel(object)+" "+getName(object), //$NON-NLS-1$
+								getLabel(o2)+" "+getName(o2) //$NON-NLS-1$
 							);
 						}
 					}
