@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BPMN2 Modeler Help
 Bundle-SymbolicName: org.eclipse.bpmn2.modeler.help;singleton:=true
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 1.0.4.qualifier
 Bundle-Activator: org.eclipse.bpmn2.modeler.help.Activator
 Bundle-Vendor: Eclipse.org
 Require-Bundle: org.eclipse.ui,
