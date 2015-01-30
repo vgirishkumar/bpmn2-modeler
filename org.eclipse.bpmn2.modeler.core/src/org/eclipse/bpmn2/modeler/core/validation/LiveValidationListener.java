@@ -15,20 +15,12 @@ package org.eclipse.bpmn2.modeler.core.validation;
 
 import java.util.List;
 
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.emf.validation.marker.MarkerUtil;
 import org.eclipse.emf.validation.model.EvaluationMode;
 import org.eclipse.emf.validation.model.IConstraintStatus;
 import org.eclipse.emf.validation.service.IValidationListener;
 import org.eclipse.emf.validation.service.ValidationEvent;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 /**
  * @author Bob Brodt
@@ -48,8 +40,6 @@ public class LiveValidationListener implements IValidationListener {
 			{
 				// fabricate a multi-errorList for the MarkerUtil to consume
 				List<IConstraintStatus> results = event.getValidationResults();
-				MultiStatus multi = new MultiStatus(Activator.getDefault().PLUGIN_ID, 1,
-						(IStatus[]) results.toArray(new IStatus[results.size()]), Messages.LiveValidationListener_Title, null);
 
 				for (IStatus s : results) {
 					reportError(s);

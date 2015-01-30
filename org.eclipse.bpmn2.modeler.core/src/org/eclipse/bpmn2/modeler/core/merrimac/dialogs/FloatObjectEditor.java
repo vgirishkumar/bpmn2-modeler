@@ -13,8 +13,9 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
+import java.math.BigInteger;
+
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
@@ -22,8 +23,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
@@ -69,6 +68,7 @@ public class FloatObjectEditor extends TextObjectEditor {
 				for (int i = 0; i < chars.length; i++) {
 					if (!('0' <= chars[i] && chars[i] <= '9') && chars[i]!='.') {
 						e.doit = false;
+						showErrorMessage("The character '"+e.text+"' is not valid");
 						return;
 					}
 				}
@@ -103,19 +103,28 @@ public class FloatObjectEditor extends TextObjectEditor {
 			}
 		});
 
-		
-		text.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
-			}
-		});
-
 		return text;
+	}
+	
+	public Double getValue() {
+		Object v =  object.eGet(feature);
+		if (v instanceof Short)
+			return ((Short)v).doubleValue();
+		if (v instanceof Integer)
+			return ((Integer)v).doubleValue();
+		if (v instanceof Long)
+			return ((Long)v).doubleValue();
+		if (v instanceof Double)
+			return (Double)v;
+		if (v instanceof BigInteger)
+			return ((BigInteger)v).doubleValue();
+		if (v instanceof String) {
+			try {
+				return Double.parseDouble((String)v);
+			}
+			catch (Exception e){
+			}
+		}
+		return new Double(0);
 	}
 }

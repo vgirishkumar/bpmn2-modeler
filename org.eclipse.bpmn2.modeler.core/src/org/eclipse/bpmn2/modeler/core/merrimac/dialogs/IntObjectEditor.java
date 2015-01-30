@@ -71,6 +71,7 @@ public class IntObjectEditor extends TextObjectEditor {
 				for (int i = 0; i < chars.length; i++) {
 					if (!('0' <= chars[i] && chars[i] <= '9')) {
 						e.doit = false;
+						showErrorMessage("The character '"+e.text+"' is not valid");
 						return;
 					}
 				}
@@ -106,19 +107,6 @@ public class IntObjectEditor extends TextObjectEditor {
 				else {
 					setValue(Long.toString(i));
 				}
-			}
-		});
-
-		
-		text.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
 			}
 		});
 

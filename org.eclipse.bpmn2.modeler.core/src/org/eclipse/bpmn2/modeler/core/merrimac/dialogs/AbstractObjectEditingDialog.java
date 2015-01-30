@@ -20,14 +20,18 @@ import org.eclipse.bpmn2.modeler.core.validation.ValidationErrorHandler;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.emf.transaction.Transaction;
+import org.eclipse.emf.transaction.TransactionChangeDescription;
+import org.eclipse.emf.transaction.impl.InternalTransaction;
 import org.eclipse.emf.transaction.impl.InternalTransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -40,10 +44,14 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.FormDialog;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.forms.widgets.Twistie;
 
 public abstract class AbstractObjectEditingDialog extends FormDialog implements ValidationErrorHandler {
 
@@ -56,13 +64,14 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	protected Transaction transaction;
 	protected ScrolledForm form;
 	protected Composite dialogContent;
+	protected InternalTransactionalEditingDomain domain;
     private Text errorMessageText;
     private IPropertiesCompositeFactory compositeFactory = null;
 	// If this property is set on a Control, then don't try to
 	// adapt the Control's colors/fonts/etc. to dialog defaults
     // This is used by the Description Styled Text widget.
 	public final static String DO_NOT_ADAPT = "do_not_adapt"; //$NON-NLS-1$
-    
+	
 	public AbstractObjectEditingDialog(DiagramEditor editor, EObject object) {
 		super(editor.getEditorSite().getShell());
 		setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.MAX | SWT.RESIZE
@@ -70,6 +79,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		
 		this.editor = editor;
 		this.object = object;
+		domain = (InternalTransactionalEditingDomain) editor.getEditingDomain();
 	}
 
 	public void setCompositeFactory(IPropertiesCompositeFactory compositeFactory) {
@@ -181,8 +191,48 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		super.create();
 		startTransaction();
 	}
+
+	public static int openWithTransaction(final AbstractObjectEditingDialog dialog) {
+		final int result[] = new int[1];
+		// wrap this dialog in a transaction
+		if (dialog.domain.getActiveTransaction()==null) {
+			dialog.domain.getCommandStack().execute(new RecordingCommand(dialog.domain) {
+				@Override
+				protected void doExecute() {
+					result[0] = openWithRollback(dialog);
+				}
+			});
+		}
+		else {
+			result[0] = openWithRollback(dialog);
+		}
+		return result[0];
+	}
 	
-	@Override
+	private static int openWithRollback(final AbstractObjectEditingDialog dialog) {
+		int result = dialog.open();
+		InternalTransaction transaction = dialog.domain.getActiveTransaction();
+		if (transaction!=null) {
+			if (dialog.cancel) {
+				// roll back transaction if CANCEL button was pressed
+				IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "cancel");
+				transaction.setStatus(status);
+				result = Window.CANCEL;
+			}
+			else {
+				TransactionChangeDescription cd = dialog.transaction.getChangeDescription();
+				if (cd.getObjectChanges().size()==0) {
+					// also roll back if there were no changes made even if
+					// OK button was pressed.
+					IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "no changes");
+					transaction.setStatus(status);
+					result = Window.CANCEL;
+				}
+			}
+		}
+		return result;
+	}
+	
 	public int open() {
 		if (getShell()==null)
 			create();
@@ -209,20 +259,24 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	}
 	
 	protected void adapt(Composite content) {
-		
+
 		// The AbstractDetailComposite controls don't actually get constructed until
 		// setBusinessObject() is called - the business object determines which controls
 		// are required. So, this needs to happen very late in the dialog lifecycle.
-		// We can now safely set the background color of all controls to match the dialog.
+		// We can now safely set the background color of all controls to match
+		// the dialog.
 		content.setBackground(form.getBackground());
 		for (Control k : content.getChildren()) {
 			Object data = k.getData(AbstractObjectEditingDialog.DO_NOT_ADAPT);
-			if (data instanceof Boolean && (Boolean)data == true)
+			if (data instanceof Boolean && (Boolean) data == true)
 				continue;
-			
+			if (k instanceof Twistie || k instanceof ToolBar
+					|| (k instanceof Label && k.getParent() instanceof Section)) {
+				continue;
+			}
 			k.setBackground(form.getBackground());
 			if (k instanceof Composite) {
-				adapt((Composite)k);
+				adapt((Composite) k);
 			}
 		}
 	}
@@ -275,9 +329,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	protected void startTransaction() {
 		if (transaction==null) {
 			try {
-				final InternalTransactionalEditingDomain transactionalDomain = (InternalTransactionalEditingDomain) editor
-						.getEditingDomain();
-				transaction = transactionalDomain.startTransaction(false, null);
+				transaction = domain.startTransaction(false, null);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();

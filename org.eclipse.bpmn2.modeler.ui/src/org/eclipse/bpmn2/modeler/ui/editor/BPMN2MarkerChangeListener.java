@@ -28,7 +28,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.IPage;
@@ -67,16 +66,22 @@ public class BPMN2MarkerChangeListener implements IResourceChangeListener {
                 // fall through
             case IResourceDelta.REMOVED:
                 final String uri = markerDelta.getAttribute(EValidator.URI_ATTRIBUTE, null);
+            	String relatedUris = markerDelta.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
                 if (uri != null) {
                     deletedMarkers.add(uri);
+                }
+                if (relatedUris!=null) {
+                	for (String relatedUri : relatedUris.split(" ")) {
+                		if (!deletedMarkers.contains(relatedUri))
+                			deletedMarkers.add(relatedUri);
+                	}
                 }
             }
         }
 
         final Set<EObject> updatedObjects = new LinkedHashSet<EObject>();
         for (String uri : deletedMarkers) {
-            final EObject eobject = editor.getEditingDomain().getResourceSet().getEObject(URI.createURI(uri),
-                    false);
+            final EObject eobject = editor.getEditingDomain().getResourceSet().getEObject(URI.createURI(uri), false);
             if (eobject == null) {
                 continue;
             }

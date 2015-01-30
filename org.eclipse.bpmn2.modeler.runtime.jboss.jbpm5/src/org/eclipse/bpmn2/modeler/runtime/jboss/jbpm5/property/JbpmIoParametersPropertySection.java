@@ -32,7 +32,7 @@ public class JbpmIoParametersPropertySection extends IoParametersPropertySection
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof ScriptTask || be==null)
 			return null;

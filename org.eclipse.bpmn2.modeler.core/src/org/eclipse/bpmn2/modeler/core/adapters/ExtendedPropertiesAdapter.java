@@ -57,6 +57,7 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends AdapterImpl {
 	public static final String PROPERTY_DESCRIPTOR = "property.descriptor"; //$NON-NLS-1$
 	// Line number in XML document where this object is defined
 	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
+	public final static String UI_OBJECT_EDITOR_CLASS = "ui.object.editor.class"; //$NON-NLS-1$
 	
 	protected static Hashtable<EClass,EObject> dummyObjects = new Hashtable<EClass,EObject>();
 

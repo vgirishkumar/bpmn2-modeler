@@ -551,8 +551,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					};
 					
 					dialog.setCompositeFactory(factory);
-					if (dialog.open() == Window.OK)
-						System.out.println();
+					dialog.open();
 				}
 			}
 		}

@@ -89,6 +89,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.PropertiesCompositeFactory;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
@@ -99,6 +100,7 @@ import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.bpmn2.modeler.core.utils.MarkerUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.core.utils.StyleUtil;
@@ -153,6 +155,7 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.MultiInstanceLoopCharacterist
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorOutlinePage;
 import org.eclipse.bpmn2.modeler.ui.views.outline.BPMN2EditorSelectionSynchronizer;
 import org.eclipse.bpmn2.modeler.ui.wizards.BPMN2DiagramCreator;
@@ -182,7 +185,6 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.NotificationFilter;
@@ -220,6 +222,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.IWorkbenchPage;
@@ -693,16 +696,20 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	
     @Override
     public void gotoMarker(IMarker marker) {
-        final EObject target = getTargetObject(marker);
+    	ResourceSet rs = getEditingDomain().getResourceSet();
+        EObject target = MarkerUtils.getTargetObject(rs, marker);
         if (target == null) {
             return;
         }
-        final PictogramElement pe = getDiagramTypeProvider().getFeatureProvider().getPictogramElementForBusinessObject(
-                target);
-        if (pe == null) {
-            return;
+    	IFeatureProvider fp = getDiagramTypeProvider().getFeatureProvider();
+        PictogramElement pe = MarkerUtils.getContainerShape(fp, marker);
+		
+        if (pe!=null)
+        	selectPictogramElements(new PictogramElement[] {pe});
+        if (pe == null || PropertyUtil.getPropertySheetView() == null) {
+			ObjectEditingDialog dialog = new ObjectEditingDialog(this, target);
+			ObjectEditingDialog.openWithTransaction(dialog);
         }
-        selectPictogramElements(new PictogramElement[] {pe });
     }
 
     private void loadMarkers() {
@@ -716,15 +723,6 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	            Activator.logStatus(e.getStatus());
 	        }
     	}
-    }
-    
-    private EObject getTargetObject(IMarker marker) {
-        final String uriString = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-        final URI uri = uriString == null ? null : URI.createURI(uriString);
-        if (uri == null) {
-            return null;
-        }
-        return getEditingDomain().getResourceSet().getEObject(uri, false);
     }
 
 	private void removeWorkbenchListener()

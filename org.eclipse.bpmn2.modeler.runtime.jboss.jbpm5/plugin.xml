@@ -5,7 +5,7 @@
    <extension point="org.eclipse.emf.ecore.generated_package">
       <package
             class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage"
-            genModel="model/jBPM5Extensions.genmodel"
+            genModel="model/drools.genmodel"
             uri="http://www.jboss.org/drools">
       </package>
    </extension>
@@ -216,6 +216,16 @@
 			label="%propertyTab.label.Simulation">
 		</propertyTab>
 
+		<propertyTab
+			id="org.jboss.runtime.jbpm5.globaltype.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.itemawareelement.tab"
+			afterTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="default"
+			features="identifier type"
+			label="Global Variable"
+			type="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType">
+		</propertyTab>
+
 <!-- Property Extension Adapters -->
 
 		<propertyExtension
@@ -345,6 +355,13 @@
 			runtimeId="org.jboss.runtime.jbpm5"
 			type="org.eclipse.bpmn2.Signal"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmSignalPropertiesAdapter">
+		</propertyExtension>
+		
+		<propertyExtension
+			id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.propertyExtension.MultiInstanceLoopCharacteristics"
+			runtimeId="org.jboss.runtime.jbpm5"
+			type="org.eclipse.bpmn2.MultiInstanceLoopCharacteristics"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.adapters.JbpmMultiInstanceLoopCharacteristicsPropertiesAdapter">
 		</propertyExtension>
 		
 <!-- Graphiti Feature Container Overrides -->
@@ -991,7 +1008,7 @@
 			<enable object="DataInput" feature="name"/>
 			<enable object="DataOutput" feature="name"/>
 			<enable object="EndEvent" feature="eventDefinitions"/>
-			<enable object="EndEvent" feature="inputSet"/>
+			<enable object="EndEvent" feature="name"/>
 			<enable object="ExclusiveGateway" feature="default"/>
 			<enable object="ExclusiveGateway" feature="gatewayDirection"/>
 			<enable object="ExclusiveGateway" feature="id"/>
@@ -1211,6 +1228,7 @@
 		<serviceImplementation name="Java" uri="Java"/>
 		<serviceImplementation name="SwitchYard Service" uri="##SwitchYard"/>
 		<serviceImplementation name="Web Service" uri="##WebService"/>
+		<serviceImplementation name="Unspecified" uri="##unspecified"/>
 		
 	</extension>
 
@@ -1222,126 +1240,151 @@
     </imageProvider>
  </extension>
 	
- <extension
-         point="org.eclipse.emf.validation.constraintProviders">
-      <category
-            name="%category.name.20"
-            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory"/>
+   <extension point="org.eclipse.emf.validation.constraintProviders">
+      <!-- These constraints override the ones in BPMN2 Modeler Core Validation -->
       <constraintProvider cache="true">
          <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
-         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
+         <constraints categories="org.eclipse.bpmn2.modeler.core.validation.category.override">
+
+            <!-- Live Validation Constraints -->
             <constraint
                   lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessConstraint"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Live"
+                  name="Definitions"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Definitions"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="Definitions"/>
+            </constraint>
+
+            <!-- Batch Validation Constraints -->
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
                   severity="ERROR"
                   mode="Batch"
-                  name="%constraint.name"
+                  name="Process"
                   id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Process"
                   statusCode="1">
-               <description>
-                  %constraint.description
-               </description>
-               <message>
-                  %constraint.message
-               </message>
+               <message>{0}</message>
                <target class="Process"/>
             </constraint>
             <constraint
                   lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.BusinessRuleTaskConstraint"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
                   severity="ERROR"
                   mode="Batch"
-                  name="%constraint.name.0"
+                  name="Signal"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Signal"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="Signal"/>
+            </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Escalation"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Escalation"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="Escalation"/>
+            </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Global Type"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.GlobalType"
+                  statusCode="1">
+               <message>{0}</message>
+               <!-- Note use of namespace URI to qualify GlobalType -->
+               <target class="GlobalType:http://www.jboss.org/drools"/>
+            </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Data Input Association"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataInputAssociation"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="DataInputAssociation"/>
+            </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Data Output Association"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataOutputAssociation"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="DataOutputAssociation"/>
+            </constraint>
+         </constraints>
+      </constraintProvider>
+            
+      <category
+            name="%category.name.20"
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category"/>
+      <!-- These constraints are in addition to the ones in BPMN2 Modeler Core Validation -->
+      <constraintProvider cache="true">
+         <package namespaceUri="http://www.omg.org/spec/BPMN/20100524/MODEL-XMI"/>
+         <constraints categories="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category">
+            
+            <!-- Live Validation Constraints -->
+			<constraint
+					class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessVariableNameConstraint"
+					id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.VariableName"
+					lang="Java"
+					mode="Live"
+					name="Variable Name"
+					severity="ERROR"
+					statusCode="1">
+				<message>{0}</message>
+				<target class="BaseElement"/>
+			</constraint>
+
+            <!-- Batch Validation Constraints -->
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Business Rule Task"
                   id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.BusinessRuleTask"
                   statusCode="1">
-               <description>
-                  %constraint.description.0
-               </description>
-               <message>
-                  %constraint.message.0
-               </message>
+               <message>{0}</message>
                <target class="BusinessRuleTask"/>
             </constraint>
             <constraint
                   lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.UserTaskConstraint"
-                  severity="WARNING"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
                   mode="Batch"
-                  name="%constraint.name.1"
+                  name="User Task"
                   id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.UserTask"
                   statusCode="1">
-               <description>
-                  %constraint.description.1
-               </description>
-               <message>
-                  %constraint.message.1
-               </message>
+               <message>{0}</message>
                <target class="UserTask"/>
             </constraint>
             <constraint
                   lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.TaskConstraint"
-                  severity="WARNING"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
                   mode="Batch"
-                  name="%constraint.name.2"
-                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Task"
-                  statusCode="1">
-               <description>
-                  %constraint.description.2
-               </description>
-               <message>
-                  %constraint.message.2
-               </message>
-               <target class="Task"/>
-            </constraint>
-            <constraint
-                  lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.GatewayConstraint"
-                  severity="WARNING"
-                  mode="Batch"
-                  name="%constraint.name.3"
-                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Gateway"
-                  statusCode="1">
-               <description>
-                  %constraint.description.3
-               </description>
-               <message>
-                  %constraint.message.3
-               </message>
-               <target class="Gateway"/>
-            </constraint>
-            <constraint
-                  lang="Java"
-                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.CallActivityConstraint"
-                  severity="WARNING"
-                  mode="Batch"
-                  name="%constraint.name.4"
+                  name="Call Activity"
                   id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.CallActivity"
                   statusCode="1">
-               <description>
-                  %constraint.description.4
-               </description>
-               <message>
-                  %constraint.message.4
-               </message>
+               <message>{0}</message>
                <target class="CallActivity"/>
             </constraint>
-			<constraint
-					class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ProcessVariableNameConstraint"
-					id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.VariableName"
-					isEnabledByDefault="true"
-					lang="Java"
-					mode="Live"
-					name="%constraint.name.5"
-					severity="INFO"
-					statusCode="1">
-				<message>%constraint.message.5</message>
-				<description>%constraint.description.5</description>
-				<target class="BaseElement"/>
-				<target class="Property"/>
-				<target class="Message"/>
-				<target class="DataObject"/>
-			</constraint>
          </constraints>
       </constraintProvider>
    </extension>
@@ -1350,7 +1393,7 @@
          point="org.eclipse.emf.validation.constraintBindings">
       <clientContext
             default="false"
-            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext">
+            id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.context">
          <enablement>
          	<test
                 property="org.eclipse.bpmn2.modeler.property.targetRuntimeId"
@@ -1358,8 +1401,8 @@
          </enablement>
       </clientContext>
       <binding
-            context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationContext"
-            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validationCategory">
+            context="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.context"
+            category="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.category">
       </binding>
    </extension>
   

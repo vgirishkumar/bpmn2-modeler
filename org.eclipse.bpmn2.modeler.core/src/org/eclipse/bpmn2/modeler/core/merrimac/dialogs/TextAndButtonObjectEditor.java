@@ -34,9 +34,9 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 
-	protected static int ID_DEFAULT_BUTTON = 0;
-	protected static int ID_ADD_BUTTON = 1;
-	protected static int ID_REMOVE_BUTTON = 2;
+	protected static int ID_DEFAULT_BUTTON = ID_OTHER_BUTTONS+0;
+	protected static int ID_ADD_BUTTON = ID_OTHER_BUTTONS+1;
+	protected static int ID_REMOVE_BUTTON = ID_OTHER_BUTTONS+2;
 	
 	protected Button defaultButton;
 	protected Button addButton;
@@ -125,6 +125,21 @@ public abstract class TextAndButtonObjectEditor extends TextObjectEditor {
 		}
 	}
 
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (defaultButton!=null && !defaultButton.isDisposed()) {
+			defaultButton.setVisible(visible);
+		}
+		if (addButton!=null && !addButton.isDisposed()) {
+			addButton.setVisible(visible);
+		}
+		if (removeButton!=null && !removeButton.isDisposed()) {
+			removeButton.setVisible(visible);
+		}
+		text.getParent().pack();
+		text.getParent().layout();
+	}
+	
 	/**
 	 * The implementation must override this to handle the "Edit..." button click.
 	 * @param buttonId TODO

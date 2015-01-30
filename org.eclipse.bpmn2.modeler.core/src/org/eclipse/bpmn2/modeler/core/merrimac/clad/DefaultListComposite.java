@@ -26,6 +26,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -63,10 +66,10 @@ public class DefaultListComposite extends AbstractListComposite {
 		if (!(list instanceof EObjectContainmentEList)) {
 			// this is not a containment list so we can't add it
 			// because we don't know where the new object belongs
-			
+			String name = object.eClass().getName() + "." +feature.getName(); //$NON-NLS-1$
 			MessageDialog.openError(getShell(), Messages.DefaultListComposite_Internal_Error_Title,
 				NLS.bind(Messages.DefaultListComposite_Error_Internal_Error_Message_No_List,
-					listItemClass.getName())
+					name)
 			);
 			return null;
 		}
@@ -137,6 +140,13 @@ public class DefaultListComposite extends AbstractListComposite {
 		EObject selected = null;
 		if (index<map.length-1)
 			selected = list.get(map[index+1]);
+		EObject removed = list.get(map[index]);
+		Diagram diagram = getDiagramEditor().getDiagramTypeProvider().getDiagram();
+		for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, removed)) {
+			if (pe.getLink()!=null) {
+				pe.getLink().getBusinessObjects().remove(removed);
+			}
+		}
 		list.remove(map[index]);
 		return selected;
 	}

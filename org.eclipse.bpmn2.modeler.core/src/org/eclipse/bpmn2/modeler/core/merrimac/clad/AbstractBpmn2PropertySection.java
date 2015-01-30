@@ -148,7 +148,16 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * @return the TabbedPropertySheetPage that owns this section.
 	 */
 	public TabbedPropertySheetPage getTabbedPropertySheetPage() {
-		return tabbedPropertySheetPage;
+		/**
+		 * Check if the Tabbed Property Sheet Page is still alive. This prevents SWT
+		 * widget disposed errors during a stray refresh attempt when the editor is
+		 * shutting down.
+		 */
+		if (tabbedPropertySheetPage!=null
+					&& tabbedPropertySheetPage.getControl()!=null
+					&& !tabbedPropertySheetPage.getControl().isDisposed())
+			return tabbedPropertySheetPage;
+		return null;
 	}
 
 	/**
@@ -178,7 +187,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	protected abstract AbstractDetailComposite createSectionRoot();
 	public abstract AbstractDetailComposite createSectionRoot(Composite parent, int style);
-	protected abstract EObject getBusinessObjectForSelection(ISelection selection);
+	public abstract EObject getBusinessObjectForSelection(ISelection selection);
 	
 	/* (non-Javadoc)
 	 * Yet another ugly hack: this restores the current property sheet page parent
@@ -201,20 +210,22 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 */
 	@Override
 	public void refresh() {
-		EObject be = getBusinessObjectForSelection(getSelection());
-		
-		if (be!=null) {
-			AbstractDetailComposite sectionRoot = getSectionRoot();
-			if (sectionRoot!=null) {
-				if (sectionRoot.getBusinessObject() != be) {
-					sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
-					if (!parent.isLayoutDeferred())
-						parent.setLayoutDeferred(true);
-					sectionRoot.setBusinessObject(be);
-					if (parent.isLayoutDeferred())
-						parent.setLayoutDeferred(false);
+		if (getTabbedPropertySheetPage()!=null) {
+			EObject be = getBusinessObjectForSelection(getSelection());
+			
+			if (be!=null) {
+				AbstractDetailComposite sectionRoot = getSectionRoot();
+				if (sectionRoot!=null) {
+					if (sectionRoot.getBusinessObject() != be) {
+						sectionRoot.setDiagramEditor((DiagramEditor) getDiagramEditor());
+						if (!parent.isLayoutDeferred())
+							parent.setLayoutDeferred(true);
+						sectionRoot.setBusinessObject(be);
+						if (parent.isLayoutDeferred())
+							parent.setLayoutDeferred(false);
+					}
+					sectionRoot.refresh();
 				}
-				sectionRoot.refresh();
 			}
 		}
 	}
@@ -229,9 +240,11 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	 * Force a layout of the property sheet page.
 	 */
 	public void layout() {
-		Composite composite = (Composite)tabbedPropertySheetPage.getControl();
-		composite.layout(true);
-		tabbedPropertySheetPage.resizeScrolledComposite();
+		if (getTabbedPropertySheetPage()!=null) {
+			Composite composite = (Composite)tabbedPropertySheetPage.getControl();
+			composite.layout(true);
+			tabbedPropertySheetPage.resizeScrolledComposite();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -244,6 +257,9 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 
 	/* (non-Javadoc)
 	 * Override this to allow the section to decide whether or not it will be rendered.
+	 * Subclasses MUST call this method because it sets the DiagramEditor as a side effect
+	 * and checks if the selected business object is enabled in the Tool Profile.
+	 * 
 	 * @see org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection#appliesTo(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
 	 */
 	@Override
@@ -257,7 +273,9 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		editor = (DiagramEditor)part.getAdapter(DiagramEditor.class);
 		
 		if (editor!=null) {
-			return true;
+			EObject be = getBusinessObjectForSelection(selection);
+			if (be!=null)
+				return isModelObjectEnabled(be);
 		}
 		return false;
 	}

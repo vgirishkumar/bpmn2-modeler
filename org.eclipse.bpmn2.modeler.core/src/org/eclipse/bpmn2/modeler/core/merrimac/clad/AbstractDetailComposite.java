@@ -13,10 +13,12 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
+import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.AbstractObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
@@ -31,6 +33,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -433,13 +436,30 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 			if (label==null)
 				label = getPropertiesProvider().getLabel(object, attribute);
 			
-			Class eTypeClass = attribute.getEType().getInstanceClass();
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+			if (adapter!=null) {
+				Object o = adapter.getProperty(attribute,ExtendedPropertiesAdapter.UI_OBJECT_EDITOR_CLASS);
+				if (o instanceof Class) {
+					try {
+						Constructor ctor = ((Class)o).getConstructor(AbstractDetailComposite.class,EObject.class,EStructuralFeature.class);
+						ObjectEditor editor = (ObjectEditor) ctor.newInstance(this,object,attribute);
+						editor.createControl(parent,label);
+						// success!
+						return;
+					} catch (Exception e) {
+						// otherwise fall through and create a default ObjectEditor...
+						e.printStackTrace();
+					}
+				}
+			}
+			EClassifier eTypeClassifier = attribute.getEType();
+			Class eTypeClass = eTypeClassifier.getInstanceClass();
 			if (ModelUtil.isMultiChoice(object, attribute)) {
 				ObjectEditor editor = new ComboObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 			}
 			else if (String.class.equals(eTypeClass)) {
-				TextObjectEditor editor = new TextObjectEditor(this,object,attribute);
+				ObjectEditor editor = new TextObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 				if (attribute.getName().equals("id"))
 					editor.setEditable(false);

@@ -87,17 +87,6 @@ public class TextObjectEditor extends ObjectEditor {
 					setValue(text.getText());
 			}
 		});
-		text.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
-			}
-		});
 
 		// ask the object if this feature is read-only
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
@@ -114,14 +103,6 @@ public class TextObjectEditor extends ObjectEditor {
 		testMultiLine = false;
 		this.multiLine = multiLine;
 
-	}
-	
-	public void setEditable(boolean editable) {
-		text.setEditable(editable);
-		text.setEditable(editable);
-		text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-		text.setForeground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-		text.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
 	}
 	
 	@Override
@@ -229,6 +210,7 @@ public class TextObjectEditor extends ObjectEditor {
 		text.setVisible(visible);
 		GridData data = (GridData)text.getLayoutData();
 		data.exclude = !visible;
+		text.getParent().redraw();
 	}
 	
 	public void dispose() {

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.validation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -18,14 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
+import org.eclipse.bpmn2.modeler.core.utils.MarkerUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -51,7 +48,7 @@ public class BPMN2ValidationStatusLoader {
         }
         Set<EObject> touched = new LinkedHashSet<EObject>();
         for (IMarker marker : markers) {
-            for (EObject markedObject : getAllObjects(marker)) {
+            for (EObject markedObject : MarkerUtils.getAllObjects(editor.getDiagramBehavior().getResourceSet(), marker)) {
 	            if (markedObject == null) {
 	                continue;
 	            }
@@ -94,40 +91,6 @@ public class BPMN2ValidationStatusLoader {
             }
         }
         return touched;
-    }
-    
-    private List<EObject> getAllObjects(IMarker marker) {
-    	List<EObject> result = new ArrayList<EObject>();
-    	result.add(getTargetObject(marker));
-    	result.addAll(getRelatedObjects(marker));
-    	return result;
-    }
-
-    private List<EObject> getRelatedObjects(IMarker marker) {
-    	List<EObject> result = new ArrayList<EObject>();
-    	String targetUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-    	String uriString = marker.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
-    	if (uriString!=null) {
-    		String[] uris = uriString.split(" ");
-    		for (String s : uris) {
-    			if (s.equals(targetUri))
-    				continue;
-    	        URI uri = URI.createURI(s);
-    	        EObject o = editor.getEditingDomain().getResourceSet().getEObject(uri, false);
-    	        if (!(o instanceof EStructuralFeature))
-    	        	result.add(o);
-    		}
-    	}
-    	return result;
-    }
-    
-    private EObject getTargetObject(IMarker marker) {
-        final String uriString = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
-        final URI uri = uriString == null ? null : URI.createURI(uriString);
-        if (uri == null) {
-            return null;
-        }
-        return editor.getEditingDomain().getResourceSet().getEObject(uri, false);
     }
 
     @SuppressWarnings("unchecked")

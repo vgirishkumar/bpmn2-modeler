@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaVariableNameObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
@@ -47,6 +48,7 @@ public class JbpmGlobalTypePropertiesAdapter extends ExtendedPropertiesAdapter<G
 					return Messages.JbpmGlobalTypePropertiesAdapter_Name;
 				}
     		});	
+		setProperty(feature, UI_OBJECT_EDITOR_CLASS, JavaVariableNameObjectEditor.class);
 
     	feature = DroolsPackage.eINSTANCE.getGlobalType_Type();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);

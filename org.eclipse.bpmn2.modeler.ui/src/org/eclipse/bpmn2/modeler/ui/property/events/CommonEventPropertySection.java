@@ -38,7 +38,7 @@ public class CommonEventPropertySection extends DefaultPropertySection implement
 	}
 
 	@Override
-	protected EObject getBusinessObjectForSelection(ISelection selection) {
+	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
 		if (be instanceof Event)
 			return be;

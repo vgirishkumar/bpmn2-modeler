@@ -26,8 +26,6 @@ import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
 public class FeatureEditingDialog extends ObjectEditingDialog {
 
@@ -70,6 +68,8 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 			else if (feature.getEType() instanceof EClass)
 				featureEType = (EClass)feature.getEType();
 		}
+		if (newObject==null)
+			cancel = true;
 		
 		if (cancel) {
 			rollbackTransaction();
@@ -79,15 +79,8 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 		}
 	}
 	
-	protected Composite createDialogContent(Composite parent) {
-		Composite content = PropertiesCompositeFactory.INSTANCE.createDetailComposite(
-				featureEType.getInstanceClass(), parent, SWT.NONE);
-		return content;
-	}
-	
 	protected EObject createNewObject(final EObject object, final EStructuralFeature feature, final EClass eclass) {
 		final EObject[] result = new EObject[1];
-		final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 		if (domain!=null) {
 			domain.getCommandStack().execute(new RecordingCommand(domain) {
 				@Override
@@ -132,7 +125,6 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	private void undoCreateNewObject() {
 		if (createNew && newObject!=null) {
 			ModelUtil.unsetID(newObject, object.eResource());
-			final TransactionalEditingDomain domain = (TransactionalEditingDomainImpl)editor.getEditingDomain();
 			if (domain!=null) {
 				if (domain.getCommandStack().canUndo()) {
 					domain.getCommandStack().undo();

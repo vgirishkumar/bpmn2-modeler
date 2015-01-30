@@ -70,6 +70,9 @@ public class NCNameObjectEditor extends TextObjectEditor {
 					return;
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isNCName(s);
+				if (!e.doit) {
+					showErrorMessage("The character '"+e.text+"' is not valid");
+				}
 			}
 		});
 
@@ -87,18 +90,6 @@ public class NCNameObjectEditor extends TextObjectEditor {
 			}
 		});
 
-		
-		text.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
-			}
-		});
 
 		return text;
 	}

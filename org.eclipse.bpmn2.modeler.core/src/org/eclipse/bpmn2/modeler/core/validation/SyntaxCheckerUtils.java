@@ -53,8 +53,8 @@ public class SyntaxCheckerUtils {
 		// Check the rest of the characters
 		for (int i = 1; i < nameLength; i++) {
 			c = name.charAt(i);
-			if (Character.isWhitespace(c))
-				continue;
+//			if (Character.isWhitespace(c))
+//				continue;
 			if (!isNCNameChar(c)) {
 				c = '_';
 			}
@@ -68,13 +68,73 @@ public class SyntaxCheckerUtils {
 				|| _isNonAsciiDigit(c) || isIdeographic(c) || isCombiningChar(c) || isExtender(c);
 	}
 
+	public static final boolean isJavaIdentifier(String name) {
+		if (name==null || name.isEmpty())
+			return false;
+		
+		int nameLength = name.length();
+
+		// Check first character
+		char c = name.charAt(0);
+
+		if (Character.isJavaIdentifierStart(c)) {
+			// Check the rest of the characters
+			for (int i = 1; i < nameLength; i++) {
+				c = name.charAt(i);
+				if (!Character.isJavaIdentifierPart(c)) {
+					return false;
+				}
+			}
+
+			// All characters have been checked
+			return true;
+		}
+
+		return false;
+	}
+
+	public static final String toJavaIdentifier(String name) {
+		if (name==null || name.isEmpty())
+			return "_"; //$NON-NLS-1$
+		
+		StringBuffer ncname = new StringBuffer();
+		int nameLength = name.length();
+
+		// Check first character
+		char c = name.charAt(0);
+
+		if (Character.isJavaIdentifierStart(c))
+			ncname.append(c);
+		else
+			ncname.append('_');
+		// Check the rest of the characters
+		for (int i = 1; i < nameLength; i++) {
+			c = name.charAt(i);
+			if (!Character.isJavaIdentifierPart(c)) {
+				c = '_';
+			}
+			ncname.append(c);
+		}
+		return ncname.toString();
+	}
+
+	public static boolean isJavaPackageName(String name) {
+		if (name==null || name.isEmpty())
+			return false;
+		for (String part : name.split("\\.")) {
+			if (!isJavaIdentifier(part))
+				return false;
+		}
+		return true;
+	}
+
 	public static final boolean isLetter(char c) {
 		return _isAsciiBaseChar(c) || _isNonAsciiBaseChar(c) || isIdeographic(c);
 	}
 
 	public static final String toXMLString(String string) {
 		if (string==null || string.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		
 		StringBuffer xmlString = new StringBuffer();
 		int stringLength = string.length();
@@ -82,15 +142,15 @@ public class SyntaxCheckerUtils {
 		for (int i = 0; i < stringLength; i++) {
 			char c = string.charAt(i);
 			if (c == '"')
-				xmlString.append("&quot;");
+				xmlString.append("&quot;"); //$NON-NLS-1$
 			else if (c == '&')
-				xmlString.append("&amp;");
+				xmlString.append("&amp;"); //$NON-NLS-1$
 			else if (c == '\'')
-				xmlString.append("&apos;");
+				xmlString.append("&apos;"); //$NON-NLS-1$
 			else if (c == '<')
-				xmlString.append("&lt;");
+				xmlString.append("&lt;"); //$NON-NLS-1$
 			else if (c == '>')
-				xmlString.append("&gt;");
+				xmlString.append("&gt;"); //$NON-NLS-1$
 			else
 				xmlString.append(c);
 		}
@@ -99,7 +159,7 @@ public class SyntaxCheckerUtils {
 
 	public static final String fromXMLString(String xmlString) {
 		if (xmlString==null || xmlString.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		
 		StringBuffer string = new StringBuffer();
 		int stringLength = xmlString.length();
@@ -110,15 +170,15 @@ public class SyntaxCheckerUtils {
 				int si = xmlString.indexOf(';', i);
 				if (si>0) {
 					String ss = xmlString.substring(i, si);
-					if ("&quot".equals(ss))
+					if ("&quot".equals(ss)) //$NON-NLS-1$
 						c = '"';
-					else if ("&amp".equals(ss))
+					else if ("&amp".equals(ss)) //$NON-NLS-1$
 						c = '&';
-					else if ("&apos".equals(ss))
+					else if ("&apos".equals(ss)) //$NON-NLS-1$
 						c = '\'';
-					else if ("&lt".equals(ss))
+					else if ("&lt".equals(ss)) //$NON-NLS-1$
 						c = '<';
-					else if ("&gt".equals(ss))
+					else if ("&gt".equals(ss)) //$NON-NLS-1$
 						c = '>';
 					else
 						si = -1;

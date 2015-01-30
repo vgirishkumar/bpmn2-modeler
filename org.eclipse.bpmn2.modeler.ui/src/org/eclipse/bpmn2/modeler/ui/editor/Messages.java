@@ -13,6 +13,7 @@ public class Messages extends NLS {
 	public static String DesignEditor_Diagram_Tab;
 	public static String DesignEditor_Hide_Source_View_Action;
 	public static String DesignEditor_Show_Source_View_Action;
+	public static String DesignEditor_Show_Property_View_Action;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

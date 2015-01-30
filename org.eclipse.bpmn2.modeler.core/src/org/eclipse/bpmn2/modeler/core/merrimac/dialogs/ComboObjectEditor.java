@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IConstants;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -156,17 +155,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				createButton.setImage( Activator.getDefault().getImage(IConstants.ICON_ADD_20));
 				createButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
-						// create a new target object
-						try {
-							EObject value = createObject();
-							setValue(value);
-							fillCombo();
-						}
-						catch (OperationCanceledException ex1) {
-						}
-						catch (Exception ex2) {
-							Activator.logError(ex2);
-						}
+						buttonClicked(ID_CREATE_BUTTON);
 					}
 				});
 			}
@@ -174,27 +163,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			editButton.setImage( Activator.getDefault().getImage(IConstants.ICON_EDIT_20));
 			editButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					ISelection selection = comboViewer.getSelection();
-					if (selection instanceof StructuredSelection) {
-						String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
-						if ((firstElement != null && firstElement.isEmpty())) {
-							// nothing to edit
-							firstElement = null;
-						}
-						if (firstElement != null && comboViewer.getData(firstElement) instanceof EObject) {
-							EObject value = (EObject) comboViewer.getData(firstElement);
-							try {
-								value = editObject(value);
-								setValue(value);
-								fillCombo();
-							}
-							catch (OperationCanceledException ex1) {
-							}
-							catch (Exception ex2) {
-								Activator.logError(ex2);
-							}
-						}
-					}
+					buttonClicked(ID_EDIT_BUTTON);
 				}
 			});
 			editButton.setEnabled(canEdit());
@@ -228,6 +197,45 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		});
 		
 		return combo;
+	}
+	
+	protected void buttonClicked(int buttonId) {
+		if (buttonId==ID_CREATE_BUTTON) {
+			// create a new target object
+			try {
+				EObject value = createObject();
+				setValue(value);
+				fillCombo();
+			}
+			catch (OperationCanceledException ex1) {
+			}
+			catch (Exception ex2) {
+				Activator.logError(ex2);
+			}
+		}
+		else if (buttonId==ID_EDIT_BUTTON) {
+			ISelection selection = comboViewer.getSelection();
+			if (selection instanceof StructuredSelection) {
+				String firstElement = (String) ((StructuredSelection) selection).getFirstElement();
+				if ((firstElement != null && firstElement.isEmpty())) {
+					// nothing to edit
+					firstElement = null;
+				}
+				if (firstElement != null && comboViewer.getData(firstElement) instanceof EObject) {
+					EObject value = (EObject) comboViewer.getData(firstElement);
+					try {
+						value = editObject(value);
+						setValue(value);
+						fillCombo();
+					}
+					catch (OperationCanceledException ex1) {
+					}
+					catch (Exception ex2) {
+						Activator.logError(ex2);
+					}
+				}
+			}
+		}
 	}
 	
 	protected EObject createObject() throws Exception {
@@ -388,7 +396,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		if (notification.getEventType() == -1 || itemsChanged()) {
+		if ((notification.getEventType() == -1 || notification.getFeature()==feature) && itemsChanged()) {
 			fillCombo();
 		}
 	}

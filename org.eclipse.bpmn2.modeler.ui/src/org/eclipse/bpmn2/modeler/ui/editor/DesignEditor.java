@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Activator;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -434,6 +435,30 @@ public class DesignEditor extends BPMN2Editor {
 			}
 		};
 		registry.registerAction(action);
+		
+		action = new WorkbenchPartAction(multipageEditor.getDesignEditor()) {
+
+			@Override
+			protected void init() {
+				super.init();
+				setId("show.property.view"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getText() {
+				return Messages.DesignEditor_Show_Property_View_Action;
+			}
+
+			@Override
+			protected boolean calculateEnabled() {
+				return true;
+			}
+
+			public void run() {
+				PropertyUtil.showPropertySheetView();
+			}
+		};
+		registry.registerAction(action);
 	}
 
 	public class AddRemoveDiagramListener implements ResourceSetListener {
@@ -524,12 +549,14 @@ public class DesignEditor extends BPMN2Editor {
 						}
 						for (int i=0; i<multipageEditor.getPageCount(); ++i) {
 							BPMNDiagram bpmnDiagram = multipageEditor.getBpmnDiagram(i);
-							if (bpmnDiagram == notifier) {
+							if (bpmnDiagram!=null) {
+								if (bpmnDiagram==notifier || bpmnDiagram.getPlane().getBpmnElement() == notifier) {
 								CTabItem item = multipageEditor.getTabItem(i);
 								String text = n.getNewStringValue();
 								if (text==null || text.isEmpty())
 									text = "Unnamed"; //$NON-NLS-1$
 								item.setText(text);
+								}
 							}
 						}
 					}

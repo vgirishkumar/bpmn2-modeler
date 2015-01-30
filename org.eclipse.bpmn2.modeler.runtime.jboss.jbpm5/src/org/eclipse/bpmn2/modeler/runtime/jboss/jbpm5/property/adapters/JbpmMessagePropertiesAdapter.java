@@ -14,9 +14,10 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.Message;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaVariableNameObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
-import org.eclipse.bpmn2.modeler.ui.adapters.properties.MessagePropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.MessagePropertiesAdapter;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -41,6 +42,9 @@ public class JbpmMessagePropertiesAdapter extends MessagePropertiesAdapter {
     		}
 	
     	});
+
+		feature = Bpmn2Package.eINSTANCE.getMessage_Name();
+		setProperty(feature, UI_OBJECT_EDITOR_CLASS, JavaVariableNameObjectEditor.class);
 	}
 
 }

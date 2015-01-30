@@ -11,6 +11,8 @@
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
@@ -634,9 +636,12 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 						public void createBindings(EObject be) {
 							ObjectEditor editor = new ComboObjectEditor(this,object,reference, PACKAGE.getDataInput());
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Data_Label);
-							EStructuralFeature f = PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem();
-							editor = new DataInputOutputItemEditor(lc,f);
-							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Parameter_Label);
+							DataInput input = lc.getInputDataItem();
+							if (input==null) {
+								input = (DataInput) createModelObject(DataInput.class);
+								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem(), input);
+							}
+							bindAttribute(getAttributesParent(), input, PACKAGE.getDataInput_Name(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Parameter_Label);
 						}
 					};
 				}
@@ -653,9 +658,12 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 						public void createBindings(EObject be) {
 							ObjectEditor editor = new ComboObjectEditor(this,object,reference);
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Data_Label);
-							EStructuralFeature f = PACKAGE.getMultiInstanceLoopCharacteristics_OutputDataItem();
-							editor = new DataInputOutputItemEditor(lc,f);
-							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Parameter_Label);
+							DataOutput output = lc.getOutputDataItem();
+							if (output==null) {
+								output = (DataOutput) createModelObject(DataOutput.class);
+								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_OutputDataItem(), output);
+							}
+							bindAttribute(getAttributesParent(), output, PACKAGE.getDataOutput_Name(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Parameter_Label);
 						}
 					};
 				}
@@ -751,38 +759,6 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 
 			};
 			return content;
-		}
-	}
-	
-	public class DataInputOutputItemEditor extends TextObjectEditor {
-		
-		MultiInstanceLoopCharacteristics milc;
-		boolean isInput;
-		
-		public DataInputOutputItemEditor(MultiInstanceLoopCharacteristics milc, EStructuralFeature feature) {
-			super(MultiInstanceLoopCharacteristicsDetailComposite.this, milc, feature);
-			
-			// The object passed in to this constructor is a MultiInstanceLoopCharacteristics
-			// but what we really want as the target for this text editor is the "name" feature
-			// of either the InputDataItem or OutputDataItem it contains (depending on @param feature).
-			// If the target object does not yet exist, create it and attach it to the MILC
-			// using an InsertionAdapter.
-			if (feature == PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem()) {
-				object = milc.getInputDataItem();
-				if (object==null) {
-					object = FACTORY.create(PACKAGE.getDataInput());
-					InsertionAdapter.add(milc, feature, object);
-				}
-				this.feature = PACKAGE.getDataInput_Name();
-			}
-			else {
-				object = milc.getOutputDataItem();
-				if (object==null) {
-					object = FACTORY.create(PACKAGE.getDataOutput());
-					InsertionAdapter.add(milc, feature, object);
-				}
-				this.feature = PACKAGE.getDataOutput_Name();
-			}
 		}
 	}
 }

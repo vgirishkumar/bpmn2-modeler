@@ -13,28 +13,37 @@
 
 package org.eclipse.bpmn2.modeler.ui.editor;
 
+import java.util.Map;
+
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
-import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapterFactory;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.commands.operations.OperationHistoryEvent;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.transaction.RollbackException;
+import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.emf.transaction.impl.EMFCommandTransaction;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
+import org.eclipse.emf.transaction.impl.TriggerCommandTransaction;
+import org.eclipse.emf.transaction.util.TriggerCommand;
 import org.eclipse.emf.workspace.IWorkspaceCommandStack;
 import org.eclipse.emf.workspace.WorkspaceEditingDomainFactory;
+import org.eclipse.emf.workspace.impl.EMFOperationTransaction;
+import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.ui.editor.DefaultUpdateBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramBehavior;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.IDiagramContainerUI;
-import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
-import org.eclipse.graphiti.ui.internal.editor.DomainModelWorkspaceSynchronizerDelegate;
 import org.eclipse.graphiti.ui.internal.editor.GFWorkspaceCommandStackImpl;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.emf.workspace.util.WorkspaceSynchronizer;
 
 /**
  * This overrides the DefaultUpdateBehavior provider class from Graphiti. This
@@ -109,14 +118,79 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 		// the Graphiti EMF Service. Here we want to substitute our own
 		// Bpmn2ModelerResourceSetImpl instead of using a ResourceSetImpl.
 		final ResourceSet resourceSet = new Bpmn2ModelerResourceSetImpl();
-		final IWorkspaceCommandStack workspaceCommandStack = new GFWorkspaceCommandStackImpl(
-				new DefaultOperationHistory());
-
+		final IWorkspaceCommandStack workspaceCommandStack = new BPMN2EditorWorkspaceCommandStack();
+		final ComposedAdapterFactory adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE); 
 		final TransactionalEditingDomainImpl editingDomain = new TransactionalEditingDomainImpl(
-				new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE),
-				workspaceCommandStack, resourceSet);
+				adapterFactory, workspaceCommandStack, resourceSet);
 		WorkspaceEditingDomainFactory.INSTANCE.mapResourceSet(editingDomain);
 		return editingDomain;
+	}
+	
+	public class BPMN2EditorWorkspaceCommandStack extends GFWorkspaceCommandStackImpl {
+
+		/**
+		 * @param history
+		 */
+		public BPMN2EditorWorkspaceCommandStack() {
+			super(new DefaultOperationHistory());
+		}
+		
+		@Override
+		public EMFCommandTransaction createTransaction(Command command, Map<?, ?> options) throws InterruptedException {
+			/*
+			 * We need to disable Live Validation after a CreateFeature
+			 * because some of the {@link CompoundCreateFeature} actions
+			 * will construct elements that are not valid until fleshed out
+			 * by the user. These errors will still be reported during Batch
+			 * Validation once the Create operation is complete.
+			 * 
+			 * If this is not done, the Create action will fail
+			 * validation and will be rolled back by Graphiti.
+			 */
+			((Map<Object,Object>)options).put(Transaction.OPTION_NO_VALIDATION, Boolean.TRUE);
+
+			EMFCommandTransaction result;
+			
+			if (command instanceof TriggerCommand) {
+				result = new TriggerCommandTransaction((TriggerCommand) command,
+						getDomain(), options);
+			} else {
+				result = new EMFOperationTransaction(command, getDomain(), options) {
+
+					/* (non-Javadoc)
+					 * @see org.eclipse.emf.transaction.impl.TransactionImpl#commit()
+					 * There is no easy way of causing a transaction rollback
+					 * in Graphiti, so we have to override the Transaction's
+					 * commit() method. An operation can set the Transaction's
+					 * status severity to {@code Status.CANCEL} anywhere along the
+					 * execution path, and the transaction will be rolled back
+					 * instead of committed (which is kinda what I had hoped to
+					 * expect anyway).
+					 */
+					@Override
+					public void commit() throws RollbackException {
+						IStatus status = getStatus();
+						if (status!=null && status.getSeverity() == Status.CANCEL) {
+							throw new RollbackException(status);
+						}
+						else
+							super.commit();
+					}
+					
+				};
+			}
+			
+			result.start();
+			
+			return result;
+		}
+
+		@Override
+		protected void handleError(Exception exception) {
+			if (!(exception instanceof RollbackException))
+				super.handleError(exception);
+		}
+		
 	}
 	
 	protected WorkspaceSynchronizer.Delegate createWorkspaceSynchronizerDelegate() {
@@ -151,4 +225,19 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 			return bpmnEditor.handleResourceMoved(resource, newURI);
 		}
 
-	}}
+	}
+
+	@Override
+	public void historyNotification(OperationHistoryEvent event) {
+		super.historyNotification(event);
+		
+		switch (event.getEventType()) {
+		case OperationHistoryEvent.REDONE:
+			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
+			break;
+		case OperationHistoryEvent.UNDONE:
+			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
+			break;
+		}
+	}
+}

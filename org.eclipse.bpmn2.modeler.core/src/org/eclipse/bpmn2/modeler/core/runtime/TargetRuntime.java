@@ -13,19 +13,17 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.AbstractPropertyChangeListenerProvider;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension2;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.features.activity.task.ICustomElementFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
@@ -39,7 +37,6 @@ import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -488,6 +485,26 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		if (serviceImplementationDescriptors==null)
 			serviceImplementationDescriptors = new ArrayList<ServiceImplementationDescriptor>();
 		return serviceImplementationDescriptors;
+	}
+	
+	/**
+	 * Notify the TargetRuntime of a LifeCycle event.
+	 * 
+	 * @param event
+	 */
+	public void notify(LifecycleEvent event) {
+		Object rte = TargetRuntime.getDefaultRuntime().getRuntimeExtension();
+		if (rte instanceof IBpmn2RuntimeExtension2)
+			((IBpmn2RuntimeExtension2)rte).notify(event);
+		if (this!=TargetRuntime.getDefaultRuntime()) {
+			for (TargetRuntime rt : targetRuntimes) {
+				if (rt.getId().equals(this.id)) {
+					rte = rt.getRuntimeExtension();
+					if (rte instanceof IBpmn2RuntimeExtension2)
+						((IBpmn2RuntimeExtension2)rte).notify(event);
+				}
+			}
+		}
 	}
 	
 	public String getName() {

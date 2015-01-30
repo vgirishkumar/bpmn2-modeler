@@ -14,13 +14,10 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -68,17 +65,6 @@ public class BooleanObjectEditor extends ObjectEditor {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 			
-		});
-		button.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				ErrorUtils.showErrorMessage(null);
-			}
 		});
 		
 		return button;

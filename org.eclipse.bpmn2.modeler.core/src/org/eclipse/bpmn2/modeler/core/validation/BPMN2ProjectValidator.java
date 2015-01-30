@@ -15,12 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
-import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.builder.BPMN2Nature;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.modeler.core.ProxyURIConverterImplExtension;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IFile;
@@ -38,15 +37,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EValidator;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.validation.marker.MarkerUtil;
 import org.eclipse.emf.validation.model.EvaluationMode;
 import org.eclipse.emf.validation.model.IConstraintStatus;
 import org.eclipse.emf.validation.service.IBatchValidator;
+import org.eclipse.emf.validation.service.IValidator;
 import org.eclipse.emf.validation.service.ModelValidationService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -79,7 +82,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         }
     	modelFile = (IFile) file;
     	try {
-			modelFile.deleteMarkers(null, false, IProject.DEPTH_INFINITE);
+			modelFile.deleteMarkers(null, true, IProject.DEPTH_INFINITE);
 		} catch (CoreException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -136,6 +139,23 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 		}
     }
 
+	/**
+	 * Perform a "Live" validation of the given model object. Errors resulting
+	 * from a Live validation should be cause to consider the model as being
+	 * corrupt and should not allow the Resource to be saved in this corrupt
+	 * state, until the issues are resolved.
+	 * 
+	 * @param object the model object to validate.
+	 * @return an IStatus object indicating the result of the validation. A
+	 *         status severity of ERROR or higher should be considered reasons
+	 *         for believing the model is corrupt.
+	 */
+    public static IStatus validateLive(EObject object) {
+		IValidator<Notification> validator = ModelValidationService.getInstance().newValidator(EvaluationMode.LIVE);
+    	Notification n = new ENotificationImpl((InternalEObject) object, 0, null, null, null, false);
+		return validator.validate(n);
+    }
+    
     public static boolean isBPMN2File(IResource resource) {
     	if (resource instanceof IFile) {
 	    	try {
@@ -146,7 +166,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 							cd.getContentType().getId());
 	    		}
 	    		String ext = file.getFileExtension();
-	    		if ("bpmn".equals(ext) || "bpmn2".equals(ext))
+	    		if ("bpmn".equals(ext) || "bpmn2".equals(ext)) //$NON-NLS-1$ //$NON-NLS-2$
 	    			return true;
 	    		
 			} catch (Exception e) {

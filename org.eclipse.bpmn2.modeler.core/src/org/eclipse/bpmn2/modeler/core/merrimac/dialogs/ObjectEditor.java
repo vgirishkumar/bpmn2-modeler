@@ -15,7 +15,6 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
@@ -23,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.utils.JavaReflectionUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -32,13 +32,17 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.validation.model.ConstraintStatus;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -52,6 +56,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * @author Bob Brodt
  */
 public abstract class ObjectEditor implements INotifyChangedListener {
+	
+	public static int ID_CREATE_BUTTON = 1;
+	public static int ID_EDIT_BUTTON = 2;
+	public static int ID_DELETE_BUTTON = 3;
+	public static int ID_OTHER_BUTTONS = 4;
+
 	protected EObject object;
 	protected EStructuralFeature feature;
 	protected AbstractDetailComposite parent;
@@ -60,6 +70,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	protected int style;
 	protected Class messages;
 	protected boolean isWidgetUpdating = false;
+	private boolean valueChanged = false;
 
 	public ObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		this.parent = parent;
@@ -86,8 +97,30 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	}
 	
 	public Control createControl(Composite composite, String label) {
-		Control c = createControl(composite,label,style);
+		final Control c = createControl(composite,label,style);
 		c.setData(IConstants.NOTIFY_CHANGE_LISTENER_KEY, this);
+		c.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				valueChanged = false;
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (valueChanged) {
+					IStatus status = parent.validate();
+					if (status.getSeverity() >= Status.ERROR) {
+						if (statusApplies(status)) {
+							MessageDialog.openError(parent.getShell(), "Validation Error", status.getMessage());
+							if (!c.isDisposed())
+								c.setFocus();
+						}
+					}
+				}
+				ErrorUtils.showErrorMessage(null);
+ 			}
+		});
 		return c; 
 	}
 	
@@ -272,6 +305,10 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		return true;
 	}
 
+	protected void showErrorMessage(String message) {
+		ErrorUtils.showErrorMessage(message);
+	}
+	
 	public abstract Object getValue();
 	
 	@Override
@@ -283,6 +320,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		label.setVisible(visible);
 		GridData data = (GridData)label.getLayoutData();
 		data.exclude = !visible;
+		updateLabelDecorator();
 	}
 	
 	public boolean isVisible() {
@@ -295,6 +333,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 			label = null;
 		}
 		if (decoration!=null) {
+    		decoration.hide();
 			decoration.dispose();
 			decoration = null;
 		}
@@ -326,5 +365,15 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 
 	protected boolean canRemove() {
 		return false;
+	}
+	
+	public void setEditable(boolean editable) {
+		Control control = getControl();
+		if (control instanceof Text) {
+			((Text)control).setEditable(editable);
+			control.setBackground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+			control.setForeground(control.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+			control.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
+		}
 	}
 }

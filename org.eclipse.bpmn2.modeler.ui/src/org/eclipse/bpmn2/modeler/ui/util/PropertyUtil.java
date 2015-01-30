@@ -17,14 +17,19 @@ import java.lang.reflect.Field;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 public class PropertyUtil {
+	
+	private static String PROPERTY_SHEET_VIEW_ID = "org.eclipse.ui.views.PropertySheet"; //$NON-NLS-1$
 
 	public static String deCamelCase(String string) {
 		return string.replaceAll("([A-Z][a-z])", " $0").substring(1); //$NON-NLS-1$ //$NON-NLS-2$
@@ -103,5 +108,38 @@ public class PropertyUtil {
 		} catch (Exception e) {
 		}
 		return null;
+	}
+
+	public static IViewReference getPropertySheetView() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		if (win==null)
+			return null;
+		IWorkbenchPage page = win.getActivePage();
+		if (page==null)
+			return null;
+		for (IViewReference vr : page.getViewReferences()) {
+			if (PROPERTY_SHEET_VIEW_ID.equals(vr.getId())) {
+				return vr;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean showPropertySheetView() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		if (win==null)
+			return false;
+		IWorkbenchPage page = win.getActivePage();
+		if (page==null)
+			return false;
+		try {
+			page.showView(PROPERTY_SHEET_VIEW_ID, null, IWorkbenchPage.VIEW_CREATE);
+			page.showView(PROPERTY_SHEET_VIEW_ID, null,  IWorkbenchPage.VIEW_ACTIVATE);
+			return true;
+		}
+		catch (Exception e) {}
+		return false;
 	}
 }
