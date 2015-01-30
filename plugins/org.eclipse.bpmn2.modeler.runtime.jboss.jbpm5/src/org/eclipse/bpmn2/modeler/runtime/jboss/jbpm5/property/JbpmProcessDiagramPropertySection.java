@@ -58,6 +58,8 @@ public class JbpmProcessDiagramPropertySection extends ProcessDiagramPropertySec
 
 		@Override
 		protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
+			if (label==null)
+				label = getBusinessObjectDelegate().getLabel(object, attribute);
 			if ("id".equals(attribute.getName())) {
 				ObjectEditor editor = new NCNameObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
