@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -59,7 +60,7 @@ public class DateTimeObjectEditor extends ReadonlyTextObjectEditor {
 		if (!(value instanceof Date)) {
 			value = new Date();
 		}
-		String title = "Select "+getLabel().getText();
+		String title = NLS.bind(Messages.DateTimeObjectEditor__Title, getLabel().getText());
 		DateTimeDialog dialog = new DateTimeDialog(getControl().getShell(), title, style);
 		dialog.setDate((Date)value);
 		if (dialog.open() == Window.OK) {
@@ -130,7 +131,7 @@ public class DateTimeObjectEditor extends ReadonlyTextObjectEditor {
 	        if (title!=null)
 	        	shell.setText(title);
 	        else
-	        	shell.setText("Select Date/Time");
+	        	shell.setText(Messages.DateTimeObjectEditor_Select_Date_Time_Title);
 	    }
 	    
 	    @Override

@@ -549,7 +549,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 								new Object[] {
 									referencedObject.eClass().getName(),
 									id,
-									ModelUtil.getLabel(referencingObject)+" \""+ModelUtil.getName((BaseElement)referencingObject)+"\"",
+									ModelUtil.getLabel(referencingObject)+" \""+ModelUtil.getName((BaseElement)referencingObject)+"\"", //$NON-NLS-1$ //$NON-NLS-2$
 									path.toString()}
 						)
 					);
@@ -694,7 +694,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 							}
 						}
 					}
-					else if (name.startsWith(XMLResource.XML_NS+":")) {
+					else if (name.startsWith(XMLResource.XML_NS+":")) { //$NON-NLS-1$
 						String prefix = name.substring(name.indexOf(':')+1);
 						String namespace = attribs.getValue(i);
 	            		NamespaceUtil.addNamespace(xmlResource, prefix, namespace);
@@ -986,8 +986,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					FeatureMap featureMap = documentRoot.getMixed();
 					if (featureMap.size()>0) {
 						// insert a comment before the Definitions node 
-						String comment = " origin at X="+(minX<0 ? minX : 0)+
-								" Y="+(minY<0 ? minY : 0)+" ";
+						String comment = " origin at X="+(minX<0 ? minX : 0)+ //$NON-NLS-1$
+								" Y="+(minY<0 ? minY : 0)+" "; //$NON-NLS-1$ //$NON-NLS-2$
 						if (featureMap.get(0).getEStructuralFeature() != XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT) {
 						    featureMap.add(0,XMLTypePackage.Literals.XML_TYPE_DOCUMENT_ROOT__COMMENT, comment);
 						}
@@ -998,8 +998,8 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 					}
 					definitions.eSetDeliver(false);
 					definitions.setExporter(Activator.PLUGIN_ID);
-					String version = Platform.getBundle(Activator.PLUGIN_ID).getHeaders().get("Bundle-Version");
-					version = version.replaceAll(".qualifier", "");
+					String version = Platform.getBundle(Activator.PLUGIN_ID).getHeaders().get("Bundle-Version"); //$NON-NLS-1$
+					version = version.replaceAll(".qualifier", ""); //$NON-NLS-1$ //$NON-NLS-2$
 					definitions.setExporterVersion(version);
         		}
         		finally {

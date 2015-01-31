@@ -50,9 +50,9 @@ public class OperationValidator extends AbstractBpmn2ElementValidator<Operation>
 	@Override
 	public IStatus validate(Operation object) {
 		if (isEmpty(object.getName()))
-			addMissingFeatureStatus(object,"name",Status.ERROR);
+			addMissingFeatureStatus(object,"name",Status.ERROR); //$NON-NLS-1$
 		if (isEmpty(object.getInMessageRef()))
-			addMissingFeatureStatus(object,"inMessageRef",Status.ERROR);
+			addMissingFeatureStatus(object,"inMessageRef",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

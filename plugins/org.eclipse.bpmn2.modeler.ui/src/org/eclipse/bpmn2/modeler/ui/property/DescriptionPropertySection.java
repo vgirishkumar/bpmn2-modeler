@@ -35,6 +35,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -149,9 +150,9 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 			}
 			if (!isModelObjectEnabled(object.eClass())) {
 				if (description==null)
-					description = "";
-				description = "*** The " + ModelUtil.toCanonicalString(object.eClass().getName()) +
-						" element is not enabled in this Tool Profile. ***\n" + description;
+					description = ""; //$NON-NLS-1$
+				description = NLS.bind(ToolTipProvider.DescriptionPropertySection_Element_Not_Enabled_Description_Prefix + description,
+						ModelUtil.toCanonicalString(object.eClass().getName()));
 			}
 			return description;
 		}
@@ -208,7 +209,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);
 				}
 				Button reset = new Button(container, SWT.PUSH);
-				reset.setText("Restore Defaults");
+				reset.setText(ToolTipProvider.DescriptionPropertySection_Restore_Defaults_Button);
 				reset.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {

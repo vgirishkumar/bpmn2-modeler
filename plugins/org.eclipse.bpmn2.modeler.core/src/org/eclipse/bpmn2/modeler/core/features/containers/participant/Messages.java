@@ -22,6 +22,9 @@ public class Messages extends NLS {
 	private Messages() {
 	}
 
+	public static String CreateParticipantReferenceFeature_Create_Pool_Reference;
+	public static String CreateParticipantReferenceFeature_Create_Pool_Reference_In_Main_Diagram;
 	public static String DirectEditParticipantFeature_Invalid_Empty;
 	public static String DirectEditParticipantFeature_Invalid_Linebreak;
+	public static String UpdateParticipantMultiplicityFeature_Participant_Multiplicity_Changed;
 }

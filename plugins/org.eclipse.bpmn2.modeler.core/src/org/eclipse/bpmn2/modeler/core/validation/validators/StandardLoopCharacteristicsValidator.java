@@ -52,7 +52,7 @@ public class StandardLoopCharacteristicsValidator extends AbstractBpmn2ElementVa
 	public IStatus validate(StandardLoopCharacteristics object) {
 		EObject resultLocus[] = new EObject[] {object.eContainer()};
 		if (isEmpty(object.getLoopCondition())) {
-			addStatus(object,resultLocus,Status.ERROR,"Loop Condition is undefined");
+			addStatus(object,resultLocus,Status.ERROR,Messages.StandardLoopCharacteristicsValidator_No_Loop_Condition);
 		}
 		return getResult();
 	}

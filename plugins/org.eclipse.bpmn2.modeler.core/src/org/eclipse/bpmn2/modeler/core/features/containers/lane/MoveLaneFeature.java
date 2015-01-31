@@ -146,7 +146,7 @@ public class MoveLaneFeature extends MoveContainerFeature {
 				// create a new Process
 				process = modelHandler.create(Process.class);
 				modelHandler.getDefinitions().getRootElements().add(process);
-				process.setName(participant.getName() + " Process");
+				process.setName(participant.getName() + Messages.MoveLaneFeature_Process_Label);
 				if (participant.eContainer() instanceof Collaboration) {
 					process.setDefinitionalCollaborationRef((Collaboration)participant.eContainer());
 				}

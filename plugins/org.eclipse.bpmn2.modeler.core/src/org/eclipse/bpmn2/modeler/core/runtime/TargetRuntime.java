@@ -898,7 +898,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			ModelDescriptor md = getModelDescriptor();
 			if (md.getEPackage() != Bpmn2Package.eINSTANCE) {
 				for (EClassifier ec : md.getEPackage().getEClassifiers()) {
-					if (ec.getName().equals("DocumentRoot"))
+					if (ec.getName().equals("DocumentRoot")) //$NON-NLS-1$
 						continue;
 					if (ec instanceof EClass) {
 						EClass eClass = (EClass)ec;

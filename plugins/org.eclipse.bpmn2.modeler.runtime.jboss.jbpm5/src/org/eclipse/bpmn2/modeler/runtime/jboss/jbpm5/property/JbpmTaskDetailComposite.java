@@ -306,7 +306,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				@Override
 				protected Composite bindFeature(EObject be, EStructuralFeature feature, EClass eItemClass) {
 					Composite composite = null;
-					if (feature!=null && "body".equals(feature.getName())) {
+					if (feature!=null && "body".equals(feature.getName())) { //$NON-NLS-1$
 						super.bindFeature(be, feature, eItemClass);
 					}
 					return composite;

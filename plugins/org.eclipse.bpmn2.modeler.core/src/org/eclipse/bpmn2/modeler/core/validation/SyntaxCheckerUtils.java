@@ -121,7 +121,7 @@ public class SyntaxCheckerUtils {
 	public static boolean isJavaPackageName(String name) {
 		if (name==null || name.isEmpty())
 			return false;
-		for (String part : name.split("\\.")) {
+		for (String part : name.split("\\.")) { //$NON-NLS-1$
 			if (!isJavaIdentifier(part))
 				return false;
 		}

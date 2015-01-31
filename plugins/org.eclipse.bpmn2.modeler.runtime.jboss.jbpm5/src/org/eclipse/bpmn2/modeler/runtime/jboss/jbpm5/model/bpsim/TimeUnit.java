@@ -26,7 +26,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	MS(0, "ms", "ms"),
+	MS(0, "ms", "ms"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>S</b></em>' literal object.
@@ -36,7 +36,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	S(1, "s", "s"),
+	S(1, "s", "s"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Min</b></em>' literal object.
@@ -46,7 +46,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	MIN(2, "min", "min"),
+	MIN(2, "min", "min"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Hour</b></em>' literal object.
@@ -56,7 +56,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	HOUR(3, "hour", "hour"),
+	HOUR(3, "hour", "hour"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Day</b></em>' literal object.
@@ -66,7 +66,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	DAY(4, "day", "day"),
+	DAY(4, "day", "day"), //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Year</b></em>' literal object.
@@ -76,7 +76,7 @@ public enum TimeUnit implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	YEAR(5, "year", "year");
+	YEAR(5, "year", "year"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	/**
 	 * The '<em><b>Ms</b></em>' literal value.

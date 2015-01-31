@@ -279,10 +279,10 @@ public class UserDistributionDataPointTypeImpl extends EObjectImpl implements Us
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (parameterValueGroup: ");
+		result.append(" (parameterValueGroup: "); //$NON-NLS-1$
 		result.append(parameterValueGroup);
-		result.append(", probability: ");
-		if (probabilityESet) result.append(probability); else result.append("<unset>");
+		result.append(", probability: "); //$NON-NLS-1$
+		if (probabilityESet) result.append(probability); else result.append("<unset>"); //$NON-NLS-1$
 		result.append(')');
 		return result.toString();
 	}

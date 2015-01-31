@@ -287,7 +287,7 @@ public class NamespaceUtil {
 			}
 		}
 		else if (object instanceof IType) {
-			namespace = "http://www.java.com/java";
+			namespace = "http://www.java.com/java"; //$NON-NLS-1$
 		}
 		return (namespace == null || namespace.isEmpty()) ? null : namespace;
 	}
@@ -299,30 +299,30 @@ public class NamespaceUtil {
 			EObject root = (EObject)object;
 			while (qualifier==null && root!=null) {
 				if (root instanceof Definition) {
-					qualifier = "wsdl";
+					qualifier = "wsdl"; //$NON-NLS-1$
 				}
 				else if (root instanceof XSDSchema) {
-					qualifier = "xsd";
+					qualifier = "xsd"; //$NON-NLS-1$
 				}
 				else if (root instanceof Definitions) {
-					qualifier = "bpmn2";
+					qualifier = "bpmn2"; //$NON-NLS-1$
 				}
 				root = root.eContainer();
 			}
 		}
 		else if (object instanceof IType) {
-			qualifier = "java";
+			qualifier = "java"; //$NON-NLS-1$
 		}
 		return qualifier;
 	}
 	
 	public static String getPrefixForObject(Resource resource, Object object) {
-		String prefix = "";
+		String prefix = ""; //$NON-NLS-1$
 		String namespace = getNamespaceForObject(object);
 		String qualifier = getQualifier(object);
 		if (namespace!=null) {
 			for (String s : getAllPrefixesForNamespace(resource, namespace)) {
-				if (s.endsWith("."+qualifier))
+				if (s.endsWith("."+qualifier)) //$NON-NLS-1$
 					return s;
 			}
 		}
@@ -331,7 +331,7 @@ public class NamespaceUtil {
 			prefix = createUniquePrefix(map, "ns"); //$NON-NLS-1$
 		}
 		if (prefix!=null) {
-			return prefix + "." + qualifier;
+			return prefix + "." + qualifier; //$NON-NLS-1$
 		}
 		return prefix;
 	}

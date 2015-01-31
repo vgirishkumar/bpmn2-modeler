@@ -41,7 +41,7 @@ public class DefinitionsValidator extends AbstractBpmn2ElementValidator<Definiti
 	@Override
 	public IStatus validate(Definitions object) {
 		if (object.getTargetNamespace()==null || object.getTargetNamespace().isEmpty()) {
-			addStatus(object, Status.ERROR, "No targetNamespace defined");
+			addStatus(object, Status.ERROR, Messages.DefinitionsValidator_No_TargetNamespace);
 		}
 		for (Import elem : object.getImports()) {
 			if (isEmpty(elem.getLocation())) {

@@ -25,9 +25,6 @@ public class Messages extends NLS {
 	/** The Abstract bpmn2 create feature_ create. */
 	public static String AbstractBpmn2CreateFeature_Create;
 	
-	/** The Abstract update base element feature_ name. */
-	public static String AbstractUpdateBaseElementFeature_Name;
-	
 	/** The BPMN diagram feature container_ disable_ enable_ description. */
 	public static String BPMNDiagramFeatureContainer_Disable_Enable_Description;
 	

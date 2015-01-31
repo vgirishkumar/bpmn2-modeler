@@ -106,11 +106,11 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 						if (EventDefinitionsUtil.hasItemDefinition((EventDefinition)result)) {
 							if (event instanceof ThrowEvent) {
 								DataInput input = ((ThrowEvent)event).getDataInputs().get(0);
-								input.setName("event");
+								input.setName("event"); //$NON-NLS-1$
 							}
 							else if  (event instanceof CatchEvent) {
 								DataOutput output = ((CatchEvent)event).getDataOutputs().get(0);
-								output.setName("event");
+								output.setName("event"); //$NON-NLS-1$
 							}
 						}
 						return result;

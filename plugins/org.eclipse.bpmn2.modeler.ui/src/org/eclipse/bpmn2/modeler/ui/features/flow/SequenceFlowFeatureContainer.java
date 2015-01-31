@@ -298,7 +298,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 			SequenceFlow defaultFlow = getDefaultFlow(flow.getSourceRef());
 			boolean isDefault = defaultFlow == null ? false : defaultFlow.equals(flow);
 			boolean changed = isDefault != new Boolean(property);
-			return changed ? Reason.createTrueReason("Default Flow") : Reason.createFalseReason();
+			return changed ? Reason.createTrueReason(Messages.SequenceFlowFeatureContainer_Default_Changed) : Reason.createFalseReason();
 		}
 
 		@Override
@@ -361,7 +361,7 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 					return Reason.createFalseReason();
 				}
 				boolean changed = flow.getConditionExpression() != null != new Boolean(property);
-				return changed ? Reason.createTrueReason("Conditional Flow") : Reason.createFalseReason();
+				return changed ? Reason.createTrueReason(Messages.SequenceFlowFeatureContainer_Conditional_Changed) : Reason.createFalseReason();
 			}
 			return Reason.createFalseReason();
 		}

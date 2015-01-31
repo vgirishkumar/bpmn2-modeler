@@ -99,10 +99,10 @@ public class MultiUpdateFeature extends AbstractUpdateFeature {
 					if (reason.toBoolean()) {
 						updateNeeded[i] = true;
 						if (text==null) {
-							text = f.getName() + ": " + reason.getText();
+							text = f.getName() + ": " + reason.getText(); //$NON-NLS-1$
 						}
 						else
-							text += "\n" + f.getName() + ": " + reason.getText(); //$NON-NLS-1$
+							text += "\n" + f.getName() + ": " + reason.getText(); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 				++i;

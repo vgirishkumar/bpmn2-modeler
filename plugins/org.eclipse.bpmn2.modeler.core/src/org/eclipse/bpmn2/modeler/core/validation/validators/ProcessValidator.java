@@ -57,14 +57,14 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 			}
 		}
 		if (!foundStartEvent) {
-			addStatus(process, Status.WARNING, "Process has no Start Event");
+			addStatus(process, Status.WARNING, Messages.ProcessValidator_No_StartEvent);
 		}
 		if (!foundEndEvent) {
-			addStatus(process, Status.WARNING, "Process has no End Event");
+			addStatus(process, Status.WARNING, Messages.ProcessValidator_No_EndEvent);
 		}
 		
 		if (isEmpty(process.getName())) {
-			addStatus(process, "name", Status.WARNING, "Process {0} has no name", process.getId());
+			addStatus(process, "name", Status.WARNING, Messages.ProcessValidator_No_Name, process.getId()); //$NON-NLS-1$
 		}
 		
 		return getResult();
@@ -72,9 +72,9 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 	
 	@Override
 	public boolean checkSuperType(EClass eClass, Process object) {
-		if ("FlowElementsContainer".equals(eClass.getName()))
+		if ("FlowElementsContainer".equals(eClass.getName())) //$NON-NLS-1$
 			return true;
-		if ("BaseElement".equals(eClass.getName()))
+		if ("BaseElement".equals(eClass.getName())) //$NON-NLS-1$
 			return true;
 		return false;
 	}

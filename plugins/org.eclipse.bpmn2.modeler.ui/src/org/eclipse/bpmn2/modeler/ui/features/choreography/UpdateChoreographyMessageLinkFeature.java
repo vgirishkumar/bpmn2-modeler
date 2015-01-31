@@ -97,14 +97,14 @@ public class UpdateChoreographyMessageLinkFeature extends AbstractUpdateBaseElem
 		String shapeIds = ChoreographyUtil.getParticipantRefIds(choreographyActivityShape);
 		String activityIds = ChoreographyUtil.getParticipantRefIds(choreographyActivity);
 		if (!shapeIds.equals(activityIds))
-			reason = Reason.createTrueReason("Participants");
+			reason = Reason.createTrueReason(Messages.UpdateChoreographyMessageLinkFeature_Participants_Changed);
 		else {
 			List<ContainerShape> bandShapes = FeatureSupport.getParticipantBandContainerShapes(choreographyActivityShape);
 			for (ContainerShape bandShape : bandShapes) {
 				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(bandShape, BPMNShape.class);
 				boolean visible = new Boolean(Graphiti.getPeService().getPropertyValue(bandShape, ChoreographyUtil.MESSAGE_VISIBLE));
 				if (bpmnShape.isIsMessageVisible() != visible) {
-					reason = Reason.createTrueReason("Message Link Visible");
+					reason = Reason.createTrueReason(Messages.UpdateChoreographyMessageLinkFeature_Message_Link_Visible_Changed);
 					break;
 				}
 			}

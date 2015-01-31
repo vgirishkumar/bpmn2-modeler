@@ -87,7 +87,7 @@ public class TextAnnotationFeatureContainer extends LabelFeatureContainer {
 			protected String getLabelString(BaseElement element) {
 				if (element instanceof TextAnnotation)
 					return ((TextAnnotation)element).getText();
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 			@Override
 			protected Rectangle getLabelBounds(PictogramElement pe, boolean isAddingLabel, Point offset) {

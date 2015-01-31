@@ -113,7 +113,7 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 	private static String getLinkName(LinkEventDefinition link) {
 		String eventName = ModelUtil.getCanonicalName(getEvent(link));
 		String linkName = link.getId();
-		return eventName + "/" + linkName;
+		return eventName + "/" + linkName; //$NON-NLS-1$
 	}
 	
 	private static Event getEvent(LinkEventDefinition link) {

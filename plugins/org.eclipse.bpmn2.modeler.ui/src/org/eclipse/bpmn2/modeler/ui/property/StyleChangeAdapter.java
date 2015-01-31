@@ -66,7 +66,7 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 		this.pictogramElement = pe;
 		for (ExtensionAttributeValue x : be.getExtensionValues()) {
 			for (Entry v : x.getValue()) {
-				if (v.getEStructuralFeature().getName().equals("style")) {
+				if (v.getEStructuralFeature().getName().equals("style")) { //$NON-NLS-1$
 					EObject style = (EObject) v.getValue();
 					style.eAdapters().add(this);
 				}
@@ -115,7 +115,7 @@ public class StyleChangeAdapter extends AdapterImpl implements IExtensionValueAd
 			Shape labelShape = FeatureSupport.getLabelShape(pictogramElement);
 			if (labelShape!=null) {
 				ga = labelShape.getGraphicsAlgorithm();
-				Graphiti.getPeService().setPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED, "true");
+				Graphiti.getPeService().setPropertyValue(labelShape, GraphitiConstants.LABEL_CHANGED, "true"); //$NON-NLS-1$
 				StyleUtil.applyStyle(ga, businessObject, ss);
 			}
 		}

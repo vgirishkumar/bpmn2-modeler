@@ -50,9 +50,9 @@ public class AssociationValidator extends AbstractBpmn2ElementValidator<Associat
 	@Override
 	public IStatus validate(Association object) {
 		if (object.getSourceRef()==null)
-			this.addStatus(object, Status.ERROR, "Association is not connected to a source element");
+			this.addStatus(object, Status.ERROR, Messages.AssociationValidator_No_Source);
 		if (object.getTargetRef()==null)
-			this.addStatus(object, Status.ERROR, "Association is not connected to a target element");
+			this.addStatus(object, Status.ERROR, Messages.AssociationValidator_No_Target);
 		return getResult();
 	}
 

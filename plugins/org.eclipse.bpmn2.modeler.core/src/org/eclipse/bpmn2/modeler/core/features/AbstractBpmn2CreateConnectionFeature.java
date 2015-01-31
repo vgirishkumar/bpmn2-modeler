@@ -87,7 +87,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
 	 */
 	public AbstractBpmn2CreateConnectionFeature(IFeatureProvider fp) {
-		super(fp, "", "");
+		super(fp, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String getCreateName() {

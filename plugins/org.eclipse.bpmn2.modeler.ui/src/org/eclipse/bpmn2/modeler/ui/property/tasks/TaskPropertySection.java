@@ -40,7 +40,7 @@ public class TaskPropertySection extends DefaultPropertySection {
 	@Override
 	public boolean appliesTo(EObject eObj) {
 		if (super.appliesTo(eObj))
-			return eObj!=null && eObj.eClass().getName().equals("Task");
+			return eObj!=null && eObj.eClass().getName().equals("Task"); //$NON-NLS-1$
 		return false;
 	}
 }

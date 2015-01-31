@@ -38,7 +38,7 @@ public class DataInputOutputDetailComposite extends ItemAwareElementDetailCompos
 
 	@Override
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
-		if (reference.getName().equals("itemSubjectRef")) {
+		if (reference.getName().equals("itemSubjectRef")) { //$NON-NLS-1$
 			String displayName = getBusinessObjectDelegate().getLabel(object, reference);
 			ObjectEditor editor = null;
 			editor = new ComboObjectEditor(this,object,reference) {

@@ -69,10 +69,10 @@ public class FlowNodeValidator extends AbstractBpmn2ElementValidator<FlowNode> {
 				// Event SubProcesses may not be connected
 				// to the rest of the Process
 				if (object.getOutgoing().size()>0) {
-					addStatus(object,"outgoing",Status.ERROR,"Event SubProcess may not have outgoing Sequence Flows");
+					addStatus(object,"outgoing",Status.ERROR,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.FlowNodeValidator_EventSubProcess_Has_Outgoing); //$NON-NLS-1$
 				}
 				if (object.getIncoming().size()>0) {
-					addStatus(object,"incoming",Status.ERROR,"Event SubProcess may not have incoming Sequence Flows");
+					addStatus(object,"incoming",Status.ERROR,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.FlowNodeValidator_EventSubProcess_Has_Incoming); //$NON-NLS-1$
 				}
 				needIncoming = false;
 				needOutgoing = false;
@@ -95,9 +95,9 @@ public class FlowNodeValidator extends AbstractBpmn2ElementValidator<FlowNode> {
 		}
 		if (Bpmn2Preferences.getInstance(object).getAllowMultipleConnections() == false) {
 			if (object.getIncoming().size()>1)
-				addStatus(object,Status.WARNING,"{0} should have only one incoming Sequence Flow",object.eClass().getName());
+				addStatus(object,Status.WARNING,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.FlowNodeValidator_Only_One_Incoming_Allowed,object.eClass().getName());
 			if (object.getOutgoing().size()>1)
-				addStatus(object,Status.WARNING,"{0} should have only one outgoing Sequence Flow",object.eClass().getName());
+				addStatus(object,Status.WARNING,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.FlowNodeValidator_Only_One_Outgoing_Allowed,object.eClass().getName());
 		}
 		return getResult();
 	}

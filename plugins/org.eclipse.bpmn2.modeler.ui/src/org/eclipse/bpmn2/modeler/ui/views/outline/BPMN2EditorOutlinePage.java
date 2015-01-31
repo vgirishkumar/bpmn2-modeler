@@ -214,8 +214,8 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		});
 
 		// Add a context menu for editing actions
-		final MenuManager contextMenu = new MenuManager("#PopUp");
-		contextMenu.add(new Separator("additions"));
+		final MenuManager contextMenu = new MenuManager("#PopUp"); //$NON-NLS-1$
+		contextMenu.add(new Separator("additions")); //$NON-NLS-1$
 		contextMenu.setRemoveAllWhenShown(true);
 		contextMenu.addMenuListener(new IMenuListener() {
 
@@ -227,7 +227,7 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 		
 		Menu menu = contextMenu.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(Activator.PLUGIN_ID+".outline", contextMenu, viewer);
+		getSite().registerContextMenu(Activator.PLUGIN_ID+".outline", contextMenu, viewer); //$NON-NLS-1$
 	}
 	
 	private void removeKeyListeners(Tree tree) {

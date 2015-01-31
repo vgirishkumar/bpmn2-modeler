@@ -26,7 +26,7 @@ public enum ResultType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	MIN(0, "min", "min"),
+	MIN(0, Messages.ResultType_0, Messages.ResultType_1),
 
 	/**
 	 * The '<em><b>Max</b></em>' literal object.
@@ -36,7 +36,7 @@ public enum ResultType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	MAX(1, "max", "max"),
+	MAX(1, Messages.ResultType_2, Messages.ResultType_3),
 
 	/**
 	 * The '<em><b>Mean</b></em>' literal object.
@@ -46,7 +46,7 @@ public enum ResultType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	MEAN(2, "mean", "mean"),
+	MEAN(2, Messages.ResultType_4, Messages.ResultType_5),
 
 	/**
 	 * The '<em><b>Count</b></em>' literal object.
@@ -56,7 +56,7 @@ public enum ResultType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	COUNT(3, "count", "count"),
+	COUNT(3, Messages.ResultType_6, Messages.ResultType_7),
 
 	/**
 	 * The '<em><b>Sum</b></em>' literal object.
@@ -66,7 +66,7 @@ public enum ResultType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	SUM(4, "sum", "sum");
+	SUM(4, Messages.ResultType_8, Messages.ResultType_9);
 
 	/**
 	 * The '<em><b>Min</b></em>' literal value.

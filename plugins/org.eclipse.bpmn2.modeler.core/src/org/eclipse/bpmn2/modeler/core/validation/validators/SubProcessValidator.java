@@ -58,18 +58,18 @@ public class SubProcessValidator extends AbstractBpmn2ElementValidator<SubProces
 			for (FlowElement fe : object.getFlowElements()) {
 				if (fe instanceof StartEvent) {
 					if (start!=null) {
-						addStatus(object,Status.ERROR,"Event SubProcess has multiple Start Events");
+						addStatus(object,Status.ERROR,Messages.SubProcessValidator_EventSubProcess_Multiple_Start);
 					}
 					start = (StartEvent) fe;
 				}
 			}
 			if (start!=null) {
 				if (start.getEventDefinitions().size()==0) {
-					addStatus(object,Status.ERROR,"Start Event of Event SubProcess has no Event Definitions");
+					addStatus(object,Status.ERROR,Messages.SubProcessValidator_EventSubProcess_No_Event);
 				}
 			}
 			else {
-				addStatus(object,Status.ERROR,"Event SubProcess has no Start Event");
+				addStatus(object,Status.ERROR,Messages.SubProcessValidator_EventSubProcess_No_Start);
 			}
 		}
 		return getResult();
@@ -77,7 +77,7 @@ public class SubProcessValidator extends AbstractBpmn2ElementValidator<SubProces
 	
 	@Override
 	public boolean checkSuperType(EClass eClass, SubProcess object) {
-		if ("FlowElementsContainer".equals(eClass.getName())) {
+		if ("FlowElementsContainer".equals(eClass.getName())) { //$NON-NLS-1$
 			if (!(object instanceof AdHocSubProcess))
 				return true;
 		}

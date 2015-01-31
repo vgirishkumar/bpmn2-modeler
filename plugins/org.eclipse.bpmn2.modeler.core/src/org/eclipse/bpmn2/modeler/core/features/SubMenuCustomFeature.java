@@ -35,7 +35,7 @@ public class SubMenuCustomFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		context.putProperty("create.feature", feature);
+		context.putProperty(GraphitiConstants.CREATE_FEATURE, feature); //$NON-NLS-1$
 		customFeature.execute(context);
 	}
 
@@ -50,6 +50,6 @@ public class SubMenuCustomFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getName() {
-		return customFeature.getName() + "/" + feature.getName();
+		return customFeature.getName() + "/" + feature.getName(); //$NON-NLS-1$
 	}
 }

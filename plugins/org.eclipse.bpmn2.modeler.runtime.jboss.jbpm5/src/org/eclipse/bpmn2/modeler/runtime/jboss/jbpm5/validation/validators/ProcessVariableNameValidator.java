@@ -60,25 +60,25 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 		String featureName = null;
 		if (object instanceof GlobalType) {
 			id = ((GlobalType) object).getIdentifier();
-			featureName = "identifier";
+			featureName = "identifier"; //$NON-NLS-1$
 		}
 		else if (object instanceof BaseElement) {
 			id = ((BaseElement) object).getId();
-			featureName = "id";
+			featureName = "id"; //$NON-NLS-1$
 		}
 
 		if (isEmpty(id)) {
-			addStatus(object, featureName, Status.ERROR, "The {0} ID can not be empty", object.eClass().getName());
+			addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Empty, object.eClass().getName());
 		}
 		else {
 			if (object instanceof Process || object instanceof ExternalProcess) {
 				if (!SyntaxCheckerUtils.isJavaPackageName(id)) {
-					addStatus(object, featureName, Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
 			}
 			else {
 				if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
-					addStatus(object, featureName, Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
 			}
 		}

@@ -70,21 +70,21 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	public final static int SS_ALL = -1;
 
 	/** Attribute names of the ShapeStyle components in the style object in BaseElement extension values **/
-	public final static String STYLE_OBJECT = "style";
-	public final static String STYLE_ECLASS = "ShapeStyle";
-	public final static String STYLE_SHAPE_FOREGROUND = "shapeForeground";
-	public final static String STYLE_SHAPE_BACKGROUND = "shapeBackground";
-	public final static String STYLE_LABEL_FONT = "labelFont";
-	public final static String STYLE_LABEL_FOREGROUND = "labelForeground";
-	public final static String STYLE_LABEL_BACKGROUND = "labelBackground";
-	public final static String STYLE_LABEL_POSITION = "labelPosition";
-	public final static String STYLE_ROUTING_STYLE = "routingStyle";
-	public final static String STYLE_USE_DEFAULT_SIZE = "useDefaultSize";
-	public final static String STYLE_DEFAULT_WIDTH = "defaultWidth";
-	public final static String STYLE_DEFAULT_HEIGHT = "defaultHeight";
+	public final static String STYLE_OBJECT = "style"; //$NON-NLS-1$
+	public final static String STYLE_ECLASS = "ShapeStyle"; //$NON-NLS-1$
+	public final static String STYLE_SHAPE_FOREGROUND = "shapeForeground"; //$NON-NLS-1$
+	public final static String STYLE_SHAPE_BACKGROUND = "shapeBackground"; //$NON-NLS-1$
+	public final static String STYLE_LABEL_FONT = "labelFont"; //$NON-NLS-1$
+	public final static String STYLE_LABEL_FOREGROUND = "labelForeground"; //$NON-NLS-1$
+	public final static String STYLE_LABEL_BACKGROUND = "labelBackground"; //$NON-NLS-1$
+	public final static String STYLE_LABEL_POSITION = "labelPosition"; //$NON-NLS-1$
+	public final static String STYLE_ROUTING_STYLE = "routingStyle"; //$NON-NLS-1$
+	public final static String STYLE_USE_DEFAULT_SIZE = "useDefaultSize"; //$NON-NLS-1$
+	public final static String STYLE_DEFAULT_WIDTH = "defaultWidth"; //$NON-NLS-1$
+	public final static String STYLE_DEFAULT_HEIGHT = "defaultHeight"; //$NON-NLS-1$
 	
-	private final static String DEFAULT_BACKGROUND = "FFFFFF";
-	private final static String DEFAULT_FOREGROUND = "000000";
+	private final static String DEFAULT_BACKGROUND = "FFFFFF"; //$NON-NLS-1$
+	private final static String DEFAULT_FOREGROUND = "000000"; //$NON-NLS-1$
 	
 	String object;
 	IColorConstant shapeBackground;
@@ -118,7 +118,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 		ARTIFACTS(Messages.ShapeStyle_Category_Other),
 		CANVAS(Messages.ShapeStyle_Category_Canvas),
 		GRID(Messages.ShapeStyle_Category_Grid),
-		NONE("");
+		NONE(""); //$NON-NLS-1$
 		
 		private String string;
 		private Category(String string) {
@@ -177,7 +177,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 
 	public ShapeStyle(IConfigurationElement e) {
 		super(e);
-		object = e.getAttribute("object");
+		object = e.getAttribute("object"); //$NON-NLS-1$
 		String shapeForeground = e.getAttribute(STYLE_SHAPE_FOREGROUND);
 		String shapeBackground = e.getAttribute(STYLE_SHAPE_BACKGROUND);
 		String labelFont = e.getAttribute(STYLE_LABEL_FONT);
@@ -417,13 +417,13 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	
 	public int getDefaultWidth() {
 		if (defaultWidth<=0) {
-			if (object.toLowerCase().contains("gateway"))
+			if (object.toLowerCase().contains("gateway")) //$NON-NLS-1$
 				return 50;
-			if (object.toLowerCase().contains("event"))
+			if (object.toLowerCase().contains("event")) //$NON-NLS-1$
 				return 36;
-			if (object.toLowerCase().contains("choreography"))
+			if (object.toLowerCase().contains("choreography")) //$NON-NLS-1$
 				return 150;
-			if (object.toLowerCase().contains("data"))
+			if (object.toLowerCase().contains("data")) //$NON-NLS-1$
 				return 36;
 			return 110;
 		}
@@ -439,13 +439,13 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	
 	public int getDefaultHeight() {
 		if (defaultHeight<=0) {
-			if (object.toLowerCase().contains("gateway"))
+			if (object.toLowerCase().contains("gateway")) //$NON-NLS-1$
 				return 50;
-			if (object.toLowerCase().contains("event"))
+			if (object.toLowerCase().contains("event")) //$NON-NLS-1$
 				return 36;
-			if (object.toLowerCase().contains("choreography"))
+			if (object.toLowerCase().contains("choreography")) //$NON-NLS-1$
 				return 150;
-			if (object.toLowerCase().contains("data"))
+			if (object.toLowerCase().contains("data")) //$NON-NLS-1$
 				return 50;
 			return 50;
 		}
@@ -538,7 +538,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 					(f.isItalic() ? "I" : "-") + "," + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					(f.isBold() ? "B" : "-") //$NON-NLS-1$ //$NON-NLS-2$
 					);
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 	
 	public static Font stringToFont(String s) {
@@ -965,7 +965,7 @@ public class ShapeStyle extends BaseRuntimeExtensionDescriptor {
 	private static Enum fromEENumLiteral(EObject element, EEnumLiteral el) {
 		try {
 			LabelPosition.values();
-			Class c = Class.forName(ShapeStyle.class.getName() + "$" + el.getEEnum().getName());
+			Class c = Class.forName(ShapeStyle.class.getName() + "$" + el.getEEnum().getName()); //$NON-NLS-1$
 			for (Enum en : (Enum[])c.getEnumConstants()) {
 				if (en.ordinal() == el.getValue())
 					return en;

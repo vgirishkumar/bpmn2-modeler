@@ -84,7 +84,7 @@ public class UpdateParticipantMultiplicityFeature extends AbstractBpmn2UpdateFea
 			hasMultiplicity = true;
 		}
 
-		return multiplicityProperty != hasMultiplicity ? Reason.createTrueReason("Participant Multiplicity") : Reason.createFalseReason();
+		return multiplicityProperty != hasMultiplicity ? Reason.createTrueReason(Messages.UpdateParticipantMultiplicityFeature_Participant_Multiplicity_Changed) : Reason.createFalseReason();
 	}
 
 	@Override

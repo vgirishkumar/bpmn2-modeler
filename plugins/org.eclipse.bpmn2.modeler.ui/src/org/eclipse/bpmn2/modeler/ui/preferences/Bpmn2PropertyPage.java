@@ -63,7 +63,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 
 		addRemoveProjectNature = new Button(container, SWT.CHECK);
 		addRemoveProjectNature.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-		addRemoveProjectNature.setText("Enable BPMN2 Project Nature");
+		addRemoveProjectNature.setText(Messages.Bpmn2PropertyPage_Enable_BPMN2_Project_Nature);
 		try {
 			if (project.getNature(BPMN2Nature.NATURE_ID)==null) {
 				addRemoveProjectNature.setSelection(false);

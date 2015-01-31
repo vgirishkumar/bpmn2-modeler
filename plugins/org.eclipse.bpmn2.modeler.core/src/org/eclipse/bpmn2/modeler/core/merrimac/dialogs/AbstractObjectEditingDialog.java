@@ -215,7 +215,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		if (transaction!=null) {
 			if (dialog.cancel) {
 				// roll back transaction if CANCEL button was pressed
-				IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "cancel");
+				IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "cancel"); //$NON-NLS-1$
 				transaction.setStatus(status);
 				result = Window.CANCEL;
 			}
@@ -224,7 +224,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 				if (cd.getObjectChanges().size()==0) {
 					// also roll back if there were no changes made even if
 					// OK button was pressed.
-					IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "no changes");
+					IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "no changes"); //$NON-NLS-1$
 					transaction.setStatus(status);
 					result = Window.CANCEL;
 				}

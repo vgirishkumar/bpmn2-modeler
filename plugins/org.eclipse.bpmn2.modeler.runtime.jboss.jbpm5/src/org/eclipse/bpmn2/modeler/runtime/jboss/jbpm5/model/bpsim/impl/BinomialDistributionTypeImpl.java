@@ -270,10 +270,10 @@ public class BinomialDistributionTypeImpl extends DistributionParameterImpl impl
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (probability: ");
-		if (probabilityESet) result.append(probability); else result.append("<unset>");
-		result.append(", trials: ");
-		if (trialsESet) result.append(trials); else result.append("<unset>");
+		result.append(" (probability: "); //$NON-NLS-1$
+		if (probabilityESet) result.append(probability); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(", trials: "); //$NON-NLS-1$
+		if (trialsESet) result.append(trials); else result.append("<unset>"); //$NON-NLS-1$
 		result.append(')');
 		return result.toString();
 	}

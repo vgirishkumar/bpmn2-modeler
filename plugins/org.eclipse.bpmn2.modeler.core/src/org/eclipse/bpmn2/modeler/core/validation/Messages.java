@@ -18,7 +18,7 @@ public class Messages extends NLS {
 	public static String BPMN2ProjectValidator_Dont_Ask_Again;
 	public static String BPMN2ProjectValidator_Invalid_File;
 	public static String BPMN2ProjectValidator_Title;
-	public static String LiveValidationListener_Title;
+	public static String ValidationStatusAdapter_Multiple_Problems_Found;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

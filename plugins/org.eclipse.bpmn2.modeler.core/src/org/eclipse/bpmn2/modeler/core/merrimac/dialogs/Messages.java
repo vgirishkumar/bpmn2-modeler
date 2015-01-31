@@ -16,10 +16,16 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.merrimac.dialogs.messages"; //$NON-NLS-1$
 	public static String AbstractObjectEditingDialog_Commit_Error;
 	public static String AbstractObjectEditingDialog_Commit_Error_Title;
+	public static String DateTimeObjectEditor__Title;
+	public static String DateTimeObjectEditor_Select_Date_Time_Title;
 	public static String FeatureEditingDialog_Create;
 	public static String FeatureEditingDialog_Edit;
 	public static String FeatureListObjectEditor_Title;
+	public static String FloatObjectEditor_Invalid_Character;
+	public static String IntObjectEditor_Invalid_Character;
+	public static String JavaVariableNameObjectEditor_Invalid_Character;
 	public static String ModelSubclassSelectionDialog_Title;
+	public static String NCNameObjectEditor_Invalid_Character;
 	public static String ObjectEditingDialog_Create;
 	public static String ObjectEditingDialog_Edit;
 	public static String ObjectEditor_No_Description;

@@ -14,8 +14,12 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.features.choreography.messages"; //$NON-NLS-1$
-	public static String UpdateChoreographyNameFeature_Name;
 	public static String ChoreographyUtil_Undefined_Message;
+	public static String UpdateChoreographyInitiatingParticipantFeature_Initiating_Participant_Changed;
+	public static String UpdateChoreographyMessageLinkFeature_Message_Link_Visible_Changed;
+	public static String UpdateChoreographyMessageLinkFeature_Participants_Changed;
+	public static String UpdateChoreographyParticipantBandsFeature_Participant_Name_Changed;
+	public static String UpdateChoreographyParticipantRefsFeature_Parkticipants_Changed;
 
 	static {
 		// initialize resource bundle

@@ -65,12 +65,12 @@ public class GatewayValidator extends AbstractBpmn2ElementValidator<Gateway> {
 			if (incoming<1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Converging Gateway must have multiple incoming Sequence Flows");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Converging_Multiple_Incoming);
 			}
 			if (outgoing>1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Converging Gateway must have zero or one outgoing Sequence Flow");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Converging_One_Outgoing);
 			}
 		}
 		else if (direction == GatewayDirection.DIVERGING) {
@@ -78,12 +78,12 @@ public class GatewayValidator extends AbstractBpmn2ElementValidator<Gateway> {
 			if (incoming>1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Diverging Gateway must have zero or one incoming Sequence Flow");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Diverging_One_Incoming);
 			}
 			if (outgoing<1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Diverging Gateway must have multiple outgoing Sequence Flows");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Diverging_Multiple_Outgoing);
 			}
 		}
 		else if (direction == GatewayDirection.MIXED) {
@@ -91,12 +91,12 @@ public class GatewayValidator extends AbstractBpmn2ElementValidator<Gateway> {
 			if (incoming<1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Mixed Gateway must have multiple incoming Sequence Flows");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Mixed_Multiple_Incoming);
 			}
 			if (outgoing<1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Mixed Gateway must have multiple outgoing Sequence Flows");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Mixed_Multiple_Outgoing);
 			}
 		}
 		else {
@@ -104,7 +104,7 @@ public class GatewayValidator extends AbstractBpmn2ElementValidator<Gateway> {
 			if (outgoing<1 && incoming<1) {
 				ctx.addResult(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Unspecified Gateway must have either multiple incoming or outgoing Sequence Flows");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Unspecified_Multiple_Incoming_Outgoing);
 			}
 		}
 		
@@ -112,34 +112,34 @@ public class GatewayValidator extends AbstractBpmn2ElementValidator<Gateway> {
 			if (direction != GatewayDirection.DIVERGING
 					&& direction != GatewayDirection.CONVERGING) {
 				addStatus(object, "gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Exclusive Gateway should be either Converging or Diverging");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Exclusive_Converging_Diverging);
 			}
 		}
 		if (object instanceof EventBasedGateway) {
 			if (direction != GatewayDirection.DIVERGING) {
 				addStatus(object,"gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "EventBased Gateway should be Diverging");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Event_Diverging);
 			}
 		}
 		if (object instanceof ParallelGateway) {
 			if (direction != GatewayDirection.DIVERGING
 					&& direction != GatewayDirection.CONVERGING) {
 				addStatus(object,"gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Parallel Gateway should be either Converging or Diverging");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Parallel_Converging_Diverging);
 			}
 		}
 		if (object instanceof InclusiveGateway) {
 			if (direction != GatewayDirection.DIVERGING
 					&& direction != GatewayDirection.CONVERGING) {
 				addStatus(object,"gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Inclusive Gateway should be either Converging or Diverging");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Inclusive_Converging_Diverging);
 			}
 		}
 		if (object instanceof ComplexGateway) {
 			if (direction != GatewayDirection.DIVERGING
 					&& direction != GatewayDirection.CONVERGING) {
 				addStatus(object,"gatewayDirection", //$NON-NLS-1$
-						Status.ERROR, "Complex Gateway should be either Converging or Diverging");
+						Status.ERROR, org.eclipse.bpmn2.modeler.core.validation.validators.Messages.GatewayValidator_Complex_Converging_Diverging);
 			}
 		}
 		return getResult();

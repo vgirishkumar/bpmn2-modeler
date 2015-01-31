@@ -411,7 +411,7 @@ public class ModelUtil {
 	
 	public static String getCanonicalName(BaseElement element) {
 		if (element==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		String name = getName(element);
 		if (name==null || name.isEmpty())
 			name = element.getId();

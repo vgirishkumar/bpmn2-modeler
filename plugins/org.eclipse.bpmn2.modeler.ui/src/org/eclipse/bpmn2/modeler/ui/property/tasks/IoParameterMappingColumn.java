@@ -61,9 +61,9 @@ public class IoParameterMappingColumn extends TableColumn {
 			if (!target.isEmpty())
 				for (ItemAwareElement e : target) {
 					if (text==null)
-						text = "";
+						text = ""; //$NON-NLS-1$
 					else
-						text += ", ";
+						text += ", "; //$NON-NLS-1$
 					text += ExtendedPropertiesProvider.getTextValue(e);
 				}
 			else {
@@ -88,9 +88,9 @@ public class IoParameterMappingColumn extends TableColumn {
 			}
 			if (text!=null && !text.isEmpty()) {
 				if (result==null)
-					result = "";
+					result = ""; //$NON-NLS-1$
 				else
-					result += ", ";
+					result += ", "; //$NON-NLS-1$
 				result += text;
 			}
 		}

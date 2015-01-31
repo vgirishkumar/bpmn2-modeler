@@ -71,7 +71,7 @@ public class BPMN2MarkerChangeListener implements IResourceChangeListener {
                     deletedMarkers.add(uri);
                 }
                 if (relatedUris!=null) {
-                	for (String relatedUri : relatedUris.split(" ")) {
+                	for (String relatedUri : relatedUris.split(" ")) { //$NON-NLS-1$
                 		if (!deletedMarkers.contains(relatedUri))
                 			deletedMarkers.add(relatedUri);
                 	}

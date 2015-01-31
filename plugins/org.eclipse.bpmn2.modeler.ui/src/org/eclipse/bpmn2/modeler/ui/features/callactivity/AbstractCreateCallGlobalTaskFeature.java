@@ -23,6 +23,7 @@ import org.eclipse.bpmn2.modeler.ui.features.callactivity.CallActivityFeatureCon
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.osgi.util.NLS;
 
 public abstract class AbstractCreateCallGlobalTaskFeature<T extends GlobalTask> extends CreateCallActivityFeature {
 
@@ -42,7 +43,7 @@ public abstract class AbstractCreateCallGlobalTaskFeature<T extends GlobalTask> 
 		ModelUtil.setID(task);
 		task.setName( ModelUtil.toCanonicalString(task.getId()));
 		callActivity.setCalledElementRef(task);
-		callActivity.setName("Call "+task.getName());
+		callActivity.setName(NLS.bind(Messages.AbstractCreateCallGlobalTaskFeature_Name_Label, task.getName()));
 		
 		return callActivity;
 	}

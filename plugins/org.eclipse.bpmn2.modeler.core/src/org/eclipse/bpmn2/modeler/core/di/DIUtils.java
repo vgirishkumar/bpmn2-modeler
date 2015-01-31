@@ -295,7 +295,7 @@ public class DIUtils {
 	
 	public static BPMNLabel getOrCreateDILabel(DiagramElement de) {
 		BPMNLabel bpmnLabel = null;
-		EStructuralFeature feature = de.eClass().getEStructuralFeature("label");
+		EStructuralFeature feature = de.eClass().getEStructuralFeature("label"); //$NON-NLS-1$
 		if (feature!=null) {
 			bpmnLabel = (BPMNLabel) de.eGet(feature);
 			if (bpmnLabel==null) {

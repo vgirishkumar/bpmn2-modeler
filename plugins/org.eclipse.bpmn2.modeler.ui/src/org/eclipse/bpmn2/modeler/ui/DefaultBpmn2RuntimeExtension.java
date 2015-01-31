@@ -191,8 +191,8 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 		if (event.eventType.equals(EventType.EDITOR_INITIALIZED)) {
 			if (event.target instanceof IAdaptable) {
 				ModelEnablements me = (ModelEnablements) ((IAdaptable)event.target).getAdapter(ModelEnablements.class);
-				me.setEnabled("BaseElement", "style", true);
-				me.setEnabled("ShapeStyle", true);
+				me.setEnabled("BaseElement", "style", true); //$NON-NLS-1$ //$NON-NLS-2$
+				me.setEnabled("ShapeStyle", true); //$NON-NLS-1$
 			}
 			PropertiesCompositeFactory.register(EObject.class, DefaultDetailComposite.class);
 			PropertiesCompositeFactory.register(EObject.class, DefaultListComposite.class);

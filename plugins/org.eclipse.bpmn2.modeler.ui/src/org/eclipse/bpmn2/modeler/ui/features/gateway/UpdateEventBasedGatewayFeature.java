@@ -52,7 +52,7 @@ public class UpdateEventBasedGatewayFeature extends AbstractUpdateBaseElementFea
 		        .getPictogramElement());
 
 		boolean changed = instantiate != gateway.isInstantiate() || gatewayType != gateway.getEventGatewayType();
-		return changed ? Reason.createTrueReason("Is Instantiate") : Reason.createFalseReason();
+		return changed ? Reason.createTrueReason(Messages.UpdateEventBasedGatewayFeature_Is_Instantiate_Changed) : Reason.createFalseReason();
 	}
 
 	@Override

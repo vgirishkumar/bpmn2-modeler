@@ -56,7 +56,7 @@ public class ThrowEventValidator extends AbstractBpmn2ElementValidator<ThrowEven
 
 	@Override
 	public boolean checkSuperType(EClass eClass, ThrowEvent object) {
-		if ("Event".equals(eClass.getName()))
+		if ("Event".equals(eClass.getName())) //$NON-NLS-1$
 			return true;
 		return false;
 	}

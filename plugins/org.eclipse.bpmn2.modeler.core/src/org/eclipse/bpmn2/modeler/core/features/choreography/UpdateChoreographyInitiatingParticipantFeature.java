@@ -59,7 +59,7 @@ public class UpdateChoreographyInitiatingParticipantFeature extends AbstractUpda
 			return Reason.createFalseReason();
 		}
 
-		return Reason.createTrueReason("Initiating Participant");
+		return Reason.createTrueReason(Messages.UpdateChoreographyInitiatingParticipantFeature_Initiating_Participant_Changed);
 	}
 
 	@Override

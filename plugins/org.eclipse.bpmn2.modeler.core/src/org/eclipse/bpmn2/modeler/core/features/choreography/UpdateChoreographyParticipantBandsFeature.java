@@ -75,7 +75,7 @@ public class UpdateChoreographyParticipantBandsFeature extends AbstractBpmn2Upda
 		for (ContainerShape s : bandShapes) {
 			IUpdateContext newContext = new UpdateContext(s);
 			if (updateFeature.updateNeeded(newContext).toBoolean())
-				return Reason.createTrueReason("Particpant Name Changed");
+				return Reason.createTrueReason(Messages.UpdateChoreographyParticipantBandsFeature_Participant_Name_Changed);
 		}
 		return Reason.createFalseReason();
 	}

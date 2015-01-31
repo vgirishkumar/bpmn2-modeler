@@ -55,7 +55,7 @@ public class AddTextAnnotationFeature extends AbstractBpmn2AddFeature<TextAnnota
 			public String getLabelString(BaseElement element) {
 				if (element instanceof TextAnnotation)
 					return ((TextAnnotation)element).getText();
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 
 		};

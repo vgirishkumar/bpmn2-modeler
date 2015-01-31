@@ -565,7 +565,7 @@ public class ModelHandler {
 			process = create(Process.class);
 			getDefinitions().getRootElements().add(process);
 			if (participant!=null) {
-				process.setName(participant.getName() + " Process");
+				process.setName(participant.getName() + Messages.ModelHandler_Process_Label);
 				if (participant.eContainer() instanceof Collaboration) {
 					process.setDefinitionalCollaborationRef((Collaboration)participant.eContainer());
 				}

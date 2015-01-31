@@ -93,7 +93,7 @@ public class ExtendedPropertiesProvider {
 				return text;
 			}
 			if (object instanceof FormalExpression)
-				return ""; 
+				return "";  //$NON-NLS-1$
 		}
 		return ModelUtil.toCanonicalString(object);
 	}

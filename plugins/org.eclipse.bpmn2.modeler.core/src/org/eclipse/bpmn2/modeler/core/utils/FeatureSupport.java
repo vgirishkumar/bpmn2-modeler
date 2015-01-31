@@ -1208,7 +1208,7 @@ public class FeatureSupport {
 	}
 	
 	public static void setExpandedSize(PictogramElement pe, int width, int height) {
-		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.EXPANDED_SIZE, width+","+height);
+		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.EXPANDED_SIZE, width+","+height); //$NON-NLS-1$
 	}
 	
 	public static IDimension getExpandedSize(PictogramElement pe) {
@@ -1234,7 +1234,7 @@ public class FeatureSupport {
 	}
 	
 	public static void setCollapsedSize(PictogramElement pe, int width, int height) {
-		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.COLLAPSED_SIZE, width+","+height);
+		Graphiti.getPeService().setPropertyValue(pe, GraphitiConstants.COLLAPSED_SIZE, width+","+height); //$NON-NLS-1$
 	}
 	
 	public static IDimension getCollapsedSize(PictogramElement pe) {

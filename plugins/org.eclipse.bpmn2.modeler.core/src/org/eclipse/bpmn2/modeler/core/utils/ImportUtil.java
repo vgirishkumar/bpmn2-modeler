@@ -101,7 +101,7 @@ public class ImportUtil {
 		else if (IMPORT_TYPE_BPMN2.equals(type))
 			kind = "bpmn"; //$NON-NLS-1$
 		else {
-			throw new IllegalArgumentException("Unsupported Import type: "+type);
+			throw new IllegalArgumentException("Unsupported Import type: "+type); //$NON-NLS-1$
 		}
 		String location = imp.getLocation();
 		if (location==null) {
@@ -314,7 +314,7 @@ public class ImportUtil {
 		String prefix = NamespaceUtil.getPrefixForObject(resource, o);
 		String name = getLocalnameForObject(o);
 		if (prefix!=null)
-			return prefix + ":" + name;
+			return prefix + ":" + name; //$NON-NLS-1$
 		return name;
 	}
 	
@@ -323,11 +323,11 @@ public class ImportUtil {
 		String kind = null;
 		if (object instanceof IFile) {
 			String ext = ((IFile)object).getFileExtension();
-			if ("xml".equals(ext) || "xsd".equals(ext))
+			if ("xml".equals(ext) || "xsd".equals(ext)) //$NON-NLS-1$ //$NON-NLS-2$
 				kind = IMPORT_KIND_XML_SCHEMA;
-			else if ("bpmn".equals(ext) || "bpmn2".equals(ext))
+			else if ("bpmn".equals(ext) || "bpmn2".equals(ext)) //$NON-NLS-1$ //$NON-NLS-2$
 				kind = IMPORT_KIND_BPMN2;
-			else if ("wsdl".equals(ext))
+			else if ("wsdl".equals(ext)) //$NON-NLS-1$
 				kind = IMPORT_KIND_WSDL;
 		}
 		else if (object instanceof IType) {
@@ -407,7 +407,7 @@ public class ImportUtil {
 		if (object instanceof CallActivity) {
 			if (feature == Bpmn2Package.eINSTANCE.getCallActivity_CalledElementRef()) {
 				// search other BPMN2 files in this project for a CallableElement
-				findAllFiles(container, new String[] {"bpmn","bpmn2"}, files);
+				findAllFiles(container, new String[] {"bpmn","bpmn2"}, files); //$NON-NLS-1$ //$NON-NLS-2$
 				for (IFile f : files) {
 					if (f==file)
 						continue;
@@ -428,7 +428,7 @@ public class ImportUtil {
 		}
 		else if (object instanceof ItemDefinition) {
 			if (feature == Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef()) {
-				findAllFiles(container, new String[] {"xml","xsd"}, files);
+				findAllFiles(container, new String[] {"xml","xsd"}, files); //$NON-NLS-1$ //$NON-NLS-2$
 				for (IFile f : files) {
 					if (f==file)
 						continue;
@@ -450,7 +450,7 @@ public class ImportUtil {
 		else if (object instanceof Interface) {
 			if (feature == Bpmn2Package.eINSTANCE.getInterface_ImplementationRef()) {
 				// Look for a WSDL PortType or a Java type
-				findAllFiles(container, new String[] {"wsdl"}, files);
+				findAllFiles(container, new String[] {"wsdl"}, files); //$NON-NLS-1$
 				for (IFile f : files) {
 					if (f==file)
 						continue;

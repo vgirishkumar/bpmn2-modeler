@@ -14,24 +14,13 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.features.event.messages"; //$NON-NLS-1$
+	public static String FollowLinkFeature_Create_Link_Description;
 	public static String FollowLinkFeature_name;
+	public static String FollowLinkFeature_Show_Source_Links_Description;
+	public static String FollowLinkFeature_Show_Target_Link_Description;
 	public static String AppendEventFeature_Description;
 	public static String AppendEventFeature_Name;
-	public static String CreateBoundaryEventFeature_0;
-	public static String CreateBoundaryEventFeature_1;
-	public static String CreateBoundaryEventFeature_2;
-	public static String EndEventFeatureContainer_0;
-	public static String EndEventFeatureContainer_1;
-	public static String EndEventFeatureContainer_2;
-	public static String IntermediateCatchEventFeatureContainer_0;
-	public static String IntermediateCatchEventFeatureContainer_1;
-	public static String IntermediateCatchEventFeatureContainer_2;
-	public static String IntermediateThrowEventFeatureContainer_0;
-	public static String IntermediateThrowEventFeatureContainer_1;
-	public static String IntermediateThrowEventFeatureContainer_2;
-	public static String StartEventFeatureContainer_1;
-	public static String StartEventFeatureContainer_2;
-	public static String StartEventFeatureContainer_3;
+	public static String StartEventFeatureContainer_Is_Interrupting_Changed;
 	public static String UpdateBoundaryEventFeature_Description_Changed;
 	static {
 		// initialize resource bundle

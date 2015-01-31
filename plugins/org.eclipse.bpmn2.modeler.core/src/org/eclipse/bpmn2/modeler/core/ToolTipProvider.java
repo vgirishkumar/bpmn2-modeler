@@ -46,7 +46,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	@Override
 	public String getToolTip(Object context, EObject object) {
 		// TODO Auto-generated method stub
-		return getUIText(context, object, "tooltip");
+		return getUIText(context, object, "tooltip"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -55,7 +55,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	@Override
 	public String getLongDescription(Object context, EObject object) {
 		// TODO Auto-generated method stub
-		return getUIText(context, object, "description");
+		return getUIText(context, object, "description"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -63,7 +63,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	 */
 	@Override
 	public String getToolTip(Object context, EObject object, EStructuralFeature feature) {
-		return getUIText(context, object, feature, "tooltip");
+		return getUIText(context, object, feature, "tooltip"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +71,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	 */
 	@Override
 	public String getLongDescription(Object context, EObject object, EStructuralFeature feature) {
-		return getUIText(context, object, feature, "description");
+		return getUIText(context, object, feature, "description"); //$NON-NLS-1$
 	}
 	
 	/**
@@ -236,5 +236,13 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 		}
 		return description;
 	}
-	
+
+	public static String DescriptionPropertySection_Appearance_Label;
+	public static String DescriptionPropertySection_Element_Not_Enabled_Description_Prefix;
+	public static String DescriptionPropertySection_Restore_Defaults_Button;
+	public static String INSTANCE;
+	public static String INSTANCE;
+	public static String ObjectEditor_No_Description;
+	public static String ObjectEditor_Set_Error_Message;
+	public static String ObjectEditor_Validation_Error_Title;
 }

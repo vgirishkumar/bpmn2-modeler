@@ -55,7 +55,7 @@ public class CatchEventValidator extends AbstractBpmn2ElementValidator<CatchEven
 	
 	@Override
 	public boolean checkSuperType(EClass eClass, CatchEvent object) {
-		if ("Event".equals(eClass.getName()))
+		if ("Event".equals(eClass.getName())) //$NON-NLS-1$
 			return true;
 		return false;
 	}

@@ -52,7 +52,7 @@ public class DefinitionsValidator extends org.eclipse.bpmn2.modeler.core.validat
 	@Override
 	public IStatus validate(Definitions object) {
 		if (object.getTargetNamespace()==null || object.getTargetNamespace().isEmpty()) {
-			addStatus(object, Status.ERROR, "No targetNamespace defined");
+			addStatus(object, Status.ERROR, Messages.DefinitionsValidator_No_TargetNamespace);
 		}
 		if (isLiveValidation()) {
 			TreeIterator<EObject> iter = object.eAllContents();

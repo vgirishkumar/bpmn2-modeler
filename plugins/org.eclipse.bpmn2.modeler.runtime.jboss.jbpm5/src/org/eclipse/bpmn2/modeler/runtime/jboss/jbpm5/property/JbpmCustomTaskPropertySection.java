@@ -42,7 +42,7 @@ public class JbpmCustomTaskPropertySection extends JbpmTaskPropertySection imple
 			// only show this property section if the selected Task is a "custom task"
 			// that is, it has a "displayName" extension attribute
 			EObject be = getBusinessObjectForSelection(selection);
-			return ModelDecorator.getAnyAttribute(be, "displayName") != null;
+			return ModelDecorator.getAnyAttribute(be, "displayName") != null; //$NON-NLS-1$
 		}
 		return false;
 	}

@@ -111,7 +111,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 					IStatus status = parent.validate();
 					if (status.getSeverity() >= Status.ERROR) {
 						if (statusApplies(status)) {
-							MessageDialog.openError(parent.getShell(), "Validation Error", status.getMessage());
+							MessageDialog.openError(parent.getShell(), ToolTipProvider.ObjectEditor_Validation_Error_Title, status.getMessage());
 							if (!c.isDisposed())
 								c.setFocus();
 						}

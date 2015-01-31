@@ -91,7 +91,7 @@ public class UpdateChoreographyParticipantRefsFeature extends AbstractBpmn2Updat
 			String shapeIds = ChoreographyUtil.getParticipantRefIds(choreographyActivityShape);
 			String activityIds = ChoreographyUtil.getParticipantRefIds(choreographyActivity);
 			if (!shapeIds.equals(activityIds))
-				return Reason.createTrueReason("Participants");
+				return Reason.createTrueReason(Messages.UpdateChoreographyParticipantRefsFeature_Parkticipants_Changed);
 		}
 		return Reason.createFalseReason();
 	}

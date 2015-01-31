@@ -34,6 +34,7 @@ public class Messages extends NLS {
 	public static String ModelHandler_Non_Initiating_Process;
 	public static String ModelHandler_Process;
 	public static String ModelHandler_Process_Diagram;
+	public static String ModelHandler_Process_Label;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

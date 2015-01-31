@@ -442,14 +442,14 @@ public class TruncatedNormalDistributionTypeImpl extends DistributionParameterIm
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (max: ");
-		if (maxESet) result.append(max); else result.append("<unset>");
-		result.append(", mean: ");
-		if (meanESet) result.append(mean); else result.append("<unset>");
-		result.append(", min: ");
-		if (minESet) result.append(min); else result.append("<unset>");
-		result.append(", standardDeviation: ");
-		if (standardDeviationESet) result.append(standardDeviation); else result.append("<unset>");
+		result.append(" (max: "); //$NON-NLS-1$
+		if (maxESet) result.append(max); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(", mean: "); //$NON-NLS-1$
+		if (meanESet) result.append(mean); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(", min: "); //$NON-NLS-1$
+		if (minESet) result.append(min); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(", standardDeviation: "); //$NON-NLS-1$
+		if (standardDeviationESet) result.append(standardDeviation); else result.append("<unset>"); //$NON-NLS-1$
 		result.append(')');
 		return result.toString();
 	}

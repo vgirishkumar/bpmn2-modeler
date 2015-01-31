@@ -26,7 +26,7 @@ import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
 import org.eclipse.graphiti.services.Graphiti;
 
 public enum AnchorType {
-	ACTIVITY("activity"), POOL("pool"), GATEWAY("gateway"), MESSAGELINK("messagelink"), CONNECTION("connection");
+	ACTIVITY("activity"), POOL("pool"), GATEWAY("gateway"), MESSAGELINK("messagelink"), CONNECTION("connection"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	
 	private final String key;
 	
@@ -71,7 +71,7 @@ public enum AnchorType {
 		else if (be != null) {
 			return ACTIVITY;
 		}
-		throw new IllegalArgumentException("Cannot determine Anchor Type for business object "+be);
+		throw new IllegalArgumentException("Cannot determine Anchor Type for business object "+be); //$NON-NLS-1$
 	}
 	
 	public static AnchorType getType(Anchor anchor) {

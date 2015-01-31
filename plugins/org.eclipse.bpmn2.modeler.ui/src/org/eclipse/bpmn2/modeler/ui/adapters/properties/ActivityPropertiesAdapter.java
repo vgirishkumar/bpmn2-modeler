@@ -48,11 +48,11 @@ public class ActivityPropertiesAdapter<T extends Activity> extends ExtendedPrope
 					@Override
 					protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
 						if (value instanceof String) {
-							if ("MultiInstanceLoopCharacteristics".equals(value)) {
+							if ("MultiInstanceLoopCharacteristics".equals(value)) { //$NON-NLS-1$
 								MultiInstanceLoopCharacteristics lc = Bpmn2ModelerFactory.create(getResource(), MultiInstanceLoopCharacteristics.class);
 								value = lc;
 							}
-							else if ("StandardLoopCharacteristics".equals(value)) {
+							else if ("StandardLoopCharacteristics".equals(value)) { //$NON-NLS-1$
 								StandardLoopCharacteristics lc = Bpmn2ModelerFactory.create(getResource(), StandardLoopCharacteristics.class);
 								value = lc;
 							}

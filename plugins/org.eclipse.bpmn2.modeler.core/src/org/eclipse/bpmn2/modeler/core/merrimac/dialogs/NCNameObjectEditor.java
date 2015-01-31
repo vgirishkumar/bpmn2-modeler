@@ -21,6 +21,7 @@ import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -67,7 +68,7 @@ public class NCNameObjectEditor extends TextObjectEditor {
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isNCName(s);
 				if (!e.doit) {
-					showErrorMessage("The character '"+e.text+"' is not valid");
+					showErrorMessage(NLS.bind(Messages.NCNameObjectEditor_Invalid_Character, e.text));
 				}
 			}
 		});

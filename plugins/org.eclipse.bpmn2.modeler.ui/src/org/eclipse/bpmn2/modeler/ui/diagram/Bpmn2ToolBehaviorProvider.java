@@ -123,7 +123,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		BPMN2Editor editor;
 		
 		ProfileSelectionToolEntry(BPMN2Editor editor, String profileId) {
-			super("", null, null, null, null);
+			super("", null, null, null, null); //$NON-NLS-1$
 			TargetRuntime rt = editor.getTargetRuntime();
 			ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
 			setLabel(med.getProfileName());
@@ -372,7 +372,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		}
 		else {
 			Activator.logError(new IllegalArgumentException(
-					"The object type '"+name+"' referenced by the tool '"+root.getName()+"'is undefined"
+					"The object type '"+name+"' referenced by the tool '"+root.getName()+"'is undefined" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					));
 		}
 		

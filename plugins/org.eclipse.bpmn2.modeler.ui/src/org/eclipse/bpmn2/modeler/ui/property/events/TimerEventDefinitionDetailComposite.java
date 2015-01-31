@@ -132,8 +132,8 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeDate(exp);
 							String body = exp.getBody();
-							if (body==null || "null".equals(body))
-								body = "";
+							if (body==null || "null".equals(body)) //$NON-NLS-1$
+								body = ""; //$NON-NLS-1$
 							exp.setBody(""); //$NON-NLS-1$
 							exp.setBody(body);
 							timeValueEditor.setObject(exp);
@@ -157,8 +157,8 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeDuration());
 							event.setTimeCycle(exp);
 							String body = exp.getBody();
-							if (body==null || "null".equals(body))
-								body = "";
+							if (body==null || "null".equals(body)) //$NON-NLS-1$
+								body = ""; //$NON-NLS-1$
 							exp.setBody(""); //$NON-NLS-1$
 							exp.setBody(body);
 							timeValueEditor.setObject(exp);
@@ -182,8 +182,8 @@ public class TimerEventDefinitionDetailComposite extends DefaultDetailComposite 
 							event.eUnset(PACKAGE.getTimerEventDefinition_TimeCycle());
 							event.setTimeDuration(exp);
 							String body = exp.getBody();
-							if (body==null || "null".equals(body))
-								body = "";
+							if (body==null || "null".equals(body)) //$NON-NLS-1$
+								body = ""; //$NON-NLS-1$
 							exp.setBody(""); //$NON-NLS-1$
 							exp.setBody(body);
 							timeValueEditor.setObject(exp);

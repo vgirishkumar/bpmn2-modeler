@@ -53,20 +53,20 @@ public class MultiInstanceLoopCharacteristicsValidator extends AbstractBpmn2Elem
 		EObject resultLocus[] = new EObject[] {object.eContainer()};
 		if (isEmpty(object.getLoopCardinality())) {
 			if (isEmpty(object.getLoopDataInputRef())) {
-				addStatus(object,resultLocus,Status.ERROR,"Multi-Instance Loop must have either a Loop Condition or Input Data Items");
+				addStatus(object,resultLocus,Status.ERROR,Messages.MultiInstanceLoopCharacteristicsValidator_No_Condition_Or_Inputs);
 			}
 			else if (isEmpty(object.getInputDataItem())) {
-				addStatus(object,resultLocus,Status.ERROR,"Multi-Instance Loop with Input Data Items must have an Instance Parameter");
+				addStatus(object,resultLocus,Status.ERROR,Messages.MultiInstanceLoopCharacteristicsValidator_No_Input_Instance_Parameter);
 			}
 		}
 		else {
 			if (!isEmpty(object.getLoopDataInputRef())) {
-				addStatus(object,resultLocus,Status.ERROR,"Multi-Instance Loop can not have both Loop Condition and Input Data Items");
+				addStatus(object,resultLocus,Status.ERROR,Messages.MultiInstanceLoopCharacteristicsValidator_Both_Condition_And_Inputs);
 			}
 		}
 		if (!isEmpty(object.getLoopDataOutputRef())) {
 			if (isEmpty(object.getOutputDataItem())) {
-				addStatus(object,resultLocus,Status.ERROR,"Multi-Instance Loop with Output Data must have an Instance Parameter");
+				addStatus(object,resultLocus,Status.ERROR,Messages.MultiInstanceLoopCharacteristicsValidator_No_Output_Instance_Parameter);
 			}
 		}
 		return getResult();

@@ -51,7 +51,7 @@ public class BusinessRuleTaskValidator extends AbstractBpmn2ElementValidator<Bus
 			}
 		}
 		if (!hasRuleflowGroup) {
-			addMissingFeatureStatus(object,"ruleFlowGroup",Status.ERROR);
+			addMissingFeatureStatus(object,"ruleFlowGroup",Status.ERROR); //$NON-NLS-1$
 		}
 		return getResult();
 	}	

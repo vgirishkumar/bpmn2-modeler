@@ -196,13 +196,13 @@ public class FollowLinkFeature extends AbstractCustomFeature {
 			PictogramElement pe = context.getPictogramElements()[0];
 			Event event = BusinessObjectUtil.getFirstElementOfType(pe, Event.class);
 			if (getLinks(event).size()==0) {
-				return "Create a Link";
+				return Messages.FollowLinkFeature_Create_Link_Description;
 			}
 			else if (event instanceof IntermediateCatchEvent) {
-				return "Show Source Links";
+				return Messages.FollowLinkFeature_Show_Source_Links_Description;
 			}
 			else {
-				return "Show Target Link";
+				return Messages.FollowLinkFeature_Show_Target_Link_Description;
 			}
 		}
 		return null;

@@ -315,7 +315,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 					oldDirection = AssociationDirection.NONE.toString();
 	
 				if (!oldDirection.equals(newDirection)) {
-					return Reason.createTrueReason("Association Direction");
+					return Reason.createTrueReason(Messages.AssociationFeatureContainer_Direction_Changed);
 				}
 			}
 			return Reason.createFalseReason();

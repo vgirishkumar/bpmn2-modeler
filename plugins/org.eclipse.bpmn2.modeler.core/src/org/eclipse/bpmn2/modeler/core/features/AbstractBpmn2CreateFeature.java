@@ -66,7 +66,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 	 *            {@link org.eclipse.bpmn2.modeler.ui.diagram.BPMN2FeatureProvider}
 	 */
 	public AbstractBpmn2CreateFeature(IFeatureProvider fp) {
-		super(fp,"","");
+		super(fp,"",""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override

@@ -62,10 +62,10 @@ public class BaseElementValidator extends AbstractBpmn2ElementValidator<BaseElem
 			// In the case of batch mode.
 			String id = object.getId();
 			if (isEmpty(id)) {
-				addStatus(object, "id", Status.ERROR, "The {0} ID can not be empty", object.eClass().getName());
+				addStatus(object, "id", Status.ERROR, Messages.BaseElementValidator_ID_Is_Empty, object.eClass().getName()); //$NON-NLS-1$
 			}
 			else if (!SyntaxCheckerUtils.isNCName(id)) {
-				addStatus(object, "id", Status.ERROR, "The {0} ID is invalid: {1}", object.eClass().getName(), id);
+				addStatus(object, "id", Status.ERROR, Messages.BaseElementValidator_ID_Is_Invalid, object.eClass().getName(), id); //$NON-NLS-1$
 			}
 			
 			Definitions definitions = ModelUtil.getDefinitions(object);
@@ -78,7 +78,7 @@ public class BaseElementValidator extends AbstractBpmn2ElementValidator<BaseElem
 					if (id!=null && id2!=null) {
 						if (id.equals(id2)) {
 							addStatus(object, Status.ERROR,
-								"{0} and {1} have the same ID",
+								Messages.BaseElementValidator_Duplicate_IDs,
 								getLabel(object)+" "+getName(object), //$NON-NLS-1$
 								getLabel(o2)+" "+getName(o2) //$NON-NLS-1$
 							);
