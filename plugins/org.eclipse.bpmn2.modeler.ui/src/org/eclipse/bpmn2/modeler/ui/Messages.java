@@ -95,7 +95,6 @@ public class Messages extends NLS {
 	public static String Bpmn2EditorPreferencePage_Label_Color_Label;
 	public static String Bpmn2EditorPreferencePage_Label_Font_Label;
 	public static String Bpmn2EditorPreferencePage_MultiSelected_Color_Label;
-	public static String Bpmn2EditorPreferencePage_Override_Size_Label;
 	public static String Bpmn2EditorPreferencePage_Routing_Style_Label;
 	public static String Bpmn2EditorPreferencePage_Label_Location_Label;
 	public static String Bpmn2EditorPreferencePage_Selected_Color_Label;

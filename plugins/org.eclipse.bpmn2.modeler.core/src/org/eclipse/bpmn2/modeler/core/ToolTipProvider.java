@@ -25,15 +25,14 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
  */
-public class ToolTipProvider extends NLS implements IToolTipProvider {
+public class ToolTipProvider implements IToolTipProvider {
 
 	public final static ToolTipProvider INSTANCE = new ToolTipProvider();
-	
+
 	/**
 	 * 
 	 */
@@ -236,13 +235,4 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 		}
 		return description;
 	}
-
-	public static String DescriptionPropertySection_Appearance_Label;
-	public static String DescriptionPropertySection_Element_Not_Enabled_Description_Prefix;
-	public static String DescriptionPropertySection_Restore_Defaults_Button;
-	public static String INSTANCE;
-	public static String INSTANCE;
-	public static String ObjectEditor_No_Description;
-	public static String ObjectEditor_Set_Error_Message;
-	public static String ObjectEditor_Validation_Error_Title;
 }

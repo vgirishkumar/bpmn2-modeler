@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.messages"; //$NON-NLS-1$
 	public static String CallActivityConstraint_No_Called_Element;
 	public static String CallActivityConstraint_No_Process;
+	public static String CallActivityConstraint_Independent_And_WaitForCompletion_False;
 	public static String ProcessConstraint_No_Package_Name;
 	public static String ProcessConstraint_No_Process_Name;
 	public static String ProcessValidator_Invalid_PackageName;
