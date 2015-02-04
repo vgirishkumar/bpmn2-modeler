@@ -38,6 +38,7 @@ public class Messages extends NLS {
 	public static String RefListEditingDialog_Move_Up;
 	public static String RefListEditingDialog_Remove;
 	public static String RefListEditingDialog_Remove_All;
+	public static String ObjectEditor_Validation_Error_Title;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
