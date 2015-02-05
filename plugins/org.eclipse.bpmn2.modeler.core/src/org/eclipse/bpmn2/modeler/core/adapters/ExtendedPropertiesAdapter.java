@@ -87,7 +87,16 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 	public static final String FEATURE_DESCRIPTOR = "feature.descriptor"; //$NON-NLS-1$
 	/** Property key for the line number in XML document where this object is defined */
 	public static final String LINE_NUMBER = "line.number"; //$NON-NLS-1$
+	/**
+	 * Boolean property key to indicate the feature is a BPMN 2.0 extension
+	 * defined by a specific Target Runtime
+	 */
 	public static final String IS_EXTENSION_FEATURE = "is.extension.feature"; //$NON-NLS-1$
+	/**
+	 * Used by the Data Input/Output Association Property Adapter to select only
+	 * valid source/target objects in scope for the Association.
+	 */
+	public final static String UI_SHOW_ITEMS_IN_SCOPE = "show.items.in.scope"; //$NON-NLS-1$
 	
 	/**
 	 * An {@code ExtendedPropertiesAdapter} may be created with a type (EClass) and then later

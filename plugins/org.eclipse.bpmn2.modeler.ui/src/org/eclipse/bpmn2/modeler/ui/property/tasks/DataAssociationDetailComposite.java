@@ -43,7 +43,6 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.TableColumn;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataAssociationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.property.data.ItemAwareElementDetailComposite;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -707,7 +706,7 @@ public class DataAssociationDetailComposite extends ItemAwareElementDetailCompos
 						protected void bindReference(Composite parent, EObject object, EReference reference) {
 							ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 							adapter.setProperty(
-									DataAssociationPropertiesAdapter.UI_SHOW_ITEMS_IN_SCOPE,
+									ExtendedPropertiesAdapter.UI_SHOW_ITEMS_IN_SCOPE,
 									new Boolean(showItemsInScope));
 							String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 							ObjectEditor editor = new ComboObjectEditor(this,object,reference);

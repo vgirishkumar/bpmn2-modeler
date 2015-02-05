@@ -83,8 +83,6 @@ import org.eclipse.osgi.util.NLS;
  */
 public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<DataAssociation> {
 
-	public final static String UI_SHOW_ITEMS_IN_SCOPE = Messages.DataAssociationPropertiesAdapter_0;
-	
 	/**
 	 * @param adapterFactory
 	 * @param object
@@ -131,7 +129,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 			// DataStores are contained in the DocumentRoot
 			EObject container = ModelUtil.getContainer(object);
 			
-			Object p = owner.getProperty(UI_SHOW_ITEMS_IN_SCOPE);
+			Object p = owner.getProperty(ExtendedPropertiesAdapter.UI_SHOW_ITEMS_IN_SCOPE);
 			if (p instanceof Boolean && (Boolean)p) {
 				values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Activity.class}) ); //$NON-NLS-1$
 				values.addAll( ModelUtil.collectAncestorObjects(container, "properties", new Class[] {Process.class}) ); //$NON-NLS-1$
@@ -399,7 +397,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					else {
 						Point p = GraphicsUtil.createPoint(connection.getEnd());
 						Anchor a = AnchorUtil.createAnchor(dataShape, p);
-						rc = new ReconnectionContext(connection, a, connection.getEnd(), null);
+						rc = new ReconnectionContext(connection, connection.getEnd(), a, null);
 						rc.setTargetPictogramElement(dataShape);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
 						rc.setReconnectType(ReconnectionContext.RECONNECT_TARGET);
