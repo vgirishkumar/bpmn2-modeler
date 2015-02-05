@@ -360,7 +360,7 @@ public class DataAssociationPropertiesAdapter extends ExtendedPropertiesAdapter<
 					else {
 						Point p = GraphicsUtil.createPoint(connection.getEnd());
 						Anchor a = AnchorUtil.findNearestAnchor(owner, p);
-						rc = new ReconnectionContext(connection, a, connection.getEnd(), null);
+						rc = new ReconnectionContext(connection, connection.getEnd(), a, null);
 						rc.setTargetPictogramElement(pe);
 						rc.setTargetLocation(Graphiti.getPeService().getLocationRelativeToDiagram(a));
 						rc.setReconnectType(ReconnectionContext.RECONNECT_SOURCE);
