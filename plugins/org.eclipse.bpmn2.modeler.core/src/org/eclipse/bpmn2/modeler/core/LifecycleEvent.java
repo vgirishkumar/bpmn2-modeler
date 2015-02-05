@@ -446,9 +446,16 @@ public class LifecycleEvent {
 	
 	public static void notify(EventType eventType, Object target) {
 		if (target!=null) {
-	    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			rt.notify(new LifecycleEvent(eventType, target));
+			notify(new LifecycleEvent(eventType, target));
 		}
+	}
+
+	/**
+	 * @param lifecycleEvent
+	 */
+	public static void notify(LifecycleEvent lifecycleEvent) {
+    	TargetRuntime rt = TargetRuntime.getCurrentRuntime();
+    	rt.notify(lifecycleEvent);
 	}
 	
 	@Override

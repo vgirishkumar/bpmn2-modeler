@@ -180,7 +180,7 @@ public abstract class AbstractBpmn2CreateFeature<T extends BaseElement>
 //	    	ctd.populateObject(businessObject, businessObject.eResource(), true);
 //		}
 		
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
 	

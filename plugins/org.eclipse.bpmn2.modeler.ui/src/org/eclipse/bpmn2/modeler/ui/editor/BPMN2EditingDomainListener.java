@@ -40,7 +40,7 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	public void transactionStarting(TransactionalEditingDomainEvent event) {
 		diagnostics = null;
 		super.transactionStarting(event);
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_STARTING, event.getTransaction()));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_STARTING, event.getTransaction()));
 	}
 	
 	/**
@@ -49,13 +49,13 @@ public class BPMN2EditingDomainListener extends TransactionalEditingDomainListen
 	@Override
 	public void transactionClosed(TransactionalEditingDomainEvent event) {
 		super.transactionClosed(event);
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_CLOSED, event.getTransaction()));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_CLOSED, event.getTransaction()));
 	}
 	
 	@Override
 	public void transactionInterrupted(TransactionalEditingDomainEvent event) {
 		super.transactionInterrupted(event);
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.TRANSACTION_INTERRUPTED, event.getTransaction()));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.TRANSACTION_INTERRUPTED, event.getTransaction()));
 	}
 
 	@Override

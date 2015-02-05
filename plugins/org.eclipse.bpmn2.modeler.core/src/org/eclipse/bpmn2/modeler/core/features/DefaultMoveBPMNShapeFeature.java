@@ -17,7 +17,6 @@ import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
@@ -85,7 +84,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_MOVE,
 				getFeatureProvider(), context, context.getPictogramElement());
 		event.doit = doit;
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		return event.doit;
 	}
 
@@ -94,13 +93,12 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	 */
 	@Override
 	public void moveShape(IMoveShapeContext context) {
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_MOVE,
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_PRE_MOVE,
 				getFeatureProvider(), context, context.getPictogramElement()));
 		
 		super.moveShape(context);
 		
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_MOVE,
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_POST_MOVE,
 				getFeatureProvider(), context, context.getPictogramElement()));
 	}
 	

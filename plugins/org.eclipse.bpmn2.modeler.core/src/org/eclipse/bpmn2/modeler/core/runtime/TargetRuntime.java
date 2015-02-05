@@ -26,7 +26,6 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
@@ -42,6 +41,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.ui.IEditorInput;
 
 
 /**
@@ -301,6 +301,28 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 		return null;
 	}
 	
+	public static TargetRuntime getRuntime(IEditorInput input) {
+		TargetRuntime runtime = null;
+		if (input!=null) {
+			 // If the project has not been configured for a specific runtime through the "BPMN2"
+			 // project properties page (i.e. the target is "None") then allow the runtime extension
+			 // plug-ins an opportunity to identify the given process file contents as their own.
+			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
+			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
+			 // generic property sheets and other default behavior.
+			runtime = null;
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				if (rt.getRuntimeExtension().isContentForRuntime(input)) {
+					runtime = rt;
+					break;
+				}
+			}
+			if (runtime==null)
+				runtime = getDefaultRuntime();
+		}
+		return runtime;
+	}
+
 	/**
 	 * Set the current TargetRuntime.
 	 * This is called by a BPMN2 Editor when it becomes the active editor.

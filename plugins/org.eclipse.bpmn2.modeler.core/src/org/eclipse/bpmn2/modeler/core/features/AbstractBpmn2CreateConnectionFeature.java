@@ -308,7 +308,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 //	    	ctd.populateObject(businessObject, getResource(context), true);
 //		}
 		
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
 	

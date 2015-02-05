@@ -744,7 +744,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		IReason reason = super.canAdd(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_ADD, this, context, context.getNewObject());
 		event.doit = reason.toBoolean();
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
 			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
 		return reason;
@@ -755,7 +755,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		IReason reason = super.updateNeeded(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_UPDATE_NEEDED, this, context, context.getPictogramElement());
 		event.doit = reason.toBoolean();
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
 			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
 		return reason;
@@ -766,7 +766,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		IReason reason = super.canUpdate(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_UPDATE, this, context, context.getPictogramElement());
 		event.doit = reason.toBoolean();
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
 			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
 		return reason;
@@ -777,7 +777,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		IReason reason = super.canLayout(context);
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_LAYOUT, this, context, context.getPictogramElement());
 		event.doit = reason.toBoolean();
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		if (event.doit != reason.toBoolean())
 			reason = (event.doit ? Reason.createTrueReason() : Reason.createFalseReason());
 		return reason;
@@ -797,9 +797,8 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 				}
 			}
 			
-			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 			List<PictogramElement> pes = new ArrayList<PictogramElement>();
-			rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_ADDED, this, context, pe));
 			
 			if (le!=null) {
 				((AbstractBpmn2AddFeature)addElementFeature).updatePictogramElement(context, pe);
