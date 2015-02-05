@@ -44,9 +44,7 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 
 	@Override
 	public IStatus validate(CallActivity object) {
-		if (object.getCalledElementRef() == null) {
-			addStatus(object, Status.ERROR, Messages.CallActivityConstraint_No_Called_Element);
-		} else {
+		if (object.getCalledElementRef() != null) {
 			String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
 			String packageName = packageAssetInfo[0];
 			List<String> allProcessesInPackage = ServletUtil.getAllProcessesInPackage(packageName, profile);
