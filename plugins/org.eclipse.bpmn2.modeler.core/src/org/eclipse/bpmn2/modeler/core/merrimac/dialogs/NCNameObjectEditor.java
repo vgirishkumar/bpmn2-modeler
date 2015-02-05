@@ -63,7 +63,8 @@ public class NCNameObjectEditor extends TextObjectEditor {
 			@Override
 			public void verifyText(VerifyEvent e) {
 				if (Character.isISOControl(e.character)) {
-					return;
+					if (e.text==null || e.text.isEmpty())
+						return;
 				}
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isNCName(s);
