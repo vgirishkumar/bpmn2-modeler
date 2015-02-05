@@ -191,8 +191,6 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 					// The BPMN2 Project Nature will allow the editor to dynamically
 					// reload configuration files (a.k.a. extensions) from ".bpmn2config"
 					IProjectNature bpmn2Nature = project.getNature(BPMN2Nature.NATURE_ID);
-					// The WST Validation Builder is required to do BPMN2 model validation
-					boolean hasWSTBuilder = BPMN2Nature.hasBuilder(project, BPMN2Nature.WST_VALIDATION_BUILDER_ID);
 					Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(project);
 					if (bpmn2Nature==null) {
 						if (preferences.getCheckProjectNature()) {
@@ -222,7 +220,10 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 							}
 						}
 					}
-					else if (!hasWSTBuilder) {
+					
+					// The WST Validation Builder is required to do BPMN2 model validation
+					boolean hasWSTBuilder = BPMN2Nature.hasBuilder(project, BPMN2Nature.WST_VALIDATION_BUILDER_ID);
+					if (!hasWSTBuilder) {
 //						if (preferences.getCheckProjectNature()) 
 						{
 							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
