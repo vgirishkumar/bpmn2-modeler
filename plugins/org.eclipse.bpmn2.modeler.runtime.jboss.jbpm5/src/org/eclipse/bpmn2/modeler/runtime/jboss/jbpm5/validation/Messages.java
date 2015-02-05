@@ -28,6 +28,7 @@ public class Messages extends NLS {
 	public static String ProcessVariableNameValidator_ID_Invalid;
 	public static String UserTaskConstraint_No_Form;
 	public static String UserTaskConstraint_No_Name;
+	public static String InterfaceValidator_Implementation_Invalid;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
