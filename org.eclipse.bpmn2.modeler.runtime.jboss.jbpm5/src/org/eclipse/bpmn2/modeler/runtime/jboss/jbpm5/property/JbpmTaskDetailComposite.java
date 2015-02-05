@@ -28,6 +28,7 @@ import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.ResourceRole;
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
@@ -98,7 +99,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 	 * 
 	 * @param task
 	 */
-	protected void createInputParameterBindings(Task task) {
+	protected void createInputParameterBindings(final Task task) {
 		
 		ModelExtensionAdapter adapter = ModelExtensionDescriptor.getModelExtensionAdapter(task);
 		if (adapter != null) {
@@ -118,7 +119,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 			for (Property property : props) {
 				
 				// this will become the label for the Object Editor
-				String name = property.getFirstStringValue();
+				final String name = property.getFirstStringValue();
 				// the input parameter
 				DataInput parameter = null;
 				// the DataInputAssociation
@@ -200,7 +201,28 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 					editor = new IntObjectEditor(this,fromExpression,attribute);
 				}
 				else if ("EBoolean".equals(dataType)) { //$NON-NLS-1$
-					editor = new BooleanObjectEditor(this,fromExpression,attribute);
+					editor = new BooleanObjectEditor(this,fromExpression,attribute) {
+						@Override
+						public Boolean getValue() {
+							if (task instanceof UserTask && "Skippable".equals(name)) {
+								// Sheesh! All this just to set the default value of
+								// the User Task "Skippable" Data Input to true by default!
+								UserTask ut = (UserTask) task;
+								for (DataInput di : ut.getIoSpecification().getDataInputs()) {
+									if ("Skippable".equals(di.getName())) {
+										for (DataInputAssociation dia : ut.getDataInputAssociations()) {
+											if (dia.getTargetRef() == di) {
+												if (dia.getAssignment().size()==0) {
+													return Boolean.TRUE;
+												}
+											}
+										}
+									}
+								}
+							}
+							return super.getValue();
+						}
+					};
 				}
 				else if ("ID".equals(dataType)) { //$NON-NLS-1$
 					editor = new NCNameObjectEditor(this,fromExpression,attribute);
@@ -284,7 +306,7 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				@Override
 				protected Composite bindFeature(EObject be, EStructuralFeature feature, EClass eItemClass) {
 					Composite composite = null;
-					if (feature!=null && "body".equals(feature.getName())) {
+					if (feature!=null && "body".equals(feature.getName())) { //$NON-NLS-1$
 						super.bindFeature(be, feature, eItemClass);
 					}
 					return composite;

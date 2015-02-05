@@ -233,10 +233,10 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 		
 		switch (event.getEventType()) {
 		case OperationHistoryEvent.REDONE:
-			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
 			break;
 		case OperationHistoryEvent.UNDONE:
-			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
 			break;
 		}
 	}

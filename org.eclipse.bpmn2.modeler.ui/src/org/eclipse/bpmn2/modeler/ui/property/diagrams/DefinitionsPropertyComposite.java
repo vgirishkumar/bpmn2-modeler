@@ -204,7 +204,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 							}
 							
 							@Override
-							protected boolean setValue(final Object result) {
+							public boolean setValue(final Object result) {
 								// we can't just change the key because the map that contains it
 								// needs to be updated, so remove old key, then add new.
 								if (result instanceof String && !((String)result).isEmpty() ) {
@@ -436,7 +436,7 @@ public class DefinitionsPropertyComposite extends DefaultDetailComposite  {
 					}
 				}
 				
-				protected boolean setValue(final Object value) {
+				public boolean setValue(final Object value) {
 					// remove old prefix
 					String prefix = text.getText();
 					NamespaceUtil.removeNamespaceForPrefix(imp.eResource(), prefix);

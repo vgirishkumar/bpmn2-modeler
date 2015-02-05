@@ -17,8 +17,6 @@ public class Messages extends NLS {
 	public static String JbpmGlobalTypePropertiesAdapter_Data_Type_Label;
 	public static String JbpmGlobalTypePropertiesAdapter_Label;
 	public static String JbpmGlobalTypePropertiesAdapter_Name;
-	public static String JbpmFormalExpressionPropertiesAdapter_Actor;
-	public static String JbpmFormalExpressionPropertiesAdapter_Expression;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

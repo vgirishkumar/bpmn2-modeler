@@ -113,11 +113,14 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 	}
 
 	void validate(IResourceDelta delta, IProgressMonitor monitor) {
-		BPMN2ProjectValidator.validate(delta, monitor);
+		// This project builder should not be doing validation.
+		// Validation is being handled by the Eclipse Validation Builder
+		// and can be enabled/disabled from the User Preferences -> Validation page.
+//		BPMN2ProjectValidator.validate(delta, monitor);
 	}
 
 	void validate(IResource resource, IProgressMonitor monitor) {
-		BPMN2ProjectValidator.validate(resource, monitor);
+//		BPMN2ProjectValidator.validate(resource, monitor);
 	}
 
 	protected void fullBuild(final IProgressMonitor monitor)

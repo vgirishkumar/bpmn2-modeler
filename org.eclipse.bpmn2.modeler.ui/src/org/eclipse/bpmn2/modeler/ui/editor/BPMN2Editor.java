@@ -377,6 +377,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			Bpmn2Preferences.setActiveProject(activeEditor.getProject());
 			TargetRuntime.setCurrentRuntime( activeEditor.getTargetRuntime() );
 		}
+		else
+			TargetRuntime.setCurrentRuntime(null);
 	}
 
 	public BPMN2MultiPageEditor getMultipageEditor() {
@@ -389,9 +391,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-			
-		setActiveEditor(this);
+		// This needs to happen very early because setActiveEditor will try to
+		// determine the TargetRuntime from the EditorInput.
 		currentInput = input;
+		setActiveEditor(this);
 		
 		if (this.getDiagramBehavior()==null) {
 			super.init(site, input);
@@ -573,6 +576,8 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	public boolean isDirty() {
 		if (!editable)
 			return false;
+		if (getEditorInput()==null)
+			return false;
 		return super.isDirty();
 	}
 	
@@ -646,18 +651,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
 			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
 			 // generic property sheets and other default behavior.
-			targetRuntime = getPreferences().getRuntime();
-			if (targetRuntime == TargetRuntime.getDefaultRuntime()) {
-				for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-					if (rt.getRuntimeExtension().isContentForRuntime(input)) {
-						targetRuntime = rt;
-						break;
-					}
-				}
-			}
-			if (targetRuntime==null)
-				targetRuntime = TargetRuntime.getDefaultRuntime();
-			
+			targetRuntime = TargetRuntime.getRuntime(input);
 			TargetRuntime.setCurrentRuntime(targetRuntime);
 		}
 		return targetRuntime;

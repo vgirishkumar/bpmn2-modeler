@@ -316,9 +316,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	////////////////////////////////////////////////////////////////////////////////
 
 	private void loadDefaults() {
-		if (defaultPreferences.get(PREF_TARGET_RUNTIME, null)==null) {
-			String rid = TargetRuntime.getFirstNonDefaultId();
-			defaultPreferences.put(PREF_TARGET_RUNTIME, rid);
+		if (!keyExists(defaultPreferences,PREF_SHOW_ADVANCED_PROPERTIES)) {
 			defaultPreferences.putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			defaultPreferences.putBoolean(PREF_CHECK_PROJECT_NATURE, true);
 			defaultPreferences.putBoolean(PREF_SIMPLIFY_LISTS, true);
@@ -405,6 +403,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				projectPreferences.node(key);
 				return true;
 			}
+			if (PREF_CHECK_PROJECT_NATURE.equals(key))
+				return true;
+			if (PREF_TARGET_RUNTIME.equals(key))
+				return true;
+
 			// otherwise only save to project preferences if the key already exists.
 			try {
 				return projectPreferences.nodeExists(key);
@@ -425,9 +428,9 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
-			String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getDefaultRuntime().getId());
+			String id = get(PREF_TARGET_RUNTIME,null);
 			if (id==null || id.isEmpty())
-				id = TargetRuntime.getFirstNonDefaultId();
+				id = TargetRuntime.getCurrentRuntime().getId();
 			targetRuntime = TargetRuntime.getRuntime(id);
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
@@ -465,7 +468,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				}
 			}
 			else {
-				put(PREF_TARGET_RUNTIME,getRuntime().getId());
 				putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
 				putBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
 				putBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
@@ -841,7 +843,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			Display.getDefault().asyncExec( new Runnable() {
 				@Override
 				public void run() {
-					String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getFirstNonDefaultId());
+					String id = get(PREF_TARGET_RUNTIME,null);
 					if (id==null || id.isEmpty())
 						id = TargetRuntime.getFirstNonDefaultId();
 
@@ -867,6 +869,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Assert.isTrue(rt!=null);
 		put(PREF_TARGET_RUNTIME, rt.getId());
 		targetRuntime = rt;
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean getShowAdvancedPropertiesTab() {
@@ -897,12 +905,19 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public boolean getCheckProjectNature() {
+		checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
 		return checkProjectNature;
 	}
 	
 	public void setCheckProjectNature(boolean show) {
 		putBoolean(PREF_CHECK_PROJECT_NATURE, show);
 		checkProjectNature = show;
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean getSimplifyLists() {
@@ -1517,21 +1532,21 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		public void putInt(int value) {
 			put(Integer.toString(value));
 		}
-		
-		private boolean keyExists(Preferences prefs, String key) {
-			try {
-				for (String k : prefs.keys()) {
-					if (k.equals(key)) {
-						return true;
-					}
+	}
+	
+	public boolean keyExists(Preferences prefs, String key) {
+		try {
+			for (String k : prefs.keys()) {
+				if (k.equals(key)) {
+					return true;
 				}
 			}
-			catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return false;
 		}
+		catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {

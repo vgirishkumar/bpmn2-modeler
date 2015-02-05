@@ -1036,6 +1036,7 @@ public class ModelUtil {
 			}
 			
 		};
+		value = SyntaxCheckerUtils.toXMLString(value);
 		de.eSetClass(EcorePackage.eINSTANCE.getEObject());
 		de.eSetProxyURI(URI.createURI(value));
 		return de;

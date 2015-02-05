@@ -246,7 +246,7 @@ public class IoSetsListComposite extends DefaultListComposite {
 				setText(text);
 			}
 			
-			protected boolean setValue(final Object result) {
+			public boolean setValue(final Object result) {
 				return true;
 			}
 		}

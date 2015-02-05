@@ -423,7 +423,7 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute) {
-		bindAttribute(parent,object,attribute,null);
+		bindAttribute(parent,object,attribute,ModelUtil.getLabel(object, attribute));
 	}
 	
 	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {

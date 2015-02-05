@@ -18,12 +18,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.bpmn2.CallActivity;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.IDiagramProfile;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.ServletUtil;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.validation.IValidationContext;
 
 public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallActivity> {
@@ -42,9 +44,7 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 
 	@Override
 	public IStatus validate(CallActivity object) {
-		if (object.getCalledElementRef() == null) {
-			addStatus(object, Status.ERROR, Messages.CallActivityConstraint_No_Called_Element);
-		} else {
+		if (object.getCalledElementRef() != null) {
 			String[] packageAssetInfo = ServletUtil.findPackageAndAssetInfo(uuid, profile);
 			String packageName = packageAssetInfo[0];
 			List<String> allProcessesInPackage = ServletUtil.getAllProcessesInPackage(packageName, profile);
@@ -63,6 +63,18 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 			if (!foundCalledElementProcess) {
 				addStatus(object, Status.ERROR, Messages.CallActivityConstraint_No_Process, object.getCalledElementRef());
 			}
+		}
+		Boolean independent = false;
+		Boolean waitForCompletion = false;
+		EStructuralFeature feature;
+		feature = ModelUtil.getAnyAttribute(object, "independent"); //$NON-NLS-1$
+		if (feature!=null)
+			independent = (Boolean) object.eGet(feature);
+		feature = ModelUtil.getAnyAttribute(object, "waitForCompletion"); //$NON-NLS-1$
+		if (feature!=null)
+			waitForCompletion = (Boolean) object.eGet(feature);
+		if (independent==false && waitForCompletion==false) {
+			addStatus(object, Status.ERROR, Messages.CallActivityConstraint_Independent_And_WaitForCompletion_False);
 		}
 		return getResult();
 	}

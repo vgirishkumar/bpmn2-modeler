@@ -286,7 +286,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
         }
 	}
 	
-	protected boolean setValue(final Object result) {
+	public boolean setValue(final Object result) {
 		TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 		boolean success = ModelUtil.setValue(domain, object, feature, result);
 		if (!success) {

@@ -158,7 +158,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 		if (isEnabled("isSequential")) { //$NON-NLS-1$
 			isSequentialEditor = new BooleanObjectEditor(this, getBO(), PACKAGE.getMultiInstanceLoopCharacteristics_IsSequential()) {
 				
-				protected boolean setValue(final Object result) {
+				public boolean setValue(final Object result) {
 					Object oldValue = object.eGet(feature);
 					if (oldValue!=result && oldValue!=null && !oldValue.equals(result)) {
 						TransactionalEditingDomain editingDomain = getDiagramEditor().getEditingDomain();
@@ -524,7 +524,7 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			throwBehaviorEditor = new ComboObjectEditor(this,object,attribute) {
 
 				@Override
-				protected boolean setValue(Object result) {
+				public boolean setValue(Object result) {
 					MultiInstanceLoopCharacteristics lc = (MultiInstanceLoopCharacteristics)object;
 					boolean updated = super.setValue(result);
 					if (updated) {

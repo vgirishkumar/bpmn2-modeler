@@ -42,6 +42,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.ui.IEditorInput;
 
 
 public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
@@ -95,22 +96,64 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 		return null;
 	}
 	
-	public static TargetRuntime getCurrentRuntime() {
-		return currentRuntime;
-	}
-	
+	public static TargetRuntime getRuntime(IEditorInput input) {
+		TargetRuntime runtime = null;
+		if (input!=null) {
+			 // If the project has not been configured for a specific runtime through the "BPMN2"
+			 // project properties page (i.e. the target is "None") then allow the runtime extension
+			 // plug-ins an opportunity to identify the given process file contents as their own.
+			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
+			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
+			 // generic property sheets and other default behavior.
+			runtime = null;
+			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
+					if (rt.getRuntimeExtension().isContentForRuntime(input)) {
+						runtime = rt;
+						break;
+					}
+				}
+			if (runtime==null)
+				runtime = getDefaultRuntime();
+			}
+		return runtime;
+		}
+
+	/**
+	 * Set the current TargetRuntime.
+	 * This is called by a BPMN2 Editor when it becomes the active editor.
+	 * 
+	 * @param rt
+	 */
 	public static void setCurrentRuntime(TargetRuntime rt) {
 		currentRuntime = rt;
 	}
 	
+	/**
+	 * Return the current TargetRuntime.
+	 * This can be used by any UI component that belongs to the currently active BPMN2 Editor
+	 * 
+	 * @return
+	 */
+	public static TargetRuntime getCurrentRuntime() {
+		if (currentRuntime==null)
+			return getDefaultRuntime();
+		return currentRuntime;
+	}
+
+	/**
+	 * Returns the "None" TargetRuntime definition.
+	 * 
+	 * @return
+	 */
 	public static TargetRuntime getDefaultRuntime() {
 		return getRuntime(DEFAULT_RUNTIME_ID);
 	}
 	
 	/**
+	 * Returns the first TargetRuntime which is not the "None", or "default" runtime.
+	 * If there are no other TargetRuntime extension plugins loaded, this returns the default runtime.
 	 * 
-	 * @return the first runtime which is non default, if there are more than on runtime or if there is only the default runtime
-	 * return the DEFAULT_RUNTIME_ID
+	 * @return
 	 */
 	public static String getFirstNonDefaultId(){
 		String runtimeId = null;

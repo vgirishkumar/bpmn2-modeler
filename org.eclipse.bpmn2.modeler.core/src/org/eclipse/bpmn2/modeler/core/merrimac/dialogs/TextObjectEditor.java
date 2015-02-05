@@ -121,7 +121,7 @@ public class TextObjectEditor extends ObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor#setValue(java.lang.Object)
 	 */
 	@Override
-	protected boolean setValue(final Object result) {
+	public boolean setValue(final Object result) {
 		
 		if (super.setValue(result)) {
 			updateText();

@@ -103,11 +103,14 @@
 
   <extension
         id="org.eclipse.bpmn2.modeler.core.projectValidator"
-        name="%extension.name"
+        name="%BPMN2Validator.name"
         point="org.eclipse.wst.validation.validatorV2">
      <validator
            class="org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator"
            markerId="org.eclipse.bpmn2.modeler.core.problemMarker">
+		<projectNature
+			id="org.eclipse.bpmn2.modeler.core.bpmn2Nature">
+		</projectNature>
         <include>
            <rules>
               <contentType
@@ -135,7 +138,7 @@
   
   <extension
         id="org.eclipse.bpmn2.modeler.core.problemMarker"
-        name="%extension.name.0"
+        name="%BPMN2ProblemMarker.name"
         point="org.eclipse.core.resources.markers">
      <persistent
            value="true">
@@ -147,7 +150,7 @@
   
   <extension
         id="org.eclipse.bpmn2.modeler.core.bpmn2Builder"
-        name="%extension.name.1"
+        name="%BPMN2Builder.name"
         point="org.eclipse.core.resources.builders">
      <builder
            hasNature="true">
@@ -158,7 +161,7 @@
   </extension>
   <extension
         id="org.eclipse.bpmn2.modeler.core.bpmn2Nature"
-        name="%extension.name.2"
+        name="%BPMN2Nature.name"
         point="org.eclipse.core.resources.natures">
      <runtime>
         <run
@@ -171,7 +174,7 @@
   </extension>
   <extension
         id="xmlProblem"
-        name="%extension.name.3"
+        name="%XMLProblem.name"
         point="org.eclipse.core.resources.markers">
      <super
            type="org.eclipse.core.resources.problemmarker">
