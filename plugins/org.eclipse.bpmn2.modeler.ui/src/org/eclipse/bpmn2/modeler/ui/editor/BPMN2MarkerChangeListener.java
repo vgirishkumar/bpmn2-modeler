@@ -112,7 +112,8 @@ public class BPMN2MarkerChangeListener implements IResourceChangeListener {
         					PropertySheet ps = (PropertySheet)v.getView(true);
         					IPage pp = ps.getCurrentPage();
         					if (pp instanceof Bpmn2TabbedPropertySheetPage) {
-        						((Bpmn2TabbedPropertySheetPage)pp).refresh();
+        						if (((Bpmn2TabbedPropertySheetPage) pp).getCurrentTab()!=null)
+        							((Bpmn2TabbedPropertySheetPage)pp).refresh();
         					}
         				}
         			}
