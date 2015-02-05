@@ -203,18 +203,32 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 					continue;
 				}
 				
-				category = getRealCategory(targetRuntime, category);
-				compartmentEntry = categories.get(category.getName());
-				for (ToolDescriptor tool : category.getTools()) {
+				CategoryDescriptor realCategory = getRealCategory(targetRuntime, category);
+				compartmentEntry = categories.get(realCategory.getName());
+				for (ToolDescriptor tool : realCategory.getTools()) {
 					tool = getRealTool(targetRuntime, tool);
 					IFeature feature = getCreateFeature(tool);
 					if (feature!=null) {
 						if (compartmentEntry==null) {
-							compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+							compartmentEntry = new PaletteCompartmentEntry(realCategory.getName(), realCategory.getIcon());
 							compartmentEntry.setInitiallyOpen(false);
-							categories.put(category.getName(), compartmentEntry);
+							categories.put(realCategory.getName(), compartmentEntry);
 						}
 						createEntry(tool, feature, compartmentEntry);
+					}
+				}
+				if (category != realCategory) {
+					for (ToolDescriptor tool : category.getTools()) {
+						tool = getRealTool(targetRuntime, tool);
+						IFeature feature = getCreateFeature(tool);
+						if (feature!=null) {
+							if (compartmentEntry==null) {
+								compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+								compartmentEntry.setInitiallyOpen(false);
+								categories.put(category.getName(), compartmentEntry);
+							}
+							createEntry(tool, feature, compartmentEntry);
+						}
 					}
 				}
 				// if there are no tools defined for this category, check if it will be
@@ -250,7 +264,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		String id = category.getId();
 		if (fromPalette!=null && id!=null) {
 			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
-				if (otherRt!=rt) {
+//				if (otherRt!=rt)
+				{
 					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
@@ -271,7 +286,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		String id = tool.getId();
 		if (fromPalette!=null && id!=null) {
 			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
-				if (otherRt!=rt) {
+//				if (otherRt!=rt) 
+				{
 					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
