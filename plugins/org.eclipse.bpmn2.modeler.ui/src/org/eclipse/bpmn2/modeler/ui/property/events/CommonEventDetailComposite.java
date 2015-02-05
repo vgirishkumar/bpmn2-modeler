@@ -86,7 +86,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 					label = getBusinessObjectDelegate().getLabel(be, attribute);
 				
 				final ObjectEditor editor = new BooleanObjectEditor(this,be,attribute) {
-					protected boolean setValue(final Object result) {
+					public boolean setValue(final Object result) {
 						if (hasEventDefinition(be,ErrorEventDefinition.class)) {
 							setCancel(be,true);
 							this.setVisible(true);

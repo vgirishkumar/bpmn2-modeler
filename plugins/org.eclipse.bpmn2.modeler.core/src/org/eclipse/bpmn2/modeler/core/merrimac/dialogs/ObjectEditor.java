@@ -111,7 +111,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 					IStatus status = parent.validate();
 					if (status.getSeverity() >= Status.ERROR) {
 						if (statusApplies(status)) {
-							MessageDialog.openError(parent.getShell(), ToolTipProvider.ObjectEditor_Validation_Error_Title, status.getMessage());
+							MessageDialog.openError(parent.getShell(), Messages.ObjectEditor_Validation_Error_Title, status.getMessage());
 							if (!c.isDisposed())
 								c.setFocus();
 						}
@@ -294,7 +294,7 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 		}
 	}
 	
-	protected boolean setValue(final Object result) {
+	public boolean setValue(final Object result) {
 		boolean success = getBusinessObjectDelegate().setValue(object, feature, result);
 		if (!success) {
 			showErrorMessage(

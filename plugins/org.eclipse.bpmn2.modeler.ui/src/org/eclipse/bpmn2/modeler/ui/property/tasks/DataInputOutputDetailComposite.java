@@ -44,7 +44,7 @@ public class DataInputOutputDetailComposite extends ItemAwareElementDetailCompos
 			editor = new ComboObjectEditor(this,object,reference) {
 
 				@Override
-				protected boolean setValue(Object result) {
+				public boolean setValue(Object result) {
 					if (super.setValue(result)) {
 						return true;
 					}
