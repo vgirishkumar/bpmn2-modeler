@@ -57,7 +57,9 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.validation.AbstractValidator;
 import org.eclipse.wst.validation.ValidationEvent;
 import org.eclipse.wst.validation.ValidationFramework;
@@ -68,18 +70,17 @@ import org.eclipse.wst.validation.ValidatorMessage;
 
 public class BPMN2ProjectValidator extends AbstractValidator {
 
-    private Bpmn2Preferences preferences;
-	private TargetRuntime targetRuntime;
 	private IFile modelFile;
 
     @Override
-    public ValidationResult validate(ValidationEvent event, ValidationState state, IProgressMonitor monitor) {
+    public synchronized ValidationResult validate(ValidationEvent event, ValidationState state, IProgressMonitor monitor) {
     	IResource file = event.getResource();
         if ((event.getKind() & IResourceDelta.REMOVED) != 0 
         		|| file.isDerived(IResource.CHECK_ANCESTORS)
         		|| !(file instanceof IFile)) {
             return new ValidationResult();
         }
+
     	modelFile = (IFile) file;
     	try {
 			modelFile.deleteMarkers(null, true, IProject.DEPTH_INFINITE);
@@ -187,14 +188,18 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 	
 			if (project!=null) {
 				try {
-					IProjectNature nature = project.getNature(BPMN2Nature.NATURE_ID);
-					if (nature==null) {
-						Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(project);
+					// The BPMN2 Project Nature will allow the editor to dynamically
+					// reload configuration files (a.k.a. extensions) from ".bpmn2config"
+					IProjectNature bpmn2Nature = project.getNature(BPMN2Nature.NATURE_ID);
+					// The WST Validation Builder is required to do BPMN2 model validation
+					boolean hasWSTBuilder = BPMN2Nature.hasBuilder(project, BPMN2Nature.WST_VALIDATION_BUILDER_ID);
+					Bpmn2Preferences preferences = Bpmn2Preferences.getInstance(project);
+					if (bpmn2Nature==null) {
 						if (preferences.getCheckProjectNature()) {
 							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 							String title = Messages.BPMN2ProjectValidator_Title;
 							String message = NLS.bind(
-								Messages.BPMN2ProjectValidator_No_Project_Nature,
+								Messages.BPMN2ProjectValidator_No_BPMN2_Project_Nature,
 								project.getName()
 							);
 							MessageDialogWithToggle result = MessageDialogWithToggle.open(
@@ -208,13 +213,7 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 									null, // pref key
 									SWT.NONE);
 							if (result.getReturnCode() == IDialogConstants.YES_ID) {
-								IProjectDescription description = project.getDescription();
-								String[] natures = description.getNatureIds();
-								String[] newNatures = new String[natures.length + 1];
-								System.arraycopy(natures, 0, newNatures, 0, natures.length);
-								newNatures[natures.length] = BPMN2Nature.NATURE_ID;
-								description.setNatureIds(newNatures);
-								project.setDescription(description, null);
+								BPMN2Nature.setBPMN2Nature(project, true);
 								needValidation = true;
 							}
 							if (result.getToggleState()) {
@@ -223,21 +222,35 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 							}
 						}
 					}
-					else
-						needValidation = true;
+					else if (!hasWSTBuilder) {
+//						if (preferences.getCheckProjectNature()) 
+						{
+							Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+							String title = Messages.BPMN2ProjectValidator_Title;
+							String message = NLS.bind(
+								Messages.BPMN2ProjectValidator_No_WST_Project_Builder,
+								project.getName()
+							);
+							boolean result = MessageDialog.open(
+									MessageDialog.QUESTION,
+									shell,
+									title,
+									message,
+									SWT.NONE);
+							if (result) {
+								BPMN2Nature.setBPMN2Nature(project, true);
+								needValidation = true;
+							}
+						}
+					}
 	
 				} catch (CoreException e) {
 					e.printStackTrace();
 				}
 			}
-			
-			if (needValidation) {
-				// validation will be done by the Project Validation builder
-				return true;
-			}
 		}
 		
-    	return false;
+    	return needValidation;
     }
     
     public void processStatus(IStatus status, IResource resource, ValidationResult result) {
@@ -305,22 +318,8 @@ public class BPMN2ProjectValidator extends AbstractValidator {
     }
 	
     protected TargetRuntime getTargetRuntime() {
-//		if (targetRuntime==null)
-			targetRuntime = getPreferences().getRuntime();
-		return targetRuntime;
-	}
-
-    protected Bpmn2Preferences getPreferences() {
-//		if (preferences==null)
-		{
-			Assert.isTrue(modelFile!=null);
-			IProject project = modelFile.getProject();
-			loadPreferences(project);
-		}
-		return preferences;
-	}
-	
-    protected void loadPreferences(IProject project) {
-		preferences = Bpmn2Preferences.getInstance(project);
+		Assert.isTrue(modelFile!=null);
+		IEditorInput input = new FileEditorInput(modelFile);
+		return TargetRuntime.getRuntime(input);
 	}
 }

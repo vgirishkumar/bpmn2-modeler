@@ -14,7 +14,8 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.validation.messages"; //$NON-NLS-1$
-	public static String BPMN2ProjectValidator_No_Project_Nature;
+	public static String BPMN2ProjectValidator_No_BPMN2_Project_Nature;
+	public static String BPMN2ProjectValidator_No_WST_Project_Builder;
 	public static String BPMN2ProjectValidator_Dont_Ask_Again;
 	public static String BPMN2ProjectValidator_Invalid_File;
 	public static String BPMN2ProjectValidator_Title;
