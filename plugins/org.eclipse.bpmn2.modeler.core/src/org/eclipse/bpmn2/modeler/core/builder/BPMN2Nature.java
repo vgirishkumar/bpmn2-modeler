@@ -31,6 +31,16 @@ public class BPMN2Nature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
 	public void configure() throws CoreException {
+		if (!project.hasNature(BPMN2Nature.NATURE_ID)) {
+			// Add the nature
+			IProjectDescription description = project.getDescription();
+			String[] natures = description.getNatureIds();
+			String[] newNatures = new String[natures.length + 1];
+			System.arraycopy(natures, 0, newNatures, 0, natures.length);
+			newNatures[natures.length] = BPMN2Nature.NATURE_ID;
+			description.setNatureIds(newNatures);
+			project.setDescription(description, null);
+		}
 		configureBuilder(BPMN2Builder.BUILDER_ID);
 		// We need the WST validation builder as well
 		configureBuilder(WST_VALIDATION_BUILDER_ID);
@@ -63,6 +73,7 @@ public class BPMN2Nature implements IProjectNature {
 			newCommands[newCommands.length - 1] = command;
 			desc.setBuildSpec(newCommands);
 			project.setDescription(desc, null);
+			project.refreshLocal(IProject.DEPTH_INFINITE, null);
 		}
 	}
 	
@@ -72,6 +83,22 @@ public class BPMN2Nature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
+		if (project.hasNature(BPMN2Nature.NATURE_ID)) {
+			IProjectDescription description = project.getDescription();
+			String[] natures = description.getNatureIds();
+			for (int i = 0; i < natures.length; ++i) {
+				if (BPMN2Nature.NATURE_ID.equals(natures[i])) {
+					// Remove the nature
+					String[] newNatures = new String[natures.length - 1];
+					System.arraycopy(natures, 0, newNatures, 0, i);
+					System.arraycopy(natures, i + 1, newNatures, i,
+							natures.length - i - 1);
+					description.setNatureIds(newNatures);
+					project.setDescription(description, null);
+					return;
+				}
+			}
+		}
 		deconfigureBuilder(BPMN2Builder.BUILDER_ID);
 		// Don't remove WST validation builder.
 		// Validation is enabled/disabled by the Project or Global
