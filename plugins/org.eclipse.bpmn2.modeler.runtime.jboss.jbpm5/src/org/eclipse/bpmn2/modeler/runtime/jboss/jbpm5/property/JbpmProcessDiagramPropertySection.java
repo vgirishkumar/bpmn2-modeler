@@ -15,7 +15,7 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.NCNameObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaPackageNameObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.diagrams.ProcessDiagramPropertySection;
@@ -61,7 +61,7 @@ public class JbpmProcessDiagramPropertySection extends ProcessDiagramPropertySec
 			if (label==null)
 				label = getBusinessObjectDelegate().getLabel(object, attribute);
 			if ("id".equals(attribute.getName())) { //$NON-NLS-1$
-				ObjectEditor editor = new NCNameObjectEditor(this,object,attribute);
+				ObjectEditor editor = new JavaPackageNameObjectEditor(this,object,attribute);
 				editor.createControl(parent,label);
 			}
 			else
