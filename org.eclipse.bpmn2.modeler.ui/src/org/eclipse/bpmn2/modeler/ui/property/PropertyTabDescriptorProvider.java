@@ -45,15 +45,16 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 	@Override
 	public ITabDescriptor[] getTabDescriptors(IWorkbenchPart part, ISelection selection) {
 		
-		// is the Tab Descriptor List already in our cache?
-		TabDescriptorList tabDescriptorList = null;
 		EObject businessObject = BusinessObjectUtil.getBusinessObjectForSelection(selection);
-		if (businessObject!=null) {
-			tabDescriptorList = tabDescriptorListMap.get(businessObject);
-			if (tabDescriptorList!=null) {
-				// Yes! return it.
-				return tabDescriptorList.toArray();
-			}
+		if (businessObject==null || businessObject.eResource()==null) {
+			return new ITabDescriptor[] {};
+		}
+		
+		// is the Tab Descriptor List already in our cache?
+		TabDescriptorList tabDescriptorList = tabDescriptorListMap.get(businessObject);
+		if (tabDescriptorList!=null) {
+			// Yes! return it.
+			return tabDescriptorList.toArray();
 		}
 		
 		// No, we need build the list: get the Target Runtime <propertyTab> contributions
@@ -176,5 +177,14 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 				tabDescriptorListMap.remove(object);
 			}
 		}
+		// clean up any dangling EObjects (ones that are not contained in a Resource)
+		List<EObject> removed = new ArrayList<EObject>();
+		for (EObject o : tabDescriptorListMap.keySet()) {
+			if (o.eResource()==null) {
+				removed.add(o);
+			}
+		}
+		for (EObject o : removed)
+			tabDescriptorListMap.remove(o);
 	}
 }

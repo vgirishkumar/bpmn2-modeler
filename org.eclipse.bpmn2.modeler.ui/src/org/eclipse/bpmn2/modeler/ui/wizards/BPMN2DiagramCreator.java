@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.ui.wizards;
 import java.io.File;
 
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
@@ -88,7 +89,7 @@ public class BPMN2DiagramCreator {
 					});
 				}
 			}
-			String diagramName = FileService.createTempName(modelName);
+			String diagramName = FileUtils.createTempName(modelName);
 			diagramUri = URI.createFileURI(diagramName);
 			FileService.createEmfFileForDiagram(diagramUri, diagram, diagramEditor);
 		}

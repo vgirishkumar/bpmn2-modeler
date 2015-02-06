@@ -170,7 +170,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		ALWAYS_FALSE
 	};
 	
-	private TargetRuntime targetRuntime;
+//	private TargetRuntime targetRuntime;
 	private boolean showAdvancedPropertiesTab;
 	private boolean showDescriptions;
 	private boolean showIdAttribute;
@@ -413,7 +413,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				return projectPreferences.nodeExists(key);
 			}
 			catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -428,10 +427,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
-			String id = get(PREF_TARGET_RUNTIME,null);
-			if (id==null || id.isEmpty())
-				id = TargetRuntime.getCurrentRuntime().getId();
-			targetRuntime = TargetRuntime.getRuntime(id);
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
@@ -837,38 +832,37 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for miscellaneous preferences
 	////////////////////////////////////////////////////////////////////////////////
 
-	public TargetRuntime getRuntime() {
-		if (targetRuntime==null) {
-			targetRuntime = TargetRuntime.getDefaultRuntime();
-			Display.getDefault().asyncExec( new Runnable() {
-				@Override
-				public void run() {
-					String id = get(PREF_TARGET_RUNTIME,null);
-					if (id==null || id.isEmpty())
-						id = TargetRuntime.getFirstNonDefaultId();
-
-					targetRuntime = TargetRuntime.getDefaultRuntime();
-					MessageDialog.openError(
-						Display.getDefault().getActiveShell(),
-						Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
-						NLS.bind(
-							Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
-							id,
-							targetRuntime.getDescription()
-						)
-					);
-				}
-				
-			});
+	public synchronized TargetRuntime getRuntime() {
+		TargetRuntime rt = null;
+		final String id = get(PREF_TARGET_RUNTIME, null);
+		if (id!=null && !id.isEmpty()) {
+			rt = TargetRuntime.getRuntime(id);
+			if (rt==null) {
+				Display.getDefault().asyncExec( new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(
+							Display.getDefault().getActiveShell(),
+							Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
+							NLS.bind(
+								Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
+								id,
+								TargetRuntime.getCurrentRuntime().getDescription()
+							)
+						);
+					}
 					
+				});
+			}
 		}
-		return targetRuntime;
+		if (rt==null)
+			rt = TargetRuntime.getCurrentRuntime();
+		return rt;
 	}
 
-	public void setRuntime(TargetRuntime rt) {
+	public synchronized void setRuntime(TargetRuntime rt) {
 		Assert.isTrue(rt!=null);
 		put(PREF_TARGET_RUNTIME, rt.getId());
-		targetRuntime = rt;
 		try {
 			projectPreferences.flush();
 		} catch (BackingStoreException e) {
@@ -1389,8 +1383,10 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	
 	// TODO: use CNF for indigo & future - keep ResourceNavigator for backward compatibility
 	public static IProject getActiveProject() {
-		if (activeProject!=null)
-			return activeProject;
+		if (activeProject!=null) {
+			if (activeProject.isOpen())
+				return activeProject;
+		}
 		
 		IWorkbench workbench = PlatformUI.getWorkbench(); 
 		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
@@ -1585,7 +1581,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Hashtable<String,String> impls = new Hashtable<String,String>();
 		for (String s : value.split("\t")) { //$NON-NLS-1$
 			if (!s.isEmpty()) {
-				String a[] = s.split(";");
+				String a[] = s.split(";"); //$NON-NLS-1$
 				if (a.length>1)
 					impls.put(a[0], a[1]);
 				else
@@ -1601,7 +1597,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		while (iter.hasNext()) {
 			Entry<String, String> entry = iter.next();
 			if (!entry.getKey().isEmpty()) {
-				value += entry.getKey() + ";" + entry.getValue();
+				value += entry.getKey() + ";" + entry.getValue(); //$NON-NLS-1$
 				if (iter.hasNext())
 					value += "\t"; //$NON-NLS-1$
 			}

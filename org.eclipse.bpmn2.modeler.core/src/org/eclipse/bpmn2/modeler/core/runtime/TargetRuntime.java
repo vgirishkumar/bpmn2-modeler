@@ -29,13 +29,16 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Value;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.util.Bpmn2Resource;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -43,6 +46,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 
 
 public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
@@ -107,16 +111,31 @@ public class TargetRuntime extends AbstractPropertyChangeListenerProvider {
 			 // generic property sheets and other default behavior.
 			runtime = null;
 			for (TargetRuntime rt : TargetRuntime.getAllRuntimes()) {
-					if (rt.getRuntimeExtension().isContentForRuntime(input)) {
-						runtime = rt;
-						break;
-					}
+				if (rt.getRuntimeExtension().isContentForRuntime(input)) {
+					runtime = rt;
+					break;
 				}
-			if (runtime==null)
-				runtime = getDefaultRuntime();
 			}
-		return runtime;
 		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
+		return runtime;
+	}
+	
+	public static TargetRuntime getRuntime(EObject object) {
+		TargetRuntime runtime = null;
+		if (object!=null && object.eResource()!=null) {
+			URI uri = object.eResource().getURI();
+			IFile file = FileUtils.getFile(uri);
+			if (file!=null) {
+				IEditorInput input = new FileEditorInput(file);
+				runtime = getRuntime(input);
+			}
+		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
+		return runtime;
+	}
 
 	/**
 	 * Set the current TargetRuntime.

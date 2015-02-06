@@ -70,6 +70,7 @@ import org.eclipse.wst.validation.ValidatorMessage;
 public class BPMN2ProjectValidator extends AbstractValidator {
 
 	private IFile modelFile;
+	private TargetRuntime targetRuntime;
 
     @Override
     public synchronized ValidationResult validate(ValidationEvent event, ValidationState state, IProgressMonitor monitor) {
@@ -79,37 +80,46 @@ public class BPMN2ProjectValidator extends AbstractValidator {
         		|| !(file instanceof IFile)) {
             return new ValidationResult();
         }
+
+        // TODO: temporary hack until I can figure out how to associate
+        // a Bpmn2ModelerFactory instance with a Resource.
+        targetRuntime = null;
+        TargetRuntime currentRuntime = TargetRuntime.getCurrentRuntime();
+        
+        ValidationResult result = null;
     	modelFile = (IFile) file;
     	try {
 			modelFile.deleteMarkers(null, true, IProject.DEPTH_INFINITE);
-		} catch (CoreException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-    	Bpmn2ModelerResourceSetImpl rs = new Bpmn2ModelerResourceSetImpl();
-		getTargetRuntime().setResourceSet(rs);
-		URI modelUri = URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true);
-		rs.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
-    	Map<Object,Object> options = new HashMap<Object,Object>();
-    	options.put(Bpmn2ModelerResourceSetImpl.OPTION_PROGRESS_MONITOR, monitor);
-    	rs.setLoadOptions(options);
-
-		Resource resource = rs.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
-        try {
+	    	Bpmn2ModelerResourceSetImpl rs = new Bpmn2ModelerResourceSetImpl();
+			getTargetRuntime().setResourceSet(rs);
+			URI modelUri = URI.createPlatformResourceURI(modelFile.getFullPath().toString(), true);
+			rs.setURIConverter(new ProxyURIConverterImplExtension(modelUri));
+	    	Map<Object,Object> options = new HashMap<Object,Object>();
+	    	options.put(Bpmn2ModelerResourceSetImpl.OPTION_PROGRESS_MONITOR, monitor);
+	    	rs.setLoadOptions(options);
+	
+			Resource resource = rs.createResource(modelUri, Bpmn2ModelerResourceImpl.BPMN2_CONTENT_TYPE_ID);
             resource.load(null);
-        } catch (IOException e) {
-            e.printStackTrace();
+	        result = new ValidationResult();
+	        if (resource.getContents().isEmpty()) {
+	            ValidatorMessage message = ValidatorMessage.create(Messages.BPMN2ProjectValidator_Invalid_File, modelFile);
+	            message.setType(getTargetRuntime().getProblemMarkerId());
+	            result.add(message);
+	        } else {
+	            IBatchValidator validator = ModelValidationService.getInstance().newValidator(EvaluationMode.BATCH);
+	            processStatus(validator.validate(resource.getContents(), monitor), modelFile, result);
+	        }
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+        } catch (IOException e2) {
+            e2.printStackTrace();
         }
-        ValidationResult result = new ValidationResult();
-        if (resource.getContents().isEmpty()) {
-            ValidatorMessage message = ValidatorMessage.create(Messages.BPMN2ProjectValidator_Invalid_File, modelFile);
-            message.setType(getTargetRuntime().getProblemMarkerId());
-            result.add(message);
-        } else {
-            IBatchValidator validator = ModelValidationService.getInstance().newValidator(EvaluationMode.BATCH);
-            processStatus(validator.validate(resource.getContents(), monitor), modelFile, result);
-        }
+    	finally {
+    		// TODO: see to-do comment above
+    		TargetRuntime.setCurrentRuntime(currentRuntime);
+    	}
+	        
         return result;
     }
     
@@ -318,7 +328,11 @@ public class BPMN2ProjectValidator extends AbstractValidator {
 	
     protected TargetRuntime getTargetRuntime() {
 		Assert.isTrue(modelFile!=null);
-		IEditorInput input = new FileEditorInput(modelFile);
-		return TargetRuntime.getRuntime(input);
+		if (targetRuntime==null) {
+			IEditorInput input = new FileEditorInput(modelFile);
+			targetRuntime = TargetRuntime.getRuntime(input);
+    		TargetRuntime.setCurrentRuntime(targetRuntime);
+		}
+		return targetRuntime;
 	}
 }

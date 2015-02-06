@@ -99,6 +99,7 @@ import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.DiagramEditorAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.MarkerUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -952,14 +953,15 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		// get rid of temp files and folders, but NOT if the workbench is being shut down.
 		// when the workbench is restarted, we need to have those temp files around!
 		if (!workbenchShutdown) {
-			if (FileService.isTempFile(modelUri)) {
-				FileService.deleteTempFile(modelUri);
+			if (FileUtils.isTempFile(modelUri)) {
+				FileUtils.deleteTempFile(modelUri);
 			}
 		}
 
 		removeWorkbenchListener();
 		removeMarkerChangeListener();
 		getPreferences().dispose();
+		currentInput = null;
 	}
 
 	public IPath getModelPath() {
