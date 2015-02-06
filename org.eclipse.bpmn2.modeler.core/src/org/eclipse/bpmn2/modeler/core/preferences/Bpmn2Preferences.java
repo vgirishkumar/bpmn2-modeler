@@ -447,7 +447,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			popupConfigDialogFor[4] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, false);
 			popupConfigDialogFor[5] = getBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
 
-			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, false);
+			doCoreValidation = getBoolean(PREF_DO_CORE_VALIDATION, true);
 			propagateGroupCategories = getBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			allowMultipleConnections = getBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 
