@@ -90,8 +90,8 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 
 	
 	public Bpmn2EditorAppearancePreferencePage() {
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		preferences = Bpmn2Preferences.getInstance();
+		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
 	/* (non-Javadoc)

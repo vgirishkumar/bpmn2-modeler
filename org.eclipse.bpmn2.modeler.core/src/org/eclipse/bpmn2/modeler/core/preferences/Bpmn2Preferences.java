@@ -334,7 +334,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_EVENT_DEFS, false);
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_DATA_DEFS, false);
 			defaultPreferences.putBoolean(PREF_POPUP_CONFIG_DIALOG_FOR_CONTAINERS, false);
-			defaultPreferences.putBoolean(PREF_DO_CORE_VALIDATION, false);
+			defaultPreferences.putBoolean(PREF_DO_CORE_VALIDATION, true);
 			defaultPreferences.putBoolean(PREF_PROPAGATE_GROUP_CATEGORIES, true);
 			defaultPreferences.putBoolean(PREF_ALLOW_MULTIPLE_CONNECTIONS, false);
 

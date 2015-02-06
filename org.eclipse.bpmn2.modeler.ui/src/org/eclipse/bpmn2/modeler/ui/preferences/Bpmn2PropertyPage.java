@@ -39,6 +39,7 @@ public class Bpmn2PropertyPage extends PropertyPage {
 		super();
 		setTitle("BPMN2"); //$NON-NLS-1$
 		setDescription(Messages.Bpmn2PropertyPage_HomePage_Description);
+		Bpmn2Preferences.getInstance();
 	}
 
 	@Override

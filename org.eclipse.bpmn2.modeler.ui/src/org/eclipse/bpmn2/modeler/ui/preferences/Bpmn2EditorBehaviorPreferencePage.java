@@ -36,8 +36,8 @@ public class Bpmn2EditorBehaviorPreferencePage extends FieldEditorPreferencePage
 	
 	public Bpmn2EditorBehaviorPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		preferences = Bpmn2Preferences.getInstance();
+		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
 	@Override

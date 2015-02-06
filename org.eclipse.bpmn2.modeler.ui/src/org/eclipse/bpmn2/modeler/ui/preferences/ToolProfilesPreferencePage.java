@@ -118,12 +118,12 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	 * Create the property page.
 	 */
 	public ToolProfilesPreferencePage() {
+		preferences = Bpmn2Preferences.getInstance();
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
 	@Override
 	public void init(IWorkbench workbench) {
-		preferences = Bpmn2Preferences.getInstance();
 		ToolProfilesPreferencesHelper.setEnableIdAttribute(preferences.getShowIdAttribute());
 	}
 
