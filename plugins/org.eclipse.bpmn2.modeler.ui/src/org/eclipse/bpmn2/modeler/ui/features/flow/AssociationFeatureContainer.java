@@ -19,6 +19,8 @@ import org.eclipse.bpmn2.AssociationDirection;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
@@ -39,15 +41,11 @@ import org.eclipse.graphiti.features.IReason;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
-import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
-import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
@@ -55,7 +53,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -98,7 +96,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
-		return new DefaultDeleteBPMNShapeFeature(fp);
+		return new DeleteAssociationFeature(fp);
 	}
 
 	public class AddAssociationFeature extends AbstractAddFlowFeature<Association> {
@@ -315,7 +313,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 					oldDirection = AssociationDirection.NONE.toString();
 	
 				if (!oldDirection.equals(newDirection)) {
-					return Reason.createTrueReason("Association Direction");
+					return Reason.createTrueReason(Messages.AssociationFeatureContainer_Direction_Changed);
 				}
 			}
 			return Reason.createFalseReason();
@@ -330,9 +328,11 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			return true;
 		}
 	}
-
 	public static class ReconnectAssociationFeature extends AbstractReconnectFlowFeature {
 
+		BaseElement oldSource;
+		BaseElement oldTarget;
+		
 		public ReconnectAssociationFeature(IFeatureProvider fp) {
 			super(fp);
 		}
@@ -364,10 +364,94 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		}
 
 		@Override
+		public void preReconnect(IReconnectionContext context) {
+			AnchorContainer ac;
+			ac = context.getConnection().getStart().getParent();
+			oldSource = BusinessObjectUtil.getFirstBaseElement(ac);
+			ac = context.getConnection().getEnd().getParent();
+			oldTarget = BusinessObjectUtil.getFirstBaseElement(ac);
+
+			super.preReconnect(context);
+		}
+
+		@Override
 		public void postReconnect(IReconnectionContext context) {
 			AnchorUtil.adjustAnchors(context.getOldAnchor().getParent());
+			AnchorContainer ac;
+			ac = context.getConnection().getStart().getParent();
+			BaseElement newSource = BusinessObjectUtil.getFirstBaseElement(ac);
+			ac = context.getConnection().getEnd().getParent();
+			BaseElement newTarget = BusinessObjectUtil.getFirstBaseElement(ac);
+			if (oldSource instanceof BoundaryEvent && oldTarget instanceof Activity) {
+				// set the Activity reference of the old Boundary Event null
+				CompensateEventDefinition ced = getCompensateEvent(oldSource);
+				if (ced!=null) {
+					ced.setActivityRef(null);
+					((Activity)oldTarget).setIsForCompensation(false);
+				}
+			}
+			if (newSource instanceof BoundaryEvent && newTarget instanceof Activity) {
+				// Set the Activity reference of the new Boundary Event
+				CompensateEventDefinition ced = getCompensateEvent(newSource);
+				if (ced!=null) {
+					ced.setActivityRef((Activity)newTarget);
+					((Activity)newTarget).setIsForCompensation(true);
+				}
+			}
+			
 			super.postReconnect(context);
 		}
 	} 
+
+	public static class DeleteAssociationFeature extends DefaultDeleteBPMNShapeFeature {
+
+		/**
+		 * @param fp
+		 */
+		public DeleteAssociationFeature(IFeatureProvider fp) {
+			super(fp);
+		}
+		
+		@Override
+		public boolean canDelete(IDeleteContext context) {
+			// don't delete if it's not an Association Connection
+			if (!(context.getPictogramElement() instanceof Connection))
+				return false;
+			return super.canDelete(context);
+		}
+		
+		@Override
+		public void delete(IDeleteContext context) {
+			// we already know this is a Connection because of canDelete()
+			Connection connection = (Connection) context.getPictogramElement();
+			AnchorContainer ac;
+			ac = connection.getStart().getParent();
+			BaseElement oldSource = BusinessObjectUtil.getFirstBaseElement(ac);
+			ac = connection.getEnd().getParent();
+			BaseElement oldTarget = BusinessObjectUtil.getFirstBaseElement(ac);
+			if (oldSource instanceof BoundaryEvent && oldTarget instanceof Activity) {
+				// Set the Activity reference of the new Boundary Event
+				CompensateEventDefinition ced = getCompensateEvent(oldSource);
+				if (ced!=null) {
+					ced.setActivityRef(null);
+					((Activity)oldTarget).setIsForCompensation(false);
+				}
+			}
+
+			super.delete(context);
+		}
+	}
+	
+	private static CompensateEventDefinition getCompensateEvent(BaseElement source) {
+		if (source instanceof BoundaryEvent) {
+			// find a Compensate Event Definition in the BoundaryEvent
+			for (EventDefinition ed : ((BoundaryEvent)source).getEventDefinitions()) {
+				if (ed instanceof CompensateEventDefinition) {
+					return (CompensateEventDefinition) ed;
+				}
+			}
+		}
+		return null;
+	}
 	
 }

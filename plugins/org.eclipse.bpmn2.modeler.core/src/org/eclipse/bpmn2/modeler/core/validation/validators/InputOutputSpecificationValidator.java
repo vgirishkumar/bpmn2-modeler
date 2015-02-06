@@ -50,9 +50,9 @@ public class InputOutputSpecificationValidator extends AbstractBpmn2ElementValid
 	@Override
 	public IStatus validate(InputOutputSpecification object) {
 		if (isEmpty(object.getInputSets()))
-			addMissingFeatureStatus(object,"inputSets",Status.ERROR);
+			addMissingFeatureStatus(object,"inputSets",Status.ERROR); //$NON-NLS-1$
 		if (isEmpty(object.getOutputSets()))
-			addMissingFeatureStatus(object,"outputSets",Status.ERROR);
+			addMissingFeatureStatus(object,"outputSets",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

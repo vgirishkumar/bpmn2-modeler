@@ -50,7 +50,6 @@ import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
-import org.eclipse.bpmn2.modeler.ui.features.AbstractAppendNodeFeature;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClassifier;
@@ -98,7 +97,6 @@ import org.eclipse.graphiti.palette.impl.PaletteCompartmentEntry;
 import org.eclipse.graphiti.platform.IPlatformImageConstants;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.tb.ContextButtonEntry;
-import org.eclipse.graphiti.tb.ContextMenuEntry;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
 import org.eclipse.graphiti.tb.IContextMenuEntry;
@@ -125,7 +123,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		BPMN2Editor editor;
 		
 		ProfileSelectionToolEntry(BPMN2Editor editor, String profileId) {
-			super("", null, null, null, null);
+			super("", null, null, null, null); //$NON-NLS-1$
 			TargetRuntime rt = editor.getTargetRuntime();
 			ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
 			setLabel(med.getProfileName());
@@ -205,18 +203,32 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 					continue;
 				}
 				
-				category = getRealCategory(targetRuntime, category);
-				compartmentEntry = categories.get(category.getName());
-				for (ToolDescriptor tool : category.getTools()) {
+				CategoryDescriptor realCategory = getRealCategory(targetRuntime, category);
+				compartmentEntry = categories.get(realCategory.getName());
+				for (ToolDescriptor tool : realCategory.getTools()) {
 					tool = getRealTool(targetRuntime, tool);
 					IFeature feature = getCreateFeature(tool);
 					if (feature!=null) {
 						if (compartmentEntry==null) {
-							compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+							compartmentEntry = new PaletteCompartmentEntry(realCategory.getName(), realCategory.getIcon());
 							compartmentEntry.setInitiallyOpen(false);
-							categories.put(category.getName(), compartmentEntry);
+							categories.put(realCategory.getName(), compartmentEntry);
 						}
 						createEntry(tool, feature, compartmentEntry);
+					}
+				}
+				if (category != realCategory) {
+					for (ToolDescriptor tool : category.getTools()) {
+						tool = getRealTool(targetRuntime, tool);
+						IFeature feature = getCreateFeature(tool);
+						if (feature!=null) {
+							if (compartmentEntry==null) {
+								compartmentEntry = new PaletteCompartmentEntry(category.getName(), category.getIcon());
+								compartmentEntry.setInitiallyOpen(false);
+								categories.put(category.getName(), compartmentEntry);
+							}
+							createEntry(tool, feature, compartmentEntry);
+						}
 					}
 				}
 				// if there are no tools defined for this category, check if it will be
@@ -252,7 +264,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		String id = category.getId();
 		if (fromPalette!=null && id!=null) {
 			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
-				if (otherRt!=rt) {
+//				if (otherRt!=rt)
+				{
 					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
@@ -273,7 +286,8 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		String id = tool.getId();
 		if (fromPalette!=null && id!=null) {
 			for (TargetRuntime otherRt : TargetRuntime.createTargetRuntimes()) {
-				if (otherRt!=rt) {
+//				if (otherRt!=rt) 
+				{
 					for (ToolPaletteDescriptor tp : otherRt.getToolPaletteDescriptors()) {
 						if ( fromPalette.equals(tp.getId())) {
 							for (CategoryDescriptor c : tp.getCategories()) {
@@ -374,7 +388,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		}
 		else {
 			Activator.logError(new IllegalArgumentException(
-					"The object type '"+name+"' referenced by the tool '"+root.getName()+"'is undefined"
+					"The object type '"+name+"' referenced by the tool '"+root.getName()+"'is undefined" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					));
 		}
 		

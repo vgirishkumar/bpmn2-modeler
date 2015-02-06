@@ -24,18 +24,18 @@ public class Messages extends NLS {
 
 	private static String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.wsil.messages"; //$NON-NLS-1$
 	
-	public static String SchemaImportDialog_8;
-	public static String SchemaImportDialog_9;
-	public static String SchemaImportDialog_15;
-	public static String SchemaImportDialog_16;
-	public static String SchemaImportDialog_26;
+	public static String SchemaImportDialog_Location_Label;
+	public static String SchemaImportDialog_Browse_Button;
+	public static String SchemaImportDialog_WSIL_Button;
+	public static String SchemaImportDialog_Filter_Name_Label;
+	public static String SchemaImportDialog_Load_Button;
 	
 	public static String SchemaImportDialogWithWSIL_Message;
 
 	public static String SchemaImportDialogWithWSIL_Title;
 
-	public static String WSILPreferencePage_WSIL_1;
-	public static String WSILPreferencePage_WSIL_2;
+	public static String WSILPreferencePage_WSIL_Document_URL;
+	public static String WSILPreferencePage_WSIL_Browse_Button;
 	public static String WSILPreferencePage_WSIL_Description;
 	public static String WSILPreferencePage_WSIL_Add;
 	public static String WSILPreferencePage_WSIL_EnterLocation;

@@ -15,7 +15,6 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.preferences.messages"; //$NON-NLS-1$
 	public static String Bpmn2EditorPreferencePage_Description;
-	public static String ToolProfilePreferencePage_Default_Profile_Label;
 	public static String ToolProfilePreferencePage_Export;
 	public static String ToolProfilePreferencePage_Extension_Elements_Label;
 	public static String ToolProfilePreferencePage_Import;
@@ -31,9 +30,9 @@ public class Messages extends NLS {
 	public static String ToolProfilesPreferencePage_DeleteProfile_Message;
 	public static String ToolProfilesPreferencePage_DeleteProfile_Title;
 	public static String ToolProfilesPreferencePage_DeleteTool_Button;
-	public static String ToolProfilesPreferencePage_DiagramType_Label;
 	public static String ToolProfilesPreferencePage_EditTool_Button;
 	public static String ToolProfilesPreferencePage_EnabledElements_Tab;
+	public static String ToolProfilesPreferencePage_Enter_Description_Label;
 	public static String ToolProfilesPreferencePage_NewProfile_Button;
 	public static String ToolProfilesPreferencePage_Profile_Duplicate;
 	public static String ToolProfilesPreferencePage_Profile_Empty;

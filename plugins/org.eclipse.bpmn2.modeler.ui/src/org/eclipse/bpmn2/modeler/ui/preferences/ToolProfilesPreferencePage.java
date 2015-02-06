@@ -109,10 +109,10 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 	 **/
 	private static class ToolProfilesHelperMap extends Hashtable<String, ToolProfilesPreferencesHelper> {
 		public ToolProfilesPreferencesHelper get(TargetRuntime rt, String profileName) {
-			return get(rt.getId() + "\n" + profileName);
+			return get(rt.getId() + "\n" + profileName); //$NON-NLS-1$
 		}
 		public ToolProfilesPreferencesHelper put(TargetRuntime rt, String profileName, ToolProfilesPreferencesHelper helper) {
-			return put(rt.getId() + "\n" + profileName, helper);
+			return put(rt.getId() + "\n" + profileName, helper); //$NON-NLS-1$
 		}
 	}
 	private ToolProfilesHelperMap helpers = new ToolProfilesHelperMap();
@@ -228,7 +228,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 				if (dlg.open() == Window.OK) {
 					String profileName = dlg.getValue();
 					String description = dlg.getDescription();
-					currentProfileName = "profile." + profileName.replaceAll(" ", ".");
+					currentProfileName = "profile." + profileName.replaceAll(" ", "."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					preferences.createToolProfile(currentRuntime, currentProfileName, profileName, description);
 					preferences.setDefaultToolProfile(currentRuntime, currentProfileName);
 					if (dlg.getCopyProfile()!=null) {
@@ -832,7 +832,7 @@ public class ToolProfilesPreferencePage extends PreferencePage implements IWorkb
 			
 			Label lblDescription = new Label(container, SWT.NONE);
 			lblDescription.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-			lblDescription.setText("Enter an optional description for the Tool Palette");
+			lblDescription.setText(Messages.ToolProfilesPreferencePage_Enter_Description_Label);
 			final Text txtDescription = new Text(container, SWT.BORDER);
 			txtDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 			txtDescription.addModifyListener(new ModifyListener() {

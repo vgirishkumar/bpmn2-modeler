@@ -156,14 +156,14 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 					// SubProcess is collapsed
 					if (!FeatureSupport.isElementExpanded(subProcess)) {
 						if (super.updateNeeded(context).toBoolean()) {
-							return Reason.createTrueReason("SubProcess Decorator Changed");
+							return Reason.createTrueReason(Messages.SubProcessFeatureContainer_Decorator_Changed);
 						}
 						if (!isVisible && eventDefinition!=null)
-							return Reason.createTrueReason("Show SubProcess Decorator");
+							return Reason.createTrueReason(Messages.SubProcessFeatureContainer_Show_Decorator);
 					}
 				}
 				else if (isVisible) {
-					return Reason.createTrueReason("Hide SubProcess Decorator");
+					return Reason.createTrueReason(Messages.SubProcessFeatureContainer_Hide_Decorator);
 				}
 			}
 			return Reason.createFalseReason();
@@ -272,7 +272,7 @@ public class SubProcessFeatureContainer extends AbstractExpandableActivityFeatur
 					return AbstractUpdateEventFeature.getEventDefinitionsValue((StartEvent)fe);
 				}
 			}
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		
 	}

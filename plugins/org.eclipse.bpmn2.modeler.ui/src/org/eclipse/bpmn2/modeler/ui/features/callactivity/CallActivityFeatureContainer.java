@@ -213,7 +213,7 @@ public class CallActivityFeatureContainer extends AbstractActivityFeatureContain
 					CallActivity.class);
 			String value = getCallableElementStringValue(callActivity.getCalledElementRef());
 			boolean changed = !value.equals(property);
-			return changed ? Reason.createTrueReason("Called Element") : Reason.createFalseReason();
+			return changed ? Reason.createTrueReason(org.eclipse.bpmn2.modeler.ui.features.callactivity.Messages.CallActivityFeatureContainer_Called_Element_Changed) : Reason.createFalseReason();
 		}
 
 		@Override

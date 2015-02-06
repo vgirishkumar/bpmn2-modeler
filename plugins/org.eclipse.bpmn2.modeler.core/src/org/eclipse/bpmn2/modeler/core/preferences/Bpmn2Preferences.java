@@ -180,7 +180,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		ALWAYS_FALSE
 	};
 	
-	private TargetRuntime targetRuntime;
+//	private TargetRuntime targetRuntime;
 	private boolean showAdvancedPropertiesTab;
 	private boolean showDescriptions;
 	private boolean showIdAttribute;
@@ -322,12 +322,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Assert.isNotNull(rt);
 		String id = rt.getId();
 		List<Bpmn2Preferences> prefs = new ArrayList<Bpmn2Preferences>();
-		if (instancePreferenceCache!=null && instancePreferenceCache.targetRuntime.getId().equals(id))
+		if (instancePreferenceCache!=null && instancePreferenceCache.getRuntime().getId().equals(id))
 			prefs.add(instancePreferenceCache);
 		if (projectPreferenceCacheMap!=null) {
 			for (Entry<IProject, Bpmn2Preferences> entry : projectPreferenceCacheMap.entrySet()) {
 				Bpmn2Preferences pref = entry.getValue();
-				if (pref.targetRuntime.getId().equals(id))
+				if (pref.getRuntime().getId().equals(id))
 					prefs.add(pref);
 			}
 			
@@ -352,9 +352,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	////////////////////////////////////////////////////////////////////////////////
 
 	private void loadDefaults() {
-		if (defaultPreferences.get(PREF_TARGET_RUNTIME, null)==null) {
-			String rid = TargetRuntime.getFirstNonDefaultId();
-			defaultPreferences.put(PREF_TARGET_RUNTIME, rid);
+		if (!keyExists(defaultPreferences,PREF_SHOW_ADVANCED_PROPERTIES)) {
 			defaultPreferences.putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			defaultPreferences.putBoolean(PREF_CHECK_PROJECT_NATURE, true);
 			defaultPreferences.putBoolean(PREF_SIMPLIFY_LISTS, true);
@@ -407,11 +405,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				Preferences prefs = defaultPreferences.node(path);
 				for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
 					for (EStructuralFeature f : e.getValue()) {
-						String s = e.getKey().getName() + "." + f.getName();
+						String s = e.getKey().getName() + "." + f.getName(); //$NON-NLS-1$
 						prefs.putBoolean(s, Boolean.TRUE);
 					}
 				}
-				ModelEnablements me = new ModelEnablements(rt,"default");
+				ModelEnablements me = new ModelEnablements(rt,"default"); //$NON-NLS-1$
 				me.setEnabledAll(true);
 				for (String s : me.getAllEnabled())
 					prefs.putBoolean(s, Boolean.TRUE);
@@ -425,7 +423,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					}
 					for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
 						for (EStructuralFeature f : e.getValue()) {
-							String s = e.getKey().getName() + "." + f.getName();
+							String s = e.getKey().getName() + "." + f.getName(); //$NON-NLS-1$
 							prefs.putBoolean(s, Boolean.TRUE);
 						}
 					}
@@ -465,7 +463,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				Preferences prefs = defaultPreferences.node(path);
 				for (Entry<EClass, List<EStructuralFeature>> e : rt.getModelExtensions(0).entrySet()) {
 					for (EStructuralFeature f : e.getValue()) {
-						String s = e.getKey().getName() + "." + f.getName();
+						String s = e.getKey().getName() + "." + f.getName(); //$NON-NLS-1$
 						prefs.remove(s);
 					}
 				}
@@ -495,6 +493,11 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				projectPreferences.node(key);
 				return true;
 			}
+			if (PREF_CHECK_PROJECT_NATURE.equals(key))
+				return true;
+			if (PREF_TARGET_RUNTIME.equals(key))
+				return true;
+			
 			// otherwise only save to project preferences if the key already exists.
 			try {
 				return projectPreferences.nodeExists(key);
@@ -514,10 +517,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
-			String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getDefaultRuntime().getId());
-			if (id==null || id.isEmpty())
-				id = TargetRuntime.getFirstNonDefaultId();
-			targetRuntime = TargetRuntime.getRuntime(id);
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
@@ -557,7 +556,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				}
 			}
 			else {
-				put(PREF_TARGET_RUNTIME,getRuntime().getId());
 				putBoolean(PREF_SHOW_ADVANCED_PROPERTIES, showAdvancedPropertiesTab);
 				putBoolean(PREF_SHOW_DESCRIPTIONS, showDescriptions);
 				putBoolean(PREF_SHOW_ID_ATTRIBUTE, showIdAttribute);
@@ -666,7 +664,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					// in Instance Preference Store
 					String path = getShapeStylePath(TargetRuntime.getDefaultRuntime());
 					Preferences prefs = instancePreferences.node(path);
-					String value = prefs.get(name,"");
+					String value = prefs.get(name,""); //$NON-NLS-1$
 					if (!value.isEmpty()) {
 						// found! save it in Instance Preferences cache
 						ss = ShapeStyle.decode(value);
@@ -675,7 +673,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					else {
 						// check if this key is in Default Preferences store
 						prefs = defaultPreferences.node(path);
-						value = prefs.get(name,"");
+						value = prefs.get(name,""); //$NON-NLS-1$
 						if (!value.isEmpty()) {
 							ss = ShapeStyle.decode(value);
 						}
@@ -691,7 +689,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					ss = ShapeStyle.decode(value);
 			}
 			ss.setObject(name);
-			ss.setRuntime(targetRuntime);
+			ss.setRuntime(getRuntime());
 			shapeStyles.put(name, ss);
 		}
 		return ss;
@@ -733,7 +731,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			String key = getShapeStyleKey(getRuntime(), name);
 			String path = getShapeStylePath(getRuntime());
 			Preferences prefs = defaultPreferences.node(path);
-			String value = prefs.get(name, "");
+			String value = prefs.get(name, ""); //$NON-NLS-1$
 			put(key, value);
 		}
 	}
@@ -942,7 +940,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 
 	public static String getModelEnablementsPath(TargetRuntime rt, String profileName) {
 		if (profileName==null || profileName.isEmpty())
-			profileName = "default";
+			profileName = "default"; //$NON-NLS-1$
 		return PREF_MODEL_ENABLEMENT + "/" + rt.getId() + "/" + profileName; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -966,8 +964,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				boolean create = false;
 				ModelEnablementDescriptor med = rt.getModelEnablements(profileName);
 				if (med==null) {
-					String description = prefs.get("description","");
-					med = createToolProfile(rt, rt.getId()+"."+profileName, profileName, description);
+					String description = prefs.get("description",""); //$NON-NLS-1$ //$NON-NLS-2$
+					med = createToolProfile(rt, rt.getId()+"."+profileName, profileName, description); //$NON-NLS-1$
 					create = true;
 				}
 
@@ -978,7 +976,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				// first to ensure that only the defined features are enabled.
 				for (String k : prefs.keys()) {
 					if (prefs.getBoolean(k, false)) {
-						if (k.contains(".")) {
+						if (k.contains(".")) { //$NON-NLS-1$
 							me.setEnabled(k, true);
 							if (create) {
 								med.setEnabled(k, true);
@@ -988,7 +986,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 				}
 				for (String k : prefs.keys()) {
 					if (prefs.getBoolean(k, false)) {
-						if (!k.contains(".")) {
+						if (!k.contains(".")) { //$NON-NLS-1$
 							me.setEnabled(k, true);
 							if (create) {
 								med.setEnabled(k, true);
@@ -1022,8 +1020,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			
 				ModelEnablementDescriptor med = rt.getModelEnablements(profileName);
 				if (med!=null) {
-					prefs.put("name", med.getProfileName());
-					prefs.put("description", med.getDescription());
+					prefs.put("name", med.getProfileName()); //$NON-NLS-1$
+					prefs.put("description", med.getDescription()); //$NON-NLS-1$
 				}
 				for (String s : me.getAllEnabled()) {
 					prefs.putBoolean(s, true);
@@ -1042,38 +1040,43 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for miscellaneous preferences
 	////////////////////////////////////////////////////////////////////////////////
 
-	public TargetRuntime getRuntime() {
-		if (targetRuntime==null) {
-			targetRuntime = TargetRuntime.getDefaultRuntime();
-			Display.getDefault().asyncExec( new Runnable() {
-				@Override
-				public void run() {
-					String id = get(PREF_TARGET_RUNTIME,TargetRuntime.getFirstNonDefaultId());
-					if (id==null || id.isEmpty())
-						id = TargetRuntime.getFirstNonDefaultId();
-
-					targetRuntime = TargetRuntime.getDefaultRuntime();
-					MessageDialog.openError(
-						Display.getDefault().getActiveShell(),
-						Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
-						NLS.bind(
-							Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
-							id,
-							targetRuntime.getDescription()
-						)
-					);
-				}
-				
-			});
+	public synchronized TargetRuntime getRuntime() {
+		TargetRuntime rt = null;
+		final String id = get(PREF_TARGET_RUNTIME, null);
+		if (id!=null && !id.isEmpty()) {
+			rt = TargetRuntime.getRuntime(id);
+			if (rt==null) {
+				Display.getDefault().asyncExec( new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(
+							Display.getDefault().getActiveShell(),
+							Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
+							NLS.bind(
+								Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
+								id,
+								TargetRuntime.getCurrentRuntime().getDescription()
+							)
+						);
+					}
 					
+				});
+			}
 		}
-		return targetRuntime;
+		if (rt==null)
+			rt = TargetRuntime.getCurrentRuntime();
+		return rt;
 	}
 
-	public void setRuntime(TargetRuntime rt) {
+	public synchronized void setRuntime(TargetRuntime rt) {
 		Assert.isTrue(rt!=null);
 		put(PREF_TARGET_RUNTIME, rt.getId());
-		targetRuntime = rt;
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean getShowAdvancedPropertiesTab() {
@@ -1104,12 +1107,19 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public boolean getCheckProjectNature() {
+		checkProjectNature = getBoolean(PREF_CHECK_PROJECT_NATURE, false);
 		return checkProjectNature;
 	}
 	
 	public void setCheckProjectNature(boolean show) {
 		putBoolean(PREF_CHECK_PROJECT_NATURE, show);
 		checkProjectNature = show;
+		try {
+			projectPreferences.flush();
+		} catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean getSimplifyLists() {
@@ -1757,21 +1767,21 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		public void putInt(int value) {
 			put(Integer.toString(value));
 		}
-		
-		private boolean keyExists(Preferences prefs, String key) {
-			try {
-				for (String k : prefs.keys()) {
-					if (k.equals(key)) {
-						return true;
-					}
+	}
+	
+	public boolean keyExists(Preferences prefs, String key) {
+		try {
+			for (String k : prefs.keys()) {
+				if (k.equals(key)) {
+					return true;
 				}
 			}
-			catch (BackingStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return false;
 		}
+		catch (BackingStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {
@@ -1810,7 +1820,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Hashtable<String,String> impls = new Hashtable<String,String>();
 		for (String s : value.split("\t")) { //$NON-NLS-1$
 			if (!s.isEmpty()) {
-				String a[] = s.split(";");
+				String a[] = s.split(";"); //$NON-NLS-1$
 				if (a.length>1)
 					impls.put(a[0], a[1]);
 				else
@@ -1826,7 +1836,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		while (iter.hasNext()) {
 			Entry<String, String> entry = iter.next();
 			if (!entry.getKey().isEmpty()) {
-				value += entry.getKey() + ";" + entry.getValue();
+				value += entry.getKey() + ";" + entry.getValue(); //$NON-NLS-1$
 				if (iter.hasNext())
 					value += "\t"; //$NON-NLS-1$
 			}

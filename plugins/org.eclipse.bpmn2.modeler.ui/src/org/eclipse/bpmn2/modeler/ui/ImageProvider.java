@@ -137,11 +137,11 @@ public class ImageProvider extends AbstractImageProvider {
 	public static final String IMG_16_DATA_OUTPUT = PREFIX + DataOutput.class.getSimpleName().toLowerCase() + dot16;
 	public static final String IMG_16_CALL_ACTIVITY = PREFIX + CallActivity.class.getSimpleName().toLowerCase() + dot16;
 
-	public static final String IMG_16_CALL_GLOBAL_TASK = PREFIX + "CallGlobalTask" + dot16;
-	public static final String IMG_16_CALL_GLOBAL_BUSINESS_RULE_TASK = PREFIX + "CallGlobalBusinessRuleTask" + dot16;
-	public static final String IMG_16_CALL_GLOBAL_MANUAL_TASK = PREFIX + "CallGlobalManualTask" + dot16;
-	public static final String IMG_16_CALL_GLOBAL_SCRIPT_TASK= PREFIX + "CallGlobalScriptTask" + dot16;
-	public static final String IMG_16_CALL_GLOBAL_USER_TASK = PREFIX + "CallGlobalUserTask" + dot16;
+	public static final String IMG_16_CALL_GLOBAL_TASK = PREFIX + "CallGlobalTask" + dot16; //$NON-NLS-1$
+	public static final String IMG_16_CALL_GLOBAL_BUSINESS_RULE_TASK = PREFIX + "CallGlobalBusinessRuleTask" + dot16; //$NON-NLS-1$
+	public static final String IMG_16_CALL_GLOBAL_MANUAL_TASK = PREFIX + "CallGlobalManualTask" + dot16; //$NON-NLS-1$
+	public static final String IMG_16_CALL_GLOBAL_SCRIPT_TASK= PREFIX + "CallGlobalScriptTask" + dot16; //$NON-NLS-1$
+	public static final String IMG_16_CALL_GLOBAL_USER_TASK = PREFIX + "CallGlobalUserTask" + dot16; //$NON-NLS-1$
 	
 	public static final String IMG_16_CONVERSATION = PREFIX + Conversation.class.getSimpleName().toLowerCase() + dot16;
 	public static final String IMG_16_SUB_CONVERSATION = PREFIX + SubConversation.class.getSimpleName().toLowerCase() + dot16;

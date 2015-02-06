@@ -240,11 +240,11 @@ public class VendorExtensionImpl extends EObjectImpl implements VendorExtension 
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (any: ");
+		result.append(" (any: "); //$NON-NLS-1$
 		result.append(any);
-		result.append(", name: ");
+		result.append(", name: "); //$NON-NLS-1$
 		result.append(name);
-		result.append(", anyAttribute: ");
+		result.append(", anyAttribute: "); //$NON-NLS-1$
 		result.append(anyAttribute);
 		result.append(')');
 		return result.toString();

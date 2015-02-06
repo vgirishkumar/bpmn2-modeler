@@ -254,7 +254,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 	}
 
 	@Override
-	protected boolean setValue(Object result) {
+	public boolean setValue(Object result) {
 		keyPressed = false;
 		return super.setValue(result);
 	}

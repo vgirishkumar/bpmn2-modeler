@@ -301,7 +301,7 @@ public class DefaultPasteBPMNElementFeature extends AbstractPasteFeature {
 		T t = (T) result;
 		
 		// don't set a name on the new object if old object didn't have one.
-		EStructuralFeature f = t.eClass().getEStructuralFeature("name");
+		EStructuralFeature f = t.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (f!=null) {
 			String name = (String)eObject.eGet(f);
 			if (name==null || name.isEmpty())

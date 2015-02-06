@@ -146,6 +146,11 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			}
 			return ModelUtil.createStringWrapper(""); //$NON-NLS-1$
 		}
+		
+		@Override
+		public String getLabel() {
+			return Messages.Interface_Implementation_Label;
+		}
 
 		@Override
 		protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {

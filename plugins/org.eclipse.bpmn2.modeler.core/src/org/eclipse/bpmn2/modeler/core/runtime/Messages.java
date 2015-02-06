@@ -14,7 +14,6 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.runtime.messages"; //$NON-NLS-1$
-	public static String ModelExtensionDescriptor_Create;
 	public static String TargetRuntime_Config_Error;
 	public static String TargetRuntimeConfigurationException_Config_Error;
 	static {

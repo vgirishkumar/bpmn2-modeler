@@ -103,13 +103,13 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 
 	@Override
 	public String getDescription() {
-		return "Create a reference to a Pool in a main diagram";
+		return Messages.CreateParticipantReferenceFeature_Create_Pool_Reference_In_Main_Diagram;
 	}
 
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "Create Pool Reference";
+		return Messages.CreateParticipantReferenceFeature_Create_Pool_Reference;
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class CreateParticipantReferenceFeature extends AbstractCustomFeature {
 	 */
 	@Override
 	public void execute(ICustomContext context) {
-		CreateReferenceFeature createFeature = (CreateReferenceFeature) context.getProperty("create.feature");
+		CreateReferenceFeature createFeature = (CreateReferenceFeature) context.getProperty(GraphitiConstants.CREATE_FEATURE);
 		if (createFeature!=null) {
 			CreateContext createContext = prepareCreateContext(context);
 			if (createFeature.canCreate(createContext)) {

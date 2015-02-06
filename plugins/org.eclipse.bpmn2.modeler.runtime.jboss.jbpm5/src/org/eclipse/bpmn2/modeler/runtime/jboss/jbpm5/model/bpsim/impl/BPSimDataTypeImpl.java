@@ -178,7 +178,7 @@ public class BPSimDataTypeImpl extends EObjectImpl implements BPSimDataType {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (group: ");
+		result.append(" (group: "); //$NON-NLS-1$
 		result.append(group);
 		result.append(')');
 		return result.toString();

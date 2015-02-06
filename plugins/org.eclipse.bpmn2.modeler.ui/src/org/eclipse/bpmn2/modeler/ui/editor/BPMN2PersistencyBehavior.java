@@ -74,12 +74,12 @@ public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 		// and saving it in its current state MAY render the file unreadable.
 		IStatus status = BPMN2ProjectValidator.validateLive(ModelUtil.getDefinitions(resource));
 		if (status.getSeverity() >= Status.ERROR) {
-			String statusList = "";
+			String statusList = ""; //$NON-NLS-1$
 			for (IStatus s : collectStatus(status)) {
-				statusList += "  " + s.getMessage() + "\n";
+				statusList += "  " + s.getMessage() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			MessageDialog.openError(editor.getEditorSite().getShell(), "Save Error",
-				"The file can not be saved because the current state of the model is invalid.\nPlease resolve the following issues before saving:\n\n"+
+			MessageDialog.openError(editor.getEditorSite().getShell(), Messages.BPMN2PersistencyBehavior_Cannot_Save_Title,
+				Messages.BPMN2PersistencyBehavior_Cannot_Save_Message+
 				statusList);
 			monitor.setCanceled(true);
 			return;

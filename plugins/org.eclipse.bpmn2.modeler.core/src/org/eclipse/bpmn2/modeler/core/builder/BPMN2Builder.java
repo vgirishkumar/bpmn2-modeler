@@ -11,7 +11,6 @@
 package org.eclipse.bpmn2.modeler.core.builder;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Stack;
@@ -25,7 +24,6 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.runtime.XMLConfigElement;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
-import org.eclipse.bpmn2.presentation.Bpmn2EditorPlugin;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -39,8 +37,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -148,11 +144,14 @@ public class BPMN2Builder extends IncrementalProjectBuilder {
 	}
 
 	void validate(IResourceDelta delta, IProgressMonitor monitor) {
-		BPMN2ProjectValidator.validate(delta, monitor);
+		// This project builder should not be doing validation.
+		// Validation is being handled by the Eclipse Validation Builder
+		// and can be enabled/disabled from the User Preferences -> Validation page.
+//		BPMN2ProjectValidator.validate(delta, monitor);
 	}
 
 	void validate(IResource resource, IProgressMonitor monitor) {
-		BPMN2ProjectValidator.validate(resource, monitor);
+//		BPMN2ProjectValidator.validate(resource, monitor);
 	}
 
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {

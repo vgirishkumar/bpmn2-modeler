@@ -21,6 +21,7 @@ import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -62,12 +63,13 @@ public class JavaVariableNameObjectEditor extends TextObjectEditor {
 			@Override
 			public void verifyText(VerifyEvent e) {
 				if (Character.isISOControl(e.character)) {
-					return;
+					if (e.text==null || e.text.isEmpty())
+						return;
 				}
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isJavaIdentifier(s);
 				if (!e.doit) {
-					showErrorMessage("The character '"+e.text+"' is not valid");
+					showErrorMessage(NLS.bind(Messages.JavaVariableNameObjectEditor_Invalid_Character, e.text));
 				}
 			}
 		});

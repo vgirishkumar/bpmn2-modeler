@@ -74,42 +74,42 @@ public class EventDefinitionValidator extends AbstractBpmn2ElementValidator<Even
 		if (ed instanceof TimerEventDefinition) {
 			TimerEventDefinition ted = (TimerEventDefinition) ed;
 			if (ted.getTimeDate() == null && ted.getTimeDuration() == null && ted.getTimeCycle() == null) {
-				addMissingFeatureStatus(event,"Timer definition", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Timer, Status.ERROR);
 			}
 		} else if (ed instanceof SignalEventDefinition) {
 			Signal signal = ((SignalEventDefinition) ed).getSignalRef();
 			if (signal==null)
-				addMissingFeatureStatus(event,"Signal definition", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Signal, Status.ERROR);
 			else
 				new SignalValidator(this).validate(signal);
 		} else if (ed instanceof ErrorEventDefinition) {
 			Error error = ((ErrorEventDefinition) ed).getErrorRef();
 			if (error==null)
-				addMissingFeatureStatus(event,"Error definition", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Error, Status.ERROR);
 			else
 				new ErrorValidator(this).validate(error);
 		} else if (ed instanceof ConditionalEventDefinition) {
 			FormalExpression expression = (FormalExpression) ((ConditionalEventDefinition) ed).getCondition();
 			if (expression==null || isEmpty(expression.getBody()))
-				addMissingFeatureStatus(event,"condition expression", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Condition, Status.ERROR);
 			else
 				new ExpressionValidator(this).validate(expression);
 		} else if (ed instanceof EscalationEventDefinition) {
 			Escalation escalation = ((EscalationEventDefinition) ed).getEscalationRef();
 			if (escalation==null)
-				addMissingFeatureStatus(event,"Escalation definition", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Escalation, Status.ERROR);
 			else
 				new EscalationValidator(this).validate(escalation);
 		} else if (ed instanceof MessageEventDefinition) {
 			Message message = ((MessageEventDefinition) ed).getMessageRef();
 			if (message==null)
-				addMissingFeatureStatus(event,"Message definition", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_Message, Status.ERROR);
 			else
 				new MessageValidator(this).validate(message);
 		} else if (ed instanceof CompensateEventDefinition) {
 			Activity activity = ((CompensateEventDefinition) ed).getActivityRef();
 			if (activity==null)
-				addMissingFeatureStatus(event,"Called Activity", Status.ERROR);
+				addMissingFeatureStatus(event,Messages.EventDefinitionValidator_CalledActivity, Status.ERROR);
 			else
 				new ActivityValidator(this).validate(activity);
 		}
@@ -121,14 +121,14 @@ public class EventDefinitionValidator extends AbstractBpmn2ElementValidator<Even
 			int severity = ProcessValidator.isContainingProcessExecutable(event) ? Status.ERROR : Status.WARNING;
 			if (da instanceof DataInputAssociation) {
 				if (((DataInputAssociation)da).getSourceRef().size()==0) {
-					addStatus(event,severity,"Input to {0} defined in {1} is not mapped to a Source data item",
+					addStatus(event,severity,Messages.EventDefinitionValidator_No_Source_DataItem,
 							ModelUtil.getLabel(ed),
 							ModelUtil.getLabel(event));
 				}
 			}
 			else if (da instanceof DataOutputAssociation) {
 				if (((DataOutputAssociation)da).getTargetRef()==null) {
-					addStatus(event,severity,"Output from {0} is not mapped to a Target data item",
+					addStatus(event,severity,Messages.EventDefinitionValidator_No_Target_DataItem,
 							ModelUtil.getLabel(ed));
 				}
 			}

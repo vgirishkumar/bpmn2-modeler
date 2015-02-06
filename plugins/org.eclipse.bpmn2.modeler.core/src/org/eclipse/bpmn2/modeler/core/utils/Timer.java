@@ -26,13 +26,13 @@ public class Timer {
 		
 		Interval(String msg) {
 			this.msg = msg;
-			System.err.println("Start: "+msg);
+			System.err.println("Start: "+msg); //$NON-NLS-1$
 			t1 = System.currentTimeMillis();
 		}
 		
 		void stop() {
 			t2 = System.currentTimeMillis();
-			System.err.println("Stop:  "+msg+" " + (double)(t2-t1)/1000.0+" sec");
+			System.err.println("Stop:  "+msg+" " + (double)(t2-t1)/1000.0+" sec"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 	

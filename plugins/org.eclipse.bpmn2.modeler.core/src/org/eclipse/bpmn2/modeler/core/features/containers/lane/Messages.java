@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.core.features.containers.lane.messages"; //$NON-NLS-1$
 	public static String DirectEditLaneFeature_Invalid_Empty;
 	public static String DirectEditLaneFeature_Invalid_Linebreak;
+	public static String MoveLaneFeature_Process_Label;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

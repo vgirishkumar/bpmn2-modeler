@@ -108,7 +108,7 @@ public class BPMN2ValidationStatusLoader {
     	String targetUri = marker.getAttribute(EValidator.URI_ATTRIBUTE, null);
     	String uriString = marker.getAttribute(EValidator.RELATED_URIS_ATTRIBUTE,null);
     	if (uriString!=null) {
-    		String[] uris = uriString.split(" ");
+    		String[] uris = uriString.split(" "); //$NON-NLS-1$
     		for (String s : uris) {
     			if (s.equals(targetUri))
     				continue;

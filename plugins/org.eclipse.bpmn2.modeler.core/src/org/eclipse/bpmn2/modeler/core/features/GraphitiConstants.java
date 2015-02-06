@@ -143,7 +143,7 @@ public interface GraphitiConstants {
 
 	public static final String TOOLTIP_PROPERTY = "tooltip"; //$NON-NLS-1$
 
-	public final static String EVENT_DEFINITION_SHAPE = "event.definition.shape";
+	public final static String EVENT_DEFINITION_SHAPE = "event.definition.shape"; //$NON-NLS-1$
 
 	public static final String EVENT_ELEMENT = "event.graphics.element"; //$NON-NLS-1$
 
@@ -229,7 +229,7 @@ public interface GraphitiConstants {
 	public static final String POOL_RESIZE_PROPERTY = "pool.resize"; //$NON-NLS-1$
 	public static final String RESIZE_FIRST_LANE = "resize.first.lane"; //$NON-NLS-1$
 
-	public final static String PARENT_CONTAINER = "parent.container";
+	public final static String PARENT_CONTAINER = "parent.container"; //$NON-NLS-1$
 
 	public static final String MULTIPLICITY_MARKER = "multiplicity.marker"; //$NON-NLS-1$
 	public static final String MULTIPLICITY = "multiplicity"; //$NON-NLS-1$
@@ -265,25 +265,25 @@ public interface GraphitiConstants {
 	 * The {@link FixPointAnchor} property key that indicates the Anchor Type,
 	 * one of the string values defined by {@see AnchorUtil$AnchorType}
 	 **/
-	public static final String ANCHOR_TYPE = "anchor.type";
+	public static final String ANCHOR_TYPE = "anchor.type"; //$NON-NLS-1$
 
 	/**
 	 * The {@link FixPointAnchor} property key that indicates the edge on which
 	 * anchor is located, one of the {@see AnchorSite} enum values
 	 **/
-	public static final String ANCHOR_LOCATION = "anchor.location";
+	public static final String ANCHOR_LOCATION = "anchor.location"; //$NON-NLS-1$
 
 	/**
 	 * The {@link IContext} property key used by the {@link LayoutFeature} to
 	 * indicate that a new Shape or Connection PictogramElement is first
 	 * created. An initial update may require special handling.
 	 **/
-	public static final String INITIAL_UPDATE = "initial.update";
+	public static final String INITIAL_UPDATE = "initial.update"; //$NON-NLS-1$
 	
 	// values for connection points
 	public static final String CONNECTION_POINT = "connection.point"; //$NON-NLS-1$
 
-	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator";
+	public static final String EVENT_SUBPROCESS_DECORATOR = "event.subprocess.decorator"; //$NON-NLS-1$
 
 	public static final String IS_EXPANDED = "is.expanded"; //$NON-NLS-1$
 	public static final String EXPANDED_SIZE = "expanded.size"; //$NON-NLS-1$
@@ -305,4 +305,6 @@ public interface GraphitiConstants {
 	 * the context menu is actually shown.
 	 **/
 	public final static String CONTEXT_MENU_ENTRY = "context.menu.entry."; //$NON-NLS-1$
+	
+	public final static String CREATE_FEATURE = "create.feature"; //$NON-NLS-1$
 }

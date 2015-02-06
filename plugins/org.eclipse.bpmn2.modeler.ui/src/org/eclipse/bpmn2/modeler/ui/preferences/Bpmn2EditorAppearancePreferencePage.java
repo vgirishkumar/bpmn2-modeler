@@ -243,19 +243,19 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				Messages.Bpmn2EditorPreferencePage_MultiSelected_Color_Label);
 
 
-		defaultWidth = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_WIDTH,"");
+		defaultWidth = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_WIDTH,""); //$NON-NLS-1$
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		defaultWidth.setLayoutData(gd);
 
-		defaultHeight = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_HEIGHT,"");
+		defaultHeight = new IntegerShapeStyleEditor(colorEditors, ShapeStyle.SS_DEFAULT_HEIGHT,""); //$NON-NLS-1$
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
 		defaultHeight.setLayoutData(gd);
 		
-		useDefaultSize = new CheckboxShapeStyleEditor(colorEditors, ShapeStyle.SS_USE_DEFAULT_SIZE, "");
+		useDefaultSize = new CheckboxShapeStyleEditor(colorEditors, ShapeStyle.SS_USE_DEFAULT_SIZE, ""); //$NON-NLS-1$
 		gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
 		gd.horizontalIndent = 5;
 		gd.verticalIndent = 10;
@@ -271,7 +271,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 		routingStyleViewer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 
 		labelGroup = new Group(colorAndLabelComposite, SWT.NONE);
-		labelGroup.setText("Labels");
+		labelGroup.setText(Messages.Bpmn2EditorAppearancePreferencePage_Labels_Title);
 		labelGroup.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false,1,1));
 		labelGroup.setLayout(new GridLayout(1,false));
 		labelForeground = new ColorShapeStyleEditor(labelGroup, ShapeStyle.SS_LABEL_FOREGROUND,
@@ -428,17 +428,17 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 					artifactShapeStyles.put(c, ss);
 				
 				if (Activator.getDefault().isDebugging()) {
-					System.out.println("\t\t<"+ShapeStyle.STYLE_OBJECT + " object=\"" + c.getSimpleName() + "\" "
-							+ ShapeStyle.STYLE_SHAPE_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeForeground()) + "\" "
-							+ ShapeStyle.STYLE_SHAPE_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeBackground()) + "\" "
-							+ ShapeStyle.STYLE_LABEL_FONT+"=\"" + ShapeStyle.fontToString(ss.getLabelFont()) + "\" "
-							+ ShapeStyle.STYLE_LABEL_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelForeground()) + "\" "
-							+ ShapeStyle.STYLE_LABEL_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelBackground()) + "\" "
-							+ ShapeStyle.STYLE_LABEL_POSITION+"=\"" + ss.getLabelPosition().name() + "\" "
-							+ ShapeStyle.STYLE_ROUTING_STYLE+"=\"" + ss.getRoutingStyle().name() + "\" "
-							+ ShapeStyle.STYLE_USE_DEFAULT_SIZE+"=\"" + ss.getUseDefaultSize() + "\" "
-							+ ShapeStyle.STYLE_DEFAULT_HEIGHT+"=\"" + ss.getDefaultHeight() + "\" "
-							+ ShapeStyle.STYLE_DEFAULT_WIDTH+"=\"" + ss.getDefaultWidth() + "\" "
+					System.out.println("\t\t<"+ShapeStyle.STYLE_OBJECT + " object=\"" + c.getSimpleName() + "\" " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							+ ShapeStyle.STYLE_SHAPE_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeForeground()) + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_SHAPE_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getShapeBackground()) + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_LABEL_FONT+"=\"" + ShapeStyle.fontToString(ss.getLabelFont()) + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_LABEL_FOREGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelForeground()) + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_LABEL_BACKGROUND+"=\"" + ShapeStyle.colorToString(ss.getLabelBackground()) + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_LABEL_POSITION+"=\"" + ss.getLabelPosition().name() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_ROUTING_STYLE+"=\"" + ss.getRoutingStyle().name() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_USE_DEFAULT_SIZE+"=\"" + ss.getUseDefaultSize() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_DEFAULT_HEIGHT+"=\"" + ss.getDefaultHeight() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+							+ ShapeStyle.STYLE_DEFAULT_WIDTH+"=\"" + ss.getDefaultWidth() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
 							+ "/>"); //$NON-NLS-1$
 				}
 			}
@@ -507,7 +507,7 @@ public class Bpmn2EditorAppearancePreferencePage extends PreferencePage implemen
 				currentSelection!=Category.CANVAS &&
 				currentSelection!=Category.GRID) { 
 			showControl(applyToAllChildren, true);
-			applyToAllChildren.setText("Apply changes to all "+((Category)currentSelection).toString());
+			applyToAllChildren.setText(Messages.Bpmn2EditorAppearancePreferencePage_Apply_All+((Category)currentSelection).toString());
 			enabled = applyToAllChildren.getSelection();
 		}
 		else

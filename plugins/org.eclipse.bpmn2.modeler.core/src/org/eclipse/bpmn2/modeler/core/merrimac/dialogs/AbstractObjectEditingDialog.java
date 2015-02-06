@@ -215,7 +215,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		if (transaction!=null) {
 			if (dialog.cancel) {
 				// roll back transaction if CANCEL button was pressed
-				IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "cancel");
+				IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "cancel"); //$NON-NLS-1$
 				transaction.setStatus(status);
 				result = Window.CANCEL;
 			}
@@ -224,7 +224,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 				if (cd.getObjectChanges().size()==0) {
 					// also roll back if there were no changes made even if
 					// OK button was pressed.
-					IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "no changes");
+					IStatus status = new Status(Status.CANCEL, Activator.PLUGIN_ID, "no changes"); //$NON-NLS-1$
 					transaction.setStatus(status);
 					result = Window.CANCEL;
 				}
@@ -259,7 +259,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 	}
 	
 	protected void adapt(Composite content) {
-		
+
 		// The AbstractDetailComposite controls don't actually get constructed until
 		// setBusinessObject() is called - the business object determines which controls
 		// are required. So, this needs to happen very late in the dialog lifecycle.
@@ -268,7 +268,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 		content.setBackground(form.getBackground());
 		for (Control k : content.getChildren()) {
 			Object data = k.getData(AbstractObjectEditingDialog.DO_NOT_ADAPT);
-			if (data instanceof Boolean && (Boolean)data == true)
+			if (data instanceof Boolean && (Boolean) data == true)
 				continue;
 			if (k instanceof Twistie || k instanceof ToolBar
 					|| (k instanceof Label && k.getParent() instanceof Section)) {
@@ -276,7 +276,7 @@ public abstract class AbstractObjectEditingDialog extends FormDialog implements 
 			}
 			k.setBackground(form.getBackground());
 			if (k instanceof Composite) {
-				adapt((Composite)k);
+				adapt((Composite) k);
 			}
 		}
 	}

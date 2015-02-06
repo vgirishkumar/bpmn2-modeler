@@ -634,10 +634,10 @@ public class ModelDecorator {
 			if (defaultValue!=null) {
 				boolean setDefault = true;
 				String values[];
-				if (defaultValue.contains(","))
-					values = defaultValue.split(",");
+				if (defaultValue.contains(",")) //$NON-NLS-1$
+					values = defaultValue.split(","); //$NON-NLS-1$
 				else
-					values = defaultValue.split(" ");
+					values = defaultValue.split(" "); //$NON-NLS-1$
 				for (String v : values) {
 					if (setDefault) {
 						eAttribute.setDefaultValue(v);
@@ -1077,7 +1077,7 @@ public class ModelDecorator {
 			// value can not be null - use the default value instead
 			if (value==null) {
 				try {
-					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
+					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,""); //$NON-NLS-1$
 				}
 				catch (Exception e) {
 					// data type converter can't handle empty strings,
@@ -1117,7 +1117,7 @@ public class ModelDecorator {
 			if (value==null) {
 				if (attr.getEType() instanceof EDataType) {
 					eDataType = (EDataType) attr.getEType();
-					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,"");
+					value = eDataType.getEPackage().getEFactoryInstance().createFromString(eDataType,""); //$NON-NLS-1$
 				}
 			}
 			anyMap.add( FeatureMapUtil.createEntry(attr, value) );

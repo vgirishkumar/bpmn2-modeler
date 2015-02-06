@@ -53,7 +53,7 @@ public class JbpmItemDefinitionDetailComposite extends
 			else {
 				ObjectEditor editor = new TextObjectEditor(this,object,reference) {
 					@Override
-					protected boolean setValue(Object result) {
+					public boolean setValue(Object result) {
 						return super.setValue(ModelUtil.createStringWrapper((String)result));
 					}
 				};

@@ -20,15 +20,10 @@ public class Messages extends NLS {
 	public static String ModelUtil_Choreography_Diagram;
 	public static String ModelUtil_Choreograpy_Diagram;
 	public static String ModelUtil_Collaboration_Diagram;
-	public static String ModelUtil_Illegal_EPackage_For_Attribute;
-	public static String ModelUtil_Illegal_EPackage_For_Reference;
 	public static String ModelUtil_Illegal_Value;
-	public static String ModelUtil_Internal_Error;
 	public static String ModelUtil_Process_Diagram;
-	public static String ModelUtil_Unknown_Attribute_Data_Type;
 	public static String ModelUtil_Unknown_Diagram_Type;
 	public static String ModelUtil_Unknown_Object;
-	public static String ModelUtil_Unknown_Reference_Object_Type;
 	public static String ModelUtil_Unnamed_Object;
 	static {
 		// initialize resource bundle

@@ -41,7 +41,7 @@ public class DirectEditTextAnnotationFeature extends AbstractBpmn2DirectEditingF
 		PictogramElement pe = context.getPictogramElement();
 		TextAnnotation annotation = (TextAnnotation) getBusinessObjectForPictogramElement(pe);
 		String text = annotation.getText();
-		return text==null ? "" : text;
+		return text==null ? "" : text; //$NON-NLS-1$
 	}
 
 	@Override

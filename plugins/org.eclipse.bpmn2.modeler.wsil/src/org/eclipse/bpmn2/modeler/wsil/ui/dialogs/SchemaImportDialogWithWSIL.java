@@ -101,9 +101,9 @@ public class SchemaImportDialogWithWSIL extends DefaultSchemaImportDialog {
 		if (fImportType!=BID_IMPORT_JAVA) {
 			setVisibleControl(fKindButtonComposite, true);
 			setVisibleControl(fBrowseButton,true);
-			fLocationLabel.setText(Messages.SchemaImportDialog_8);
+			fLocationLabel.setText(Messages.SchemaImportDialog_Location_Label);
 			fBrowseButton.setText(fImportSource==BID_BROWSE_FILE || fImportSource==BID_BROWSE_WSIL ?
-					Messages.SchemaImportDialog_9 : Messages.SchemaImportDialog_26);
+					Messages.SchemaImportDialog_Browse_Button : Messages.SchemaImportDialog_Load_Button);
 		}
 		super.buttonPressed(id, checked);
 	}
@@ -120,7 +120,7 @@ public class SchemaImportDialogWithWSIL extends DefaultSchemaImportDialog {
 	protected Object createWSILStructure(Composite parent) {
 		
 		// Add WSIL option to button bar
-		fBtnWSIL = createRadioButton(fKindButtonComposite, Messages.SchemaImportDialog_15,
+		fBtnWSIL = createRadioButton(fKindButtonComposite, Messages.SchemaImportDialog_WSIL_Button,
 				BID_BROWSE_WSIL, fImportSource == BID_BROWSE_WSIL);
 
 		// create WSIL section
@@ -139,7 +139,7 @@ public class SchemaImportDialogWithWSIL extends DefaultSchemaImportDialog {
         fWSILComposite.setLayoutData(data);
         
 		Label location = new Label(fWSILComposite, SWT.NONE);
-	    location.setText( Messages.SchemaImportDialog_16 );
+	    location.setText( Messages.SchemaImportDialog_Filter_Name_Label );
 	    
 	    data = new GridData();
 	    data.grabExcessHorizontalSpace = true;

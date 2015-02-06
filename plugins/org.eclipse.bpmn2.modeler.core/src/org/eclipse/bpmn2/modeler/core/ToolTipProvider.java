@@ -25,15 +25,14 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.osgi.util.NLS;
 
 /**
  *
  */
-public class ToolTipProvider extends NLS implements IToolTipProvider {
+public class ToolTipProvider implements IToolTipProvider {
 
 	public final static ToolTipProvider INSTANCE = new ToolTipProvider();
-	
+
 	/**
 	 * 
 	 */
@@ -46,7 +45,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	@Override
 	public String getToolTip(Object context, EObject object) {
 		// TODO Auto-generated method stub
-		return getUIText(context, object, "tooltip");
+		return getUIText(context, object, "tooltip"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -55,7 +54,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	@Override
 	public String getLongDescription(Object context, EObject object) {
 		// TODO Auto-generated method stub
-		return getUIText(context, object, "description");
+		return getUIText(context, object, "description"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -63,7 +62,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	 */
 	@Override
 	public String getToolTip(Object context, EObject object, EStructuralFeature feature) {
-		return getUIText(context, object, feature, "tooltip");
+		return getUIText(context, object, feature, "tooltip"); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +70,7 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 	 */
 	@Override
 	public String getLongDescription(Object context, EObject object, EStructuralFeature feature) {
-		return getUIText(context, object, feature, "description");
+		return getUIText(context, object, feature, "description"); //$NON-NLS-1$
 	}
 	
 	/**
@@ -236,5 +235,4 @@ public class ToolTipProvider extends NLS implements IToolTipProvider {
 		}
 		return description;
 	}
-	
 }

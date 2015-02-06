@@ -563,7 +563,7 @@ public class GraphicsUtil {
 		ContainerShape target = (ContainerShape) c.getEnd().getParent();
 		String sourceName = GraphicsUtil.getDebugText(source);
 		String targetName = GraphicsUtil.getDebugText(target);
-		System.out.println(sourceName+" -> "+targetName);
+		System.out.println(sourceName+" -> "+targetName); //$NON-NLS-1$
 	}
 
 	public static void dump(int level, String label, ContainerShape shape) {

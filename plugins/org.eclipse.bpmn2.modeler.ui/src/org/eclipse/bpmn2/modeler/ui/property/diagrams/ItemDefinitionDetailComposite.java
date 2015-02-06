@@ -77,7 +77,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 					label = ExtendedPropertiesProvider.getLabel(object, attribute);
 				
 				ObjectEditor editor = new ComboObjectEditor(this,object,attribute) {
-					protected boolean setValue(final Object result) {
+					public boolean setValue(final Object result) {
 						super.setValue(result);
 						Display.getCurrent().syncExec( new Runnable() {
 							@Override
@@ -116,7 +116,7 @@ public class ItemDefinitionDetailComposite extends DefaultDetailComposite {
 				// This is a Physical item: anything goes
 				ObjectEditor editor = new TextObjectEditor(this,object,reference) {
 					@Override
-					protected boolean setValue(Object result) {
+					public boolean setValue(Object result) {
 						return super.setValue(ModelUtil.createStringWrapper((String)result));
 					}
 				};

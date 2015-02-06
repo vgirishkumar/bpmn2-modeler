@@ -116,9 +116,9 @@ public class Bpmn2HomePreferencePage
 				Bpmn2Preferences.PREF_RESOLVE_EXTERNALS,
 				Bpmn2Preferences.PREF_RESOLVE_EXTERNALS_LABEL,
 				new String[][]  {
-						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Always, "1"},
-						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Never, "0"},
-						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Prompt, "2"} },
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Always, "1"}, //$NON-NLS-1$
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Never, "0"}, //$NON-NLS-1$
+						{Messages.Bpmn2PreferencePage_HomePage_Resolve_Externals_Prompt, "2"} }, //$NON-NLS-1$
 				getFieldEditorParent());
 		addField(resolveExternals);
 		

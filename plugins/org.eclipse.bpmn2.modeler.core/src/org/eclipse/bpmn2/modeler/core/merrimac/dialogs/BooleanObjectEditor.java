@@ -96,7 +96,7 @@ public class BooleanObjectEditor extends ObjectEditor {
 		super.notifyChanged(notification);
 		if ( notification.getEventType() == -1 ||
 				(object == notification.getNotifier() && feature == notification.getFeature())) {
-			Object value = getBusinessObjectDelegate().getValue(object, feature);
+			Object value = getValue();
 			if (value==null) {
 				value = Boolean.FALSE;
 			}

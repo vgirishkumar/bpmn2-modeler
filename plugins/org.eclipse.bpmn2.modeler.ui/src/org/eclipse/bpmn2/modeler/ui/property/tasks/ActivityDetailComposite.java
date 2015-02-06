@@ -317,7 +317,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 		final String operationLabel = getBusinessObjectDelegate().getLabel(activity, operationRef);
 		final ObjectEditor operationEditor = new ComboObjectEditor(this,activity,operationRef) {
 			@Override
-			protected boolean setValue(final Object result) {
+			public boolean setValue(final Object result) {
 				TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 				domain.getCommandStack().execute(new RecordingCommand(domain) {
 					@Override
@@ -366,7 +366,7 @@ public class ActivityDetailComposite extends DefaultDetailComposite {
 			final String messageLabel = getBusinessObjectDelegate().getLabel(activity, messageRef);
 			final ObjectEditor messageEditor = new ComboObjectEditor(this,activity,messageRef) {
 				@Override
-				protected boolean setValue(final Object result) {
+				public boolean setValue(final Object result) {
 					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override

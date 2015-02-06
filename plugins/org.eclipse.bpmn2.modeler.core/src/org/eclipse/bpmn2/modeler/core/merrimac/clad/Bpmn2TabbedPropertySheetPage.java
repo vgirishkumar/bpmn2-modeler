@@ -58,7 +58,7 @@ public class Bpmn2TabbedPropertySheetPage extends TabbedPropertySheetPage implem
 		// Use a UIJob here to avoid thrashing as Graphiti updates and selects
 		// figures during creation.
 		if (job==null) {
-			job = new UIJob("BPMN2 Property Page") {
+			job = new UIJob("BPMN2 Property Page") { //$NON-NLS-1$
 
 				@Override
 				public IStatus runInUIThread(IProgressMonitor monitor) {

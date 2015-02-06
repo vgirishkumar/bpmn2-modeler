@@ -18,12 +18,14 @@ import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -31,6 +33,9 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -39,6 +44,10 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite {
 
+	BooleanObjectEditor independentEditor;
+	Button independentCheckbox;
+	Button waitForCompletionCheckbox;
+	
 	public JbpmCallActivityDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
@@ -47,6 +56,45 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 		super(parent, style);
 	}
 
+	@Override
+	protected void bindAttribute(Composite parent, EObject object, EAttribute attribute, String label) {
+		if ("independent".equals(attribute.getName())) {
+			independentEditor = new BooleanObjectEditor(this,object,attribute);
+			independentCheckbox = (Button) independentEditor.createControl(parent,label);
+			if (waitForCompletionCheckbox!=null && waitForCompletionCheckbox.getSelection()==false) {
+				independentCheckbox.setEnabled(false);
+			}
+		}
+		else if ("waitForCompletion".equals(attribute.getName())) {
+			ObjectEditor editor = new BooleanObjectEditor(this,object,attribute);
+			waitForCompletionCheckbox = (Button) editor.createControl(parent,label);
+			waitForCompletionCheckbox.addSelectionListener( new SelectionListener() {
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					boolean checked = waitForCompletionCheckbox.getSelection();
+					if (!checked) {
+						independentCheckbox.setEnabled(false);
+						independentEditor.setValue(Boolean.TRUE);
+					}
+					else {
+						independentCheckbox.setEnabled(true);
+					}
+				}
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+			if (waitForCompletionCheckbox.getSelection()==false) {
+				if (independentCheckbox!=null)
+					independentCheckbox.setEnabled(false);
+			}
+		}
+		else
+			super.bindAttribute(parent, object, attribute, label);
+	}
+	
 	@Override
 	protected void bindReference(Composite parent, EObject object, EReference reference) {
 		if ("calledElementRef".equals(reference.getName())) { //$NON-NLS-1$
@@ -86,7 +134,7 @@ public class JbpmCallActivityDetailComposite extends JbpmActivityDetailComposite
 					
 					
 					@Override
-					protected boolean setValue(final Object result) {
+					public boolean setValue(final Object result) {
 						if (result != object.eGet(feature)) {
 							TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 							domain.getCommandStack().execute(new RecordingCommand(domain) {

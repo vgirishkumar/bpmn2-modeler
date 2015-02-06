@@ -16,11 +16,13 @@ package org.eclipse.bpmn2.modeler.ui.features.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.IntermediateCatchEvent;
 import org.eclipse.bpmn2.IntermediateThrowEvent;
 import org.eclipse.bpmn2.LinkEventDefinition;
+import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2CustomFeature;
@@ -194,13 +196,13 @@ public class FollowLinkFeature extends AbstractBpmn2CustomFeature {
 			PictogramElement pe = context.getPictogramElements()[0];
 			Event event = BusinessObjectUtil.getFirstElementOfType(pe, Event.class);
 			if (getLinks(event).size()==0) {
-				return "Create a Link";
+				return Messages.FollowLinkFeature_Create_Link_Description;
 			}
 			else if (event instanceof IntermediateCatchEvent) {
-				return "Show Source Links";
+				return Messages.FollowLinkFeature_Show_Source_Links_Description;
 			}
 			else {
-				return "Show Target Link";
+				return Messages.FollowLinkFeature_Show_Target_Link_Description;
 			}
 		}
 		return null;

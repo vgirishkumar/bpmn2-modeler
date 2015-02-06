@@ -87,7 +87,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 	 * @link org.eclipse.bpmn2.modeler.ui.diagram.BPMNFeatureProvider
 	 */
 	public AbstractBpmn2CreateConnectionFeature(IFeatureProvider fp) {
-		super(fp, "", "");
+		super(fp, "", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String getCreateName() {
@@ -308,7 +308,7 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 //	    	ctd.populateObject(businessObject, getResource(context), true);
 //		}
 		
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_INITIALIZED,
 				getFeatureProvider(), context, businessObject));
 	}
 	

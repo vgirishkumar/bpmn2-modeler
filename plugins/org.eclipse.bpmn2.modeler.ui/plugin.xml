@@ -765,7 +765,7 @@
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.full"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.1">
+			profile="Full">
 			
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 			
@@ -910,35 +910,35 @@
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.descriptive"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.2">
+			profile="Descriptive">
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 		</toolPalette>
 
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.analytic"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.3">
+			profile="Analytic">
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 		</toolPalette>
 
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.executable"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.4">
+			profile="Executable">
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 		</toolPalette>
 
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.choreography"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.5">
+			profile="Choreography">
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 		</toolPalette>
 
 		<toolPalette
 			id="org.bpmn2.modeler.toolpalette.conversation"
 			runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-			profile="profile.6">
+			profile="Conversation">
 			<category id="org.bpmn2.modeler.toolpalette.default.categories"/>
 		</toolPalette>
 
@@ -948,7 +948,7 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.1"
+				id="org.eclipse.bpmn2.modeler.enablements.full"
 				profile="Full"
 				description="All BPMN2 elements and attributes">
 			<enable object="all"/>
@@ -956,7 +956,7 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.2"
+				id="org.eclipse.bpmn2.modeler.enablements.descriptive"
 				profile="Descriptive"
 				description="Descriptive Process Modeling Conformance">
 			<enable object="Collaboration"/>
@@ -1005,10 +1005,10 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.3"
+				id="org.eclipse.bpmn2.modeler.enablements.analytic"
 				profile="Analytic"
 				description="Analytic Process Modeling Conformance"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.2">
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Descriptive">
 			<enable object="SequenceFlow" feature="conditionExpression"/>
 			<enable object="ExclusiveGateway" feature="default"/>
 			<enable object="InclusiveGateway" feature="name"/>
@@ -1034,10 +1034,10 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.4"
+				id="org.eclipse.bpmn2.modeler.enablements.executable"
 				profile="Executable"
 				description="Common Executable Process Modeling Conformance"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.3">
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Analytic">
 			<enable object="BusinessRuleTask"/>
 			<enable object="AdHocSubProcess"/>
 			<enable object="GlobalTask"/>
@@ -1068,7 +1068,7 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.5"
+				id="org.eclipse.bpmn2.modeler.enablements.choreography"
 				profile="Choreography"
 				description="Choreography and Collaboration Modeling Conformance">
 			<enable object="Choreography"/>
@@ -1100,7 +1100,7 @@
 
 		<modelEnablement
 				runtimeId="org.eclipse.bpmn2.modeler.runtime.none"
-				id="profile.6"
+				id="org.eclipse.bpmn2.modeler.enablements.conversation"
 				profile="Conversation"
 				description="Conversation Modeling">
 			<enable object="Participant" feature="name"/>

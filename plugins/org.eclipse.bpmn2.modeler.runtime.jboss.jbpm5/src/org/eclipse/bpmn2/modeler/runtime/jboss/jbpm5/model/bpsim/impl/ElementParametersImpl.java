@@ -662,9 +662,9 @@ public class ElementParametersImpl extends EObjectImpl implements ElementParamet
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (elementRef: ");
+		result.append(" (elementRef: "); //$NON-NLS-1$
 		result.append(elementRef);
-		result.append(", id: ");
+		result.append(", id: "); //$NON-NLS-1$
 		result.append(id);
 		result.append(')');
 		return result.toString();

@@ -82,7 +82,7 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 							if (newLabel==null || newLabel.isEmpty())
 								newLabel = ""; //$NON-NLS-1$
 							if (!newLabel.equals(oldLabel)) {
-								reason = Reason.createTrueReason("Choreography Message");
+								reason = Reason.createTrueReason(Messages.UpdateChoreographyMessageFlowFeature_Message_Changed);
 								break;
 						}
 					}
@@ -98,12 +98,12 @@ public class UpdateChoreographyMessageFlowFeature extends AbstractUpdateBaseElem
 			String shapeIds = ChoreographyUtil.getMessageRefIds(choreographyTaskShape);
 			String taskIds = ChoreographyUtil.getMessageRefIds(choreographyTask);
 			if (!shapeIds.equals(taskIds))
-				reason = Reason.createTrueReason("Choreography Message Link");
+				reason = Reason.createTrueReason(Messages.UpdateChoreographyMessageFlowFeature_Message_Link_Changed);
 			else {
 				shapeIds = ChoreographyUtil.getParticipantRefIds(choreographyTaskShape);
 				taskIds = ChoreographyUtil.getParticipantRefIds(choreographyTask);
 				if (!shapeIds.equals(taskIds))
-					reason = Reason.createTrueReason("Participants");
+					reason = Reason.createTrueReason(Messages.UpdateChoreographyMessageFlowFeature_Participants_Changed);
 		}
 	}
 

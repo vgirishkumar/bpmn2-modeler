@@ -72,14 +72,14 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 	@Override
 	public Object createFromString(String literal) {
 		try {
-			String a[] = literal.split(",");
+			String a[] = literal.split(","); //$NON-NLS-1$
 			if (a.length==4) {
 				String name = a[0];
 				int height = (int)Math.round(Double.parseDouble(a[1]));
 				int style = 0;
-				if ("I".equals(a[2]))
+				if ("I".equals(a[2])) //$NON-NLS-1$
 					style |= SWT.ITALIC;
-				if ("B".equals(a[3]))
+				if ("B".equals(a[3])) //$NON-NLS-1$
 					style |= SWT.BOLD;
 				return new FontData(name, height, style);
 			}
@@ -99,7 +99,7 @@ public class EFontConversionDelegate extends DefaultConversionDelegate {
 		}
 		if (systemFontData!=null)
 			return systemFontData;
-		return new FontData("arial",12,SWT.NORMAL);
+		return new FontData("arial",12,SWT.NORMAL); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)

@@ -131,7 +131,7 @@
 				id="customtask.profile.1"
 				profile="Full"
 				description="All BPMN2 elements and attributes"
-				ref="org.eclipse.bpmn2.modeler.runtime.none:profile.1">
+				ref="org.eclipse.bpmn2.modeler.runtime.none:Full">
 			<enable object="TaskConfig"/>
 			<enable object="TemporalDependency"/>
 			<enable object="Parameter"/>

@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.adapters;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.CallChoreography;
@@ -93,6 +94,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.Messages;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ActivityPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.ui.adapters.properties.AssociationPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.BusinessRuleTaskPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallActivityPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.CallChoreographyPropertiesAdapter;
@@ -408,6 +410,14 @@ public class Bpmn2EditorItemProviderAdapterFactory extends Bpmn2ItemProviderAdap
 			if (adapter!=null)
 				return adapter;
         	return new DataAssociationPropertiesAdapter(adapterFactory,object);
+		}
+
+		@Override
+		public ExtendedPropertiesAdapter caseAssociation(Association object) {
+			ExtendedPropertiesAdapter adapter = getTargetRuntimeAdapter(object);
+			if (adapter!=null)
+				return adapter;
+        	return new AssociationPropertiesAdapter(adapterFactory,object);
 		}
 
 		@Override

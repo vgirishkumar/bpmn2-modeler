@@ -50,9 +50,9 @@ public class InterfaceValidator extends AbstractBpmn2ElementValidator<Interface>
 	@Override
 	public IStatus validate(Interface object) {
 		if (isEmpty(object.getName()))
-			addMissingFeatureStatus(object,"name",Status.ERROR);
+			addMissingFeatureStatus(object,"name",Status.ERROR); //$NON-NLS-1$
 		if (isEmpty(object.getOperations()))
-			addMissingFeatureStatus(object,"operations",Status.ERROR);
+			addMissingFeatureStatus(object,"operations",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

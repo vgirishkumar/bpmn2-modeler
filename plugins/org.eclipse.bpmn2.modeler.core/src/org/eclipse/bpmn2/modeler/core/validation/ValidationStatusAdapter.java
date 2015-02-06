@@ -80,7 +80,7 @@ public class ValidationStatusAdapter extends AdapterImpl {
             }
             StringBuffer sb = new StringBuffer();
             if (getChildren().length > 1) {
-           		sb.append("Multiple problems:\n");
+           		sb.append(Messages.ValidationStatusAdapter_Multiple_Problems_Found);
             }
             for (IStatus status : getChildren()) {
                 if (status.isOK()) {

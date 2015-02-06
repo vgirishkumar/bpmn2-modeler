@@ -50,9 +50,9 @@ public class AssignmentValidator extends AbstractBpmn2ElementValidator<Assignmen
 	@Override
 	public IStatus validate(Assignment object) {
 		if (isEmpty(object.getFrom()))
-			addMissingFeatureStatus(object,"from",Status.ERROR);
+			addMissingFeatureStatus(object,"from",Status.ERROR); //$NON-NLS-1$
 		if (isEmpty(object.getTo()))
-			addMissingFeatureStatus(object,"To",Status.ERROR);
+			addMissingFeatureStatus(object,"To",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

@@ -18,7 +18,6 @@ import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.ItemAwareElement;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
@@ -64,11 +63,11 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 				if (isEmpty(object.getTargetRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
 					ItemAwareElement source = object.getSourceRef().size()>0 ? object.getSourceRef().get(0) : null;
 					if (source!=null) {
-						addStatus(object, resultLocus, severity, "Output Parameter {0} is uninitialized",
-							ExtendedPropertiesProvider.getTextValue(source));
+						addStatus(object, resultLocus, severity, Messages.DataAssociationValidator_Output_Uninitialized,
+							getName(source));
 					}
 					else {
-						addMissingFeatureStatus(object, "targetRef", resultLocus, severity);
+						addMissingFeatureStatus(object, "targetRef", resultLocus, severity); //$NON-NLS-1$
 					}
 				}
 			}
@@ -76,11 +75,11 @@ public class DataAssociationValidator extends AbstractBpmn2ElementValidator<Data
 				if (isEmpty(object.getSourceRef()) && object.getAssignment().size()==0 && object.getTransformation()==null) {
 					ItemAwareElement target = object.getTargetRef();
 					if (target!=null) {
-						addStatus(object, resultLocus, severity, "Input Parameter {0} is uninitialized",
-							ExtendedPropertiesProvider.getTextValue(target));
+						addStatus(object, resultLocus, severity, Messages.DataAssociationValidator_Input_Uninitialized,
+								getName(target));
 					}
 					else {
-						addMissingFeatureStatus(object, "sourceRef", resultLocus, severity);
+						addMissingFeatureStatus(object, "sourceRef", resultLocus, severity); //$NON-NLS-1$
 					}
 				}
 			}

@@ -50,7 +50,7 @@ public class CallActivityValidator extends AbstractBpmn2ElementValidator<CallAct
 	@Override
 	public IStatus validate(CallActivity object) {
 		if (object.getCalledElementRef()==null)
-			addMissingFeatureStatus(object,"calledElementRef",Status.ERROR);
+			addMissingFeatureStatus(object,"calledElementRef",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

@@ -26,22 +26,25 @@ import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
-import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 
 
 /**
@@ -183,10 +186,9 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	}
 	
 	/**
-	 * Load and initialize all RuntimeExtension classes for all Target Runtimes
-	 * that have the same ID as ours.
+	 * Notify the TargetRuntime of a LifeCycle event.
 	 * 
-	 * @param editor - the DiagramEditor initializing us.
+	 * @param event
 	 */
 	public void notify(LifecycleEvent event) {
 		TargetRuntime.getDefaultRuntime().getRuntimeExtension().notify(event);
@@ -300,6 +302,42 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 				return rt;
 		}
 		return null;
+	}
+	
+	public static TargetRuntime getRuntime(IEditorInput input) {
+		TargetRuntime runtime = null;
+		if (input!=null) {
+			 // If the project has not been configured for a specific runtime through the "BPMN2"
+			 // project properties page (i.e. the target is "None") then allow the runtime extension
+			 // plug-ins an opportunity to identify the given process file contents as their own.
+			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
+			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
+			 // generic property sheets and other default behavior.
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				if (rt.getRuntimeExtension().isContentForRuntime(input)) {
+					runtime = rt;
+					break;
+				}
+			}
+		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
+		return runtime;
+	}
+	
+	public static TargetRuntime getRuntime(EObject object) {
+		TargetRuntime runtime = null;
+		if (object!=null && object.eResource()!=null) {
+			URI uri = object.eResource().getURI();
+			IFile file = FileUtils.getFile(uri);
+			if (file!=null) {
+				IEditorInput input = new FileEditorInput(file);
+				runtime = getRuntime(input);
+			}
+		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
+		return runtime;
 	}
 	
 	/**
@@ -899,7 +937,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			ModelDescriptor md = getModelDescriptor();
 			if (md.getEPackage() != Bpmn2Package.eINSTANCE) {
 				for (EClassifier ec : md.getEPackage().getEClassifiers()) {
-					if (ec.getName().equals("DocumentRoot"))
+					if (ec.getName().equals("DocumentRoot")) //$NON-NLS-1$
 						continue;
 					if (ec instanceof EClass) {
 						EClass eClass = (EClass)ec;

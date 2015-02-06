@@ -76,7 +76,7 @@ public class UpdateChoreographyMarkerFeature extends AbstractUpdateMarkerFeature
 	protected String convertPropertyToString(ChoreographyActivity element) {
 		String type = element.getLoopType().getName();
 		if (type==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return type;
 	}
 

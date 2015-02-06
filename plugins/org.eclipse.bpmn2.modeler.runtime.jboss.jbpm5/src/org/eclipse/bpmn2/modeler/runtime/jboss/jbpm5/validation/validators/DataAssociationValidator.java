@@ -54,7 +54,7 @@ public class DataAssociationValidator extends org.eclipse.bpmn2.modeler.core.val
 	public IStatus validate(DataAssociation object) {
 		EObject container = object.eContainer();
 		if (container!=null) {
-			if (ModelDecorator.getAnyAttribute(container, "taskName")!=null)
+			if (ModelDecorator.getAnyAttribute(container, "taskName")!=null) //$NON-NLS-1$
 				return getResult();
 		}
 		if (!(container instanceof UserTask)) {

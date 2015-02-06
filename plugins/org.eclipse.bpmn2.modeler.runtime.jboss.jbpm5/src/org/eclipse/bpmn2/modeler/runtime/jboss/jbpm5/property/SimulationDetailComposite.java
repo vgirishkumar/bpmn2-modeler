@@ -194,7 +194,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 			editor = new FloatObjectEditor(this,decimalValue,BpsimPackage.eINSTANCE.getFloatingParameterType_Value()) {
 
 				@Override
-				protected boolean setValue(final Object result) {
+				public boolean setValue(final Object result) {
 					TransactionalEditingDomain domain = getDiagramEditor().getEditingDomain();
 					domain.getCommandStack().execute(new RecordingCommand(domain) {
 						@Override
@@ -235,7 +235,7 @@ public class SimulationDetailComposite extends DefaultDetailComposite {
 					}
 					
 					@Override
-					protected boolean setValue(Object result) {
+					public boolean setValue(Object result) {
 						final DistributionType dt = (DistributionType)result;
 						ParameterValue value = timeParams.getProcessingTime().getParameterValue().get(0);
 						boolean changed = true;

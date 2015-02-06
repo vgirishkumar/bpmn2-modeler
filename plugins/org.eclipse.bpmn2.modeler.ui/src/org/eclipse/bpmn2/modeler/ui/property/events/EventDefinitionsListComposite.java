@@ -259,21 +259,21 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								return ((EscalationEventDefinition)element).getEscalationRef().getName();
 						}
 						if (element instanceof LinkEventDefinition) {
-							String text = "";
+							String text = ""; //$NON-NLS-1$
 							LinkEventDefinition link = (LinkEventDefinition)element;
 							int size = link.getSource().size();
 							for (int i=0; i<size; ++i) {
 								LinkEventDefinition source = link.getSource().get(i);
 								text += getTextValue(source.eContainer());
 								if (i<size-1)
-									text += ", ";
+									text += ", "; //$NON-NLS-1$
 							}
 							if (!text.isEmpty()) {
-									text += " -> ";
+									text += " -> "; //$NON-NLS-1$
 								text += getTextValue(link.eContainer());
 								LinkEventDefinition target = link.getTarget();
 								if (target!=null) {
-									text += " -> " + getTextValue(target.eContainer());
+									text += " -> " + getTextValue(target.eContainer()); //$NON-NLS-1$
 								}
 								return text;
 							}
@@ -291,18 +291,18 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 						if (element instanceof TimerEventDefinition) {
 							Expression exp = ((TimerEventDefinition)element).getTimeDate();
 							if (exp!=null)
-								return Messages.TimerEventDefinitionDetailComposite_Time_Date + ": " +
+								return Messages.TimerEventDefinitionDetailComposite_Time_Date + ": " + //$NON-NLS-1$
 										getTextValue(exp);
 							exp = ((TimerEventDefinition)element).getTimeCycle();
 							if (exp!=null)
-								return Messages.TimerEventDefinitionDetailComposite_Interval + ": " +
+								return Messages.TimerEventDefinitionDetailComposite_Interval + ": " + //$NON-NLS-1$
 									getTextValue(exp);
 							exp = ((TimerEventDefinition)element).getTimeDuration();
 							if (exp!=null)
-								return Messages.TimerEventDefinitionDetailComposite_Duration + ": " +
+								return Messages.TimerEventDefinitionDetailComposite_Duration + ": " + //$NON-NLS-1$
 									getTextValue(exp);
 						}
-						return "<None>";
+						return Messages.EventDefinitionsListComposite_None_Label;
 					}
 
 					@Override

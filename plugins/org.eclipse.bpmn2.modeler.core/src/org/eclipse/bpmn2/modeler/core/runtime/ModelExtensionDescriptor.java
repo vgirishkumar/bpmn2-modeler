@@ -14,7 +14,6 @@
 package org.eclipse.bpmn2.modeler.core.runtime;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -291,7 +290,7 @@ public class ModelExtensionDescriptor extends BaseRuntimeExtensionDescriptor {
 		uri = e.getAttribute("uri"); //$NON-NLS-1$
 		type = e.getAttribute("type"); //$NON-NLS-1$
 		description = e.getAttribute("description"); //$NON-NLS-1$
-		if (e.getAttribute("decorator")!=null) {
+		if (e.getAttribute("decorator")!=null) { //$NON-NLS-1$
 			try {
 				objectDecorator = (IObjectDecorator) e.createExecutableExtension("decorator"); //$NON-NLS-1$
 			} catch (CoreException e1) {

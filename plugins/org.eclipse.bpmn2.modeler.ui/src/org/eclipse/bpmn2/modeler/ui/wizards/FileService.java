@@ -14,10 +14,8 @@ package org.eclipse.bpmn2.modeler.ui.wizards;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -28,12 +26,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -46,7 +43,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -257,93 +253,11 @@ public class FileService {
 				// the input is not a local file. Create a temp file and copy its contents
 				String name = sei.getStorage().getName();
 				InputStream istream = sei.getStorage().getContents();
-				File file = createTempFile(name, istream);
+				File file = FileUtils.createTempFile(name, istream);
 				return URI.createFileURI(file.getPath());
 			}
 			catch (Exception e) {
 			}
-		}
-		return null;
-	}
-	
-	public static String createTempName(String name) {
-		String tempDir = System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
-		if (!tempDir.endsWith(File.separator))
-			tempDir += File.separator;
-		String tempName = tempDir + name + "." + EcoreUtil.generateUUID(); //$NON-NLS-1$
-		return tempName;
-	}
-	
-	public static File createTempFile(String name) {
-		return createTempFile(name,null);
-	}
-	
-	public static File createTempFile(String name, InputStream istream) {
-		File tempFile = null;
-		try {
-			tempFile = File.createTempFile(name, ".bpmn"); //$NON-NLS-1$
-			if (istream!=null) {
-				OutputStream ostream = new FileOutputStream(tempFile);
-	
-				int read = 0;
-				byte[] bytes = new byte[1024];
-	
-				while ((read = istream.read(bytes)) != -1) {
-					ostream.write(bytes, 0, read);
-				}
-	
-				istream.close();
-
-				ostream.flush();
-				ostream.close();
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return tempFile;
-	}
-	
-	public static boolean isTempFile(URI uri) {
-		String tempDir = System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
-		String uriDir = uri.trimFragment().trimSegments(1).devicePath();
-		return tempDir!=null && tempDir.compareToIgnoreCase(uriDir)==0;
-	}
-	
-	public static void deleteTempFile(URI uri) {
-		File file = new File(uri.toFileString());
-		if (file.exists())
-			file.delete();
-	}
-
-	public static IFile getFile(URI uri) {
-		if (uri == null) {
-			return null;
-		}
-
-		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-
-		// File URIs
-		final String filePath = getWorkspaceFilePath(uri.trimFragment());
-		if (filePath == null) {
-			final IPath location = Path.fromOSString(uri.toString());
-			final IFile file = workspaceRoot.getFileForLocation(location);
-			if (file != null) {
-				return file;
-			}
-			return null;
-		}
-
-		// Platform resource URIs
-		else {
-			final IResource workspaceResource = workspaceRoot.findMember(filePath);
-			return (IFile) workspaceResource;
-		}
-	}
-
-	private static String getWorkspaceFilePath(URI uri) {
-		if (uri.isPlatform()) {
-			return uri.toPlatformString(true);
 		}
 		return null;
 	}

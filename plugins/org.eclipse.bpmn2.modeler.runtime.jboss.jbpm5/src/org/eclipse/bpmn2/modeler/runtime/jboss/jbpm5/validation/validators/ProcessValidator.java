@@ -56,14 +56,14 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 			}
 		}
 		if (!foundStartEvent) {
-			addStatus(object, Status.WARNING, "Process has no Start Event");
+			addStatus(object, Status.WARNING, Messages.ProcessValidator_No_Start);
 		}
 		if (!foundEndEvent) {
-			addStatus(object, Status.WARNING, "Process has no End Event");
+			addStatus(object, Status.WARNING, Messages.ProcessValidator_No_End);
 		}
 		
 		if (isEmpty(object.getName())) {
-			addStatus(object, "name", Status.WARNING, "Process {0} has no name", object.getId());
+			addStatus(object, "name", Status.WARNING, Messages.ProcessValidator_No_Name, object.getId()); //$NON-NLS-1$
 		}
 		
 		EStructuralFeature feature;
@@ -73,15 +73,15 @@ public class ProcessValidator extends AbstractBpmn2ElementValidator<Process> {
 			name = (String) object.eGet(feature);
 		}
 		if (name==null || name.isEmpty()) {
-			addStatus(object, "packageName", Status.ERROR, Messages.ProcessConstraint_No_Package_Name, object.getName(), object.getId());
+			addStatus(object, "packageName", Status.ERROR, Messages.ProcessConstraint_No_Package_Name, object.getName(), object.getId()); //$NON-NLS-1$
 		}
 		else if (!SyntaxCheckerUtils.isJavaPackageName(name)) {
-			addStatus(object, "packageName", Status.ERROR, "Package name is invalid: {0}", name);
+			addStatus(object, "packageName", Status.ERROR, Messages.ProcessValidator_Invalid_PackageName, name); //$NON-NLS-1$
 		}
 
 		name = object.getName();
 		if (name==null || name.isEmpty()) {
-			addStatus(object, "name", Status.ERROR, Messages.ProcessConstraint_No_Process_Name, object.getId());
+			addStatus(object, "name", Status.ERROR, Messages.ProcessConstraint_No_Process_Name, object.getId()); //$NON-NLS-1$
 		}
 		
 		feature = ModelDecorator.getAnyAttribute(object, "adHoc"); //$NON-NLS-1$

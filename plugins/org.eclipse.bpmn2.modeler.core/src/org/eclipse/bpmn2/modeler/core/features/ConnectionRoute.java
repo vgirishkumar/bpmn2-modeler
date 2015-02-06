@@ -224,12 +224,12 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			int size = getPoints().size();
 			Point p0 = size==0 ? null : getPoints().get(0);
 			Point p1 = size==0 ? null : getPoints().get(size-1);
-			String start = p0==null ? "null" : p0.getX()+","+p0.getY();
-			String end = p1==null ? "null" : p1.getX()+","+p1.getY();
+			String start = p0==null ? "null" : p0.getX()+","+p0.getY(); //$NON-NLS-1$ //$NON-NLS-2$
+			String end = p1==null ? "null" : p1.getX()+","+p1.getY(); //$NON-NLS-1$ //$NON-NLS-2$
 			
-			text = getId()+(valid?" :" : "X:")+
-					" rank="+rank+
-					" length="+getLength()+
+			text = getId()+(valid?" :" : "X:")+ //$NON-NLS-1$ //$NON-NLS-2$
+					" rank="+rank+ //$NON-NLS-1$
+					" length="+getLength()+ //$NON-NLS-1$
 					" points="+getPoints().size() + //$NON-NLS-1$ //$NON-NLS-2$
 					" source="+sourceAnchorSite+" "+start+ //$NON-NLS-1$  //$NON-NLS-2$
 					" target="+targetAnchorSite+" "+end; //$NON-NLS-1$ //$NON-NLS-2$

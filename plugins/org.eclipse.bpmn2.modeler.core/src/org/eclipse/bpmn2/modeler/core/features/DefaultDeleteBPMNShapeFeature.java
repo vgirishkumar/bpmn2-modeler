@@ -70,7 +70,7 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			return false;
 		LifecycleEvent event = new LifecycleEvent(EventType.PICTOGRAMELEMENT_CAN_DELETE,
 				getFeatureProvider(), context, context.getPictogramElement());
-		TargetRuntime.getCurrentRuntime().notify(event);
+		LifecycleEvent.notify(event);
 		return event.doit;
 	}
 	
@@ -138,7 +138,7 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			Graphiti.getPeService().deletePictogramElement(pe);
 		}
 
-		TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.BUSINESSOBJECT_DELETED, bo));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_DELETED, bo));
 
 		super.deleteBusinessObject(bo);
 	}
@@ -173,15 +173,13 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 			if (shape instanceof ContainerShape) {
 				DeleteContext context = new DeleteContext((PictogramElement) shape);
 
-				TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-				rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, shape));
+				LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, shape));
 
 				fp.getDeleteFeature(context).delete(context);
 			}
 		}
 
-		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-		rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape));
+		LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, null, containerShape));
 	}
 
 	/**
@@ -196,9 +194,7 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 		for (Connection connection : allConnections) {
 			IDeleteContext context = new DeleteContext(connection);
 
-			TargetRuntime rt = TargetRuntime.getCurrentRuntime();
-			rt.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, connection));
-
+			LifecycleEvent.notify(new LifecycleEvent(EventType.PICTOGRAMELEMENT_DELETED, fp, context, connection));
 			fp.getDeleteFeature(context).delete(context);
 		}
 	}

@@ -50,7 +50,7 @@ public class ResourceValidator extends AbstractBpmn2ElementValidator<Resource> {
 	@Override
 	public IStatus validate(Resource object) {
 		if (isEmpty(object.getName()))
-			addMissingFeatureStatus(object,"name",Status.ERROR);
+			addMissingFeatureStatus(object,"name",Status.ERROR); //$NON-NLS-1$
 		return getResult();
 	}
 

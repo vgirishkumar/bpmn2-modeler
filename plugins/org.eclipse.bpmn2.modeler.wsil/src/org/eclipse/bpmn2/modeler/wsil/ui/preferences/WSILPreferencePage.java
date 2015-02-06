@@ -141,7 +141,7 @@ public class WSILPreferencePage extends PreferencePage implements IWorkbenchPref
 
 		// WSIL directory
 		Label wsilLabel = new Label(result, SWT.NONE);
-		wsilLabel.setText(Messages.WSILPreferencePage_WSIL_1);
+		wsilLabel.setText(Messages.WSILPreferencePage_WSIL_Document_URL);
 		wsilLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 		
 		wsilURL = new Text(result, SWT.BORDER);
@@ -166,7 +166,7 @@ public class WSILPreferencePage extends PreferencePage implements IWorkbenchPref
 		});
 		
 		Button browse = new Button(result, SWT.NONE);
-		browse.setText(Messages.WSILPreferencePage_WSIL_2);
+		browse.setText(Messages.WSILPreferencePage_WSIL_Browse_Button);
 		data = new GridData(SWT.RIGHT);
 		data.widthHint = 100;
 		

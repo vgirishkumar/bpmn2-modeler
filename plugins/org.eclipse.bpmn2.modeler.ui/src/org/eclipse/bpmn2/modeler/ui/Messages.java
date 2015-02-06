@@ -26,9 +26,6 @@ public class Messages extends NLS {
 	
 	public static String Activator_Error;
 
-	public static String SchemaImportDialog_15;
-	public static String SchemaImportDialog_16;
-	public static String SchemaImportDialog_20;
 	public static String SchemaImportDialog_BPMN2_Button;
 	public static String SchemaImportDialog_Browse_BPMN2_Title;
 	public static String SchemaImportDialog_Browse_Button;
@@ -77,6 +74,10 @@ public class Messages extends NLS {
 	public static String XSDTypeDefinitionAdapter_XSD_Type_1;
 	public static String XSDSimpleTypeDefinitionAdapter_0;
 
+	public static String Bpmn2EditorAppearancePreferencePage_Apply_All;
+
+	public static String Bpmn2EditorAppearancePreferencePage_Labels_Title;
+
 	public static String Bpmn2EditorPreferencePage_Colors_Group;
 	public static String Bpmn2EditorPreferencePage_GraphicalElements_Group;
 	
@@ -94,12 +95,13 @@ public class Messages extends NLS {
 	public static String Bpmn2EditorPreferencePage_Label_Color_Label;
 	public static String Bpmn2EditorPreferencePage_Label_Font_Label;
 	public static String Bpmn2EditorPreferencePage_MultiSelected_Color_Label;
-	public static String Bpmn2EditorPreferencePage_Override_Size_Label;
 	public static String Bpmn2EditorPreferencePage_Routing_Style_Label;
 	public static String Bpmn2EditorPreferencePage_Label_Location_Label;
 	public static String Bpmn2EditorPreferencePage_Selected_Color_Label;
 	public static String Bpmn2HomePreferencePage_Default_DI_Values_Title;
 	public static String Bpmn2PreferencePage_HomePage_Description;
+	public static String Bpmn2PropertyPage_Enable_BPMN2_Project_Nature;
+
 	public static String Bpmn2PropertyPage_HomePage_Description;
 	public static String Bpmn2PreferencePage_HomePage_Resolve_Externals_Always;
 	public static String Bpmn2PreferencePage_HomePage_Resolve_Externals_Never;

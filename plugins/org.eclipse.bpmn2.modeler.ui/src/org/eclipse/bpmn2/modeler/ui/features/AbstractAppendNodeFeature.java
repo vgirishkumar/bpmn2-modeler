@@ -234,7 +234,7 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 				// AbstractAppendNodeNodeFeature specializations; for example the class
 				// AppendActivityFeature will construct a popup list of all Activity subclasses
 				// e.g. Task, ScriptTask, SubProcess, etc.
-				ICreateFeature createFeature = (ICreateFeature) context.getProperty("create.feature");
+				ICreateFeature createFeature = (ICreateFeature) context.getProperty(GraphitiConstants.CREATE_FEATURE);
 				if (createFeature==null)
 					createFeature = selectNewShape();
 				

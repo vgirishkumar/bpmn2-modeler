@@ -61,7 +61,7 @@ public class MessageRefFeatureDescriptor<T extends BaseElement> extends RootElem
 	@Override
 	protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
 		super.internalSet(object, feature, value, index);
-		EStructuralFeature f = object.eClass().getEStructuralFeature("messageRef");
+		EStructuralFeature f = object.eClass().getEStructuralFeature("messageRef"); //$NON-NLS-1$
 		if (f!=null) {
 			Message message = (Message) object.eGet(f);
 			if (message!=null) {

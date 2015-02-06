@@ -50,9 +50,9 @@ public class ChoreographyActivityValidator extends AbstractBpmn2ElementValidator
 	@Override
 	public IStatus validate(ChoreographyActivity object) {
 		if (object.getParticipantRefs().size()<2)
-			addStatus(object,"particpiantRefs",Status.ERROR,"ChoreographyActivity must have at least two Participants");
+			addStatus(object,"particpiantRefs",Status.ERROR,Messages.ChoreographyActivityValidator_Need_Two_Participants); //$NON-NLS-1$
 		if (object.getInitiatingParticipantRef()==null)
-			addStatus(object,"particpiantRefs",Status.ERROR,"ChoreographyActivity has no initiating Participant");
+			addStatus(object,"particpiantRefs",Status.ERROR,Messages.ChoreographyActivityValidator_No_Initiating_Participant); //$NON-NLS-1$
 		return getResult();
 	}
 

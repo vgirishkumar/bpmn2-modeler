@@ -175,21 +175,21 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 		int totalWidth = dim.getWidth();
 		int height = totalHeight;
 		int width = 0;
-		String line = "";
-		String nextword = "";
+		String line = ""; //$NON-NLS-1$
+		String nextword = ""; //$NON-NLS-1$
 		for (int i=0; i<words.length; ++i) {
 			line += words[i];
 			if (i<words.length-1)
 				nextword = words[i+1];
 			else
-				nextword = "";
+				nextword = ""; //$NON-NLS-1$
 			dim = calculateTextSize(line + nextword, font);
 			if (dim.getWidth()>wrapWidth) {
 				height += dim.getHeight();
 				dim = calculateTextSize(line, font);
 				if (dim.getWidth()>width)
 					width = dim.getWidth();
-				line = "";
+				line = ""; //$NON-NLS-1$
 			}
 			else if (dim.getWidth()>width)
 				width = dim.getWidth();
@@ -201,7 +201,7 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 	
 	private IDimension calculateTextSize(String text, Font font) {
 		IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-		if (text.endsWith("\n"))
+		if (text.endsWith("\n")) //$NON-NLS-1$
 			dim.setHeight(2*dim.getHeight());
 		return dim;
 	}

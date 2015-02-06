@@ -60,7 +60,7 @@ public class PropertyTabDescriptorProvider implements ITabDescriptorProvider {
 		// No, we need build the list: get the Target Runtime <propertyTab> contributions
 		// and merge with the Default Runtime Tab Descriptors
 		List<PropertyTabDescriptor> desc = null;
-		TargetRuntime rt = Bpmn2Preferences.getInstance(businessObject.eResource()).getRuntime();
+		TargetRuntime rt = TargetRuntime.getRuntime(businessObject);
 		if (rt!=TargetRuntime.getDefaultRuntime()) {
 			desc = TargetRuntime.getDefaultRuntime().buildPropertyTabDescriptors();
 			desc.addAll(rt.buildPropertyTabDescriptors());

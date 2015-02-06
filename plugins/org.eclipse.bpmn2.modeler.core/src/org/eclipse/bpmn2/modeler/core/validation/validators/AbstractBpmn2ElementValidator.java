@@ -64,11 +64,11 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 	 * @return a validator class if found, otherwise null.
 	 */
 	public static IBpmn2ElementValidator<?> getValidator(IValidationContext ctx, Class<?> c) {
-		String className = AbstractBpmn2ElementValidator.class.getPackage().getName() + "." + c.getSimpleName();
-		if (className.endsWith("Impl")) {
-			className = className.replaceFirst("Impl$", "");
+		String className = AbstractBpmn2ElementValidator.class.getPackage().getName() + "." + c.getSimpleName(); //$NON-NLS-1$
+		if (className.endsWith("Impl")) { //$NON-NLS-1$
+			className = className.replaceFirst("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		className += "Validator";
+		className += "Validator"; //$NON-NLS-1$
 		try {
 			Class<?> validatorClass = AbstractBpmn2ElementValidator.class.getClassLoader().loadClass(className);
 			if (validatorClass != null) {
@@ -81,11 +81,11 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 	}
 
 	public static IBpmn2ElementValidator<?> getValidator(IBpmn2ElementValidator<?> parent, Class<?> c) {
-		String className = AbstractBpmn2ElementValidator.class.getPackage().getName() + "." + c.getSimpleName();
-		if (className.endsWith("Impl")) {
-			className = className.replaceFirst("Impl$", "");
+		String className = AbstractBpmn2ElementValidator.class.getPackage().getName() + "." + c.getSimpleName(); //$NON-NLS-1$
+		if (className.endsWith("Impl")) { //$NON-NLS-1$
+			className = className.replaceFirst("Impl$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		className += "Validator";
+		className += "Validator"; //$NON-NLS-1$
 		try {
 			Class<?> validatorClass = AbstractBpmn2ElementValidator.class.getClassLoader().loadClass(className);
 			if (validatorClass != null) {
@@ -138,14 +138,14 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		// change error message slightly for connections
 		String message;
 		if (feature!=null && feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = "{0} {1} has no {2} Connections";
+			message = Messages.AbstractBpmn2ElementValidator_Object_Missing_Connections;
 		else
-			message = "{0} {1} has no {2}";
+			message = Messages.AbstractBpmn2ElementValidator_Object_Missing_Feature;
 		if (feature!=null)
-			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
+			featureName = getLabel(object, feature);
 		addStatus(object, featureName, severity, message,
-				ExtendedPropertiesProvider.getLabel(object),
-				ExtendedPropertiesProvider.getTextValue(object),
+				getLabel(object),
+				getName(object),
 				featureName);
 	}
 
@@ -154,14 +154,14 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		// change error message slightly for connections
 		String message;
 		if (feature!=null && feature.getEType() == Bpmn2Package.eINSTANCE.getSequenceFlow())
-			message = "{0} {1} has no {2} Connections";
+			message = Messages.AbstractBpmn2ElementValidator_Object_Missing_Connections;
 		else
-			message = "{0} {1} has no {2}";
+			message = Messages.AbstractBpmn2ElementValidator_Object_Missing_Feature;
 		if (feature!=null)
-			featureName = ExtendedPropertiesProvider.getLabel(object, feature);
+			featureName = getLabel(object, feature);
 		addStatus(object, featureName, resultLocus, severity, message,
-				ExtendedPropertiesProvider.getLabel(object),
-				ExtendedPropertiesProvider.getTextValue(object),
+				getLabel(object),
+				getName(object),
 				featureName);
 	}
 
@@ -185,6 +185,18 @@ public abstract class AbstractBpmn2ElementValidator<T extends EObject> implement
 		if (parent == null)
 			return this;
 		return parent;
+	}
+
+	protected String getLabel(EObject object) {
+		return ExtendedPropertiesProvider.getLabel(object);
+	}
+
+	protected String getLabel(EObject object, EStructuralFeature feature) {
+		return ExtendedPropertiesProvider.getLabel(object, feature);
+	}
+
+	protected String getName(EObject object) {
+		return ExtendedPropertiesProvider.getTextValue(object);
 	}
 
 	/**

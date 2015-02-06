@@ -36,13 +36,13 @@ public class EColorConversionDelegate extends DefaultConversionDelegate {
 	public String convertToString(Object value) {
 		if (value instanceof RGB) {
 			RGB c = (RGB) value;
-			return "#" +
+			return "#" + //$NON-NLS-1$
 					toHex(c.red) +
 					toHex(c.green) +
 					toHex(c.blue);
 		}
 		if (value==null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return value.toString();
 	}
 
@@ -54,7 +54,7 @@ public class EColorConversionDelegate extends DefaultConversionDelegate {
 	 */
 	@Override
 	public Object createFromString(String literal) {
-		if (literal.startsWith("#"))
+		if (literal.startsWith("#")) //$NON-NLS-1$
 			literal = literal.substring(1);
 		if (literal.length()==6) {
 			RGB c = new RGB(
@@ -79,7 +79,7 @@ public class EColorConversionDelegate extends DefaultConversionDelegate {
 		String s = Integer.toHexString(i);
 		int l = s.length();
 		if (l==1)
-			s = "0" + s;
+			s = "0" + s; //$NON-NLS-1$
 		else if (l>2)
 			s = s.substring(l-2, l-1);
 		return s;

@@ -265,10 +265,10 @@ public class UserDistributionTypeImpl extends DistributionParameterImpl implemen
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (group: ");
+		result.append(" (group: "); //$NON-NLS-1$
 		result.append(group);
-		result.append(", discrete: ");
-		if (discreteESet) result.append(discrete); else result.append("<unset>");
+		result.append(", discrete: "); //$NON-NLS-1$
+		if (discreteESet) result.append(discrete); else result.append("<unset>"); //$NON-NLS-1$
 		result.append(')');
 		return result.toString();
 	}

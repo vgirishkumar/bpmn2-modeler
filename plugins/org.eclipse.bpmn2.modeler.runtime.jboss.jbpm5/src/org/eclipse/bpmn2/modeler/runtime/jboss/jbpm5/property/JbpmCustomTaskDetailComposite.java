@@ -27,6 +27,6 @@ public class JbpmCustomTaskDetailComposite extends JbpmTaskDetailComposite {
 
 	@Override
 	protected boolean isModelObjectEnabled(String className, String featureName) {
-		return !"anyAttribute".equals(featureName);
+		return !"anyAttribute".equals(featureName); //$NON-NLS-1$
 	}
 }

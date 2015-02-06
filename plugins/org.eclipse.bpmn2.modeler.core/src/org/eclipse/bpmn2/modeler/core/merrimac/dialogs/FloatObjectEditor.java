@@ -22,6 +22,7 @@ import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -68,7 +69,7 @@ public class FloatObjectEditor extends TextObjectEditor {
 				for (int i = 0; i < chars.length; i++) {
 					if (!('0' <= chars[i] && chars[i] <= '9') && chars[i]!='.') {
 						e.doit = false;
-						showErrorMessage("The character '"+e.text+"' is not valid");
+						showErrorMessage(NLS.bind(Messages.FloatObjectEditor_Invalid_Character, e.text));
 						return;
 					}
 				}

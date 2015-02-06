@@ -55,11 +55,11 @@ public class ChoreographyTaskValidator extends AbstractBpmn2ElementValidator<Cho
 		for (MessageFlow mf : object.getMessageFlowRef()) {
 			InteractionNode in = mf.getSourceRef();
 			if (!object.getParticipantRefs().contains(in)) {
-				addStatus(object,"participantRefs",Status.ERROR,"Message Flow source is not a Participant of the Choreography Task");
+				addStatus(object,"participantRefs",Status.ERROR,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.ChoreographyTaskValidator_Source_Not_Participant); //$NON-NLS-1$
 			}
 			in = mf.getTargetRef();
 			if (!object.getParticipantRefs().contains(in)) {
-				addStatus(object,"participantRefs",Status.ERROR,"Message Flow target is not a Participant of the Choreography Task");
+				addStatus(object,"participantRefs",Status.ERROR,org.eclipse.bpmn2.modeler.core.validation.validators.Messages.ChoreographyTaskValidator_Target_Not_Participant); //$NON-NLS-1$
 			}
 		}
 		return getResult();

@@ -18,10 +18,10 @@ import org.eclipse.core.runtime.CoreException;
 
 public class BPMN2Nature implements IProjectNature {
 
-	/**
-	 * ID of this project nature
-	 */
+	/** BPMN2 Project Nature ID **/
 	public static final String NATURE_ID = "org.eclipse.bpmn2.modeler.core.bpmn2Nature"; //$NON-NLS-1$
+	/** WST Validation Builder ID **/
+	public static final String WST_VALIDATION_BUILDER_ID = "org.eclipse.wst.validation.validationbuilder"; //$NON-NLS-1$
 
 	private IProject project;
 
@@ -31,34 +31,85 @@ public class BPMN2Nature implements IProjectNature {
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
 	public void configure() throws CoreException {
-		IProjectDescription desc = project.getDescription();
-		ICommand[] commands = desc.getBuildSpec();
-
-		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(BPMN2Builder.BUILDER_ID)) {
-				return;
-			}
+		if (!project.hasNature(BPMN2Nature.NATURE_ID)) {
+			// Add the nature
+			IProjectDescription description = project.getDescription();
+			String[] natures = description.getNatureIds();
+			String[] newNatures = new String[natures.length + 1];
+			System.arraycopy(natures, 0, newNatures, 0, natures.length);
+			newNatures[natures.length] = BPMN2Nature.NATURE_ID;
+			description.setNatureIds(newNatures);
+			project.setDescription(description, null);
 		}
-
-		ICommand[] newCommands = new ICommand[commands.length + 1];
-		System.arraycopy(commands, 0, newCommands, 0, commands.length);
-		ICommand command = desc.newCommand();
-		command.setBuilderName(BPMN2Builder.BUILDER_ID);
-		newCommands[newCommands.length - 1] = command;
-		desc.setBuildSpec(newCommands);
-		project.setDescription(desc, null);
+		configureBuilder(BPMN2Builder.BUILDER_ID);
+		// We need the WST validation builder as well
+		configureBuilder(WST_VALIDATION_BUILDER_ID);
 	}
 
+	public static boolean hasBuilder(IProject project, String builderId) {
+		try {
+			IProjectDescription desc = project.getDescription();
+			ICommand[] commands = desc.getBuildSpec();
+	
+			for (int i = 0; i < commands.length; ++i) {
+				if (commands[i].getBuilderName().equals(builderId)) {
+					return true;
+				}
+			}
+		}
+		catch (CoreException e) {
+		}
+		return false;
+	}
+	
+	private void configureBuilder(String builderId) throws CoreException {
+		if (!hasBuilder(project, builderId)) {
+			IProjectDescription desc = project.getDescription();
+			ICommand[] commands = desc.getBuildSpec();
+			ICommand[] newCommands = new ICommand[commands.length + 1];
+			System.arraycopy(commands, 0, newCommands, 0, commands.length);
+			ICommand command = desc.newCommand();
+			command.setBuilderName(builderId);
+			newCommands[newCommands.length - 1] = command;
+			desc.setBuildSpec(newCommands);
+			project.setDescription(desc, null);
+			project.refreshLocal(IProject.DEPTH_INFINITE, null);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
 	public void deconfigure() throws CoreException {
+		if (project.hasNature(BPMN2Nature.NATURE_ID)) {
+			IProjectDescription description = project.getDescription();
+			String[] natures = description.getNatureIds();
+			for (int i = 0; i < natures.length; ++i) {
+				if (BPMN2Nature.NATURE_ID.equals(natures[i])) {
+					// Remove the nature
+					String[] newNatures = new String[natures.length - 1];
+					System.arraycopy(natures, 0, newNatures, 0, i);
+					System.arraycopy(natures, i + 1, newNatures, i,
+							natures.length - i - 1);
+					description.setNatureIds(newNatures);
+					project.setDescription(description, null);
+					return;
+				}
+			}
+		}
+		deconfigureBuilder(BPMN2Builder.BUILDER_ID);
+		// Don't remove WST validation builder.
+		// Validation is enabled/disabled by the Project or Global
+		// User Preferences UI.
+	}
+
+	private void deconfigureBuilder(String builderId) throws CoreException {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(BPMN2Builder.BUILDER_ID)) {
+			if (commands[i].getBuilderName().equals(builderId)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
@@ -69,7 +120,6 @@ public class BPMN2Nature implements IProjectNature {
 			}
 		}
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -90,35 +140,12 @@ public class BPMN2Nature implements IProjectNature {
 	
 	public static void setBPMN2Nature(IProject project, boolean enable) {
 		try {
-			IProjectDescription description = project.getDescription();
-			String[] natures = description.getNatureIds();
-
-			if (enable) {
-				if (project.getNature(BPMN2Nature.NATURE_ID)==null) {
-					// Add the nature
-					String[] newNatures = new String[natures.length + 1];
-					System.arraycopy(natures, 0, newNatures, 0, natures.length);
-					newNatures[natures.length] = BPMN2Nature.NATURE_ID;
-					description.setNatureIds(newNatures);
-					project.setDescription(description, null);
-				}
-			}
-			else {
-				if (project.getNature(BPMN2Nature.NATURE_ID)!=null) {
-					for (int i = 0; i < natures.length; ++i) {
-						if (BPMN2Nature.NATURE_ID.equals(natures[i])) {
-							// Remove the nature
-							String[] newNatures = new String[natures.length - 1];
-							System.arraycopy(natures, 0, newNatures, 0, i);
-							System.arraycopy(natures, i + 1, newNatures, i,
-									natures.length - i - 1);
-							description.setNatureIds(newNatures);
-							project.setDescription(description, null);
-							return;
-						}
-					}
-				}
-			}
+			BPMN2Nature nature = new BPMN2Nature();
+			nature.setProject(project);
+			if (enable)
+				nature.configure();
+			else
+				nature.deconfigure();
 		} catch (CoreException e) {
 		}
 	}

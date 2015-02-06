@@ -31,7 +31,6 @@ public class Messages extends NLS {
 	public static String BPMNToolBehaviorProvider_SwimLanes_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Profiles_Drawer_Label;
 	public static String BPMNToolBehaviorProvider_Tasks_Drawer_Label;
-	public static String BPMNToolBehaviorProvider_Unnamed_Profile;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

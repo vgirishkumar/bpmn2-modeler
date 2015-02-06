@@ -18,7 +18,6 @@ import java.util.Map;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.commands.operations.DefaultOperationHistory;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.IStatus;
@@ -32,7 +31,6 @@ import org.eclipse.emf.transaction.RollbackException;
 import org.eclipse.emf.transaction.Transaction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.impl.EMFCommandTransaction;
-import org.eclipse.emf.transaction.impl.InternalTransaction;
 import org.eclipse.emf.transaction.impl.TransactionalEditingDomainImpl;
 import org.eclipse.emf.transaction.impl.TriggerCommandTransaction;
 import org.eclipse.emf.transaction.util.TriggerCommand;
@@ -235,10 +233,10 @@ public class BPMN2EditorUpdateBehavior extends DefaultUpdateBehavior {
 		
 		switch (event.getEventType()) {
 		case OperationHistoryEvent.REDONE:
-			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_REDO, event.getOperation()));
 			break;
 		case OperationHistoryEvent.UNDONE:
-			TargetRuntime.getCurrentRuntime().notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
+			LifecycleEvent.notify(new LifecycleEvent(EventType.COMMAND_UNDO, event.getOperation()));
 			break;
 		}
 	}

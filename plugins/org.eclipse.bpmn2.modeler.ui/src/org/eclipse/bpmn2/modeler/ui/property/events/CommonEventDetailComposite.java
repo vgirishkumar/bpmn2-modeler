@@ -86,7 +86,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 					label = getBusinessObjectDelegate().getLabel(be, attribute);
 				
 				final ObjectEditor editor = new BooleanObjectEditor(this,be,attribute) {
-					protected boolean setValue(final Object result) {
+					public boolean setValue(final Object result) {
 						if (hasEventDefinition(be,ErrorEventDefinition.class)) {
 							setCancel(be,true);
 							this.setVisible(true);
@@ -164,13 +164,13 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 					if (object instanceof StartEvent && object.eContainer() instanceof SubProcess) {
 						SubProcess sp = (SubProcess)object.eContainer();
 						if (sp.isTriggeredByEvent()) {
-							result.add("isInterrupting");
+							result.add("isInterrupting"); //$NON-NLS-1$
 						}
 					}
 					if (object instanceof CatchEvent) {
 						CatchEvent ce = (CatchEvent)object;
 						if (ce.getEventDefinitions().size()>1)
-							result.add("parallelMultiple");
+							result.add("parallelMultiple"); //$NON-NLS-1$
 					}
 					if (object instanceof BoundaryEvent) {
 						boolean add = true;
@@ -182,12 +182,12 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 							}
 						}
 						if (add)
-							result.add("cancelActivity");
+							result.add("cancelActivity"); //$NON-NLS-1$
 					}
-					result.add("eventDefinitions");
-					result.add("dataInputs");
-					result.add("dataOutputs");
-					result.add("properties");
+					result.add("eventDefinitions"); //$NON-NLS-1$
+					result.add("dataInputs"); //$NON-NLS-1$
+					result.add("dataOutputs"); //$NON-NLS-1$
+					result.add("properties"); //$NON-NLS-1$
 					return result.toArray(new String[result.size()]); 
 				}
 			};
@@ -210,7 +210,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 						ThrowEvent throwEvent = (ThrowEvent)object;
 						inputTable = new DataInputsListComposite(this, throwEvent);
 						inputTable.bindList(object, feature);
-						inputTable.setTitle("Input Parameters");//Messages.CommonEventDetailComposite_Input_Parameters_Title);
+						inputTable.setTitle(Messages.CommonEventDetailComposite_Input_Parameters_Title);//Messages.CommonEventDetailComposite_Input_Parameters_Title);
 						return inputTable;
 					}
 				}
@@ -219,7 +219,7 @@ public class CommonEventDetailComposite extends DefaultDetailComposite {
 						CatchEvent catchEvent = (CatchEvent)object;
 						outputTable = new DataOutputsListComposite(this, catchEvent);
 						outputTable.bindList(catchEvent, feature);
-						outputTable.setTitle("Output Parameters");//Messages.CommonEventDetailComposite_Output_Parameters_Title);
+						outputTable.setTitle(Messages.CommonEventDetailComposite_Output_Parameters_Title);//Messages.CommonEventDetailComposite_Output_Parameters_Title);
 						return outputTable;
 					}
 				}

@@ -42,7 +42,7 @@ public class CollaborationDiagramPropertySection extends DefaultPropertySection 
 		EObject bo = super.getBusinessObjectForSelection(selection);
 		// check class name instead of using instanceof to distinguish it
 		// from a Choreography which is a subclass of Collaboration.
-		if (bo!=null && bo.eClass().getName().equals("Collaboration"))
+		if (bo!=null && bo.eClass().getName().equals("Collaboration")) //$NON-NLS-1$
 			return bo;
 		
 		return null;

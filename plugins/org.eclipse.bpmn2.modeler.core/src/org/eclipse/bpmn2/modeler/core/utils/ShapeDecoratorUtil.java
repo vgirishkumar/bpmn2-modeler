@@ -966,7 +966,7 @@ public class ShapeDecoratorUtil {
 				return pe;
 		}
 		PictogramElement decorator = Graphiti.getPeCreateService().createShape(containerShape, true);
-		peService.setPropertyValue(decorator, GraphitiConstants.VALIDATION_DECORATOR, "true");
+		peService.setPropertyValue(decorator, GraphitiConstants.VALIDATION_DECORATOR, "true"); //$NON-NLS-1$
 		Rectangle rect = Graphiti.getGaCreateService().createInvisibleRectangle(decorator);
 		rect.setX(-5);
 		rect.setY(-5);

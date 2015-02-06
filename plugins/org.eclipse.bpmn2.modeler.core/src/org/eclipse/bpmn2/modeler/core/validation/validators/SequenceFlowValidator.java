@@ -50,9 +50,9 @@ public class SequenceFlowValidator extends AbstractBpmn2ElementValidator<Sequenc
 	@Override
 	public IStatus validate(SequenceFlow object) {
 		if (object.getSourceRef()==null)
-			this.addStatus(object, Status.ERROR, "Sequence Flow is not connected to a source element");
+			this.addStatus(object, Status.ERROR, Messages.SequenceFlowValidator_SequenceFlow_No_Source);
 		if (object.getTargetRef()==null)
-			this.addStatus(object, Status.ERROR, "Sequence Flow is not connected to a target element");
+			this.addStatus(object, Status.ERROR, Messages.SequenceFlowValidator_SequenceFlow_No_Target);
 		return getResult();
 	}
 

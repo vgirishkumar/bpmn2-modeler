@@ -57,7 +57,7 @@ public class ExpressionValidator extends AbstractBpmn2ElementValidator<Expressio
 				// if the Process is executable the FormalExpression body can not be empty
 				String body = ModelUtil.getExpressionBody(formalExpression);
 				if(body == null || body.isEmpty()){
-					addStatus(formalExpression, Status.ERROR, "Expression is empty");
+					addStatus(formalExpression, Status.ERROR, Messages.ExpressionValidator_Empty);
 				}
 			}
 		}

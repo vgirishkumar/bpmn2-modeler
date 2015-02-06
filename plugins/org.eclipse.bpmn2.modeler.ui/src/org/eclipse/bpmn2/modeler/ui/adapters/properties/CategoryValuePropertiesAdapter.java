@@ -79,7 +79,7 @@ public class CategoryValuePropertiesAdapter extends ExtendedPropertiesAdapter<Ca
 	
 	private static String getDisplayName(CategoryValue categoryValue) {
 		Category category = (Category) categoryValue.eContainer();
-		String prefix = (category==null || category.getName()==null) ? "" : category.getName() + ":"; //$NON-NLS-1$
+		String prefix = (category==null || category.getName()==null) ? "" : category.getName() + ":"; //$NON-NLS-1$ //$NON-NLS-2$
 		String suffix = categoryValue.getValue();
 		return prefix + suffix;
 	}

@@ -49,8 +49,8 @@ public class BPMNLabelTreeEditPart extends AbstractGraphicsTreeEditPart {
 		BPMNLabel bpmnLabel = getBPMNLabel();
 		if (bpmnLabel.getBounds()!=null) {
 			Bounds b = bpmnLabel.getBounds();
-			return "Label: x="+b.getX()+", y="+b.getY()+" w="+b.getWidth()+" h="+b.getHeight();
+			return "Label: x="+b.getX()+", y="+b.getY()+" w="+b.getWidth()+" h="+b.getHeight(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
-		return "Label";
+		return "Label"; //$NON-NLS-1$
 	}
 }

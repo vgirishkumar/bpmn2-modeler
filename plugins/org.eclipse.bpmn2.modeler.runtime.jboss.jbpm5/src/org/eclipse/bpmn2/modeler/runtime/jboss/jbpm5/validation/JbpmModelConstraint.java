@@ -15,6 +15,7 @@ import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Escalation;
+import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.UserTask;
@@ -25,6 +26,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DataA
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DefinitionsValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.EscalationValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.GlobalTypeValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.InterfaceValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.ProcessValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.SignalValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.UserTaskValidator;
@@ -64,7 +66,10 @@ public class JbpmModelConstraint extends AbstractModelConstraint {
 		}	
 		if (object instanceof Definitions) {
 			return new DefinitionsValidator(ctx).validate((Definitions)object);
-		}	
+		}
+		if (object instanceof Interface) {
+			return new InterfaceValidator(ctx).validate((Interface)object);
+		}
 		return ctx.createSuccessStatus();
 	}
 

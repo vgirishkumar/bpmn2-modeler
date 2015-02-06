@@ -56,7 +56,7 @@ public abstract class AbstractBpmn2DirectEditingFeature extends AbstractDirectEd
 	 */
 	@Override
 	public String getInitialValue(IDirectEditingContext context) {
-		String value = "";
+		String value = ""; //$NON-NLS-1$
 		BaseElement be = getBusinessObject(context);
 		EStructuralFeature feature = be.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (feature!=null)

@@ -220,25 +220,25 @@ public class BPMN2ValidationConstraints extends AbstractModelConstraint {
 			ClassLoader cl = rt.getRuntimeExtension().getClass().getClassLoader();
 			Bundle b = ((BundleReference)cl).getBundle();
 			String pluginId = b.getSymbolicName();
-			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.emf.validation.constraintProviders");
+			IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.emf.validation.constraintProviders"); //$NON-NLS-1$
 			for (IConfigurationElement e : elements) {
 				if (pluginId.equals(e.getDeclaringExtension().getContributor().getName())) {
-					if ("constraintProvider".equals(e.getName())) {
-						for (IConfigurationElement e1 : e.getChildren("constraints")) {
-							String categories = e1.getAttribute("categories");
+					if ("constraintProvider".equals(e.getName())) { //$NON-NLS-1$
+						for (IConfigurationElement e1 : e.getChildren("constraints")) { //$NON-NLS-1$
+							String categories = e1.getAttribute("categories"); //$NON-NLS-1$
 							if (categories!=null && categories.contains(CATEGORY_ID)) {
-								for (IConfigurationElement e2 : e1.getChildren("constraint")) {
-									for (IConfigurationElement e3 : e2.getChildren("target")) {
-										String className = e3.getAttribute("class");
+								for (IConfigurationElement e2 : e1.getChildren("constraint")) { //$NON-NLS-1$
+									for (IConfigurationElement e3 : e2.getChildren("target")) { //$NON-NLS-1$
+										String className = e3.getAttribute("class"); //$NON-NLS-1$
 										int i = className.indexOf(':');
 										if (i>0) {
 											className = className.substring(0,i);
 										}
 										if (object.eClass().getName().equals(className)) {
-											String mode = isLiveValidation(ctx) ? "Live" : "Batch";
-											String m = e2.getAttribute("mode");
+											String mode = isLiveValidation(ctx) ? "Live" : "Batch"; //$NON-NLS-1$ //$NON-NLS-2$
+											String m = e2.getAttribute("mode"); //$NON-NLS-1$
 											if (m==null)
-												m = "Batch";
+												m = "Batch"; //$NON-NLS-1$
 											if (mode.equals(m))
 												return true;
 										}
