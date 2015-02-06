@@ -29,12 +29,14 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.utils.ErrorDialog;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
@@ -42,6 +44,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.FileEditorInput;
 
 
 /**
@@ -310,19 +313,33 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
 			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
 			 // generic property sheets and other default behavior.
-			runtime = null;
 			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
 				if (rt.getRuntimeExtension().isContentForRuntime(input)) {
 					runtime = rt;
 					break;
 				}
 			}
-			if (runtime==null)
-				runtime = getDefaultRuntime();
 		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
 		return runtime;
 	}
-
+	
+	public static TargetRuntime getRuntime(EObject object) {
+		TargetRuntime runtime = null;
+		if (object!=null && object.eResource()!=null) {
+			URI uri = object.eResource().getURI();
+			IFile file = FileUtils.getFile(uri);
+			if (file!=null) {
+				IEditorInput input = new FileEditorInput(file);
+				runtime = getRuntime(input);
+			}
+		}
+		if (runtime==null)
+			runtime = getDefaultRuntime();
+		return runtime;
+	}
+	
 	/**
 	 * Set the current TargetRuntime.
 	 * This is called by a BPMN2 Editor when it becomes the active editor.

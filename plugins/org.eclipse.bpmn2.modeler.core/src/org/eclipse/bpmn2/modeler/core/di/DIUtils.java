@@ -75,6 +75,7 @@ import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.ILayoutService;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 public class DIUtils {
 	
@@ -939,6 +940,26 @@ public class DIUtils {
 	}
 	
 	/**
+	 * Convenience method to return only a single Graphiti ContainerShape that
+	 * references the given BaseElement in the current Diagram
+	 * 
+	 * @param baseElement
+	 * @return
+	 */
+	public static ContainerShape getContainerShape(BaseElement baseElement) {
+		DiagramEditor diagramEditor = ModelUtil.getDiagramEditor(baseElement);
+		if (diagramEditor!=null) {
+			Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
+			for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, baseElement)) {
+				if (pe instanceof ContainerShape && BusinessObjectUtil.getFirstElementOfType(pe, BPMNShape.class)!=null) {
+					return (ContainerShape) pe;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Convenience method to return only the Graphiti Connections that reference the given BaseElement
 	 * in all Diagrams of the given ResourceSet
 	 * 
@@ -958,6 +979,27 @@ public class DIUtils {
 		return connections;
 	}
 	
+	/**
+	 * Convenience method to return only a single Graphiti Connection that
+	 * references the given BaseElement in the current Diagram
+	 * 
+	 * @param baseElement
+	 * @return
+	 */
+	public static Connection getConnection(BaseElement baseElement) {
+		DiagramEditor diagramEditor = ModelUtil.getDiagramEditor(baseElement);
+		if (diagramEditor!=null) {
+			Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
+			for (Connection c : diagram.getConnections()) {
+				if ( BusinessObjectUtil.getFirstBaseElement(c) == baseElement &&
+						BusinessObjectUtil.getFirstElementOfType(c, BPMNEdge.class)!=null) {
+					return c;
+				}
+			}
+		}
+		return null;
+	}
+
 	public static Diagram getDiagram(BaseElement baseElement) {
 		Resource res = ExtendedPropertiesAdapter.getResource(baseElement);
 		List<PictogramElement> pes = getPictogramElements(res.getResourceSet(), baseElement);

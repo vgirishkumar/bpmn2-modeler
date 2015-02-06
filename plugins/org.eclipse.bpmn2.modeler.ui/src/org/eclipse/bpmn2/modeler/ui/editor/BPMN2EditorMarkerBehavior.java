@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
+import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.notify.Notification;
@@ -136,7 +136,7 @@ public class BPMN2EditorMarkerBehavior extends DefaultMarkerBehavior {
 	 */
 	public Diagnostic analyzeResourceProblems(Resource resource, Exception exception) {
 		if ((!resource.getErrors().isEmpty() || !resource.getWarnings().isEmpty()) && updateProblemIndication) {
-			final IFile file = FileService.getFile(resource.getURI());
+			final IFile file = FileUtils.getFile(resource.getURI());
 			final String fileName = file != null ? file.getFullPath().toString() : "unknown name"; //$NON-NLS-1$
 			final BasicDiagnostic basicDiagnostic = new BasicDiagnostic(
 					Diagnostic.ERROR,

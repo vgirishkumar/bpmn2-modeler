@@ -180,7 +180,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		ALWAYS_FALSE
 	};
 	
-	private TargetRuntime targetRuntime;
+//	private TargetRuntime targetRuntime;
 	private boolean showAdvancedPropertiesTab;
 	private boolean showDescriptions;
 	private boolean showIdAttribute;
@@ -322,12 +322,12 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 		Assert.isNotNull(rt);
 		String id = rt.getId();
 		List<Bpmn2Preferences> prefs = new ArrayList<Bpmn2Preferences>();
-		if (instancePreferenceCache!=null && instancePreferenceCache.targetRuntime.getId().equals(id))
+		if (instancePreferenceCache!=null && instancePreferenceCache.getRuntime().getId().equals(id))
 			prefs.add(instancePreferenceCache);
 		if (projectPreferenceCacheMap!=null) {
 			for (Entry<IProject, Bpmn2Preferences> entry : projectPreferenceCacheMap.entrySet()) {
 				Bpmn2Preferences pref = entry.getValue();
-				if (pref.targetRuntime.getId().equals(id))
+				if (pref.getRuntime().getId().equals(id))
 					prefs.add(pref);
 			}
 			
@@ -517,10 +517,6 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	private void cache() {
 		if (!cached) {
 			// cache all preferences as Bpmn2Preferences instance variables for faster access
-			String id = get(PREF_TARGET_RUNTIME,null);
-			if (id==null || id.isEmpty())
-				id = TargetRuntime.getCurrentRuntime().getId();
-			targetRuntime = TargetRuntime.getRuntime(id);
 			showAdvancedPropertiesTab = getBoolean(PREF_SHOW_ADVANCED_PROPERTIES, false);
 			showDescriptions = getBoolean(PREF_SHOW_DESCRIPTIONS, false);
 			showIdAttribute = getBoolean(PREF_SHOW_ID_ATTRIBUTE, false);
@@ -693,7 +689,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 					ss = ShapeStyle.decode(value);
 			}
 			ss.setObject(name);
-			ss.setRuntime(targetRuntime);
+			ss.setRuntime(getRuntime());
 			shapeStyles.put(name, ss);
 		}
 		return ss;
@@ -1044,38 +1040,37 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	// Getters and setters for miscellaneous preferences
 	////////////////////////////////////////////////////////////////////////////////
 
-	public TargetRuntime getRuntime() {
-		if (targetRuntime==null) {
-			targetRuntime = TargetRuntime.getDefaultRuntime();
-			Display.getDefault().asyncExec( new Runnable() {
-				@Override
-				public void run() {
-					String id = get(PREF_TARGET_RUNTIME,null);
-					if (id==null || id.isEmpty())
-						id = TargetRuntime.getFirstNonDefaultId();
-
-					targetRuntime = TargetRuntime.getDefaultRuntime();
-					MessageDialog.openError(
-						Display.getDefault().getActiveShell(),
-						Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
-						NLS.bind(
-							Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
-							id,
-							targetRuntime.getDescription()
-						)
-					);
-				}
-				
-			});
+	public synchronized TargetRuntime getRuntime() {
+		TargetRuntime rt = null;
+		final String id = get(PREF_TARGET_RUNTIME, null);
+		if (id!=null && !id.isEmpty()) {
+			rt = TargetRuntime.getRuntime(id);
+			if (rt==null) {
+				Display.getDefault().asyncExec( new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(
+							Display.getDefault().getActiveShell(),
+							Messages.Bpmn2Preferences_No_Runtime_Plugin_Title,
+							NLS.bind(
+								Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
+								id,
+								TargetRuntime.getCurrentRuntime().getDescription()
+							)
+						);
+					}
 					
+				});
+			}
 		}
-		return targetRuntime;
+		if (rt==null)
+			rt = TargetRuntime.getCurrentRuntime();
+		return rt;
 	}
 
-	public void setRuntime(TargetRuntime rt) {
+	public synchronized void setRuntime(TargetRuntime rt) {
 		Assert.isTrue(rt!=null);
 		put(PREF_TARGET_RUNTIME, rt.getId());
-		targetRuntime = rt;
 		try {
 			projectPreferences.flush();
 		} catch (BackingStoreException e) {
