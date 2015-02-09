@@ -11,7 +11,14 @@
 package org.eclipse.bpmn2.modeler.core.validation;
 
 public class SyntaxCheckerUtils {
+	private static char invalidChar;
+	
+	public static char getInvalidChar() {
+		return invalidChar;
+	}
+	
 	public static final boolean isQName(String name) {
+		invalidChar = 0;
 		String parts[] = name.split(":");
 		if (parts.length==1) {
 			return isNCName(parts[0]);
@@ -20,10 +27,13 @@ public class SyntaxCheckerUtils {
 			if (!name.endsWith(":"))
 				return isNCName(parts[0]) && isNCName(parts[1]);
 		}
+		else
+			invalidChar = ':';
 		return false;
 	}
 	
 	public static final boolean isNCName(String name) {
+		invalidChar = 0;
 		if (name==null || name.isEmpty())
 			return false;
 		
@@ -44,7 +54,7 @@ public class SyntaxCheckerUtils {
 			// All characters have been checked
 			return true;
 		}
-
+		invalidChar = c;
 		return false;
 	}
 
@@ -76,11 +86,15 @@ public class SyntaxCheckerUtils {
 	}
 	
 	public static final boolean isNCNameChar(char c) {
-		return _isAsciiBaseChar(c) || _isAsciiDigit(c) || c == '.' || c == '-' || c == '_' || _isNonAsciiBaseChar(c)
+		boolean result = _isAsciiBaseChar(c) || _isAsciiDigit(c) || c == '.' || c == '-' || c == '_' || _isNonAsciiBaseChar(c)
 				|| _isNonAsciiDigit(c) || isIdeographic(c) || isCombiningChar(c) || isExtender(c);
+		if (!result)
+			invalidChar = c;
+		return result;
 	}
 
 	public static final boolean isJavaIdentifier(String name) {
+		invalidChar = 0;
 		if (name==null || name.isEmpty())
 			return false;
 		
@@ -94,6 +108,7 @@ public class SyntaxCheckerUtils {
 			for (int i = 1; i < nameLength; i++) {
 				c = name.charAt(i);
 				if (!Character.isJavaIdentifierPart(c)) {
+					invalidChar = c;
 					return false;
 				}
 			}
@@ -131,11 +146,16 @@ public class SyntaxCheckerUtils {
 	}
 
 	public static boolean isJavaPackageName(String name) {
+		invalidChar = 0;
 		if (name==null || name.isEmpty())
 			return false;
 		for (String part : name.split("\\.")) { //$NON-NLS-1$
 			if (!isJavaIdentifier(part))
 				return false;
+		}
+		if (name.endsWith("\\.")) {
+			invalidChar = '.';
+			return false;
 		}
 		return true;
 	}

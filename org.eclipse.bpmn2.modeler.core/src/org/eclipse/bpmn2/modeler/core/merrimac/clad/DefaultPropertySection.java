@@ -41,7 +41,15 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
-		DefaultDetailComposite composite = new DefaultDetailComposite(parent, style);
+		AbstractDetailComposite composite = null;
+		// If this section applies to only one type of BPMN2 element, search the registry for
+		// a Properties Composite of the given element type.
+		if (appliesToClasses.size()==1) {
+			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), parent, style);
+		}
+		else {
+			composite = new DefaultDetailComposite(parent, style);
+		}
 		composite.setPropertiesProvider(propertiesProvider);
 		return composite;
 	}

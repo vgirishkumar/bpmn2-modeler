@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
+import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CallableElement;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
@@ -39,12 +41,10 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	@Override
 	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
 		if (super.appliesTo(part, selection)) {
-			EObject object = getBusinessObjectForSelection(selection);
-//			if (object instanceof ServiceTask) {
-//				if (((ServiceTask)object).getOperationRef()!=null)
-//					return false;
-//			}
-			return object!=null;
+			if (isModelObjectEnabled(Bpmn2Package.eINSTANCE.getInputOutputSpecification())) {
+				EObject object = getBusinessObjectForSelection(selection);
+				return object!=null;
+			}
 		}
 		return false;
 	}
@@ -52,7 +52,7 @@ public class IoParametersPropertySection extends DefaultPropertySection {
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof SubProcess) {
+		if (be instanceof SubProcess || be instanceof CallableElement) {
 			// Section 10, P211 of the BPMN 2.0 spec:
 			// "Embedded SubProcesses MUST NOT define Data Inputs and Data Outputs directly,
 			// however they MAY define them indirectly via MultiInstanceLoopCharacteristics."

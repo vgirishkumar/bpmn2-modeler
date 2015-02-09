@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -312,6 +313,19 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 		return label;
 	}
 
+	protected Text createText(Composite parent, String label, String value) {
+		createLabel(parent,label);
+		Text text = getToolkit().createText(parent, "", style | SWT.BORDER); //$NON-NLS-1$
+		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+		text.setLayoutData(data);
+		text.setText(value==null ? "" : value); //$NON-NLS-1$
+		text.setEditable(false);
+		text.setBackground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+		text.setForeground(text.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+		text.setData(AbstractObjectEditingDialog.DO_NOT_ADAPT, Boolean.TRUE);
+		return text;
+	}
+
 	public Font getDescriptionFont() {
 		if (descriptionFont==null) {
 			Display display = Display.getCurrent();
@@ -343,6 +357,10 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	}
 
 	protected Section createSection(Composite parent, final String title) {
+		return createSection(parent, title, true);
+	}
+
+	protected Section createSection(Composite parent, final String title, boolean expanded) {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE |
 				ExpandableComposite.EXPANDED |
@@ -362,11 +380,13 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 //	    toolBarManager.update(true);
 //	    section.setTextClient(toolbar);
 
-		if (getBusinessObject()!=null) {
-			final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			boolean expanded = preferenceStore.getBoolean(prefKey);
-			section.setExpanded(expanded);
-		}
+		final String prefKey = (getBusinessObject()==null) ?
+				null :
+				"section."+getBusinessObject().eClass().getName()+"."+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+		if (prefKey!=null && preferenceStore.contains(prefKey))
+			expanded = preferenceStore.getBoolean(prefKey);
+		section.setExpanded(expanded);
 		
 		section.addExpansionListener(new IExpansionListener() {
 			@Override
@@ -375,13 +395,22 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 
 			@Override
 			public void expansionStateChanged(ExpansionEvent e) {
-				if (getBusinessObject()!=null) {
-					final String prefKey = "section."+getBusinessObject().eClass().getName()+title+"."+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				if (prefKey!=null) {
 					preferenceStore.setValue(prefKey, e.getState());
 				}
 			}
 		});
+		
 		return section;
+	}
+
+	protected Composite createSectionComposite(Composite parent, String title) {
+		Section section = createSection(parent, title, false);
+		section.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true, 3, 1));
+		Composite composite = toolkit.createComposite(section);
+		section.setClient(composite);
+		composite.setLayout(new GridLayout(3,false));
+		return composite;
 	}
 
 	protected Section createSubSection(Composite parent, String title) {

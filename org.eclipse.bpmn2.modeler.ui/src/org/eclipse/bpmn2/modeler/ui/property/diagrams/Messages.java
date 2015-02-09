@@ -11,6 +11,12 @@ public class Messages extends NLS {
 	public static String DefinitionsPropertyComposite_Namespace_Label;
 	public static String DefinitionsPropertyComposite_Prefix_Label;
 	public static String DefinitionsPropertyComposite_Prefix_Message;
+	public static String ItemDefinitionDetailComposite_DefinedIn_Title;
+	public static String ItemDefinitionDetailComposite_Import_Label;
+	public static String ItemDefinitionDetailComposite_Namespace_Label;
+	public static String ItemDefinitionDetailComposite_Type_Label;
+	public static String ItemDefinitionDetailComposite_TypeLanguage_Label;
+
 	public static String ResourceRoleListComposite_Roles_Label;
 	static {
 		// initialize resource bundle

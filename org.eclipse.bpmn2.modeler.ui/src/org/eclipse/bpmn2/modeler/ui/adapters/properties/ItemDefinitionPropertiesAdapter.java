@@ -88,6 +88,11 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 	    		@Override
 	    		public void setValue(Object context, Object value) {
 					ItemDefinition itemDefinition = adopt(context);
+					if (value instanceof ItemDefinition) {
+						value = ((ItemDefinition)value).getStructureRef();
+						if (ModelUtil.isStringWrapper(value))
+							value = ModelUtil.getStringWrapperTextValue(value);
+					}
 					if (value instanceof String) {
 						if (itemDefinition.getStructureRef()==null) {
 							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);

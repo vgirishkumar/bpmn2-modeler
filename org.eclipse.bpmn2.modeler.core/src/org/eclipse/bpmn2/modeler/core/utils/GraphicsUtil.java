@@ -22,20 +22,14 @@ import java.util.Map;
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.ChoreographyActivity;
-import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Event;
-import org.eclipse.bpmn2.EventDefinition;
-import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNPlane;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.di.DIUtils;
+import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.features.participant.AddParticipantFeature;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil.AnchorLocation;
-import org.eclipse.core.runtime.dynamichelpers.IFilter;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
@@ -900,13 +894,12 @@ public class GraphicsUtil {
 	}
 
 	public static void deleteEventShape(ContainerShape containerShape) {
-		for (PictogramElement shape : containerShape.getChildren()) {
-			if (shape.getLink() != null) {
-				EList<EObject> objects = shape.getLink().getBusinessObjects();
-				if (objects.size()>0 && objects.get(0) instanceof EventDefinition) {
-					peService.deletePictogramElement(shape);
-					break;
-				}
+		List<PictogramElement> shapes = new ArrayList<PictogramElement>();
+		shapes.addAll(containerShape.getChildren());
+		for (PictogramElement shape : shapes) {
+			String property = peService.getPropertyValue(shape, GraphitiConstants.EVENT_DEFINITION_SHAPE);
+			if (property != null) {
+				peService.deletePictogramElement(shape);
 			}
 		}
 	}

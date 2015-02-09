@@ -4,6 +4,11 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.property.editors.messages"; //$NON-NLS-1$
+	public static String ItemDefinitionStructureEditor_DataStructureEmpty_Error;
+	public static String ItemDefinitionStructureEditor_DataStructureInvalid_Error;
+	public static String ItemDefinitionStructureEditor_DuplicateItemDefinition_Error;
+	public static String ItemDefinitionStructureEditor_EditDataStructure_Prompt;
+	public static String ItemDefinitionStructureEditor_EditDataStructure_Title;
 	public static String SchemaObjectEditor_0;
 	public static String SchemaObjectEditor_Browse_Button;
 	public static String SchemaObjectEditor_Invalid_Selection_Message;
