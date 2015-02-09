@@ -22,8 +22,8 @@ import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
-import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.ObjectPropertyProvider;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.QNameObjectEditor;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
@@ -47,11 +47,12 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 	public InterfacePropertiesAdapter(AdapterFactory adapterFactory, Interface object) {
 		super(adapterFactory, object);
 		
-    	EStructuralFeature ref = Bpmn2Package.eINSTANCE.getInterface_ImplementationRef();
-    	setFeatureDescriptor(ref, new ImplementationRefFeatureDescriptor<Interface>(this, adapterFactory, object, ref));
+    	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getInterface_ImplementationRef();
+		setProperty(feature, UI_OBJECT_EDITOR_CLASS, QNameObjectEditor.class);
+    	setFeatureDescriptor(feature, new ImplementationRefFeatureDescriptor<Interface>(this, adapterFactory, object, feature));
     	
-    	ref = Bpmn2Package.eINSTANCE.getInterface_Operations();
-    	setFeatureDescriptor(ref, new FeatureDescriptor<Interface>(this,object, ref) {
+    	feature = Bpmn2Package.eINSTANCE.getInterface_Operations();
+    	setFeatureDescriptor(feature, new FeatureDescriptor<Interface>(this,object, feature) {
 
 			@Override
 			public EObject createFeature(Resource resource, EClass eclass) {
@@ -156,6 +157,8 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 		protected void internalSet(T object, EStructuralFeature feature, Object value, int index) {
 			Resource resource = ObjectPropertyProvider.getResource(object);
 			
+			if (value==null)
+				value = "";
 			if (value instanceof PortType) {
 				PortType portType = (PortType)value;
 				value = NamespaceUtil.normalizeQName(resource, portType.getQName());;
