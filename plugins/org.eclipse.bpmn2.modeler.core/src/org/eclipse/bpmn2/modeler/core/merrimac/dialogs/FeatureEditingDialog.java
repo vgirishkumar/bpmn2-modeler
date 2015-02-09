@@ -125,10 +125,12 @@ public class FeatureEditingDialog extends ObjectEditingDialog {
 	private void undoCreateNewObject() {
 		if (createNew && newObject!=null) {
 			ModelUtil.unsetID(newObject, object.eResource());
-			if (domain!=null) {
-				if (domain.getCommandStack().canUndo()) {
-					domain.getCommandStack().undo();
-				}
+			// try to undo if undo stack contains the new object
+			if (domain!=null &&
+				domain.getCommandStack().canUndo() &&
+				domain.getCommandStack().getUndoCommand().getAffectedObjects().contains(newObject)
+			) {
+				domain.getCommandStack().undo();
 			}
 			else {
 				EcoreUtil.delete(newObject, true);
