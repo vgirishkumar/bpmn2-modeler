@@ -16,16 +16,14 @@ package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 import java.math.BigInteger;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.utils.ErrorUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
@@ -71,7 +69,7 @@ public class IntObjectEditor extends TextObjectEditor {
 				for (int i = 0; i < chars.length; i++) {
 					if (!('0' <= chars[i] && chars[i] <= '9')) {
 						e.doit = false;
-						showErrorMessage("The character '"+e.text+"' is not valid");
+						showErrorMessage(NLS.bind(Messages.IntObjectEditor_Invalid_Character, e.text));
 						return;
 					}
 				}

@@ -13,9 +13,8 @@
 
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
-import java.math.BigInteger;
-
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
@@ -34,14 +33,14 @@ import org.eclipse.swt.widgets.Control;
  * @author Bob Brodt
  *
  */
-public class FloatObjectEditor extends TextObjectEditor {
+public class QNameObjectEditor extends TextObjectEditor {
 
 	/**
 	 * @param parent
 	 * @param object
 	 * @param feature
 	 */
-	public FloatObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+	public QNameObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
 	}
 
@@ -63,15 +62,14 @@ public class FloatObjectEditor extends TextObjectEditor {
 			 */
 			@Override
 			public void verifyText(VerifyEvent e) {
-				String string = e.text;
-				char[] chars = new char[string.length()];
-				string.getChars(0, chars.length, chars, 0);
-				for (int i = 0; i < chars.length; i++) {
-					if (!('0' <= chars[i] && chars[i] <= '9') && chars[i]!='.') {
-						e.doit = false;
-						showErrorMessage(NLS.bind(Messages.FloatObjectEditor_Invalid_Character, e.text));
+				if (Character.isISOControl(e.character)) {
+					if (e.text==null || e.text.isEmpty())
 						return;
-					}
+				}
+				String s = getValue() + e.text;
+				e.doit = SyntaxCheckerUtils.isQName(s);
+				if (!e.doit) {
+					showErrorMessage(NLS.bind(Messages.QNameObjectEditor_Invalid_Character, e.text));
 				}
 			}
 		});
@@ -83,49 +81,14 @@ public class FloatObjectEditor extends TextObjectEditor {
 			@Override
 			public void handleValueChange(ValueChangeEvent event) {
 
-				try {
-					final Double i = Double.parseDouble(text.getText());
-					if (!object.eGet(feature).equals(i)) {
-						setFeatureValue(i);
-					}
-				} catch (NumberFormatException e) {
-					setFeatureValue(0L);
+				String s = text.getText();
+				if (!getValue().equals(s)) {
+					setValue(s);
 				}
-			}
-
-			@SuppressWarnings("rawtypes")
-			private void setFeatureValue(final double i) {
-				Class eTypeClass = feature.getEType().getInstanceClass();
-				if (Double.class.equals(eTypeClass) || double.class.equals(eTypeClass)) {
-					setValue(Double.valueOf((double)i));
-				}
-				else
-					setValue(Float.valueOf((float)i));
 			}
 		});
 
+
 		return text;
-	}
-	
-	public Double getValue() {
-		Object v =  object.eGet(feature);
-		if (v instanceof Short)
-			return ((Short)v).doubleValue();
-		if (v instanceof Integer)
-			return ((Integer)v).doubleValue();
-		if (v instanceof Long)
-			return ((Long)v).doubleValue();
-		if (v instanceof Double)
-			return (Double)v;
-		if (v instanceof BigInteger)
-			return ((BigInteger)v).doubleValue();
-		if (v instanceof String) {
-			try {
-				return Double.parseDouble((String)v);
-			}
-			catch (Exception e){
-			}
-		}
-		return new Double(0);
 	}
 }

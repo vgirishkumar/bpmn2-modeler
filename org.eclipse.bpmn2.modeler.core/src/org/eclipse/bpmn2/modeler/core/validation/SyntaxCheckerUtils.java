@@ -11,6 +11,18 @@
 package org.eclipse.bpmn2.modeler.core.validation;
 
 public class SyntaxCheckerUtils {
+	public static final boolean isQName(String name) {
+		String parts[] = name.split(":");
+		if (parts.length==1) {
+			return isNCName(parts[0]);
+		}
+		else if (parts.length==2) {
+			if (!name.endsWith(":"))
+				return isNCName(parts[0]) && isNCName(parts[1]);
+		}
+		return false;
+	}
+	
 	public static final boolean isNCName(String name) {
 		if (name==null || name.isEmpty())
 			return false;

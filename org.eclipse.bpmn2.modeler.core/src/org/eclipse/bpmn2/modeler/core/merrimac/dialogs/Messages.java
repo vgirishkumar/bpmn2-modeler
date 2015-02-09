@@ -19,10 +19,13 @@ public class Messages extends NLS {
 	public static String FeatureEditingDialog_Create;
 	public static String FeatureEditingDialog_Edit;
 	public static String FeatureListObjectEditor_Title;
+	public static String FloatObjectEditor_Invalid_Character;
+	public static String IntObjectEditor_Invalid_Character;
 	public static String JavaVariableNameObjectEditor_Invalid_Character;
 	public static String JavaPackageNameObjectEditor_Invalid_Character;
 	public static String ModelSubclassSelectionDialog_Title;
 	public static String NCNameObjectEditor_Invalid_Character;
+	public static String QNameObjectEditor_Invalid_Character;
 	public static String ObjectEditingDialog_Create;
 	public static String ObjectEditingDialog_Edit;
 	public static String ObjectEditor_No_Description;
