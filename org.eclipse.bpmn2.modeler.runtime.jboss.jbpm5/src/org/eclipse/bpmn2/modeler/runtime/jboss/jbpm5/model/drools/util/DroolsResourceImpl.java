@@ -506,6 +506,14 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
 						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
 					}
+//					else if (ProcessVariableNameChangeAdapter.appliesTo(childObject)) {
+//						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
+//						String n = (String) childObject.eGet(nameFeature);
+//						if (n==null || n.isEmpty()) {
+//							EStructuralFeature idFeature = childObject.eClass().getEStructuralFeature("id"); //$NON-NLS-1$
+//							childObject.eSet(nameFeature, childObject.eGet(idFeature));
+//						}
+//					}
 				}
 				catch(Exception e) {
 				}

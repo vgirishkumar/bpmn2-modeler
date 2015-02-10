@@ -11,8 +11,14 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5;
 
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataObject;
+import org.eclipse.bpmn2.Error;
+import org.eclipse.bpmn2.Escalation;
+import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
@@ -37,19 +43,32 @@ import org.eclipse.emf.validation.service.ModelValidationService;
  */
 public class ProcessVariableNameChangeAdapter implements Adapter {
 
+	public static boolean appliesTo(EObject object) {
+		return (object instanceof org.eclipse.bpmn2.Property ||
+				object instanceof DataObject ||
+				object instanceof Message ||
+				object instanceof Signal ||
+				object instanceof Error ||
+				object instanceof Escalation ||
+				object instanceof GlobalType ||
+				(
+						// DataInput objects are a special case: Only keep the name and
+						// ID in sync if the DataInput is being used as the instance
+						// parameter for MultiInstanceLoopCharacteristics (or if the
+						// DataInput hasn't been added to a container yet).
+						object instanceof DataInput && (
+						object.eContainer() instanceof MultiInstanceLoopCharacteristics ||
+						object.eContainer()==null)
+					)
+				);
+		
+	}
+	
 	@Override
 	public void notifyChanged(Notification notification) {
 		if (notification.getNotifier() instanceof EObject) {
 			EObject object = (EObject)notification.getNotifier();
-            if (notification.getEventType()==Notification.SET) {
-				// DataInput objects are a special case: Only keep the name and
-				// ID in sync if the DataInput is being used as the instance
-				// parameter for MultiInstanceLoopCharacteristics.
-				if (object instanceof DataInput) {
-					if (!(object.eContainer() instanceof MultiInstanceLoopCharacteristics)) {
-						return;
-					}
-				}
+            if (notification.getEventType()==Notification.SET && appliesTo(object)) {
 
 				Object f = notification.getFeature();
 				if (f instanceof EStructuralFeature) {
@@ -60,6 +79,12 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 					if (identifierFeature!=null)
 						nameFeature = identifierFeature;
                     if ("name".equals(feature.getName()) || "identifier".equals(feature.getName())) { //$NON-NLS-1$ //$NON-NLS-2$
+                    	// you guys are killing me here!
+                    	// if the object is still being created and it hasn't been added to a container
+                    	// yet, then don't keep the ID in sync with the name...in other words, if the name
+                    	// is being set, don't alter the ID to match the name...yet...
+                    	if (object.eContainer()==null)
+                    		return;
 						Object newValue = notification.getNewValue();
 						Object oldValue = notification.getOldValue();
 						if (newValue!=null && !newValue.equals(oldValue))
@@ -163,7 +188,7 @@ public class ProcessVariableNameChangeAdapter implements Adapter {
 			EObject object = (EObject)newTarget;
 			EStructuralFeature feature = object.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 			if (feature!=null) {
-				Object oldValue = "";
+				Object oldValue = ""; //$NON-NLS-1$
 				Object newValue = object.eGet(feature);
 				Notification notification = new ENotificationImpl((InternalEObject)object,
 						Notification.SET, feature,

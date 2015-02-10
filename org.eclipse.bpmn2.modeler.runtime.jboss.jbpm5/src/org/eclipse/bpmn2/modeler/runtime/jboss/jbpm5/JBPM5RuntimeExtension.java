@@ -530,14 +530,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension, IBpmn2Runt
 			EObject object = (EObject) event.target;
 			// Add a name change adapter to every one of these objects.
 			// See my rant in ProcessVariableNameChangeAdapter...
-			if (object instanceof org.eclipse.bpmn2.Property ||
-					object instanceof DataObject ||
-					object instanceof Message ||
-					object instanceof Signal ||
-					object instanceof Error ||
-					object instanceof Escalation ||
-					object instanceof GlobalType ||
-					object instanceof DataInput) {
+			if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
 				boolean found = false;
 				for (Adapter a : ((EObject)object).eAdapters()) {
 					if (a instanceof ProcessVariableNameChangeAdapter) {

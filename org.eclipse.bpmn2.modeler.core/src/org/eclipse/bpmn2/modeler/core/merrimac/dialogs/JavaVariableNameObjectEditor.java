@@ -14,6 +14,7 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.dialogs;
 
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
+import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
@@ -90,5 +91,10 @@ public class JavaVariableNameObjectEditor extends TextObjectEditor {
 
 
 		return text;
+	}
+
+	protected String getText() {
+		Object value = ModelUtil.getValue(object, feature);
+		return value==null ? "" : SyntaxCheckerUtils.toJavaIdentifier(value.toString()); //$NON-NLS-1$
 	}
 }

@@ -32,6 +32,19 @@ public class SyntaxCheckerUtils {
 		return false;
 	}
 	
+	public static String toQName(String name) {
+		if (name==null || name.isEmpty())
+			return "_"; //$NON-NLS-1$
+		String parts[] = name.split(":");
+		if (parts.length==1) {
+			return toNCName(parts[0]);
+		}
+		else if (parts.length>=2) {
+			return toNCName(parts[0]) + ":" + toNCName(parts[1]);
+		}
+		return toNCName(name);
+	}
+	
 	public static final boolean isNCName(String name) {
 		invalidChar = 0;
 		if (name==null || name.isEmpty())
@@ -160,6 +173,19 @@ public class SyntaxCheckerUtils {
 		return true;
 	}
 
+	public static String toJavaPackageName(String name) {
+		if (name==null || name.isEmpty())
+			return "_";
+		String result = null;
+		for (String part : name.split("\\.")) { //$NON-NLS-1$
+			if (result==null || result.isEmpty())
+				result = toJavaIdentifier(part);
+			else
+				result = result + "." + toJavaIdentifier(part);
+		}
+		return result;
+	}
+	
 	public static final boolean isLetter(char c) {
 		return _isAsciiBaseChar(c) || _isNonAsciiBaseChar(c) || isIdeographic(c);
 	}

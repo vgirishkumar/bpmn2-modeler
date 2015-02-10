@@ -20,10 +20,13 @@ import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
+import org.eclipse.bpmn2.ItemDefinition;
+import org.eclipse.bpmn2.ItemKind;
 import org.eclipse.bpmn2.PotentialOwner;
 import org.eclipse.bpmn2.ResourceAssignmentExpression;
 import org.eclipse.bpmn2.ResourceRole;
@@ -116,6 +119,8 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 						PACKAGE.getActivity_IoSpecification(),
 						ioSpec);
 			}
+			
+            Definitions definitions = ModelUtil.getDefinitions(task);
 			for (Property property : props) {
 				
 				// this will become the label for the Object Editor
@@ -140,8 +145,16 @@ public class JbpmTaskDetailComposite extends JbpmActivityDetailComposite {
 				
 				// create the DataInput element (the parameter) if needed
 				if (parameter==null) {
+                    ItemDefinition itemDef = createModelObject(ItemDefinition.class);
+                    itemDef.setItemKind(ItemKind.INFORMATION);
+                    itemDef.setStructureRef( ModelUtil.createStringWrapper("Object") );
+                    InsertionAdapter.add(definitions,
+                            PACKAGE.getDefinitions_RootElements(),
+                            itemDef);
+                    
 					parameter = createModelObject(DataInput.class);
 					parameter.setName(name);
+					parameter.setItemSubjectRef(itemDef);
 					InsertionAdapter.add(ioSpec,
 							PACKAGE.getInputOutputSpecification_DataInputs(),
 							parameter);
