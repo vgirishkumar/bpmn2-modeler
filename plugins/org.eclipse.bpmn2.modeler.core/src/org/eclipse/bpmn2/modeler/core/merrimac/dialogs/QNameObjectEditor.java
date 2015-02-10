@@ -33,14 +33,14 @@ import org.eclipse.swt.widgets.Control;
  * @author Bob Brodt
  *
  */
-public class JavaVariableNameObjectEditor extends TextObjectEditor {
+public class QNameObjectEditor extends TextObjectEditor {
 
 	/**
 	 * @param parent
 	 * @param object
 	 * @param feature
 	 */
-	public JavaVariableNameObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+	public QNameObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
 		super(parent, object, feature);
 	}
 
@@ -67,9 +67,9 @@ public class JavaVariableNameObjectEditor extends TextObjectEditor {
 						return;
 				}
 				String s = getValue() + e.text;
-				e.doit = SyntaxCheckerUtils.isJavaIdentifier(s);
+				e.doit = SyntaxCheckerUtils.isQName(s);
 				if (!e.doit) {
-					showErrorMessage(NLS.bind(Messages.JavaVariableNameObjectEditor_Invalid_Character, e.text));
+					showErrorMessage(NLS.bind(Messages.QNameObjectEditor_Invalid_Character, e.text));
 				}
 			}
 		});
@@ -94,6 +94,6 @@ public class JavaVariableNameObjectEditor extends TextObjectEditor {
 
 	protected String getText() {
 		Object value = getBusinessObjectDelegate().getValue(object, feature);
-		return value==null ? "" : SyntaxCheckerUtils.toJavaIdentifier(value.toString()); //$NON-NLS-1$
+		return value==null ? "" : SyntaxCheckerUtils.toQName(value.toString()); //$NON-NLS-1$
 	}
 }

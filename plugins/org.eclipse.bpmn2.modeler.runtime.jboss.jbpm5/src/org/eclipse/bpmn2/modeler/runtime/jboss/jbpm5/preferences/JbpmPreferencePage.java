@@ -24,6 +24,7 @@ public class JbpmPreferencePage extends FieldEditorPreferencePage implements IWo
 
 	public JbpmPreferencePage() {
 		super(GRID);
+		Bpmn2Preferences.getInstance();
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription(Messages.JbpmPreferencePage_JBPM_Settings);
 	}

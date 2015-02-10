@@ -32,6 +32,7 @@ public class Messages extends NLS {
 	public static String JbpmDefinitionsPropertyComposite_Imports_Title;
 	public static String JbpmDefinitionsPropertySection_Name;
 	public static String JbpmImportObjectEditor_Browse;
+	public static String JbpmImportObjectEditor_Invalid_Character;
 	public static String JbpmImportTypeDetailComposite_Title;
 	public static String JbpmInterfacePropertySection_Import_Action;
 	public static String JbpmIoParametersDetailComposite_Input_Mapping_Title;

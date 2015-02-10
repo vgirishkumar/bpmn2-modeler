@@ -13,15 +13,16 @@
 
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
+import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.AdHocSubProcess;
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.CatchEvent;
-import org.eclipse.bpmn2.FlowElement;
+import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowNode;
-import org.eclipse.bpmn2.StartEvent;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
-import org.eclipse.bpmn2.modeler.core.validation.Messages;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.validation.IValidationContext;
@@ -77,6 +78,21 @@ public class FlowNodeValidator extends AbstractBpmn2ElementValidator<FlowNode> {
 				needIncoming = false;
 				needOutgoing = false;
 			}
+		}
+		if (object instanceof Activity) {
+			if (((Activity)object).isIsForCompensation()) {
+				needIncoming = false;
+				needOutgoing = false;
+			}
+		}
+		if (object instanceof BoundaryEvent) {
+			for (EventDefinition ed : ((BoundaryEvent)object).getEventDefinitions()) {
+				if (ed instanceof CompensateEventDefinition) {
+					needOutgoing = false;
+					break;
+				}
+			}
+
 		}
 		if (object.eContainer() instanceof AdHocSubProcess) {
 			needIncoming = false;

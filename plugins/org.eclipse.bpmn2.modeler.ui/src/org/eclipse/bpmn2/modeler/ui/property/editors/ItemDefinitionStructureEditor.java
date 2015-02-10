@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * This class implements a Data Structure editor for ItemDefinitions.
@@ -75,16 +76,14 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 			public String isValid(String newText) {
 				if (newText==null || newText.isEmpty())
 					return Messages.ItemDefinitionStructureEditor_DataStructureEmpty_Error;
-				if (newText.contains(":") && prefix!=null) { //$NON-NLS-1$
-					return Messages.ItemDefinitionStructureEditor_DataStructureInvalid_Error;
-				}
-				String thisText = (prefix!=null) ?
-						prefix + ":" + newText : //$NON-NLS-1$
-						newText;
+				if (prefix!=null)
+					newText = prefix + ":" + newText;
+				if (!SyntaxCheckerUtils.isQName(newText))
+					return NLS.bind(Messages.ItemDefinitionStructureEditor_DataStructureInvalid_Error, SyntaxCheckerUtils.getInvalidChar());
 				for (ItemDefinition that : ModelUtil.getAllRootElements(definitions, ItemDefinition.class)) {
 					String thatText = ModelUtil.getStringWrapperTextValue(that.getStructureRef());
 					if (
-							thisText.equals(thatText) &&
+							newText.equals(thatText) &&
 							that.getItemKind() == thisItemKind &&
 							that.isIsCollection() == thisIsCollection &&
 							that.getImport() == thisImport 

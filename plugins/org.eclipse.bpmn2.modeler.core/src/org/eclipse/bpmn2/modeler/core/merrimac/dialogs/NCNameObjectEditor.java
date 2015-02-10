@@ -91,4 +91,9 @@ public class NCNameObjectEditor extends TextObjectEditor {
 
 		return text;
 	}
+
+	protected String getText() {
+		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		return value==null ? "" : SyntaxCheckerUtils.toNCName(value.toString()); //$NON-NLS-1$
+	}
 }

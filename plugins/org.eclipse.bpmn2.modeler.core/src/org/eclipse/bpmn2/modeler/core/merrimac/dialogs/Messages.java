@@ -27,6 +27,7 @@ public class Messages extends NLS {
 	public static String JavaPackageNameObjectEditor_Invalid_Character;
 	public static String ModelSubclassSelectionDialog_Title;
 	public static String NCNameObjectEditor_Invalid_Character;
+	public static String QNameObjectEditor_Invalid_Character;
 	public static String ObjectEditingDialog_Create;
 	public static String ObjectEditingDialog_Edit;
 	public static String ObjectEditor_No_Description;

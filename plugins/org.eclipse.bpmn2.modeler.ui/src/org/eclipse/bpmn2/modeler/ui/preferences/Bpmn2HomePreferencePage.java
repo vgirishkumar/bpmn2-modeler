@@ -57,9 +57,9 @@ public class Bpmn2HomePreferencePage
 
 	public Bpmn2HomePreferencePage() {
 		super(GRID);
+		preferences = Bpmn2Preferences.getInstance();
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription(Messages.Bpmn2PreferencePage_HomePage_Description);
-		preferences = Bpmn2Preferences.getInstance();
 	}
 	
 	@Override

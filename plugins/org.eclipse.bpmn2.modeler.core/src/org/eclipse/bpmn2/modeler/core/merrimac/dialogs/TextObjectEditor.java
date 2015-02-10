@@ -171,11 +171,7 @@ public class TextObjectEditor extends ObjectEditor {
 	 * @return string representation of the EObject feature's value.
 	 */
 	protected String getText() {
-		boolean useActualValue = false;
-		Object result = this.getExtendedProperty(ExtendedPropertiesAdapter.UI_CAN_SET_NULL);
-		if (result instanceof Boolean)
-			useActualValue = ((Boolean)result);
-		if (useActualValue) {
+		if (canSetNull()) {
 			Object value = getBusinessObjectDelegate().getValue(object, feature);
 			return value==null ? "" : value.toString(); //$NON-NLS-1$
 		}

@@ -14,17 +14,12 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.Escalation;
-import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.Process;
-import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.modeler.core.validation.validators.AbstractBpmn2ElementValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Messages;
@@ -82,14 +77,7 @@ public class ProcessVariableNameValidator extends AbstractBpmn2ElementValidator<
 					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
 			}
-			else if (object instanceof org.eclipse.bpmn2.Property ||
-					object instanceof DataObject ||
-					object instanceof Message ||
-					object instanceof Signal ||
-					object instanceof Error ||
-					object instanceof Escalation ||
-					object instanceof GlobalType ||
-					object instanceof DataInput) {
+			else if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
 				if (!SyntaxCheckerUtils.isJavaIdentifier(id)) {
 					addStatus(object, featureName, Status.ERROR, Messages.ProcessVariableNameValidator_ID_Invalid, object.eClass().getName(), id);
 				}
