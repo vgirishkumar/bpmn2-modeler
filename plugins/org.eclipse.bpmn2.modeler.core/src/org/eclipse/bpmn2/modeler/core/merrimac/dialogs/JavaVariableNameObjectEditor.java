@@ -91,4 +91,9 @@ public class JavaVariableNameObjectEditor extends TextObjectEditor {
 
 		return text;
 	}
+
+	protected String getText() {
+		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		return value==null ? "" : SyntaxCheckerUtils.toJavaIdentifier(value.toString()); //$NON-NLS-1$
+	}
 }

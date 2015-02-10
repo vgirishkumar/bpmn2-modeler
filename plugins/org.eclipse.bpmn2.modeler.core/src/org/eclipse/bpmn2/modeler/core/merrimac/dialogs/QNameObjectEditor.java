@@ -91,4 +91,9 @@ public class QNameObjectEditor extends TextObjectEditor {
 
 		return text;
 	}
+
+	protected String getText() {
+		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		return value==null ? "" : SyntaxCheckerUtils.toQName(value.toString()); //$NON-NLS-1$
+	}
 }

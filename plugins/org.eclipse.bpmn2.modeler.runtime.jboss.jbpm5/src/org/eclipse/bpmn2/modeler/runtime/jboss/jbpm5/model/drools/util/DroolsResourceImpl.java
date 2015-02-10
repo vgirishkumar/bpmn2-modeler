@@ -49,6 +49,7 @@ import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.ProcessVariableNameChangeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
@@ -506,13 +507,7 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 						// @see ProcessVariableNameChangeAdapter for details of how these are kept in sync.
 						((GlobalType) childObject).setId(((GlobalType) childObject).getIdentifier());
 					}
-					else if (childObject instanceof org.eclipse.bpmn2.Property ||
-							childObject instanceof DataObject ||
-							childObject instanceof Message ||
-							childObject instanceof Signal ||
-							childObject instanceof Error ||
-							childObject instanceof Escalation ||
-							childObject instanceof DataInput) {
+					else if (ProcessVariableNameChangeAdapter.appliesTo(childObject)) {
 						EStructuralFeature nameFeature = childObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 						String n = (String) childObject.eGet(nameFeature);
 						if (n==null || n.isEmpty()) {
