@@ -128,7 +128,8 @@ public class Messages extends NLS {
 	public static String UI_SequenceFlow_description;
 	public static String UI_MessageFlow_description;
 	public static String UI_Association_description;
-	public static String UI_Annotation_description;
+	public static String UI_DataInputAssociation_description;
+	public static String UI_DataOutputAssociation_description;
 	public static String UI_Task_description;
 	public static String UI_ManualTask_description;
 	public static String UI_UserTask_description;

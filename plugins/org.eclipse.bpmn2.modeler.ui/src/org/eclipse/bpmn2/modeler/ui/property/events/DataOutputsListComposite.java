@@ -20,7 +20,6 @@ import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.ListCompositeColumnProvider;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParameterMappingColumn;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.IoParameterNameColumn;
 import org.eclipse.emf.common.util.EList;

@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.LinkEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -32,6 +33,7 @@ import org.eclipse.bpmn2.modeler.ui.property.editors.ExpressionLanguageObjectEdi
 import org.eclipse.bpmn2.modeler.ui.property.events.CommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.ConditionalEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.EventDefinitionsListComposite;
+import org.eclipse.bpmn2.modeler.ui.property.events.LinkEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.events.TimerEventDefinitionDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.DataAssociationDetailComposite.MapType;
 import org.eclipse.emf.ecore.EClass;
@@ -74,6 +76,9 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 						}
 						if (eClass==ConditionalEventDefinition.class){
 							return new ConditionalEventDefinitionDetailComposite(parent, style);
+						}
+						if (eClass==LinkEventDefinition.class){
+							return new LinkEventDefinitionDetailComposite(parent, style);
 						}
 						EventDefinitionsDetailComposite details = new EventDefinitionsDetailComposite(parent, (Event)getBusinessObject()) {
 							@Override
@@ -120,7 +125,21 @@ public class JbpmCommonEventDetailComposite extends CommonEventDetailComposite {
 				eventsTable.setTitle(Messages.JbpmCommonEventDetailComposite_Title);
 				return eventsTable;
 			}
-			return super.bindList(object, feature, listItemClass);
+			else if ("dataInputs".equals(feature.getName()) || "dataOutputs".equals(feature.getName())) { //$NON-NLS-1$
+				// only show Input/Output list if the event definition requires it
+				List<EventDefinition> eventDefinitions = null;
+				if (object instanceof ThrowEvent)
+					eventDefinitions = ((ThrowEvent)object).getEventDefinitions();
+				else if  (object instanceof CatchEvent)
+					eventDefinitions = ((CatchEvent)object).getEventDefinitions();
+				if (eventDefinitions.size()>0) {
+					if (EventDefinitionsUtil.hasItemDefinition(eventDefinitions.get(0))) {
+						super.bindList(object, feature, listItemClass);
+					}
+				}
+			}
+			else
+				return super.bindList(object, feature, listItemClass);
 		}
 		return null;
 	}

@@ -249,7 +249,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			result = dataInput;
 			// build the popup list
 			List<DataInput> list = new ArrayList<DataInput>();
-			if (target instanceof ThrowEvent) {
+			if (target instanceof ThrowEvent || target instanceof SubProcess) {
 				if (dataInputs.size()==0) {
 					result = dataInput;
 					list.add(dataInput);
@@ -341,7 +341,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			);
 			// build the popup list
 			List<DataOutput> list = new ArrayList<DataOutput>();
-			if (source instanceof CatchEvent) {
+			if (source instanceof CatchEvent || source instanceof SubProcess) {
 				if (dataOutputs.size()==0) {
 					result = dataOutput;
 					list.add(dataOutput);

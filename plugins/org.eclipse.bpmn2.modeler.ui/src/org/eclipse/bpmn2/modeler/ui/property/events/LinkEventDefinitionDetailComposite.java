@@ -53,6 +53,7 @@ public class LinkEventDefinitionDetailComposite extends DefaultDetailComposite {
 		final LinkEventDefinition eventDefinition = (LinkEventDefinition)be;
 		if (eventDefinition.eContainer() instanceof Event) {
 			Event event = (Event) eventDefinition.eContainer();
+			this.bindAttribute(getAttributesParent(), eventDefinition, Bpmn2Package.eINSTANCE.getLinkEventDefinition_Name());
 			if (event instanceof CatchEvent) {
 				bindReference(eventDefinition, Bpmn2Package.eINSTANCE.getLinkEventDefinition_Source());
 			}

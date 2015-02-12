@@ -13,7 +13,6 @@
 package org.eclipse.bpmn2.modeler.ui.features.flow;
 
 import org.eclipse.bpmn2.Activity;
-import org.eclipse.bpmn2.Artifact;
 import org.eclipse.bpmn2.Association;
 import org.eclipse.bpmn2.AssociationDirection;
 import org.eclipse.bpmn2.BaseElement;
@@ -53,7 +52,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -151,7 +149,7 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 				if (source instanceof BoundaryEvent && target instanceof Activity)
 					return true;
 				
-				if (source instanceof Artifact || target instanceof Artifact)
+				if (source instanceof BaseElement || target instanceof BaseElement)
 					return true;
 			}			
 			return false;
