@@ -80,12 +80,6 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 				}
 				return choices;
 			}
-
-			@Override
-			protected void internalSet(LinkEventDefinition object, EStructuralFeature feature, Object value, int index) {
-				super.internalSet(object, feature, value, index);
-			}
-
 		});
 
 		feature = Bpmn2Package.eINSTANCE.getLinkEventDefinition_Source();
@@ -95,12 +89,6 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 			public String getTextValue() {
 				return getLinkName(object);
 			}
-
-			@Override
-			protected void internalSet(LinkEventDefinition object, EStructuralFeature feature, Object value, int index) {
-				super.internalSet(object, feature, value, index);
-			}
-
 		});
 		
 		setObjectDescriptor(new ObjectDescriptor<LinkEventDefinition>(this, object) {
@@ -112,7 +100,9 @@ public class LinkEventDefinitionPropertiesAdapter extends EventDefinitionPropert
 
 	private static String getLinkName(LinkEventDefinition link) {
 		String eventName = ModelUtil.getCanonicalName(getEvent(link));
-		String linkName = link.getId();
+		String linkName = link.getName();
+		if (linkName==null || linkName.isEmpty())
+			linkName = link.getId();
 		return eventName + "/" + linkName; //$NON-NLS-1$
 	}
 	

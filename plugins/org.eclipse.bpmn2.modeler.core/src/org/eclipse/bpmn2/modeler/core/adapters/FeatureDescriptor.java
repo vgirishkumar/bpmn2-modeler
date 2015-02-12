@@ -32,6 +32,8 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -214,8 +216,17 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				// fallback is to do our own search
 			}
 
-			if (values==null)
+			if (values==null) {
+				if (feature.getEType() instanceof EEnum) {
+					EEnum en = (EEnum) feature.getEType();
+					Hashtable<String, Object> choices = new Hashtable<String, Object>();
+					for (EEnumLiteral el : en.getELiterals()) {
+						choices.put(el.getLiteral(), el.getInstance());
+					}
+					return choices;
+				}
 				values = ModelUtil.getAllReachableObjects(object, feature);
+			}
 			
 			if (values!=null) {
 				Hashtable<String,Object> choices = new Hashtable<String,Object>();

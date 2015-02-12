@@ -911,7 +911,7 @@
 			<enable object="IntermediateCatchEvent" feature="eventDefinitions"/>
 			<enable object="IntermediateCatchEvent" feature="name"/>
 			<enable object="IntermediateThrowEvent" feature="eventDefinitions"/>
-			<enable object="IntermediateThrowEvent" feature="inputSet"/>
+			<enable object="IntermediateThrowEvent" feature="dataInputs"/>
 			<enable object="IntermediateThrowEvent" feature="name"/>
 			<enable object="ItemAwareElement" feature="documentation"/>
 			<enable object="ItemAwareElement" feature="extensionDefinitions"/>
