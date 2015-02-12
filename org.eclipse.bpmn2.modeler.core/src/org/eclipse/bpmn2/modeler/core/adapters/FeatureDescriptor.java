@@ -13,7 +13,6 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -21,11 +20,12 @@ import java.util.List;
 
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.modeler.core.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -170,8 +170,17 @@ public class FeatureDescriptor<T extends EObject> extends ObjectDescriptor<T> {
 				// fallback is to do our own search
 			}
 
-			if (values==null)
+			if (values==null) {
+				if (feature.getEType() instanceof EEnum) {
+					EEnum en = (EEnum) feature.getEType();
+					Hashtable<String, Object> choices = new Hashtable<String, Object>();
+					for (EEnumLiteral el : en.getELiterals()) {
+						choices.put(el.getLiteral(), el.getInstance());
+					}
+					return choices;
+				}
 				values = ModelUtil.getAllReachableObjects(object, feature);
+			}
 			
 			if (values!=null) {
 				Hashtable<String,Object> choices = new Hashtable<String,Object>();

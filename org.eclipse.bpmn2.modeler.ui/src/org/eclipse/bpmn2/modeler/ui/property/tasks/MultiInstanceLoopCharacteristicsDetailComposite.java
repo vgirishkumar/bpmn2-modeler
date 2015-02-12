@@ -634,7 +634,12 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 
 						@Override
 						public void createBindings(EObject be) {
-							ObjectEditor editor = new ComboObjectEditor(this,object,reference, PACKAGE.getDataInput());
+							ObjectEditor editor = new ComboObjectEditor(this,object,reference, PACKAGE.getDataInput()) {
+								@Override
+								protected boolean canCreateNew() {
+									return false;
+								}
+							};
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Data_Label);
 							DataInput input = lc.getInputDataItem();
 							if (input==null) {
@@ -656,7 +661,12 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 
 						@Override
 						public void createBindings(EObject be) {
-							ObjectEditor editor = new ComboObjectEditor(this,object,reference);
+							ObjectEditor editor = new ComboObjectEditor(this,object,reference){
+								@Override
+								protected boolean canCreateNew() {
+									return false;
+								}
+							};
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Data_Label);
 							DataOutput output = lc.getOutputDataItem();
 							if (output==null) {

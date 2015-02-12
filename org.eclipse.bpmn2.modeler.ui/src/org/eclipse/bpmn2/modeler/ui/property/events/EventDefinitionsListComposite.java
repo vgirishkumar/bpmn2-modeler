@@ -271,22 +271,28 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								return ((EscalationEventDefinition)element).getEscalationRef().getName();
 						}
 						if (element instanceof LinkEventDefinition) {
-							String text = "";
+							String text = ""; //$NON-NLS-1$
 							LinkEventDefinition link = (LinkEventDefinition)element;
-							int size = link.getSource().size();
-							for (int i=0; i<size; ++i) {
-								LinkEventDefinition source = link.getSource().get(i);
-								text += getTextValue(source.eContainer());
-								if (i<size-1)
-									text += ", ";
-							}
-							if (!text.isEmpty()) {
-									text += " -> ";
-								text += getTextValue(link.eContainer());
-								LinkEventDefinition target = link.getTarget();
-								if (target!=null) {
-									text += " -> " + getTextValue(target.eContainer());
+							Event event = (Event) link.eContainer();
+							if (event instanceof CatchEvent) {
+								int size = link.getSource().size();
+								for (int i=0; i<size; ++i) {
+									LinkEventDefinition source = link.getSource().get(i);
+									text += getTextValue(source.eContainer());
+									if (i<size-1)
+										text += ", "; //$NON-NLS-1$
 								}
+								if (!text.isEmpty()) {
+									text += " -> "; //$NON-NLS-1$
+									text += getTextValue(link.eContainer());
+									return text;
+								}
+							}
+							else if (event instanceof ThrowEvent) {
+								text += getTextValue(link.eContainer());
+								text += " -> ";
+								LinkEventDefinition target = link.getTarget();
+								text += getTextValue(target.eContainer());
 								return text;
 							}
 						}

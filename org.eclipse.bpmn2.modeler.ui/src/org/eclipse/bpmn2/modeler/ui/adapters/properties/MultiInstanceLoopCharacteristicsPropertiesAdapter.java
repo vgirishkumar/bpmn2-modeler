@@ -43,10 +43,10 @@ import org.eclipse.emf.ecore.resource.Resource;
  */
 public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedPropertiesAdapter<MultiInstanceLoopCharacteristics> {
 
-	final static EStructuralFeature LOOP_DATA_INPUT_REF = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataInputRef();
-	final static EStructuralFeature INPUT_DATA_ITEM = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_InputDataItem();
-	final static EStructuralFeature LOOP_DATA_OUTPUT_REF = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataOutputRef();
-	final static EStructuralFeature OUTPUT_DATA_ITEM = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_OutputDataItem();
+	protected final static EStructuralFeature LOOP_DATA_INPUT_REF = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataInputRef();
+	protected final static EStructuralFeature INPUT_DATA_ITEM = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_InputDataItem();
+	protected final static EStructuralFeature LOOP_DATA_OUTPUT_REF = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_LoopDataOutputRef();
+	protected final static EStructuralFeature OUTPUT_DATA_ITEM = Bpmn2Package.eINSTANCE.getMultiInstanceLoopCharacteristics_OutputDataItem();
 	
 	/**
 	 * @param adapterFactory

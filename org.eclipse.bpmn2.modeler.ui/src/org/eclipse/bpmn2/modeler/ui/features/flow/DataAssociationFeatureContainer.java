@@ -29,6 +29,7 @@ import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.OutputSet;
+import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
@@ -224,7 +225,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataInputs();
 			targetFeature = Bpmn2Package.eINSTANCE.getActivity_DataInputAssociations();
 		}
-		else if (target instanceof ThrowEvent) {
+		else if (target instanceof ThrowEvent || target instanceof SubProcess) {
 			object = target;
 			objectFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputs();
 			targetFeature = Bpmn2Package.eINSTANCE.getThrowEvent_DataInputAssociation();
@@ -292,7 +293,7 @@ public class DataAssociationFeatureContainer extends BaseElementConnectionFeatur
 			objectFeature = Bpmn2Package.eINSTANCE.getInputOutputSpecification_DataOutputs();
 			sourceFeature = Bpmn2Package.eINSTANCE.getActivity_DataOutputAssociations();
 		}
-		else if (source instanceof CatchEvent) {
+		else if (source instanceof CatchEvent || source instanceof SubProcess) {
 			object = source;
 			objectFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputs();
 			sourceFeature = Bpmn2Package.eINSTANCE.getCatchEvent_DataOutputAssociation();
