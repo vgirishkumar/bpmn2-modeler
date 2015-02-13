@@ -125,6 +125,16 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 			public String getDisplayName(Object context) {
 				return getFeatureDescriptor(body).getDisplayName(context);
 			}
+    		
+			@Override
+			public String getLabel(Object context) {
+				FormalExpression expression = adopt(context);
+				if (expression.eContainer() instanceof SequenceFlow)
+					return Messages.FormalExpressionPropertiesAdapter_Condition;
+				if (object.eContainer() instanceof ResourceAssignmentExpression)
+					return Messages.FormalExpressionPropertiesAdapter_Actor;
+				return Messages.FormalExpressionPropertiesAdapter_Script;
+			}
 		});
 	}
 	

@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
@@ -81,7 +82,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
-import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EObjectWithInverseEList;
@@ -737,6 +737,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             	return true;
             }
             
+            if (o instanceof Process && f==Bpmn2Package.eINSTANCE.getProcess_IsExecutable())
+           		return true;
+            if (o instanceof ItemDefinition && f==Bpmn2Package.eINSTANCE.getItemDefinition_IsCollection())
+           		return true;
+            if (o instanceof CompensateEventDefinition && f==Bpmn2Package.eINSTANCE.getCompensateEventDefinition_WaitForCompletion())
+           		return true;
+
             // empty Expressions should not be saved
             if (f!=null && (f.getEType() == Bpmn2Package.eINSTANCE.getExpression() ||
             		f.getEType() == Bpmn2Package.eINSTANCE.getFormalExpression())) {
