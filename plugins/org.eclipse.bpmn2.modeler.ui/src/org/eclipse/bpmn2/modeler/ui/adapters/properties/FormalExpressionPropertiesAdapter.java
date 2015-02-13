@@ -111,6 +111,15 @@ public class FormalExpressionPropertiesAdapter extends ExtendedPropertiesAdapter
 			public String getTextValue() {
 				return getFeatureDescriptor(body).getTextValue();
 			}
+
+			@Override
+			public String getLabel() {
+				if (object.eContainer() instanceof SequenceFlow)
+					return Messages.FormalExpressionPropertiesAdapter_Condition;
+				if (object.eContainer() instanceof ResourceAssignmentExpression)
+					return Messages.FormalExpressionPropertiesAdapter_Actor;
+				return Messages.FormalExpressionPropertiesAdapter_Script;
+			}
 		});
 	}
 	

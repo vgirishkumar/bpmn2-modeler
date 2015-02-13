@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
@@ -37,6 +38,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -1041,7 +1043,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
        		}
 		}
-
+        
 		@Override
         protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
             if (o instanceof BPMNShape && f==BpmnDiPackage.eINSTANCE.getBPMNShape_IsHorizontal()) {
@@ -1054,6 +1056,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             if (o instanceof Bounds || o instanceof Point) {
             	return true;
             }
+            
+            if (o instanceof Process && f==Bpmn2Package.eINSTANCE.getProcess_IsExecutable())
+           		return true;
+            if (o instanceof ItemDefinition && f==Bpmn2Package.eINSTANCE.getItemDefinition_IsCollection())
+           		return true;
+            if (o instanceof CompensateEventDefinition && f==Bpmn2Package.eINSTANCE.getCompensateEventDefinition_WaitForCompletion())
+           		return true;
             
             // empty Expressions should not be saved
             if (f!=null && (f.getEType() == Bpmn2Package.eINSTANCE.getExpression() ||
