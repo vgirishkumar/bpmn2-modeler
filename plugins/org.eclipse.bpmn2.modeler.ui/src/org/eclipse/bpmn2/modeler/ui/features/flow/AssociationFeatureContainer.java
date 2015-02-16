@@ -45,6 +45,8 @@ import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IReconnectionContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.DeleteContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
 import org.eclipse.graphiti.features.impl.Reason;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
@@ -52,6 +54,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
@@ -95,6 +98,144 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 	@Override
 	public IDeleteFeature getDeleteFeature(IFeatureProvider fp) {
 		return new DeleteAssociationFeature(fp);
+	}
+	
+	private static void setAssociationDirection(Connection connection, Association businessObject) {
+		IPeService peService = Graphiti.getPeService();
+		IGaService gaService = Graphiti.getGaService();
+		String newDirection = businessObject.getAssociationDirection().toString();
+		if (newDirection==null || newDirection.isEmpty())
+			newDirection = AssociationDirection.NONE.toString();
+		String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
+		if (oldDirection==null || oldDirection.isEmpty())
+			oldDirection = AssociationDirection.NONE.toString();
+
+		if (!oldDirection.equals(newDirection)) {
+			ConnectionDecorator sourceDecorator = null;
+			ConnectionDecorator targetDecorator = null;
+			for (ConnectionDecorator d : connection.getConnectionDecorators()) {
+				String s = peService.getPropertyValue(d, ARROWHEAD_DECORATOR);
+				if (s!=null) {
+					if (s.equals("source")) //$NON-NLS-1$
+						sourceDecorator = d;
+					else if (s.equals("target")) //$NON-NLS-1$
+						targetDecorator = d;
+				}
+			}
+			
+			boolean needSource = false;
+			boolean needTarget = false;
+			if (newDirection.equals(AssociationDirection.ONE.toString())) {
+				needTarget = true;
+			}
+			else if (newDirection.equals(AssociationDirection.BOTH.toString())) {
+				needSource = needTarget = true;
+			}
+			
+			final int w = 7;
+			final int l = 13;
+			if (needSource) {
+				if (sourceDecorator==null) {
+					sourceDecorator = peService.createConnectionDecorator(connection, false, 0.0, true);
+					Polyline arrowhead = gaService.createPolyline(sourceDecorator, new int[] { -l, w, 0, 0, -l, -w });
+					StyleUtil.applyStyle(arrowhead, businessObject);
+					peService.setPropertyValue(sourceDecorator, ARROWHEAD_DECORATOR, "source"); //$NON-NLS-1$
+				}
+			}
+			else {
+				if (sourceDecorator!=null)
+					connection.getConnectionDecorators().remove(sourceDecorator);				
+			}
+			if (needTarget) {
+				if (targetDecorator==null) {
+					targetDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
+					Polyline arrowhead = gaService.createPolyline(targetDecorator, new int[] { -l, w, 0, 0, -l, -w });
+					StyleUtil.applyStyle(arrowhead, businessObject);
+					peService.setPropertyValue(targetDecorator, ARROWHEAD_DECORATOR, "target"); //$NON-NLS-1$
+				}
+			}
+			else {
+				if (targetDecorator!=null)
+					connection.getConnectionDecorators().remove(targetDecorator);				
+			}
+		
+			// update the property value in the Connection PictogramElement
+			peService.setPropertyValue(connection, ASSOCIATION_DIRECTION, newDirection);
+		}
+
+	}
+	
+	private static void updateCompensationHandlers(IFeatureProvider fp, Association association,
+			BaseElement oldSource, BaseElement oldTarget, 
+			BaseElement newSource, BaseElement newTarget) {
+		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
+		boolean oldTargetHasOtherCompensationEvents = false;
+		for (Connection c : diagram.getConnections()) {
+			Association a = BusinessObjectUtil.getFirstElementOfType(c, Association.class);
+			if (a!=null && a.getAssociationDirection()==AssociationDirection.ONE &&
+				a!=association && a.getTargetRef()==oldTarget) {
+				oldTargetHasOtherCompensationEvents = true;
+				break;
+			}
+		}
+		Association oldAssociation = null;
+		for (Connection c : diagram.getConnections()) {
+			Association a = BusinessObjectUtil.getFirstElementOfType(c, Association.class);
+			if (a!=null && a.getAssociationDirection()==AssociationDirection.ONE &&
+				a!=association && a.getSourceRef()==newSource) {
+				oldAssociation = a;
+				break;
+			}
+		}
+	
+		if (association.getAssociationDirection()==AssociationDirection.ONE) {
+			if (oldSource instanceof BoundaryEvent && oldTarget instanceof Activity) {
+				// set the Activity reference of the old Boundary Event null
+				CompensateEventDefinition ced = getCompensateEvent(oldSource);
+				if (ced!=null) {
+					ced.setActivityRef(null);
+					if (!oldTargetHasOtherCompensationEvents) {
+						((Activity)oldTarget).setIsForCompensation(false);
+						PictogramElement pe = fp.getPictogramElementForBusinessObject(oldTarget);
+						IUpdateContext uc = new UpdateContext(pe);
+						IUpdateFeature uf = fp.getUpdateFeature(uc);
+						uf.update(uc);
+					}
+				}
+			}
+			if (newSource instanceof BoundaryEvent && newTarget instanceof Activity) {
+				// Set the Activity reference of the new Boundary Event
+				CompensateEventDefinition ced = getCompensateEvent(newSource);
+				if (ced!=null) {
+					oldTarget = ced.getActivityRef();
+					ced.setActivityRef((Activity)newTarget);
+					((Activity)newTarget).setIsForCompensation(true);
+					PictogramElement pe = fp.getPictogramElementForBusinessObject(newTarget);
+					IUpdateContext uc = new UpdateContext(pe);
+					IUpdateFeature uf = fp.getUpdateFeature(uc);
+					uf.update(uc);
+					
+					if ((oldSource!=newSource || oldTarget!=newTarget) && oldAssociation!=null) {
+						pe = fp.getPictogramElementForBusinessObject(oldAssociation);
+						IDeleteContext dc = new DeleteContext(pe);
+						IDeleteFeature df = fp.getDeleteFeature(dc);
+						df.delete(dc);
+					}
+				}
+			}
+		}
+	}
+	
+	private static CompensateEventDefinition getCompensateEvent(BaseElement source) {
+		if (source instanceof BoundaryEvent) {
+			// find a Compensate Event Definition in the BoundaryEvent
+			for (EventDefinition ed : ((BoundaryEvent)source).getEventDefinitions()) {
+				if (ed instanceof CompensateEventDefinition) {
+					return (CompensateEventDefinition) ed;
+				}
+			}
+		}
+		return null;
 	}
 
 	public class AddAssociationFeature extends AbstractAddFlowFeature<Association> {
@@ -217,71 +358,6 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		}
 	}
 	
-	private static void setAssociationDirection(Connection connection, Association businessObject) {
-		IPeService peService = Graphiti.getPeService();
-		IGaService gaService = Graphiti.getGaService();
-		String newDirection = businessObject.getAssociationDirection().toString();
-		if (newDirection==null || newDirection.isEmpty())
-			newDirection = AssociationDirection.NONE.toString();
-		String oldDirection = peService.getPropertyValue(connection, ASSOCIATION_DIRECTION);
-		if (oldDirection==null || oldDirection.isEmpty())
-			oldDirection = AssociationDirection.NONE.toString();
-
-		if (!oldDirection.equals(newDirection)) {
-			ConnectionDecorator sourceDecorator = null;
-			ConnectionDecorator targetDecorator = null;
-			for (ConnectionDecorator d : connection.getConnectionDecorators()) {
-				String s = peService.getPropertyValue(d, ARROWHEAD_DECORATOR);
-				if (s!=null) {
-					if (s.equals("source")) //$NON-NLS-1$
-						sourceDecorator = d;
-					else if (s.equals("target")) //$NON-NLS-1$
-						targetDecorator = d;
-				}
-			}
-			
-			boolean needSource = false;
-			boolean needTarget = false;
-			if (newDirection.equals(AssociationDirection.ONE.toString())) {
-				needTarget = true;
-			}
-			else if (newDirection.equals(AssociationDirection.BOTH.toString())) {
-				needSource = needTarget = true;
-			}
-			
-			final int w = 7;
-			final int l = 13;
-			if (needSource) {
-				if (sourceDecorator==null) {
-					sourceDecorator = peService.createConnectionDecorator(connection, false, 0.0, true);
-					Polyline arrowhead = gaService.createPolyline(sourceDecorator, new int[] { -l, w, 0, 0, -l, -w });
-					StyleUtil.applyStyle(arrowhead, businessObject);
-					peService.setPropertyValue(sourceDecorator, ARROWHEAD_DECORATOR, "source"); //$NON-NLS-1$
-				}
-			}
-			else {
-				if (sourceDecorator!=null)
-					connection.getConnectionDecorators().remove(sourceDecorator);				
-			}
-			if (needTarget) {
-				if (targetDecorator==null) {
-					targetDecorator = peService.createConnectionDecorator(connection, false, 1.0, true);
-					Polyline arrowhead = gaService.createPolyline(targetDecorator, new int[] { -l, w, 0, 0, -l, -w });
-					StyleUtil.applyStyle(arrowhead, businessObject);
-					peService.setPropertyValue(targetDecorator, ARROWHEAD_DECORATOR, "target"); //$NON-NLS-1$
-				}
-			}
-			else {
-				if (targetDecorator!=null)
-					connection.getConnectionDecorators().remove(targetDecorator);				
-			}
-		
-			// update the property value in the Connection PictogramElement
-			peService.setPropertyValue(connection, ASSOCIATION_DIRECTION, newDirection);
-		}
-
-	}
-	
 	public static class UpdateAssociationFeature extends AbstractBpmn2UpdateFeature {
 
 		public UpdateAssociationFeature(IFeatureProvider fp) {
@@ -320,9 +396,13 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		@Override
 		public boolean update(IUpdateContext context) {
 			Connection connection = (Connection) context.getPictogramElement();
-			Association businessObject = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
+			Association association = BusinessObjectUtil.getFirstElementOfType(context.getPictogramElement(),
 					Association.class);
-			setAssociationDirection(connection, businessObject);
+			setAssociationDirection(connection, association);
+			BaseElement source = association.getSourceRef();
+			BaseElement target = association.getTargetRef();
+			updateCompensationHandlers(getFeatureProvider(), association, source, target, source, target);
+			
 			return true;
 		}
 	}
@@ -380,23 +460,9 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			BaseElement newSource = BusinessObjectUtil.getFirstBaseElement(ac);
 			ac = context.getConnection().getEnd().getParent();
 			BaseElement newTarget = BusinessObjectUtil.getFirstBaseElement(ac);
-			if (oldSource instanceof BoundaryEvent && oldTarget instanceof Activity) {
-				// set the Activity reference of the old Boundary Event null
-				CompensateEventDefinition ced = getCompensateEvent(oldSource);
-				if (ced!=null) {
-					ced.setActivityRef(null);
-					((Activity)oldTarget).setIsForCompensation(false);
-				}
-			}
-			if (newSource instanceof BoundaryEvent && newTarget instanceof Activity) {
-				// Set the Activity reference of the new Boundary Event
-				CompensateEventDefinition ced = getCompensateEvent(newSource);
-				if (ced!=null) {
-					ced.setActivityRef((Activity)newTarget);
-					((Activity)newTarget).setIsForCompensation(true);
-				}
-			}
-			
+			Association association = BusinessObjectUtil.getFirstElementOfType(context.getConnection(), Association.class);
+			updateCompensationHandlers(getFeatureProvider(), association, oldSource, oldTarget, newSource, newTarget);
+				
 			super.postReconnect(context);
 		}
 	} 
@@ -427,29 +493,10 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 			BaseElement oldSource = BusinessObjectUtil.getFirstBaseElement(ac);
 			ac = connection.getEnd().getParent();
 			BaseElement oldTarget = BusinessObjectUtil.getFirstBaseElement(ac);
-			if (oldSource instanceof BoundaryEvent && oldTarget instanceof Activity) {
-				// Set the Activity reference of the new Boundary Event
-				CompensateEventDefinition ced = getCompensateEvent(oldSource);
-				if (ced!=null) {
-					ced.setActivityRef(null);
-					((Activity)oldTarget).setIsForCompensation(false);
-				}
-			}
-
+			Association association = BusinessObjectUtil.getFirstElementOfType(connection, Association.class);
+			updateCompensationHandlers(getFeatureProvider(), association, oldSource, oldTarget, null, null);
+			
 			super.delete(context);
 		}
 	}
-	
-	private static CompensateEventDefinition getCompensateEvent(BaseElement source) {
-		if (source instanceof BoundaryEvent) {
-			// find a Compensate Event Definition in the BoundaryEvent
-			for (EventDefinition ed : ((BoundaryEvent)source).getEventDefinitions()) {
-				if (ed instanceof CompensateEventDefinition) {
-					return (CompensateEventDefinition) ed;
-				}
-			}
-		}
-		return null;
-	}
-	
 }
