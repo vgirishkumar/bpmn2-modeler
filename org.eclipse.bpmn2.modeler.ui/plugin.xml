@@ -191,7 +191,7 @@
 		
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.definitions.tab"
-			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
+			afterTab="org.eclipse.bpmn2.modeler.interfaces.tab"
 			class="org.eclipse.bpmn2.modeler.ui.property.diagrams.DefinitionsPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process"
 			label="%propertyTab.label.1">
@@ -553,9 +553,9 @@
 		</propertyTab>
 
 		<propertyTab
-			id="org.eclipse.bpmn2.modeler.interface.tab"
+			id="org.eclipse.bpmn2.modeler.interfaces.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacesPropertySection"
 			type="org.eclipse.bpmn2.di.BPMNDiagram org.eclipse.bpmn2.Process org.eclipse.bpmn2.Participant"
 			label="%propertyTab.label.41">
 		</propertyTab>
@@ -563,7 +563,7 @@
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.interface.details.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
-			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacePropertySection"
+			class="org.eclipse.bpmn2.modeler.ui.property.data.InterfacesPropertySection"
 			type="org.eclipse.bpmn2.Interface"
 			label="%propertyTab.label.42">
 		</propertyTab>

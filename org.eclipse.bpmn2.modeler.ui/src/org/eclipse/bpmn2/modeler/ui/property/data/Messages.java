@@ -6,6 +6,7 @@ public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.ui.property.data.messages"; //$NON-NLS-1$
 	public static String DataAssignmentDetailComposite_From_Title;
 	public static String DataAssignmentDetailComposite_To_Title;
+	public static String InterfacePropertySection_Implementation_Header;
 	public static String InterfacePropertySection_Interfaces_Message;
 	public static String InterfacePropertySection_Interfaces_Title;
 	public static String InterfacePropertySection_No_Interfaces_Error_Message;

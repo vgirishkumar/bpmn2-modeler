@@ -147,7 +147,7 @@ public class InterfacePropertiesAdapter extends ExtendedPropertiesAdapter<Interf
 			Object value = object.eGet(feature);
 			if (value!=null) {
 				if (ModelUtil.isStringWrapper(value))
-					return value;
+					return value.toString();
 				return getDisplayName(context);
 			}
 			return ModelUtil.createStringWrapper(""); //$NON-NLS-1$

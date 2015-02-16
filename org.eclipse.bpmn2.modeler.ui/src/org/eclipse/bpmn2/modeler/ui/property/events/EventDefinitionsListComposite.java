@@ -289,11 +289,13 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								}
 							}
 							else if (event instanceof ThrowEvent) {
-								text += getTextValue(link.eContainer());
-								text += " -> ";
-								LinkEventDefinition target = link.getTarget();
-								text += getTextValue(target.eContainer());
-								return text;
+								if (link.getTarget()!=null) {
+									text += getTextValue(link.eContainer());
+									text += " -> ";
+									LinkEventDefinition target = link.getTarget();
+									text += getTextValue(target.eContainer());
+									return text;
+								}
 							}
 						}
 						if (element instanceof MessageEventDefinition) {

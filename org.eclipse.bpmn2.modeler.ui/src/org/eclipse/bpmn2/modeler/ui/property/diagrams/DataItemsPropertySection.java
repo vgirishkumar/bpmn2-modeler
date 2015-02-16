@@ -10,14 +10,14 @@
  *******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.diagrams;
 
+import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.bpmn2.Process;
+import org.eclipse.swt.widgets.Composite;
 
 public class DataItemsPropertySection extends DefaultPropertySection {
 
@@ -30,18 +30,18 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	}
 
 	@Override
-	public boolean appliesTo(IWorkbenchPart part, ISelection selection) {
-		if (super.appliesTo(part, selection)) {
-			return getBusinessObjectForSelection(selection) != null;
-		}
-		return false;
+	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
+		return new DataItemsDetailComposite(parent,style);
 	}
-	
+
 	@Override
 	public EObject getBusinessObjectForSelection(ISelection selection) {
 		EObject be = super.getBusinessObjectForSelection(selection);
-		if (be instanceof Process || ModelUtil.getDiagramType(be)==Bpmn2DiagramType.PROCESS)
+		if (be instanceof Participant)
+			be = ((Participant)be).getProcessRef();
+		if (be instanceof Process) {
 			return ModelUtil.getDefinitions(be);
+		}
 		return null;
 	}
 }

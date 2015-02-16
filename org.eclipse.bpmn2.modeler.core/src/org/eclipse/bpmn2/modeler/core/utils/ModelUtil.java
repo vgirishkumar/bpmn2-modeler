@@ -1035,6 +1035,11 @@ public class ModelUtil {
 				return super.equals(object);
 			}
 			
+			@Override
+			public String toString() {
+				URI uri = this.eProxyURI();
+				return uri.toString();
+			}
 		};
 		value = SyntaxCheckerUtils.toXMLString(value);
 		de.eSetClass(EcorePackage.eINSTANCE.getEObject());
