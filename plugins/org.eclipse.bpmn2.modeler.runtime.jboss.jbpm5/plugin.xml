@@ -41,17 +41,25 @@
 		</propertyTab>
 
 		<propertyTab
-			id="bpmn2.jbpm.interface.tab"
-			replaceTab="org.eclipse.bpmn2.modeler.interface.tab"
+			id="bpmn2.jbpm.interfaces.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.interfaces.tab"
+			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
+			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmInterfacesPropertySection"
+			label="%propertyTab.label.Interfaces">
+		</propertyTab>
+
+		<propertyTab
+			id="bpmn2.jbpm.interface.details.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.interface.details.tab"
 			afterTab="org.eclipse.bpmn2.modeler.process.diagram.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmInterfacePropertySection"
-			label="%propertyTab.label.Interfaces">
+			label="%propertyTab.label.Interface">
 		</propertyTab>
 
 		<propertyTab
 			id="bpmn2.jbpm.definitions.tab"
 			replaceTab="org.eclipse.bpmn2.modeler.definitions.tab"
-			afterTab="org.eclipse.bpmn2.modeler.interface.tab"
+			afterTab="org.eclipse.bpmn2.modeler.interfaces.tab"
 			class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDefinitionsPropertySection"
 			type="org.eclipse.bpmn2.Definitions"
 			label="%propertyTab.label.Definitions">

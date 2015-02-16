@@ -17,6 +17,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultPropertySection;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Composite;
 
 public class DataItemsPropertySection extends DefaultPropertySection {
 
@@ -26,6 +27,11 @@ public class DataItemsPropertySection extends DefaultPropertySection {
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		return new DataItemsDetailComposite(this);
+	}
+
+	@Override
+	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
+		return new DataItemsDetailComposite(parent,style);
 	}
 
 	@Override
