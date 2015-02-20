@@ -245,7 +245,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		if (isSelfConnection())
 			return super.calculateRoute();
 		
-		GraphicsUtil.debug = true;
+		GraphicsUtil.debug = false;
 		
 		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		if (initialUpdate) {
@@ -761,6 +761,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		}
 		
 		if (route.isValid()){
+			nextPoint = route.get(route.size()-1);
 			if (!calculateEnroute(route,nextPoint,end))
 				return false;
 		}
@@ -785,16 +786,15 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					nextPoint.setY( detour.bottomLeft.getY() );
 					route.add(nextPoint);
 					route.add(detour.bottomLeft);
-					route.add(detour.topLeft);
+//					route.add(detour.topLeft);
 				}
 				else {
 					// go right
 					nextPoint.setY( detour.bottomRight.getY() );
 					route.add(nextPoint);
 					route.add(detour.bottomRight);
-					route.add(detour.topRight);
+//					route.add(detour.topRight);
 				}
-				nextPoint = route.get(route.size()-1);
 				break;
 			case DOWN:
 				// approach from top of shape: go left or right?
@@ -805,16 +805,15 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					nextPoint.setY( detour.topLeft.getY() );
 					route.add(nextPoint);
 					route.add(detour.topLeft);
-					route.add(detour.bottomLeft);
+//					route.add(detour.bottomLeft);
 				}
 				else {
 					// go right
 					nextPoint.setY( detour.topRight.getY() );
 					route.add(nextPoint);
 					route.add(detour.topRight);
-					route.add(detour.bottomRight);
+//					route.add(detour.bottomRight);
 				}
-				nextPoint = route.get(route.size()-1);
 				break;
 			case LEFT:
 				// approach from right of shape: go up or down?
@@ -825,16 +824,15 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					nextPoint.setX( detour.topRight.getX() );
 					route.add(nextPoint);
 					route.add(detour.topRight);
-					route.add(detour.topLeft);
+//					route.add(detour.topLeft);
 				}
 				else {
 					// go down
 					nextPoint.setX( detour.bottomRight.getX() );
 					route.add(nextPoint);
 					route.add(detour.bottomRight);
-					route.add(detour.bottomLeft);
+//					route.add(detour.bottomLeft);
 				}
-				nextPoint = route.get(route.size()-1);
 				break;
 			case RIGHT:
 				// approach from left of shape: go up or down?
@@ -845,17 +843,18 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					nextPoint.setX( detour.topLeft.getX() );
 					route.add(nextPoint);
 					route.add(detour.topLeft);
-					route.add(detour.topRight);
+//					route.add(detour.topRight);
 				}
 				else {
 					// go down
 					nextPoint.setX( detour.bottomLeft.getX() );
 					route.add(nextPoint);
 					route.add(detour.bottomLeft);
-					route.add(detour.bottomRight);
+//					route.add(detour.bottomRight);
 				}
-				nextPoint = route.get(route.size()-1);
 				break;
+			default:
+				return false;
 			}
 		}
 		return shape!=null;
