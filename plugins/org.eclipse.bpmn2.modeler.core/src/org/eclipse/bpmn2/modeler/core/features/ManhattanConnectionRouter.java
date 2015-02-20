@@ -479,9 +479,6 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			route.setSourceAnchor(sourceAnchor);
 			route.setTargetAnchor(targetAnchor);
 			
-			if (sourceSite==AnchorSite.LEFT && targetSite==AnchorSite.RIGHT)
-				System.out.println();
-			
 			calculateRoute(route, sourceSite, start, targetSite, end);
 
 			allRoutes.add(route);
@@ -743,22 +740,22 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		switch (newDirection) {
 		case UP:
 			nextPoint = createPoint(start.getX(), end.getY());
-			if (!calculateDetour(route, newDirection, start, nextPoint))
+			if (!calculateDetour(route, newDirection, start, nextPoint, end))
 				route.add(nextPoint);
 			break;
 		case DOWN:
 			nextPoint = createPoint(start.getX(), end.getY());
-			if (!calculateDetour(route, newDirection, start, nextPoint))
+			if (!calculateDetour(route, newDirection, start, nextPoint, end))
 				route.add(nextPoint);
 			break;
 		case LEFT:
 			nextPoint = createPoint(end.getX(), start.getY());
-			if (!calculateDetour(route, newDirection, start, nextPoint))
+			if (!calculateDetour(route, newDirection, start, nextPoint, end))
 				route.add(nextPoint);
 			break;
 		case RIGHT:
 			nextPoint = createPoint(end.getX(), start.getY());
-			if (!calculateDetour(route, newDirection, start, nextPoint))
+			if (!calculateDetour(route, newDirection, start, nextPoint, end))
 				route.add(nextPoint);
 			break;
 		}
@@ -771,9 +768,9 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return route.isValid();
 	}
 	
-	boolean calculateDetour(ConnectionRoute route, Direction direction, Point start, Point end) {
+	boolean calculateDetour(ConnectionRoute route, Direction direction, Point start, Point nextPoint, Point end) {
 		
-		ContainerShape shape = getCollision(start,end);
+		ContainerShape shape = getCollision(start,nextPoint);
 		if (shape!=null) {
 			int d0, d1;
 			DetourPoints detour = getDetourPoints(shape);
@@ -781,83 +778,83 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			switch (direction) {
 			case UP:
 				// approach from bottom of shape: go left or right?
-				d0 = Math.abs(end.getX()-detour.bottomLeft.getX());
-				d1 = Math.abs(end.getX()-detour.bottomRight.getX());
+				d0 = Math.abs(nextPoint.getX()-detour.bottomLeft.getX());
+				d1 = Math.abs(nextPoint.getX()-detour.bottomRight.getX());
 				if (d0 < d1) {
 					// go left
-					end.setY( detour.bottomLeft.getY() );
-					route.add(end);
+					nextPoint.setY( detour.bottomLeft.getY() );
+					route.add(nextPoint);
 					route.add(detour.bottomLeft);
 					route.add(detour.topLeft);
 				}
 				else {
 					// go right
-					end.setY( detour.bottomRight.getY() );
-					route.add(end);
+					nextPoint.setY( detour.bottomRight.getY() );
+					route.add(nextPoint);
 					route.add(detour.bottomRight);
 					route.add(detour.topRight);
 				}
-				end = route.get(route.size()-1);
+				nextPoint = route.get(route.size()-1);
 				break;
 			case DOWN:
 				// approach from top of shape: go left or right?
-				d0 = Math.abs(end.getX()-detour.topLeft.getX());
-				d1 = Math.abs(end.getX()-detour.topRight.getX());
+				d0 = Math.abs(nextPoint.getX()-detour.topLeft.getX());
+				d1 = Math.abs(nextPoint.getX()-detour.topRight.getX());
 				if (d0 < d1) {
 					// go left
-					end.setY( detour.topLeft.getY() );
-					route.add(end);
+					nextPoint.setY( detour.topLeft.getY() );
+					route.add(nextPoint);
 					route.add(detour.topLeft);
 					route.add(detour.bottomLeft);
 				}
 				else {
 					// go right
-					end.setY( detour.topRight.getY() );
-					route.add(end);
+					nextPoint.setY( detour.topRight.getY() );
+					route.add(nextPoint);
 					route.add(detour.topRight);
 					route.add(detour.bottomRight);
 				}
-				end = route.get(route.size()-1);
+				nextPoint = route.get(route.size()-1);
 				break;
 			case LEFT:
 				// approach from right of shape: go up or down?
-				d0 = Math.abs(end.getY()-detour.topRight.getY());
-				d1 = Math.abs(end.getY()-detour.bottomRight.getY());
+				d0 = Math.abs(nextPoint.getY()-detour.topRight.getY());
+				d1 = Math.abs(nextPoint.getY()-detour.bottomRight.getY());
 				if (d0 < d1) {
 					// go up
-					end.setX( detour.topRight.getX() );
-					route.add(end);
+					nextPoint.setX( detour.topRight.getX() );
+					route.add(nextPoint);
 					route.add(detour.topRight);
 					route.add(detour.topLeft);
 				}
 				else {
 					// go down
-					end.setX( detour.bottomRight.getX() );
-					route.add(end);
+					nextPoint.setX( detour.bottomRight.getX() );
+					route.add(nextPoint);
 					route.add(detour.bottomRight);
 					route.add(detour.bottomLeft);
 				}
-				end = route.get(route.size()-1);
+				nextPoint = route.get(route.size()-1);
 				break;
 			case RIGHT:
 				// approach from left of shape: go up or down?
-				d0 = Math.abs(end.getY()-detour.topLeft.getY());
-				d1 = Math.abs(end.getY()-detour.bottomLeft.getY());
+				d0 = Math.abs(nextPoint.getY()-detour.topLeft.getY());
+				d1 = Math.abs(nextPoint.getY()-detour.bottomLeft.getY());
 				if (d0 < d1) {
 					// go up
-					end.setX( detour.topLeft.getX() );
-					route.add(end);
+					nextPoint.setX( detour.topLeft.getX() );
+					route.add(nextPoint);
 					route.add(detour.topLeft);
 					route.add(detour.topRight);
 				}
 				else {
 					// go down
-					end.setX( detour.bottomLeft.getX() );
-					route.add(end);
+					nextPoint.setX( detour.bottomLeft.getX() );
+					route.add(nextPoint);
 					route.add(detour.bottomLeft);
 					route.add(detour.bottomRight);
 				}
-				end = route.get(route.size()-1);
+				nextPoint = route.get(route.size()-1);
 				break;
 			}
 		}
@@ -912,7 +909,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 
 		for (int i=0; i<allShapes.size(); ++i) {
 			ContainerShape s = allShapes.get(i);
-			if (shape==s)
+			if (shape==s || shape==source || shape==target)
 				continue;
 			DetourPoints d = new DetourPoints(s, margin);
 			if (detour.intersects(d) && !detour.contains(d)) {
