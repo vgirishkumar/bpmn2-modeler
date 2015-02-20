@@ -101,7 +101,8 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 			do {
 				repeat = false;
 				IConnectionRouter router = getRouter(connection);
-				hasDoneChanges |= router.route(connection);
+				if (router.canRoute(connection) && router.routingNeeded(connection))
+					hasDoneChanges |= router.route(connection);
 
 				UpdateContext uc = new UpdateContext(connection);
 				getFeatureProvider().updateIfPossible(uc);

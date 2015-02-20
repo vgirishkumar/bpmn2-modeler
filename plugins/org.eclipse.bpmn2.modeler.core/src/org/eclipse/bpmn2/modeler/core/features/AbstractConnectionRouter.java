@@ -12,12 +12,14 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeService;
-import org.eclipse.core.runtime.Assert;
 
 /**
  * Abstract base class for Connection Routers. This is a container for common utility functions
@@ -30,17 +32,6 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 	
 	/** The Constant gaService. */
 	protected static final IGaService gaService = Graphiti.getGaService();
-	
-	/**
-	 * The connection routing directions.
-	 */
-	public enum Direction {
-		 UP,
-		 DOWN,
-		 LEFT,
-		 RIGHT,
-		 NONE
-	};
 
 	/** The Feature Provider. */
 	protected IFeatureProvider fp;
@@ -54,6 +45,11 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 		this.fp = fp;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#initialize(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
+	protected abstract void initialize(Connection connection);
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */
@@ -158,6 +154,11 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 		return addRoutingInfo(connection, info+"="+value); //$NON-NLS-1$
 	}
 
+	public static String setRoutingInfo(Connection connection, String info, String value) {
+		removeRoutingInfo(connection, info+"="); //$NON-NLS-1$
+		return addRoutingInfo(connection, info+"="+value); //$NON-NLS-1$
+	}
+
 	/**
 	 * Gets the routing info.
 	 *
@@ -169,7 +170,7 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 		String oldInfo = getRoutingInfo(connection);
 		String a[] = oldInfo.split(","); //$NON-NLS-1$
 		for (String s : a) {
-			if (oldInfo.startsWith(info+"=")) { //$NON-NLS-1$
+			if (s.startsWith(info+"=")) { //$NON-NLS-1$
 				try {
 					String b[] = s.split("="); //$NON-NLS-1$
 					return Integer.parseInt(b[1]);
@@ -179,6 +180,22 @@ public abstract class AbstractConnectionRouter implements IConnectionRouter {
 			}
 		}
 		return -1;
+	}
+
+	public static String getRoutingInfo(Connection connection, String info) {
+		String oldInfo = getRoutingInfo(connection);
+		String a[] = oldInfo.split(","); //$NON-NLS-1$
+		for (String s : a) {
+			if (s.startsWith(info+"=")) { //$NON-NLS-1$
+				try {
+					String b[] = s.split("="); //$NON-NLS-1$
+					return b[1];
+				}
+				catch (Exception e) {
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

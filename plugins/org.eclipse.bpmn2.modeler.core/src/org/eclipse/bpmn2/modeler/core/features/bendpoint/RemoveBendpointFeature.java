@@ -18,14 +18,12 @@ import org.eclipse.bpmn2.di.BPMNEdge;
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IRemoveBendpointContext;
 import org.eclipse.graphiti.features.impl.DefaultRemoveBendpointFeature;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 
 public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 
@@ -46,7 +44,7 @@ public class RemoveBendpointFeature extends DefaultRemoveBendpointFeature {
 			Activator.logError(e);
 		}
 	    
-		BendpointConnectionRouter.setRemovedBendpoint(connection, context.getBendpointIndex());
+		BendpointConnectionRouter.setRemovedBendpoint(connection, context.getBendpoint());
 		FeatureSupport.updateConnection(getFeatureProvider(), connection);
 	}
 }

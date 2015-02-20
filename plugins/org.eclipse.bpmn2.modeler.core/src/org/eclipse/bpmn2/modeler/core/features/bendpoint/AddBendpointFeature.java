@@ -20,10 +20,12 @@ import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
+import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.dd.dc.DcFactory;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddBendpointContext;
 import org.eclipse.graphiti.features.impl.DefaultAddBendpointFeature;
+import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 public class AddBendpointFeature extends DefaultAddBendpointFeature {
@@ -48,21 +50,33 @@ public class AddBendpointFeature extends DefaultAddBendpointFeature {
 
 	@Override
 	public void addBendpoint(IAddBendpointContext context) {
+		FreeFormConnection connection = context.getConnection();
+		int index = context.getBendpointIndex();
+		Point bp1;
+		if (index<=0)
+			bp1 = GraphicsUtil.createPoint(connection.getStart());
+		else
+			bp1 = connection.getBendpoints().get(index-1);
+		Point bp2;
+		if (index>=connection.getBendpoints().size())
+			bp2 = GraphicsUtil.createPoint(connection.getEnd());
+		else
+			bp2 = connection.getBendpoints().get(index);
+		Point m = GraphicsUtil.getMidpoint(bp1, bp2);
+		BendpointConnectionRouter.setOldBendpointLocation(connection, m);
+		
 		super.addBendpoint(context);
+		
 		try {
-			
-			FreeFormConnection connection = context.getConnection();
 			BaseElement element = (BaseElement) BusinessObjectUtil.getFirstElementOfType(connection, BaseElement.class);
-
 			org.eclipse.dd.dc.Point p = DcFactory.eINSTANCE.createPoint();
 			p.setX(context.getX());
 			p.setY(context.getY());
 
 			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(connection);
 			BPMNEdge edge = DIUtils.findBPMNEdge(bpmnDiagram, element);
-			int index = context.getBendpointIndex() + 1;
-			edge.getWaypoint().add(index, p);
-			BendpointConnectionRouter.setAddedBendpoint(connection, context.getBendpointIndex());
+			edge.getWaypoint().add(index+1, p);
+			BendpointConnectionRouter.setAddedBendpoint(connection, index);
 			FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			
 		} catch (Exception e) {

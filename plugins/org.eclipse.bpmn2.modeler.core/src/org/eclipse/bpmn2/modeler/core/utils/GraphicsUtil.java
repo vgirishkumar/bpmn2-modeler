@@ -584,7 +584,7 @@ public class GraphicsUtil {
 		}
 	}
 	
-	public static String getDebugText(ContainerShape shape) {
+	public static String getDebugText(Shape shape) {
 		EObject be = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 		String id = ""; //$NON-NLS-1$
 		if (be instanceof BaseElement) {
@@ -727,6 +727,14 @@ public class GraphicsUtil {
 		int y = p.getY();
 		int lx = loc.getX();
 		int ly = loc.getY();
+		return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
+	}
+
+	public static boolean isPointNear(Point p1, Point p2, int dist) {
+		int x = p1.getX();
+		int y = p1.getY();
+		int lx = p2.getX();
+		int ly = p2.getY();
 		return lx-dist <= x && x <= lx+dist && ly-dist <= y && y <= ly+dist;
 	}
 
