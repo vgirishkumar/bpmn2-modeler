@@ -19,7 +19,9 @@ import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.CompensateEventDefinition;
+import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.EventDefinition;
+import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.modeler.core.features.AbstractBpmn2UpdateFeature;
 import org.eclipse.bpmn2.modeler.core.features.BaseElementConnectionFeatureContainer;
 import org.eclipse.bpmn2.modeler.core.features.DefaultDeleteBPMNShapeFeature;
@@ -276,6 +278,11 @@ public class AssociationFeatureContainer extends BaseElementConnectionFeatureCon
 		public boolean isAvailable(IContext context) {
 			if (!isModelObjectEnabled(Bpmn2Package.eINSTANCE.getAssociation()))
 				return false;
+			if (context instanceof ICreateConnectionContext) {
+				BaseElement source = getSourceBo((ICreateConnectionContext) context);
+				if (source instanceof Activity || source instanceof Gateway || source instanceof Event)
+					return false;
+			}
 			return super.isAvailable(context);
 		}
 
