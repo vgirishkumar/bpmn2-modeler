@@ -233,7 +233,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) && !FeatureSupport.isParticipant(shape)) {
+			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) ) {
 				EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 				if (bo instanceof FlowElementsContainer) {
 					// it's not a collision if the shape is a SubProcess and

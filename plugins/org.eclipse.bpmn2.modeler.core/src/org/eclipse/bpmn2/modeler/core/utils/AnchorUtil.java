@@ -18,10 +18,12 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.bpmn2.BaseElement;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -206,6 +208,7 @@ public class AnchorUtil {
 			return;
 		}
 		if (parent instanceof Shape) {
+			EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(parent);
 			p = GraphicsUtil.createPoint(p); // make a copy
 			ILocation loc = peService.getLocationRelativeToDiagram((Shape)parent);
 			LineSegment edge = GraphicsUtil.findNearestEdge((Shape)parent, p);
@@ -218,10 +221,15 @@ public class AnchorUtil {
 					site = AnchorSite.BOTTOM;
 				p.setY(y - loc.getY());
 				int x = p.getX();
-				if (x < edge.getStart().getX())
-					x = edge.getStart().getX();
-				if (x > edge.getEnd().getX())
-					x = edge.getEnd().getX();
+				if (FeatureSupport.isParticipant(parent)) {
+					if (x < edge.getStart().getX())
+						x = edge.getStart().getX();
+					if (x > edge.getEnd().getX())
+						x = edge.getEnd().getX();
+				}
+				else
+					p = edge.getMiddle();
+
 				p.setX(x - loc.getX());
 			}
 			else {
@@ -232,10 +240,14 @@ public class AnchorUtil {
 					site = AnchorSite.RIGHT;
 				p.setX(x - loc.getX());
 				int y = p.getY();
-				if (y < edge.getStart().getY())
-					y = edge.getStart().getY();
-				if (y > edge.getEnd().getY())
-					y = edge.getEnd().getY();
+				if (FeatureSupport.isParticipant(parent)) {
+					if (y < edge.getStart().getY())
+						y = edge.getStart().getY();
+					if (y > edge.getEnd().getY())
+						y = edge.getEnd().getY();
+				}
+				else
+					p = edge.getMiddle();
 				p.setY(y - loc.getY());
 			}
 			AnchorSite.setSite(anchor, site);
