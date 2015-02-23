@@ -8,7 +8,7 @@
 
 	<groupId>org.eclipse.bpmn2.modeler</groupId>
 	<artifactId>org.eclipse.bpmn2.modeler.parent</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.4.Final</version>
 	<packaging>pom</packaging>
 
 	<name>BPMN2 Modeler Parent</name>
@@ -270,7 +270,7 @@
 				</configuration>
 			</plugin>
 
-
+<!--
 			<plugin>
 				<groupId>org.eclipse.tycho.extras</groupId>
 				<artifactId>tycho-pack200a-plugin</artifactId>
@@ -312,6 +312,7 @@
 					</execution>
 				</executions>
 			</plugin>
+-->
 
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
