@@ -228,7 +228,7 @@ public class AnchorUtil {
 						x = edge.getEnd().getX();
 				}
 				else
-					p = edge.getMiddle();
+					x = edge.getMiddle().getX();
 
 				p.setX(x - loc.getX());
 			}
@@ -247,7 +247,7 @@ public class AnchorUtil {
 						y = edge.getEnd().getY();
 				}
 				else
-					p = edge.getMiddle();
+					x = edge.getMiddle().getY();
 				p.setY(y - loc.getY());
 			}
 			AnchorSite.setSite(anchor, site);
