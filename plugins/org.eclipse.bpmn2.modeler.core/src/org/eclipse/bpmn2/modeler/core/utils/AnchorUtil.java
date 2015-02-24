@@ -221,14 +221,14 @@ public class AnchorUtil {
 					site = AnchorSite.BOTTOM;
 				p.setY(y - loc.getY());
 				int x = p.getX();
-				if (FeatureSupport.isParticipant(parent)) {
+//				if (FeatureSupport.isParticipant(parent)) {
 					if (x < edge.getStart().getX())
 						x = edge.getStart().getX();
 					if (x > edge.getEnd().getX())
 						x = edge.getEnd().getX();
-				}
-				else
-					x = edge.getMiddle().getX();
+//				}
+//				else
+//					x = edge.getMiddle().getX();
 
 				p.setX(x - loc.getX());
 			}
@@ -240,14 +240,14 @@ public class AnchorUtil {
 					site = AnchorSite.RIGHT;
 				p.setX(x - loc.getX());
 				int y = p.getY();
-				if (FeatureSupport.isParticipant(parent)) {
+//				if (FeatureSupport.isParticipant(parent)) {
 					if (y < edge.getStart().getY())
 						y = edge.getStart().getY();
 					if (y > edge.getEnd().getY())
 						y = edge.getEnd().getY();
-				}
-				else
-					x = edge.getMiddle().getY();
+//				}
+//				else
+//					x = edge.getMiddle().getY();
 				p.setY(y - loc.getY());
 			}
 			AnchorSite.setSite(anchor, site);

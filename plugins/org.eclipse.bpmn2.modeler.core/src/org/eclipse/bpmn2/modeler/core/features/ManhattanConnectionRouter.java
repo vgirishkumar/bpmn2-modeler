@@ -215,7 +215,9 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		if (connection instanceof FreeFormConnection) {
 			if (peService.getPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE) != null)
 				return true;
-			
+			if (forceRouting(connection))
+				return true;
+
 			initialize(connection);
 
 			int length = oldPoints.length;
