@@ -1794,4 +1794,10 @@ public class ModelUtil {
 		}
 		return false;
 	}
+
+	// FIXME: update Switchyard to use new API 
+	@Deprecated
+	public static String toDisplayName(String name) {
+		return toCanonicalString(name);
+	}
 }
