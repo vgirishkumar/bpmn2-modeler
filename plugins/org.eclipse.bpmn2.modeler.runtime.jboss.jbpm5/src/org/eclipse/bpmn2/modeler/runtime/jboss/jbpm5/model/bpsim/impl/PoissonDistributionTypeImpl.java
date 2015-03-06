@@ -184,8 +184,8 @@ public class PoissonDistributionTypeImpl extends DistributionParameterImpl imple
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (mean: "); //$NON-NLS-1$
-		if (meanESet) result.append(mean); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(" (mean: ");
+		if (meanESet) result.append(mean); else result.append("<unset>");
 		result.append(')');
 		return result.toString();
 	}

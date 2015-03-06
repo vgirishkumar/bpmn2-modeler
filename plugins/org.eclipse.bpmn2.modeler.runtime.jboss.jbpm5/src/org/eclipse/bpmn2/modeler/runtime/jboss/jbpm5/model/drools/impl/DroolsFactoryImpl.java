@@ -10,8 +10,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.ecore.EClass;
@@ -38,7 +38,7 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 	 */
 	public static DroolsFactory init() {
 		try {
-			DroolsFactory theDroolsFactory = (DroolsFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.jboss.org/drools"); 
+			DroolsFactory theDroolsFactory = (DroolsFactory)EPackage.Registry.INSTANCE.getEFactory(DroolsPackage.eNS_URI);
 			if (theDroolsFactory != null) {
 				return theDroolsFactory;
 			}
@@ -70,8 +70,8 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 			case DroolsPackage.DOCUMENT_ROOT: return createDocumentRoot();
 			case DroolsPackage.GLOBAL_TYPE: return createGlobalType();
 			case DroolsPackage.IMPORT_TYPE: return createImportType();
-			case DroolsPackage.METADATA_TYPE: return createMetadataType();
-			case DroolsPackage.METAENTRY_TYPE: return createMetaentryType();
+			case DroolsPackage.META_DATA_TYPE: return createMetaDataType();
+			case DroolsPackage.META_VALUE_TYPE: return createMetaValueType();
 			case DroolsPackage.ON_ENTRY_SCRIPT_TYPE: return createOnEntryScriptType();
 			case DroolsPackage.ON_EXIT_SCRIPT_TYPE: return createOnExitScriptType();
 			case DroolsPackage.BP_SIM_DATA_TYPE: return createBPSimDataType();
@@ -162,9 +162,9 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MetadataType createMetadataType() {
-		MetadataTypeImpl metadataType = new MetadataTypeImpl();
-		return metadataType;
+	public MetaDataType createMetaDataType() {
+		MetaDataTypeImpl metaDataType = new MetaDataTypeImpl();
+		return metaDataType;
 	}
 
 	/**
@@ -172,9 +172,9 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MetaentryType createMetaentryType() {
-		MetaentryTypeImpl metaentryType = new MetaentryTypeImpl();
-		return metaentryType;
+	public MetaValueType createMetaValueType() {
+		MetaValueTypeImpl metaValueType = new MetaValueTypeImpl();
+		return metaValueType;
 	}
 
 	/**
@@ -213,8 +213,8 @@ public class DroolsFactoryImpl extends EFactoryImpl implements DroolsFactory {
 	 * @generated
 	 */
 	public ExternalProcess createExternalProcess() {
-		ExternalProcessImpl callableElementProxy = new ExternalProcessImpl();
-		return callableElementProxy;
+		ExternalProcessImpl externalProcess = new ExternalProcessImpl();
+		return externalProcess;
 	}
 
 	/**

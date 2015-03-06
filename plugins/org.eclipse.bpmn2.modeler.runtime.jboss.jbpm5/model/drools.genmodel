@@ -15,11 +15,11 @@
     <genClasses ecoreClass="drools.ecore#//DocumentRoot">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/global"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/importType"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/metadata"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/metaentry"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/metaData"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/metaValue"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/onEntryScript"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/onExitScript"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/processAnalysisData"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//DocumentRoot/bpsimData"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//DocumentRoot/packageName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//DocumentRoot/priority"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//DocumentRoot/ruleFlowGroup"/>
@@ -33,13 +33,11 @@
     <genClasses ecoreClass="drools.ecore#//ImportType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//ImportType/name"/>
     </genClasses>
-    <genClasses ecoreClass="drools.ecore#//MetadataType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//MetadataType/metaentry"/>
+    <genClasses ecoreClass="drools.ecore#//MetaDataType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//MetaDataType/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference drools.ecore#//MetaDataType/metaValue"/>
     </genClasses>
-    <genClasses ecoreClass="drools.ecore#//MetaentryType">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//MetaentryType/name"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//MetaentryType/value"/>
-    </genClasses>
+    <genClasses ecoreClass="drools.ecore#//MetaValueType"/>
     <genClasses ecoreClass="drools.ecore#//OnEntryScriptType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//OnEntryScriptType/script"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//OnEntryScriptType/scriptFormat"/>
@@ -48,10 +46,8 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//OnExitScriptType/script"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute drools.ecore#//OnExitScriptType/scriptFormat"/>
     </genClasses>
-    <genClasses ecoreClass="drools.ecore#//ProcessAnalysisDataType">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute drools.ecore#//ProcessAnalysisDataType/group"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference drools.ecore#//ProcessAnalysisDataType/scenario"/>
-    </genClasses>
+    <genClasses ecoreClass="drools.ecore#//BPSimDataType"/>
+    <genClasses ecoreClass="drools.ecore#//ExternalProcess"/>
   </genPackages>
   <genPackages prefix="Bpsim" basePackage="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model"
       resource="XML" disposableProviderFactory="true" ecorePackage="bpsim.ecore#/">

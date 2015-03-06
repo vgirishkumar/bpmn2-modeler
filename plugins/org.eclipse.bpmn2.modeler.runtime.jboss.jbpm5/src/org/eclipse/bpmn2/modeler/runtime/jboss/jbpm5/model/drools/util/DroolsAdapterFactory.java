@@ -11,8 +11,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.common.notify.Adapter;
@@ -89,12 +89,12 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 				return createImportTypeAdapter();
 			}
 			@Override
-			public Adapter caseMetadataType(MetadataType object) {
-				return createMetadataTypeAdapter();
+			public Adapter caseMetaDataType(MetaDataType object) {
+				return createMetaDataTypeAdapter();
 			}
 			@Override
-			public Adapter caseMetaentryType(MetaentryType object) {
-				return createMetaentryTypeAdapter();
+			public Adapter caseMetaValueType(MetaValueType object) {
+				return createMetaValueTypeAdapter();
 			}
 			@Override
 			public Adapter caseOnEntryScriptType(OnEntryScriptType object) {
@@ -199,30 +199,30 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType <em>Metadata Type</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType <em>Meta Data Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType
 	 * @generated
 	 */
-	public Adapter createMetadataTypeAdapter() {
+	public Adapter createMetaDataTypeAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType <em>Metaentry Type</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType <em>Meta Value Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType
 	 * @generated
 	 */
-	public Adapter createMetaentryTypeAdapter() {
+	public Adapter createMetaValueTypeAdapter() {
 		return null;
 	}
 
@@ -269,7 +269,7 @@ public class DroolsAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess <em>Callable Element Proxy</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess <em>External Process</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.

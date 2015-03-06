@@ -49,22 +49,22 @@ public interface DroolsFactory extends EFactory {
 	ImportType createImportType();
 
 	/**
-	 * Returns a new object of class '<em>Metadata Type</em>'.
+	 * Returns a new object of class '<em>Meta Data Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Metadata Type</em>'.
+	 * @return a new object of class '<em>Meta Data Type</em>'.
 	 * @generated
 	 */
-	MetadataType createMetadataType();
+	MetaDataType createMetaDataType();
 
 	/**
-	 * Returns a new object of class '<em>Metaentry Type</em>'.
+	 * Returns a new object of class '<em>Meta Value Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Metaentry Type</em>'.
+	 * @return a new object of class '<em>Meta Value Type</em>'.
 	 * @generated
 	 */
-	MetaentryType createMetaentryType();
+	MetaValueType createMetaValueType();
 
 	/**
 	 * Returns a new object of class '<em>On Entry Script Type</em>'.
@@ -94,10 +94,10 @@ public interface DroolsFactory extends EFactory {
 	BPSimDataType createBPSimDataType();
 
 	/**
-	 * Returns a new object of class '<em>Callable Element Proxy</em>'.
+	 * Returns a new object of class '<em>External Process</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Callable Element Proxy</em>'.
+	 * @return a new object of class '<em>External Process</em>'.
 	 * @generated
 	 */
 	ExternalProcess createExternalProcess();

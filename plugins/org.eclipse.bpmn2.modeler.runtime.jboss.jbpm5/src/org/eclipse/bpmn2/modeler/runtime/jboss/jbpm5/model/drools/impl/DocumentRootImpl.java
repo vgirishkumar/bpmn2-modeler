@@ -9,8 +9,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.common.notify.Notification;
@@ -29,8 +29,8 @@ import org.eclipse.emf.ecore.util.FeatureMap;
  * <ul>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getGlobal <em>Global</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getImportType <em>Import Type</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getMetadata <em>Metadata</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getMetaentry <em>Metaentry</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getMetaData <em>Meta Data</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getMetaValue <em>Meta Value</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getOnEntryScript <em>On Entry Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getOnExitScript <em>On Exit Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DocumentRootImpl#getBpsimData <em>Bpsim Data</em>}</li>
@@ -223,8 +223,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MetadataType getMetadata() {
-		return (MetadataType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, true);
+	public MetaDataType getMetaData() {
+		return (MetaDataType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__META_DATA, true);
 	}
 
 	/**
@@ -232,8 +232,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetMetadata(MetadataType newMetadata, NotificationChain msgs) {
-		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, newMetadata, msgs);
+	public NotificationChain basicSetMetaData(MetaDataType newMetaData, NotificationChain msgs) {
+		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__META_DATA, newMetaData, msgs);
 	}
 
 	/**
@@ -241,8 +241,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMetadata(MetadataType newMetadata) {
-		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, newMetadata);
+	public void setMetaData(MetaDataType newMetaData) {
+		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__META_DATA, newMetaData);
 	}
 
 	/**
@@ -250,8 +250,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public MetaentryType getMetaentry() {
-		return (MetaentryType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__METAENTRY, true);
+	public MetaValueType getMetaValue() {
+		return (MetaValueType)getMixed().get(DroolsPackage.Literals.DOCUMENT_ROOT__META_VALUE, true);
 	}
 
 	/**
@@ -259,8 +259,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetMetaentry(MetaentryType newMetaentry, NotificationChain msgs) {
-		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__METAENTRY, newMetaentry, msgs);
+	public NotificationChain basicSetMetaValue(MetaValueType newMetaValue, NotificationChain msgs) {
+		return ((FeatureMap.Internal)getMixed()).basicAdd(DroolsPackage.Literals.DOCUMENT_ROOT__META_VALUE, newMetaValue, msgs);
 	}
 
 	/**
@@ -268,8 +268,8 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMetaentry(MetaentryType newMetaentry) {
-		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__METAENTRY, newMetaentry);
+	public void setMetaValue(MetaValueType newMetaValue) {
+		((FeatureMap.Internal)getMixed()).set(DroolsPackage.Literals.DOCUMENT_ROOT__META_VALUE, newMetaValue);
 	}
 
 	/**
@@ -470,10 +470,10 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return basicSetGlobal(null, msgs);
 			case DroolsPackage.DOCUMENT_ROOT__IMPORT_TYPE:
 				return basicSetImportType(null, msgs);
-			case DroolsPackage.DOCUMENT_ROOT__METADATA:
-				return basicSetMetadata(null, msgs);
-			case DroolsPackage.DOCUMENT_ROOT__METAENTRY:
-				return basicSetMetaentry(null, msgs);
+			case DroolsPackage.DOCUMENT_ROOT__META_DATA:
+				return basicSetMetaData(null, msgs);
+			case DroolsPackage.DOCUMENT_ROOT__META_VALUE:
+				return basicSetMetaValue(null, msgs);
 			case DroolsPackage.DOCUMENT_ROOT__ON_ENTRY_SCRIPT:
 				return basicSetOnEntryScript(null, msgs);
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
@@ -496,10 +496,10 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getGlobal();
 			case DroolsPackage.DOCUMENT_ROOT__IMPORT_TYPE:
 				return getImportType();
-			case DroolsPackage.DOCUMENT_ROOT__METADATA:
-				return getMetadata();
-			case DroolsPackage.DOCUMENT_ROOT__METAENTRY:
-				return getMetaentry();
+			case DroolsPackage.DOCUMENT_ROOT__META_DATA:
+				return getMetaData();
+			case DroolsPackage.DOCUMENT_ROOT__META_VALUE:
+				return getMetaValue();
 			case DroolsPackage.DOCUMENT_ROOT__ON_ENTRY_SCRIPT:
 				return getOnEntryScript();
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:
@@ -534,11 +534,11 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 			case DroolsPackage.DOCUMENT_ROOT__IMPORT_TYPE:
 				setImportType((ImportType)newValue);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__METADATA:
-				setMetadata((MetadataType)newValue);
+			case DroolsPackage.DOCUMENT_ROOT__META_DATA:
+				setMetaData((MetaDataType)newValue);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__METAENTRY:
-				setMetaentry((MetaentryType)newValue);
+			case DroolsPackage.DOCUMENT_ROOT__META_VALUE:
+				setMetaValue((MetaValueType)newValue);
 				return;
 			case DroolsPackage.DOCUMENT_ROOT__ON_ENTRY_SCRIPT:
 				setOnEntryScript((OnEntryScriptType)newValue);
@@ -582,11 +582,11 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 			case DroolsPackage.DOCUMENT_ROOT__IMPORT_TYPE:
 				setImportType((ImportType)null);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__METADATA:
-				setMetadata((MetadataType)null);
+			case DroolsPackage.DOCUMENT_ROOT__META_DATA:
+				setMetaData((MetaDataType)null);
 				return;
-			case DroolsPackage.DOCUMENT_ROOT__METAENTRY:
-				setMetaentry((MetaentryType)null);
+			case DroolsPackage.DOCUMENT_ROOT__META_VALUE:
+				setMetaValue((MetaValueType)null);
 				return;
 			case DroolsPackage.DOCUMENT_ROOT__ON_ENTRY_SCRIPT:
 				setOnEntryScript((OnEntryScriptType)null);
@@ -628,10 +628,10 @@ public class DocumentRootImpl extends org.eclipse.bpmn2.impl.DocumentRootImpl im
 				return getGlobal() != null;
 			case DroolsPackage.DOCUMENT_ROOT__IMPORT_TYPE:
 				return getImportType() != null;
-			case DroolsPackage.DOCUMENT_ROOT__METADATA:
-				return getMetadata() != null;
-			case DroolsPackage.DOCUMENT_ROOT__METAENTRY:
-				return getMetaentry() != null;
+			case DroolsPackage.DOCUMENT_ROOT__META_DATA:
+				return getMetaData() != null;
+			case DroolsPackage.DOCUMENT_ROOT__META_VALUE:
+				return getMetaValue() != null;
 			case DroolsPackage.DOCUMENT_ROOT__ON_ENTRY_SCRIPT:
 				return getOnEntryScript() != null;
 			case DroolsPackage.DOCUMENT_ROOT__ON_EXIT_SCRIPT:

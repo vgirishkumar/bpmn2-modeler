@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,21 +31,18 @@ import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStore;
 import org.eclipse.bpmn2.Definitions;
-import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
+import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.InputSet;
 import org.eclipse.bpmn2.Interface;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.LoopCharacteristics;
-import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
 import org.eclipse.bpmn2.OutputSet;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Property;
 import org.eclipse.bpmn2.RootElement;
-import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceImpl;
 import org.eclipse.bpmn2.modeler.core.model.ModelDecorator;
@@ -54,6 +52,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.preferences.JbpmPreferencePage;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.emf.common.util.EList;
@@ -68,6 +68,7 @@ import org.eclipse.emf.ecore.impl.EAttributeImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
 import org.eclipse.emf.ecore.util.BasicInternalEList;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
+import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -127,15 +128,17 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				if (o instanceof ExternalProcess) {
 					return;
 				}
+				if (o instanceof MetaDataType) {
+					if (((MetaDataType)o).getName()==null || ((MetaDataType)o).getName().isEmpty()) {
+						return;
+					}
+				}
 				super.saveElement(o, f);
 			}
 
 			@Override
 			protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
 				
-				if (Bpmn2Package.eINSTANCE.getDocumentation_Text().equals(f))
-					return false;
-
 				if (f==Bpmn2Package.eINSTANCE.getDefinitions_Relationships()) {
 					if (!JbpmPreferencePage.isEnableSimulation())
 						return false;
@@ -143,7 +146,11 @@ public class DroolsResourceImpl extends Bpmn2ModelerResourceImpl {
 				if (o instanceof GlobalType && f==Bpmn2Package.eINSTANCE.getBaseElement_Id()) {
 					return false;
 				}
-
+				if (o instanceof MetaValueType && f==DroolsPackage.eINSTANCE.getMetaValueType_Value()) {
+					// the MetaValue.value will already be saved as CData, so no need to duplicate
+					return false;
+				}
+				
 				// workaround for Bug 430953 don't save the following collections:
 				//
 				// OutputSet

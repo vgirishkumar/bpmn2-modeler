@@ -132,7 +132,7 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__ARTIFACT = Bpmn2Package.DOCUMENT_ROOT__ARTIFACT;
 
 	/**
-	 * The feature id for the '<em><b>MultipleAssignments</b></em>' containment reference.
+	 * The feature id for the '<em><b>Assignment</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -420,7 +420,7 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__CORRELATION_PROPERTY_BINDING = Bpmn2Package.DOCUMENT_ROOT__CORRELATION_PROPERTY_BINDING;
 
 	/**
-	 * The feature id for the '<em><b>Correlation Property Retrieval SingleAssignment</b></em>' containment reference.
+	 * The feature id for the '<em><b>Correlation Property Retrieval Expression</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -627,7 +627,7 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__EXCLUSIVE_GATEWAY = Bpmn2Package.DOCUMENT_ROOT__EXCLUSIVE_GATEWAY;
 
 	/**
-	 * The feature id for the '<em><b>SingleAssignment</b></em>' containment reference.
+	 * The feature id for the '<em><b>Expression</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -663,7 +663,7 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__FLOW_NODE = Bpmn2Package.DOCUMENT_ROOT__FLOW_NODE;
 
 	/**
-	 * The feature id for the '<em><b>Formal SingleAssignment</b></em>' containment reference.
+	 * The feature id for the '<em><b>Formal Expression</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1104,7 +1104,7 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__RESOURCE = Bpmn2Package.DOCUMENT_ROOT__RESOURCE;
 
 	/**
-	 * The feature id for the '<em><b>Resource MultipleAssignments SingleAssignment</b></em>' containment reference.
+	 * The feature id for the '<em><b>Resource Assignment Expression</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1329,22 +1329,22 @@ public interface DroolsPackage extends EPackage {
 	int DOCUMENT_ROOT__IMPORT_TYPE = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Metadata</b></em>' containment reference.
+	 * The feature id for the '<em><b>Meta Data</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__METADATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 2;
+	int DOCUMENT_ROOT__META_DATA = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 2;
 
 	/**
-	 * The feature id for the '<em><b>Metaentry</b></em>' containment reference.
+	 * The feature id for the '<em><b>Meta Value</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT__METAENTRY = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 3;
+	int DOCUMENT_ROOT__META_VALUE = Bpmn2Package.DOCUMENT_ROOT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>On Entry Script</b></em>' containment reference.
@@ -1556,42 +1556,14 @@ public interface DroolsPackage extends EPackage {
 	int IMPORT_TYPE_FEATURE_COUNT = 1;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetadataTypeImpl <em>Metadata Type</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaDataTypeImpl <em>Meta Data Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetadataTypeImpl
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetadataType()
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaDataTypeImpl
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaDataType()
 	 * @generated
 	 */
-	int METADATA_TYPE = 3;
-
-	/**
-	 * The feature id for the '<em><b>Metaentry</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int METADATA_TYPE__METAENTRY = 0;
-
-	/**
-	 * The number of structural features of the '<em>Metadata Type</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int METADATA_TYPE_FEATURE_COUNT = 1;
-
-	/**
-	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaentryTypeImpl <em>Metaentry Type</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaentryTypeImpl
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaentryType()
-	 * @generated
-	 */
-	int METAENTRY_TYPE = 4;
+	int META_DATA_TYPE = 3;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1600,7 +1572,44 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int METAENTRY_TYPE__NAME = 0;
+	int META_DATA_TYPE__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Meta Value</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA_TYPE__META_VALUE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Meta Data Type</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA_TYPE_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaValueTypeImpl <em>Meta Value Type</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaValueTypeImpl
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaValueType()
+	 * @generated
+	 */
+	int META_VALUE_TYPE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_VALUE_TYPE__MIXED = 0;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1609,16 +1618,16 @@ public interface DroolsPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int METAENTRY_TYPE__VALUE = 1;
+	int META_VALUE_TYPE__VALUE = 1;
 
 	/**
-	 * The number of structural features of the '<em>Metaentry Type</em>' class.
+	 * The number of structural features of the '<em>Meta Value Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int METAENTRY_TYPE_FEATURE_COUNT = 2;
+	int META_VALUE_TYPE_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.OnEntryScriptTypeImpl <em>On Entry Script Type</em>}' class.
@@ -1732,7 +1741,7 @@ public interface DroolsPackage extends EPackage {
 	int BP_SIM_DATA_TYPE_FEATURE_COUNT = BpsimPackage.BP_SIM_DATA_TYPE_FEATURE_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl <em>Callable Element Proxy</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl <em>External Process</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl
@@ -1823,7 +1832,7 @@ public interface DroolsPackage extends EPackage {
 	int EXTERNAL_PROCESS__NAME = Bpmn2Package.CALLABLE_ELEMENT__NAME;
 
 	/**
-	 * The number of structural features of the '<em>Callable Element Proxy</em>' class.
+	 * The number of structural features of the '<em>External Process</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1915,26 +1924,26 @@ public interface DroolsPackage extends EPackage {
 	EReference getDocumentRoot_ImportType();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetadata <em>Metadata</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaData <em>Meta Data</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Metadata</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetadata()
+	 * @return the meta object for the containment reference '<em>Meta Data</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaData()
 	 * @see #getDocumentRoot()
 	 * @generated
 	 */
-	EReference getDocumentRoot_Metadata();
+	EReference getDocumentRoot_MetaData();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaentry <em>Metaentry</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaValue <em>Meta Value</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Metaentry</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaentry()
+	 * @return the meta object for the containment reference '<em>Meta Value</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaValue()
 	 * @see #getDocumentRoot()
 	 * @generated
 	 */
-	EReference getDocumentRoot_Metaentry();
+	EReference getDocumentRoot_MetaValue();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getOnEntryScript <em>On Entry Script</em>}'.
@@ -2078,57 +2087,68 @@ public interface DroolsPackage extends EPackage {
 	EAttribute getImportType_Name();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType <em>Metadata Type</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType <em>Meta Data Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Metadata Type</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType
+	 * @return the meta object for class '<em>Meta Data Type</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType
 	 * @generated
 	 */
-	EClass getMetadataType();
+	EClass getMetaDataType();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType#getMetaentry <em>Metaentry</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Metaentry</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType#getMetaentry()
-	 * @see #getMetadataType()
-	 * @generated
-	 */
-	EReference getMetadataType_Metaentry();
-
-	/**
-	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType <em>Metaentry Type</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Metaentry Type</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType
-	 * @generated
-	 */
-	EClass getMetaentryType();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType#getName <em>Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType#getName <em>Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType#getName()
-	 * @see #getMetaentryType()
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType#getName()
+	 * @see #getMetaDataType()
 	 * @generated
 	 */
-	EAttribute getMetaentryType_Name();
+	EAttribute getMetaDataType_Name();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType#getValue <em>Value</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType#getMetaValue <em>Meta Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Meta Value</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType#getMetaValue()
+	 * @see #getMetaDataType()
+	 * @generated
+	 */
+	EReference getMetaDataType_MetaValue();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType <em>Meta Value Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Meta Value Type</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType
+	 * @generated
+	 */
+	EClass getMetaValueType();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType#getMixed <em>Mixed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Mixed</em>'.
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType#getMixed()
+	 * @see #getMetaValueType()
+	 * @generated
+	 */
+	EAttribute getMetaValueType_Mixed();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType#getValue <em>Value</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Value</em>'.
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType#getValue()
-	 * @see #getMetaentryType()
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType#getValue()
+	 * @see #getMetaValueType()
 	 * @generated
 	 */
-	EAttribute getMetaentryType_Value();
+	EAttribute getMetaValueType_Value();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType <em>On Entry Script Type</em>}'.
@@ -2205,10 +2225,10 @@ public interface DroolsPackage extends EPackage {
 	EClass getBPSimDataType();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess <em>Callable Element Proxy</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess <em>External Process</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Callable Element Proxy</em>'.
+	 * @return the meta object for class '<em>External Process</em>'.
 	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProcess
 	 * @generated
 	 */
@@ -2323,20 +2343,20 @@ public interface DroolsPackage extends EPackage {
 		EReference DOCUMENT_ROOT__IMPORT_TYPE = eINSTANCE.getDocumentRoot_ImportType();
 
 		/**
-		 * The meta object literal for the '<em><b>Metadata</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Meta Data</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference DOCUMENT_ROOT__METADATA = eINSTANCE.getDocumentRoot_Metadata();
+		EReference DOCUMENT_ROOT__META_DATA = eINSTANCE.getDocumentRoot_MetaData();
 
 		/**
-		 * The meta object literal for the '<em><b>Metaentry</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Meta Value</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference DOCUMENT_ROOT__METAENTRY = eINSTANCE.getDocumentRoot_Metaentry();
+		EReference DOCUMENT_ROOT__META_VALUE = eINSTANCE.getDocumentRoot_MetaValue();
 
 		/**
 		 * The meta object literal for the '<em><b>On Entry Script</b></em>' containment reference feature.
@@ -2447,32 +2467,14 @@ public interface DroolsPackage extends EPackage {
 		EAttribute IMPORT_TYPE__NAME = eINSTANCE.getImportType_Name();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetadataTypeImpl <em>Metadata Type</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaDataTypeImpl <em>Meta Data Type</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetadataTypeImpl
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetadataType()
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaDataTypeImpl
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaDataType()
 		 * @generated
 		 */
-		EClass METADATA_TYPE = eINSTANCE.getMetadataType();
-
-		/**
-		 * The meta object literal for the '<em><b>Metaentry</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference METADATA_TYPE__METAENTRY = eINSTANCE.getMetadataType_Metaentry();
-
-		/**
-		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaentryTypeImpl <em>Metaentry Type</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaentryTypeImpl
-		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaentryType()
-		 * @generated
-		 */
-		EClass METAENTRY_TYPE = eINSTANCE.getMetaentryType();
+		EClass META_DATA_TYPE = eINSTANCE.getMetaDataType();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -2480,7 +2482,33 @@ public interface DroolsPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute METAENTRY_TYPE__NAME = eINSTANCE.getMetaentryType_Name();
+		EAttribute META_DATA_TYPE__NAME = eINSTANCE.getMetaDataType_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Meta Value</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference META_DATA_TYPE__META_VALUE = eINSTANCE.getMetaDataType_MetaValue();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaValueTypeImpl <em>Meta Value Type</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.MetaValueTypeImpl
+		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.DroolsPackageImpl#getMetaValueType()
+		 * @generated
+		 */
+		EClass META_VALUE_TYPE = eINSTANCE.getMetaValueType();
+
+		/**
+		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute META_VALUE_TYPE__MIXED = eINSTANCE.getMetaValueType_Mixed();
 
 		/**
 		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
@@ -2488,7 +2516,7 @@ public interface DroolsPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute METAENTRY_TYPE__VALUE = eINSTANCE.getMetaentryType_Value();
+		EAttribute META_VALUE_TYPE__VALUE = eINSTANCE.getMetaValueType_Value();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.OnEntryScriptTypeImpl <em>On Entry Script Type</em>}' class.
@@ -2553,7 +2581,7 @@ public interface DroolsPackage extends EPackage {
 		EClass BP_SIM_DATA_TYPE = eINSTANCE.getBPSimDataType();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl <em>Callable Element Proxy</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl <em>External Process</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.impl.ExternalProcessImpl

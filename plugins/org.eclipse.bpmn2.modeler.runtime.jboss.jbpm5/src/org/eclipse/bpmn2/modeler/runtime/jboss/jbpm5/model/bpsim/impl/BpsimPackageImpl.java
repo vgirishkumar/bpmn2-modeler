@@ -2729,77 +2729,77 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 	 * @generated
 	 */
 	protected void createExtendedMetaDataAnnotations() {
-		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData";		
+		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData";	
 		addAnnotation
 		  (betaDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "BetaDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getBetaDistributionType_Scale(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "scale"
-		   });		
+		   });	
 		addAnnotation
 		  (getBetaDistributionType_Shape(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "shape"
-		   });		
+		   });	
 		addAnnotation
 		  (binomialDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "BinomialDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getBinomialDistributionType_Probability(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "probability"
-		   });		
+		   });	
 		addAnnotation
 		  (getBinomialDistributionType_Trials(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "trials"
-		   });		
+		   });	
 		addAnnotation
 		  (booleanParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "BooleanParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getBooleanParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (bpSimDataTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "BPSimData_._type",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getBPSimDataType_Group(), 
 		   source, 
 		   new String[] {
 			 "kind", "group",
 			 "name", "group:0"
-		   });		
+		   });	
 		addAnnotation
 		  (getBPSimDataType_Scenario(), 
 		   source, 
@@ -2808,49 +2808,49 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "Scenario",
 			 "namespace", "##targetNamespace",
 			 "group", "#group:0"
-		   });		
+		   });	
 		addAnnotation
 		  (calendarEClass, 
 		   source, 
 		   new String[] {
 			 "name", "Calendar",
 			 "kind", "simple"
-		   });		
+		   });	
 		addAnnotation
 		  (getCalendar_Value(), 
 		   source, 
 		   new String[] {
 			 "name", ":0",
 			 "kind", "simple"
-		   });		
+		   });	
 		addAnnotation
 		  (getCalendar_Id(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "id"
-		   });		
+		   });	
 		addAnnotation
 		  (getCalendar_Name(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "name"
-		   });		
+		   });	
 		addAnnotation
 		  (constantParameterEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ConstantParameter",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (controlParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ControlParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getControlParameters_Probability(), 
 		   source, 
@@ -2858,7 +2858,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Probability",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getControlParameters_Condition(), 
 		   source, 
@@ -2866,7 +2866,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Condition",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getControlParameters_InterTriggerTimer(), 
 		   source, 
@@ -2874,7 +2874,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "InterTriggerTimer",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getControlParameters_TriggerCount(), 
 		   source, 
@@ -2882,14 +2882,14 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "TriggerCount",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (costParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "CostParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getCostParameters_FixedCost(), 
 		   source, 
@@ -2897,7 +2897,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "FixedCost",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getCostParameters_UnitCost(), 
 		   source, 
@@ -2905,70 +2905,70 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "UnitCost",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (dateTimeParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "DateTimeParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getDateTimeParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (distributionParameterEClass, 
 		   source, 
 		   new String[] {
 			 "name", "DistributionParameter",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getDistributionParameter_CurrencyUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "currencyUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getDistributionParameter_TimeUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "timeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (documentRootEClass, 
 		   source, 
 		   new String[] {
 			 "name", "",
 			 "kind", "mixed"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_Mixed(), 
 		   source, 
 		   new String[] {
 			 "kind", "elementWildcard",
 			 "name", ":mixed"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_XMLNSPrefixMap(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "xmlns:prefix"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_XSISchemaLocation(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "xsi:schemaLocation"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_BetaDistribution(), 
 		   source, 
@@ -2977,7 +2977,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "BetaDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_ParameterValue(), 
 		   source, 
@@ -2985,7 +2985,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ParameterValue",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_BinomialDistribution(), 
 		   source, 
@@ -2994,7 +2994,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "BinomialDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_BooleanParameter(), 
 		   source, 
@@ -3003,7 +3003,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "BooleanParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_BPSimData(), 
 		   source, 
@@ -3011,7 +3011,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "BPSimData",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_DateTimeParameter(), 
 		   source, 
@@ -3020,7 +3020,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "DateTimeParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_DurationParameter(), 
 		   source, 
@@ -3029,7 +3029,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "DurationParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_EnumParameter(), 
 		   source, 
@@ -3038,7 +3038,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "EnumParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_ErlangDistribution(), 
 		   source, 
@@ -3047,7 +3047,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ErlangDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_ExpressionParameter(), 
 		   source, 
@@ -3056,7 +3056,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ExpressionParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_FloatingParameter(), 
 		   source, 
@@ -3065,7 +3065,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "FloatingParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_GammaDistribution(), 
 		   source, 
@@ -3074,7 +3074,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "GammaDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_LogNormalDistribution(), 
 		   source, 
@@ -3083,7 +3083,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "LogNormalDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_NegativeExponentialDistribution(), 
 		   source, 
@@ -3092,7 +3092,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "NegativeExponentialDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_NormalDistribution(), 
 		   source, 
@@ -3101,7 +3101,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "NormalDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_NumericParameter(), 
 		   source, 
@@ -3110,7 +3110,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "NumericParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_PoissonDistribution(), 
 		   source, 
@@ -3119,7 +3119,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "PoissonDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_StringParameter(), 
 		   source, 
@@ -3128,7 +3128,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "StringParameter",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_TriangularDistribution(), 
 		   source, 
@@ -3137,7 +3137,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "TriangularDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_TruncatedNormalDistribution(), 
 		   source, 
@@ -3146,7 +3146,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "TruncatedNormalDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_UniformDistribution(), 
 		   source, 
@@ -3155,7 +3155,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "UniformDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_UserDistribution(), 
 		   source, 
@@ -3164,7 +3164,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "UserDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_UserDistributionDataPoint(), 
 		   source, 
@@ -3172,7 +3172,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "UserDistributionDataPoint",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_WeibullDistribution(), 
 		   source, 
@@ -3181,28 +3181,28 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "WeibullDistribution",
 			 "namespace", "##targetNamespace",
 			 "affiliation", "ParameterValue"
-		   });		
+		   });	
 		addAnnotation
 		  (durationParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "DurationParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getDurationParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (elementParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ElementParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_TimeParameters(), 
 		   source, 
@@ -3210,7 +3210,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "TimeParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_ControlParameters(), 
 		   source, 
@@ -3218,7 +3218,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ControlParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_ResourceParameters(), 
 		   source, 
@@ -3226,7 +3226,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ResourceParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_PriorityParameters(), 
 		   source, 
@@ -3234,7 +3234,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "PriorityParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_CostParameters(), 
 		   source, 
@@ -3242,7 +3242,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "CostParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_PropertyParameters(), 
 		   source, 
@@ -3250,7 +3250,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "PropertyParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_VendorExtension(), 
 		   source, 
@@ -3258,42 +3258,42 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "VendorExtension",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_ElementRef(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "elementRef"
-		   });		
+		   });	
 		addAnnotation
 		  (getElementParameters_Id(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "id"
-		   });		
+		   });	
 		addAnnotation
 		  (elementParametersTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ElementParametersType",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (enumParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "EnumParameter_._type",
 			 "kind", "elementOnly"
-		   });			
+		   });	
 		addAnnotation
 		  (getEnumParameterType_Group(), 
 		   source, 
 		   new String[] {
 			 "kind", "group",
 			 "name", "group:3"
-		   });		
+		   });	
 		addAnnotation
 		  (getEnumParameterType_ParameterValueGroup(), 
 		   source, 
@@ -3302,7 +3302,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ParameterValue:group",
 			 "namespace", "##targetNamespace",
 			 "group", "#group:3"
-		   });		
+		   });	
 		addAnnotation
 		  (getEnumParameterType_ParameterValue(), 
 		   source, 
@@ -3311,182 +3311,182 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ParameterValue",
 			 "namespace", "##targetNamespace",
 			 "group", "ParameterValue:group"
-		   });		
+		   });	
 		addAnnotation
 		  (erlangDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ErlangDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getErlangDistributionType_K(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "k"
-		   });		
+		   });	
 		addAnnotation
 		  (getErlangDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (expressionParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ExpressionParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getExpressionParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (floatingParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "FloatingParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getFloatingParameterType_CurrencyUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "currencyUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getFloatingParameterType_TimeUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "timeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getFloatingParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (gammaDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "GammaDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getGammaDistributionType_Scale(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "scale"
-		   });		
+		   });	
 		addAnnotation
 		  (getGammaDistributionType_Shape(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "shape"
-		   });		
+		   });	
 		addAnnotation
 		  (logNormalDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "LogNormalDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getLogNormalDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (getLogNormalDistributionType_StandardDeviation(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "standardDeviation"
-		   });		
+		   });	
 		addAnnotation
 		  (negativeExponentialDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "NegativeExponentialDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getNegativeExponentialDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (normalDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "NormalDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getNormalDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (getNormalDistributionType_StandardDeviation(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "standardDeviation"
-		   });		
+		   });	
 		addAnnotation
 		  (numericParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "NumericParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getNumericParameterType_CurrencyUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "currencyUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getNumericParameterType_TimeUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "timeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getNumericParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (parameterEClass, 
 		   source, 
 		   new String[] {
 			 "name", "Parameter",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameter_ResultRequest(), 
 		   source, 
@@ -3494,7 +3494,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ResultRequest",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameter_ParameterValueGroup(), 
 		   source, 
@@ -3502,7 +3502,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "group",
 			 "name", "ParameterValue:group",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameter_ParameterValue(), 
 		   source, 
@@ -3511,70 +3511,70 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ParameterValue",
 			 "namespace", "##targetNamespace",
 			 "group", "ParameterValue:group"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameter_Kpi(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "kpi"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameter_Sla(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "sla"
-		   });		
+		   });	
 		addAnnotation
 		  (parameterValueEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ParameterValue",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameterValue_Instance(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "instance"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameterValue_Result(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "result"
-		   });		
+		   });	
 		addAnnotation
 		  (getParameterValue_ValidFor(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "validFor"
-		   });		
+		   });	
 		addAnnotation
 		  (poissonDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "PoissonDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getPoissonDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (priorityParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "PriorityParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getPriorityParameters_Interruptible(), 
 		   source, 
@@ -3582,7 +3582,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Interruptible",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getPriorityParameters_Priority(), 
 		   source, 
@@ -3590,14 +3590,14 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Priority",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (propertyParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "PropertyParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getPropertyParameters_Property(), 
 		   source, 
@@ -3605,28 +3605,28 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Property",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (propertyTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "Property_._type",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getPropertyType_Name(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "name"
-		   });		
+		   });	
 		addAnnotation
 		  (resourceParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ResourceParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getResourceParameters_Selection(), 
 		   source, 
@@ -3634,7 +3634,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Selection",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getResourceParameters_Availability(), 
 		   source, 
@@ -3642,7 +3642,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Availability",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getResourceParameters_Quantity(), 
 		   source, 
@@ -3650,7 +3650,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Quantity",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getResourceParameters_Role(), 
 		   source, 
@@ -3658,27 +3658,27 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Role",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (resultTypeEEnum, 
 		   source, 
 		   new String[] {
 			 "name", "ResultType"
-		   });		
+		   });	
 		addAnnotation
 		  (resultTypeObjectEDataType, 
 		   source, 
 		   new String[] {
 			 "name", "ResultType:Object",
 			 "baseType", "ResultType"
-		   });		
+		   });	
 		addAnnotation
 		  (scenarioEClass, 
 		   source, 
 		   new String[] {
 			 "name", "Scenario",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_ScenarioParameters(), 
 		   source, 
@@ -3686,7 +3686,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ScenarioParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_ElementParameters(), 
 		   source, 
@@ -3694,7 +3694,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ElementParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Calendar(), 
 		   source, 
@@ -3702,7 +3702,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Calendar",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_VendorExtension(), 
 		   source, 
@@ -3710,84 +3710,84 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "VendorExtension",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Author(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "author"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Created(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "created"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Description(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "description"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Id(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "id"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Inherits(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "inherits"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Modified(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "modified"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Name(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "name"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Result(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "result"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Vendor(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "vendor"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenario_Version(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "version"
-		   });		
+		   });	
 		addAnnotation
 		  (scenarioParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ScenarioParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_Start(), 
 		   source, 
@@ -3795,7 +3795,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Start",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_Duration(), 
 		   source, 
@@ -3803,7 +3803,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "Duration",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_PropertyParameters(), 
 		   source, 
@@ -3811,63 +3811,63 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "PropertyParameters",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_BaseCurrencyUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "baseCurrencyUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_BaseTimeUnit(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "baseTimeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_Replication(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "replication"
-		   });		
+		   });	
 		addAnnotation
 		  (getScenarioParameters_Seed(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "seed"
-		   });		
+		   });	
 		addAnnotation
 		  (scenarioParametersTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "ScenarioParameters_._type",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (stringParameterTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "StringParameter_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getStringParameterType_Value(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "value"
-		   });		
+		   });	
 		addAnnotation
 		  (timeParametersEClass, 
 		   source, 
 		   new String[] {
 			 "name", "TimeParameters",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_TransferTime(), 
 		   source, 
@@ -3875,7 +3875,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "TransferTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_QueueTime(), 
 		   source, 
@@ -3883,7 +3883,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "QueueTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_WaitTime(), 
 		   source, 
@@ -3891,7 +3891,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "WaitTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_SetUpTime(), 
 		   source, 
@@ -3899,7 +3899,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "SetUpTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_ProcessingTime(), 
 		   source, 
@@ -3907,7 +3907,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ProcessingTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_ValidationTime(), 
 		   source, 
@@ -3915,7 +3915,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ValidationTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getTimeParameters_ReworkTime(), 
 		   source, 
@@ -3923,111 +3923,111 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "element",
 			 "name", "ReworkTime",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (timeUnitEEnum, 
 		   source, 
 		   new String[] {
 			 "name", "TimeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (timeUnitObjectEDataType, 
 		   source, 
 		   new String[] {
 			 "name", "TimeUnit:Object",
 			 "baseType", "TimeUnit"
-		   });		
+		   });	
 		addAnnotation
 		  (triangularDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "TriangularDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getTriangularDistributionType_Max(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "max"
-		   });		
+		   });	
 		addAnnotation
 		  (getTriangularDistributionType_Min(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "min"
-		   });		
+		   });	
 		addAnnotation
 		  (getTriangularDistributionType_Mode(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mode"
-		   });		
+		   });	
 		addAnnotation
 		  (truncatedNormalDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "TruncatedNormalDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getTruncatedNormalDistributionType_Max(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "max"
-		   });		
+		   });	
 		addAnnotation
 		  (getTruncatedNormalDistributionType_Mean(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "mean"
-		   });		
+		   });	
 		addAnnotation
 		  (getTruncatedNormalDistributionType_Min(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "min"
-		   });		
+		   });	
 		addAnnotation
 		  (getTruncatedNormalDistributionType_StandardDeviation(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "standardDeviation"
-		   });		
+		   });	
 		addAnnotation
 		  (uniformDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "UniformDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getUniformDistributionType_Max(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "max"
-		   });		
+		   });	
 		addAnnotation
 		  (getUniformDistributionType_Min(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "min"
-		   });		
+		   });	
 		addAnnotation
 		  (userDistributionDataPointTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "UserDistributionDataPoint_._type",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionDataPointType_ParameterValueGroup(), 
 		   source, 
@@ -4035,7 +4035,7 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "kind", "group",
 			 "name", "ParameterValue:group",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionDataPointType_ParameterValue(), 
 		   source, 
@@ -4044,28 +4044,28 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "ParameterValue",
 			 "namespace", "##targetNamespace",
 			 "group", "ParameterValue:group"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionDataPointType_Probability(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "probability"
-		   });		
+		   });	
 		addAnnotation
 		  (userDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "UserDistribution_._type",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionType_Group(), 
 		   source, 
 		   new String[] {
 			 "kind", "group",
 			 "name", "group:5"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionType_UserDistributionDataPoint(), 
 		   source, 
@@ -4074,21 +4074,21 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "name", "UserDistributionDataPoint",
 			 "namespace", "##targetNamespace",
 			 "group", "#group:5"
-		   });		
+		   });	
 		addAnnotation
 		  (getUserDistributionType_Discrete(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "discrete"
-		   });		
+		   });	
 		addAnnotation
 		  (vendorExtensionEClass, 
 		   source, 
 		   new String[] {
 			 "name", "VendorExtension",
 			 "kind", "elementOnly"
-		   });		
+		   });	
 		addAnnotation
 		  (getVendorExtension_Any(), 
 		   source, 
@@ -4097,14 +4097,14 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "wildcards", "##other",
 			 "name", ":0",
 			 "processing", "strict"
-		   });		
+		   });	
 		addAnnotation
 		  (getVendorExtension_Name(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "name"
-		   });		
+		   });	
 		addAnnotation
 		  (getVendorExtension_AnyAttribute(), 
 		   source, 
@@ -4113,21 +4113,21 @@ public class BpsimPackageImpl extends EPackageImpl implements BpsimPackage {
 			 "wildcards", "##other",
 			 "name", ":2",
 			 "processing", "strict"
-		   });		
+		   });	
 		addAnnotation
 		  (weibullDistributionTypeEClass, 
 		   source, 
 		   new String[] {
 			 "name", "WeibullDistribution_._type",
 			 "kind", "empty"
-		   });		
+		   });	
 		addAnnotation
 		  (getWeibullDistributionType_Scale(), 
 		   source, 
 		   new String[] {
 			 "kind", "attribute",
 			 "name", "scale"
-		   });		
+		   });	
 		addAnnotation
 		  (getWeibullDistributionType_Shape(), 
 		   source, 

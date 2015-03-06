@@ -255,11 +255,11 @@ public class CalendarImpl extends EObjectImpl implements Calendar {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (value: "); //$NON-NLS-1$
+		result.append(" (value: ");
 		result.append(value);
-		result.append(", id: "); //$NON-NLS-1$
+		result.append(", id: ");
 		result.append(id);
-		result.append(", name: "); //$NON-NLS-1$
+		result.append(", name: ");
 		result.append(name);
 		result.append(')');
 		return result.toString();

@@ -624,14 +624,14 @@ public class ScenarioParametersImpl extends EObjectImpl implements ScenarioParam
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (baseCurrencyUnit: "); //$NON-NLS-1$
+		result.append(" (baseCurrencyUnit: ");
 		result.append(baseCurrencyUnit);
-		result.append(", baseTimeUnit: "); //$NON-NLS-1$
-		if (baseTimeUnitESet) result.append(baseTimeUnit); else result.append("<unset>"); //$NON-NLS-1$
-		result.append(", replication: "); //$NON-NLS-1$
-		if (replicationESet) result.append(replication); else result.append("<unset>"); //$NON-NLS-1$
-		result.append(", seed: "); //$NON-NLS-1$
-		if (seedESet) result.append(seed); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(", baseTimeUnit: ");
+		if (baseTimeUnitESet) result.append(baseTimeUnit); else result.append("<unset>");
+		result.append(", replication: ");
+		if (replicationESet) result.append(replication); else result.append("<unset>");
+		result.append(", seed: ");
+		if (seedESet) result.append(seed); else result.append("<unset>");
 		result.append(')');
 		return result.toString();
 	}

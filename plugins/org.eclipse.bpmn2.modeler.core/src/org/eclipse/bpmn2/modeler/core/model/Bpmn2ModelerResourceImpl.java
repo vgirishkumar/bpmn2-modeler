@@ -1128,28 +1128,31 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 			if (f == Bpmn2Package.eINSTANCE.getBaseElement_ExtensionValues()) {
 				// check if this element is (or should be) empty
-				boolean shouldSave = true;
+				int entryCount = 0;
 				for (ExtensionAttributeValue ev : (EList<ExtensionAttributeValue>)o.eGet(f)) {
 					BasicFeatureMap map = (BasicFeatureMap) ev.getValue();
 					Iterator<FeatureMap.Entry> mi = map.iterator();
 					while (mi.hasNext()) {
 						FeatureMap.Entry entry = mi.next();
 						Object v = entry.getValue();
+						boolean entryCounted = false;
 						if (v instanceof EObject) {
 							Iterator<Adapter> ai = ((EObject)v).eAdapters().iterator();
 							while (ai.hasNext()) {
 								Adapter a = ai.next();
 								if (a instanceof IExtensionValueAdapter) {
-									if (!((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
-										shouldSave = false;
-										break;
+									if (((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
+										++entryCount;
 									}
+									entryCounted = true;
 								}
 							}
 						}
+						if (!entryCounted)
+							++entryCount;
 					}
 				}
-				return shouldSave;
+				return entryCount>0;
 			}
 			
 			Iterator<Adapter> ai = o.eAdapters().iterator();

@@ -10,6 +10,28 @@
       </package>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated drools -->
+      <parser
+            type="drools"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.util.DroolsResourceFactoryImpl"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated drools -->
+      <package
+            uri="http://www.bpsim.org/schemas/1.0"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BpsimPackage"
+            genModel="model/drools.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated drools -->
+      <parser
+            type="bpsim"
+            class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.util.BpsimResourceFactoryImpl"/>
+   </extension>
+
 	<extension point="org.eclipse.bpmn2.modeler.runtime">
 		<runtime name="%runtime.name" versions="5.1,5.2,5.3"
 			id="org.jboss.runtime.jbpm5"
@@ -942,6 +964,8 @@
 			<enable object="Message" feature="id"/>
 			<enable object="Message" feature="itemRef"/>
 			<enable object="MessageEventDefinition" feature="messageRef"/>
+			<enable object="MetaDataType" feature="name"/>
+			<enable object="MetaValueType" feature="value"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="inputDataItem"/>
 			<enable object="MultiInstanceLoopCharacteristics" feature="loopDataInputRef"/>
 			<enable object="OnEntryScriptType"/>

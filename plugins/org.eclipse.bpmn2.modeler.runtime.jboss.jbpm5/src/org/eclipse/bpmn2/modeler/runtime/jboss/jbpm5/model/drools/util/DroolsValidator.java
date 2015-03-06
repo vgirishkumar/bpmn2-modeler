@@ -10,8 +10,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.common.util.DiagnosticChain;
@@ -107,10 +107,10 @@ public class DroolsValidator extends EObjectValidator {
 				return validateGlobalType((GlobalType)value, diagnostics, context);
 			case DroolsPackage.IMPORT_TYPE:
 				return validateImportType((ImportType)value, diagnostics, context);
-			case DroolsPackage.METADATA_TYPE:
-				return validateMetadataType((MetadataType)value, diagnostics, context);
-			case DroolsPackage.METAENTRY_TYPE:
-				return validateMetaentryType((MetaentryType)value, diagnostics, context);
+			case DroolsPackage.META_DATA_TYPE:
+				return validateMetaDataType((MetaDataType)value, diagnostics, context);
+			case DroolsPackage.META_VALUE_TYPE:
+				return validateMetaValueType((MetaValueType)value, diagnostics, context);
 			case DroolsPackage.ON_ENTRY_SCRIPT_TYPE:
 				return validateOnEntryScriptType((OnEntryScriptType)value, diagnostics, context);
 			case DroolsPackage.ON_EXIT_SCRIPT_TYPE:
@@ -166,8 +166,8 @@ public class DroolsValidator extends EObjectValidator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean validateMetadataType(MetadataType metadataType, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		return validate_EveryDefaultConstraint(metadataType, diagnostics, context);
+	public boolean validateMetaDataType(MetaDataType metaDataType, DiagnosticChain diagnostics, Map<Object, Object> context) {
+		return validate_EveryDefaultConstraint(metaDataType, diagnostics, context);
 	}
 
 	/**
@@ -175,8 +175,8 @@ public class DroolsValidator extends EObjectValidator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean validateMetaentryType(MetaentryType metaentryType, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		return validate_EveryDefaultConstraint(metaentryType, diagnostics, context);
+	public boolean validateMetaValueType(MetaValueType metaValueType, DiagnosticChain diagnostics, Map<Object, Object> context) {
+		return validate_EveryDefaultConstraint(metaValueType, diagnostics, context);
 	}
 
 	/**
@@ -211,8 +211,8 @@ public class DroolsValidator extends EObjectValidator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean validateExternalProcess(ExternalProcess callableElementProxy, DiagnosticChain diagnostics, Map<Object, Object> context) {
-		return validate_EveryDefaultConstraint(callableElementProxy, diagnostics, context);
+	public boolean validateExternalProcess(ExternalProcess externalProcess, DiagnosticChain diagnostics, Map<Object, Object> context) {
+		return validate_EveryDefaultConstraint(externalProcess, diagnostics, context);
 	}
 
 	/**

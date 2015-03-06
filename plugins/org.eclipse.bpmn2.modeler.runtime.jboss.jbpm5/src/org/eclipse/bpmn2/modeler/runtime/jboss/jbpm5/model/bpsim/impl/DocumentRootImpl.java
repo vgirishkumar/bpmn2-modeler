@@ -60,7 +60,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getDurationParameter <em>Duration Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getEnumParameter <em>Enum Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getErlangDistribution <em>Erlang Distribution</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getExpressionParameter <em>SingleAssignment Parameter</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getExpressionParameter <em>Expression Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getFloatingParameter <em>Floating Parameter</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getGammaDistribution <em>Gamma Distribution</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.impl.DocumentRootImpl#getLogNormalDistribution <em>Log Normal Distribution</em>}</li>
@@ -1211,7 +1211,7 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (mixed: "); //$NON-NLS-1$
+		result.append(" (mixed: ");
 		result.append(mixed);
 		result.append(')');
 		return result.toString();

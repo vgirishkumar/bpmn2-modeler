@@ -15,8 +15,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.bpsim.BPSimDataType;
  * <ul>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getGlobal <em>Global</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getImportType <em>Import Type</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetadata <em>Metadata</em>}</li>
- *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaentry <em>Metaentry</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaData <em>Meta Data</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaValue <em>Meta Value</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getOnEntryScript <em>On Entry Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getOnExitScript <em>On Exit Script</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getBpsimData <em>Bpsim Data</em>}</li>
@@ -88,58 +88,58 @@ public interface DocumentRoot extends org.eclipse.bpmn2.DocumentRoot {
 	void setImportType(ImportType value);
 
 	/**
-	 * Returns the value of the '<em><b>Metadata</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Meta Data</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Metadata</em>' containment reference isn't clear,
+	 * If the meaning of the '<em>MetaData</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Metadata</em>' containment reference.
-	 * @see #setMetadata(MetadataType)
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_Metadata()
+	 * @return the value of the '<em>Meta Data</em>' containment reference.
+	 * @see #setMetaData(MetaDataType)
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_MetaData()
 	 * @model containment="true" upper="-2" transient="true" volatile="true" derived="true"
-	 *        extendedMetaData="kind='element' name='metadata' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='element' name='metaData' namespace='##targetNamespace'"
 	 * @generated
 	 */
-	MetadataType getMetadata();
+	MetaDataType getMetaData();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetadata <em>Metadata</em>}' containment reference.
+	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaData <em>Meta Data</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Metadata</em>' containment reference.
-	 * @see #getMetadata()
+	 * @param value the new value of the '<em>Meta Data</em>' containment reference.
+	 * @see #getMetaData()
 	 * @generated
 	 */
-	void setMetadata(MetadataType value);
+	void setMetaData(MetaDataType value);
 
 	/**
-	 * Returns the value of the '<em><b>Metaentry</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Meta Value</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Metaentry</em>' containment reference isn't clear,
+	 * If the meaning of the '<em>MetaValue</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Metaentry</em>' containment reference.
-	 * @see #setMetaentry(MetaentryType)
-	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_Metaentry()
+	 * @return the value of the '<em>Meta Value</em>' containment reference.
+	 * @see #setMetaValue(MetaValueType)
+	 * @see org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage#getDocumentRoot_MetaValue()
 	 * @model containment="true" upper="-2" transient="true" volatile="true" derived="true"
-	 *        extendedMetaData="kind='element' name='metaentry' namespace='##targetNamespace'"
+	 *        extendedMetaData="kind='element' name='metaValue' namespace='##targetNamespace'"
 	 * @generated
 	 */
-	MetaentryType getMetaentry();
+	MetaValueType getMetaValue();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaentry <em>Metaentry</em>}' containment reference.
+	 * Sets the value of the '{@link org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot#getMetaValue <em>Meta Value</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Metaentry</em>' containment reference.
-	 * @see #getMetaentry()
+	 * @param value the new value of the '<em>Meta Value</em>' containment reference.
+	 * @see #getMetaValue()
 	 * @generated
 	 */
-	void setMetaentry(MetaentryType value);
+	void setMetaValue(MetaValueType value);
 
 	/**
 	 * Returns the value of the '<em><b>On Entry Script</b></em>' containment reference.

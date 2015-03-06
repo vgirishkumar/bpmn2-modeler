@@ -23,11 +23,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.DataInputAssociation;
-import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataOutput;
-import org.eclipse.bpmn2.Error;
-import org.eclipse.bpmn2.Escalation;
 import org.eclipse.bpmn2.Event;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.Gateway;
@@ -40,9 +36,7 @@ import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
 import org.eclipse.bpmn2.SequenceFlow;
-import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.Task;
-import org.eclipse.bpmn2.UserTask;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
@@ -52,11 +46,11 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskImageProvider;
 import org.eclipse.bpmn2.modeler.core.runtime.ModelExtensionDescriptor.Property;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
-import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmActivityDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataAssociationDetailComposite;
@@ -80,18 +74,19 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDException;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WIDHandler;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.wid.WorkItemDefinition;
 import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension.RootElementParser;
+import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.xml.sax.InputSource;
@@ -164,13 +159,16 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			// TODO: if file was opened from a Guvnor Repository view (or git in jBPM 6)
 			// we may want to explicitly make the editor read-only
 	
-			IProject project = Bpmn2Preferences.getActiveProject();
-			if (project != null) {
+			IFile inputFile = ((BPMN2Editor) event.target).getModelFile();
+			if (inputFile!=null) {
+				IContainer folder = inputFile.getParent();
+
+				// initialize workItemDefinitions list if necessary
 				getWorkItemDefinitions();
 				workItemDefinitions.clear();
 				try {
 					final WIDResourceVisitor visitor = new WIDResourceVisitor();
-					project.accept(visitor, IResource.DEPTH_INFINITE, false);
+					folder.accept(visitor, IResource.DEPTH_INFINITE, false);
 					if (visitor.getWIDFiles().size() > 0) {
 						Iterator<IFile> fileIter = visitor.getWIDFiles().iterator();
 						while (fileIter.hasNext()) {
@@ -200,12 +198,11 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 										public void run() {
 											MessageDialog.openError(Display.getDefault().getActiveShell(),
 													Messages.JBPM5RuntimeExtension_Duplicate_Task_Title,
-													Messages.JBPM5RuntimeExtension_Duplicate_Task_Message+
-													ctd.getId()+
-													"' was already defined.\n"+ //$NON-NLS-1$
-													"The new Custom Task defined in the file: "+ //$NON-NLS-1$
-													wid.getDefinitionFile().getFullPath().toString()+"\n"+ //$NON-NLS-1$
-													"will be ignored."); //$NON-NLS-1$
+													NLS.bind(
+														Messages.JBPM5RuntimeExtension_Duplicate_Task_Message,
+														ctd.getId(),
+														wid.getDefinitionFile().getFullPath().toString())
+												);
 										}
 									});
 								}
@@ -226,17 +223,10 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 			// Add a name change adapter to every one of these objects.
 			// See my rant in ProcessVariableNameChangeAdapter...
 			if (ProcessVariableNameChangeAdapter.appliesTo(object)) {
-				boolean found = false;
-				for (Adapter a : ((EObject)object).eAdapters()) {
-					if (a instanceof ProcessVariableNameChangeAdapter) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
-					object.eAdapters().add(a);
-				}
+				ProcessVariableNameChangeAdapter.adapt(object);
+			}
+			else if (MetaDataTypeAdapter.appliesTo(object)) {
+				MetaDataTypeAdapter.adapt(object);
 			}
 		}
 	}
