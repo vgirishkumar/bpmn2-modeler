@@ -13,13 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.core.adapters;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
 /**
  *
  */
-public interface IExtensionValueAdapter {
+public interface IExtensionValueAdapter extends Adapter {
 
 	public boolean shouldSaveElement(EObject o);
 	public boolean shouldSaveFeature(EObject o, EStructuralFeature f);

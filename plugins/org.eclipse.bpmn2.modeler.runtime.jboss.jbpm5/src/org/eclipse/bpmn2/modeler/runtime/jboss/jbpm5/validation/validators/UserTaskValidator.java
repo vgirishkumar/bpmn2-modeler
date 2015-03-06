@@ -89,12 +89,12 @@ public class UserTaskValidator extends AbstractBpmn2ElementValidator<UserTask> {
 				Bpmn2FeatureMap extensionElements = extattrval.getValue();
 				if (extensionElements!=null) {
 					@SuppressWarnings("unchecked")
-					List<MetadataType> metadataTypeExtensions = (List<MetadataType>) extensionElements.get(
+					List<MetaDataType> metaDataTypeExtensions = (List<MetaDataType>) extensionElements.get(
 							DroolsPackage.Literals.DOCUMENT_ROOT__METADATA, true);
-					if (metadataTypeExtensions != null && metadataTypeExtensions.size() > 0) {
-						MetadataType metaType = metadataTypeExtensions.get(0);
-						for (Object metaEntryObj : metaType.getMetaentry()) {
-							MetaentryType entry = (MetaentryType) metaEntryObj;
+					if (metaDataTypeExtensions != null && metaDataTypeExtensions.size() > 0) {
+						MetaDataType metaType = metaDataTypeExtensions.get(0);
+						for (Object metaValueObj : metaType.getMetaValue()) {
+							MetaValueType entry = (MetaValueType) metaValueObj;
 							if (entry.getName() != null && entry.getName().equals("staffavailability")) {
 								Float f = new Float(entry.getValue());
 								if (f.floatValue() < 0) {

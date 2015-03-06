@@ -765,6 +765,15 @@ public class FeatureSupport {
 //		}
 		return layoutChanged || updateChanged;
 	}
+	
+	public static List<Connection> getConnections(AnchorContainer ac) {
+		List<Connection> connections = new ArrayList<Connection>();
+		for (Anchor a : ac.getAnchors()) {
+			connections.addAll(a.getIncomingConnections());
+			connections.addAll(a.getOutgoingConnections());
+		}
+		return connections;
+	}
 
 	public static boolean updateConnection(IFeatureProvider fp, Connection connection, boolean force) {
 		AbstractConnectionRouter.setForceRouting(connection, force);

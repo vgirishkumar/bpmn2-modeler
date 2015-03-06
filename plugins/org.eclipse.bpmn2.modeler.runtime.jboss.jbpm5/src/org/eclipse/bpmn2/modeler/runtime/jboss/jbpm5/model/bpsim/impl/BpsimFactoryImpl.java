@@ -71,7 +71,7 @@ public class BpsimFactoryImpl extends EFactoryImpl implements BpsimFactory {
 	 */
 	public static BpsimFactory init() {
 		try {
-			BpsimFactory theBpsimFactory = (BpsimFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.bpsim.org/schemas/1.0"); 
+			BpsimFactory theBpsimFactory = (BpsimFactory)EPackage.Registry.INSTANCE.getEFactory(BpsimPackage.eNS_URI);
 			if (theBpsimFactory != null) {
 				return theBpsimFactory;
 			}

@@ -18,22 +18,16 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
-import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
-import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.datatypes.IDimension;
-import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddConnectionContext;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -68,7 +62,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	protected List<ContainerShape> allShapes;
 	
 	/** The connection. */
-	protected Connection connection;
+	protected Connection connection = null;
 	
 	/** The source. */
 	protected Shape source;
@@ -78,10 +72,6 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	
 	/** The target anchor. */
 	protected FixPointAnchor sourceAnchor, targetAnchor;
-
-	AnchorSite sourceAnchorSites[];
-
-	AnchorSite targetAnchorSites[];
 	
 	/**
 	 * Instantiates a new default connection router.
@@ -90,19 +80,6 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 */
 	public DefaultConnectionRouter(IFeatureProvider fp) {
 		super(fp);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
-	 */
-	@Override
-	public boolean route(Connection connection) {
-		this.connection = connection;
-		this.sourceAnchor = (FixPointAnchor) connection.getStart();
-		this.targetAnchor = (FixPointAnchor) connection.getEnd();
-		this.source = (Shape) AnchorUtil.getAnchorContainer(sourceAnchor);
-		this.target = (Shape) AnchorUtil.getAnchorContainer(targetAnchor);
-		return false;
 	}
 
 	/* (non-Javadoc)
@@ -125,13 +102,32 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 */
 	@Override
 	public boolean routingNeeded(Connection connection) {
+		if (this.connection==null) {
+			return true;
+		}
 		return false;
 	}
 
-	/**
-	 * Initialize.
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter#initialize(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */
-	protected void initialize() {
+	@Override
+	protected void initialize(Connection connection) {
+		if (this.connection!=connection) {
+			this.connection = connection;
+			this.sourceAnchor = (FixPointAnchor) connection.getStart();
+			this.targetAnchor = (FixPointAnchor) connection.getEnd();
+			this.source = (Shape) AnchorUtil.getAnchorContainer(sourceAnchor);
+			this.target = (Shape) AnchorUtil.getAnchorContainer(targetAnchor);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.AbstractConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
+	@Override
+	public boolean route(Connection connection) {
+		return false;
 	}
 	
 	/* (non-Javadoc)
@@ -160,6 +156,8 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 * @return the list
 	 */
 	protected List<ContainerShape> findAllShapes() {
+		if (allShapes!=null)
+			return allShapes;
 		allShapes = new ArrayList<ContainerShape>();
 		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
 		TreeIterator<EObject> iter = diagram.eAllContents();
@@ -187,7 +185,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				allShapes.add(shape);
 			}
 		}
-		GraphicsUtil.dump("All Shapes", allShapes); //$NON-NLS-1$
+//		GraphicsUtil.dump("All Shapes", allShapes); //$NON-NLS-1$
 		return allShapes;
 	}
 
@@ -235,7 +233,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) && !FeatureSupport.isParticipant(shape)) {
+			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) ) {
 				EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
 				if (bo instanceof FlowElementsContainer) {
 					// it's not a collision if the shape is a SubProcess and
@@ -246,6 +244,19 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				
 				if (GraphicsUtil.intersectsLine(shape, p1, p2))
 					collisions.add(shape);
+//				else {
+//					int min = 2;
+//					ILocation loc = this.peService.getLocationRelativeToDiagram(shape);
+//					IDimension size = GraphicsUtil.calculateSize(shape);
+//					if (GraphicsUtil.isVertical(p1, p2)) {
+//						if (Math.abs(p1.getX() - loc.getX()) < min || Math.abs(p1.getX() - (loc.getX() + size.getWidth())) < min)
+//							collisions.add(shape);
+//					}
+//					else if (GraphicsUtil.isHorizontal(p1, p2)) {
+//						if (Math.abs(p1.getY() - loc.getY()) < min || Math.abs(p1.getY() - (loc.getY() + size.getHeight())) < min)
+//							collisions.add(shape);
+//					}
+//				}
 			}
 		}
 //		if (collisions.size()>0)
@@ -354,229 +365,6 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				GraphicsUtil.dump(r.toString());
 			}
 		}
-	}
-	
-	protected void calculateAllowedAnchorSites() {
-		
-		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(source);
-		if (bo instanceof BoundaryEvent) {
-			sourceAnchorSites = calculateBoundaryEventAnchorSites(source);
-		}
-		bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(target);
-		if (bo instanceof BoundaryEvent) {
-			targetAnchorSites = calculateBoundaryEventAnchorSites(target);
-		}
-		if (AnchorType.getType(source) == AnchorType.CONNECTION) {
-			sourceAnchorSites = new AnchorSite[1];
-			sourceAnchorSites[0] = AnchorSite.CENTER;
-		}
-		if (AnchorType.getType(target) == AnchorType.CONNECTION) {
-			targetAnchorSites = new AnchorSite[1];
-			targetAnchorSites[0] = AnchorSite.CENTER;
-		}
-		ILocation sPos = Graphiti.getPeService().getLocationRelativeToDiagram(source);
-		IDimension sSize = GraphicsUtil.calculateSize(source);
-		ILocation tPos = Graphiti.getPeService().getLocationRelativeToDiagram(target);
-		IDimension tSize = GraphicsUtil.calculateSize(target);
-		// find relative locations
-		if (sPos.getX()+sSize.getWidth() < tPos.getX()) {
-			// source shape is to left of target
-			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
-				// source shape is to left and above target:
-				// omit the two opposite sides of both source and target
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[2];
-					sourceAnchorSites[0] = AnchorSite.RIGHT;
-					sourceAnchorSites[1] = AnchorSite.BOTTOM;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[2];
-					targetAnchorSites[0] = AnchorSite.LEFT;
-					targetAnchorSites[1] = AnchorSite.TOP;
-				}
-			}
-			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
-				// source shape is to left and below target
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[2];
-					sourceAnchorSites[0] = AnchorSite.RIGHT;
-					sourceAnchorSites[1] = AnchorSite.TOP;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[2];
-					targetAnchorSites[0] = AnchorSite.LEFT;
-					targetAnchorSites[1] = AnchorSite.BOTTOM;
-				}
-			}
-			else {
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[3];
-					sourceAnchorSites[0] = AnchorSite.RIGHT;
-					sourceAnchorSites[1] = AnchorSite.TOP;
-					sourceAnchorSites[2] = AnchorSite.BOTTOM;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[3];
-					targetAnchorSites[0] = AnchorSite.LEFT;
-					targetAnchorSites[1] = AnchorSite.TOP;
-					targetAnchorSites[2] = AnchorSite.BOTTOM;
-				}
-			}
-		}
-		else if (sPos.getX() > tPos.getX()+tSize.getWidth()) {
-			// source shape is to right of target
-			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
-				// source shape is to right and above target
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[2];
-					sourceAnchorSites[0] = AnchorSite.LEFT;
-					sourceAnchorSites[1] = AnchorSite.BOTTOM;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[2];
-					targetAnchorSites[0] = AnchorSite.RIGHT;
-					targetAnchorSites[1] = AnchorSite.TOP;
-				}
-			}
-			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
-				// source shape is to right and below target
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[2];
-					sourceAnchorSites[0] = AnchorSite.LEFT;
-					sourceAnchorSites[1] = AnchorSite.TOP;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[2];
-					targetAnchorSites[0] = AnchorSite.RIGHT;
-					targetAnchorSites[1] = AnchorSite.BOTTOM;
-				}
-			}
-			else {
-				if (sourceAnchorSites==null) {
-					sourceAnchorSites = new AnchorSite[3];
-					sourceAnchorSites[0] = AnchorSite.LEFT;
-					sourceAnchorSites[1] = AnchorSite.TOP;
-					sourceAnchorSites[2] = AnchorSite.BOTTOM;
-				}
-				if (targetAnchorSites==null) {
-					targetAnchorSites = new AnchorSite[3];
-					targetAnchorSites[0] = AnchorSite.RIGHT;
-					targetAnchorSites[1] = AnchorSite.TOP;
-					targetAnchorSites[2] = AnchorSite.BOTTOM;
-				}
-			}
-		}
-		else if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
-			// source shape is above target
-			if (sourceAnchorSites==null) {
-				sourceAnchorSites = new AnchorSite[3];
-				sourceAnchorSites[0] = AnchorSite.LEFT;
-				sourceAnchorSites[1] = AnchorSite.RIGHT;
-				sourceAnchorSites[2] = AnchorSite.BOTTOM;
-			}
-			if (targetAnchorSites==null) {
-				targetAnchorSites = new AnchorSite[3];
-				targetAnchorSites[0] = AnchorSite.LEFT;
-				targetAnchorSites[1] = AnchorSite.RIGHT;
-				targetAnchorSites[2] = AnchorSite.TOP;
-			}
-		}
-		else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
-			// source shape is below target
-			if (sourceAnchorSites==null) {
-				sourceAnchorSites = new AnchorSite[3];
-				sourceAnchorSites[0] = AnchorSite.LEFT;
-				sourceAnchorSites[1] = AnchorSite.RIGHT;
-				sourceAnchorSites[2] = AnchorSite.TOP;
-			}
-			if (targetAnchorSites==null) {
-				targetAnchorSites = new AnchorSite[3];
-				targetAnchorSites[0] = AnchorSite.LEFT;
-				targetAnchorSites[1] = AnchorSite.RIGHT;
-				targetAnchorSites[2] = AnchorSite.BOTTOM;
-			}
-		}
-		else {
-			// source and target overlap
-			if (sourceAnchorSites==null) {
-				sourceAnchorSites = new AnchorSite[4];
-				sourceAnchorSites[0] = AnchorSite.LEFT;
-				sourceAnchorSites[1] = AnchorSite.RIGHT;
-				sourceAnchorSites[2] = AnchorSite.TOP;
-				sourceAnchorSites[3] = AnchorSite.BOTTOM;
-			}
-			if (targetAnchorSites==null) {
-				targetAnchorSites = new AnchorSite[4];
-				targetAnchorSites[0] = AnchorSite.LEFT;
-				targetAnchorSites[1] = AnchorSite.RIGHT;
-				targetAnchorSites[2] = AnchorSite.TOP;
-				targetAnchorSites[3] = AnchorSite.BOTTOM;
-			}
-		}
-	}
-
-	protected AnchorSite[] calculateBoundaryEventAnchorSites(Shape shape) {
-		AnchorSite sites[];
-		PositionOnLine pol = BoundaryEventPositionHelper.getPositionOnLineProperty(shape);
-		switch (pol.getLocationType()) {
-		case BOTTOM:
-			sites = new AnchorSite[1];
-			sites[0] = AnchorSite.BOTTOM;
-			break;
-		case BOTTOM_LEFT:
-			sites = new AnchorSite[2];
-			sites[0] = AnchorSite.BOTTOM;
-			sites[1] = AnchorSite.LEFT;
-			break;
-		case BOTTOM_RIGHT:
-			sites = new AnchorSite[2];
-			sites[0] = AnchorSite.BOTTOM;
-			sites[1] = AnchorSite.RIGHT;
-			break;
-		case LEFT:
-			sites = new AnchorSite[1];
-			sites[0] = AnchorSite.LEFT;
-			break;
-		case RIGHT:
-			sites = new AnchorSite[1];
-			sites[0] = AnchorSite.RIGHT;
-			break;
-		case TOP:
-			sites = new AnchorSite[1];
-			sites[0] = AnchorSite.TOP;
-			break;
-		case TOP_LEFT:
-			sites = new AnchorSite[2];
-			sites[0] = AnchorSite.TOP;
-			sites[1] = AnchorSite.LEFT;
-			break;
-		case TOP_RIGHT:
-			sites = new AnchorSite[2];
-			sites[0] = AnchorSite.TOP;
-			sites[1] = AnchorSite.RIGHT;
-			break;
-		default:
-			sites = new AnchorSite[4];
-			sites[0] = AnchorSite.TOP;
-			sites[1] = AnchorSite.LEFT;
-			sites[2] = AnchorSite.BOTTOM;
-			sites[3] = AnchorSite.RIGHT;
-			break;
-		}
-		return sites;
-	}
-
-	protected boolean shouldCalculate(AnchorSite sourceSite, AnchorSite targetSite) {
-		for (int i=0; i<sourceAnchorSites.length; ++i) {
-			if (sourceSite == sourceAnchorSites[i]) {
-				for (int j=0; j<targetAnchorSites.length; ++j) {
-					if (targetSite == targetAnchorSites[j]) {
-						return true;
-					}
-				}				
-			}
-		}
-		return false;
 	}
 
 	/**

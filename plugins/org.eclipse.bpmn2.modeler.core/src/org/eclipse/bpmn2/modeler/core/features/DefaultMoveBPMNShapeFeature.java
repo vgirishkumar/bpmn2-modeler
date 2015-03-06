@@ -27,6 +27,7 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.impl.DefaultMoveShapeFeature;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -42,6 +43,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 
 	/** The shape's location before the move. */
 	protected ILocation preMoveLoc;
+	protected PictogramElement[] selectedShapes = null;
 	
 	/**
 	 * Instantiates a new default MoveShapeFature.
@@ -50,6 +52,7 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 	 */
 	public DefaultMoveBPMNShapeFeature(IFeatureProvider fp) {
 		super(fp);
+		selectedShapes = fp.getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer().getSelectedPictogramElements();
 	}
 
 	/* (non-Javadoc)
@@ -120,14 +123,16 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		Shape shape = context.getShape();
 		Point p = null;
 		
+		ILocation postMoveLoc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+		int deltaX = postMoveLoc.getX()-preMoveLoc.getX();
+		int deltaY = postMoveLoc.getY()-preMoveLoc.getY();
 		/*
 		 * If the shape being moved has a Label and the Label is
 		 * {@link org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.LabelPosition.MOVABLE}
 		 * then adjust the Label position by the move offset.
 		 */
 		if (!FeatureSupport.isLabelShape(shape)) {
-			ILocation postMoveLoc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
-			p = GraphicsUtil.createPoint(postMoveLoc.getX()-preMoveLoc.getX(), postMoveLoc.getY()-preMoveLoc.getY());
+			p = GraphicsUtil.createPoint(deltaX, deltaY);
 			DIUtils.updateDIShape(shape);
 			FeatureSupport.updateLabel(getFeatureProvider(), shape, p);
 		}
@@ -140,7 +145,14 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 
-		FeatureSupport.updateConnections(getFeatureProvider(), shape);
+		// if multiple shapes are being moved, only update the connections
+		// after all of them have been moved. This is to avoid relocating
+		// connections unnecessarily as each shape is moved.
+		if (shape==selectedShapes[ selectedShapes.length-1 ]) {
+			for (int i=0; i<selectedShapes.length; ++i) {
+				FeatureSupport.updateConnections(getFeatureProvider(), (AnchorContainer)selectedShapes[i]);
+			}
+		}
 		
 		for (Connection connection : getDiagram().getConnections()) {
 			if (GraphicsUtil.intersects(shape, connection)) {

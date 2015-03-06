@@ -12,13 +12,16 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper;
+import org.eclipse.bpmn2.modeler.core.utils.BoundaryEventPositionHelper.PositionOnLine;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -27,6 +30,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 
 /**
@@ -41,7 +45,13 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	/** The removed bendpoint. */
 	protected Point removedBendpoint;
 	/** The list of old connection cuts (including the end cuts) for determining if a route has changed */
-	protected List<Point> oldPoints;
+	protected Point oldPoints[];
+
+	/** The list of allowable source shape edges which can serve as sites (top, left, bottom or right) */
+	AnchorSite sourceAnchorSites[];
+
+	/** The list of allowable target shape edges which can serve as sites */
+	AnchorSite targetAnchorSites[];
 	
 	/**
 	 * Instantiates a new bendpoint connection router.
@@ -53,34 +63,21 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
+	 * @see org.eclipse.bpmn2.modeler.core.features.IConnectionRouter#canRoute(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */
 	@Override
-	public boolean route(Connection connection) {
-		super.route(connection);
-		
-		boolean changed = false;
-		if (connection instanceof FreeFormConnection) {
-			ffc = (FreeFormConnection)connection;
-			initialize();
-			ConnectionRoute route = calculateRoute();
-			if (route!=null) {
-				changed = isRouteChanged(route);
-				applyRoute(route);
-			}
-			dispose();
-		}
-		
-		return changed;
+	public boolean canRoute(Connection connection) {
+		return super.canRoute(connection) && connection instanceof FreeFormConnection;
 	}
 
-	/**
-	 * Initialize the newPoints list and set the new start and end anchors.
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultConnectionRouter#initialize(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */
 	@Override
-	protected void initialize() {
-		super.initialize();
-		
+	protected void initialize(Connection connection) {
+		super.initialize(connection);
+		ffc = (FreeFormConnection)connection;
+
 		movedBendpoint = getMovedBendpoint(ffc);
 		if (movedBendpoint==null)
 			movedBendpoint = getAddedBendpoint(ffc);
@@ -100,13 +97,454 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		 * Save the connection's start/end anchors, and their locations as well as
 		 * the bendpoints. This is used to compare against the new ConnectionRoute
 		 */
-		oldPoints = new ArrayList<Point>();
-		oldPoints.add(GraphicsUtil.createPoint(ffc.getStart()));
+		oldPoints = new Point[ffc.getBendpoints().size() + 2];
+		int i = 0;
+		oldPoints[i++] = GraphicsUtil.createPoint(ffc.getStart());
 		for (Point p : ffc.getBendpoints()) {
-			oldPoints.add(GraphicsUtil.createPoint(p));
+			oldPoints[i++] = GraphicsUtil.createPoint(p);
 		}
-		oldPoints.add(GraphicsUtil.createPoint(ffc.getEnd()));
+		oldPoints[i++] = GraphicsUtil.createPoint(ffc.getEnd());
 		calculateAllowedAnchorSites();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultConnectionRouter#route(org.eclipse.graphiti.mm.pictograms.Connection)
+	 */
+	@Override
+	public boolean route(Connection connection) {
+		initialize(connection);
+		
+		boolean changed = false;
+		if (connection instanceof FreeFormConnection) {
+			ConnectionRoute route = calculateRoute();
+			if (route!=null) {
+				changed = isRouteChanged(route);
+				applyRoute(route);
+			}
+			dispose();
+		}
+		
+		return changed;
+	}
+
+	/**
+	 * 
+	 */
+	protected void calculateAllowedAnchorSites() {
+		
+		EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(source);
+		if (bo instanceof BoundaryEvent) {
+			sourceAnchorSites = calculateBoundaryEventAnchorSites(source);
+		}
+		bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(target);
+		if (bo instanceof BoundaryEvent) {
+			targetAnchorSites = calculateBoundaryEventAnchorSites(target);
+		}
+		if (AnchorType.getType(source) == AnchorType.CONNECTION) {
+			sourceAnchorSites = new AnchorSite[1];
+			sourceAnchorSites[0] = AnchorSite.CENTER;
+		}
+		if (AnchorType.getType(target) == AnchorType.CONNECTION) {
+			targetAnchorSites = new AnchorSite[1];
+			targetAnchorSites[0] = AnchorSite.CENTER;
+		}
+		
+		ILocation sPos = Graphiti.getPeService().getLocationRelativeToDiagram(source);
+		IDimension sSize = GraphicsUtil.calculateSize(source);
+		ILocation tPos = Graphiti.getPeService().getLocationRelativeToDiagram(target);
+		IDimension tSize = GraphicsUtil.calculateSize(target);
+		
+		if (movedBendpoint!=null) {
+			Point sc = GraphicsUtil.getShapeCenter(source);
+			Point tc = GraphicsUtil.getShapeCenter(target);
+			double ds = GraphicsUtil.getLength(movedBendpoint, sc);
+			double dt = GraphicsUtil.getLength(movedBendpoint, tc);
+			boolean expandSourceSites = ds > 2*dt;
+			boolean expandTargetSites = dt > 2*ds;
+			if (sourceAnchorSites==null) {
+				if (movedBendpoint.getX() < sPos.getX()) {
+					// bendpoint is left of shape
+					if (movedBendpoint.getY() < sPos.getY()) {
+						// bendpoint is above shape
+						sourceAnchorSites = new AnchorSite[2];
+						sourceAnchorSites[0] = AnchorSite.LEFT;
+						sourceAnchorSites[1] = AnchorSite.TOP;
+					}
+					else if (sPos.getY()+sSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						sourceAnchorSites = new AnchorSite[2];
+						sourceAnchorSites[0] = AnchorSite.LEFT;
+						sourceAnchorSites[1] = AnchorSite.BOTTOM;
+					}
+					else {
+						// bendpoint is directly left of shape
+						if (expandSourceSites) {
+							sourceAnchorSites = new AnchorSite[3];
+							sourceAnchorSites[0] = AnchorSite.LEFT;
+							sourceAnchorSites[1] = AnchorSite.TOP;
+							sourceAnchorSites[2] = AnchorSite.BOTTOM;
+						}
+						else {
+							sourceAnchorSites = new AnchorSite[1];
+							sourceAnchorSites[0] = AnchorSite.LEFT;
+						}
+					}
+				}
+				else if (sPos.getX()+sSize.getWidth() < movedBendpoint.getX()) {
+					// bendpoint is right of shape
+					if (movedBendpoint.getY() < sPos.getY()) {
+						// bendpoint is above shape
+						sourceAnchorSites = new AnchorSite[2];
+						sourceAnchorSites[0] = AnchorSite.RIGHT;
+						sourceAnchorSites[1] = AnchorSite.TOP;
+					}
+					else if (sPos.getY()+sSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						sourceAnchorSites = new AnchorSite[2];
+						sourceAnchorSites[0] = AnchorSite.RIGHT;
+						sourceAnchorSites[1] = AnchorSite.BOTTOM;
+					}
+					else {
+						// bendpoint is directly right of shape
+						if (expandSourceSites) {
+							sourceAnchorSites = new AnchorSite[3];
+							sourceAnchorSites[0] = AnchorSite.RIGHT;
+							sourceAnchorSites[1] = AnchorSite.TOP;
+							sourceAnchorSites[2] = AnchorSite.BOTTOM;
+						}
+						else {
+							sourceAnchorSites = new AnchorSite[1];
+							sourceAnchorSites[0] = AnchorSite.RIGHT;
+						}
+					}
+				}
+				else {
+					// bendpoint is directly above or below shape
+					if (movedBendpoint.getY() < sPos.getY()) {
+						// bendpoint is above shape
+						if (expandSourceSites) {
+							sourceAnchorSites = new AnchorSite[3];
+							sourceAnchorSites[0] = AnchorSite.TOP;
+							sourceAnchorSites[1] = AnchorSite.LEFT;
+							sourceAnchorSites[2] = AnchorSite.RIGHT;
+						}
+						else {
+							sourceAnchorSites = new AnchorSite[1];
+							sourceAnchorSites[0] = AnchorSite.TOP;
+						}
+					}
+					else if (sPos.getY()+sSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						if (expandSourceSites) {
+							sourceAnchorSites = new AnchorSite[3];
+							sourceAnchorSites[0] = AnchorSite.BOTTOM;
+							sourceAnchorSites[1] = AnchorSite.LEFT;
+							sourceAnchorSites[2] = AnchorSite.RIGHT;
+						}
+						else {
+							sourceAnchorSites = new AnchorSite[1];
+							sourceAnchorSites[0] = AnchorSite.BOTTOM;
+						}
+					}
+					else {
+						// bendpoint is inside shape
+						sourceAnchorSites = new AnchorSite[0];
+					}
+				}
+			}
+			if (targetAnchorSites==null) {
+				if (movedBendpoint.getX() < tPos.getX()) {
+					// bendpoint is left of shape
+					if (movedBendpoint.getY() < tPos.getY()) {
+						// bendpoint is above shape
+						targetAnchorSites = new AnchorSite[2];
+						targetAnchorSites[0] = AnchorSite.LEFT;
+						targetAnchorSites[1] = AnchorSite.TOP;
+					}
+					else if (tPos.getY()+tSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						targetAnchorSites = new AnchorSite[2];
+						targetAnchorSites[0] = AnchorSite.LEFT;
+						targetAnchorSites[1] = AnchorSite.BOTTOM;
+					}
+					else {
+						// bendpoint is directly left of shape
+						if (expandTargetSites) {
+							targetAnchorSites = new AnchorSite[3];
+							targetAnchorSites[0] = AnchorSite.LEFT;
+							targetAnchorSites[1] = AnchorSite.TOP;
+							targetAnchorSites[2] = AnchorSite.BOTTOM;
+						}
+						else {
+							targetAnchorSites = new AnchorSite[1];
+							targetAnchorSites[0] = AnchorSite.LEFT;
+						}
+					}
+				}
+				else if (tPos.getX()+tSize.getWidth() < movedBendpoint.getX()) {
+					// bendpoint is right of shape
+					if (movedBendpoint.getY() < tPos.getY()) {
+						// bendpoint is above shape
+						targetAnchorSites = new AnchorSite[2];
+						targetAnchorSites[0] = AnchorSite.RIGHT;
+						targetAnchorSites[1] = AnchorSite.TOP;
+					}
+					else if (tPos.getY()+tSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						targetAnchorSites = new AnchorSite[2];
+						targetAnchorSites[0] = AnchorSite.RIGHT;
+						targetAnchorSites[1] = AnchorSite.BOTTOM;
+					}
+					else {
+						// bendpoint is directly right of shape
+						if (expandTargetSites) {
+							targetAnchorSites = new AnchorSite[3];
+							targetAnchorSites[0] = AnchorSite.RIGHT;
+							targetAnchorSites[1] = AnchorSite.TOP;
+							targetAnchorSites[2] = AnchorSite.BOTTOM;
+						}
+						else {
+							targetAnchorSites = new AnchorSite[1];
+							targetAnchorSites[0] = AnchorSite.RIGHT;
+						}
+					}
+				}
+				else {
+					// bendpoint is directly above or below shape
+					if (movedBendpoint.getY() < tPos.getY()) {
+						// bendpoint is above shape
+						if (expandTargetSites) {
+							targetAnchorSites = new AnchorSite[3];
+							targetAnchorSites[0] = AnchorSite.TOP;
+							targetAnchorSites[1] = AnchorSite.LEFT;
+							targetAnchorSites[2] = AnchorSite.RIGHT;
+						}
+						else {
+							targetAnchorSites = new AnchorSite[1];
+							targetAnchorSites[0] = AnchorSite.TOP;
+						}
+					}
+					else if (tPos.getY()+tSize.getHeight() < movedBendpoint.getY()) {
+						// bendpoint is below shape
+						if (expandTargetSites) {
+							targetAnchorSites = new AnchorSite[3];
+							targetAnchorSites[0] = AnchorSite.BOTTOM;
+							targetAnchorSites[1] = AnchorSite.LEFT;
+							targetAnchorSites[2] = AnchorSite.RIGHT;
+						}
+						else {
+							targetAnchorSites = new AnchorSite[1];
+							targetAnchorSites[0] = AnchorSite.BOTTOM;
+						}
+					}
+					else {
+						// bendpoint is inside shape
+						targetAnchorSites = new AnchorSite[0];
+					}
+				}
+			}
+			return;
+		}
+
+		// find relative locations
+		if (sPos.getX()+sSize.getWidth() < tPos.getX()) {
+			// source shape is to left of target
+			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+				// source shape is to left and above target:
+				// omit the two opposite sides of both source and target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+				}
+			}
+			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+				// source shape is to left and below target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+			}
+			else {
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[3];
+					sourceAnchorSites[0] = AnchorSite.RIGHT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+					sourceAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[3];
+					targetAnchorSites[0] = AnchorSite.LEFT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+					targetAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+			}
+		}
+		else if (sPos.getX() > tPos.getX()+tSize.getWidth()) {
+			// source shape is to right of target
+			if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+				// source shape is to right and above target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+				}
+			}
+			else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+				// source shape is to right and below target
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[2];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[2];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.BOTTOM;
+				}
+			}
+			else {
+				if (sourceAnchorSites==null) {
+					sourceAnchorSites = new AnchorSite[3];
+					sourceAnchorSites[0] = AnchorSite.LEFT;
+					sourceAnchorSites[1] = AnchorSite.TOP;
+					sourceAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+				if (targetAnchorSites==null) {
+					targetAnchorSites = new AnchorSite[3];
+					targetAnchorSites[0] = AnchorSite.RIGHT;
+					targetAnchorSites[1] = AnchorSite.TOP;
+					targetAnchorSites[2] = AnchorSite.BOTTOM;
+				}
+			}
+		}
+		else if (sPos.getY()+sSize.getHeight() < tPos.getY()) {
+			// source shape is above target
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[3];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.BOTTOM;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[3];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.TOP;
+			}
+		}
+		else if(sPos.getY() > tPos.getY()+tSize.getHeight()) {
+			// source shape is below target
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[3];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.TOP;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[3];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.BOTTOM;
+			}
+		}
+		else {
+			// source and target overlap
+			if (sourceAnchorSites==null) {
+				sourceAnchorSites = new AnchorSite[4];
+				sourceAnchorSites[0] = AnchorSite.LEFT;
+				sourceAnchorSites[1] = AnchorSite.RIGHT;
+				sourceAnchorSites[2] = AnchorSite.TOP;
+				sourceAnchorSites[3] = AnchorSite.BOTTOM;
+			}
+			if (targetAnchorSites==null) {
+				targetAnchorSites = new AnchorSite[4];
+				targetAnchorSites[0] = AnchorSite.LEFT;
+				targetAnchorSites[1] = AnchorSite.RIGHT;
+				targetAnchorSites[2] = AnchorSite.TOP;
+				targetAnchorSites[3] = AnchorSite.BOTTOM;
+			}
+		}
+	}
+
+	protected AnchorSite[] calculateBoundaryEventAnchorSites(Shape shape) {
+		AnchorSite sites[];
+		PositionOnLine pol = BoundaryEventPositionHelper.getPositionOnLineProperty(shape);
+		switch (pol.getLocationType()) {
+		case BOTTOM:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.BOTTOM;
+			break;
+		case BOTTOM_LEFT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.BOTTOM;
+			sites[1] = AnchorSite.LEFT;
+			break;
+		case BOTTOM_RIGHT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.BOTTOM;
+			sites[1] = AnchorSite.RIGHT;
+			break;
+		case LEFT:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.LEFT;
+			break;
+		case RIGHT:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.RIGHT;
+			break;
+		case TOP:
+			sites = new AnchorSite[1];
+			sites[0] = AnchorSite.TOP;
+			break;
+		case TOP_LEFT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.LEFT;
+			break;
+		case TOP_RIGHT:
+			sites = new AnchorSite[2];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.RIGHT;
+			break;
+		default:
+			sites = new AnchorSite[4];
+			sites[0] = AnchorSite.TOP;
+			sites[1] = AnchorSite.LEFT;
+			sites[2] = AnchorSite.BOTTOM;
+			sites[3] = AnchorSite.RIGHT;
+			break;
+		}
+		return sites;
+	}
+
+	protected boolean shouldCalculate(AnchorSite sourceSite, AnchorSite targetSite) {
+		for (int i=0; i<sourceAnchorSites.length; ++i) {
+			if (sourceSite == sourceAnchorSites[i]) {
+				for (int j=0; j<targetAnchorSites.length; ++j) {
+					if (targetSite == targetAnchorSites[j]) {
+						return true;
+					}
+				}				
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -130,12 +568,12 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		Point end = GraphicsUtil.createPoint(targetAnchor);
 
 		route.add(start);
-		for (int i=1; i<oldPoints.size() -1; ++i) {
-			route.add(oldPoints.get(i));
+		for (int i=1; i<oldPoints.length -1; ++i) {
+			route.add(oldPoints[i]);
 		}
 		route.add(end);
 		
-		oldPoints.clear();
+		oldPoints = null;
 		
 		return route;
 	}
@@ -221,11 +659,11 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	protected boolean isRouteChanged(ConnectionRoute route) {
 		if (route==null || route.size()==0)
 			return false;
-		if (oldPoints.size()!=route.size()) {
+		if (oldPoints.length!=route.size()) {
 			return true;
 		}
-		for (int i=0; i<oldPoints.size(); ++i) {
-			Point p1 = oldPoints.get(i);
+		for (int i=0; i<oldPoints.length; ++i) {
+			Point p1 = oldPoints[i];
 			Point p2 = route.get(i);
 			if (!GraphicsUtil.pointsEqual(p1, p2)) {
 				return true;
@@ -290,8 +728,8 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @param connection the connection
 	 * @param index the index
 	 */
-	public static void setRemovedBendpoint(Connection connection, int index) {
-		setInterestingBendpoint(connection, "removed.", index); //$NON-NLS-1$
+	public static void setRemovedBendpoint(Connection connection, Point p) {
+		AbstractConnectionRouter.setRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY());
 	}
 
 	/**
@@ -302,6 +740,10 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 */
 	public static void setFixedBendpoint(Connection connection, int index) {
 		setInterestingBendpoint(connection, "fixed."+index+".", index); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	public static void setOldBendpointLocation(Connection connection, Point p) {
+		AbstractConnectionRouter.setRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT, p.getX() + "." + p.getY());
 	}
 
 	/**
@@ -353,7 +795,14 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 * @return the removed bendpoint
 	 */
 	public static Point getRemovedBendpoint(Connection connection) {
-		return getInterestingBendpoint(connection, "removed."); //$NON-NLS-1$
+		String value = AbstractConnectionRouter.getRoutingInfo(connection, "removed."+ROUTING_INFO_BENDPOINT);
+		if (value!=null && !value.isEmpty()) {
+			String b[] = value.split("\\.");
+			int x = Integer.parseInt(b[0]);
+			int y = Integer.parseInt(b[1]);
+			return GraphicsUtil.createPoint(x, y);
+		}
+		return null;
 	}
 	
 	/**
@@ -366,7 +815,18 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	public static Point getFixedBendpoint(Connection connection, int index) {
 		return getInterestingBendpoint(connection, "fixed."+index+"."); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
+
+	public static Point getOldBendpointLocation(Connection connection) {
+		String value = AbstractConnectionRouter.getRoutingInfo(connection, "oldloc."+ROUTING_INFO_BENDPOINT);
+		if (value!=null && !value.isEmpty()) {
+			String b[] = value.split("\\.");
+			int x = Integer.parseInt(b[0]);
+			int y = Integer.parseInt(b[1]);
+			return GraphicsUtil.createPoint(x, y);
+		}
+		return null;
+	}
+
 	/**
 	 * Gets the interesting bendpoint.
 	 *

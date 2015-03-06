@@ -27,6 +27,7 @@ import org.eclipse.bpmn2.Assignment;
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
 import org.eclipse.bpmn2.Bpmn2Package;
+import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Documentation;
@@ -37,6 +38,7 @@ import org.eclipse.bpmn2.Import;
 import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.Participant;
+import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.RootElement;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNEdge;
@@ -1041,7 +1043,7 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				}
        		}
 		}
-
+        
 		@Override
         protected boolean shouldSaveFeature(EObject o, EStructuralFeature f) {
             if (o instanceof BPMNShape && f==BpmnDiPackage.eINSTANCE.getBPMNShape_IsHorizontal()) {
@@ -1054,6 +1056,13 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
             if (o instanceof Bounds || o instanceof Point) {
             	return true;
             }
+            
+            if (o instanceof Process && f==Bpmn2Package.eINSTANCE.getProcess_IsExecutable())
+           		return true;
+            if (o instanceof ItemDefinition && f==Bpmn2Package.eINSTANCE.getItemDefinition_IsCollection())
+           		return true;
+            if (o instanceof CompensateEventDefinition && f==Bpmn2Package.eINSTANCE.getCompensateEventDefinition_WaitForCompletion())
+           		return true;
             
             // empty Expressions should not be saved
             if (f!=null && (f.getEType() == Bpmn2Package.eINSTANCE.getExpression() ||
@@ -1119,28 +1128,31 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 
 			if (f == Bpmn2Package.eINSTANCE.getBaseElement_ExtensionValues()) {
 				// check if this element is (or should be) empty
-				boolean shouldSave = true;
+				int entryCount = 0;
 				for (ExtensionAttributeValue ev : (EList<ExtensionAttributeValue>)o.eGet(f)) {
 					BasicFeatureMap map = (BasicFeatureMap) ev.getValue();
 					Iterator<FeatureMap.Entry> mi = map.iterator();
 					while (mi.hasNext()) {
 						FeatureMap.Entry entry = mi.next();
 						Object v = entry.getValue();
+						boolean entryCounted = false;
 						if (v instanceof EObject) {
 							Iterator<Adapter> ai = ((EObject)v).eAdapters().iterator();
 							while (ai.hasNext()) {
 								Adapter a = ai.next();
 								if (a instanceof IExtensionValueAdapter) {
-									if (!((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
-										shouldSave = false;
-										break;
+									if (((IExtensionValueAdapter)a).shouldSaveElement((EObject)v)) {
+										++entryCount;
 									}
+									entryCounted = true;
 								}
 							}
 						}
+						if (!entryCounted)
+							++entryCount;
 					}
 				}
-				return shouldSave;
+				return entryCount>0;
 			}
 			
 			Iterator<Adapter> ai = o.eAdapters().iterator();

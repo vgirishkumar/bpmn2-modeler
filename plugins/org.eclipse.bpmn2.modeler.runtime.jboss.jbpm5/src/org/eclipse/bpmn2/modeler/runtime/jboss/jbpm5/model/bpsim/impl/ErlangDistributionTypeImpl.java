@@ -270,10 +270,10 @@ public class ErlangDistributionTypeImpl extends DistributionParameterImpl implem
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (k: "); //$NON-NLS-1$
-		if (kESet) result.append(k); else result.append("<unset>"); //$NON-NLS-1$
-		result.append(", mean: "); //$NON-NLS-1$
-		if (meanESet) result.append(mean); else result.append("<unset>"); //$NON-NLS-1$
+		result.append(" (k: ");
+		if (kESet) result.append(k); else result.append("<unset>");
+		result.append(", mean: ");
+		if (meanESet) result.append(mean); else result.append("<unset>");
 		result.append(')');
 		return result.toString();
 	}

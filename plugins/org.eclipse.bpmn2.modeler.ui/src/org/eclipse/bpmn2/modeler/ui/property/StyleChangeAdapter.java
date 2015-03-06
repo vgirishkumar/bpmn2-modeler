@@ -14,10 +14,7 @@
 package org.eclipse.bpmn2.modeler.ui.property;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.ChoreographyActivity;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
-import org.eclipse.bpmn2.Lane;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.adapters.IExtensionValueAdapter;
 import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
@@ -34,11 +31,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
-import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.swt.graphics.FontData;
 
 /**
  *

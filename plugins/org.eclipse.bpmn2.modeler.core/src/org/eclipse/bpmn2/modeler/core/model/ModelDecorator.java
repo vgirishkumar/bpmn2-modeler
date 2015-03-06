@@ -26,6 +26,7 @@ import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BpmnDiPackage;
+import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
@@ -1178,6 +1179,10 @@ public class ModelDecorator {
 		if (object instanceof ExtensionAttributeValue)
 			object = object.eContainer();
 		EStructuralFeature evf = object.eClass().getEStructuralFeature("extensionValues"); //$NON-NLS-1$
+		if (evf==null) {
+			Activator.logError(new Exception("Object type "+object.eClass().getName()+" is not a BaseElement"));
+			return;
+		}
 		EList<EObject> list = (EList<EObject>)object.eGet(evf);
 		
 		if (list.size()==0) {

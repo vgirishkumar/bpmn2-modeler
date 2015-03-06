@@ -43,6 +43,23 @@ import org.eclipse.emf.validation.service.ModelValidationService;
  */
 public class ProcessVariableNameChangeAdapter implements Adapter {
 
+	private ProcessVariableNameChangeAdapter() {
+	}
+	
+	public static ProcessVariableNameChangeAdapter adapt(EObject object) {
+		if (appliesTo(object)) {
+			for (Adapter a : ((EObject)object).eAdapters()) {
+				if (a instanceof ProcessVariableNameChangeAdapter) {
+					return (ProcessVariableNameChangeAdapter)a;
+				}
+			}
+			ProcessVariableNameChangeAdapter a = new ProcessVariableNameChangeAdapter();
+			object.eAdapters().add(a);
+			return a;
+		}
+		return null;
+	}
+	
 	public static boolean appliesTo(EObject object) {
 		return (object instanceof org.eclipse.bpmn2.Property ||
 				object instanceof DataObject ||

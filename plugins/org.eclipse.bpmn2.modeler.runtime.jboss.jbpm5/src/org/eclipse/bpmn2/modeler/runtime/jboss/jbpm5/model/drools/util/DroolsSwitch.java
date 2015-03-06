@@ -11,8 +11,8 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DocumentRoot;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsPackage;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetadataType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaentryType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnEntryScriptType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.OnExitScriptType;
 import org.eclipse.emf.ecore.EObject;
@@ -97,15 +97,15 @@ public class DroolsSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case DroolsPackage.METADATA_TYPE: {
-				MetadataType metadataType = (MetadataType)theEObject;
-				T result = caseMetadataType(metadataType);
+			case DroolsPackage.META_DATA_TYPE: {
+				MetaDataType metaDataType = (MetaDataType)theEObject;
+				T result = caseMetaDataType(metaDataType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case DroolsPackage.METAENTRY_TYPE: {
-				MetaentryType metaentryType = (MetaentryType)theEObject;
-				T result = caseMetaentryType(metaentryType);
+			case DroolsPackage.META_VALUE_TYPE: {
+				MetaValueType metaValueType = (MetaValueType)theEObject;
+				T result = caseMetaValueType(metaValueType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -129,11 +129,11 @@ public class DroolsSwitch<T> extends Switch<T> {
 				return result;
 			}
 			case DroolsPackage.EXTERNAL_PROCESS: {
-				ExternalProcess callableElementProxy = (ExternalProcess)theEObject;
-				T result = caseExternalProcess(callableElementProxy);
-				if (result == null) result = caseCallableElement(callableElementProxy);
-				if (result == null) result = caseRootElement(callableElementProxy);
-				if (result == null) result = caseBaseElement(callableElementProxy);
+				ExternalProcess externalProcess = (ExternalProcess)theEObject;
+				T result = caseExternalProcess(externalProcess);
+				if (result == null) result = caseCallableElement(externalProcess);
+				if (result == null) result = caseRootElement(externalProcess);
+				if (result == null) result = caseBaseElement(externalProcess);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -187,32 +187,32 @@ public class DroolsSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Metadata Type</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Meta Data Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Metadata Type</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Meta Data Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseMetadataType(MetadataType object) {
+	public T caseMetaDataType(MetaDataType object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Metaentry Type</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Meta Value Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Metaentry Type</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Meta Value Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseMetaentryType(MetaentryType object) {
+	public T caseMetaValueType(MetaValueType object) {
 		return null;
 	}
 
@@ -262,13 +262,13 @@ public class DroolsSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Callable Element Proxy</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>External Process</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Callable Element Proxy</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>External Process</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
