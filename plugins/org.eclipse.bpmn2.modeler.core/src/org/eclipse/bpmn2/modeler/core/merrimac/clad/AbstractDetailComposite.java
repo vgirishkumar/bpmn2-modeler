@@ -626,7 +626,6 @@ public abstract class AbstractDetailComposite extends ListAndDetailCompositeBase
 	@Override
 	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		setBusinessObject(businessObject);
 		refresh();
 	}
 

@@ -36,6 +36,7 @@ import org.eclipse.bpmn2.TerminateEventDefinition;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
@@ -310,6 +311,16 @@ public class EventDefinitionsListComposite extends DefaultListComposite {
 								return Messages.TimerEventDefinitionDetailComposite_Duration + ": " + //$NON-NLS-1$
 									getTextValue(exp);
 						}
+						
+						// fallback: if the object has an ExtendedPropertiesAdapter, use the text value
+						// provided by that adapter.
+						ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(element);
+						if (adapter!=null) {
+							String textValue = adapter.getObjectDescriptor().getTextValue();
+							if (textValue!=null)
+								return textValue;
+						}
+								
 						return Messages.EventDefinitionsListComposite_None_Label;
 					}
 

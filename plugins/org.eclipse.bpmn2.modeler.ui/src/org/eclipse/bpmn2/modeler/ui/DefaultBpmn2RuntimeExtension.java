@@ -11,6 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui;
+
 import java.util.Enumeration;
 
 import org.apache.xerces.parsers.SAXParser;
@@ -79,6 +80,8 @@ import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDialogComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultListComposite;
@@ -135,11 +138,14 @@ import org.eclipse.bpmn2.modeler.ui.property.tasks.MultiInstanceLoopCharacterist
 import org.eclipse.bpmn2.modeler.ui.property.tasks.ScriptTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.StandardLoopCharacteristicsDetailComposite;
 import org.eclipse.bpmn2.modeler.ui.property.tasks.TaskDetailComposite;
+import org.eclipse.bpmn2.modeler.ui.util.PropertyUtil;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.part.IPage;
+import org.eclipse.ui.views.properties.PropertySheet;
 import org.xml.sax.InputSource;
 
 
@@ -276,6 +282,11 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 			EClass ec = object.eClass();
 			if (Bpmn2FeatureMap.ALL_SHAPES.contains(ec.getInstanceClass()) && ShapeStyle.hasStyle(object))
 				ShapeStyle.createStyleObject(object);
+		}
+		else if (event.eventType.equals(EventType.COMMAND_UNDO) || event.eventType.equals(EventType.COMMAND_REDO)) {
+			AbstractBpmn2PropertySection section = PropertyUtil.getCurrentPropertySection();
+			if (section!=null)
+				section.redraw();
 		}
 	}
 
