@@ -154,23 +154,45 @@ public class UpdateLabelFeature extends AbstractBpmn2UpdateFeature {
 	
 	protected int[] wrapText(AbstractText ga, String text, int wrapWidth) {
 		Font font = ga.getFont();
+		
+		// If the text is camel case, break on the lower to upper case change.
+		String normalizedText = ""; //$NON-NLS-1$
+		boolean first = true;
+		char[] chars = text.toCharArray();
+		for (int i=0; i<chars.length; ++i) {
+			char c = chars[i];
+			if (Character.isUpperCase(c)) {
+				if (normalizedText.length()>0 && i+1<chars.length && !Character.isUpperCase(chars[i+1]))
+					normalizedText += " "; //$NON-NLS-1$
+			}
+			if (first) {
+				c = Character.toUpperCase(c);
+				first = false;
+			}
+			if (!Character.isLetterOrDigit(c))
+				c = ' ';
+			if (c==' ')
+				first = true;
+			normalizedText += c;
+		}
+		
 		List<String> ss = new ArrayList<String>();
 		int start = 0;
-		for (int end=0; end<text.length(); ++end) {
-			char c = text.charAt(end);
+		for (int end=0; end<normalizedText.length(); ++end) {
+			char c = normalizedText.charAt(end);
 			if (c==' ') {
-				ss.add(text.substring(start, end+1));
+				ss.add(normalizedText.substring(start, end+1));
 				start = end+1;
 			}
 			else if (c=='\n') {
-				ss.add(text.substring(start, end+1));
+				ss.add(normalizedText.substring(start, end+1));
 				start = end+1;
 			}
 		}
-		if (start<text.length())
-			ss.add(text.substring(start));
+		if (start<normalizedText.length())
+			ss.add(normalizedText.substring(start));
 		String words[] = ss.toArray(new String[ss.size()]);
-		IDimension dim = calculateTextSize(text, font);
+		IDimension dim = calculateTextSize(normalizedText, font);
 		int totalHeight = dim.getHeight();
 		int totalWidth = dim.getWidth();
 		int height = totalHeight;
