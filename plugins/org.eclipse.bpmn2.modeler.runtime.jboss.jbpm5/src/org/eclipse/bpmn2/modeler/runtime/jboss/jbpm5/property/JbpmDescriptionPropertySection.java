@@ -122,7 +122,7 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 
 		protected void bindMetaData(final BaseElement be) {
 			if (isModelObjectEnabled(DroolsPackage.eINSTANCE.getMetaDataType())) {
-				Composite section = createSectionComposite(this, "Metadata");
+				Composite section = createSectionComposite(this, Messages.JbpmDescriptionPropertySection_MetaData_Section_Title);
 				metaData = null;
 				metaValue = null;
 				for (ExtensionAttributeValue eav : be.getExtensionValues()) {
@@ -134,9 +134,9 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 					}
 				}
 				if (metaData==null) {
-					Button button = toolkit.createButton(section, "Add MetaData", SWT.PUSH);
-					toolkit.createLabel(section, "");
-					toolkit.createLabel(section, "");
+					Button button = toolkit.createButton(section, Messages.JbpmDescriptionPropertySection_Add_MetaData_Button, SWT.PUSH);
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
 					button.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
@@ -145,7 +145,7 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 								@Override
 								protected void doExecute() {
 									metaValue = DroolsFactory.eINSTANCE.createMetaValueType();
-									metaValue.setValue("");
+									metaValue.setValue(""); //$NON-NLS-1$
 									metaData = DroolsFactory.eINSTANCE.createMetaDataType();
 									MetaDataTypeAdapter.adapt(metaData);
 									metaData.setMetaValue(metaValue);
@@ -161,12 +161,12 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 				else {
 					TextObjectEditor nameEditor = new TextObjectEditor(this, metaData, DroolsPackage.eINSTANCE.getMetaDataType_Name());
 					TextObjectEditor valueEditor = new TextObjectEditor(this, metaValue, DroolsPackage.eINSTANCE.getMetaValueType_Value());
-					nameEditor.createControl(section, "Name");
-					valueEditor.createControl(section, "Value");
+					nameEditor.createControl(section, Messages.JbpmDescriptionPropertySection_MetaData_Name);
+					valueEditor.createControl(section, Messages.JbpmDescriptionPropertySection_MetaData_Value);
 
-					toolkit.createLabel(section, "");
-					Button button = toolkit.createButton(section, "Remove MetaData", SWT.PUSH);
-					toolkit.createLabel(section, "");
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
+					Button button = toolkit.createButton(section, Messages.JbpmDescriptionPropertySection_Remove_MetaData_Button, SWT.PUSH);
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
 					button.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
