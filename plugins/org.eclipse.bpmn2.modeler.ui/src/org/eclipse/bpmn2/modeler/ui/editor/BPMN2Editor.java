@@ -388,8 +388,10 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				// If the bpmn file was missing DI elements, they would have been added by the importer
 				// so save the file now in case it was changed.
 				saveModelFile();
+			} else {
+				modelHandler.getDefinitions().setTargetNamespace(targetNamespace);
 			}
-			
+
 			DIImport di = new DIImport(this);
 			di.setModelHandler(modelHandler);
 	
