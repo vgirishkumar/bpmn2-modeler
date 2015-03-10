@@ -13,12 +13,10 @@
 package org.eclipse.bpmn2.modeler.ui;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.graphiti.ui.editor.DiagramEditorInputFactory;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -65,6 +63,31 @@ public final class Bpmn2DiagramEditorInput extends DiagramEditorInput {
 	
 	public String getName() {
 		return URI.decode(modelUri.trimFileExtension().lastSegment());
+	}
+	
+	/**
+	 * Determine the Target Runtime for this IEditorInput. This method is only
+	 * used during creation when the model file has not yet been populated, but
+	 * we already know the targetNamespace and the initial diagram type to be
+	 * constructed. This will only happen immediately after the New File wizard
+	 * is finished.
+	 * 
+	 * @return the Target Runtime that owns the targetNamespace defined in this
+	 *         IEditorInput, or null if the targetNamespace is empty or no
+	 *         Target Runtime owns the targetNamespace.
+	 */
+	public TargetRuntime getRuntime() {
+		TargetRuntime targetRuntime = null;
+		if (targetNamespace!=null && initialDiagramType!=null) {
+			for (TargetRuntime rt : TargetRuntime.createTargetRuntimes()) {
+				String tns = rt.getRuntimeExtension().getTargetNamespace(initialDiagramType);
+				if (targetNamespace.equals(tns)) {
+					targetRuntime = rt;
+					break;
+				}
+			}
+		}
+		return targetRuntime;
 	}
 	
 	public void updateUri(URI diagramFileUri) {

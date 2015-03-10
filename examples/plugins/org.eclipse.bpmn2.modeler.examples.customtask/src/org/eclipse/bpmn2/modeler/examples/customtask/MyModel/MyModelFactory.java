@@ -40,6 +40,15 @@ public interface MyModelFactory extends EFactory {
 	Parameter createParameter();
 
 	/**
+	 * Returns a new object of class '<em>Meta Data</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Meta Data</em>'.
+	 * @generated
+	 */
+	MetaData createMetaData();
+
+	/**
 	 * Returns a new object of class '<em>Task Config</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

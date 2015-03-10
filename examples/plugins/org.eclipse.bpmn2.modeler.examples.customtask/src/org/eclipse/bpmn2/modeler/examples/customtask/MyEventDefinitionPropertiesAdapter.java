@@ -11,6 +11,7 @@
 package org.eclipse.bpmn2.modeler.examples.customtask;
 
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.adapters.ObjectDescriptor;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.emf.common.notify.AdapterFactory;
 
@@ -18,6 +19,13 @@ public class MyEventDefinitionPropertiesAdapter extends ExtendedPropertiesAdapte
 
 	public MyEventDefinitionPropertiesAdapter(AdapterFactory adapterFactory, MyEventDefinition object) {
 		super(adapterFactory, object);
+		
+		setObjectDescriptor(new ObjectDescriptor<MyEventDefinition> (this, object) {
+			@Override
+			public String getTextValue() {
+				return object.getValue();
+			}
+		});
 	}
 
 }

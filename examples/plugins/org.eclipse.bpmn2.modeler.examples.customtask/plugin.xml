@@ -9,6 +9,13 @@
 			genModel="model/MyModel.genmodel" />
 	</extension>
 
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated MyModel -->
+      <parser
+            type="bpmn"
+            class="org.eclipse.bpmn2.modeler.examples.customtask.MyModel.util.MyModelResourceFactoryImpl"/>
+   </extension>
+
 	<extension point="org.eclipse.bpmn2.modeler.runtime">
 		<runtime name="Sample Runtime - with EMF model"
 			id="org.eclipse.bpmn2.modeler.examples.customtask.runtime"
@@ -85,6 +92,13 @@
 			runtimeId="org.eclipse.bpmn2.modeler.examples.timebpmn.runtime"
 			type="StartEvent">
 		</customTask>
+		
+		<propertyTab
+			id="org.eclipse.bpmn2.modeler.examples.customtask.description.tab"
+			replaceTab="org.eclipse.bpmn2.modeler.description.tab"
+			class="org.eclipse.bpmn2.modeler.examples.customtask.MyDescriptionPropertySection"
+			label="General">
+		</propertyTab>
 
 		<propertyTab
 			id="org.eclipse.bpmn2.modeler.examples.customtask.mytask.tab"
@@ -135,6 +149,7 @@
 			<enable object="TaskConfig"/>
 			<enable object="TemporalDependency"/>
 			<enable object="Parameter"/>
+			<enable object="MetaData"/>
 			<enable object="MyEventDefinition"/>
 		</modelEnablement>
 

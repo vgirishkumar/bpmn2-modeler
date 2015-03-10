@@ -3,6 +3,7 @@
 package org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl;
 
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.DocumentRoot;
+import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TaskConfig;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TemporalDependency;
@@ -25,6 +26,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
  * <ul>
  *   <li>{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.DocumentRootImpl#getTaskConfig <em>Task Config</em>}</li>
  *   <li>{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.DocumentRootImpl#getTemporalDependency <em>Temporal Dependency</em>}</li>
+ *   <li>{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.DocumentRootImpl#getMetaData <em>Meta Data</em>}</li>
  * </ul>
  * </p>
  *
@@ -50,6 +52,16 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 	 * @ordered
 	 */
 	protected TemporalDependency temporalDependency;
+
+	/**
+	 * The cached value of the '{@link #getMetaData() <em>Meta Data</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMetaData()
+	 * @generated
+	 * @ordered
+	 */
+	protected MetaData metaData;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -161,6 +173,49 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public MetaData getMetaData() {
+		return metaData;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetMetaData(MetaData newMetaData, NotificationChain msgs) {
+		MetaData oldMetaData = metaData;
+		metaData = newMetaData;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, MyModelPackage.DOCUMENT_ROOT__META_DATA, oldMetaData, newMetaData);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setMetaData(MetaData newMetaData) {
+		if (newMetaData != metaData) {
+			NotificationChain msgs = null;
+			if (metaData != null)
+				msgs = ((InternalEObject)metaData).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - MyModelPackage.DOCUMENT_ROOT__META_DATA, null, msgs);
+			if (newMetaData != null)
+				msgs = ((InternalEObject)newMetaData).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - MyModelPackage.DOCUMENT_ROOT__META_DATA, null, msgs);
+			msgs = basicSetMetaData(newMetaData, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, MyModelPackage.DOCUMENT_ROOT__META_DATA, newMetaData, newMetaData));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -168,6 +223,8 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				return basicSetTaskConfig(null, msgs);
 			case MyModelPackage.DOCUMENT_ROOT__TEMPORAL_DEPENDENCY:
 				return basicSetTemporalDependency(null, msgs);
+			case MyModelPackage.DOCUMENT_ROOT__META_DATA:
+				return basicSetMetaData(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -184,6 +241,8 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				return getTaskConfig();
 			case MyModelPackage.DOCUMENT_ROOT__TEMPORAL_DEPENDENCY:
 				return getTemporalDependency();
+			case MyModelPackage.DOCUMENT_ROOT__META_DATA:
+				return getMetaData();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -201,6 +260,9 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				return;
 			case MyModelPackage.DOCUMENT_ROOT__TEMPORAL_DEPENDENCY:
 				setTemporalDependency((TemporalDependency)newValue);
+				return;
+			case MyModelPackage.DOCUMENT_ROOT__META_DATA:
+				setMetaData((MetaData)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -220,6 +282,9 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 			case MyModelPackage.DOCUMENT_ROOT__TEMPORAL_DEPENDENCY:
 				setTemporalDependency((TemporalDependency)null);
 				return;
+			case MyModelPackage.DOCUMENT_ROOT__META_DATA:
+				setMetaData((MetaData)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -236,6 +301,8 @@ public class DocumentRootImpl extends EObjectImpl implements DocumentRoot {
 				return taskConfig != null;
 			case MyModelPackage.DOCUMENT_ROOT__TEMPORAL_DEPENDENCY:
 				return temporalDependency != null;
+			case MyModelPackage.DOCUMENT_ROOT__META_DATA:
+				return metaData != null;
 		}
 		return super.eIsSet(featureID);
 	}
