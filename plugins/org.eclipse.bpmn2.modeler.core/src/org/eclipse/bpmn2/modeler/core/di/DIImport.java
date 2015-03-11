@@ -86,15 +86,13 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
-@SuppressWarnings("restriction")
 public class DIImport {
 
-	private DiagramEditor editor;
-//	private Diagram diagram;
+	private IDiagramContainer diagramContainer;
 	private TransactionalEditingDomain domain;
 	private ModelHandler modelHandler;
 	private IFeatureProvider featureProvider;
@@ -103,11 +101,12 @@ public class DIImport {
 	private ImportDiagnostics diagnostics;
 	private final IGaService gaService = Graphiti.getGaService();
 	private BPMNDiagram currentBPMNDiagram;
-	
-	public DIImport(DiagramEditor editor) {
-		this.editor = editor;
-		domain = editor.getEditingDomain();
-		featureProvider = editor.getDiagramTypeProvider().getFeatureProvider();
+
+	public DIImport(IDiagramContainer diagramContainer, Bpmn2Preferences preferences) {
+		this.diagramContainer = diagramContainer;
+		this.preferences = preferences;
+		domain = diagramContainer.getDiagramBehavior().getEditingDomain();
+		featureProvider = diagramContainer.getDiagramTypeProvider().getFeatureProvider();
 	}
 	
 	/**
@@ -119,7 +118,6 @@ public class DIImport {
 		final List<BPMNDiagram> bpmnDiagrams = modelHandler.getAll(BPMNDiagram.class);
 		
 		diagnostics = new ImportDiagnostics(modelHandler.getResource());
-		preferences = (Bpmn2Preferences) editor.getAdapter(Bpmn2Preferences.class);		
 		elements = new LinkedHashMap<BaseElement, PictogramElement>();
 		Bpmn2Preferences prefs = Bpmn2Preferences.getInstance(modelHandler.getResource());
 		prefs.setEnableConnectionRouting(false);
@@ -129,7 +127,7 @@ public class DIImport {
 				@Override
 				protected void doExecute() {
 	
-					Diagram diagram = editor.getDiagramTypeProvider().getDiagram();
+					Diagram diagram = diagramContainer.getDiagramTypeProvider().getDiagram();
 					Definitions definitions = modelHandler.getDefinitions();
 					
 					if (bpmnDiagrams.size() == 0) {
@@ -155,13 +153,13 @@ public class DIImport {
 					// do the import
 					for (BPMNDiagram d : bpmnDiagrams) {
 						currentBPMNDiagram = d;
-						diagram = DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(),d);
+						diagram = DIUtils.getOrCreateDiagram(diagramContainer.getDiagramBehavior(),d);
 					}
 					for (BPMNDiagram d : bpmnDiagrams) {
 						
 						currentBPMNDiagram = d;
-						diagram = DIUtils.findDiagram(editor.getDiagramBehavior(),d);
-						editor.getDiagramTypeProvider().init(diagram, editor.getDiagramBehavior());
+						diagram = DIUtils.findDiagram(diagramContainer.getDiagramBehavior(),d);
+						diagramContainer.getDiagramTypeProvider().init(diagram, diagramContainer.getDiagramBehavior());
 	
 						BPMNPlane plane = d.getPlane();
 						if (plane.getBpmnElement() == null) {
@@ -203,9 +201,9 @@ public class DIImport {
 	public ImportDiagnostics getDiagnostics() {
 		return diagnostics;
 	}
-	
-	public DiagramEditor getEditor() {
-		return editor;
+
+	public IDiagramContainer getDiagramContainer() {
+		return diagramContainer;
 	}
 
 	private void layoutAll() {
@@ -471,7 +469,7 @@ public class DIImport {
 	private Diagram getDiagram(EObject object) {
 		while (object!=null && !(object instanceof BPMNDiagram))
 			object = object.eContainer();
-		return DIUtils.getOrCreateDiagram(editor.getDiagramBehavior(), (BPMNDiagram)object);
+		return DIUtils.getOrCreateDiagram(diagramContainer.getDiagramBehavior(), (BPMNDiagram)object);
 	
 	}
 	
@@ -550,7 +548,6 @@ public class DIImport {
 					elements.put(process, newContainer);
 			}
 			else if (bpmnElement instanceof ChoreographyActivity) {
-				ChoreographyActivity ca = (ChoreographyActivity)bpmnElement;
 				for (PictogramElement pe : ((ContainerShape)newContainer).getChildren()) {
 					Object o = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
 					if (o instanceof Participant)
@@ -649,7 +646,7 @@ public class DIImport {
 			if (targetContainer == null) {
 				BPMNDiagram childDiagram = DIUtils.findBPMNDiagram(element, true);
 				if (childDiagram!=null) {
-					targetContainer = DIUtils.findDiagram(editor.getDiagramBehavior(), childDiagram);
+					targetContainer = DIUtils.findDiagram(diagramContainer.getDiagramBehavior(), childDiagram);
 				}
 			}
 			if (!(targetContainer instanceof Diagram)) {
@@ -941,7 +938,7 @@ public class DIImport {
 		if (context.getTargetContainer() instanceof Diagram) {
 			Diagram diagram = (Diagram)context.getTargetContainer();
 			if (diagram!=featureProvider.getDiagramTypeProvider().getDiagram())
-				featureProvider.getDiagramTypeProvider().init(diagram, editor.getDiagramBehavior());
+				featureProvider.getDiagramTypeProvider().init(diagram, diagramContainer.getDiagramBehavior());
 		}
 		return addFeature.canAdd(context);
 	}

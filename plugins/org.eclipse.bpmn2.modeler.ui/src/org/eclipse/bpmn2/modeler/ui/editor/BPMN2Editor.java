@@ -392,7 +392,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				modelHandler.getDefinitions().setTargetNamespace(targetNamespace);
 			}
 
-			DIImport di = new DIImport(this);
+			DIImport di = new DIImport(this, getPreferences());
 			di.setModelHandler(modelHandler);
 	
 			di.generateFromDI();

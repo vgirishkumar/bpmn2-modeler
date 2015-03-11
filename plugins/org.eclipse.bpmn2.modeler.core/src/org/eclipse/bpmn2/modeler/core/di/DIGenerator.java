@@ -47,26 +47,22 @@ import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
-import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ShapeLayoutManager;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
-import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
@@ -75,7 +71,7 @@ public class DIGenerator {
 	private DIImport importer;
 	private Diagram diagram;
 	private BPMNDiagram bpmnDiagram;
-	private DiagramEditor editor;
+	private IDiagramContainer diagramContainer;
 	private Definitions definitions;
 	private HashMap<BaseElement, PictogramElement> elements;
 	private ImportDiagnostics diagnostics;
@@ -86,8 +82,8 @@ public class DIGenerator {
 		this.importer = importer;
 		elements = importer.getImportedElements();
 		diagnostics = importer.getDiagnostics();
-		editor = importer.getEditor();
-		diagram = editor.getDiagramTypeProvider().getDiagram();
+		diagramContainer = importer.getDiagramContainer();
+		diagram = diagramContainer.getDiagramTypeProvider().getDiagram();
 		bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
 		definitions = ModelUtil.getDefinitions(bpmnDiagram);
 		preferences = Bpmn2Preferences.getInstance(definitions);
@@ -108,13 +104,13 @@ public class DIGenerator {
 				public void run() {
 					MissingDIElementsDialog dlg = new MissingDIElementsDialog(missingElements);
 					if (dlg.open()==Window.OK) {
-						TransactionalEditingDomain domain = editor.getEditingDomain();
+						TransactionalEditingDomain domain = diagramContainer.getDiagramBehavior().getEditingDomain();
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
 								createMissingDIElements(missingElements);
 								
-								ShapeLayoutManager layoutManager = new ShapeLayoutManager(editor);
+								ShapeLayoutManager layoutManager = new ShapeLayoutManager(diagramContainer);
 								Iterator<DiagramElementTreeNode> iter = missingElements.iterator();
 								while (iter.hasNext()) {
 									DiagramElementTreeNode node = iter.next();
