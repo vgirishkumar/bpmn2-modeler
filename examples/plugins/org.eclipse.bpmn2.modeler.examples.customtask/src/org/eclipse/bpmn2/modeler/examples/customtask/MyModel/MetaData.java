@@ -79,7 +79,7 @@ public interface MetaData extends EObject {
 	 * @return the value of the '<em>Value</em>' attribute.
 	 * @see #setValue(String)
 	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage#getMetaData_Value()
-	 * @model required="true" transient="true" volatile="true" derived="true" ordered="false"
+	 * @model transient="true" volatile="true" derived="true" ordered="false"
 	 * @generated
 	 */
 	String getValue();
