@@ -212,7 +212,7 @@ public class BPMNDiagramFeatureContainer extends BaseElementFeatureContainer {
 	 * Context menu action to force automatic Connection Routing on all connections in
 	 * the Diagram.
 	 */
-	public class LayoutConnectionsFeature extends AbstractCustomFeature {
+	public static class LayoutConnectionsFeature extends AbstractCustomFeature {
 
 		/** indicates if changes were made as a result of updating all connections. */
 		boolean hasDoneChanges = false;

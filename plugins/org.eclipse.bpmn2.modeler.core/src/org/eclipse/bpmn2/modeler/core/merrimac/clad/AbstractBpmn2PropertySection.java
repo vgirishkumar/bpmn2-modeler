@@ -231,6 +231,16 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		}
 	}
 
+	/**
+	 * Force a full redraw of the property sheet page
+	 */
+	public void redraw() {
+		AbstractDetailComposite sectionRoot = getSectionRoot();
+		if (sectionRoot!=null) {
+			sectionRoot.setBusinessObject(sectionRoot.getBusinessObject());
+		}
+	}
+	
 	@Override
 	// make this public!
 	public PictogramElement getSelectedPictogramElement() {

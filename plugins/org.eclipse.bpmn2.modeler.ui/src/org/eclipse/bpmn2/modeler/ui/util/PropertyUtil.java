@@ -14,6 +14,8 @@ package org.eclipse.bpmn2.modeler.ui.util;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.core.merrimac.clad.Bpmn2TabbedPropertySheetPage;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.emf.ecore.EObject;
@@ -26,6 +28,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.IPage;
+import org.eclipse.ui.views.properties.PropertySheet;
 
 public class PropertyUtil {
 	
@@ -141,5 +145,17 @@ public class PropertyUtil {
 		}
 		catch (Exception e) {}
 		return false;
+	}
+	
+	public static AbstractBpmn2PropertySection getCurrentPropertySection() {
+		if (PropertyUtil.getPropertySheetView() != null) {
+			PropertySheet props = (PropertySheet)PropertyUtil.getPropertySheetView().getView(true);
+			IPage page = props.getCurrentPage();
+			if (page instanceof Bpmn2TabbedPropertySheetPage) {
+				Bpmn2TabbedPropertySheetPage bpmn2PropertySheetPage = (Bpmn2TabbedPropertySheetPage) page;
+				return (AbstractBpmn2PropertySection) bpmn2PropertySheetPage.getCurrentTab().getSectionAtIndex(0);
+			}
+		}
+		return null;
 	}
 }

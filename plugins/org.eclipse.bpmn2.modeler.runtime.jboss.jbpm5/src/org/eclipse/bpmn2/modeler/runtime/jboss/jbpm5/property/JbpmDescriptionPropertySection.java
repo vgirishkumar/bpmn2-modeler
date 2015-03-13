@@ -15,17 +15,12 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Bpmn2Factory;
-import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.ExtensionAttributeValue;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.Activator;
-import org.eclipse.bpmn2.modeler.core.IConstants;
-import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.MetaDataTypeAdapter;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.DroolsFactory;
@@ -34,7 +29,6 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ExternalProces
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaValueType;
 import org.eclipse.bpmn2.modeler.ui.property.DescriptionPropertySection;
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap.Entry;
 import org.eclipse.emf.transaction.RecordingCommand;
@@ -44,7 +38,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 /**
  * This is an empty tab section which simply exists to hide the "Basic" tab
@@ -126,15 +119,10 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 		protected void bindAppearance(EObject be) {
 			// TODO: support the color/appearance extensions defined by jBPM Web Designer
 		}
-		
-		@Override
-		public void notifyChanged(Notification notification) {
-			super.notifyChanged(notification);
-		}
 
 		protected void bindMetaData(final BaseElement be) {
 			if (isModelObjectEnabled(DroolsPackage.eINSTANCE.getMetaDataType())) {
-				Composite section = createSectionComposite(this, "Metadata");
+				Composite section = createSectionComposite(this, Messages.JbpmDescriptionPropertySection_MetaData_Section_Title);
 				metaData = null;
 				metaValue = null;
 				for (ExtensionAttributeValue eav : be.getExtensionValues()) {
@@ -146,9 +134,9 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 					}
 				}
 				if (metaData==null) {
-					Button button = toolkit.createButton(section, "Add MetaData", SWT.PUSH);
-					toolkit.createLabel(section, "");
-					toolkit.createLabel(section, "");
+					Button button = toolkit.createButton(section, Messages.JbpmDescriptionPropertySection_Add_MetaData_Button, SWT.PUSH);
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
 					button.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {
@@ -157,7 +145,7 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 								@Override
 								protected void doExecute() {
 									metaValue = DroolsFactory.eINSTANCE.createMetaValueType();
-									metaValue.setValue("");
+									metaValue.setValue(""); //$NON-NLS-1$
 									metaData = DroolsFactory.eINSTANCE.createMetaDataType();
 									MetaDataTypeAdapter.adapt(metaData);
 									metaData.setMetaValue(metaValue);
@@ -173,12 +161,12 @@ public class JbpmDescriptionPropertySection extends DescriptionPropertySection {
 				else {
 					TextObjectEditor nameEditor = new TextObjectEditor(this, metaData, DroolsPackage.eINSTANCE.getMetaDataType_Name());
 					TextObjectEditor valueEditor = new TextObjectEditor(this, metaValue, DroolsPackage.eINSTANCE.getMetaValueType_Value());
-					nameEditor.createControl(section, "Name");
-					valueEditor.createControl(section, "Value");
+					nameEditor.createControl(section, Messages.JbpmDescriptionPropertySection_MetaData_Name);
+					valueEditor.createControl(section, Messages.JbpmDescriptionPropertySection_MetaData_Value);
 
-					toolkit.createLabel(section, "");
-					Button button = toolkit.createButton(section, "Remove MetaData", SWT.PUSH);
-					toolkit.createLabel(section, "");
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
+					Button button = toolkit.createButton(section, Messages.JbpmDescriptionPropertySection_Remove_MetaData_Button, SWT.PUSH);
+					toolkit.createLabel(section, ""); //$NON-NLS-1$
 					button.addSelectionListener(new SelectionAdapter() {
 						@Override
 						public void widgetSelected(SelectionEvent e) {

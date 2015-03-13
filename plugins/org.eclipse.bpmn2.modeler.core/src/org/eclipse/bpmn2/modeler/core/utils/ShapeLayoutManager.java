@@ -30,9 +30,11 @@ import org.eclipse.graphiti.features.context.impl.MoveShapeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.platform.IDiagramContainer;
@@ -65,7 +67,6 @@ public class ShapeLayoutManager {
 	
 	private void layout(ContainerShape container, int level) {
 
-		GraphicsUtil.dump(level, "layout", container); //$NON-NLS-1$
 		if (container==null)
 			return;
 		
@@ -207,10 +208,34 @@ public class ShapeLayoutManager {
 			resizeContainerShape(container);
 		}
 
-		// TODO: remove this temporary hack to fix Manhattan Router issue
-//		for (ContainerShape child : childShapes) {
-//			FeatureSupport.updateConnections(editor.getDiagramTypeProvider().getFeatureProvider(), child);
-//		}
+		for (ContainerShape child : childShapes) {
+			if (!child.isActive())
+				continue;
+
+			BaseElement be = BusinessObjectUtil.getFirstBaseElement(child);
+			if (be instanceof Participant && ModelUtil.isParticipantBand((Participant)be))
+				continue;
+
+			for (Connection c : getIncomingConnections(child)) {
+				AnchorContainer targetShape = child;
+				FixPointAnchor sourceAnchor = (FixPointAnchor)c.getStart();
+				FixPointAnchor targetAnchor = (FixPointAnchor)c.getEnd();
+				AnchorContainer sourceShape = sourceAnchor.getParent();
+				AnchorUtil.moveAnchor(sourceAnchor, GraphicsUtil.getShapeCenter(targetShape));
+				AnchorUtil.moveAnchor(targetAnchor, GraphicsUtil.getShapeCenter(sourceShape));
+				DIUtils.updateDIEdge(c);
+			}
+
+			for (Connection c : getOutgoingConnections(child)) {
+				AnchorContainer sourceShape = child;
+				FixPointAnchor sourceAnchor = (FixPointAnchor)c.getStart();
+				FixPointAnchor targetAnchor = (FixPointAnchor)c.getEnd();
+				AnchorContainer targetShape = targetAnchor.getParent();
+				AnchorUtil.moveAnchor(sourceAnchor, GraphicsUtil.getShapeCenter(targetShape));
+				AnchorUtil.moveAnchor(targetAnchor, GraphicsUtil.getShapeCenter(sourceShape));
+				DIUtils.updateDIEdge(c);
+			}
+		}
 	}
 
 	private void stackShapes(ContainerShape container, List<ContainerShape> unconnectedShapes) {
@@ -254,6 +279,18 @@ public class ShapeLayoutManager {
 					if (size.getWidth() > maxWidth)
 						maxWidth = size.getWidth();
 				}
+			}
+		}
+		if (container instanceof Diagram) {
+			x = HORZ_PADDING;
+			y = VERT_PADDING;
+			for (ContainerShape shape : unconnectedShapes) {
+				moveShape(container, shape, x, y);
+				IDimension size = GraphicsUtil.calculateSize(shape);
+				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+				x = loc.getX();
+				y = loc.getY();
+				y += size.getHeight() + VERT_PADDING;
 			}
 		}
 	}
@@ -418,6 +455,22 @@ public class ShapeLayoutManager {
 			}
 		}
 		return flows;
+	}
+	
+	private List<Connection> getIncomingConnections(ContainerShape shape) {
+		List<Connection> connections = new ArrayList<Connection>();
+		for (Anchor a : shape.getAnchors()) {
+			connections.addAll(a.getIncomingConnections());
+		}
+		return connections;
+	}
+	
+	private List<Connection> getOutgoingConnections(ContainerShape shape) {
+		List<Connection> connections = new ArrayList<Connection>();
+		for (Anchor a : shape.getAnchors()) {
+			connections.addAll(a.getOutgoingConnections());
+		}
+		return connections;
 	}
 	
 	private ContainerShape getContainerShape(BaseElement be) {

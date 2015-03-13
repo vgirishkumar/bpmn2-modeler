@@ -86,13 +86,22 @@ public interface MyModelPackage extends EPackage {
 	int DOCUMENT_ROOT__TEMPORAL_DEPENDENCY = 1;
 
 	/**
+	 * The feature id for the '<em><b>Meta Data</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DOCUMENT_ROOT__META_DATA = 2;
+
+	/**
 	 * The number of structural features of the '<em>Document Root</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DOCUMENT_ROOT_FEATURE_COUNT = 2;
+	int DOCUMENT_ROOT_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.ParameterImpl <em>Parameter</em>}' class.
@@ -132,6 +141,52 @@ public interface MyModelPackage extends EPackage {
 	int PARAMETER_FEATURE_COUNT = 2;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MetaDataImpl <em>Meta Data</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MetaDataImpl
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MyModelPackageImpl#getMetaData()
+	 * @generated
+	 */
+	int META_DATA = 2;
+
+	/**
+	 * The feature id for the '<em><b>Mixed</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA__MIXED = 0;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA__NAME = 1;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA__VALUE = 2;
+
+	/**
+	 * The number of structural features of the '<em>Meta Data</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int META_DATA_FEATURE_COUNT = 3;
+
+	/**
 	 * The meta object id for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.TaskConfigImpl <em>Task Config</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -139,7 +194,7 @@ public interface MyModelPackage extends EPackage {
 	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MyModelPackageImpl#getTaskConfig()
 	 * @generated
 	 */
-	int TASK_CONFIG = 2;
+	int TASK_CONFIG = 3;
 
 	/**
 	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
@@ -168,7 +223,7 @@ public interface MyModelPackage extends EPackage {
 	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MyModelPackageImpl#getMyEventDefinition()
 	 * @generated
 	 */
-	int MY_EVENT_DEFINITION = 3;
+	int MY_EVENT_DEFINITION = 4;
 
 	/**
 	 * The feature id for the '<em><b>Extension Values</b></em>' containment reference list.
@@ -242,7 +297,7 @@ public interface MyModelPackage extends EPackage {
 	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MyModelPackageImpl#getTemporalDependency()
 	 * @generated
 	 */
-	int TEMPORAL_DEPENDENCY = 4;
+	int TEMPORAL_DEPENDENCY = 5;
 
 	/**
 	 * The feature id for the '<em><b>Extension Values</b></em>' containment reference list.
@@ -395,6 +450,17 @@ public interface MyModelPackage extends EPackage {
 	EReference getDocumentRoot_TemporalDependency();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.DocumentRoot#getMetaData <em>Meta Data</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Meta Data</em>'.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.DocumentRoot#getMetaData()
+	 * @see #getDocumentRoot()
+	 * @generated
+	 */
+	EReference getDocumentRoot_MetaData();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.Parameter <em>Parameter</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -425,6 +491,49 @@ public interface MyModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getParameter_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData <em>Meta Data</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Meta Data</em>'.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData
+	 * @generated
+	 */
+	EClass getMetaData();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getMixed <em>Mixed</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Mixed</em>'.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getMixed()
+	 * @see #getMetaData()
+	 * @generated
+	 */
+	EAttribute getMetaData_Mixed();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getName()
+	 * @see #getMetaData()
+	 * @generated
+	 */
+	EAttribute getMetaData_Name();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getValue <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Value</em>'.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData#getValue()
+	 * @see #getMetaData()
+	 * @generated
+	 */
+	EAttribute getMetaData_Value();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TaskConfig <em>Task Config</em>}'.
@@ -560,6 +669,14 @@ public interface MyModelPackage extends EPackage {
 		EReference DOCUMENT_ROOT__TEMPORAL_DEPENDENCY = eINSTANCE.getDocumentRoot_TemporalDependency();
 
 		/**
+		 * The meta object literal for the '<em><b>Meta Data</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DOCUMENT_ROOT__META_DATA = eINSTANCE.getDocumentRoot_MetaData();
+
+		/**
 		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.ParameterImpl <em>Parameter</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -584,6 +701,40 @@ public interface MyModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute PARAMETER__VALUE = eINSTANCE.getParameter_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MetaDataImpl <em>Meta Data</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MetaDataImpl
+		 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.MyModelPackageImpl#getMetaData()
+		 * @generated
+		 */
+		EClass META_DATA = eINSTANCE.getMetaData();
+
+		/**
+		 * The meta object literal for the '<em><b>Mixed</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute META_DATA__MIXED = eINSTANCE.getMetaData_Mixed();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute META_DATA__NAME = eINSTANCE.getMetaData_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute META_DATA__VALUE = eINSTANCE.getMetaData_Value();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl.TaskConfigImpl <em>Task Config</em>}' class.

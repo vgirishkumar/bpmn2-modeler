@@ -31,6 +31,11 @@ public class Messages extends NLS {
 	public static String JbpmDataItemsPropertySection_Duplicate_Import;
 	public static String JbpmDefinitionsPropertyComposite_Imports_Title;
 	public static String JbpmDefinitionsPropertySection_Name;
+	public static String JbpmDescriptionPropertySection_Add_MetaData_Button;
+	public static String JbpmDescriptionPropertySection_MetaData_Name;
+	public static String JbpmDescriptionPropertySection_MetaData_Section_Title;
+	public static String JbpmDescriptionPropertySection_MetaData_Value;
+	public static String JbpmDescriptionPropertySection_Remove_MetaData_Button;
 	public static String JbpmImportObjectEditor_Browse;
 	public static String JbpmImportObjectEditor_Invalid_Character;
 	public static String JbpmImportTypeDetailComposite_Title;

@@ -58,6 +58,7 @@ public class MyModelFactoryImpl extends EFactoryImpl implements MyModelFactory {
 		switch (eClass.getClassifierID()) {
 			case MyModelPackage.DOCUMENT_ROOT: return createDocumentRoot();
 			case MyModelPackage.PARAMETER: return createParameter();
+			case MyModelPackage.META_DATA: return createMetaData();
 			case MyModelPackage.TASK_CONFIG: return createTaskConfig();
 			case MyModelPackage.MY_EVENT_DEFINITION: return createMyEventDefinition();
 			case MyModelPackage.TEMPORAL_DEPENDENCY: return createTemporalDependency();
@@ -84,6 +85,16 @@ public class MyModelFactoryImpl extends EFactoryImpl implements MyModelFactory {
 	public Parameter createParameter() {
 		ParameterImpl parameter = new ParameterImpl();
 		return parameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public MetaData createMetaData() {
+		MetaDataImpl metaData = new MetaDataImpl();
+		return metaData;
 	}
 
 	/**

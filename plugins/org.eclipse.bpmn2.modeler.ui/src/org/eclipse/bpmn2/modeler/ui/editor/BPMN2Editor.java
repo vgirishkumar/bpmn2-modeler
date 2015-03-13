@@ -482,7 +482,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			 // If none of the plug-ins respond with "yes, this file is targeted for my runtime",
 			 // then use the "None" as the extension. This will configure the BPMN2 Modeler with
 			 // generic property sheets and other default behavior.
-			targetRuntime = TargetRuntime.getRuntime(input);
+			if (input instanceof Bpmn2DiagramEditorInput)
+				targetRuntime = ((Bpmn2DiagramEditorInput)input).getRuntime();
+			if (targetRuntime==null)
+				targetRuntime = TargetRuntime.getRuntime(input);
+			
 			TargetRuntime.setCurrentRuntime(targetRuntime);
 		}
 		return targetRuntime;

@@ -45,8 +45,11 @@ import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.di.ParticipantBandKind;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
+import org.eclipse.bpmn2.modeler.core.features.BPMNDiagramFeatureContainer.LayoutConnectionsFeature;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
+import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -54,12 +57,16 @@ import org.eclipse.bpmn2.modeler.core.utils.ShapeLayoutManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dd.dc.Bounds;
 import org.eclipse.dd.dc.DcFactory;
+import org.eclipse.dd.dc.Point;
 import org.eclipse.dd.di.DiagramElement;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.platform.IDiagramContainer;
@@ -118,6 +125,12 @@ public class DIGenerator {
 										layoutManager.layout(node.getBaseElement());
 									}
 								}
+								// clear selection of last element created
+								diagramContainer.setPictogramElementForSelection(null);
+								// lay out all connections
+								ICustomContext context = new CustomContext(new PictogramElement[] {diagramContainer.getDiagramTypeProvider().getDiagram()} );
+								LayoutConnectionsFeature f = new LayoutConnectionsFeature(diagramContainer.getDiagramTypeProvider().getFeatureProvider());
+								f.execute(context);
 							}
 						});
 					}
@@ -450,7 +463,7 @@ public class DIGenerator {
 
 		// look for any BPMN2 elements that do not have corresponding DI elements
 		// and create DI elements for them. First, handle the BPMNShape objects:
-		int x = 102400;
+		int x = 0;
 		int y = 0;
 		List<BaseElement> shapes = new ArrayList<BaseElement>();
 		for (DiagramElementTreeNode node : missing.getChildren()) {
@@ -655,26 +668,27 @@ public class DIGenerator {
 				// we know the PictogramElements for these can be found in our elements map
 				Shape sourceShape = (Shape)elements.get(sourceElement);
 				Shape targetShape = (Shape)elements.get(targetElement);
-//				if (sourceShape!=null && targetShape!=null) {
-//					Tuple<FixPointAnchor,FixPointAnchor> anchors =
-//							AnchorUtil.getSourceAndTargetBoundaryAnchors(sourceShape, targetShape, null);
-//					org.eclipse.graphiti.mm.algorithms.styles.Point sourceLoc = GraphicsUtil.createPoint(anchors.getFirst());
-//					org.eclipse.graphiti.mm.algorithms.styles.Point targetLoc = GraphicsUtil.createPoint(anchors.getSecond());
-//					Point point = DcFactory.eINSTANCE.createPoint();
-//					point.setX(sourceLoc.getX());
-//					point.setY(sourceLoc.getY());
-//					bpmnEdge.getWaypoint().add(point);
-//			
-//					point = DcFactory.eINSTANCE.createPoint();
-//					point.setX(targetLoc.getX());
-//					point.setY(targetLoc.getY());
-//					bpmnEdge.getWaypoint().add(point);
-//					
-//					plane.getPlaneElement().add(bpmnEdge);
-//					
-//					ModelUtil.setID(bpmnEdge);
-//					importer.importConnection(bpmnEdge);
-//				}
+				if (sourceShape!=null && targetShape!=null) {
+					FixPointAnchor sourceAnchor = AnchorUtil.createAnchor(sourceShape, AnchorSite.LEFT);
+					FixPointAnchor targetAnchor = AnchorUtil.createAnchor(targetShape, AnchorSite.RIGHT);
+					
+					org.eclipse.graphiti.mm.algorithms.styles.Point sourceLoc = GraphicsUtil.createPoint(sourceAnchor);
+					org.eclipse.graphiti.mm.algorithms.styles.Point targetLoc = GraphicsUtil.createPoint(targetAnchor);
+					Point point = DcFactory.eINSTANCE.createPoint();
+					point.setX(sourceLoc.getX());
+					point.setY(sourceLoc.getY());
+					bpmnEdge.getWaypoint().add(point);
+			
+					point = DcFactory.eINSTANCE.createPoint();
+					point.setX(targetLoc.getX());
+					point.setY(targetLoc.getY());
+					bpmnEdge.getWaypoint().add(point);
+					
+					plane.getPlaneElement().add(bpmnEdge);
+					
+					ModelUtil.setID(bpmnEdge);
+					importer.importConnection(bpmnEdge);
+				}
 			}
 		}
 		

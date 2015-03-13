@@ -4,10 +4,12 @@ package org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl;
 
 import java.util.Collection;
 
+import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.Parameter;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TaskConfig;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -15,6 +17,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;

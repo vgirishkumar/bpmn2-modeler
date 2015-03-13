@@ -3,26 +3,21 @@
 package org.eclipse.bpmn2.modeler.examples.customtask.MyModel.impl;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-
 import org.eclipse.bpmn2.di.BpmnDiPackage;
-
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.DocumentRoot;
+import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyEventDefinition;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelFactory;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MyModelPackage;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.Parameter;
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TaskConfig;
-
 import org.eclipse.bpmn2.modeler.examples.customtask.MyModel.TemporalDependency;
 import org.eclipse.dd.dc.DcPackage;
-
 import org.eclipse.dd.di.DiPackage;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 /**
@@ -45,6 +40,13 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 	 * @generated
 	 */
 	private EClass parameterEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass metaDataEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -166,6 +168,15 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getDocumentRoot_MetaData() {
+		return (EReference)documentRootEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getParameter() {
 		return parameterEClass;
 	}
@@ -186,6 +197,42 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 	 */
 	public EAttribute getParameter_Value() {
 		return (EAttribute)parameterEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getMetaData() {
+		return metaDataEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMetaData_Mixed() {
+		return (EAttribute)metaDataEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMetaData_Name() {
+		return (EAttribute)metaDataEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getMetaData_Value() {
+		return (EAttribute)metaDataEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -291,10 +338,16 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 		documentRootEClass = createEClass(DOCUMENT_ROOT);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__TASK_CONFIG);
 		createEReference(documentRootEClass, DOCUMENT_ROOT__TEMPORAL_DEPENDENCY);
+		createEReference(documentRootEClass, DOCUMENT_ROOT__META_DATA);
 
 		parameterEClass = createEClass(PARAMETER);
 		createEAttribute(parameterEClass, PARAMETER__NAME);
 		createEAttribute(parameterEClass, PARAMETER__VALUE);
+
+		metaDataEClass = createEClass(META_DATA);
+		createEAttribute(metaDataEClass, META_DATA__MIXED);
+		createEAttribute(metaDataEClass, META_DATA__NAME);
+		createEAttribute(metaDataEClass, META_DATA__VALUE);
 
 		taskConfigEClass = createEClass(TASK_CONFIG);
 		createEReference(taskConfigEClass, TASK_CONFIG__PARAMETERS);
@@ -346,10 +399,16 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 		initEClass(documentRootEClass, DocumentRoot.class, "DocumentRoot", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDocumentRoot_TaskConfig(), this.getTaskConfig(), null, "taskConfig", null, 0, -2, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDocumentRoot_TemporalDependency(), this.getTemporalDependency(), null, "temporalDependency", null, 0, -2, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getDocumentRoot_MetaData(), this.getMetaData(), null, "metaData", null, 0, -2, null, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getParameter_Value(), ecorePackage.getEString(), "value", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(metaDataEClass, MetaData.class, "MetaData", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getMetaData_Mixed(), ecorePackage.getEFeatureMapEntry(), "mixed", null, 0, -1, MetaData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMetaData_Name(), ecorePackage.getEString(), "name", null, 0, 1, MetaData.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getMetaData_Value(), ecorePackage.getEString(), "value", null, 0, 1, MetaData.class, IS_TRANSIENT, IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, IS_DERIVED, !IS_ORDERED);
 
 		initEClass(taskConfigEClass, TaskConfig.class, "TaskConfig", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTaskConfig_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, TaskConfig.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -377,14 +436,14 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 	 * @generated
 	 */
 	protected void createExtendedMetaDataAnnotations() {
-		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData";		
+		String source = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData";	
 		addAnnotation
 		  (documentRootEClass, 
 		   source, 
 		   new String[] {
 			 "name", "",
 			 "kind", "mixed"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_TaskConfig(), 
 		   source, 
@@ -392,7 +451,7 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 			 "name", "taskConfig",
 			 "kind", "element",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
 		addAnnotation
 		  (getDocumentRoot_TemporalDependency(), 
 		   source, 
@@ -400,7 +459,30 @@ public class MyModelPackageImpl extends EPackageImpl implements MyModelPackage {
 			 "name", "temporalDependency",
 			 "kind", "element",
 			 "namespace", "##targetNamespace"
-		   });		
+		   });	
+		addAnnotation
+		  (getDocumentRoot_MetaData(), 
+		   source, 
+		   new String[] {
+			 "name", "metaData",
+			 "kind", "element",
+			 "namespace", "##targetNamespace"
+		   });	
+		addAnnotation
+		  (metaDataEClass, 
+		   source, 
+		   new String[] {
+			 "kind", "mixed",
+			 "namespace", "##targetNamespace"
+		   });	
+		addAnnotation
+		  (getMetaData_Mixed(), 
+		   source, 
+		   new String[] {
+			 "kind", "elementWildcard",
+			 "name", ":mixed",
+			 "namespace", "##targetNamespace"
+		   });	
 		addAnnotation
 		  (getTaskConfig_Parameters(), 
 		   source, 

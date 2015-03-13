@@ -20,6 +20,8 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -136,10 +138,12 @@ public class TextObjectEditor extends ObjectEditor {
 	protected void updateText() {
 		try {
 			isWidgetUpdating = true;
+			if (!text.isDisposed()) {
 			if (!text.getText().equals(getText())) {
-				int pos = text.getCaretPosition();
-				setText(getText());
-				text.setSelection(pos, pos);
+					int pos = text.getCaretPosition();
+					setText(getText());
+					text.setSelection(pos, pos);
+				}
 			}
 		}
 		finally {

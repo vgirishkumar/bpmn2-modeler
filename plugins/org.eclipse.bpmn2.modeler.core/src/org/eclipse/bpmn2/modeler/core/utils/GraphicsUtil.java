@@ -549,7 +549,8 @@ public class GraphicsUtil {
 	}
 
 	public static void dump(String label, ContainerShape shape) {
-		GraphicsUtil.dump(0, label,shape,0,0);
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
+		GraphicsUtil.dump(0, label,shape,loc.getX(),loc.getY());
 	}
 
 	public static void dump(String label, Connection c) {
@@ -562,7 +563,8 @@ public class GraphicsUtil {
 	}
 
 	public static void dump(int level, String label, ContainerShape shape) {
-		GraphicsUtil.dump(level, label,shape,0,0);
+		ILocation loc = peService.getLocationRelativeToDiagram(shape);
+		GraphicsUtil.dump(level, label,shape,loc.getX(),loc.getY());
 	}
 
 	public static void dump(int level, String label, ContainerShape shape, int x, int y) {
@@ -571,7 +573,7 @@ public class GraphicsUtil {
 			for (int i=0; i<level; ++i)
 				System.out.print("    "); //$NON-NLS-1$
 			System.out.print(label+" "+text); //$NON-NLS-1$
-			if (x>0 && y>0) {
+			if (x>0 || y>0) {
 				System.out.println(" at "+x+", "+y); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			else

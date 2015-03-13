@@ -80,6 +80,10 @@ public class MyModelAdapterFactory extends AdapterFactoryImpl {
 				return createParameterAdapter();
 			}
 			@Override
+			public Adapter caseMetaData(MetaData object) {
+				return createMetaDataAdapter();
+			}
+			@Override
 			public Adapter caseTaskConfig(TaskConfig object) {
 				return createTaskConfigAdapter();
 			}
@@ -152,6 +156,20 @@ public class MyModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createParameterAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData <em>Meta Data</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.bpmn2.modeler.examples.customtask.MyModel.MetaData
+	 * @generated
+	 */
+	public Adapter createMetaDataAdapter() {
 		return null;
 	}
 
