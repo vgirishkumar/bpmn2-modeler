@@ -37,9 +37,9 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILayoutService;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * 
@@ -48,16 +48,17 @@ public class ShapeLayoutManager {
 
 	private static final int HORZ_PADDING = 50;
 	private static final int VERT_PADDING = 50;
-	private DiagramEditor editor;
 	private static final ILayoutService layoutService = Graphiti.getLayoutService();
 	
-	public ShapeLayoutManager(DiagramEditor editor) {
-		this.editor = editor;
+	private IDiagramContainer diagramContainer;
+	
+	public ShapeLayoutManager(IDiagramContainer diagramContainer) {
+		this.diagramContainer = diagramContainer;
 	}
 
 	public void layout(BaseElement container) {
 		layout( getContainerShape(container) );
-		editor.selectPictogramElements(new PictogramElement[]{});
+		diagramContainer.selectPictogramElements(new PictogramElement[]{});
 	}
 	
 	public void layout(ContainerShape container) {
@@ -299,7 +300,7 @@ public class ShapeLayoutManager {
 		context.setLocation(x, y);
 		context.setSourceContainer(container);
 		context.setTargetContainer(container);
-		IMoveShapeFeature moveFeature = editor.getDiagramTypeProvider().getFeatureProvider().getMoveShapeFeature(context);
+		IMoveShapeFeature moveFeature = diagramContainer.getDiagramTypeProvider().getFeatureProvider().getMoveShapeFeature(context);
 		if (moveFeature.canMoveShape(context)) {
 			moveFeature.moveShape(context);
 			return true;
@@ -392,7 +393,7 @@ public class ShapeLayoutManager {
 		int y = container.getGraphicsAlgorithm().getY();
 		context.setLocation(x, y);
 		context.setSize(width, height);
-		IResizeShapeFeature resizeFeature = editor.getDiagramTypeProvider().getFeatureProvider().getResizeShapeFeature(context);
+		IResizeShapeFeature resizeFeature = diagramContainer.getDiagramTypeProvider().getFeatureProvider().getResizeShapeFeature(context);
 		if (resizeFeature.canResizeShape(context)) {
 			resizeFeature.resizeShape(context);
 			return true;
@@ -476,7 +477,7 @@ public class ShapeLayoutManager {
 		Diagram diagram = null;
 		BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(be, true);
 		if (bpmnDiagram != null) {
-			diagram = DIUtils.findDiagram(editor.getDiagramBehavior(), bpmnDiagram);
+			diagram = DIUtils.findDiagram(diagramContainer.getDiagramBehavior(), bpmnDiagram);
 			if (diagram==null) {
 				System.out.println("Diagram is null"); //$NON-NLS-1$
 			}

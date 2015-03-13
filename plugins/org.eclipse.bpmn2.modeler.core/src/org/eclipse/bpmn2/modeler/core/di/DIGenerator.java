@@ -69,7 +69,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
@@ -78,7 +78,7 @@ public class DIGenerator {
 	private DIImport importer;
 	private Diagram diagram;
 	private BPMNDiagram bpmnDiagram;
-	private DiagramEditor editor;
+	private IDiagramContainer diagramContainer;
 	private Definitions definitions;
 	private HashMap<BaseElement, PictogramElement> elements;
 	private ImportDiagnostics diagnostics;
@@ -89,8 +89,8 @@ public class DIGenerator {
 		this.importer = importer;
 		elements = importer.getImportedElements();
 		diagnostics = importer.getDiagnostics();
-		editor = importer.getEditor();
-		diagram = editor.getDiagramTypeProvider().getDiagram();
+		diagramContainer = importer.getDiagramContainer();
+		diagram = diagramContainer.getDiagramTypeProvider().getDiagram();
 		bpmnDiagram = BusinessObjectUtil.getFirstElementOfType(diagram, BPMNDiagram.class);
 		definitions = ModelUtil.getDefinitions(bpmnDiagram);
 		preferences = Bpmn2Preferences.getInstance(definitions);
@@ -111,13 +111,13 @@ public class DIGenerator {
 				public void run() {
 					MissingDIElementsDialog dlg = new MissingDIElementsDialog(missingElements);
 					if (dlg.open()==Window.OK) {
-						TransactionalEditingDomain domain = editor.getEditingDomain();
+						TransactionalEditingDomain domain = diagramContainer.getDiagramBehavior().getEditingDomain();
 						domain.getCommandStack().execute(new RecordingCommand(domain) {
 							@Override
 							protected void doExecute() {
 								createMissingDIElements(missingElements);
 								
-								ShapeLayoutManager layoutManager = new ShapeLayoutManager(editor);
+								ShapeLayoutManager layoutManager = new ShapeLayoutManager(diagramContainer);
 								Iterator<DiagramElementTreeNode> iter = missingElements.iterator();
 								while (iter.hasNext()) {
 									DiagramElementTreeNode node = iter.next();
@@ -126,10 +126,10 @@ public class DIGenerator {
 									}
 								}
 								// clear selection of last element created
-								editor.setPictogramElementForSelection(null);
+								diagramContainer.setPictogramElementForSelection(null);
 								// lay out all connections
-								ICustomContext context = new CustomContext(new PictogramElement[] {editor.getDiagramTypeProvider().getDiagram()} );
-								LayoutConnectionsFeature f = new LayoutConnectionsFeature(editor.getDiagramTypeProvider().getFeatureProvider());
+								ICustomContext context = new CustomContext(new PictogramElement[] {diagramContainer.getDiagramTypeProvider().getDiagram()} );
+								LayoutConnectionsFeature f = new LayoutConnectionsFeature(diagramContainer.getDiagramTypeProvider().getFeatureProvider());
 								f.execute(context);
 							}
 						});

@@ -388,9 +388,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 				// If the bpmn file was missing DI elements, they would have been added by the importer
 				// so save the file now in case it was changed.
 				saveModelFile();
+			} else {
+				modelHandler.getDefinitions().setTargetNamespace(targetNamespace);
 			}
 			
-			DIImport di = new DIImport(this);
+			DIImport di = new DIImport(this, getPreferences());
 			di.setModelHandler(modelHandler);
 	
 			di.generateFromDI();
@@ -739,7 +741,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 
 	@Override
 	public void dispose() {
-		getTargetRuntime().notify(new LifecycleEvent(EventType.EDITOR_SHUTDOWN,this));
+		if (targetRuntime != null) {
+			targetRuntime.notify(new LifecycleEvent(EventType.EDITOR_SHUTDOWN,this));
+		}
 
 		// clear ID mapping tables if no more instances of editor are active
 		int instances = 0;
@@ -754,7 +758,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			}
 		}
 		BPMN2Editor otherEditor = findOpenEditor(this, getEditorInput());
-		if (otherEditor==null) {
+		if (otherEditor==null && diagramUri != null) {
 			// we can delete the Graphiti Diagram file if there are no other
 			// editor windows open for this BPMN2 file.
 			File diagramFile = new File(diagramUri.toFileString());
@@ -770,7 +774,9 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			ModelUtil.clearIDs(modelHandler.getResource(), instances==0);
 			modelHandler.dispose();
 		}
-		getPreferences().removePreferenceChangeListener(this);
+		if (preferences != null) {
+			preferences.removePreferenceChangeListener(this);
+		}
 		
 		// cancel the Property Sheet Page job
 		if (propertySheetPage!=null)
@@ -780,24 +786,32 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 		if (tabDescriptorProvider instanceof PropertyTabDescriptorProvider)
 			((PropertyTabDescriptorProvider)tabDescriptorProvider).disposeTabDescriptors(bpmnResource);
 		
-		getResourceSet().eAdapters().remove(getEditorAdapter());
+		if (getResourceSet() != null) {
+			getResourceSet().eAdapters().remove(getEditorAdapter());
+		}
 		removeSelectionListener();
 		if (instances==0)
 			setActiveEditor(null);
 		
 		super.dispose();
-		ModelHandlerLocator.remove(modelUri);
-		// get rid of temp files and folders, but NOT if the workbench is being shut down.
-		// when the workbench is restarted, we need to have those temp files around!
-		if (!workbenchShutdown) {
-			if (FileUtils.isTempFile(modelUri)) {
-				FileUtils.deleteTempFile(modelUri);
+		if (modelUri != null) {
+			ModelHandlerLocator.remove(modelUri);
+			// get rid of temp files and folders, but NOT if the workbench is being shut down.
+			// when the workbench is restarted, we need to have those temp files around!
+			if (!workbenchShutdown) {
+				if (FileUtils.isTempFile(modelUri)) {
+					FileUtils.deleteTempFile(modelUri);
+				}
 			}
 		}
 
 		removeWorkbenchListener();
 		removeMarkerChangeListener();
-		getPreferences().dispose();
+
+		if (preferences != null) {
+			preferences.dispose();
+		}
+
 		currentInput = null;
 	}
 
@@ -1294,7 +1308,7 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 	}
 
 	@Override
-	protected void configureGraphicalViewer() {
+	public void configureGraphicalViewer() {
 	    super.configureGraphicalViewer();
 	    // add zooming action with "CTRL + Mouse Wheel"
 	    GraphicalViewer viewer = getGraphicalViewer();
