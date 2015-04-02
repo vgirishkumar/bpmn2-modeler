@@ -661,6 +661,11 @@
 							<property name="name" value="Locale" type="EString"/>
 						</value>
 					</property>
+					<property name="dataInputs">
+						<value>
+							<property name="name" value="CreatedBy" type="EString"/>
+						</value>
+					</property>
 
 					<property name="inputSets">
 						<value>
@@ -671,6 +676,7 @@
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#4"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#5"/>
 							<property name="dataInputRefs" ref="ioSpecification/dataInputs#6"/>
+							<property name="dataInputRefs" ref="ioSpecification/dataInputs#7"/>
 						</value>
 					</property>
 				</value>
@@ -806,6 +812,25 @@
 						</value>
 					</property>
 					<property name="targetRef" ref="ioSpecification/dataInputs#6"/>
+				</value>
+			</property>
+			<property name="dataInputAssociations">
+				<value>
+					<property name="assignment">
+						<value>
+							<property name="from" type="FormalExpression">
+								<value>
+									<property name="body" value=""/>
+								</value>
+							</property>
+							<property name="to" type="FormalExpression">
+								<value>
+									<property name="body" ref="ioSpecification/dataInputs#7"/>
+								</value>
+							</property>
+						</value>
+					</property>
+					<property name="targetRef" ref="ioSpecification/dataInputs#7"/>
 				</value>
 			</property>
 		</modelExtension>

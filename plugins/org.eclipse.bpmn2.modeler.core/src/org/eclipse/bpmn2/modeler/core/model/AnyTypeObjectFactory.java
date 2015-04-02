@@ -13,14 +13,17 @@
 
 package org.eclipse.bpmn2.modeler.core.model;
 
+import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
+import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+import org.eclipse.emf.ecore.xml.type.AnyType;
 import org.eclipse.emf.ecore.xml.type.XMLTypeFactory;
 
 /**
@@ -47,13 +50,33 @@ class AnyTypeObjectFactory extends EFactoryImpl {
 			object = eClass.getEPackage().getEFactoryInstance().create(eClass);
 		}
 		else {
-			object = super.create(eClass);
+			// If an implementation class with the given EClass name exists
+			// try creating an instance of that class instead of the generic
+			// AnyTypeImpl. The implementation class name must have the
+			// EClass name followed by "Impl" and must extend AnyTypeImpl.
+			if ("AnyType".equals(eClass.getInstanceClass().getSimpleName()))
+				object = super.create(eClass);
+			else
+				object = create(eClass, (Class<EObject>)eClass.getInstanceClass());
 		}
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
 		LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
 		return object;
 	}
 	
+	public EObject create(EClass eClass, Class<EObject> instanceClass) {
+		try {
+			EObject object = instanceClass.newInstance();
+			ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(object);
+			LifecycleEvent.notify(new LifecycleEvent(EventType.BUSINESSOBJECT_CREATED, object));
+			return object;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	protected EObject basicCreate(EClass eClass) {
 		return eClass.getInstanceClassName() == "java.util.Map$Entry" ? //$NON-NLS-1$
 				new DynamicEObjectImpl.BasicEMapEntry<String, String>(eClass) :

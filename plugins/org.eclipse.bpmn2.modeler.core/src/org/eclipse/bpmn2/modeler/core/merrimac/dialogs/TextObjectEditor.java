@@ -20,8 +20,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -40,7 +38,7 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Text text;
 	protected boolean multiLine = false;
 	protected boolean testMultiLine = true;
-	
+
 	/**
 	 * @param parent
 	 * @param object
@@ -57,7 +55,7 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		if (testMultiLine && super.isMultiLineText()) {
+		if (multiLine || (testMultiLine && super.isMultiLineText())) {
 			multiLine = true;
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
@@ -69,7 +67,7 @@ public class TextObjectEditor extends ObjectEditor {
 			data.heightHint = 100;
 		}
 		text.setLayoutData(data);
-		
+
 		int textLimit = Bpmn2Preferences.getInstance(object).getTextLimit();
 		text.setTextLimit(textLimit);
 
@@ -80,7 +78,7 @@ public class TextObjectEditor extends ObjectEditor {
 				if (e.detail == SWT.TRAVERSE_RETURN && multiLine)
 					e.doit = false;
 			}
-			
+
 		});
 		setText(getText());
 
@@ -99,19 +97,19 @@ public class TextObjectEditor extends ObjectEditor {
 
 		return text;
 	}
-	
+
 	public void setMultiLine(boolean multiLine) {
 		testMultiLine = false;
 		this.multiLine = multiLine;
 
 	}
-	
+
 	@Override
 	public void setObject(EObject object) {
 		super.setObject(object);
 		updateText();
 	}
-	
+
 	@Override
 	public void setObject(EObject object, EStructuralFeature feature) {
 		super.setObject(object, feature);
@@ -123,7 +121,7 @@ public class TextObjectEditor extends ObjectEditor {
 	 */
 	@Override
 	public boolean setValue(final Object result) {
-		
+
 		if (super.setValue(result)) {
 			updateText();
 			return true;
@@ -132,7 +130,7 @@ public class TextObjectEditor extends ObjectEditor {
 		text.setText(getText());
 		return false;
 	}
-	
+
 	/**
 	 * Update the text field widget after its underlying value has changed.
 	 */
@@ -151,10 +149,10 @@ public class TextObjectEditor extends ObjectEditor {
 			isWidgetUpdating = false;
 		}
 	}
-	
+
 	/**
 	 * Set the text field with the given value
-	 * 
+	 *
 	 * @param value - new value for the text field
 	 */
 	protected void setText(String value) {
@@ -163,16 +161,16 @@ public class TextObjectEditor extends ObjectEditor {
 		if (!value.equals(text.getText()))
 				text.setText(value);
 	}
-	
+
 	/**
 	 * Returns the string representation of the given value used for
 	 * display in the text field. The default implementation correctly
 	 * handles structureRef values (proxy URIs from a DynamicEObject)
 	 * and provides reasonable behavior for EObject values.
-	 * 
+	 *
 	 * @param value - new object value. If null is passed in, the implementation
 	 * should substitute the original value of the EObject's feature.
-	 * 
+	 *
 	 * @return string representation of the EObject feature's value.
 	 */
 	protected String getText() {
@@ -200,7 +198,8 @@ public class TextObjectEditor extends ObjectEditor {
 			}
 		}
 	}
-	
+
+	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		text.setVisible(visible);
@@ -208,7 +207,8 @@ public class TextObjectEditor extends ObjectEditor {
 		data.exclude = !visible;
 		text.getParent().redraw();
 	}
-	
+
+	@Override
 	public void dispose() {
 		super.dispose();
 		if (text!=null && !text.isDisposed()) {
@@ -216,7 +216,8 @@ public class TextObjectEditor extends ObjectEditor {
 			text = null;
 		}
 	}
-	
+
+	@Override
 	public Control getControl() {
 		return text;
 	}

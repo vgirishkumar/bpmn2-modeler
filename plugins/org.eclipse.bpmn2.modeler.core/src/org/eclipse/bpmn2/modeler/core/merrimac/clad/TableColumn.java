@@ -51,6 +51,10 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 	protected boolean editable = true;
 	protected String headerText = null;
 
+	public TableColumn(EObject o) {
+		this(o,(EStructuralFeature)null);
+	}
+
 	public TableColumn(EObject o, EStructuralFeature f) {
 		this(null,o,f);
 	}
@@ -96,11 +100,16 @@ public class TableColumn extends ColumnTableProvider.Column implements ILabelPro
 		return text;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.merrimac.providers.ColumnTableProvider.Column#getProperty()
+	 * NOTE: You may want to override this method if feature==null and provide a unique string value
+	 * for each column in the table, otherwise it will use the Header Text string.
+	 */
 	@Override
 	public String getProperty() {
 		if (feature!=null)
 			return feature.getName(); //$NON-NLS-1$
-		return ""; //$NON-NLS-1$
+		return this.getHeaderText(); //$NON-NLS-1$
 	}
 
 	@Override
