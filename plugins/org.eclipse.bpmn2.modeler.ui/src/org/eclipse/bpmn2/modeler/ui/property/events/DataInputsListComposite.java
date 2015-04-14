@@ -88,7 +88,7 @@ public class DataInputsListComposite extends DefaultListComposite {
 	@Override
 	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
 		// remove parameter from inputSets
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		EObject item = list.get(index);
 		InputSet inputSet = throwEvent.getInputSet();
 		if (inputSet.getDataInputRefs().contains(item))

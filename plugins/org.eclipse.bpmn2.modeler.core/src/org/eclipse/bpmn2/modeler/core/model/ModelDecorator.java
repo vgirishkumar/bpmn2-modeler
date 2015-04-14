@@ -31,7 +31,6 @@ import org.eclipse.bpmn2.modeler.core.EDataTypeConversionFactory;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterRegistry;
 import org.eclipse.bpmn2.modeler.core.adapters.AdapterUtil;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.utils.Messages;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -39,6 +38,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.dd.dc.DcPackage;
 import org.eclipse.dd.di.DiPackage;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -56,6 +56,7 @@ import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
+import org.eclipse.emf.ecore.impl.EEnumLiteralImpl;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.BasicFeatureMap;
@@ -488,7 +489,7 @@ public class ModelDecorator {
 	 * @see getType(String)
 	 * @return the EClass.
 	 */
-	public EClass createEClass(String type) {
+	public EClass createEClass(String type, Class instanceClass) {
 		EClass eClass = getEClass(type);
 		if (eClass!=null)
 			return eClass;
@@ -507,11 +508,15 @@ public class ModelDecorator {
 		// make this class look like a DocumentRoot so that it can be added
 		// to the containing object's "anyType" feature.
 		ExtendedMetaData.INSTANCE.setName(eClass, ""); //$NON-NLS-1$
-		eClass.setInstanceClass(AnyType.class);
+		eClass.setInstanceClass(instanceClass);
 
 		return eClass;
 	}
-
+	
+	public EClass createEClass(String type) {
+		return createEClass(type, AnyType.class);
+	}
+	
 	public EStructuralFeature getEStructuralFeature(EObject object, String name) {
 		// first check the object's EClass for the feature name
 		EClass eClass = object.eClass();
@@ -593,6 +598,10 @@ public class ModelDecorator {
 	 * @return a new EAttribute
 	 */
 	public EAttribute createEAttribute(String name, String type, String owningtype, String defaultValue) {
+		return this.createEAttribute(name, type, owningtype, defaultValue, null);
+	}
+	
+	public EAttribute createEAttribute(String name, String type, String owningtype, String defaultValue, Enumerator[] enumerators) {
 		EAttribute eAttribute = getEAttribute(name,type,owningtype);
 		if (eAttribute!=null)
 			return eAttribute;
@@ -640,11 +649,23 @@ public class ModelDecorator {
 				else
 					values = defaultValue.split(" "); //$NON-NLS-1$
 				for (String v : values) {
+					createEEnumLiteral(v, (EEnum)eClassifier);
 					if (setDefault) {
 						eAttribute.setDefaultValue(v);
 						setDefault = false;
 					}
-					createEEnumLiteral(v, (EEnum)eClassifier);
+				}
+			}
+			else if (enumerators!=null) {
+				boolean setDefault = true;
+				for (Enumerator e : enumerators) {
+					EEnumLiteralImpl lit = (EEnumLiteralImpl) createEEnumLiteral(e.getLiteral(), (EEnum)eClassifier);
+					lit.setInstance(e);
+				    lit.setGeneratedInstance(true);
+					if (setDefault) {
+						eAttribute.setDefaultValue(e);
+						setDefault = false;
+					}
 				}
 			}
 		}

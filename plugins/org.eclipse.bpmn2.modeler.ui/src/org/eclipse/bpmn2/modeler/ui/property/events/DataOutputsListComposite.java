@@ -92,7 +92,7 @@ public class DataOutputsListComposite extends DefaultListComposite {
 	@Override
 	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
 		// remove parameter from outputSets
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		EObject item = list.get(index);
 		OutputSet outputSet = catchEvent.getOutputSet();
 		if (outputSet.getDataOutputRefs().contains(item))

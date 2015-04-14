@@ -14,7 +14,11 @@
 package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 
+import org.eclipse.bpmn2.Task;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.TaskReassignmentsListComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.TaskNotificationsListComposite;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -23,6 +27,9 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class JbpmUserTaskDetailComposite extends JbpmTaskDetailComposite {
 
+	final static String NOT_STARTED_NOTIFY = "NotStartedNotify";
+	final static String NOT_COMPLETED_NOTIFY = "NotCompletedNotify";
+
 	public JbpmUserTaskDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
@@ -30,6 +37,18 @@ public class JbpmUserTaskDetailComposite extends JbpmTaskDetailComposite {
 	public JbpmUserTaskDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
-	
-	
+
+
+	@Override
+	public void createBindings(EObject be) {
+		super.createBindings(be);
+
+		TaskNotificationsListComposite notificationsList = new TaskNotificationsListComposite(this, (Task)be);
+		notificationsList.bindList(be, PACKAGE.getActivity_DataInputAssociations());
+		notificationsList.setTitle("Notifications");
+
+		TaskReassignmentsListComposite reassignmentsList = new TaskReassignmentsListComposite(this, (Task)be);
+		reassignmentsList.bindList(be, PACKAGE.getActivity_DataInputAssociations());
+		reassignmentsList.setTitle("Reassignments");
+	}
 }

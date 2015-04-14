@@ -193,11 +193,7 @@ public class TargetRuntime extends BaseRuntimeExtensionDescriptor implements IRu
 	public void notify(LifecycleEvent event) {
 		TargetRuntime.getDefaultRuntime().getRuntimeExtension().notify(event);
 		if (this!=TargetRuntime.getDefaultRuntime()) {
-			for (TargetRuntime rt : targetRuntimes) {
-				if (rt.getId().equals(this.id)) {
-					rt.getRuntimeExtension().notify(event);
-				}
-			}
+			getRuntimeExtension().notify(event);
 		}
 	}
 	

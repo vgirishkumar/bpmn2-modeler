@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.Activator;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
-import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.IConstants;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.providers.TableCursor;
@@ -47,7 +46,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlAdapter;
@@ -60,7 +58,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -69,6 +66,7 @@ import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.events.IExpansionListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.internal.preferences.PropertyUtil;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
  
 
@@ -158,6 +156,10 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		return lic;
 	}
 	
+	protected EList<EObject> getItemList() {
+		return (EList<EObject>)businessObject.eGet(feature);
+	}
+
 	/**
 	 * Create a default ColumnTableProvider if none was set in setTableProvider();
 	 * @param object
@@ -166,7 +168,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	 */
 	public ListCompositeColumnProvider getColumnProvider(EObject object, EStructuralFeature feature) {
 		if (columnProvider==null) {
-			final EList<EObject> list = (EList<EObject>)object.eGet(feature);
+			final EList<EObject> list = getItemList();
 			final EClass listItemClass = getDefaultListItemClass(object, feature);
 
 			boolean canModify;
@@ -315,7 +317,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	abstract protected Object moveListItemDown(EObject object, EStructuralFeature feature, int index);
 
 	protected int[] buildIndexMap(EObject object, EStructuralFeature feature) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		EClass listItemClass = getListItemClass(object,feature);
 		int[] map = null;
 		if (listItemClass!=null) {
@@ -359,7 +361,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 		setBusinessObject(theobject);
 		this.feature = thefeature;
-		final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+		final EList<EObject> list = getItemList();
 		final EClass listItemClass = getDefaultListItemClass(businessObject,feature);
 		String label = getBusinessObjectDelegate().getLabel(listItemClass);
 		final String prefName = "list."+listItemClass.getName()+".expanded"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -581,7 +583,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					String label = getBusinessObjectDelegate().getLabel(o);
 					detailSection.setText(label+Messages.AbstractListComposite_Details);
 					((AbstractDetailComposite)detailComposite).setBusinessObject(o);
-					enable = !detailComposite.isEmpty();
+//					enable = !detailComposite.isEmpty();
 					detailSection.setExpanded(enable);
 					if (!enable && editAction!=null)
 						editAction.setEnabled(enable);
@@ -605,7 +607,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 				parent = parent.getParent();
 			}
 
-			final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+			final EList<EObject> list = getItemList();
 			tableViewer.setInput(list);
 
 			redrawPage();
@@ -726,7 +728,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 						protected void doExecute() {
 							EObject newItem = addListItem(businessObject,feature);
 							if (newItem!=null) {
-								final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+								final EList<EObject> list = getItemList();
 								tableViewer.setInput(list);
 								tableViewer.setSelection(new StructuredSelection(newItem));
 								showDetails(true);
@@ -756,7 +758,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+                            final EList<EObject> list = getItemList();
                             int i = tableViewer.getTable().getSelectionIndex();
 							Object item;
 							if (removeIsDelete)
@@ -796,7 +798,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+                            final EList<EObject> list = getItemList();
                             int i = tableViewer.getTable().getSelectionIndex();
 							Object item = moveListItemUp(businessObject,feature,i);
 							tableViewer.setInput(list);
@@ -817,7 +819,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 					editingDomain.getCommandStack().execute(new RecordingCommand(editingDomain) {
 						@Override
 						protected void doExecute() {
-                            final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+                            final EList<EObject> list = getItemList();
                             int i = tableViewer.getTable().getSelectionIndex();
 							Object item = moveListItemDown(businessObject,feature,i);
 							tableViewer.setInput(list);
@@ -851,7 +853,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 							protected void doExecute() {
 								EObject newItem = editListItem(businessObject,feature);
 								if (newItem!=null) {
-									final EList<EObject> list = (EList<EObject>)businessObject.eGet(feature);
+									final EList<EObject> list = getItemList();
 									tableViewer.setInput(list);
 									tableViewer.setSelection(new StructuredSelection(newItem));
 								}
@@ -899,18 +901,18 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	@SuppressWarnings("unchecked")
 	@Override
 	public void notifyChanged(Notification notification) {
-		EList<EObject> table = (EList<EObject>)businessObject.eGet(feature);
+		EList<EObject> list = getItemList();
 		Object n = notification.getNotifier();
 		// if the table contains the notifier, or if this notification is coming from
 		// AbstractDetailComposite.refresh(), then set the new input into the table
-		if (table.contains(n) || notification.getEventType() == -1) {
-			tableViewer.setInput(table);
+		if (list.contains(n) || notification.getEventType() == -1) {
+			tableViewer.setInput(list);
 			tableViewer.refresh(true);
 			return; // quick exit before the exhaustive search that follows
 		}
 		if (n instanceof EObject) {
 			HashSet<Object> visited = new HashSet<Object>(); 
-			if (refreshIfNeededRecursive((EObject)n, table, visited))
+			if (refreshIfNeededRecursive((EObject)n, list, visited))
 				return;
 		}
 	}
@@ -920,7 +922,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private boolean refreshIfNeededRecursive(EObject value, EList<EObject> table, HashSet<Object> visited) {
+	private boolean refreshIfNeededRecursive(EObject value, List<EObject> table, HashSet<Object> visited) {
 		for (EStructuralFeature f : value.eClass().getEAllStructuralFeatures()) {
 			try {
 				Object v = value.eGet(f);
@@ -946,7 +948,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 
 	static int count = 0;
 	@SuppressWarnings("rawtypes")
-	private boolean refreshIfNeededRecursive(List list, EList<EObject> table, HashSet<Object> visited) {
+	private boolean refreshIfNeededRecursive(List list, List<EObject> table, HashSet<Object> visited) {
 		for (Object v : list) {
 			if (!visited.contains(v)) {
 				visited.add(v);
@@ -963,7 +965,7 @@ public abstract class AbstractListComposite extends ListAndDetailCompositeBase i
 		return false;
 	}
 
-	private boolean refreshIfNeeded(EObject value, EList<EObject> table) {
+	private boolean refreshIfNeeded(EObject value, List<EObject> table) {
 		if (table.contains(value) && tableViewer!=null) {
 			tableViewer.setInput(table);
 			return true;
