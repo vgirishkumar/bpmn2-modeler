@@ -28,9 +28,6 @@
    <feature url="features/org.eclipse.bpmn2.modeler.wsil_0.0.0.jar" id="org.eclipse.bpmn2.modeler.wsil" version="0.0.0">
       <category name="Eclipse BPMN2 Modeler"/>
    </feature>
-   <feature url="features/org.eclipse.bpmn2.modeler.sdk_0.0.0.jar" id="org.eclipse.bpmn2.modeler.sdk" version="0.0.0">
-      <category name="Eclipse BPMN2 Modeler"/>
-   </feature>
  
    <feature url="features/org.eclipse.bpmn2.modeler.source_0.0.0.jar" id="org.eclipse.bpmn2.modeler.source" version="0.0.0">
       <category name="Eclipse BPMN2 Modeler Sources"/>
