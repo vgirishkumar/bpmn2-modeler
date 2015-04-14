@@ -49,6 +49,10 @@ public class ListCompositeColumnProvider extends ColumnTableProvider {
 	}
 	
 	public TableColumn add(EObject object, EClass eclass, EStructuralFeature feature) {
+		for (Column c : columns) {
+			if (((TableColumn)c).feature==feature)
+				return (TableColumn)c;
+		}
 		TableColumn tc = null;
 		listComposite.getModelEnablements();
 		if (listComposite.isModelObjectEnabled(eclass,feature)) {
