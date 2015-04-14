@@ -16,24 +16,31 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions;
 import java.util.Collection;
 
 import org.eclipse.bpmn2.Task;
+import org.eclipse.bpmn2.modeler.core.utils.ExtendedStringTokenizer;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.xml.type.impl.AnyTypeImpl;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 
-public class TaskReassignment extends AnyTypeImpl {
+public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvider {
 	
 	Task task;
-	ReassignmentType type;
+	ReassignmentType type = ReassignmentType.NOT_STARTED_REASSIGN;
 	EList<String> users = new BasicEList<String>();
 	EList<String> groups = new BasicEList<String>();
 	String expiresAt = "";
 
-	EStructuralFeature typeFeature;
-	EStructuralFeature usersFeature;
-	EStructuralFeature groupsFeature;
-	EStructuralFeature expiresAtFeature;
+	static EStructuralFeature typeFeature;
+	static EStructuralFeature usersFeature;
+	static EStructuralFeature groupsFeature;
+	static EStructuralFeature expiresAtFeature;
 
 	public TaskReassignment() {
 		super();
@@ -96,15 +103,73 @@ public class TaskReassignment extends AnyTypeImpl {
 	}
 
 	public void setType(ReassignmentType type) {
+		ReassignmentType oldType = this.type;
 		this.type = type;
+        if (eNotificationRequired() && oldType!=type)
+            eNotify(new ENotificationImpl(this, Notification.SET, typeFeature.getFeatureID(),
+                    oldType, type));
 	}
 
 	public EList<String> getUsers() {
 		return users;
 	}
+	
+	public String getUsersAsString() {
+		String text = "";
+		for (int i=0; i<getUsers().size(); ++i) {
+			text += getUsers().get(i);
+			if (i+1<getUsers().size())
+				text += ",";
+		}
+		return text;
 
+	}
+
+	public void setUsers(String users) {
+		EList<String> oldUsers = new BasicEList<String>();
+		oldUsers.addAll(this.users);
+		this.users.clear();
+		if (users!=null && !users.isEmpty()) {
+			for (String s : users.split(",")) {
+				s = s.trim();
+				if (!s.isEmpty())
+					this.users.add(s);
+			}
+		}
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, usersFeature.getFeatureID(),
+                    oldUsers, this.users));
+	}
+	
 	public EList<String> getGroups() {
 		return groups;
+	}
+	
+	public String getGroupsAsString() {
+		String text = "";
+		for (int i=0; i<getGroups().size(); ++i) {
+			text += getGroups().get(i);
+			if (i+1<getGroups().size())
+				text += ",";
+		}
+		return text;
+
+	}
+
+	public void setGroups(String groups) {
+		EList<String> oldGroups = new BasicEList<String>();
+		oldGroups.addAll(this.groups);
+		this.groups.clear();
+		if (groups!=null && !groups.isEmpty()) {
+			for (String s : groups.split(",")) {
+				s = s.trim();
+				if (!s.isEmpty())
+					this.groups.add(s);
+			}
+		}
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, groupsFeature.getFeatureID(),
+                    oldGroups, this.groups));
 	}
 
 	public String getExpiresAt() {
@@ -112,7 +177,11 @@ public class TaskReassignment extends AnyTypeImpl {
 	}
 
 	public void setExpiresAt(String expiresAt) {
+		String oldExpiresAt = this.expiresAt;
 		this.expiresAt = expiresAt;
+        if (eNotificationRequired())
+            eNotify(new ENotificationImpl(this, Notification.SET, expiresAtFeature.getFeatureID(),
+            		oldExpiresAt, this.expiresAt));
 	}
 
 	@Override
@@ -134,82 +203,79 @@ public class TaskReassignment extends AnyTypeImpl {
 		return result;
 	}
 
+	/*
+	 * [users:user1,user2|groups:group1,group2]@[exp1]^[users:user5|groups:group5]@[exp3]
+	 */
 	public String fromString(String string) {
 		String tail = null;
 		users.clear();
 		groups.clear();
 		expiresAt = "";
-		int segment = 0;
-		for (int i = 0; i < string.length() - 1; ++i) {
-			char c = string.charAt(i);
-			if (c == '[' || c == '|') {
-				if (segment == 0) {
-					// begin a Users segment
-					c = string.charAt(i + 1);
-					if (c == 'u') {
-						while (++i < string.length() - 1) {
-							c = string.charAt(i);
-							if (c == ':')
-								break;
-						}
-						int start = i + 1;
-						while (++i < string.length() - 1) {
-							c = string.charAt(i);
-							if (c == ',' || c == '|') {
-								String user = string.substring(start, i);
-								users.add(user);
-								start = i + 1;
-							}
-							if (c == '|' || c == ']') {
-								--i;
-								break;
-							}
-						}
-					} else if (c == 'g') {
-						while (++i < string.length() - 1) {
-							c = string.charAt(i);
-							if (c == ':')
-								break;
-						}
-						int start = i + 1;
-						while (++i < string.length() - 1) {
-							c = string.charAt(i);
-							if (c == ',' || c == '|') {
-								String group = string.substring(start, i);
-								groups.add(group);
-								start = i + 1;
-							}
-							if (c == '|' || c == ']') {
-								--i;
-								break;
-							}
-						}
+		EStructuralFeature currentFeature = null;
+		// append a newline to given string - this is used to collect
+		// the tail of the string if a "^" delimiter is found.
+		ExtendedStringTokenizer st = new ExtendedStringTokenizer(string + "\n", "[:,|]@^", true);
+		while (st.hasMoreTokens()) {
+			String t = st.nextToken();
+			if ("|".equals(t)) {
+				currentFeature = null;
+				continue;
+			}
+			else if ("]".equals(t)) {
+				String t2 = st.nextToken();
+				if ("@".equals(t2)) {
+					String t3 = st.nextToken();
+					if ("[".equals(t3)) {
+						// body is complete, expect expiresAt feature next
+						currentFeature = expiresAtFeature;
 					}
-				} else {
-					// begin a "Expires At" segment
-					int start = i + 1;
-					while (++i < string.length()) {
-						c = string.charAt(i);
-						if (c == ']') {
-							--i;
-							break;
-						}
+					else {
+						// add tokens to body
+						st.pushToken(t3);
+						st.pushToken(t2);
 					}
-					expiresAt = string.substring(start, i + 1);
 				}
-			} else if (c == ']') {
-				c = string.charAt(i + 1);
-				if (c == '@') {
-					++i;
-					// expect the "Expires At" segment next
-					segment = 1;
-				} else if (c == '^') {
-					// finished this expression, expect another to follow
-					tail = string.substring(i + 2);
-					break;
+				else {
+					st.pushToken(t2);
+				}
+			}
+			else if ("^".equals(t)) {
+				tail = st.nextToken("\n");
+				break;
+			}
+			else if ("users".equals(t)) {
+				currentFeature = usersFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("groups".equals(t)) {
+				currentFeature = groupsFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if (currentFeature!=null) {
+				// we're currently parsing a feature
+				if (currentFeature==usersFeature) {
+					if (!",".equals(t))
+						getUsers().add(t.trim());
+				}
+				else if (currentFeature==groupsFeature) {
+					if (!",".equals(t))
+						getGroups().add(t.trim());
+				}
+				else if (currentFeature==expiresAtFeature) {
+					expiresAt += t;
 				}
 			}
 		}
+		
 		return tail;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.emf.edit.domain.IEditingDomainProvider#getEditingDomain()
+	 */
+	@Override
+	public EditingDomain getEditingDomain() {
+		EditingDomain result = AdapterFactoryEditingDomain.getEditingDomainFor(task);
+		return result;
 	}
 }

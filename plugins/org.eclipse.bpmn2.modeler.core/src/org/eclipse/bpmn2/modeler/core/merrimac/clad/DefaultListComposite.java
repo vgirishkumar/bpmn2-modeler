@@ -61,7 +61,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite#addListItem(org.eclipse.emf.ecore.EObject, org.eclipse.emf.ecore.EStructuralFeature)
 	 */
 	protected EObject addListItem(EObject object, EStructuralFeature feature) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		EClass listItemClass = getListItemClass(object,feature);
 		EObject newItem = null;
 		if (!(list instanceof EObjectContainmentEList)) {
@@ -132,7 +132,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	 * @see org.eclipse.bpmn2.modeler.ui.property.AbstractListComposite#removeListItem(org.eclipse.emf.ecore.EObject, org.eclipse.emf.ecore.EStructuralFeature, int)
 	 */
 	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int[] map = buildIndexMap(object,feature);
 		if (list instanceof EObjectContainmentEList) {
 			if (!canDelete(list.get(map[index])))
@@ -153,7 +153,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	}
 	
 	protected Object deleteListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int[] map = buildIndexMap(object,feature);
 		EObject removed = list.get(map[index]);
 		if (list instanceof EObjectContainmentEList) {
@@ -168,13 +168,13 @@ public class DefaultListComposite extends AbstractListComposite {
 	}
 	
 	protected Object getListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int[] map = buildIndexMap(object,feature);
 		return list.get(map[index]);
 	}
 	
 	protected Object moveListItemUp(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int[] map = buildIndexMap(object,feature);
 		if (index>0) {
 			list.move(map[index-1], map[index]);
@@ -184,7 +184,7 @@ public class DefaultListComposite extends AbstractListComposite {
 	}
 
 	protected Object moveListItemDown(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int[] map = buildIndexMap(object,feature);
 		if (index<map.length-1) {
 			list.move(map[index+1], map[index]);

@@ -160,7 +160,7 @@ public class InterfacesPropertySection extends DefaultPropertySection {
 		protected EObject addListItem(EObject object, EStructuralFeature feature) {
 			Interface iface = Bpmn2ModelerFactory.create(object.eResource(), Interface.class);
 			
-			EList<EObject> list = (EList<EObject>)object.eGet(feature);
+			EList<EObject> list = getItemList();
 			list.add(iface);
 			return iface;
 		}

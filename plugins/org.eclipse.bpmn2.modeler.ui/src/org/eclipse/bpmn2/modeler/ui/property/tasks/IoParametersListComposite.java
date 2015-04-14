@@ -138,7 +138,7 @@ public class IoParametersListComposite extends DefaultListComposite {
 
 	@Override
 	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		EObject item = list.get(index);
 
 		if (item instanceof DataInput) {

@@ -69,7 +69,7 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	}
 	
 	protected Object getListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int i = 0;
 		int iGet = -1;
 		FeatureMap fmGet = null;
@@ -99,7 +99,7 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	}
 	
 	protected Object removeListItem(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		int i = 0;
 		int iRemove = -1;
 		FeatureMap fmRemove = null;
@@ -133,7 +133,7 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	}
 
 	protected Object moveListItemUp(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		Entry result = null;
 		int i = 0;
 		int iFrom = -1;
@@ -176,7 +176,7 @@ public abstract class ExtensionValueListComposite extends DefaultListComposite {
 	}
 
 	protected Object moveListItemDown(EObject object, EStructuralFeature feature, int index) {
-		EList<EObject> list = (EList<EObject>)object.eGet(feature);
+		EList<EObject> list = getItemList();
 		Entry result = null;
 		
 		int i = 0;

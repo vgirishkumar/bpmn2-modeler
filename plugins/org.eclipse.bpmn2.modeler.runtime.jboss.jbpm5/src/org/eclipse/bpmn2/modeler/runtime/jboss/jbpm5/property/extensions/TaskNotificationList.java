@@ -33,33 +33,33 @@ import org.eclipse.emf.ecore.EObject;
  *
  */
 @SuppressWarnings("serial")
-public class TaskReassignmentList extends BasicEList<EObject> implements Adapter {
+public class TaskNotificationList extends BasicEList<EObject> implements Adapter {
 
 	protected Task task;
 	
-	public TaskReassignmentList() {
+	public TaskNotificationList() {
 		super();
 	}
 
 	public void add(String type, String string) {
-		TaskReassignment tr = TaskExtensionsFactory.eINSTANCE.createTaskReassignment();
-		tr.setType(ReassignmentType.get(type));
-		add(tr);
-		String tail = tr.fromString(string);
+		TaskNotification tn = TaskExtensionsFactory.eINSTANCE.createTaskNotification();
+		tn.setType(NotificationType.get(type));
+		add(tn);
+		String tail = tn.fromString(string);
 		while (tail!=null) {
-			tr = TaskExtensionsFactory.eINSTANCE.createTaskReassignment();
-			tr.setType(ReassignmentType.get(type));
-			add(tr);
-			tail = tr.fromString(tail);
+			tn = TaskExtensionsFactory.eINSTANCE.createTaskNotification();
+			tn.setType(NotificationType.get(type));
+			add(tn);
+			tail = tn.fromString(tail);
 		}
 
 	}
 
 	@Override
 	public boolean add(EObject object) {
-		Assert.isTrue(object instanceof TaskReassignment);
+		Assert.isTrue(object instanceof TaskNotification);
 		object.eAdapters().add(this);
-		((TaskReassignment)object).setTask(task);
+		((TaskNotification)object).setTask(task);
 		return super.add(object);
 	}
 
@@ -70,11 +70,11 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 				return true;
 			}
 		}
-		TaskReassignment tr = get(index);
-		String oldString = tr.toString();
-		if (!tr.getType().getLiteral().equals(type) || !oldString.equals(string)) {
-			tr.setType(ReassignmentType.get(type));
-			tr.fromString(string);
+		TaskNotification tn = get(index);
+		String oldString = tn.toString();
+		if (!tn.getType().getLiteral().equals(type) || !oldString.equals(string)) {
+			tn.setType(NotificationType.get(type));
+			tn.fromString(string);
 			return true;
 		}
 		return false;
@@ -88,8 +88,8 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 	}
 
 	@Override
-	public TaskReassignment get(int index) {
-		return (TaskReassignment)super.get(index);
+	public TaskNotification get(int index) {
+		return (TaskNotification)super.get(index);
 	}
     
 	public void setTask(Task task) {
@@ -103,15 +103,15 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 	public void updateTask() {
 		/*
 		 * Here we need to examine the current list of DataInputAssociations on the
-		 * Task and, if there is already a DataInput named NotStartedReassign or
-		 * NotCompletedReassign, append a new expression. Otherwise create a new
+		 * Task and, if there is already a DataInput named NotStartedNotify or
+		 * NotCompletedNotify, append a new expression. Otherwise create a new
 		 * DataInput and DataInputAssociation.
 		 * 
 		 * The XML looks like this:
 		 * 
 		 * <bpmn2:ioSpecification id="IOSpec_1">
-         *   <bpmn2:dataInput id="DataInput_1" name="NotCompletedReassign"/>
-         *   <bpmn2:dataInput id="DataInput_2" name="NotStartedReassign"/>
+         *   <bpmn2:dataInput id="DataInput_1" name="NotCompletedNotify"/>
+         *   <bpmn2:dataInput id="DataInput_2" name="NotStartedNotify"/>
       	 * </bpmn2:ioSpecification>
 		 *
 		 * <bpmn2:dataInputAssociation id="DataInputAssociation_1">
@@ -140,19 +140,19 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 		for (DataInputAssociation dia : task.getDataInputAssociations()) {
 			if (dia.getTargetRef() instanceof DataInput) {
 				input = (DataInput) dia.getTargetRef();
-				if (ReassignmentType.NOT_STARTED_REASSIGN.getLiteral().equals(input.getName())) {
+				if (NotificationType.NOT_STARTED_NOTIFY.getLiteral().equals(input.getName())) {
 					notStarted = dia;
 				}
-				else if (ReassignmentType.NOT_COMPLETED_REASSIGN.getLiteral().equals(input.getName())) {
+				else if (NotificationType.NOT_COMPLETED_NOTIFY.getLiteral().equals(input.getName())) {
 					notCompleted = dia;
 				}
 			}
 		}
 		
-		body = toString(ReassignmentType.NOT_STARTED_REASSIGN);
+		body = toString(NotificationType.NOT_STARTED_NOTIFY);
 		if (body.isEmpty()) {
 			if (notStarted!=null) {
-				// need to remove the NotCompletedReassign data input and association
+				// need to remove the NotCompletedNotify data input and association
 				iospec.getDataInputs().remove(notStarted.getTargetRef());
 				iospec.getInputSets().get(0).getDataInputRefs().remove(notStarted.getTargetRef());
 				task.getDataInputAssociations().remove(notStarted);
@@ -160,9 +160,9 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 		}
 		else {
 			if (notStarted==null) {
-				// create the NotStartedReassign data input and association
+				// create the NotStartedNotify data input and association
 				input = (DataInput) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInput());
-				input.setName(ReassignmentType.NOT_STARTED_REASSIGN.getLiteral());
+				input.setName(NotificationType.NOT_STARTED_NOTIFY.getLiteral());
 				iospec.getDataInputs().add(input);
 				iospec.getInputSets().get(0).getDataInputRefs().add(input);
 				notStarted = (DataInputAssociation) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInputAssociation());
@@ -191,10 +191,10 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 			expression.setBody(body);
 		}		
 		
-		body = toString(ReassignmentType.NOT_COMPLETED_REASSIGN);
+		body = toString(NotificationType.NOT_COMPLETED_NOTIFY);
 		if (body.isEmpty()) {
 			if (notCompleted!=null) {
-				// need to remove the NotCompletedReassign data input and association
+				// need to remove the NotCompletedNotify data input and association
 				iospec.getDataInputs().remove(notCompleted.getTargetRef());
 				iospec.getInputSets().get(0).getDataInputRefs().remove(notCompleted.getTargetRef());
 				task.getDataInputAssociations().remove(notCompleted);
@@ -202,9 +202,9 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 		}
 		else {
 			if (notCompleted==null) {
-				// create the NotStartedReassign data input and association
+				// create the NotStartedNotify data input and association
 				input = (DataInput) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInput());
-				input.setName(ReassignmentType.NOT_COMPLETED_REASSIGN.getLiteral());
+				input.setName(NotificationType.NOT_COMPLETED_NOTIFY.getLiteral());
 				iospec.getDataInputs().add(input);
 				iospec.getInputSets().get(0).getDataInputRefs().add(input);
 				notCompleted = (DataInputAssociation) Bpmn2ModelerFactory.eINSTANCE.create(Bpmn2Package.eINSTANCE.getDataInputAssociation());
@@ -234,14 +234,14 @@ public class TaskReassignmentList extends BasicEList<EObject> implements Adapter
 		}
 	}
 	
-	public String toString(ReassignmentType type) {
+	public String toString(NotificationType type) {
 		String result = "";
 		for (int i=0; i<size(); ++i) {
-			TaskReassignment tr = get(i);
-			if (tr.getType().equals(type)) {
+			TaskNotification tn = get(i);
+			if (tn.getType().equals(type)) {
 				if (!result.isEmpty())
 					result += "^";
-				result += tr.toString();
+				result += tn.toString();
 			}
 		}
 		return result;
