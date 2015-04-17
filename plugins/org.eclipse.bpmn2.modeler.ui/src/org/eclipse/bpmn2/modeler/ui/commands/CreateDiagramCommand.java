@@ -25,6 +25,7 @@ import org.eclipse.bpmn2.di.BpmnDiFactory;
 import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerFactory;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -112,7 +113,7 @@ public class CreateDiagramCommand extends AbstractHandler {
 
 	private static class NewDiagramNameDialog extends InputDialog {
 		
-		public NewDiagramNameDialog(final BPMN2Editor editor, final String type) {
+		public NewDiagramNameDialog(final DefaultBPMN2Editor editor, final String type) {
 			super(editor.getSite().getShell(),
 				NLS.bind(Messages.CreateDiagramCommand_Title,type),
 				NLS.bind(Messages.CreateDiagramCommand_Message,type),
@@ -144,7 +145,7 @@ public class CreateDiagramCommand extends AbstractHandler {
 			);
 		}
 		
-		public static Definitions getDefinitions(BPMN2Editor editor) {
+		public static Definitions getDefinitions(DefaultBPMN2Editor editor) {
 			return ModelUtil.getDefinitions(editor.getBpmnDiagram());
 		}
 	}

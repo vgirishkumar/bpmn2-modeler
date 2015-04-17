@@ -19,7 +19,7 @@ import org.eclipse.bpmn2.DataState;
 import org.eclipse.bpmn2.ParticipantMultiplicity;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.ui.Activator;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
@@ -43,7 +43,7 @@ public class Bpmn2DiagramTypeProvider extends AbstractDiagramTypeProvider {
 	@Override
 	public IToolBehaviorProvider[] getAvailableToolBehaviorProviders() {
 		if (toolBehaviorProviders == null) {
-			BPMN2Editor editor = (BPMN2Editor)getDiagramEditor();
+			DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramEditor();
 			TargetRuntime rt = editor.getTargetRuntime();
 			IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
 					Activator.UI_EXTENSION_ID);

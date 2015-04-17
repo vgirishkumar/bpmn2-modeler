@@ -35,9 +35,9 @@ import org.eclipse.ui.views.properties.PropertySheet;
 
 public class BPMN2MarkerChangeListener implements IResourceChangeListener {
 	
-	BPMN2Editor editor;
+	DefaultBPMN2Editor editor;
 	
-	public BPMN2MarkerChangeListener(BPMN2Editor editor) {
+	public BPMN2MarkerChangeListener(DefaultBPMN2Editor editor) {
 		this.editor = editor;
 	}
 

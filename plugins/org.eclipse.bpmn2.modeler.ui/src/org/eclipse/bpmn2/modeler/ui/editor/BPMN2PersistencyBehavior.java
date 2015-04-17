@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.bpmn2.modeler.core.utils.FixDuplicateIdsDialog;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
-import org.eclipse.bpmn2.modeler.core.utils.Tuple;
 import org.eclipse.bpmn2.modeler.core.validation.BPMN2ProjectValidator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -27,7 +25,6 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.ui.editor.DefaultPersistencyBehavior;
@@ -39,11 +36,11 @@ import org.eclipse.swt.widgets.Display;
 
 public class BPMN2PersistencyBehavior extends DefaultPersistencyBehavior {
 
-	BPMN2Editor editor;
-	
+	DefaultBPMN2Editor editor;
+
 	public BPMN2PersistencyBehavior(DiagramBehavior diagramBehavior) {
 		super(diagramBehavior);
-		editor = (BPMN2Editor)diagramBehavior.getDiagramContainer();
+		editor = (DefaultBPMN2Editor)diagramBehavior.getDiagramContainer();
 	}
 	
     @Override

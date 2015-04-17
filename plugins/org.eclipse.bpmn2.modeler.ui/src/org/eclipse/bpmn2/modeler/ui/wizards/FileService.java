@@ -29,7 +29,7 @@ import org.eclipse.bpmn2.modeler.core.model.Bpmn2ModelerResourceSetImpl;
 import org.eclipse.bpmn2.modeler.core.utils.FileUtils;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -57,8 +57,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 public class FileService {
 
-	public static TransactionalEditingDomain createEmfFileForDiagram(URI diagramResourceUri, final Diagram diagram, BPMN2Editor diagramEditor) {
-
+	public static TransactionalEditingDomain createEmfFileForDiagram(URI diagramResourceUri, Diagram diagram, DefaultBPMN2Editor diagramEditor) {
 		ResourceSet resourceSet = null;
 		TransactionalEditingDomain editingDomain = null;
 		if (diagramEditor==null) {
@@ -74,7 +73,11 @@ public class FileService {
 			editingDomain = diagramEditor.getEditingDomain();
 			resourceSet = diagramEditor.getResourceSet();
 		}
-		
+		return createEmfFileForDiagram(diagramResourceUri, diagram, resourceSet, editingDomain);
+	}
+
+	public static TransactionalEditingDomain createEmfFileForDiagram(URI diagramResourceUri, final Diagram diagram, ResourceSet resourceSet,
+			TransactionalEditingDomain editingDomain) {
 		// Create a resource for this file.
 		final Resource resource = resourceSet.createResource(diagramResourceUri);
 		CommandStack commandStack = editingDomain.getCommandStack();

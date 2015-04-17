@@ -106,7 +106,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.CustomTaskDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.FeatureContainerDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.AdHocSubProcessFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.SubProcessFeatureContainer;
 import org.eclipse.bpmn2.modeler.ui.features.activity.subprocess.TransactionFeatureContainer;
@@ -314,8 +314,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		
 		// Collect all of the <featureContainerDelegate> extensions defined by the current TargetRuntime
 		// and replace the ones in our list of FeatureContainers
-		BPMN2Editor editor = BPMN2Editor.getActiveEditor(); //(BPMN2Editor)getDiagramTypeProvider().getDiagramEditor();;
-		TargetRuntime rt = editor.getTargetRuntime();
+		TargetRuntime rt = TargetRuntime.getCurrentRuntime();
 		for (FeatureContainerDescriptor fcd : rt.getFeatureContainerDescriptors()) {
 			IFeatureContainer fc = fcd.getFeatureContainer();
 			if (fc instanceof IConnectionFeatureContainer) {
@@ -419,7 +418,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 //		if (lfc.getApplyObject(context)!=null)
 //			return lfc;
 		
-		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		TargetRuntime rt = editor.getTargetRuntime();
 		EObject object = getApplyObject(context);
 		if (object!=null) {
@@ -471,7 +470,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 		// is called during file loading.
 		Object id = CustomElementFeatureContainer.getId(context); 
 		if (id!=null) {
-			BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+			DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 			TargetRuntime rt = editor.getTargetRuntime();
 			for (CustomTaskDescriptor ct : rt.getCustomTaskDescriptors()) {
 				if (id.equals(ct.getId())) {
@@ -619,7 +618,7 @@ public class BPMN2FeatureProvider extends DefaultFeatureProvider implements IBpm
 	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
 		List<ICustomFeature> list = new ArrayList<ICustomFeature>();
 
-		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		TargetRuntime rt = editor.getTargetRuntime();
 		String id = CustomElementFeatureContainer.getId(context);
 		if (id!=null) {

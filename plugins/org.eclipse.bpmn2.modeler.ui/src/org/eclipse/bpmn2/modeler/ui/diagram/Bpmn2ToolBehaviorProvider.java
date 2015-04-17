@@ -49,7 +49,7 @@ import org.eclipse.bpmn2.modeler.core.validation.ValidationStatusAdapter;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.IConstants;
 import org.eclipse.bpmn2.modeler.ui.ImageProvider;
-import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.bpmn2.modeler.ui.features.choreography.ChoreographySelectionBehavior;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClassifier;
@@ -111,18 +111,18 @@ import org.eclipse.swt.widgets.Display;
 
 public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider implements IFeatureCheckerHolder {
 
-	protected BPMN2Editor editor;
+	protected DefaultBPMN2Editor editor;
 	protected TargetRuntime targetRuntime;
 	protected BPMN2FeatureProvider featureProvider;
 	protected ModelEnablements modelEnablements;
 	protected Hashtable<String, PaletteCompartmentEntry> categories = new Hashtable<String, PaletteCompartmentEntry>();
 	protected List<IPaletteCompartmentEntry> palette;
 	protected CustomKeyCommandFeature commandFeature = null;
-	
+
 	protected class ProfileSelectionToolEntry extends ToolEntry {
-		BPMN2Editor editor;
+		DefaultBPMN2Editor editor;
 		
-		ProfileSelectionToolEntry(BPMN2Editor editor, String profileId) {
+		ProfileSelectionToolEntry(DefaultBPMN2Editor editor, String profileId) {
 			super("", null, null, null, null); //$NON-NLS-1$
 			TargetRuntime rt = editor.getTargetRuntime();
 			ModelEnablementDescriptor med = rt.getModelEnablements(profileId);
@@ -165,7 +165,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 		super(diagramTypeProvider);
 	}
 
-	public void createPaletteProfilesGroup(BPMN2Editor editor, PaletteRoot paletteRoot) {
+	public void createPaletteProfilesGroup(DefaultBPMN2Editor editor, PaletteRoot paletteRoot) {
 		TargetRuntime rt = editor.getTargetRuntime();
 
 		PaletteDrawer drawer = new PaletteDrawer(Messages.BPMNToolBehaviorProvider_Profiles_Drawer_Label, null);
@@ -183,7 +183,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	@Override
 	public IPaletteCompartmentEntry[] getPalette() {
 
-		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		targetRuntime = editor.getTargetRuntime();
 		modelEnablements = editor.getModelEnablements();
 		featureProvider = (BPMN2FeatureProvider)getFeatureProvider();
@@ -505,7 +505,7 @@ public class Bpmn2ToolBehaviorProvider extends DefaultToolBehaviorProvider imple
 	private void createCustomTasks(List<IPaletteCompartmentEntry> ret) {
 
 		PaletteCompartmentEntry compartmentEntry = null;
-		BPMN2Editor editor = (BPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
+		DefaultBPMN2Editor editor = (DefaultBPMN2Editor)getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 		TargetRuntime rt = editor.getTargetRuntime();
 		
 		try {

@@ -21,6 +21,7 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.ui.Activator;
 import org.eclipse.bpmn2.modeler.ui.Bpmn2DiagramEditorInput;
 import org.eclipse.bpmn2.modeler.ui.editor.BPMN2Editor;
+import org.eclipse.bpmn2.modeler.ui.editor.DefaultBPMN2Editor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -41,9 +42,9 @@ public class BPMN2DiagramCreator {
 		return createDiagram(null, uri, diagramType, targetNamespace, null);
 	}
 
-	public static Bpmn2DiagramEditorInput createDiagram(IEditorInput oldInput, URI modelUri, Bpmn2DiagramType diagramType, String targetNamespace, BPMN2Editor diagramEditor) {
+	public static Bpmn2DiagramEditorInput createDiagram(IEditorInput oldInput, URI modelUri, Bpmn2DiagramType diagramType, String targetNamespace, DefaultBPMN2Editor diagramEditor) {
 
-		// Should we create a new Graphiti Diamgra file or reuse the one
+		// Should we create a new Graphiti diagram file or reuse the one
 		// from an already open editor window?
 		boolean createNew = true;
 		URI diagramUri = null;

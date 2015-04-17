@@ -14,7 +14,6 @@ package org.eclipse.bpmn2.modeler.ui.editor;
 
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
-import org.eclipse.bpmn2.modeler.core.runtime.TargetRuntime;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -26,12 +25,10 @@ import org.eclipse.emf.transaction.TransactionalEditingDomainListenerImpl;
 
 public class BPMN2EditingDomainListener extends TransactionalEditingDomainListenerImpl implements ExceptionHandler {
 	
-	protected BPMN2Editor bpmn2Editor;
 	protected BasicDiagnostic diagnostics;
 
-	public BPMN2EditingDomainListener(BPMN2Editor bpmn2Editor) {
+	public BPMN2EditingDomainListener(DefaultBPMN2Editor bpmn2Editor) {
 		super();
-		this.bpmn2Editor = bpmn2Editor;
 		TransactionalCommandStack stack = (TransactionalCommandStack) bpmn2Editor.getEditingDomain().getCommandStack();
 		stack.setExceptionHandler(this);
 	}
