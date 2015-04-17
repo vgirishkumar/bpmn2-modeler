@@ -55,8 +55,13 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		if (multiLine || (testMultiLine && super.isMultiLineText())) {
-			multiLine = true;
+		// verify if multiline mode was requested...
+		if (testMultiLine && super.isMultiLineText()) {
+			multiLine = true;		
+		}
+
+		// change style to multiline...
+		if (multiLine) {
 			style |= SWT.MULTI | SWT.V_SCROLL;
 		}
 
