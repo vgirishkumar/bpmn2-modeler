@@ -567,6 +567,11 @@ public class BPMN2Editor extends DiagramEditor implements IPreferenceChangeListe
 			IWorkbenchPage page = getSite().getPage();
 			selectionListener = new IPartListener2() {
 				public void partActivated(IWorkbenchPartReference partRef) {
+					IWorkbenchPart part = partRef.getPart(false);
+					if (part instanceof BPMN2MultiPageEditor) {
+						BPMN2MultiPageEditor mpe = (BPMN2MultiPageEditor)part;
+						setActiveEditor(mpe.getDesignEditor());
+					}
 				}
 
 				@Override

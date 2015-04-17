@@ -1055,7 +1055,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 							NLS.bind(
 								Messages.Bpmn2Preferences_No_Runtime_Plugin_Message,
 								id,
-								TargetRuntime.getCurrentRuntime().getDescription()
+								TargetRuntime.getDefaultRuntime().getDescription()
 							)
 						);
 					}
@@ -1064,7 +1064,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 			}
 		}
 		if (rt==null)
-			rt = TargetRuntime.getCurrentRuntime();
+			rt = TargetRuntime.getDefaultRuntime();
 		return rt;
 	}
 
