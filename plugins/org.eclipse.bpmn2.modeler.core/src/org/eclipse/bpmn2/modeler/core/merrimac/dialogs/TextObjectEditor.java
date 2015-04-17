@@ -55,11 +55,16 @@ public class TextObjectEditor extends ObjectEditor {
 	protected Control createControl(Composite composite, String label, int style) {
 		createLabel(composite,label);
 
-		if (multiLine || (testMultiLine && super.isMultiLineText())) {
-			multiLine = true;
-			style |= SWT.MULTI | SWT.V_SCROLL;
+		// verify if multiline mode was requested...
+		if (testMultiLine && super.isMultiLineText()) {
+			multiLine = true;		
 		}
 
+		// change style to multiline...
+		if (multiLine) {
+			style |= SWT.MULTI | SWT.V_SCROLL;
+		}
+		
 		text = getToolkit().createText(composite, "", style | SWT.BORDER); //$NON-NLS-1$
 
 		GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
