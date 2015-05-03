@@ -75,36 +75,39 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 	 */
 	@Override
 	protected void initialize(Connection connection) {
-		super.initialize(connection);
-		ffc = (FreeFormConnection)connection;
-
-		movedBendpoint = getMovedBendpoint(ffc);
-		if (movedBendpoint==null)
-			movedBendpoint = getAddedBendpoint(ffc);
-		removedBendpoint = getRemovedBendpoint(ffc);
-
-		findAllShapes();
-		if (movedBendpoint!=null) {
-			for (ContainerShape shape : allShapes) {
-				if (GraphicsUtil.contains(shape, movedBendpoint)) {
-					movedBendpoint = null;
-					break;
+		// check if initialization needed?
+		if (oldPoints==null) {
+			super.initialize(connection);
+			ffc = (FreeFormConnection)connection;
+	
+			movedBendpoint = getMovedBendpoint(ffc);
+			if (movedBendpoint==null)
+				movedBendpoint = getAddedBendpoint(ffc);
+			removedBendpoint = getRemovedBendpoint(ffc);
+	
+			findAllShapes();
+			if (movedBendpoint!=null) {
+				for (ContainerShape shape : allShapes) {
+					if (GraphicsUtil.contains(shape, movedBendpoint)) {
+						movedBendpoint = null;
+						break;
+					}
 				}
 			}
+	
+			/**
+			 * Save the connection's start/end anchors, and their locations as well as
+			 * the bendpoints. This is used to compare against the new ConnectionRoute
+			 */
+			oldPoints = new Point[ffc.getBendpoints().size() + 2];
+			int i = 0;
+			oldPoints[i++] = GraphicsUtil.createPoint(ffc.getStart());
+			for (Point p : ffc.getBendpoints()) {
+				oldPoints[i++] = GraphicsUtil.createPoint(p);
+			}
+			oldPoints[i++] = GraphicsUtil.createPoint(ffc.getEnd());
+			calculateAllowedAnchorSites();
 		}
-
-		/**
-		 * Save the connection's start/end anchors, and their locations as well as
-		 * the bendpoints. This is used to compare against the new ConnectionRoute
-		 */
-		oldPoints = new Point[ffc.getBendpoints().size() + 2];
-		int i = 0;
-		oldPoints[i++] = GraphicsUtil.createPoint(ffc.getStart());
-		for (Point p : ffc.getBendpoints()) {
-			oldPoints[i++] = GraphicsUtil.createPoint(p);
-		}
-		oldPoints[i++] = GraphicsUtil.createPoint(ffc.getEnd());
-		calculateAllowedAnchorSites();
 	}
 	
 	/* (non-Javadoc)

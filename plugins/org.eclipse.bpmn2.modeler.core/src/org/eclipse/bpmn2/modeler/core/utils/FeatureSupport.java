@@ -810,12 +810,12 @@ public class FeatureSupport {
 
 	public static void updateConnections(IFeatureProvider fp, AnchorContainer ac) {
 		List<Connection> alreadyUpdated = new ArrayList<Connection>();
-		if (ac instanceof ContainerShape) {
-			for (Shape child : ((ContainerShape)ac).getChildren()) {
-				if (child instanceof ContainerShape)
-					updateConnections(fp, child, alreadyUpdated);
-			}
-		}
+//		if (ac instanceof ContainerShape) {
+//			for (Shape child : ((ContainerShape)ac).getChildren()) {
+//				if (child instanceof ContainerShape)
+//					updateConnections(fp, child, alreadyUpdated);
+//			}
+//		}
 		updateConnections(fp, ac, alreadyUpdated);
 //		AnchorUtil.relocateAnchors((Shape)ac);
 	}

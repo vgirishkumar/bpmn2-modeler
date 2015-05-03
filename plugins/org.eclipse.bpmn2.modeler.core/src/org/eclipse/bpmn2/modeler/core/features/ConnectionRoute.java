@@ -454,13 +454,13 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		if (i == 0) {
 			i = o1.collisions.size() - o2.collisions.size();
 			if (i == 0) {
-				i = o1.getRank() - o2.getRank();
+				i = o1.crossings.size() - o2.crossings.size();
 				if (i == 0) {
-					i = o1.crossings.size() - o2.crossings.size();
+					i = o1.getLength() - o2.getLength();
 					if (i == 0) {
 						i = o1.getPoints().size() - o2.getPoints().size();
 						if (i == 0) {
-							i = o1.getLength() - o2.getLength();
+							i = o1.getRank() - o2.getRank();
 							if (i == 0) {
 								i = o1.getPoints().size() - o2.getPoints().size();
 							}
@@ -476,14 +476,15 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 				// return o1.getLength() - o2.getLength();
 				// }
 			}
-		} else {
-			// pick the shorter route
-			float dl = Math.abs(o1.getLength() - o2.getLength());
-			float sl = (o1.getLength() + o2.getLength()) / 2;
-			dl = dl / sl;
-			if (dl > 0.5)
-				return o1.getLength() - o2.getLength();
 		}
+//		else if (o1.isValid() != o2.isValid()) {
+//			// pick the shorter route
+//			float dl = Math.abs(o1.getLength() - o2.getLength());
+//			float sl = (o1.getLength() + o2.getLength()) / 2;
+//			dl = dl / sl;
+//			if (dl > 0.5)
+//				return o1.getLength() - o2.getLength();
+//		}
 		return i;
 	}
 

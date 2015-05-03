@@ -18,9 +18,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.FlowElementsContainer;
 import org.eclipse.bpmn2.Lane;
 import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
+import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
@@ -80,6 +81,28 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	 */
 	public DefaultConnectionRouter(IFeatureProvider fp) {
 		super(fp);
+	}
+
+	public static IConnectionRouter getRouter(IFeatureProvider fp, Connection connection) {
+		IConnectionRouter router = null;
+		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
+		if (be!=null) {
+			// get the user preference of routing style for this connection
+			ShapeStyle ss = ShapeStyle.getShapeStyle(be);
+			if (ss!=null) {
+				if (ss.getRoutingStyle() == RoutingStyle.MANHATTAN)
+					router = new ManhattanConnectionRouter(fp);
+				else if (ss.getRoutingStyle() == RoutingStyle.MANUAL) {
+					router = new BendpointConnectionRouter(fp);
+				}
+				else if (ss.getRoutingStyle() == RoutingStyle.AUTOMATIC) {
+					router = new AutomaticConnectionRouter(fp);
+				}
+			}
+		}
+		if (router==null)
+			router = new BendpointConnectionRouter(fp);
+		return router;
 	}
 
 	/* (non-Javadoc)
@@ -151,41 +174,88 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 	}
 
 	/**
-	 * Find all shapes.
+	 * Find all shapes in the diagram which can cause a collision. 
 	 *
 	 * @return the list
 	 */
 	protected List<ContainerShape> findAllShapes() {
 		if (allShapes!=null)
 			return allShapes;
+		
 		allShapes = new ArrayList<ContainerShape>();
 		Diagram diagram = fp.getDiagramTypeProvider().getDiagram();
+		
+		// first find all ancestors of source and  target, and their siblings
+		List<ContainerShape> ancestors = new ArrayList<ContainerShape>();
+		List<ContainerShape> shapes = new ArrayList<ContainerShape>();
+		
 		TreeIterator<EObject> iter = diagram.eAllContents();
 		while (iter.hasNext()) {
 			EObject o = iter.next();
-			if (o instanceof ContainerShape) {
+			if (o instanceof ContainerShape && !(o instanceof Diagram)) {
 				// this is a potential collision shape
 				ContainerShape shape = (ContainerShape)o;
 				BPMNShape bpmnShape = BusinessObjectUtil.getFirstElementOfType(shape, BPMNShape.class);
-				if (bpmnShape==null)
+				if (bpmnShape==null) {
+					// this shape does not have a visual,
+					// so no collision is possible
 					continue;
-//				if (shape==source || shape==target)
-//					continue;
-				// ignore containers (like Lane, SubProcess, etc.) if the source
-				// or target shapes are children of the container's hierarchy
-				if (shape==source.eContainer() || shape==target.eContainer())
+				}
+				if (FeatureSupport.isGroupShape(shape) || FeatureSupport.isLabelShape(shape) ) {
+					// ignore Groups and Labels
 					continue;
+				}
+
+				boolean ignore = false;
+				EObject ancestor = source.eContainer();
+				while (ancestor!=null) {
+					if (ancestor instanceof ContainerShape && shape==ancestor) {
+						ancestors.add((ContainerShape)ancestor);
+						ignore = true;
+						break;
+					}
+					ancestor = ancestor.eContainer();
+				}
 				
-				// ignore some containers altogether
-				BaseElement be = bpmnShape.getBpmnElement();
-				if (be instanceof Lane)
-					continue;
-				// TODO: other criteria here?
-	
-				allShapes.add(shape);
+				if (!ignore) {
+					ancestor = target.eContainer();
+					while (ancestor!=null) {
+						if (ancestor instanceof ContainerShape && shape==ancestor) {
+							ancestors.add((ContainerShape)ancestor);
+							ignore = true;
+							break;
+						}
+						ancestor = ancestor.eContainer();
+					}
+					
+					if (!ignore && !shapes.contains(shape)) {
+						shapes.add(shape);
+					}
+				}
 			}
 		}
-//		GraphicsUtil.dump("All Shapes", allShapes); //$NON-NLS-1$
+		
+		for (ContainerShape shape : shapes) {
+			// this is a potential collision shape
+			if (!ancestors.contains(shape)) {
+				boolean ignore = false;
+				// only Lanes can be siblings to other Lanes within a container
+				// which may be either another Lane or a Pool.
+				if (BusinessObjectUtil.containsElementOfType(shape, Lane.class)) {
+					EObject ancestor = shape.eContainer();
+					while (!(ancestor instanceof Diagram)) {
+						if (ancestors.contains(ancestor)) {
+							ignore = true;
+							break;
+						}
+						ancestor = ancestor.eContainer();
+					}
+				}
+				if (!ignore) {
+					allShapes.add(shape);
+				}
+			}
+		}
 		return allShapes;
 	}
 
@@ -233,34 +303,9 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 		if (allShapes==null)
 			findAllShapes();
 		for (ContainerShape shape : allShapes) {
-			if (!FeatureSupport.isGroupShape(shape) && !FeatureSupport.isLabelShape(shape) ) {
-				EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(shape);
-				if (bo instanceof FlowElementsContainer) {
-					// it's not a collision if the shape is a SubProcess and
-					// both source and target connection points lie inside the SubProcess
-					if (GraphicsUtil.contains(shape, p1) || GraphicsUtil.contains(shape, p2))
-						continue;
-				}
-				
-				if (GraphicsUtil.intersectsLine(shape, p1, p2))
-					collisions.add(shape);
-//				else {
-//					int min = 2;
-//					ILocation loc = this.peService.getLocationRelativeToDiagram(shape);
-//					IDimension size = GraphicsUtil.calculateSize(shape);
-//					if (GraphicsUtil.isVertical(p1, p2)) {
-//						if (Math.abs(p1.getX() - loc.getX()) < min || Math.abs(p1.getX() - (loc.getX() + size.getWidth())) < min)
-//							collisions.add(shape);
-//					}
-//					else if (GraphicsUtil.isHorizontal(p1, p2)) {
-//						if (Math.abs(p1.getY() - loc.getY()) < min || Math.abs(p1.getY() - (loc.getY() + size.getHeight())) < min)
-//							collisions.add(shape);
-//					}
-//				}
-			}
+			if (GraphicsUtil.intersectsLine(shape, p1, p2))
+				collisions.add(shape);
 		}
-//		if (collisions.size()>0)
-//			GraphicsUtil.dump("Collisions with line ["+p1.getX()+", "+p1.getY()+"]"+" ["+p2.getX()+", "+p2.getY()+"]", collisions);
 		return collisions;
 	}
 

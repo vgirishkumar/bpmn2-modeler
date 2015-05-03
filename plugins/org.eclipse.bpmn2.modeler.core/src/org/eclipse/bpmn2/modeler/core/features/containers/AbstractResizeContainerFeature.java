@@ -24,6 +24,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -81,7 +82,6 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 		// leaves them in the same location relative to the diagram.
 		// This allows the user to create (or remove) space between
 		// the Lane's edge and the contained activities.
-		Point offset = null;
 		Point pos = containerPos.pop();
 		if (context.getDirection()==IResizeShapeContext.DIRECTION_NORTH ||
 				context.getDirection()==IResizeShapeContext.DIRECTION_WEST ||
@@ -91,7 +91,7 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 			int deltaX = pos.getX() - context.getX();
 			int deltaY = pos.getY() - context.getY();
 			// we'll need to use this as the offset for MOVABLE Labels
-			offset = Graphiti.getCreateService().createPoint(deltaX, deltaY);
+			Point offset = Graphiti.getCreateService().createPoint(deltaX, deltaY);
 			
 			for (PictogramElement pe : descendants) {
 				if (containerShape.getChildren().contains(pe)) {
@@ -99,13 +99,6 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 					Graphiti.getLayoutService().setLocation(ga, ga.getX() + deltaX, ga.getY() + deltaY);
 					FeatureSupport.updateLabel(getFeatureProvider(), pe, offset);
 				}
-			}
-		}
-		
-		for (PictogramElement pe : descendants) {
-			if (pe instanceof FreeFormConnection) {
-				FreeFormConnection c = (FreeFormConnection) pe;
-				FeatureSupport.updateConnection(getFeatureProvider(), c, true);
 			}
 		}
 		

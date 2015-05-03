@@ -94,31 +94,20 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 			Connection connection = (Connection) context.getPictogramElement();
 			if (context.getProperty(GraphitiConstants.INITIAL_UPDATE) == Boolean.TRUE)
 				Graphiti.getPeService().setPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE, Boolean.TRUE.toString());
+
 			diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
-			// limit the number of iterations for recalculating other connections
-			int iterations = 0;
-			boolean repeat;
-			do {
-				repeat = false;
-				IConnectionRouter router = getRouter(connection);
-				if (router.canRoute(connection) && router.routingNeeded(connection))
-					hasDoneChanges |= router.route(connection);
-
-				UpdateContext uc = new UpdateContext(connection);
-				getFeatureProvider().updateIfPossible(uc);
-				for (Connection c : diagram.getConnections()) {
-					router = getRouter(c);
-					if (router.canRoute(c) && router.routingNeeded(c)) {
-						router.route(c);
-
-						uc = new UpdateContext(c);
-						getFeatureProvider().updateIfPossible(uc);
-
-						repeat = true;
-					}
-				}
+			IConnectionRouter router = getRouter(connection);
+			if (router.canRoute(connection) && router.routingNeeded(connection)) {
+				hasDoneChanges |= router.route(connection);
+				if (router.routingNeeded(connection))
+					AbstractConnectionRouter.addRoutingInfo(connection, "failed");
+				else
+					AbstractConnectionRouter.removeRoutingInfo(connection);
 			}
-			while (repeat && ++iterations < 3);
+
+			UpdateContext uc = new UpdateContext(connection);
+			getFeatureProvider().updateIfPossible(uc);
+
 			Graphiti.getPeService().removeProperty(connection, GraphitiConstants.INITIAL_UPDATE);
 		}
 		return hasDoneChanges;
@@ -128,25 +117,11 @@ public class DefaultLayoutBPMNConnectionFeature extends AbstractLayoutFeature {
 		if (routers.containsKey(connection))
 			return routers.get(connection);
 		
-		IConnectionRouter router = null;
 		IFeatureProvider fp = getFeatureProvider();
-		BaseElement be = BusinessObjectUtil.getFirstBaseElement(connection);
-		if (be!=null) {
-			// get the user preference of routing style for this connection
-			ShapeStyle ss = ShapeStyle.getShapeStyle(be);
-			if (ss!=null) {
-				if (ss.getRoutingStyle() == RoutingStyle.MANHATTAN)
-					router = new ManhattanConnectionRouter(fp);
-				else if (ss.getRoutingStyle() == RoutingStyle.MANUAL) {
-					router = new BendpointConnectionRouter(fp);
-				}
-				else if (ss.getRoutingStyle() == RoutingStyle.AUTOMATIC) {
-					router = new AutomaticConnectionRouter(fp);
-				}
-			}
-		}
+		IConnectionRouter router = DefaultConnectionRouter.getRouter(fp, connection);
 		if (router==null)
 			router = new BendpointConnectionRouter(fp);
+		
 		routers.put(connection, router);
 		return router;
 	}

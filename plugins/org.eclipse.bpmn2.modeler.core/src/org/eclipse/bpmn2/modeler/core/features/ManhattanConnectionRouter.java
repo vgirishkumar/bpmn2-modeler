@@ -14,6 +14,7 @@ package org.eclipse.bpmn2.modeler.core.features;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
@@ -25,8 +26,10 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 
 /**
@@ -238,6 +241,72 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return false;
 	}
 	
+	@Override
+	public boolean route(Connection connection) {
+		
+		initialize(connection);
+
+		// if a connection was moved to or from an edge and it changed the number of connections
+		// on an edge, force a re-routing of all the connection on that edge.
+		Hashtable<AnchorSite, List<FixPointAnchor>> sourceAnchorsBefore = AnchorUtil.countAnchors(source); 
+		Hashtable<AnchorSite, List<FixPointAnchor>> targetAnchorsBefore = AnchorUtil.countAnchors(target); 
+
+		boolean changed = false;
+		if (connection instanceof FreeFormConnection) {
+			ConnectionRoute route = calculateRoute();
+			if (route!=null) {
+				changed = isRouteChanged(route);
+				applyRoute(route);
+			}
+			dispose();
+		}
+
+		Hashtable<AnchorSite, List<FixPointAnchor>> sourceAnchorsAfter = AnchorUtil.countAnchors(source); 
+		Hashtable<AnchorSite, List<FixPointAnchor>> targetAnchorsAfter = AnchorUtil.countAnchors(target);
+		
+		boolean repeat = false;
+		int iterations=0;
+		do {
+			repeat = false;
+			for (AnchorSite site : AnchorSite.values()) {
+				List<FixPointAnchor> sb = sourceAnchorsBefore.get(site);
+				List<FixPointAnchor> sa = sourceAnchorsAfter.get(site);
+				if (sa!=null && sb!=null) {
+					if (sa.size()!=sb.size()) {
+						// the number of anchors on this edge of the source shape
+						// has changed: we may need to re-route all of these connections
+						for (Connection c : AnchorUtil.getConnections(source, site)) {
+							IConnectionRouter router = getRouter(fp, c);
+							if (router.canRoute(c) && router.routingNeeded(c)) {
+								router.route(c);
+								repeat = true;
+							}
+						}
+					}
+				}
+	
+				List<FixPointAnchor> tb = targetAnchorsBefore.get(site);
+				List<FixPointAnchor> ta = targetAnchorsAfter.get(site);
+				if (ta!=null && tb!=null) {
+					if (ta.size()!=tb.size()) {
+						// the number of anchors on this edge of the source shape
+						// has changed: we may need to re-route all of these connections
+						for (Connection c : AnchorUtil.getConnections(target, site)) {
+							IConnectionRouter router = getRouter(fp, c);
+							if (router.canRoute(c) && router.routingNeeded(c)) {
+								router.route(c);
+								repeat = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		while (repeat && ++iterations<30);
+		
+		return changed;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter#calculateRoute()
 	 */
@@ -247,7 +316,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		if (isSelfConnection())
 			return super.calculateRoute();
 		
-		GraphicsUtil.debug = false;
+		GraphicsUtil.debug = true;
 		
 		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		if (initialUpdate) {
@@ -538,7 +607,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 
 			route = allRoutes.get(0);
 		}
-		
+
 		return route;
 	}
 	
@@ -1006,7 +1075,9 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					route.setRank(4);
 			}
 			if (size>2) {
-				if (GraphicsUtil.getLength(p1, p2) < margin) {
+				// TODO: instead of ranking these poorly,
+				// move the bendpoints instead if possible.
+				if (GraphicsUtil.getLength(p1, p2) < margin/2) {
 					p1 = route.get(1);
 					p2 = route.get(2);
 					if (sourceSite==AnchorSite.LEFT || sourceSite==AnchorSite.RIGHT) {
@@ -1033,7 +1104,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					if (isHorizontal(p1, p2) && p1.getY()==y)
 						route.setRank(4);
 				}
-				if (GraphicsUtil.getLength(p1, p2) < margin) {
+				if (GraphicsUtil.getLength(p1, p2) < margin/2) {
 					p1 = route.get(size-3);
 					p2 = route.get(size-2);
 					if (targetSite==AnchorSite.LEFT || targetSite==AnchorSite.RIGHT) {
