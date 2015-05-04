@@ -170,8 +170,8 @@ public class BoundaryEventPositionHelper {
 	}
 
 	public static boolean canMoveTo(IMoveShapeContext context, Diagram diagram) {
-		int x = context.getX();
-		int y = context.getY();
+		int x = context.getX() + context.getDeltaX();
+		int y = context.getY() + context.getDeltaY();
 
 		if (!(context.getTargetContainer() instanceof Diagram)) {
 			ILocation loc = peService.getLocationRelativeToDiagram(context.getTargetContainer());
@@ -186,9 +186,9 @@ public class BoundaryEventPositionHelper {
 		GraphicsAlgorithm activityGa = activityContainer.getGraphicsAlgorithm();
 		ILocation activityLoc = peService.getLocationRelativeToDiagram(activityContainer);
 
-		if (!activityContainer.equals(context.getTargetContainer())) {
-			return false;
-		}
+//		if (!activityContainer.equals(context.getTargetContainer())) {
+//			return false;
+//		}
 
 		PositionOnLine pos = getPositionOnLine(x, y, eventGa.getWidth(), eventGa.getHeight(), activityLoc.getX(),
 		        activityLoc.getY(), activityGa.getWidth(), activityGa.getHeight());
