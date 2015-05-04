@@ -31,8 +31,10 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -85,8 +87,13 @@ public class LayoutContainerFeature extends AbstractLayoutBpmn2ShapeFeature {
 		DIUtils.updateDIShape(rootContainer);
 		
 		for (PictogramElement pe : FeatureSupport.getPoolAndLaneDescendants(rootContainer)) {
-			if (pe instanceof Connection) {
-				FeatureSupport.updateConnection(getFeatureProvider(), (Connection)pe, true);
+			if (pe instanceof FreeFormConnection) {
+				FreeFormConnection c = (FreeFormConnection) pe;
+				// only reroute connections between shapes in different containers
+				AnchorContainer start = c.getStart().getParent();
+				AnchorContainer end = c.getEnd().getParent();
+				if (start.eContainer()!=end.eContainer())
+					FeatureSupport.updateConnection(getFeatureProvider(), (Connection)pe, true);
 			}
 		}
 

@@ -107,15 +107,15 @@ public class DefaultDeleteBPMNShapeFeature extends DefaultDeleteFeature {
 
 		// If the deleted PE was a Connection, update all of the remaining
 		// Connections for the source and target shapes
-		connections.clear();
-		for (AnchorContainer shape : shapes) {
-			for (Anchor a : shape.getAnchors()) {
-				connections.addAll(a.getIncomingConnections());
-				connections.addAll(a.getOutgoingConnections());
-			}
-		}
-		for (Connection connection : connections)
-			FeatureSupport.updateConnection(getFeatureProvider(), connection);
+//		connections.clear();
+//		for (AnchorContainer shape : shapes) {
+//			for (Anchor a : shape.getAnchors()) {
+//				connections.addAll(a.getIncomingConnections());
+//				connections.addAll(a.getOutgoingConnections());
+//			}
+//		}
+//		for (Connection connection : connections)
+//			FeatureSupport.updateConnection(getFeatureProvider(), connection);
 	}
 	
 	/* (non-Javadoc)

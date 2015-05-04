@@ -91,11 +91,11 @@ public class DefaultResizeBPMNShapeFeature extends DefaultResizeShapeFeature {
 
 		FeatureSupport.updateConnections(getFeatureProvider(), shape);
 		
-		for (Connection connection : getDiagram().getConnections()) {
-			if (GraphicsUtil.intersects(shape, connection)) {
-				FeatureSupport.updateConnection(getFeatureProvider(), connection);
-			}
-		}
+//		for (Connection connection : getDiagram().getConnections()) {
+//			if (GraphicsUtil.intersects(shape, connection)) {
+//				FeatureSupport.updateConnection(getFeatureProvider(), connection);
+//			}
+//		}
 
 		FeatureSupport.updateCategoryValues(getFeatureProvider(), shape);
 		

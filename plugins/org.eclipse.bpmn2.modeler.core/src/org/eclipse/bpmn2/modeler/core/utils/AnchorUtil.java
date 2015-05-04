@@ -13,12 +13,12 @@
 package org.eclipse.bpmn2.modeler.core.utils;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil.LineSegment;
 import org.eclipse.emf.common.notify.Notification;
@@ -341,6 +341,58 @@ public class AnchorUtil {
 		AnchorContainer ac = anchor.getParent();
 		return ac;
 	}
+	
+	public static Hashtable<AnchorSite, List<FixPointAnchor>> countAnchors(AnchorContainer ac) {
+		Hashtable<AnchorSite, List<FixPointAnchor>> result = new Hashtable<AnchorSite, List<FixPointAnchor>>(); 
+		List<FixPointAnchor> topAnchors = null;
+		List<FixPointAnchor> bottomAnchors = null;
+		List<FixPointAnchor> leftAnchors = null;
+		List<FixPointAnchor> rightAnchors = null;
+		for (Anchor a : ac.getAnchors()) {
+			AnchorType at = AnchorType.getType(a);
+			if (at == AnchorType.ACTIVITY || at == AnchorType.MESSAGELINK) {
+				// Count all of the Activity Anchors 
+				FixPointAnchor anchor = (FixPointAnchor) a;
+				AnchorSite site = AnchorSite.getSite(anchor);
+				switch (site) {
+				case BOTTOM:
+					if (bottomAnchors==null) {
+						bottomAnchors = new ArrayList<FixPointAnchor>();
+						result.put(site, bottomAnchors);
+					}
+					bottomAnchors.add(anchor);
+					break;
+				case CENTER:
+					break;
+				case LEFT:
+					if (leftAnchors==null) {
+						leftAnchors = new ArrayList<FixPointAnchor>();
+						result.put(site, leftAnchors);
+					}
+					leftAnchors.add(anchor);
+					break;
+				case RIGHT:
+					if (rightAnchors==null) {
+						rightAnchors = new ArrayList<FixPointAnchor>();
+						result.put(site, rightAnchors);
+					}
+					rightAnchors.add(anchor);
+					break;
+				case TOP:
+					if (topAnchors==null) {
+						topAnchors = new ArrayList<FixPointAnchor>();
+						result.put(site, topAnchors);
+					}
+					topAnchors.add(anchor);
+					break;
+				default:
+					break;
+				
+				}
+			}
+		}
+		return result;
+	}
 
 	/////////////////////////////////////////////////////////////////////
 	// Private API
@@ -426,64 +478,25 @@ public class AnchorUtil {
 		if (ac==null || isConnectionAnchorContainer(ac))
 			return;
 
-		// These are the number of Activity Anchors along each
-		// edge of the Activity. These anchors are distributed
-		// evenly along an edge of the shape
-		int topCount = 0;
-		int bottomCount = 0;
-		int leftCount = 0;
-		int rightCount = 0;
 		// Calculated offsets for each Activity Anchor
 		int topOffset = 0;
 		int bottomOffset = 0;
 		int leftOffset = 0;
 		int rightOffset = 0;
 		// Connections attached to each anchor
-		List<FixPointAnchor> topAnchors = null;
-		List<FixPointAnchor> bottomAnchors = null;
-		List<FixPointAnchor> leftAnchors = null;
-		List<FixPointAnchor> rightAnchors = null;
-		
-		for (Anchor a : ac.getAnchors()) {
-			AnchorType at = AnchorType.getType(a);
-			if (at == AnchorType.ACTIVITY || at == AnchorType.MESSAGELINK) {
-				// Count all of the Activity Anchors 
-				FixPointAnchor anchor = (FixPointAnchor) a;
-				AnchorSite site = AnchorSite.getSite(anchor);
-				switch (site) {
-				case BOTTOM:
-					++bottomCount;
-					if (bottomAnchors==null)
-						bottomAnchors = new ArrayList<FixPointAnchor>();
-					bottomAnchors.add(anchor);
-					break;
-				case CENTER:
-					break;
-				case LEFT:
-					++leftCount;
-					if (leftAnchors==null)
-						leftAnchors = new ArrayList<FixPointAnchor>();
-					leftAnchors.add(anchor);
-					break;
-				case RIGHT:
-					++rightCount;
-					if (rightAnchors==null)
-						rightAnchors = new ArrayList<FixPointAnchor>();
-					rightAnchors.add(anchor);
-					break;
-				case TOP:
-					++topCount;
-					if (topAnchors==null)
-						topAnchors = new ArrayList<FixPointAnchor>();
-					topAnchors.add(anchor);
-					break;
-				default:
-					break;
-				
-				}
-			}
-		}
-		
+		Hashtable<AnchorSite, List<FixPointAnchor>> anchors = countAnchors(ac);
+		List<FixPointAnchor> topAnchors = anchors.get(AnchorSite.TOP);
+		List<FixPointAnchor> bottomAnchors = anchors.get(AnchorSite.BOTTOM);
+		List<FixPointAnchor> leftAnchors = anchors.get(AnchorSite.LEFT);
+		List<FixPointAnchor> rightAnchors = anchors.get(AnchorSite.RIGHT);
+		// These are the number of Activity Anchors along each
+		// edge of the Activity. These anchors are distributed
+		// evenly along an edge of the shape
+		int topCount = topAnchors==null ? 0 : topAnchors.size();
+		int bottomCount = bottomAnchors==null ? 0 : bottomAnchors.size();
+		int leftCount = leftAnchors==null ? 0 : leftAnchors.size();
+		int rightCount = rightAnchors==null ? 0 : rightAnchors.size();
+
 		for (Anchor a : ac.getAnchors()) {
 			AnchorType at = AnchorType.getType(a);
 			if (at == AnchorType.ACTIVITY) {
@@ -505,7 +518,7 @@ public class AnchorUtil {
 				case LEFT:
 					index = calculateIndex(anchor, leftAnchors);
 					if (index>=0)
-						leftOffset = (index+1) * w/(leftCount+1);
+						leftOffset = (index+1) * h/(leftCount+1);
 					else
 						leftOffset += h/(leftCount+1);
 					anchor.setLocation(gaService.createPoint(0, leftOffset));
@@ -513,7 +526,7 @@ public class AnchorUtil {
 				case RIGHT:
 					index = calculateIndex(anchor, rightAnchors);
 					if (index>=0)
-						rightOffset = (index+1) * w/(rightCount+1);
+						rightOffset = (index+1) * h/(rightCount+1);
 					else
 						rightOffset += h/(rightCount+1);
 					anchor.setLocation(gaService.createPoint(w, rightOffset));
@@ -604,10 +617,9 @@ public class AnchorUtil {
 	private static int calculateIndex(FixPointAnchor anchor, List<FixPointAnchor> all) {
 		// TODO: fix this: should probably look at the location of the closest bendboint,
 		// not the opposite anchor.
-		if (true) return -1;
+//		if (true) return -1;
 		TreeMap<Integer, FixPointAnchor> offsets = new TreeMap<Integer, FixPointAnchor>();
 		AnchorSite site = AnchorSite.getSite(anchor);
-		Connection c;
 		for (FixPointAnchor a : all) {
 			FixPointAnchor a2 = getOpposite(a);
 			if (a2!=null) {
