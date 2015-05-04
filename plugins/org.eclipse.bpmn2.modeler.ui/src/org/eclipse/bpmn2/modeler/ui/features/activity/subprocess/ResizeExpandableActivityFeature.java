@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.features.activity.subprocess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.di.BPMNDiagram;
 import org.eclipse.bpmn2.di.BPMNShape;
@@ -22,11 +25,11 @@ import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.bpmn2.modeler.core.utils.ShapeDecoratorUtil;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.features.context.impl.ResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
@@ -49,6 +52,8 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 		Activity activity = BusinessObjectUtil.getFirstElementOfType(containerShape, Activity.class);
 		ShapeStyle ss = preferences.getShapeStyle(activity);
 		
+		List<AnchorContainer> movedChildren = new ArrayList<AnchorContainer>();
+		List<PictogramElement> containerChildren = FeatureSupport.getContainerChildren(containerShape);
 		try {
 			BPMNDiagram bpmnDiagram = DIUtils.findBPMNDiagram(containerShape);
 			BPMNShape shape = DIUtils.findBPMNShape(bpmnDiagram, activity);
@@ -67,11 +72,13 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 				int minHeight = sizeCalc.minHeight;
 				
 				if (shiftX < 0) {
-					for (PictogramElement pe : FeatureSupport.getContainerChildren(containerShape)) {
+					for (PictogramElement pe : containerChildren) {
 						GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 						if (childGa!=null) {
 							int x = childGa.getX() - shiftX + MARGIN;
 							childGa.setX(x);
+							if (pe instanceof ContainerShape)
+								movedChildren.add((ContainerShape)pe);
 						}
 					}
 					resizeShapeContext.setX(resizeShapeContext.getX() + shiftX - MARGIN);
@@ -79,10 +86,12 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 				}
 				
 				if (shiftY < 0) {
-					for (PictogramElement pe : FeatureSupport.getContainerChildren(containerShape)) {
+					for (PictogramElement pe : containerChildren) {
 						GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 						if (childGa!=null) {
 							int y = childGa.getY() - shiftY + MARGIN;
+							if (!movedChildren.contains(pe) && pe instanceof ContainerShape)
+								movedChildren.add((ContainerShape)pe);
 							childGa.setY(y);
 						}
 					}
@@ -106,11 +115,13 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 						shift = shiftX-MARGIN;
 					}
 					if (shift>0) {
-						for (PictogramElement pe : FeatureSupport.getContainerChildren(containerShape)) {
+						for (PictogramElement pe : containerChildren) {
 							GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 							if (childGa!=null) {
 								int x = childGa.getX() - shift;
 								childGa.setX(x);
+								if (!movedChildren.contains(pe) && pe instanceof ContainerShape)
+									movedChildren.add((ContainerShape)pe);
 							}
 						}
 					}
@@ -124,11 +135,13 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 						shift = shiftY-MARGIN;
 					}
 					if (shift>0) {
-						for (PictogramElement pe : FeatureSupport.getContainerChildren(containerShape)) {
+						for (PictogramElement pe : containerChildren) {
 							GraphicsAlgorithm childGa = pe.getGraphicsAlgorithm();
 							if (childGa!=null) {
 								int y = childGa.getY() - shift;
 								childGa.setY(y);
+								if (!movedChildren.contains(pe) && pe instanceof ContainerShape)
+									movedChildren.add((ContainerShape)pe);
 							}
 						}
 					}
@@ -158,6 +171,8 @@ public class ResizeExpandableActivityFeature extends DefaultResizeBPMNShapeFeatu
 //		Graphiti.getPeService().sendToBack(containerShape);
 		
 		super.resizeShape(context);
+
+		FeatureSupport.updateConnections(getFeatureProvider(), movedChildren);
 	}
 	
 	public static class SizeCalculator {

@@ -154,11 +154,12 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 		
+		// Handle the case where a shape was moved such that it now collides
+		// with an existing connection
 		for (Connection connection : getDiagram().getConnections()) {
-			if (GraphicsUtil.intersects(shape, connection)) {
-				if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
-					FeatureSupport.updateConnection(getFeatureProvider(), connection);
-				}
+			if (!FeatureSupport.getConnections(shape).contains(connection) &&
+					GraphicsUtil.intersects(shape, connection)) {
+				FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			}
 		}
 
