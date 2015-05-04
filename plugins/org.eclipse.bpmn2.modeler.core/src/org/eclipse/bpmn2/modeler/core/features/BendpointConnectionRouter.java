@@ -70,6 +70,14 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 		return super.canRoute(connection) && connection instanceof FreeFormConnection;
 	}
 
+	@Override
+	public boolean routingNeeded(Connection connection) {
+		if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
+			return false;
+		}
+		return super.routingNeeded(connection);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.features.DefaultConnectionRouter#initialize(org.eclipse.graphiti.mm.pictograms.Connection)
 	 */

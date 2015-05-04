@@ -33,6 +33,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 /**
  * Default Graphiti {@code MoveShapeFeature} class for Shapes.
@@ -136,15 +137,6 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			FeatureSupport.updateLabel(getFeatureProvider(), shape, p);
 		}
 		
-//		for (Connection c : FeatureSupport.getConnections(shape)) {
-//			if (c instanceof FreeFormConnection) {
-//				FreeFormConnection ffc = (FreeFormConnection) c;
-//				for (Point bp : ffc.getBendpoints()) {
-//					bp.setX( bp.getX() + deltaX );
-//					bp.setY( bp.getY() + deltaY );
-//				}
-//			}
-//		}
 		
 		if (shape instanceof ContainerShape) {
 			PictogramElement pe = (PictogramElement) ((ContainerShape)shape).eContainer();
@@ -162,11 +154,12 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 			}
 		}
 		
+		// Handle the case where a shape was moved such that it now collides
+		// with an existing connection
 		for (Connection connection : getDiagram().getConnections()) {
-			if (GraphicsUtil.intersects(shape, connection)) {
-				if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
-					FeatureSupport.updateConnection(getFeatureProvider(), connection);
-				}
+			if (!FeatureSupport.getConnections(shape).contains(connection) &&
+					GraphicsUtil.intersects(shape, connection)) {
+				FeatureSupport.updateConnection(getFeatureProvider(), connection);
 			}
 		}
 
@@ -180,5 +173,9 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 				FeatureSupport.updateCategoryValues(getFeatureProvider(), c);
 			}
 		}
+	}
+	
+	protected DiagramEditor getDiagramEditor() {
+		return (DiagramEditor)getFeatureProvider().getDiagramTypeProvider().getDiagramBehavior().getDiagramContainer();
 	}
 }

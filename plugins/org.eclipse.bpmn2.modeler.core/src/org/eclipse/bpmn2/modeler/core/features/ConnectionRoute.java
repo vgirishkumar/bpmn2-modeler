@@ -456,11 +456,11 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 			if (i == 0) {
 				i = o1.crossings.size() - o2.crossings.size();
 				if (i == 0) {
-					i = o1.getLength() - o2.getLength();
+					i = o1.getRank() - o2.getRank();
 					if (i == 0) {
 						i = o1.getPoints().size() - o2.getPoints().size();
 						if (i == 0) {
-							i = o1.getRank() - o2.getRank();
+							i = o1.getLength() - o2.getLength();
 							if (i == 0) {
 								i = o1.getPoints().size() - o2.getPoints().size();
 							}

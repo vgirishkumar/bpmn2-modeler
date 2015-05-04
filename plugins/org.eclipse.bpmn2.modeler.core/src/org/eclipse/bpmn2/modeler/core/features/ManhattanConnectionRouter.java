@@ -31,6 +31,7 @@ import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * A Connection Router that constrains all line segments of a connection to be either
@@ -44,7 +45,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 	/** The Constant offset. */
-	static final int margin = 20;
+	static final int margin = 10;
 	
 	/** The test route solver. */
 	static boolean testRouteSolver = false;
@@ -215,7 +216,11 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 	@Override
 	public boolean routingNeeded(Connection connection) {
+		if (Graphiti.getPeService().getProperty(connection, RoutingNet.CONNECTION)!=null) {
+			return false;
+		}
 		if (connection instanceof FreeFormConnection) {
+
 			if (peService.getPropertyValue(connection, GraphitiConstants.INITIAL_UPDATE) != null)
 				return true;
 			if (forceRouting(connection))
@@ -289,7 +294,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 				List<FixPointAnchor> ta = targetAnchorsAfter.get(site);
 				if (ta!=null && tb!=null) {
 					if (ta.size()!=tb.size()) {
-						// the number of anchors on this edge of the source shape
+						// the number of anchors on this edge of the target shape
 						// has changed: we may need to re-route all of these connections
 						for (Connection c : AnchorUtil.getConnections(target, site)) {
 							IConnectionRouter router = getRouter(fp, c);
@@ -302,7 +307,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 				}
 			}
 		}
-		while (repeat && ++iterations<30);
+		while (repeat && ++iterations<3);
 		
 		return changed;
 	}
@@ -448,7 +453,10 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					ConnectionRoute route = new ConnectionRoute(this, 0, source,target);
 					route.setSourceAnchor(sourceAnchor);
 					route.setTargetAnchor(targetAnchor);
-					
+					if (!shouldCalculate(sourceSite, targetSite)) {
+						route.setRank(1);
+					}
+
 					int i = 0;
 					p1 = oldPoints[i++];
 					route.add(p1);
@@ -544,8 +552,8 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 						++rank;
 				}
 			}
-			if ((sourceSite!=initialSourceSite || targetSite!=initialTargetSite))
-				++rank;
+//			if ((sourceSite!=initialSourceSite || targetSite!=initialTargetSite))
+//				++rank;
 			route.setRank(rank);
 			route.setSourceAnchor(sourceAnchor);
 			route.setTargetAnchor(targetAnchor);
@@ -673,7 +681,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			m.setX(start.getX());
 			for (;;) {
 				m = getVertMidpoint(start,m,0.5);
-				adjustPoint(sourceSite, m, start);
+//				adjustPoint(sourceSite, m, start);
 				shape = getCollision(start,m);
 				if (shape==null || Math.abs(m.getY()-start.getY())<=margin) {
 					if (shape!=null) {
@@ -693,7 +701,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			m.setY(start.getY());
 			for (;;) {
 				m = getHorzMidpoint(start,m,0.5);
-				adjustPoint(sourceSite, m, start);
+//				adjustPoint(sourceSite, m, start);
 				shape = getCollision(start,m);
 				if (shape==null || Math.abs(m.getX()-start.getX())<=margin) {
 					if (shape!=null) {
@@ -738,7 +746,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			m.setX(end.getX());
 			for (;;) {
 				m = getVertMidpoint(m,end,0.5);
-				adjustPoint(m, end, targetSite);
+//				adjustPoint(m, end, targetSite);
 				ContainerShape shape = getCollision(m,end);
 				if (shape==null || Math.abs(m.getY()-end.getY())<=margin) {
 					if (shape!=null) {
@@ -758,7 +766,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			m.setY(end.getY());
 			for (;;) {
 				m = getHorzMidpoint(m,end,0.5);
-				adjustPoint(m, end, targetSite);
+//				adjustPoint(m, end, targetSite);
 				ContainerShape shape = getCollision(m,end);
 				if (shape==null || Math.abs(m.getX()-end.getX())<=margin) {
 					if (shape!=null) {
@@ -1075,9 +1083,10 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					route.setRank(4);
 			}
 			if (size>2) {
+				int margin = 2;
 				// TODO: instead of ranking these poorly,
 				// move the bendpoints instead if possible.
-				if (GraphicsUtil.getLength(p1, p2) < margin/2) {
+				if (GraphicsUtil.getLength(p1, p2) < margin) {
 					p1 = route.get(1);
 					p2 = route.get(2);
 					if (sourceSite==AnchorSite.LEFT || sourceSite==AnchorSite.RIGHT) {
@@ -1104,7 +1113,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					if (isHorizontal(p1, p2) && p1.getY()==y)
 						route.setRank(4);
 				}
-				if (GraphicsUtil.getLength(p1, p2) < margin/2) {
+				if (GraphicsUtil.getLength(p1, p2) < margin) {
 					p1 = route.get(size-3);
 					p2 = route.get(size-2);
 					if (targetSite==AnchorSite.LEFT || targetSite==AnchorSite.RIGHT) {

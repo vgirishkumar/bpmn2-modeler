@@ -49,13 +49,13 @@ public class ShapeLayoutManager {
 	private static final int HORZ_PADDING = 50;
 	private static final int VERT_PADDING = 50;
 	private static final ILayoutService layoutService = Graphiti.getLayoutService();
-	
+
 	private IDiagramContainer diagramContainer;
 	
 	public ShapeLayoutManager(IDiagramContainer diagramContainer) {
 		this.diagramContainer = diagramContainer;
 	}
-
+	
 	public void layout(BaseElement container) {
 		layout( getContainerShape(container) );
 		diagramContainer.selectPictogramElements(new PictogramElement[]{});
@@ -113,6 +113,8 @@ public class ShapeLayoutManager {
 			
 			BaseElement be = BusinessObjectUtil.getFirstBaseElement(child);
 			if (be instanceof Participant && ModelUtil.isParticipantBand((Participant)be))
+				continue;
+			if (be instanceof BoundaryEvent)
 				continue;
 
 			List<SequenceFlow> incomingFlows = getIncomingSequenceFlows(child);
@@ -346,6 +348,15 @@ public class ShapeLayoutManager {
 			}
 			for (ContainerShape c : allChildren) {
 				if (c!=child && GraphicsUtil.intersects(child, c)) {
+					BaseElement childBE = BusinessObjectUtil.getFirstBaseElement(child);
+					BaseElement cBE = BusinessObjectUtil.getFirstBaseElement(c);
+					if (cBE instanceof BoundaryEvent) {
+						// these are allowed to overlap their attached Activities
+						if (((BoundaryEvent)cBE).getAttachedToRef() == childBE) {
+							intersects = false;
+							break;
+						}
+					}
 					intersects = true;
 					y += VERT_PADDING;
 				}
