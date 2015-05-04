@@ -506,7 +506,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		// Calculate all possible routes: this iterates over every permutation
 		// of 4 sides for both source and target shape
 		for (int i=0; i<16; ++i) {
-			int rank = 0;
+			int rank = 1;
 			if (!shouldCalculate(sourceSite, targetSite)) {
 				++rank;
 			}
