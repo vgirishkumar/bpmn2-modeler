@@ -109,29 +109,40 @@ public class MoveBoundaryEventFeature extends MoveFlowNodeFeature {
 
 	@Override
 	protected void postMoveShape(IMoveShapeContext context) {
-		ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
-		
-		Object property = context.getProperty(GraphitiConstants.ACTIVITY_MOVE_PROPERTY);
-		Object selectionFlag = context.getProperty(GraphitiConstants.SELECTION_MOVE_PROPERTY);
-		if (property != null && (Boolean) property) {
-			IGaService gaService = Graphiti.getGaService();
-			GraphicsAlgorithm ga = containerShape.getGraphicsAlgorithm();
-			gaService.setLocation(ga, ga.getX() + context.getDeltaX(), ga.getY() + context.getDeltaY());
-		} 
-		else if (selectionFlag != null && (Boolean) selectionFlag) {
-			// do nothing, let base class do the job
-		}
-		else {
-			BoundaryEvent event = BusinessObjectUtil.getFirstElementOfType(containerShape, BoundaryEvent.class);
-			PictogramElement activityContainer = BusinessObjectUtil.getFirstBaseElementFromDiagram(getDiagram(),
-					event.getAttachedToRef());
-			PositionOnLine newPos = BoundaryEventPositionHelper.getPositionOnLineUsingAbsoluteCoordinates(
-					containerShape, (Shape) activityContainer);
-			BoundaryEventPositionHelper.assignPositionOnLineProperty(containerShape, newPos);
-		}
-		
-		GraphicsUtil.sendToFront(context.getShape());
-		
-		super.postMoveShape(context);
+		PictogramElement pe = context.getPictogramElement();
+		if (pe instanceof ContainerShape) {
+			ContainerShape eventContainer = (ContainerShape) pe;
+			
+			Object property = context.getProperty(GraphitiConstants.ACTIVITY_MOVE_PROPERTY);
+			Object selectionFlag = context.getProperty(GraphitiConstants.SELECTION_MOVE_PROPERTY);
+			if (property != null && (Boolean) property) {
+				IGaService gaService = Graphiti.getGaService();
+				GraphicsAlgorithm ga = eventContainer.getGraphicsAlgorithm();
+				// make sure the x/y coordinates are within the bounds of the
+				// Activity to which this Boundary Event is attached
+				int x = ga.getX() + context.getDeltaX();
+				int y = ga.getY() + context.getDeltaY();
+				if (!BoundaryEventPositionHelper.canMoveTo(context, getDiagram())) {
+					ILocation loc = BoundaryEventPositionHelper.getLocation(context, getDiagram());
+					x = loc.getX();
+					y = loc.getY();
+				}
+				gaService.setLocation(ga, x, y);
+			} 
+			else if (selectionFlag != null && (Boolean) selectionFlag) {
+				// do nothing, let base class do the job
+			}
+			else {
+				BoundaryEvent event = BusinessObjectUtil.getFirstElementOfType(eventContainer, BoundaryEvent.class);
+				PictogramElement activityContainer = BusinessObjectUtil.getFirstBaseElementFromDiagram(getDiagram(),
+						event.getAttachedToRef());
+				PositionOnLine newPos = BoundaryEventPositionHelper.getPositionOnLineUsingAbsoluteCoordinates(
+						eventContainer, (Shape) activityContainer);
+				BoundaryEventPositionHelper.assignPositionOnLineProperty(eventContainer, newPos);
+			}
+			
+			GraphicsUtil.sendToFront(context.getShape());
+			super.postMoveShape(context);
+		}		
 	}
 }

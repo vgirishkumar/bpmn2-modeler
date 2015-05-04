@@ -16,6 +16,7 @@ import org.eclipse.bpmn2.BoundaryEvent;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.features.GraphitiConstants;
 import org.eclipse.dd.dc.Bounds;
+import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.context.ICreateContext;
 import org.eclipse.graphiti.features.context.IMoveShapeContext;
@@ -23,11 +24,14 @@ import org.eclipse.graphiti.mm.PropertyContainer;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IPeService;
 
 public class BoundaryEventPositionHelper {
+
+	private static IPeService peService = Graphiti.getPeService();
 
 	public static class PositionOnLine {
 
@@ -166,8 +170,6 @@ public class BoundaryEventPositionHelper {
 	}
 
 	public static boolean canMoveTo(IMoveShapeContext context, Diagram diagram) {
-		IPeService peService = Graphiti.getPeService();
-
 		int x = context.getX();
 		int y = context.getY();
 
@@ -192,6 +194,24 @@ public class BoundaryEventPositionHelper {
 		        activityLoc.getY(), activityGa.getWidth(), activityGa.getHeight());
 		return pos.isLegalPosition();
 	}
+	
+	public static ILocation getLocation(IMoveShapeContext context, Diagram diagram) {
+		ILocation eventLoc = peService.getLocationRelativeToDiagram(context.getShape());
+		Shape eventShape = context.getShape();
+		BoundaryEvent event = BusinessObjectUtil.getFirstElementOfType(eventShape, BoundaryEvent.class);
+		PictogramElement pe = BusinessObjectUtil.getFirstBaseElementFromDiagram(diagram, event.getAttachedToRef());
+		if (pe instanceof ContainerShape) {
+			ContainerShape activityShape = (ContainerShape) pe;
+			ILocation activityLoc = peService.getLocationRelativeToDiagram(activityShape);
+			IDimension eventSize = GraphicsUtil.calculateSize(eventShape);
+			IDimension activitySize = GraphicsUtil.calculateSize(activityShape);
+			eventLoc.setX(activityLoc.getX() + eventSize.getWidth());
+			eventLoc.setY(activityLoc.getY() + activitySize.getHeight() - eventSize.getHeight()/2);
+		}
+
+		return eventLoc;
+	}
+	
 
 	public static PositionOnLine getPositionOnLineUsingBPMNShape(Shape eventShape, Shape activityShape) {
 		BPMNShape event = BusinessObjectUtil.getFirstElementOfType(eventShape, BPMNShape.class);
@@ -205,7 +225,6 @@ public class BoundaryEventPositionHelper {
 	}
 
 	public static PositionOnLine getPositionOnLineUsingAbsoluteCoordinates(Shape eventShape, Shape activityShape) {
-		IPeService peService = Graphiti.getPeService();
 		GraphicsAlgorithm eventGa = eventShape.getGraphicsAlgorithm();
 		ILocation eventLoc = peService.getLocationRelativeToDiagram(eventShape);
 		GraphicsAlgorithm activityGa = activityShape.getGraphicsAlgorithm();
@@ -242,12 +261,10 @@ public class BoundaryEventPositionHelper {
 	}
 
 	public static void assignPositionOnLineProperty(PropertyContainer propertyContainer, PositionOnLine pos) {
-		IPeService peService = Graphiti.getPeService();
 		peService.setPropertyValue(propertyContainer, GraphitiConstants.BOUNDARY_EVENT_RELATIVE_POS, pos.toString());
 	}
 
 	public static PositionOnLine getPositionOnLineProperty(PropertyContainer propertyContainer) {
-		IPeService peService = Graphiti.getPeService();
 		String value = peService.getPropertyValue(propertyContainer, GraphitiConstants.BOUNDARY_EVENT_RELATIVE_POS);
 		return PositionOnLine.fromString(value);
 	}
