@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
 import org.eclipse.bpmn2.Lane;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.di.BPMNShape;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle.RoutingStyle;
@@ -241,7 +242,8 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				boolean ignore = false;
 				// only Lanes can be siblings to other Lanes within a container
 				// which may be either another Lane or a Pool.
-				if (BusinessObjectUtil.containsElementOfType(shape, Lane.class)) {
+				BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
+				if (be instanceof Lane) {
 					EObject ancestor = shape.eContainer();
 					while (!(ancestor instanceof Diagram)) {
 						if (ancestors.contains(ancestor)) {
@@ -251,6 +253,25 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 						ancestor = ancestor.eContainer();
 					}
 				}
+				// Yet another hack for dealing with imported files.
+				// Here we have a poorly laid out diagram such that
+				// a Pool overlaps another Pool almost completely.
+				// This is an indication that the tool used to create
+				// the file is rendering Pools on separate pages, even
+				// though there is only a single BPMNDiagram.
+				// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=463205
+				// for an example of this.
+				if (be instanceof Lane || be instanceof Participant) {
+					for (ContainerShape ancestor : ancestors) {
+						if (GraphicsUtil.intersects(shape, ancestor)) {
+							ignore = true;
+							break;
+						}
+					}
+				}				
+				// check if any ancestors overlaps this Lane or Pool
+				// this is a special case
+				
 				if (!ignore) {
 					allShapes.add(shape);
 				}

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.bpmn2.modeler.core.utils.AnchorSite;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorType;
@@ -45,7 +46,7 @@ import org.eclipse.graphiti.services.Graphiti;
 public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 	/** The Constant offset. */
-	static final int margin = 10;
+	static final int margin = 20;
 	
 	/** The test route solver. */
 	static boolean testRouteSolver = false;
@@ -258,11 +259,35 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 
 		boolean changed = false;
 		if (connection instanceof FreeFormConnection) {
+			// This is yet another hack to deal with imported diagrams:
+			// we need to respect the original source/target anchor locations
+			// of connections that are not being routed.
+			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=463205
+			// for an example of this.
+			Map<Anchor,Point> initialSourceAnchorLocations = AnchorUtil.saveAnchorLocations(source); 
+			Map<Anchor,Point> initialTargetAnchorLocations = AnchorUtil.saveAnchorLocations(target);
+			// this will normalize the locations of the source and target
+			// anchors by ensuring that single anchors are in the middle
+			// of an edge and multiple anchors are evenly spaced out
+			// along the edge of a shape.
+			AnchorUtil.adjustAnchors(source);
+			AnchorUtil.adjustAnchors(target);
+			// of course now the locations of the source and target anchors
+			// MAY have changed, so these need to be updated...
+			oldPoints[0] = GraphicsUtil.createPoint(ffc.getStart());
+			oldPoints[oldPoints.length-1] = GraphicsUtil.createPoint(ffc.getEnd());
+
 			ConnectionRoute route = calculateRoute();
 			if (route!=null) {
 				changed = isRouteChanged(route);
 				applyRoute(route);
 			}
+			
+			initialSourceAnchorLocations.remove(ffc.getStart());
+			initialTargetAnchorLocations.remove(ffc.getEnd());
+			AnchorUtil.restoreAnchorLocations(source, initialSourceAnchorLocations);
+			AnchorUtil.restoreAnchorLocations(target, initialTargetAnchorLocations);
+			
 			dispose();
 		}
 
@@ -270,7 +295,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		Hashtable<AnchorSite, List<FixPointAnchor>> targetAnchorsAfter = AnchorUtil.countAnchors(target);
 		
 		boolean repeat = false;
-		int iterations=0;
+		int iterations = 0;
 		do {
 			repeat = false;
 			for (AnchorSite site : AnchorSite.values()) {
@@ -322,6 +347,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			return super.calculateRoute();
 		
 		GraphicsUtil.debug = false;
+		GraphicsUtil.dump("\n===========================================\nRouting ", ffc);
 		
 		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
 		if (initialUpdate) {
@@ -485,10 +511,10 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 						// to an anchor on the shape) we have to change the
 						p3 = oldPoints[length-2];
 						if (isHorizontal(p3, p1)) {
-							p1.setX(p2.getX());
+							p1.setY(p2.getY());
 						}
 						else {
-							p1.setY(p2.getY());
+							p1.setX(p2.getX());
 						}
 					}
 					else {

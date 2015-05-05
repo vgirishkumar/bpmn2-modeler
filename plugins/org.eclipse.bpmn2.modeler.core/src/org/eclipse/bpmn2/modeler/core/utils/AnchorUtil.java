@@ -15,6 +15,7 @@ package org.eclipse.bpmn2.modeler.core.utils;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -26,6 +27,7 @@ import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.datatypes.ILocation;
+import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
@@ -208,7 +210,6 @@ public class AnchorUtil {
 			return;
 		}
 		if (parent instanceof Shape) {
-			EObject bo = BusinessObjectUtil.getBusinessObjectForPictogramElement(parent);
 			p = GraphicsUtil.createPoint(p); // make a copy
 			ILocation loc = peService.getLocationRelativeToDiagram((Shape)parent);
 			LineSegment edge = GraphicsUtil.findNearestEdge((Shape)parent, p);
@@ -393,7 +394,29 @@ public class AnchorUtil {
 		}
 		return result;
 	}
-
+	
+	public static Map<Anchor,Point> saveAnchorLocations(AnchorContainer ac) {
+		Map<Anchor, Point> points = new Hashtable<Anchor,Point>();
+		for (Anchor a : ac.getAnchors()) {
+			if (a instanceof FixPointAnchor) {
+				Point p = GraphicsUtil.createPoint(((FixPointAnchor) a).getLocation());
+				points.put(a, p);
+			}
+		}
+		return points;
+	}
+	
+	public static void restoreAnchorLocations(AnchorContainer ac, Map<Anchor,Point> points) {
+		for (Anchor a : ac.getAnchors()) {
+			if (a instanceof FixPointAnchor) {
+				Point p = points.get(a);
+				if (p!=null) {
+					((FixPointAnchor) a).setLocation(p);
+				}
+			}
+		}
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// Private API
 	/////////////////////////////////////////////////////////////////////
