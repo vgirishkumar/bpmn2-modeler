@@ -811,17 +811,10 @@ public class FeatureSupport {
 
 	public static void updateConnections(IFeatureProvider fp, AnchorContainer ac) {
 		List<Connection> alreadyUpdated = new ArrayList<Connection>();
-//		if (ac instanceof ContainerShape) {
-//			for (Shape child : ((ContainerShape)ac).getChildren()) {
-//				if (child instanceof ContainerShape)
-//					updateConnections(fp, child, alreadyUpdated);
-//			}
-//		}
 		updateConnections(fp, ac, alreadyUpdated);
-//		AnchorUtil.relocateAnchors((Shape)ac);
 	}
 	
-	public static void updateConnections(IFeatureProvider fp, List<AnchorContainer> acs) {
+	public static void updateConnections(IFeatureProvider fp, List<? extends AnchorContainer> acs) {
 		List<Connection> alreadyUpdated = new ArrayList<Connection>();
 		for (AnchorContainer ac : acs)
 			updateConnections(fp, ac, alreadyUpdated);

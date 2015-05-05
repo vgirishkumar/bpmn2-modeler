@@ -554,12 +554,14 @@ public class GraphicsUtil {
 	}
 
 	public static void dump(String label, Connection c) {
-		System.out.print(label+" connection="); //$NON-NLS-1$
-		ContainerShape source = (ContainerShape) c.getStart().getParent();
-		ContainerShape target = (ContainerShape) c.getEnd().getParent();
-		String sourceName = GraphicsUtil.getDebugText(source);
-		String targetName = GraphicsUtil.getDebugText(target);
-		System.out.println(sourceName+" -> "+targetName); //$NON-NLS-1$
+		if (debug) {
+			System.out.print(label+" connection="); //$NON-NLS-1$
+			ContainerShape source = (ContainerShape) c.getStart().getParent();
+			ContainerShape target = (ContainerShape) c.getEnd().getParent();
+			String sourceName = GraphicsUtil.getDebugText(source);
+			String targetName = GraphicsUtil.getDebugText(target);
+			System.out.println(sourceName+" -> "+targetName); //$NON-NLS-1$
+		}
 	}
 
 	public static void dump(int level, String label, ContainerShape shape) {
