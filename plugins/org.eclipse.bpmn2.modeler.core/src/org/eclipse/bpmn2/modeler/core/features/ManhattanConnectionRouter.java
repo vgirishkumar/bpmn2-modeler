@@ -46,7 +46,7 @@ import org.eclipse.graphiti.services.Graphiti;
 public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 	
 	/** The Constant offset. */
-	static final int margin = 20;
+	static final int margin = 10;
 	
 	/** The test route solver. */
 	static boolean testRouteSolver = false;
@@ -508,13 +508,16 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 					// check the last segment just before the target shape
 					if (!isHorizontal(p1, p2) && !isVertical(p1, p2)) {
 						// since we can't change the target point (it is connected
-						// to an anchor on the shape) we have to change the
-						p3 = oldPoints[length-2];
-						if (isHorizontal(p3, p1)) {
-							p1.setY(p2.getY());
+						// to an anchor on the shape) we will check if this last
+						// segment is closer to horizontal or vertical and adjust
+						// the previous bendpoint.
+						dx = Math.abs(p1.getX() - p2.getX());
+						dy = Math.abs(p1.getY() - p2.getY());
+						if (dx < dy) {
+							p1.setX(p2.getX());
 						}
 						else {
-							p1.setX(p2.getX());
+							p1.setY(p2.getY());
 						}
 					}
 					else {

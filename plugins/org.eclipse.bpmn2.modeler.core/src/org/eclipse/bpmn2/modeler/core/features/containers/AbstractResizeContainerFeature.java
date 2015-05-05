@@ -24,9 +24,7 @@ import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IResizeShapeContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
-import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
@@ -93,13 +91,18 @@ public abstract class AbstractResizeContainerFeature extends DefaultResizeBPMNSh
 			// we'll need to use this as the offset for MOVABLE Labels
 			Point offset = Graphiti.getCreateService().createPoint(deltaX, deltaY);
 			
+			List<ContainerShape> movedShapes = new ArrayList<ContainerShape>();
 			for (PictogramElement pe : descendants) {
 				if (containerShape.getChildren().contains(pe)) {
 					GraphicsAlgorithm ga = pe.getGraphicsAlgorithm();
 					Graphiti.getLayoutService().setLocation(ga, ga.getX() + deltaX, ga.getY() + deltaY);
 					FeatureSupport.updateLabel(getFeatureProvider(), pe, offset);
+					if (pe instanceof ContainerShape)
+						movedShapes.add((ContainerShape)pe);
 				}
 			}
+			
+			FeatureSupport.updateConnections(getFeatureProvider(), movedShapes);
 		}
 		
 		DIUtils.updateDIShape(containerShape);

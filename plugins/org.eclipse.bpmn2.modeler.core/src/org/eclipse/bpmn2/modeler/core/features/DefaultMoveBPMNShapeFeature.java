@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.core.features;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.bpmn2.Group;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
@@ -149,9 +152,11 @@ public class DefaultMoveBPMNShapeFeature extends DefaultMoveShapeFeature {
 		// after all of them have been moved. This is to avoid relocating
 		// connections unnecessarily as each shape is moved.
 		if (shape==selectedShapes[ selectedShapes.length-1 ]) {
+			List<AnchorContainer> movedShapes = new ArrayList<AnchorContainer>();
 			for (int i=0; i<selectedShapes.length; ++i) {
-				FeatureSupport.updateConnections(getFeatureProvider(), (AnchorContainer)selectedShapes[i]);
+				movedShapes.add((AnchorContainer)selectedShapes[i]);
 			}
+			FeatureSupport.updateConnections(getFeatureProvider(), movedShapes);
 		}
 		
 		// Handle the case where a shape was moved such that it now collides
