@@ -180,294 +180,318 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 		return changed;
 	}
 
-		@Override
-		protected ConnectionRoute calculateRoute() {
+	/* (non-Javadoc)
+	 * @see org.eclipse.bpmn2.modeler.core.features.BendpointConnectionRouter#calculateRoute()
+	 */
+	@Override
+	protected ConnectionRoute calculateRoute() {
+		
+		if (isSelfConnection())
+			return super.calculateRoute();
+		
+		GraphicsUtil.debug = false;
+		GraphicsUtil.dump("\n===========================================\nRouting ", ffc);
+		
+		boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
+		if (initialUpdate) {
+			peService.removeProperty(ffc, GraphitiConstants.INITIAL_UPDATE);
+		}
+		
+		Point start = null;
+		Point end = null;
+
+		if (testRouteSolver) {
+			RouteSolver solver = new RouteSolver(fp, allShapes);
+			boolean b = solver.solve(source, target);
+			if (b) return null;
+		}
+		
+		// The list of all possible routes. The shortest will be used.
+		List<ConnectionRoute> allRoutes = new ArrayList<ConnectionRoute>();
+		AnchorSite sourceSite = AnchorSite.getSite(sourceAnchor);
+		AnchorSite targetSite = AnchorSite.getSite(targetAnchor);
+		AnchorSite initialSourceSite = sourceSite;
+		AnchorSite initialTargetSite = targetSite;
+		Point initialSourceLocation = createPoint(sourceAnchor);
+		Point initialTargetLocation = createPoint(targetAnchor);
+		int length = oldPoints.length;
+
+		if (movedBendpoint==null && length>2) {
+			// Can we fix the existing route (assuming some segments are already orthogonal)?
+			int d;
+			int dx = 0;
+			int dy = 0;
+			boolean canFix = true;
 			
-			if (isSelfConnection())
-				return super.calculateRoute();
-			
-			GraphicsUtil.debug = false;
-			GraphicsUtil.dump("\n===========================================\nRouting ", ffc);
-			
-			boolean initialUpdate = (peService.getPropertyValue(ffc, GraphitiConstants.INITIAL_UPDATE) != null);
-			if (initialUpdate) {
-				peService.removeProperty(ffc, GraphitiConstants.INITIAL_UPDATE);
+			Point p = oldPoints[1];
+			if (sourceSite==AnchorSite.LEFT) {
+				d = initialSourceLocation.getX() - p.getX();
+				if (d < margin) {
+					dx = d - margin;
+				}
 			}
-			
-			Point start = null;
-			Point end = null;
-	
-			if (testRouteSolver) {
-				RouteSolver solver = new RouteSolver(fp, allShapes);
-				boolean b = solver.solve(source, target);
-				if (b) return null;
+			else if (sourceSite==AnchorSite.RIGHT) {
+				d = p.getX() - initialSourceLocation.getX();
+				if (d < margin) {
+					dx = margin - d;
+				}
 			}
-			
-			// The list of all possible routes. The shortest will be used.
-			List<ConnectionRoute> allRoutes = new ArrayList<ConnectionRoute>();
-			AnchorSite sourceSite = AnchorSite.getSite(sourceAnchor);
-			AnchorSite targetSite = AnchorSite.getSite(targetAnchor);
-			AnchorSite initialSourceSite = sourceSite;
-			AnchorSite initialTargetSite = targetSite;
-			Point initialSourceLocation = createPoint(sourceAnchor);
-			Point initialTargetLocation = createPoint(targetAnchor);
-			int length = oldPoints.length;
-	
-			if (movedBendpoint==null && length>2) {
-				// Can we fix the existing route (assuming some segments are already orthogonal)?
-				int d;
-				int dx = 0;
-				int dy = 0;
-				boolean canFix = true;
-				
-				Point p = oldPoints[1];
-				if (sourceSite==AnchorSite.LEFT) {
-					d = initialSourceLocation.getX() - p.getX();
-					if (d < margin) {
+			else if (sourceSite==AnchorSite.TOP) {
+				d = initialSourceLocation.getY() - p.getY();
+				if (d < margin) {
+					dy = d - margin;
+				}
+			}
+			else if (sourceSite==AnchorSite.BOTTOM) {
+				d = p.getY() - initialSourceLocation.getY();
+				if (d < margin) {
+					dy = margin - d;
+				}
+			}
+
+			p = oldPoints[length-2];
+			if (targetSite==AnchorSite.LEFT) {
+				d = initialTargetLocation.getX() - p.getX();
+				if (d < margin) {
+					if (dx!=0)
+						canFix = false;
+					else
 						dx = d - margin;
-					}
 				}
-				else if (sourceSite==AnchorSite.RIGHT) {
-					d = p.getX() - initialSourceLocation.getX();
-					if (d < margin) {
+			}
+			else if (targetSite==AnchorSite.RIGHT) {
+				d = p.getX() - initialTargetLocation.getX();
+				if (d < margin) {
+					if (dx!=0)
+						canFix = false;
+					else
 						dx = margin - d;
-					}
 				}
-				else if (sourceSite==AnchorSite.TOP) {
-					d = initialSourceLocation.getY() - p.getY();
-					if (d < margin) {
+			}
+			else if (targetSite==AnchorSite.TOP) {
+				d = initialTargetLocation.getY() - p.getY();
+				if (d < margin) {
+					if (dy!=0)
+						canFix = false;
+					else
 						dy = d - margin;
-					}
 				}
-				else if (sourceSite==AnchorSite.BOTTOM) {
-					d = p.getY() - initialSourceLocation.getY();
-					if (d < margin) {
+			}
+			else if (targetSite==AnchorSite.BOTTOM) {
+				d = p.getY() - initialTargetLocation.getY();
+				if (d < margin) {
+					if (dy!=0)
+						canFix = false;
+					else
 						dy = margin - d;
+				}
+			}
+
+			if (canFix) {
+				Point p1;
+				Point p2;
+				Point p3;
+				Point p4;
+				Direction directions[] = new Direction[length-1];
+				ConnectionRoute route = new ConnectionRoute(this, 0, source,target);
+				route.setSourceAnchor(sourceAnchor);
+				route.setTargetAnchor(targetAnchor);
+				// add all current bendpoints to this route
+				route.addAll(oldPoints);
+				// adjust each point for offsets calculated above
+				if (dx!=0 || dy!=0) {
+					for (int i=1; i<length-1; ++i) {
+						p1 = route.get(i);
+						p1.setX( p1.getX() + dx );
+						p1.setY( p1.getY() + dy );
 					}
 				}
-	
-				p = oldPoints[length-2];
-				if (targetSite==AnchorSite.LEFT) {
-					d = initialTargetLocation.getX() - p.getX();
-					if (d < margin) {
-						if (dx!=0)
-							canFix = false;
-						else
-							dx = d - margin;
-					}
+				// calculate direction of each line segment in the route
+				p1 = route.get(0);
+				for (int i=1; i<length; ++i) {
+					p2 = route.get(i);
+					directions[i-1] = Direction.get(p1,p2);
+					p1 = p2;
 				}
-				else if (targetSite==AnchorSite.RIGHT) {
-					d = p.getX() - initialTargetLocation.getX();
-					if (d < margin) {
-						if (dx!=0)
-							canFix = false;
-						else
-							dx = margin - d;
-					}
-				}
-				else if (targetSite==AnchorSite.TOP) {
-					d = initialTargetLocation.getY() - p.getY();
-					if (d < margin) {
-						if (dy!=0)
-							canFix = false;
-						else
-							dy = d - margin;
-					}
-				}
-				else if (targetSite==AnchorSite.BOTTOM) {
-					d = p.getY() - initialTargetLocation.getY();
-					if (d < margin) {
-						if (dy!=0)
-							canFix = false;
-						else
-							dy = margin - d;
-					}
-				}
-	
-				if (canFix) {
-					Point p1;
-					Point p2;
-					Point p3;
-					if (dx!=0 || dy!=0) {
-						for (int i=1; i<length-1; ++i) {
-							p1 = oldPoints[i];
-							p1.setX( p1.getX() + dx );
-							p1.setY( p1.getY() + dy );
-						}
-					}
-					
-					for (int loop=0; loop<2; ++loop) {
-						ConnectionRoute route = new ConnectionRoute(this, 0, source,target);
-						route.setSourceAnchor(sourceAnchor);
-						route.setTargetAnchor(targetAnchor);
-	//					if (!shouldCalculate(sourceSite, targetSite)) {
-	//						route.setRank(1);
-	//					}
-	
+				// directions of first and last segments are determined
+				// by the anchor site (the edge of the source/target shape)
+				directions[0] = Direction.get(initialSourceSite);
+				directions[length-2] = Direction.get(initialTargetSite);
+				
+				for (int loop=0; loop<2; ++loop) {
+					p1 = route.get(0);
+					p2 = route.get(1);
+					p3 = route.get(length-2);
+					p4 = route.get(length-1);
+					if (!Direction.get(p1,p2,true).parallel(directions[0])) {
+						// fix up beginning of route
 						int i = 0;
-						p1 = oldPoints[i++];
-						route.add(p1);
-						while (true) {
-							p2 = oldPoints[i++];
-							if (i==length)
-								break;
-							if (!isHorizontal(p1, p2) && !isVertical(p1, p2)) {
-								p3 = oldPoints[i];
-								if (isHorizontal(p2, p3)) {
-									p2.setX(p1.getX());
-								}
-								else {
+						p1 = route.get(i++);
+						while (i<length-1) {
+							Direction dir = directions[i-1];
+							p2 = route.get(i++);
+							if (!Direction.get(p1,p2,true).parallel(dir)) {
+								if (dir.isHorizontal()) {
 									p2.setY(p1.getY());
 								}
+								else {
+									p2.setX(p1.getX());
+								}
 							}
-							route.add(p2);
 							ContainerShape shape = getCollision(p1,p2);
 							if (shape!=null)
 								route.addCollision(shape, p1,p2);
 							p1 = p2;
 						}
-						// check the last segment just before the target shape
-						if (!isHorizontal(p1, p2) && !isVertical(p1, p2)) {
-							// since we can't change the target point (it is connected
-							// to an anchor on the shape) we will check if this last
-							// segment is closer to horizontal or vertical and adjust
-							// the previous bendpoint.
-							dx = Math.abs(p1.getX() - p2.getX());
-							dy = Math.abs(p1.getY() - p2.getY());
-							if (dx < dy) {
-								p1.setX(p2.getX());
-							}
-							else {
-								p1.setY(p2.getY());
-							}
-						}
-						else {
-							route.addCollision(getCollision(p1,p2), p1,p2);
-							if (route.getCollisions().size()==0) {
-								route.add(p2);
-								allRoutes.add(route);
-								break;
-							}
-						}
 					}
-				}
-			}
-			
-			// Calculate all possible routes: this iterates over every permutation
-			// of 4 sides for both source and target shape
-			for (int i=0; i<16; ++i) {
-				int rank = 1;
-				if (!shouldCalculate(sourceSite, targetSite)) {
-					++rank;
-				}
-				AnchorUtil.moveAnchor(sourceAnchor, initialSourceLocation);
-				AnchorUtil.moveAnchor(targetAnchor, initialTargetLocation);
-				AnchorSite.setSite(sourceAnchor, sourceSite);
-				AnchorUtil.adjustAnchors(source);
-				AnchorSite.setSite(targetAnchor, targetSite);
-				AnchorUtil.adjustAnchors(target);
-				
-				ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
-	
-				// Get the starting and ending points on the (possibly relocated)
-				// source and target anchors.
-				start = createPoint(sourceAnchor);
-				end = createPoint(targetAnchor);
-				
-				// If either the source or target anchor is a "Pool" anchor
-				// (i.e. attached to a Pool) then try to move it so it lines
-				// up either vertically or horizontally with the other anchor.
-				// This is only done for these conditions:
-				// 1. this is an initial update, i.e. the Connection has just been created
-				// 2. the Connection was manually moved
-				// 3. the edge to which the Connection was attached has changed
-				if (initialUpdate || movedBendpoint!=null ||
-						sourceSite!=initialSourceSite || targetSite!=initialTargetSite) {
-					if (AnchorType.getType(targetAnchor) == AnchorType.POOL) {
-						if (movedBendpoint!=null)
-							AnchorUtil.moveAnchor(targetAnchor, movedBendpoint);
-						else
-							AnchorUtil.moveAnchor(targetAnchor, sourceAnchor);
-						end = createPoint(targetAnchor);
-						if (targetSite!=initialTargetSite)
-							++rank;
-					}
-					if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
-						if (movedBendpoint!=null)
-							AnchorUtil.moveAnchor(sourceAnchor, movedBendpoint);
-						else
-							AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
-						start = createPoint(sourceAnchor);
-						if (sourceSite!=initialSourceSite)
-							++rank;
-					}
-				}
-	//			if ((sourceSite!=initialSourceSite || targetSite!=initialTargetSite))
-	//				++rank;
-				route.setRank(rank);
-				route.setSourceAnchor(sourceAnchor);
-				route.setTargetAnchor(targetAnchor);
-				
-				calculateRoute(route, sourceSite, start, targetSite, end);
-	
-				allRoutes.add(route);
-	
-				if ((i % 4)==0) {
-					sourceSite = getNextAnchorSite(sourceSite);
-				}
-				else {
-					targetSite = getNextAnchorSite(targetSite);
-				}
-			}
-			
-			// pick the "best" route
-			ConnectionRoute route = null;
-			if (allRoutes.size()==1) {
-				route = allRoutes.get(0);
-				optimize(route);
-				GraphicsUtil.dump("Only one valid route: "+route.toString()); //$NON-NLS-1$
-			}
-			else if (allRoutes.size()>1) {
-				GraphicsUtil.dump("Optimizing Routes:\n------------------"); //$NON-NLS-1$
-				for (ConnectionRoute r : allRoutes) {
-					optimize(r);
-				}
-	
-				GraphicsUtil.dump("Calculating Crossings:\n------------------"); //$NON-NLS-1$
-				// Connection crossings only participate in determining the best route,
-				// we don't actually try to correct a route crossing a connection.
-				for (ConnectionRoute r : allRoutes) {
-					if (r.getPoints().size()>1) {
-						Point p1 = r.get(0);
-						for (int i=1; i<r.getPoints().size(); ++i) {
-							Point p2 = r.get(i);
-							List<Connection> crossings = findCrossings(connection, p1, p2);
-							for (Connection c : crossings) {
-								if (c!=this.connection)
-									r.addCrossing(c, p1, p2);
+					else if (!Direction.get(p3, p4, true).parallel(directions[length-2])) {
+						// fix up end of route
+						int i = length;
+						p1 = route.get(--i);
+						while (i>0) {
+							Direction dir = directions[i-1];
+							p2 = route.get(--i);
+							if (Direction.get(p1,p2,true) != dir) {
+								if (dir.isHorizontal()) {
+									p2.setY(p1.getY());
+								}
+								else {
+									p2.setX(p1.getX());
+								}
 							}
-							ContainerShape shape = getCollision(p1, p2);
-							if (shape!=null) {
-								r.addCollision(shape, p1, p2);
-							}
-							
+							ContainerShape shape = getCollision(p1,p2);
+							if (shape!=null)
+								route.addCollision(shape, p1,p2);
 							p1 = p2;
 						}
-	
 					}
-					GraphicsUtil.dump("    "+r.toString()); //$NON-NLS-1$
+					else 
+					{
+						route.addCollision(getCollision(p1,p2), p1,p2);
+						if (route.getCollisions().size()==0) {
+							allRoutes.add(route);
+							break;
+						}
+					}
 				}
-	
-				GraphicsUtil.dump("Sorting Routes:\n------------------"); //$NON-NLS-1$
-				Collections.sort(allRoutes);
-				
-				drawConnectionRoutes(allRoutes);
-	
-				route = allRoutes.get(0);
 			}
-	
-			return route;
 		}
+		
+		// Calculate all possible routes: this iterates over every permutation
+		// of 4 sides for both source and target shape
+		for (int i=0; i<16; ++i) {
+			int rank = 1;
+			if (!shouldCalculate(sourceSite, targetSite)) {
+				++rank;
+			}
+			AnchorUtil.moveAnchor(sourceAnchor, initialSourceLocation);
+			AnchorUtil.moveAnchor(targetAnchor, initialTargetLocation);
+			AnchorSite.setSite(sourceAnchor, sourceSite);
+			AnchorUtil.adjustAnchors(source);
+			AnchorSite.setSite(targetAnchor, targetSite);
+			AnchorUtil.adjustAnchors(target);
+			
+			ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
+
+			// Get the starting and ending points on the (possibly relocated)
+			// source and target anchors.
+			start = createPoint(sourceAnchor);
+			end = createPoint(targetAnchor);
+			
+			// If either the source or target anchor is a "Pool" anchor
+			// (i.e. attached to a Pool) then try to move it so it lines
+			// up either vertically or horizontally with the other anchor.
+			// This is only done for these conditions:
+			// 1. this is an initial update, i.e. the Connection has just been created
+			// 2. the Connection was manually moved
+			// 3. the edge to which the Connection was attached has changed
+			if (initialUpdate || movedBendpoint!=null ||
+					sourceSite!=initialSourceSite || targetSite!=initialTargetSite) {
+				if (AnchorType.getType(targetAnchor) == AnchorType.POOL) {
+					if (movedBendpoint!=null)
+						AnchorUtil.moveAnchor(targetAnchor, movedBendpoint);
+					else
+						AnchorUtil.moveAnchor(targetAnchor, sourceAnchor);
+					end = createPoint(targetAnchor);
+					if (targetSite!=initialTargetSite)
+						++rank;
+				}
+				if (AnchorType.getType(sourceAnchor) == AnchorType.POOL) {
+					if (movedBendpoint!=null)
+						AnchorUtil.moveAnchor(sourceAnchor, movedBendpoint);
+					else
+						AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
+					start = createPoint(sourceAnchor);
+					if (sourceSite!=initialSourceSite)
+						++rank;
+				}
+			}
+//			if ((sourceSite!=initialSourceSite || targetSite!=initialTargetSite))
+//				++rank;
+			route.setRank(rank);
+			route.setSourceAnchor(sourceAnchor);
+			route.setTargetAnchor(targetAnchor);
+			
+			calculateRoute(route, sourceSite, start, targetSite, end);
+
+			allRoutes.add(route);
+
+			if ((i % 4)==0) {
+				sourceSite = getNextAnchorSite(sourceSite);
+			}
+			else {
+				targetSite = getNextAnchorSite(targetSite);
+			}
+		}
+		
+		// pick the "best" route
+		ConnectionRoute route = null;
+		if (allRoutes.size()==1) {
+			route = allRoutes.get(0);
+			optimize(route);
+			GraphicsUtil.dump("Only one valid route: "+route.toString()); //$NON-NLS-1$
+		}
+		else if (allRoutes.size()>1) {
+			GraphicsUtil.dump("Optimizing Routes:\n------------------"); //$NON-NLS-1$
+			for (ConnectionRoute r : allRoutes) {
+				optimize(r);
+			}
+
+			GraphicsUtil.dump("Calculating Crossings:\n------------------"); //$NON-NLS-1$
+			// Connection crossings only participate in determining the best route,
+			// we don't actually try to correct a route crossing a connection.
+			for (ConnectionRoute r : allRoutes) {
+				if (r.getPoints().size()>1) {
+					Point p1 = r.get(0);
+					for (int i=1; i<r.getPoints().size(); ++i) {
+						Point p2 = r.get(i);
+						List<Connection> crossings = findCrossings(connection, p1, p2);
+						for (Connection c : crossings) {
+							if (c!=this.connection)
+								r.addCrossing(c, p1, p2);
+						}
+						ContainerShape shape = getCollision(p1, p2);
+						if (shape!=null) {
+							r.addCollision(shape, p1, p2);
+						}
+						
+						p1 = p2;
+					}
+
+				}
+				GraphicsUtil.dump("    "+r.toString()); //$NON-NLS-1$
+			}
+
+			GraphicsUtil.dump("Sorting Routes:\n------------------"); //$NON-NLS-1$
+			Collections.sort(allRoutes);
+			
+			drawConnectionRoutes(allRoutes);
+
+			route = allRoutes.get(0);
+		}
+
+		return route;
+	}
 	
 	/**
 	 * Calculate route.
