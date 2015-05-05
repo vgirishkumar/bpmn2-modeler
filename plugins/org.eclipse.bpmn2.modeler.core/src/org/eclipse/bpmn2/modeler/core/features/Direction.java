@@ -166,4 +166,14 @@ public enum Direction {
 	public boolean isHorizontal() {
 		return this == LEFT || this == RIGHT;
 	}
+	
+	public boolean isVertical() {
+		return this == UP || this == DOWN;
+	}
+	
+	public boolean parallel(Direction that) {
+		return
+				(this.isHorizontal() && that.isHorizontal()) ||
+				(this.isVertical() && that.isVertical());
+	}
 }
