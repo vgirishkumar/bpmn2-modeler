@@ -297,7 +297,9 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 				route.setSourceAnchor(sourceAnchor);
 				route.setTargetAnchor(targetAnchor);
 				// add all current bendpoints to this route
-				route.addAll(oldPoints);
+				for (Point point : oldPoints) {
+					route.getPoints().add(point);
+				}
 				// adjust each point for offsets calculated above
 				if (dx!=0 || dy!=0) {
 					for (int i=1; i<length-1; ++i) {

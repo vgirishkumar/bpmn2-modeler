@@ -315,13 +315,6 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 		return isValid();
 	}
 
-	public boolean addAll(Point list[]) {
-		for (Point p : list) {
-			add(p);
-		}
-		return isValid();
-	}
-
 	public boolean contains(Point newPoint) {
 		for (Point p : getPoints()) {
 			if (GraphicsUtil.pointsEqual(newPoint, p)) {
