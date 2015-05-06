@@ -317,7 +317,7 @@ public class ConnectionRoute implements Comparable<ConnectionRoute>, Comparator<
 
 	public boolean addAll(Point list[]) {
 		for (Point p : list) {
-			add(p);
+			getPoints().add(p);
 		}
 		return isValid();
 	}
