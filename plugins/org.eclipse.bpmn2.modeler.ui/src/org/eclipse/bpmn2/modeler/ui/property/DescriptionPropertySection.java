@@ -158,7 +158,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 		}
 		
 		protected void bindAppearance(EObject be) {
-			if (Bpmn2FeatureMap.ALL_SHAPES.contains(be.eClass().getInstanceClass())) {
+			if (Bpmn2FeatureMap.ALL_FIGURES.contains(be.eClass().getInstanceClass())) {
 				// don't show appearance section for Participant Bands
 				PictogramElement pes[] = getDiagramEditor().getSelectedPictogramElements();
 				if (pes.length==1 && ChoreographyUtil.isChoreographyParticipantBand(pes[0])) {
@@ -180,7 +180,7 @@ public class DescriptionPropertySection extends DefaultPropertySection implement
 				
 				Composite container = createSectionComposite(this, Messages.DescriptionPropertySection_Appearance_Label);
 				
-				if (Bpmn2FeatureMap.CONNECTIONS.contains(be.eClass().getInstanceClass())) {
+				if (Bpmn2FeatureMap.ALL_CONNECTIONS.contains(be.eClass().getInstanceClass())) {
 					bindAttribute(container, style, ShapeStyle.STYLE_SHAPE_FOREGROUND);
 					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FOREGROUND);
 					bindAttribute(container, style, ShapeStyle.STYLE_LABEL_FONT);

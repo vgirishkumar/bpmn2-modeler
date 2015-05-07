@@ -33,9 +33,11 @@ import org.eclipse.bpmn2.Conversation;
 import org.eclipse.bpmn2.ConversationLink;
 import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataInputAssociation;
 import org.eclipse.bpmn2.DataObject;
 import org.eclipse.bpmn2.DataObjectReference;
 import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.DataStoreReference;
 import org.eclipse.bpmn2.EndEvent;
 import org.eclipse.bpmn2.ErrorEventDefinition;
@@ -75,7 +77,6 @@ import org.eclipse.bpmn2.TextAnnotation;
 import org.eclipse.bpmn2.TimerEventDefinition;
 import org.eclipse.bpmn2.Transaction;
 import org.eclipse.bpmn2.UserTask;
-import org.eclipse.bpmn2.modeler.ui.features.data.DataObjectFeatureContainer.AddDataObjectFeature;
 
 @SuppressWarnings("rawtypes")
 public class Bpmn2FeatureMap {
@@ -92,7 +93,9 @@ public class Bpmn2FeatureMap {
 	public static final List<Class> ALL_DATA;
 	public static final List<Class> ARTIFACTS;
 	public static final List<Class> SWIMLANES;
+	public static HashSet<Class> ALL_FIGURES;
 	public static HashSet<Class> ALL_SHAPES;
+	public static HashSet<Class> ALL_CONNECTIONS;
 	
 	static {
 		ArrayList<Class> features = new ArrayList<Class>();
@@ -207,7 +210,6 @@ public class Bpmn2FeatureMap {
 		ARTIFACTS = Collections.unmodifiableList(features);
 
 		ALL_SHAPES = new HashSet<Class>();
-		ALL_SHAPES.addAll(CONNECTIONS);
 		ALL_SHAPES.addAll(EVENTS);
 		ALL_SHAPES.addAll(GATEWAYS);
 		ALL_SHAPES.addAll(TASKS);
@@ -225,5 +227,14 @@ public class Bpmn2FeatureMap {
 		ALL_SHAPES.add(Message.class);
 		ALL_SHAPES.addAll(ARTIFACTS);
 		ALL_SHAPES.addAll(SWIMLANES);
+
+		ALL_CONNECTIONS = new HashSet<Class>();
+		ALL_CONNECTIONS.addAll(CONNECTIONS);
+		ALL_CONNECTIONS.add(DataInputAssociation.class);
+		ALL_CONNECTIONS.add(DataOutputAssociation.class);
+
+		ALL_FIGURES = new HashSet<Class>();
+		ALL_FIGURES.addAll(ALL_SHAPES);
+		ALL_FIGURES.addAll(ALL_CONNECTIONS);
 	}
 }
