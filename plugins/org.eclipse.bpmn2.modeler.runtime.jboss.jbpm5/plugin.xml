@@ -1498,6 +1498,18 @@
                <message>{0}</message>
                <target class="Interface"/>
             </constraint>
+            <!-- Some DataInputs in UserTasks do not require a Data Type (ItemSubjectRef) -->
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Data Input"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.DataInput"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="DataInput"/>
+            </constraint>
          </constraints>
       </constraintProvider>
             

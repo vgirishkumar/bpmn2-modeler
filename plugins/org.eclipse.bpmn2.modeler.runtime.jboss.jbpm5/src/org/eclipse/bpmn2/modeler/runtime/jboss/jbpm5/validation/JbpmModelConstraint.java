@@ -13,13 +13,19 @@ package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation;
 import org.eclipse.bpmn2.BusinessRuleTask;
 import org.eclipse.bpmn2.CallActivity;
 import org.eclipse.bpmn2.DataAssociation;
+import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Escalation;
+import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.Interface;
+import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.UserTask;
+import org.eclipse.bpmn2.modeler.core.validation.validators.ItemAwareElementValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.NotificationType;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.extensions.ReassignmentType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.BusinessRuleTaskValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.CallActivityValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DataAssociationValidator;
@@ -69,6 +75,23 @@ public class JbpmModelConstraint extends AbstractModelConstraint {
 		}
 		if (object instanceof Interface) {
 			return new InterfaceValidator(ctx).validate((Interface)object);
+		}
+		if (object instanceof DataInput) {
+			// don't validate DataInputs that are used for UserTask
+			// Notifications or Reassignments as these don't require
+			// a data type (ItemSubjectRef)
+			DataInput input = (DataInput) object;
+			if (input.eContainer() instanceof InputOutputSpecification) {
+				InputOutputSpecification iospec = (InputOutputSpecification) input.eContainer();
+				if (iospec.eContainer() instanceof UserTask) {
+					String name = input.getName();
+					if (	NotificationType.getByName(name) != null ||
+							ReassignmentType.getByName(name) != null) {
+						return ctx.createSuccessStatus();
+					}
+				}
+			}
+			return new ItemAwareElementValidator(ctx).validate((DataInput)object);
 		}
 		return ctx.createSuccessStatus();
 	}
