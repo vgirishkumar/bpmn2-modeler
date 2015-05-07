@@ -11,6 +11,7 @@
  * @author Bob Brodt
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui;
+
 import java.util.Enumeration;
 
 import org.apache.xerces.parsers.SAXParser;
@@ -279,7 +280,7 @@ public class DefaultBpmn2RuntimeExtension implements IBpmn2RuntimeExtension {
 			
 			BaseElement object = BusinessObjectUtil.getFirstBaseElement((PictogramElement) event.target); //(BaseElement) event.target;
 			EClass ec = object.eClass();
-			if (Bpmn2FeatureMap.ALL_SHAPES.contains(ec.getInstanceClass()) && ShapeStyle.hasStyle(object))
+			if (Bpmn2FeatureMap.ALL_FIGURES.contains(ec.getInstanceClass()) && ShapeStyle.hasStyle(object))
 				ShapeStyle.createStyleObject(object);
 		}
 		else if (event.eventType.equals(EventType.COMMAND_UNDO) || event.eventType.equals(EventType.COMMAND_REDO)) {

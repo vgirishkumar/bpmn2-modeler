@@ -153,8 +153,8 @@ public class GraphicsUtil {
 			return end;
 		}
 		public Point getMiddle() {
-			int x = (start.getX() + end.getX()) / 2;
-			int y = (start.getY() + end.getY()) / 2;
+			int x = start.getX() + Math.abs(start.getX() - end.getX()) / 2;
+			int y = start.getY() + Math.abs(start.getY() - end.getY()) / 2;
 			return Graphiti.getCreateService().createPoint(x,y);
 		}
 		
@@ -623,20 +623,20 @@ public class GraphicsUtil {
 		double dist;
 		LineSegment result;
 		
-		minDist = top.getDistance(p);
+		minDist = GraphicsUtil.getLength(p, top.getMiddle()); //top.getDistance(p);
 		result = top;
 		
-		dist = bottom.getDistance(p);
+		dist = GraphicsUtil.getLength(p, bottom.getMiddle()); //bottom.getDistance(p);
 		if (dist<minDist) {
 			minDist = dist;
 			result = bottom;
 		}
-		dist = left.getDistance(p);
+		dist = GraphicsUtil.getLength(p, left.getMiddle()); //left.getDistance(p);
 		if (dist<minDist) {
 			minDist = dist;
 			result = left;
 		}
-		dist = right.getDistance(p);
+		dist = GraphicsUtil.getLength(p, right.getMiddle()); //right.getDistance(p);
 		if (dist<minDist) {
 			minDist = dist;
 			result = right;

@@ -622,7 +622,15 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public static String getShapeStyleKey(TargetRuntime rt, String name) {
-		return getShapeStylePath(rt) + "/" + name; //$NON-NLS-1$
+		return getShapeStylePath(rt) + "/" + getShapeStylePreferenceName(name); //$NON-NLS-1$
+	}
+	
+	private static String getShapeStylePreferenceName(String name) {
+		// stupid hack to map both DataInputAssociation and DataOutputAssociation
+		// to DataAssociation
+		if ("DataInputAssociation".equals(name) || "DataOutputAssociation".equals(name))
+			return "DataAssociation";
+		return name;
 	}
 	
 	public static String getShapeStylePath(TargetRuntime rt) {
@@ -652,6 +660,7 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public ShapeStyle getShapeStyle(String name) {
+		name = getShapeStylePreferenceName(name);
 		ShapeStyle ss = shapeStyles.get(name);
 		if (ss==null) {
 			if (instancePreferenceCache!=null) {
@@ -710,6 +719,8 @@ public class Bpmn2Preferences implements IResourceChangeListener, IPropertyChang
 	}
 	
 	public void setShapeStyle(String name, ShapeStyle style) {
+		name = getShapeStylePreferenceName(name);
+
 		if (style!=null) {
 			if (style.isDirty()) {
 				shapeStyles.put(name, style);

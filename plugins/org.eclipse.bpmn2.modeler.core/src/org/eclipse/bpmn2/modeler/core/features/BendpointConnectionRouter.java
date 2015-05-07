@@ -570,11 +570,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 
 		ConnectionRoute route = new ConnectionRoute(this, 1, source, target);
 		
-		// relocate the source and target anchors for closest proximity to their
-		// opposite shapes' centers
-		AnchorUtil.moveAnchor(sourceAnchor, GraphicsUtil.getShapeCenter(target));
-		AnchorUtil.moveAnchor(targetAnchor, GraphicsUtil.getShapeCenter(source));
-		
 		Point start = GraphicsUtil.createPoint(sourceAnchor);
 		Point end = GraphicsUtil.createPoint(targetAnchor);
 
@@ -583,8 +578,6 @@ public class BendpointConnectionRouter extends DefaultConnectionRouter {
 			route.add(oldPoints[i]);
 		}
 		route.add(end);
-		
-		oldPoints = null;
 		
 		return route;
 	}
