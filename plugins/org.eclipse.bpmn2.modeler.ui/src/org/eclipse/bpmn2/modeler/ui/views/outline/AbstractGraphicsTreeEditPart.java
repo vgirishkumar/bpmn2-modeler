@@ -153,4 +153,12 @@ public class AbstractGraphicsTreeEditPart extends AbstractTreeEditPart {
 			e.printStackTrace();
 		}
 	}
+	
+	protected RootElementTreeEditPart getRootEditPart() {
+		if (this instanceof RootElementTreeEditPart)
+			return (RootElementTreeEditPart) this;
+		if (getParent() instanceof AbstractGraphicsTreeEditPart)
+			return ((AbstractGraphicsTreeEditPart)getParent()).getRootEditPart();
+		return null;
+	}
 }

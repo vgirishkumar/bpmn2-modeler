@@ -212,7 +212,12 @@ public class AnchorUtil {
 		if (parent instanceof Shape) {
 			p = GraphicsUtil.createPoint(p); // make a copy
 			ILocation loc = peService.getLocationRelativeToDiagram((Shape)parent);
-			LineSegment edge = GraphicsUtil.findNearestEdge((Shape)parent, p);
+			AnchorType at = AnchorType.getType(anchor);
+			LineSegment edge;
+			if (at==AnchorType.POOL)
+				edge = GraphicsUtil.findNearestOrthogonalEdge((Shape)parent, p);
+			else
+				edge = GraphicsUtil.findNearestEdge((Shape)parent, p);
 			AnchorSite site;
 			if (edge.isHorizontal()) {
 				int y = edge.getStart().getY();

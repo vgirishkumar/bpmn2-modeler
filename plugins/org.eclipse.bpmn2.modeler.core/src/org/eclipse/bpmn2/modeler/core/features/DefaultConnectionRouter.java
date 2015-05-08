@@ -277,6 +277,7 @@ public class DefaultConnectionRouter extends AbstractConnectionRouter {
 				}
 			}
 		}
+		GraphicsUtil.dump("All Shapes: ", allShapes);
 		return allShapes;
 	}
 

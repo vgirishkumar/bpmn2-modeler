@@ -392,7 +392,8 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 			AnchorUtil.adjustAnchors(source);
 			AnchorSite.setSite(targetAnchor, targetSite);
 			AnchorUtil.adjustAnchors(target);
-			
+//			if (sourceSite==AnchorSite.BOTTOM && targetSite==AnchorSite.TOP)
+//				System.out.println();
 			ConnectionRoute route = new ConnectionRoute(this, allRoutes.size()+1, source,target);
 
 			// Get the starting and ending points on the (possibly relocated)
@@ -414,6 +415,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 						AnchorUtil.moveAnchor(targetAnchor, movedBendpoint);
 					else
 						AnchorUtil.moveAnchor(targetAnchor, sourceAnchor);
+					AnchorUtil.adjustAnchors(source);
 					end = createPoint(targetAnchor);
 					if (targetSite!=initialTargetSite)
 						++rank;
@@ -423,6 +425,7 @@ public class ManhattanConnectionRouter extends BendpointConnectionRouter {
 						AnchorUtil.moveAnchor(sourceAnchor, movedBendpoint);
 					else
 						AnchorUtil.moveAnchor(sourceAnchor, targetAnchor);
+					AnchorUtil.adjustAnchors(target);
 					start = createPoint(sourceAnchor);
 					if (sourceSite!=initialSourceSite)
 						++rank;
