@@ -44,11 +44,7 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IPeService;
 
 public abstract class AbstractCreateFlowFeature<
 		CONNECTION extends BaseElement,
@@ -230,44 +226,10 @@ public abstract class AbstractCreateFlowFeature<
 			}
 		}
 		else if (connection instanceof Association) {
-			if (source instanceof Process) {
-				((Process)source).getArtifacts().add((Association)connection);
+			if (addAssociationToContainer(connection, source))
 				return true;
-			}
-			else if (source instanceof SubProcess) {
-				while (sourceContainer!=null) {
-					if (sourceContainer instanceof Process) {
-						((Process)sourceContainer).getArtifacts().add((Association)connection);
-						return true;
-					}
-					if (sourceContainer instanceof Collaboration) {
-						((Collaboration)sourceContainer).getArtifacts().add((Association)connection);
-						return true;
-					}
-					sourceContainer = sourceContainer.eContainer();
-				}
-				((SubProcess)source).getArtifacts().add((Association)connection);
+			if (addAssociationToContainer(connection, target))
 				return true;
-			}
-			else if (source instanceof SubChoreography) {
-				while (sourceContainer!=null) {
-					if (sourceContainer instanceof Process) {
-						((Process)sourceContainer).getArtifacts().add((Association)connection);
-						return true;
-					}
-					if (sourceContainer instanceof Collaboration) {
-						((Collaboration)sourceContainer).getArtifacts().add((Association)connection);
-						return true;
-					}
-					sourceContainer = sourceContainer.eContainer();
-				}
-				((SubChoreography)source).getArtifacts().add((Association)connection);
-				return true;
-			}
-			else if (source instanceof Collaboration) {
-				((Collaboration)source).getArtifacts().add((Association)connection);
-				return true;
-			}
 		}
 		else if (connection instanceof MessageFlow) {
 			if (source instanceof Activity) {
@@ -329,9 +291,52 @@ public abstract class AbstractCreateFlowFeature<
 		}
 
 		if (source.eContainer() instanceof EObject) {
-			return addConnectionToContainer(connection, (SOURCE)source.eContainer(), target);
+			return addConnectionToContainer(connection, (SOURCE)source.eContainer(), (TARGET)target.eContainer());
 		}
 		
+		return false;
+	}
+	
+	private boolean addAssociationToContainer(CONNECTION connection, EObject endpoint) {
+		EObject container = endpoint.eContainer();
+		if (endpoint instanceof Process) {
+			((Process)endpoint).getArtifacts().add((Association)connection);
+			return true;
+		}
+		else if (endpoint instanceof SubProcess) {
+			while (container!=null) {
+				if (container instanceof Process) {
+					((Process)container).getArtifacts().add((Association)connection);
+					return true;
+				}
+				if (container instanceof Collaboration) {
+					((Collaboration)container).getArtifacts().add((Association)connection);
+					return true;
+				}
+				container = container.eContainer();
+			}
+			((SubProcess)endpoint).getArtifacts().add((Association)connection);
+			return true;
+		}
+		else if (endpoint instanceof SubChoreography) {
+			while (container!=null) {
+				if (container instanceof Process) {
+					((Process)container).getArtifacts().add((Association)connection);
+					return true;
+				}
+				if (container instanceof Collaboration) {
+					((Collaboration)container).getArtifacts().add((Association)connection);
+					return true;
+				}
+				container = container.eContainer();
+			}
+			((SubChoreography)endpoint).getArtifacts().add((Association)connection);
+			return true;
+		}
+		else if (endpoint instanceof Collaboration) {
+			((Collaboration)endpoint).getArtifacts().add((Association)connection);
+			return true;
+		}
 		return false;
 	}
 }
