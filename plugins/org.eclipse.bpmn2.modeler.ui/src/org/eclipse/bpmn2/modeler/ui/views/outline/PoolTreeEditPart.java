@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.Process;
+import org.eclipse.gef.EditPart;
 
 public class PoolTreeEditPart extends AbstractGraphicsTreeEditPart {
 
@@ -47,6 +47,11 @@ public class PoolTreeEditPart extends AbstractGraphicsTreeEditPart {
 		List<Object> retList = new ArrayList<Object>();
 		Participant participant = getParticipant();
 		Process process = participant.getProcessRef();
+		RootElementTreeEditPart root = getRootEditPart();
+		if (root!=null) {
+			if (root.getModel() == process)
+				return retList;
+		}
 		if (process!=null) {
 			retList.add(process);
 		}

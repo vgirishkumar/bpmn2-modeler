@@ -16,13 +16,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.bpmn2.BaseElement;
-import org.eclipse.bpmn2.LaneSet;
 import org.eclipse.bpmn2.Group;
-import org.eclipse.bpmn2.Process;
+import org.eclipse.bpmn2.Participant;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
@@ -74,7 +71,8 @@ public class GroupTreeEditPart extends AbstractGraphicsTreeEditPart {
 					for (ContainerShape shape : groupedShapes) {
 						BaseElement be = BusinessObjectUtil.getFirstBaseElement(shape);
 						if (be!=null && !retList.contains(be)) {
-							retList.add(be);
+							if (!(be instanceof Participant))
+								retList.add(be);
 						}
 					}
 					

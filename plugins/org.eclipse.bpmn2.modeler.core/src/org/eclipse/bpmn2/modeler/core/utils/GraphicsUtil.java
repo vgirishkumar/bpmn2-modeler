@@ -623,20 +623,51 @@ public class GraphicsUtil {
 		double dist;
 		LineSegment result;
 		
-		minDist = GraphicsUtil.getLength(p, top.getMiddle()); //top.getDistance(p);
+		minDist = GraphicsUtil.getLength(p, top.getMiddle());
 		result = top;
 		
-		dist = GraphicsUtil.getLength(p, bottom.getMiddle()); //bottom.getDistance(p);
+		dist = GraphicsUtil.getLength(p, bottom.getMiddle());
 		if (dist<minDist) {
 			minDist = dist;
 			result = bottom;
 		}
-		dist = GraphicsUtil.getLength(p, left.getMiddle()); //left.getDistance(p);
+		dist = GraphicsUtil.getLength(p, left.getMiddle());
 		if (dist<minDist) {
 			minDist = dist;
 			result = left;
 		}
-		dist = GraphicsUtil.getLength(p, right.getMiddle()); //right.getDistance(p);
+		dist = GraphicsUtil.getLength(p, right.getMiddle());
+		if (dist<minDist) {
+			minDist = dist;
+			result = right;
+		}
+		return result;
+	}
+
+	public static LineSegment findNearestOrthogonalEdge(Shape shape, Point p) {
+		LineSegment edges[] = getEdges(shape);
+		LineSegment top = edges[0];
+		LineSegment bottom = edges[1];
+		LineSegment left = edges[2];
+		LineSegment right = edges[3];
+		double minDist;
+		double dist;
+		LineSegment result;
+		
+		minDist = top.getDistance(p);
+		result = top;
+		
+		dist = bottom.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = bottom;
+		}
+		dist = left.getDistance(p);
+		if (dist<minDist) {
+			minDist = dist;
+			result = left;
+		}
+		dist = right.getDistance(p);
 		if (dist<minDist) {
 			minDist = dist;
 			result = right;
