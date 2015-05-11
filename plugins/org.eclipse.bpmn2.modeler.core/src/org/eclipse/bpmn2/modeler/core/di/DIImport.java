@@ -56,6 +56,7 @@ import org.eclipse.bpmn2.modeler.core.model.ModelHandler;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.preferences.ShapeStyle;
 import org.eclipse.bpmn2.modeler.core.utils.AnchorUtil;
+import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.bpmn2.modeler.core.utils.FeatureSupport;
 import org.eclipse.bpmn2.modeler.core.utils.GraphicsUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
@@ -90,6 +91,7 @@ import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.platform.IDiagramContainer;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 public class DIImport {
 
@@ -755,6 +757,12 @@ public class DIImport {
 			target = ((Association) bpmnElement).getTargetRef();
 			se = elements.get(source);
 			te = elements.get(target);
+			if (se==null) {
+				se = getContainerShape((BaseElement)source);
+			}
+			if (te==null) {
+				te = getContainerShape((BaseElement)target);
+			}
 		} else if (bpmnElement instanceof ConversationLink) {
 			source = ((ConversationLink) bpmnElement).getSourceRef();
 			target = ((ConversationLink) bpmnElement).getTargetRef();
@@ -952,4 +960,15 @@ public class DIImport {
 			return (Boolean)o;
 		return false;
 	}
+	
+	private ContainerShape getContainerShape(BaseElement baseElement) {
+		Diagram diagram = diagramContainer.getDiagramTypeProvider().getDiagram();
+		for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, baseElement)) {
+			if (pe instanceof ContainerShape) {
+				return (ContainerShape) pe;
+			}
+		}
+		return null;
+	}
+	
 }
