@@ -755,6 +755,12 @@ public class DIImport {
 			target = ((Association) bpmnElement).getTargetRef();
 			se = elements.get(source);
 			te = elements.get(target);
+			if (se==null) {
+				se = getContainerShape((BaseElement)source);
+			}
+			if (te==null) {
+				te = getContainerShape((BaseElement)target);
+			}
 		} else if (bpmnElement instanceof ConversationLink) {
 			source = ((ConversationLink) bpmnElement).getSourceRef();
 			target = ((ConversationLink) bpmnElement).getTargetRef();
@@ -952,4 +958,15 @@ public class DIImport {
 			return (Boolean)o;
 		return false;
 	}
+	
+	private ContainerShape getContainerShape(BaseElement baseElement) {
+		Diagram diagram = diagramContainer.getDiagramTypeProvider().getDiagram();
+		for (PictogramElement pe : Graphiti.getLinkService().getPictogramElements(diagram, baseElement)) {
+			if (pe instanceof ContainerShape) {
+				return (ContainerShape) pe;
+			}
+		}
+		return null;
+	}
+	
 }
