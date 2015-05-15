@@ -243,14 +243,6 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 				tail = st.nextToken("\n");
 				break;
 			}
-			else if ("users".equals(t)) {
-				currentFeature = usersFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("groups".equals(t)) {
-				currentFeature = groupsFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
 			else if (currentFeature!=null) {
 				// we're currently parsing a feature
 				if (currentFeature==usersFeature) {
@@ -264,6 +256,14 @@ public class TaskReassignment extends AnyTypeImpl implements IEditingDomainProvi
 				else if (currentFeature==expiresAtFeature) {
 					expiresAt += t;
 				}
+			}
+			else if ("users".equals(t)) {
+				currentFeature = usersFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("groups".equals(t)) {
+				currentFeature = groupsFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
 			}
 		}
 		

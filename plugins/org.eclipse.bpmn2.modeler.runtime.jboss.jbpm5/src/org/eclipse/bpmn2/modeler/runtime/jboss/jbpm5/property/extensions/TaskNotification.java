@@ -313,30 +313,6 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 				tail = st.nextToken("\n");
 				break;
 			}
-			else if ("from".equals(t)) {
-				currentFeature = fromFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("tousers".equals(t)) {
-				currentFeature = toUsersFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("togroups".equals(t)) {
-				currentFeature = toGroupsFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("replyTo".equals(t)) {
-				currentFeature = replyToFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("subject".equals(t)) {
-				currentFeature = subjectFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
-			else if ("body".equals(t)) {
-				currentFeature = bodyFeature;
-				Assert.isTrue(":".equals(st.nextToken()));
-			}
 			else if (currentFeature!=null) {
 				// we're currently parsing a feature
 				if (currentFeature==fromFeature) {
@@ -389,6 +365,30 @@ public class TaskNotification extends AnyTypeImpl implements IEditingDomainProvi
 				else if (currentFeature==expiresAtFeature) {
 					expiresAt += t;
 				}
+			}
+			else if ("from".equals(t)) {
+				currentFeature = fromFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("tousers".equals(t)) {
+				currentFeature = toUsersFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("togroups".equals(t)) {
+				currentFeature = toGroupsFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("replyTo".equals(t)) {
+				currentFeature = replyToFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("subject".equals(t)) {
+				currentFeature = subjectFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
+			}
+			else if ("body".equals(t)) {
+				currentFeature = bodyFeature;
+				Assert.isTrue(":".equals(st.nextToken()));
 			}
 		}
 		
