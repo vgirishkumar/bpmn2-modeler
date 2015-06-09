@@ -13,11 +13,18 @@
 
 package org.eclipse.bpmn2.modeler.core.validation.validators;
 
+import java.util.List;
+
+import org.eclipse.bpmn2.DataInput;
+import org.eclipse.bpmn2.DataInputAssociation;
+import org.eclipse.bpmn2.DataOutput;
+import org.eclipse.bpmn2.DataOutputAssociation;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.validation.IValidationContext;
 
 /**
@@ -56,6 +63,38 @@ public class ItemAwareElementValidator extends AbstractBpmn2ElementValidator<Ite
 				EObject container = object.eContainer();
 				if (container instanceof InputOutputSpecification) {
 					container = container.eContainer();
+				}
+				EStructuralFeature doaFeature = container.eClass().getEStructuralFeature("dataOutputAssociation");
+				EStructuralFeature diaFeature = container.eClass().getEStructuralFeature("dataInputAssociation");
+				
+				if (object instanceof DataOutput) {
+					// if there's a DataOutputAssociation that references
+					// this object, use the data type of the target of the
+					// association
+					if (doaFeature!=null) {
+						for (DataOutputAssociation doa : (List<DataOutputAssociation>) container.eGet(doaFeature)) {
+							if (doa.getSourceRef().contains(object)) {
+								ItemAwareElement target = doa.getTargetRef();
+								if (target!=null) {
+									return getResult();
+								}
+							}
+						}
+					}
+				}
+				else if (object instanceof DataInput) {
+					// same as above for DataInputs
+					if (diaFeature!=null) {
+						for (DataInputAssociation dia : (List<DataInputAssociation>) container.eGet(diaFeature)) {
+							if (dia.getTargetRef() == object) {
+								for (ItemAwareElement source : dia.getSourceRef()) {
+									if (source!=null) {
+										return getResult();
+									}
+								}
+							}
+						}
+					}
 				}
 				
 				addMissingFeatureStatus(object,"itemSubjectRef",new EObject[] {container},Status.ERROR); //$NON-NLS-1$
