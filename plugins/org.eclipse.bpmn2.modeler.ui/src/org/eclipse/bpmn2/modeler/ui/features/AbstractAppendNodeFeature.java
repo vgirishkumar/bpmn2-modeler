@@ -551,9 +551,6 @@ public abstract class AbstractAppendNodeFeature<T extends FlowNode> extends Abst
 			return null;
 		
 		cc.setTargetContainer((ContainerShape)container);
-		
-		// set the IMPORT flag so that the new shape's location is not adjusted during creation
-		cc.putProperty(GraphitiConstants.IMPORT_PROPERTY, Boolean.TRUE);
 		return cc;
 	}
 }

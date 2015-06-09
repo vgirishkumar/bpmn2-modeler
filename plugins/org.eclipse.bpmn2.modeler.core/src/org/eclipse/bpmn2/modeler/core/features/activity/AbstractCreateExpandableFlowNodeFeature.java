@@ -13,9 +13,16 @@
 package org.eclipse.bpmn2.modeler.core.features.activity;
 
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.di.BPMNShape;
+import org.eclipse.bpmn2.modeler.core.di.DIUtils;
 import org.eclipse.bpmn2.modeler.core.features.AbstractCreateFlowElementFeature;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -43,12 +50,15 @@ public abstract class AbstractCreateExpandableFlowNodeFeature<T extends FlowNode
 		Object[] elems = super.create(context);
 		try {
 			
-//			BPMNShape shape = DIUtils.findBPMNShape((T)elems[0]);
+			BPMNShape shape = DIUtils.findBPMNShape((T)elems[0]);
 			// if the Activity is expandable, set "isExpanded" to true because
 			// this feature will always create an expanded BPMNShape.
-//			EStructuralFeature feature = ((EObject)shape).eClass().getEStructuralFeature("isExpanded");
-//			if (feature!=null)
-//				shape.eSet(feature, Boolean.TRUE);
+			EStructuralFeature feature = ((EObject)shape).eClass().getEStructuralFeature("isExpanded");
+			if (feature!=null) {
+				shape.eSet(feature, Boolean.TRUE);
+				IUpdateContext updateContext = new UpdateContext((PictogramElement) elems[1]);
+				getFeatureProvider().updateIfPossible(updateContext);
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
