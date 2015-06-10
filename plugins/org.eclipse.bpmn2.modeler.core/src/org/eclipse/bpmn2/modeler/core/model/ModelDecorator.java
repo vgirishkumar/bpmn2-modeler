@@ -602,9 +602,6 @@ public class ModelDecorator {
 	}
 	
 	public EAttribute createEAttribute(String name, String type, String owningtype, String defaultValue, Enumerator[] enumerators) {
-		if ("priority".equals(name))
-			System.out.println();
-		
 		EAttribute eAttribute = getEAttribute(name,type,owningtype);
 		if (eAttribute!=null)
 			return eAttribute;
