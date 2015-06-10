@@ -253,6 +253,10 @@ public abstract class AbstractBpmn2CreateConnectionFeature<
 		Resource resource = getResource(context);
 		EClass eclass = getBusinessObjectClass();
 		ExtendedPropertiesAdapter adapter = ExtendedPropertiesAdapter.adapt(eclass);
+		String id = (String)context.getProperty(GraphitiConstants.CUSTOM_ELEMENT_ID);
+		if (id!=null) {
+			adapter.setProperty(GraphitiConstants.CUSTOM_ELEMENT_ID, id);
+		}
 		CONNECTION businessObject = (CONNECTION)adapter.getObjectDescriptor().createObject(resource,eclass);
 		EStructuralFeature nameFeature = businessObject.eClass().getEStructuralFeature("name"); //$NON-NLS-1$
 		if (nameFeature!=null) {

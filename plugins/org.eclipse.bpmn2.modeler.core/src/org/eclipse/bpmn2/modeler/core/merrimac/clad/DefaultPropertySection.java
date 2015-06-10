@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
+import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -37,7 +38,7 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		AbstractDetailComposite composite = null;
 		// If this section applies to only one type of BPMN2 element, search the registry for
 		// a Properties Composite of the given element type.
-		if (appliesToClasses.size()==1) {
+		if (appliesToClasses.size()==1 && descriptor==null) {
 			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), this);
 		}
 		else {
@@ -52,7 +53,7 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		AbstractDetailComposite composite = null;
 		// If this section applies to only one type of BPMN2 element, search the registry for
 		// a Properties Composite of the given element type.
-		if (appliesToClasses.size()==1) {
+		if (appliesToClasses.size()==1 && descriptor==null) {
 			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), parent, style);
 		}
 		else {

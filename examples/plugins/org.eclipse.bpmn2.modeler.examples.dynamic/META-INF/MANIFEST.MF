@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.emf.edit.ui,
  org.eclipse.bpmn2.modeler.core,
  org.eclipse.bpmn2.modeler.ui,
- org.eclipse.bpmn2
+ org.eclipse.bpmn2,
+ org.apache.xerces
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.core.resources

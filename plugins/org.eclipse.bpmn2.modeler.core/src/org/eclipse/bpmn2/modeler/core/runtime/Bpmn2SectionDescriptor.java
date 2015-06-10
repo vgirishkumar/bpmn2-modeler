@@ -72,6 +72,7 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				}
 				
 				if (sectionClass!=null) {
+					sectionClass.setDescriptor(this);
 					if (e.getAttribute("features")!=null) { //$NON-NLS-1$
 						String value = e.getAttribute("features"); //$NON-NLS-1$
 						if (value==null || value.isEmpty()) {
@@ -224,6 +225,10 @@ public class Bpmn2SectionDescriptor extends AbstractSectionDescriptor {
 				}
 			}
 			return false;
+		}
+
+		public boolean appliesTo(Class clazz) {
+			return appliesToClasses.contains(clazz);
 		}
 
 		/* (non-Javadoc)
