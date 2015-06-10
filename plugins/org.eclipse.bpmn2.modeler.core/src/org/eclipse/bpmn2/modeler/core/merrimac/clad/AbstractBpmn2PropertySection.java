@@ -13,6 +13,7 @@
 package org.eclipse.bpmn2.modeler.core.merrimac.clad;
 
 import org.eclipse.bpmn2.modeler.core.preferences.ModelEnablements;
+import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.runtime.IBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.help.IHelpContexts;
 import org.eclipse.emf.ecore.EClass;
@@ -42,6 +43,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	protected TabbedPropertySheetPage tabbedPropertySheetPage;
 	protected Composite parent;
 	protected DiagramEditor editor;
+	protected Bpmn2SectionDescriptor descriptor = null;
 	private IWorkbenchWindow cachedWorkbenchWindow;
 	
 	private IPartListener partActivationListener = new IPartListener() {
@@ -72,6 +74,10 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 			cachedWorkbenchWindow.getPartService().addPartListener(
 				partActivationListener);
 		}
+	}
+
+	public void setDescriptor(Bpmn2SectionDescriptor descriptor) {
+		this.descriptor = descriptor;
 	}
 
 	@Override

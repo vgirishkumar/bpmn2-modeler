@@ -13,15 +13,14 @@
 
 package org.eclipse.bpmn2.modeler.examples.dynamic;
 
-import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension;
+import org.eclipse.bpmn2.modeler.core.LifecycleEvent;
 import org.eclipse.bpmn2.modeler.core.LifecycleEvent.EventType;
-import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.bpmn2.modeler.ui.DefaultBpmn2RuntimeExtension.RootElementParser;
+import org.eclipse.bpmn2.modeler.ui.wizards.FileService;
 import org.eclipse.ui.IEditorInput;
+import org.xml.sax.InputSource;
 
 /**
  * @author Bob Brodt
@@ -32,14 +31,14 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	
 	public static final String RUNTIME_ID = "org.eclipse.bpmn2.modeler.examples.dynamic";
 	
-	private static final String targetNamespace = "http://org.eclipse.bpmn2.modeler.examples.dynamic";
+	private static final String TARGET_NAMESPACE = "http://org.eclipse.bpmn2.modeler.examples.dynamic";
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.bpmn2.modeler.core.IBpmn2RuntimeExtension#getTargetNamespace(org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType)
 	 */
 	@Override
 	public String getTargetNamespace(Bpmn2DiagramType diagramType) {
-		return targetNamespace;
+		return TARGET_NAMESPACE;
 	}
 
 	/* (non-Javadoc)
@@ -47,11 +46,10 @@ public class SampleRuntimeExtension implements IBpmn2RuntimeExtension {
 	 */
 	@Override
 	public boolean isContentForRuntime(IEditorInput input) {
-		// IMPORTANT: The plugin is responsible for inspecting the file contents!
-		// Unless you are absolutely sure that the file is targeted for this runtime
-		// (by, e.g. looking at the targetNamespace or some other feature) then this
-		// method must return FALSE.
-		return false;
+		  InputSource source = new InputSource( FileService.getInputContents(input) );
+		  RootElementParser parser = new RootElementParser(TARGET_NAMESPACE);
+		  parser.parse(source);
+		  return parser.getResult();
 	}
 
 	/* (non-Javadoc)
