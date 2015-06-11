@@ -878,6 +878,7 @@
 			<enable object="CallActivity" feature="waitForCompletion"/>
 			<enable object="CatchEvent" feature="dataOutputAssociation"/>
 			<enable object="CompensateEventDefinition" feature="activityRef"/>
+			<enable object="CompensateEventDefinition" feature="waitForCompletion"/>
 			<enable object="ConditionalEventDefinition" feature="condition"/>
 			<enable object="DataAssociation"/>
 			<enable object="DataInput" feature="documentation"/>
