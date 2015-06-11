@@ -166,7 +166,7 @@ public class SyntaxCheckerUtils {
 			if (!isJavaIdentifier(part))
 				return false;
 		}
-		if (name.endsWith("\\.")) {
+		if (name.endsWith(".")) {
 			invalidChar = '.';
 			return false;
 		}
