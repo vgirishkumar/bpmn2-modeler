@@ -69,7 +69,14 @@ public class NCNameObjectEditor extends TextObjectEditor {
 				String s = getValue() + e.text;
 				e.doit = SyntaxCheckerUtils.isNCName(s);
 				if (!e.doit) {
-					showErrorMessage(NLS.bind(Messages.NCNameObjectEditor_Invalid_Character, e.text));
+					if (SyntaxCheckerUtils.getInvalidChar()=='.') {
+						// Allow a dot to appear at end of NC name.
+						// if the user does not provide a valid name at the
+						// end, it will be caught during batch validation
+						e.doit = true;
+					}
+					else
+						showErrorMessage(NLS.bind(Messages.NCNameObjectEditor_Invalid_Character, e.text));
 				}
 			}
 		});
@@ -94,6 +101,6 @@ public class NCNameObjectEditor extends TextObjectEditor {
 
 	protected String getText() {
 		Object value = getBusinessObjectDelegate().getValue(object, feature);
-		return value==null ? "" : SyntaxCheckerUtils.toNCName(value.toString()); //$NON-NLS-1$
+		return value==null ? "" : value.toString(); //$NON-NLS-1$
 	}
 }
