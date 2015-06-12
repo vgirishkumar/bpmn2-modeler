@@ -1385,6 +1385,7 @@
 		<expressionLanguage name="Java" uri="http://www.java.com/java"/>
 		<expressionLanguage name="Rule" uri="http://www.jboss.org/drools/rule"/>
 		<expressionLanguage name="XPath 1.0" uri="http://www.w3.org/1999/XPath"/>
+		<expressionLanguage name="JavaScript" uri="http://www.javascript.com/javascript"/>
 
 		<serviceImplementation name="Java" uri="Java"/>
 		<serviceImplementation name="SwitchYard Service" uri="##SwitchYard"/>
