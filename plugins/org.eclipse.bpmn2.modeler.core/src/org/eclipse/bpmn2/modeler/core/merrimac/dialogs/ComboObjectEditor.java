@@ -284,6 +284,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 		try {
 			isWidgetUpdating = true;
 			if (comboViewer!=null) {
+				comboViewer.getCombo().setRedraw(false);
 				Object oldValue =  getValue();
 				String oldTextValue = getTextValue();
 		
@@ -329,6 +330,8 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 			}
 		}
 		finally {
+			if (comboViewer!=null)
+				comboViewer.getCombo().setRedraw(true);
 			isWidgetUpdating = false;
 		}
 	}

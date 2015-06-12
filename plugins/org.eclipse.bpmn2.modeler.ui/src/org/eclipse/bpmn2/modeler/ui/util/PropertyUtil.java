@@ -153,7 +153,8 @@ public class PropertyUtil {
 			IPage page = props.getCurrentPage();
 			if (page instanceof Bpmn2TabbedPropertySheetPage) {
 				Bpmn2TabbedPropertySheetPage bpmn2PropertySheetPage = (Bpmn2TabbedPropertySheetPage) page;
-				return (AbstractBpmn2PropertySection) bpmn2PropertySheetPage.getCurrentTab().getSectionAtIndex(0);
+				if (bpmn2PropertySheetPage.getCurrentTab()!=null)
+					return (AbstractBpmn2PropertySection) bpmn2PropertySheetPage.getCurrentTab().getSectionAtIndex(0);
 			}
 		}
 		return null;
