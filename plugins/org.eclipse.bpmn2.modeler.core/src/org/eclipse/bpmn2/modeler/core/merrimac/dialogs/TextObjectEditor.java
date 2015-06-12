@@ -125,8 +125,11 @@ public class TextObjectEditor extends ObjectEditor {
 	 * @see org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor#setValue(java.lang.Object)
 	 */
 	@Override
-	public boolean setValue(final Object result) {
+	public boolean setValue(Object result) {
 
+		if (multiLine && result instanceof String) {
+			result = fromPlatformString((String) result);
+		}
 		if (super.setValue(result)) {
 			updateText();
 			return true;
@@ -179,11 +182,14 @@ public class TextObjectEditor extends ObjectEditor {
 	 * @return string representation of the EObject feature's value.
 	 */
 	protected String getText() {
+		Object value = getBusinessObjectDelegate().getValue(object, feature);
+		if (multiLine && value instanceof String) {
+			value = toPlatformString((String) value);
+		}
 		if (canSetNull()) {
-			Object value = getBusinessObjectDelegate().getValue(object, feature);
 			return value==null ? "" : value.toString(); //$NON-NLS-1$
 		}
-		return getBusinessObjectDelegate().getTextValue(object, feature);
+		return value==null ? null : value.toString();
 	}
 
 	@Override
@@ -230,5 +236,33 @@ public class TextObjectEditor extends ObjectEditor {
 	@Override
 	public Object getValue() {
 		return getText();
+	}
+	
+	/**
+	 * Convert line delimiters in a string from platform dependent values to a
+	 * single "\n" character. This works on all platforms, because SWT Text
+	 * widgets universally understand "\n" to be the line delimiter.
+	 * 
+	 * @param s
+	 *            string to convert
+	 * @return converted string with platform-dependent line delimiters
+	 */
+	public static String fromPlatformString(String s) {
+		if (s==null)
+			return null;
+		return s.replaceAll(Text.DELIMITER, "\n");
+	}
+	
+	/**
+	 * Convert "\n" characters in a string back to platform-dependent values:
+	 * "\r\n" for windows, "\n" for Linux, "\r" for Mac OS X
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static String toPlatformString(String s) {
+		if (s==null)
+			return null;
+		return s.replaceAll("\n", Text.DELIMITER);
 	}
 }
