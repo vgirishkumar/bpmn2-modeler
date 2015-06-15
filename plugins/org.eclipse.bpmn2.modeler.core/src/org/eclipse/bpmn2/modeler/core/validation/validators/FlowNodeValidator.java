@@ -20,6 +20,7 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.CompensateEventDefinition;
 import org.eclipse.bpmn2.EventDefinition;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.SubProcess;
 import org.eclipse.bpmn2.ThrowEvent;
 import org.eclipse.bpmn2.modeler.core.preferences.Bpmn2Preferences;
@@ -58,6 +59,9 @@ public class FlowNodeValidator extends AbstractBpmn2ElementValidator<FlowNode> {
 	 */
 	@Override
 	public IStatus validate(FlowNode object) {
+		if (object instanceof Gateway)
+			return getResult();
+
 		boolean needIncoming = true;
 		boolean needOutgoing = true;
 		if (object instanceof ThrowEvent)

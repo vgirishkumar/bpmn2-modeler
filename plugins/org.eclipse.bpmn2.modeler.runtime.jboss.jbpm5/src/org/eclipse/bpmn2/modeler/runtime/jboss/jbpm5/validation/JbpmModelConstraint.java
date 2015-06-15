@@ -16,9 +16,9 @@ import org.eclipse.bpmn2.DataAssociation;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.Definitions;
 import org.eclipse.bpmn2.Escalation;
+import org.eclipse.bpmn2.Gateway;
 import org.eclipse.bpmn2.InputOutputSpecification;
 import org.eclipse.bpmn2.Interface;
-import org.eclipse.bpmn2.ItemAwareElement;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.Signal;
 import org.eclipse.bpmn2.UserTask;
@@ -31,6 +31,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.CallA
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DataAssociationValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.DefinitionsValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.EscalationValidator;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.GatewayValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.GlobalTypeValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.InterfaceValidator;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.ProcessValidator;
@@ -54,6 +55,9 @@ public class JbpmModelConstraint extends AbstractModelConstraint {
 		}
 		if (object instanceof UserTask) {
 			return new UserTaskValidator(ctx).validate((UserTask)object);
+		}	
+		if (object instanceof Gateway) {
+			return new GatewayValidator(ctx).validate((Gateway)object);
 		}	
 		if (object instanceof Process) {
 			return new ProcessValidator(ctx).validate((Process)object);

@@ -1570,6 +1570,17 @@
                <message>{0}</message>
                <target class="CallActivity"/>
             </constraint>
+            <constraint
+                  lang="Java"
+                  class="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.JbpmModelConstraint"
+                  severity="ERROR"
+                  mode="Batch"
+                  name="Gateway"
+                  id="org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.Gateway"
+                  statusCode="1">
+               <message>{0}</message>
+               <target class="Gateway"/>
+            </constraint>
          </constraints>
       </constraintProvider>
    </extension>
