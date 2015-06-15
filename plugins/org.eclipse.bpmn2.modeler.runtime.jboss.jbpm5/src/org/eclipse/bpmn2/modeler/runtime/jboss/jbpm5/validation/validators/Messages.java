@@ -21,6 +21,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.validation.validators.messages"; //$NON-NLS-1$
 	public static String DefinitionsValidator_No_TargetNamespace;
+	public static String GatewayValidator_Invalid_GatewayDirection;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

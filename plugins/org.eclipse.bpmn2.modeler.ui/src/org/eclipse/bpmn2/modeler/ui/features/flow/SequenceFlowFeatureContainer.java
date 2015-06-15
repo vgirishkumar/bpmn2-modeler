@@ -21,6 +21,8 @@ import org.eclipse.bpmn2.CatchEvent;
 import org.eclipse.bpmn2.ComplexGateway;
 import org.eclipse.bpmn2.ExclusiveGateway;
 import org.eclipse.bpmn2.FlowNode;
+import org.eclipse.bpmn2.Gateway;
+import org.eclipse.bpmn2.GatewayDirection;
 import org.eclipse.bpmn2.InclusiveGateway;
 import org.eclipse.bpmn2.Process;
 import org.eclipse.bpmn2.SequenceFlow;
@@ -220,6 +222,40 @@ public class SequenceFlowFeatureContainer extends BaseElementConnectionFeatureCo
 				}
 			}
 			return super.isAvailable(context);
+		}
+
+		@Override
+		public Connection create(ICreateConnectionContext context) {
+			Connection connection = super.create(context);
+			FlowNode source = getSourceBo(context);
+			FlowNode target = getTargetBo(context);
+			if (source instanceof Gateway) {
+				// update the gateway direction
+				Gateway gw = (Gateway) source;
+				if (gw.getOutgoing().size()>1) {
+					if (gw.getIncoming().size()>1) {
+						gw.eUnset(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+					}
+					else {
+						// must be a Diverging gateway
+						gw.setGatewayDirection(GatewayDirection.DIVERGING);
+					}
+				}
+			}
+			if (target instanceof Gateway) {
+				// update the gateway direction
+				Gateway gw = (Gateway) target;
+				if (gw.getIncoming().size()>1) {
+					if (gw.getOutgoing().size()>1) {
+						gw.eUnset(Bpmn2Package.eINSTANCE.getGateway_GatewayDirection());
+					}
+					else {
+						// must be a Converging gateway
+						gw.setGatewayDirection(GatewayDirection.CONVERGING);
+					}
+				}
+			}
+			return connection;
 		}
 		
 		/* (non-Javadoc)
