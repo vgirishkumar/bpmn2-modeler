@@ -601,7 +601,7 @@ public class FeatureSupport {
 	}
 
 	public static boolean isGroupShape(PictogramElement shape) {
-		return BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
+		return shape instanceof ContainerShape && BusinessObjectUtil.getFirstBaseElement(shape) instanceof Group;
 	}
 
 	public static List<EObject> findMessageReferences(Diagram diagram, Message message) {
