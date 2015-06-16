@@ -245,9 +245,11 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public boolean update(IUpdateContext context) {
-			ContainerShape groupShape = (ContainerShape)context.getPictogramElement();
-			List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes(groupShape);
-			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
+			PictogramElement pe = context.getPictogramElement();
+			if (FeatureSupport.isGroupShape(pe)) {
+				List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes((ContainerShape) pe);
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
+			}
 			return true;
 		}
 	}
@@ -267,22 +269,24 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 		@Override
 		protected void preMoveShape(IMoveShapeContext context) {
 			super.preMoveShape(context);
-			ContainerShape groupShape = (ContainerShape) context.getShape();
-			ContainerShape container = context.getTargetContainer();
-			if (!(container instanceof Diagram)) {
-				ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(container);
-				int x = context.getX() + loc.getX();
-				int y = context.getY() + loc.getY();
-				((MoveShapeContext)context).setX(x);
-				((MoveShapeContext)context).setY(y);
-				((MoveShapeContext)context).setDeltaX(x - preMoveLoc.getX());
-				((MoveShapeContext)context).setDeltaY(y - preMoveLoc.getY());
-				((MoveShapeContext)context).setTargetContainer(getDiagram());
+			PictogramElement pe = context.getPictogramElement();
+			if (FeatureSupport.isGroupShape(pe)) {
+				ContainerShape container = context.getTargetContainer();
+				if (!(container instanceof Diagram)) {
+					ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(container);
+					int x = context.getX() + loc.getX();
+					int y = context.getY() + loc.getY();
+					((MoveShapeContext)context).setX(x);
+					((MoveShapeContext)context).setY(y);
+					((MoveShapeContext)context).setDeltaX(x - preMoveLoc.getX());
+					((MoveShapeContext)context).setDeltaY(y - preMoveLoc.getY());
+					((MoveShapeContext)context).setTargetContainer(getDiagram());
+				}
+	
+				// find all shapes that are inside this Group
+				// these will be moved along with the Group
+				containedShapes = FeatureSupport.findGroupedShapes((ContainerShape) pe);
 			}
-
-			// find all shapes that are inside this Group
-			// these will be moved along with the Group
-			containedShapes = FeatureSupport.findGroupedShapes(groupShape);
 		}
 
 		@Override
@@ -290,27 +294,29 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 			super.postMoveShape(context);
 			
-			ContainerShape groupShape = (ContainerShape) context.getShape();
-			for (ContainerShape shape : containedShapes) {
-				if (!FeatureSupport.isLabelShape(shape)) {
-					ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
-					int x = loc.getX() + context.getDeltaX();
-					int y = loc.getY() + context.getDeltaY();
-					MoveShapeContext mc = new MoveShapeContext(shape);
-					mc.setSourceContainer(shape.getContainer());
-					mc.setTargetContainer(shape.getContainer());
-					mc.setX(x);
-					mc.setY(y);
-					IMoveShapeFeature mf = getFeatureProvider().getMoveShapeFeature(mc);
-					mf.moveShape(mc);
+			PictogramElement pe = context.getPictogramElement();
+			if (FeatureSupport.isGroupShape(pe)) {
+				for (ContainerShape shape : containedShapes) {
+					if (!FeatureSupport.isLabelShape(shape)) {
+						ILocation loc = Graphiti.getPeService().getLocationRelativeToDiagram(shape);
+						int x = loc.getX() + context.getDeltaX();
+						int y = loc.getY() + context.getDeltaY();
+						MoveShapeContext mc = new MoveShapeContext(shape);
+						mc.setSourceContainer(shape.getContainer());
+						mc.setTargetContainer(shape.getContainer());
+						mc.setX(x);
+						mc.setY(y);
+						IMoveShapeFeature mf = getFeatureProvider().getMoveShapeFeature(mc);
+						mf.moveShape(mc);
+					}
 				}
-			}
-			for (ContainerShape cs : FeatureSupport.findGroupedShapes(groupShape)) {
-				if (!containedShapes.contains(cs)) {
-					containedShapes.add(cs);
+				for (ContainerShape cs : FeatureSupport.findGroupedShapes((ContainerShape) pe)) {
+					if (!containedShapes.contains(cs)) {
+						containedShapes.add(cs);
+					}
 				}
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 			}
-			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 		}
 	}
 
@@ -318,6 +324,12 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 		public ResizeGroupFeature(IFeatureProvider fp) {
 			super(fp);
+		}
+
+		@Override
+		public boolean canResizeShape(IResizeShapeContext context) {
+			return FeatureSupport.isGroupShape(context.getPictogramElement());
+
 		}
 
 		@Override
@@ -365,12 +377,15 @@ public class GroupFeatureContainer extends BaseElementFeatureContainer {
 
 		@Override
 		public void delete(IDeleteContext context) {
-			ContainerShape groupShape = (ContainerShape) context.getPictogramElement();
-			List<ContainerShape> containedShapes = FeatureSupport.findGroupedShapes(groupShape);
+			PictogramElement pe = context.getPictogramElement();
+			List<ContainerShape> containedShapes = null;
+			if (FeatureSupport.isGroupShape(pe))
+				containedShapes = FeatureSupport.findGroupedShapes((ContainerShape) pe);
 			
 			super.delete(context);
 
-			FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
+			if (containedShapes!=null)
+				FeatureSupport.updateCategoryValues(getFeatureProvider(), containedShapes);
 		}
 		
 	}
