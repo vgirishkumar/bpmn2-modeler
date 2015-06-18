@@ -545,6 +545,12 @@ public class ExtendedPropertiesAdapter<T extends EObject> extends ObjectProperty
 			// IDs are allowed to be different
 			if (similar && "id".equals(f.getName())) //$NON-NLS-1$
 				continue;
+			if (otherObject.eClass().getEStructuralFeature(f.getName())==null) {
+				if (similar)
+					continue;
+				return false;
+			}
+				
 			Object v1 = otherObject.eGet(f);
 			Object v2 = thisObject.eGet(f);
 			// both null? equal!

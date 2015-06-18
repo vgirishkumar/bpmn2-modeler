@@ -362,9 +362,6 @@ public class BPMN2EditorOutlinePage extends ContentOutlinePage implements IPrope
 
 			@Override
 			public void run() {
-				Diagram diagram = diagramEditor.getDiagramTypeProvider().getDiagram();
-				getViewer().setContents(diagram);
-				getViewer().setControl(interchangeModelOutline);
 				showPage(ID_INTERCHANGE_MODEL_OUTLINE);
 			}
 		};

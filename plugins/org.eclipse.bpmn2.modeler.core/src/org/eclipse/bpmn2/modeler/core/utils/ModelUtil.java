@@ -693,68 +693,12 @@ public class ModelUtil {
 		return Messages.ModelUtil_Unknown_Diagram_Type;
 	}
 	
-	private static EClass stringWrapperClass = null;
-	private static EPackage myPackage = null;
-	
 	public static EObject createStringWrapper(String value) {
-		DynamicEObjectImpl de = new DynamicEObjectImpl() {
-			// prevent owners from trying to resolve this thing - it's just a string!
-			public boolean eIsProxy() {
-				return false;
-			}
-
-			@Override
-			public boolean equals(Object that) {
-				String thisValue = this.toString();
-				if (that==null) {
-					return thisValue==null || thisValue.isEmpty();
-				}
-				String thatValue = that.toString();
-				if (thisValue==null) {
-					return thatValue==null;
-				}
-				return thisValue.equals(thatValue);
-			}
-			
-			@Override
-			public String toString() {
-				EStructuralFeature feature = this.eClass().getEStructuralFeature("value"); //$NON-NLS-1$
-				if (feature!=null) {
-					return (String)eGet(feature);
-				}
-				return null;
-			}
-		};
-		value = SyntaxCheckerUtils.toXMLString(value);
-		if (stringWrapperClass==null) {
-			myPackage = EcoreFactory.eINSTANCE.createEPackage();
-			stringWrapperClass = EcoreFactory.eINSTANCE.createEClass();
-			myPackage.getEClassifiers().add(stringWrapperClass);
-			
-			stringWrapperClass.setName("StringWrapper"); //$NON-NLS-1$
-			stringWrapperClass.getESuperTypes().add(XMLTypePackage.eINSTANCE.getAnyType());
-			ExtendedMetaData.INSTANCE.setName(stringWrapperClass, ""); //$NON-NLS-1$
-			stringWrapperClass.setInstanceClass(AnyType.class);
-
-			EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
-			eAttribute.setName("value"); //$NON-NLS-1$
-			eAttribute.setChangeable(true);
-			eAttribute.setUnsettable(true);
-			eAttribute.setEType(EcorePackage.eINSTANCE.getEClassifier("EString")); //$NON-NLS-1$
-			stringWrapperClass.getEStructuralFeatures().add(eAttribute);
-
-//			ExtendedMetaData.INSTANCE.setNamespace(eAttribute, ePackage.getNsURI());
-			ExtendedMetaData.INSTANCE.setFeatureKind(eAttribute, ExtendedMetaData.ATTRIBUTE_FEATURE);
-			ExtendedMetaData.INSTANCE.setName(eAttribute, "value"); //$NON-NLS-1$
-		}
-		de.eSetClass(stringWrapperClass);
-		de.eSet(stringWrapperClass.getEStructuralFeature("value"), value); //$NON-NLS-1$
-		
-		return de;
+		return new StringWrapper(value);
 	}
 	
 	public static String getStringWrapperValue(Object wrapper) {
-		if (wrapper instanceof DynamicEObjectImpl) {
+		if (wrapper instanceof StringWrapper) {
 			return wrapper.toString();
 		}
 		else if (wrapper instanceof EObject) {
@@ -779,6 +723,8 @@ public class ModelUtil {
 	}
 	
 	public static boolean isStringWrapper(Object wrapper) {
+		if (wrapper instanceof StringWrapper)
+			return true;
 		if (wrapper instanceof DynamicEObjectImpl) {
 			EStructuralFeature feature = ((DynamicEObjectImpl)wrapper).eClass().getEStructuralFeature("value"); //$NON-NLS-1$
 			return feature!=null;

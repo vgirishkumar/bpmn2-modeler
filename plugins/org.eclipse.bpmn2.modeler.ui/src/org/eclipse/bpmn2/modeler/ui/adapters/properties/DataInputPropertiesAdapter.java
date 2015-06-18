@@ -84,7 +84,7 @@ public class DataInputPropertiesAdapter extends ItemAwareElementPropertiesAdapte
 			}
 		});
 	}
-
+	
 	public static DataInput createDataInput(Resource resource, List<DataInput> dataInputs) {
 		DataInput dataInput = Bpmn2ModelerFactory.create(resource,DataInput.class);
 		dataInput.setName( generateName(dataInputs) );

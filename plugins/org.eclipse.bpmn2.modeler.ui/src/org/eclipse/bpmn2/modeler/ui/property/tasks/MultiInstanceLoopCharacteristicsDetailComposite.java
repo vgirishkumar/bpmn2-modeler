@@ -11,12 +11,14 @@
 package org.eclipse.bpmn2.modeler.ui.property.tasks;
 
 import org.eclipse.bpmn2.Activity;
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.Expression;
 import org.eclipse.bpmn2.FormalExpression;
 import org.eclipse.bpmn2.MultiInstanceBehavior;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.InsertionAdapter;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
@@ -29,7 +31,9 @@ import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.BooleanObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.FeatureEditingDialog;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -38,6 +42,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -346,13 +351,13 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 	private InstanceType getInstanceType() {
 		if (isEnabled("loopCardinality") && isEnabled("loopDataInputRef")) { //$NON-NLS-1$ //$NON-NLS-2$
 			MultiInstanceLoopCharacteristics lc = getBO();
-			if (lc.getLoopDataInputRef()==null) {
+			if (lc.getLoopDataInputRef()==null && lc.getInputDataItem()==null) {
 				if (lc.getLoopCardinality()==null)
 					return InstanceType.None;
 				return InstanceType.LoopCardinality;
 			}
 			else if (lc.getLoopCardinality()==null) {
-				if (lc.getLoopDataInputRef()==null)
+				if (lc.getLoopDataInputRef()==null && lc.getInputDataItem()==null)
 					return InstanceType.None;
 				return InstanceType.DataInput;
 			}
@@ -641,12 +646,15 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 								}
 							};
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Data_Label);
+
+
 							DataInput input = lc.getInputDataItem();
 							if (input==null) {
 								input = (DataInput) getBusinessObjectDelegate().createObject(PACKAGE.getDataInput());
 								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_InputDataItem(), input);
 							}
-							bindAttribute(getAttributesParent(), input, PACKAGE.getDataInput_Name(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Parameter_Label);
+							editor = new DataInputOutputObjectEditor(this, input, PACKAGE.getDataInput_Name());
+							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Input_Parameter_Label);
 						}
 					};
 				}
@@ -668,12 +676,15 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 								}
 							};
 							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Data_Label);
+							
+							
 							DataOutput output = lc.getOutputDataItem();
 							if (output==null) {
 								output = (DataOutput) getBusinessObjectDelegate().createObject(PACKAGE.getDataOutput());
 								InsertionAdapter.add(lc, PACKAGE.getMultiInstanceLoopCharacteristics_OutputDataItem(), output);
 							}
-							bindAttribute(getAttributesParent(), output, PACKAGE.getDataOutput_Name(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Parameter_Label);
+							editor = new DataInputOutputObjectEditor(this, output, PACKAGE.getDataOutput_Name());
+							editor.createControl(getAttributesParent(), Messages.MultiInstanceLoopCharacteristicsDetailComposite_Output_Parameter_Label);
 						}
 					};
 				}
@@ -771,4 +782,32 @@ public class MultiInstanceLoopCharacteristicsDetailComposite extends DefaultDeta
 			return content;
 		}
 	}
+	
+
+	public class DataInputOutputObjectEditor extends TextAndButtonObjectEditor {
+		public DataInputOutputObjectEditor(AbstractDetailComposite parent, EObject object, EStructuralFeature feature) {
+			super(parent, object, feature);
+		}
+
+		@Override
+		protected void buttonClicked(int buttonId) {
+			FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef(), object);
+			if ( dialog.open() == Window.OK) {
+				this.updateText();
+			}
+		}
+
+		@Override
+		protected String getText() {
+			String text = null;
+			EStructuralFeature f = object.eClass().getEStructuralFeature("name");
+			if (f!=null) {
+				text = (String)object.eGet(f);
+			}
+			if (text==null)
+				return "";
+			return text;
+		}
+	};
+
 }

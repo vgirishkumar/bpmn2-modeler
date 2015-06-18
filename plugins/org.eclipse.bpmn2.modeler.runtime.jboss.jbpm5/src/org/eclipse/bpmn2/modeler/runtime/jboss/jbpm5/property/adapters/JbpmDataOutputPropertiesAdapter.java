@@ -27,7 +27,7 @@ public class JbpmDataOutputPropertiesAdapter extends DataOutputPropertiesAdapter
 
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(feature,

@@ -22,6 +22,7 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextAndButtonObjectEditor;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
@@ -44,9 +45,9 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 	 * @param parent
 	 * @param object
 	 */
-	public ItemDefinitionStructureEditor(AbstractDetailComposite parent, ItemDefinition itemDefinition) {
+	public ItemDefinitionStructureEditor(AbstractDetailComposite parent, EObject itemDefinition) {
 		super(parent, itemDefinition, Bpmn2Package.eINSTANCE.getItemDefinition_StructureRef());
-		this.itemDefinition = itemDefinition;
+		this.itemDefinition = (ItemDefinition)itemDefinition;
 		definitions = ModelUtil.getDefinitions(itemDefinition);
 	}
 	
@@ -56,7 +57,7 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 		// data structure name part (the localpart) if the original structureRef contained
 		// a namespace prefix.
 		String text = getText();
-		int index = text.indexOf(":"); //$NON-NLS-1$
+		int index = text==null ? -1 : text.indexOf(":"); //$NON-NLS-1$
 		prefix = null;
 		if (index>0) {
 			prefix = text.substring(0,index);
@@ -78,7 +79,9 @@ public class ItemDefinitionStructureEditor extends TextAndButtonObjectEditor {
 					return Messages.ItemDefinitionStructureEditor_DataStructureEmpty_Error;
 				if (prefix!=null)
 					newText = prefix + ":" + newText;
-				if (!SyntaxCheckerUtils.isQName(newText))
+				// we support both QNames and parameterized Java typespecs
+				boolean valid = SyntaxCheckerUtils.isQName(newText) || SyntaxCheckerUtils.isJavaTypespec(newText);
+				if (!valid)
 					return NLS.bind(Messages.ItemDefinitionStructureEditor_DataStructureInvalid_Error, SyntaxCheckerUtils.getInvalidChar());
 				for (ItemDefinition that : ModelUtil.getAllRootElements(definitions, ItemDefinition.class)) {
 					String thatText = ModelUtil.getStringWrapperTextValue(that.getStructureRef());

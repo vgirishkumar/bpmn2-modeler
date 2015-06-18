@@ -14,7 +14,6 @@ import java.util.Hashtable;
 
 import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.DataInput;
-import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.JavaVariableNameObjectEditor;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.util.JbpmModelUtil;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.DataInputPropertiesAdapter;
 import org.eclipse.bpmn2.modeler.ui.adapters.properties.ItemDefinitionRefFeatureDescriptor;
@@ -28,7 +27,7 @@ public class JbpmDataInputPropertiesAdapter extends DataInputPropertiesAdapter {
 
     	EStructuralFeature feature = Bpmn2Package.eINSTANCE.getItemAwareElement_ItemSubjectRef();
     	setProperty(feature, UI_CAN_CREATE_NEW, Boolean.TRUE);
-    	setProperty(feature, UI_CAN_EDIT, Boolean.FALSE);
+    	setProperty(feature, UI_CAN_EDIT, Boolean.TRUE);
 		setProperty(feature, UI_IS_MULTI_CHOICE, Boolean.TRUE);
 		
     	setFeatureDescriptor(feature,
@@ -51,9 +50,6 @@ public class JbpmDataInputPropertiesAdapter extends DataInputPropertiesAdapter {
 				}
 			}
     	);
-
-		feature = Bpmn2Package.eINSTANCE.getDataInput_Name();
-		setProperty(feature, UI_OBJECT_EDITOR_CLASS, JavaVariableNameObjectEditor.class);
 	}
 
 }

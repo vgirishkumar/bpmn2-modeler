@@ -67,7 +67,7 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 
 				@Override
 				public String getTextValue() {
-					return ItemDefinitionPropertiesAdapter.getStructureName(object);
+					return ItemDefinitionPropertiesAdapter.getDisplayName(object);
 				}
 				
 	    		@Override
@@ -98,7 +98,12 @@ public class ItemDefinitionPropertiesAdapter extends ExtendedPropertiesAdapter<I
 							String oldValue = ItemDefinitionPropertiesAdapter.getStructureName(itemDefinition);
 							value = ((String) value).replace(oldValue, ""); //$NON-NLS-1$
 						}
-						value = SyntaxCheckerUtils.toXMLString((String)value);
+						// convert to entities if string is not a Java
+						// typespec which may be parameterized, e.g.
+						// something like "java.util.List<String>"
+						if (!SyntaxCheckerUtils.isJavaTypespec((String)value)) {
+							value = SyntaxCheckerUtils.toXMLString((String)value);
+						}
 						value = ModelUtil.createStringWrapper((String)value);
 					}
 					super.internalSet(itemDefinition, feature, value, index);
