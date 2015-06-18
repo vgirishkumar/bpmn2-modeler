@@ -151,6 +151,17 @@ public class MultiInstanceLoopCharacteristicsPropertiesAdapter extends ExtendedP
 						if (fe!=null && !values.contains(fe))
 							values.add(fe);
 					}
+					// Collect all Properties from Process and SubProcess ancestors
+					EObject parent = container.eContainer();
+					while (parent!=null) {
+						if (parent instanceof Process) {
+							values.addAll(((Process)parent).getProperties());
+						}
+						if (parent instanceof SubProcess) {
+							values.addAll(((SubProcess)parent).getProperties());
+						}
+						parent = parent.eContainer();
+					}
 				}
 			}
 			else {

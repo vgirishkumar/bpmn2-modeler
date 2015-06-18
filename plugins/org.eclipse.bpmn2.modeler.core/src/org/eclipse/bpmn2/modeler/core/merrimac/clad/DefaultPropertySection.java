@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.bpmn2.di.BPMNDiagram;
-import org.eclipse.bpmn2.modeler.core.runtime.Bpmn2SectionDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.BusinessObjectUtil;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.ConnectionDecorator;
@@ -24,6 +23,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.views.properties.tabbed.ITabDescriptor;
 
 public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 
@@ -36,12 +36,24 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	protected AbstractDetailComposite createSectionRoot() {
 		AbstractDetailComposite composite = null;
+		// If a plugin defines either a replaceTab or afterTab in the <propertyTab>
+		// extension, then we'll create a DefaultDetailComposite, otherwise the detail
+		// composite registered for the "appliesToClasses" will be used.
+		//
+		// If, for example, a plugin wishes to contribute a DefaultDetailComposite to the tabs already
+		// added to the property page, then the <propertyTab> extension should not define an "afterTab"
+		// or "replaceTab" attribute that references any one of the other tabs already contributed.
+		// Otherwise, it is possible that the contributed tab will be a duplicate of one already contributed.
+		String replaceTab = sectionDescriptor.getTabDescriptor().getReplaceTab();
+		String afterTab = sectionDescriptor.getTabDescriptor().getAfterTab();
 		// If this section applies to only one type of BPMN2 element, search the registry for
 		// a Properties Composite of the given element type.
-		if (appliesToClasses.size()==1 && descriptor==null) {
-			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), this);
-		}
-		else {
+		if (appliesToClasses.size() == 1
+				&& replaceTab == null
+				&&  !ITabDescriptor.TOP.equals(afterTab)) {
+			composite = PropertiesCompositeFactory.INSTANCE
+					.createDetailComposite(appliesToClasses.get(0), this);
+		} else {
 			composite = new DefaultDetailComposite(this);
 		}
 		composite.setPropertiesProvider(propertiesProvider);
@@ -51,9 +63,11 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 	@Override
 	public AbstractDetailComposite createSectionRoot(Composite parent, int style) {
 		AbstractDetailComposite composite = null;
-		// If this section applies to only one type of BPMN2 element, search the registry for
-		// a Properties Composite of the given element type.
-		if (appliesToClasses.size()==1 && descriptor==null) {
+		String replaceTab = sectionDescriptor.getTabDescriptor().getReplaceTab();
+		String afterTab = sectionDescriptor.getTabDescriptor().getAfterTab();
+		if (appliesToClasses.size() == 1
+				&& replaceTab == null
+				&&  !ITabDescriptor.TOP.equals(afterTab)) {
 			composite = PropertiesCompositeFactory.INSTANCE.createDetailComposite(appliesToClasses.get(0), parent, style);
 		}
 		else {
@@ -62,7 +76,7 @@ public class DefaultPropertySection extends AbstractBpmn2PropertySection {
 		composite.setPropertiesProvider(propertiesProvider);
 		return composite;
 	}
-
+	
 	protected void setProperties(DefaultDetailComposite composite, String[] properties) {
 		setProperties(properties);
 		composite.setPropertiesProvider(propertiesProvider);

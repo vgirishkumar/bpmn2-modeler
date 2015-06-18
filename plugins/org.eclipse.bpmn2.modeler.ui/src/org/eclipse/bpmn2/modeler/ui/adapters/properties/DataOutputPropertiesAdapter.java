@@ -16,7 +16,6 @@ package org.eclipse.bpmn2.modeler.ui.adapters.properties;
 import java.util.List;
 
 import org.eclipse.bpmn2.Bpmn2Package;
-import org.eclipse.bpmn2.DataInput;
 import org.eclipse.bpmn2.DataOutput;
 import org.eclipse.bpmn2.modeler.core.adapters.ExtendedPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.adapters.FeatureDescriptor;

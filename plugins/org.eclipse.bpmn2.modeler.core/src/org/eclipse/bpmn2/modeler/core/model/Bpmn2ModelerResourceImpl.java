@@ -59,6 +59,7 @@ import org.eclipse.bpmn2.modeler.core.runtime.TypeLanguageDescriptor;
 import org.eclipse.bpmn2.modeler.core.utils.ImportUtil;
 import org.eclipse.bpmn2.modeler.core.utils.ModelUtil;
 import org.eclipse.bpmn2.modeler.core.utils.NamespaceUtil;
+import org.eclipse.bpmn2.modeler.core.validation.SyntaxCheckerUtils;
 import org.eclipse.bpmn2.util.Bpmn2ResourceImpl;
 import org.eclipse.bpmn2.util.ImportHelper;
 import org.eclipse.bpmn2.util.OnlyContainmentTypeInfo;
@@ -102,6 +103,7 @@ import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.ElementHandlerImpl;
+import org.eclipse.emf.ecore.xmi.impl.StringSegment;
 import org.eclipse.emf.ecore.xmi.impl.XMLLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLSaveImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLString;
@@ -940,6 +942,12 @@ public class Bpmn2ModelerResourceImpl extends Bpmn2ResourceImpl {
 				return lineNum;
 			}
 			
+			@Override
+			public void addAttributeContent(String content) {
+				// convert to XML string with entities 
+				super.addAttributeContent(SyntaxCheckerUtils.toXMLString(content));
+			}
+
 			public int getColumnNum() {
 				return getLength() - lineOffset + 1;
 			}

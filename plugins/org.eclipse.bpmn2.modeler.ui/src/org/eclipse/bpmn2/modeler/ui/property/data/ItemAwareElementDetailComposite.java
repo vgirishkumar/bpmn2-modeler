@@ -12,10 +12,14 @@
  ******************************************************************************/
 package org.eclipse.bpmn2.modeler.ui.property.data;
 
+import org.eclipse.bpmn2.Bpmn2Package;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractBpmn2PropertySection;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ComboObjectEditor;
+import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.swt.widgets.Composite;
 
 public class ItemAwareElementDetailComposite extends DefaultDetailComposite {
@@ -52,5 +56,21 @@ public class ItemAwareElementDetailComposite extends DefaultDetailComposite {
 			};
 		}
 		return propertiesProvider;
+	}
+	
+	@Override
+	protected void bindReference(Composite parent, EObject object, EReference reference) {
+		if (reference.getName().equals("itemSubjectRef")) {
+			if (isModelObjectEnabled(object.eClass(), reference)) {
+				if (parent==null)
+					parent = getAttributesParent();
+				
+				String displayName = getBusinessObjectDelegate().getLabel(object, reference);
+				ObjectEditor editor = new ComboObjectEditor(this,object,reference, Bpmn2Package.eINSTANCE.getItemDefinition());
+				editor.createControl(parent,displayName);
+			}
+		}
+		else
+			super.bindReference(parent, object, reference);
 	}
 }

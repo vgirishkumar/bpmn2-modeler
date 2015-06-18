@@ -191,16 +191,18 @@ public class InsertionAdapter extends EContentAdapter implements IResourceProvid
 	 * @param value
 	 */
 	public static void executeIfNeeded(EObject value) {
-		List<InsertionAdapter> allAdapters = new ArrayList<InsertionAdapter>();
-		
-		for (Adapter adapter : value.eAdapters()) {
-			if (adapter instanceof InsertionAdapter) {
-				allAdapters.add((InsertionAdapter)adapter);
+		if (value!=null) {
+			List<InsertionAdapter> allAdapters = new ArrayList<InsertionAdapter>();
+			
+			for (Adapter adapter : value.eAdapters()) {
+				if (adapter instanceof InsertionAdapter) {
+					allAdapters.add((InsertionAdapter)adapter);
+				}
 			}
+			value.eAdapters().removeAll(allAdapters);
+			for (InsertionAdapter adapter : allAdapters)
+				adapter.execute();
 		}
-		value.eAdapters().removeAll(allAdapters);
-		for (InsertionAdapter adapter : allAdapters)
-			adapter.execute();
 	}
 	
 	/* (non-Javadoc)

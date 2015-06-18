@@ -20,7 +20,7 @@ public class SyntaxCheckerUtils {
 	public static final boolean isQName(String name) {
 		invalidChar = 0;
 		String parts[] = name.split(":");
-		if (parts.length==1) {
+		if (parts.length==1 && !name.endsWith(":")) {
 			return isNCName(parts[0]);
 		}
 		else if (parts.length==2) {
@@ -185,7 +185,79 @@ public class SyntaxCheckerUtils {
 		}
 		return result;
 	}
-	
+
+	public static boolean isJavaTypespec(String name) {
+		invalidChar = 0;
+		if (name==null || name.isEmpty())
+			return false;
+		String part = "";
+		int brackets = 0;
+		int parts = 0;
+		char last = 0;
+		for (char c : name.toCharArray()) {
+			if (c==' ') {
+				if (!part.isEmpty()) {
+					if (!isJavaPackageName(part))
+						return false;
+					++parts;
+					part = "";
+				}
+				continue;
+			}
+			if (c=='<') {
+				++brackets;
+				if (last!='<' && last!=',' && !isJavaPackageName(part)) {
+					return false;
+				}
+				part = "";
+				last = c;
+				continue;
+			}
+			if (c==',') {
+				if (brackets==0) {
+					invalidChar = c;
+					return false;
+				}
+				if (last!='>' && !isJavaPackageName(part)) {
+					return false;
+				}
+				part = "";
+				last = c;
+				continue;
+			}
+			if (c=='>') {
+				if (--brackets<0) {
+					invalidChar = c;
+					return false;
+				}
+				if (last!='>' && !isJavaPackageName(part)) {
+					return false;
+				}
+				part = "";
+				last = c;
+				continue;
+			}
+			part += c;
+		}
+		if (brackets!=0) {
+			invalidChar = '<';
+			return false;
+		}
+		if ((last=='>' || last=='<' || last==',') && !part.isEmpty()) {
+			invalidChar = part.charAt(0);
+			return false;
+		}
+		if (!part.isEmpty()) {
+			if (!isJavaPackageName(part))
+				return false;
+			if (parts>0) {
+				invalidChar = part.charAt(0);
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static final boolean isLetter(char c) {
 		return _isAsciiBaseChar(c) || _isNonAsciiBaseChar(c) || isIdeographic(c);
 	}

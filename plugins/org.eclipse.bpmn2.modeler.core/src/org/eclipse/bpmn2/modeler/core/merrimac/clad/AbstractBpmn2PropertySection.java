@@ -43,7 +43,7 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 	protected TabbedPropertySheetPage tabbedPropertySheetPage;
 	protected Composite parent;
 	protected DiagramEditor editor;
-	protected Bpmn2SectionDescriptor descriptor = null;
+	protected Bpmn2SectionDescriptor sectionDescriptor = null;
 	private IWorkbenchWindow cachedWorkbenchWindow;
 	
 	private IPartListener partActivationListener = new IPartListener() {
@@ -76,8 +76,12 @@ public abstract class AbstractBpmn2PropertySection extends GFPropertySection imp
 		}
 	}
 
-	public void setDescriptor(Bpmn2SectionDescriptor descriptor) {
-		this.descriptor = descriptor;
+	public void setSectionDescriptor(Bpmn2SectionDescriptor descriptor) {
+		this.sectionDescriptor = descriptor;
+	}
+
+	public Bpmn2SectionDescriptor getSectionDescriptor() {
+		return sectionDescriptor;
 	}
 
 	@Override
