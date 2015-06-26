@@ -46,7 +46,7 @@ public class JbpmItemDefinitionDetailComposite extends
 			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			if (def.getItemKind().equals(ItemKind.INFORMATION)) {
-				JbpmImportObjectEditor editor = new JbpmImportObjectEditor(this,object,reference);
+				JbpmItemDefinitionStructureEditor editor = new JbpmItemDefinitionStructureEditor(this,object,reference);
 				editor.createControl(parent,displayName);
 			}
 			else {
