@@ -32,6 +32,7 @@ import org.eclipse.bpmn2.ItemDefinition;
 import org.eclipse.bpmn2.ManualTask;
 import org.eclipse.bpmn2.Message;
 import org.eclipse.bpmn2.MultiInstanceLoopCharacteristics;
+import org.eclipse.bpmn2.Operation;
 import org.eclipse.bpmn2.ReceiveTask;
 import org.eclipse.bpmn2.ScriptTask;
 import org.eclipse.bpmn2.SendTask;
@@ -50,7 +51,6 @@ import org.eclipse.bpmn2.modeler.core.utils.ModelUtil.Bpmn2DiagramType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.features.JbpmCustomTaskFeatureContainer;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.GlobalType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.ImportType;
-import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.model.drools.MetaDataType;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmActivityDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmCommonEventDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmDataAssociationDetailComposite;
@@ -65,6 +65,7 @@ import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmItemDefinition
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmItemDefinitionListComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmManualTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmMultiInstanceDetailComposite;
+import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmOperationDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmReceiveTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmScriptTaskDetailComposite;
 import org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property.JbpmSendTaskDetailComposite;
@@ -154,6 +155,7 @@ public class JBPM5RuntimeExtension implements IBpmn2RuntimeExtension {
 	        PropertiesCompositeFactory.register(Task.class, JbpmTaskDetailComposite.class);
 			PropertiesCompositeFactory.register(ItemDefinition.class, JbpmItemDefinitionDetailComposite.class);
 			PropertiesCompositeFactory.register(Interface.class, JbpmInterfaceDetailComposite.class);
+			PropertiesCompositeFactory.register(Operation.class, JbpmOperationDetailComposite.class);
 			PropertiesCompositeFactory.register(Expression.class, JbpmExpressionDetailComposite.class);
 
 			// TODO: if file was opened from a Guvnor Repository view (or git in jBPM 6)

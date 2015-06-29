@@ -195,6 +195,7 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 	public void setData(String key, Object object) {
 		if ("factory".equals(key) && object instanceof IPropertiesCompositeFactory) //$NON-NLS-1$
 			compositeFactory = (IPropertiesCompositeFactory) object;
+		super.setData(key, object);
 	}
 	
 	@Override
@@ -209,6 +210,13 @@ public class DefaultDialogComposite extends AbstractDialogComposite {
 				detail.setIsPopupDialog(true);
 				StructuredSelection selection = new StructuredSelection(businessObject);
 				EObject bo = section.getBusinessObjectForSelection(selection);
+				// Pass the container object along to the detail composites
+				// in case they need to display additional information
+				// depending on what type of referencing object created this
+				// feature editing dialog.
+				Object data = this.getData("container");
+				if (data!=null)
+					detail.setData("container",data);
 				detail.setBusinessObject(bo);
 			}
 		}

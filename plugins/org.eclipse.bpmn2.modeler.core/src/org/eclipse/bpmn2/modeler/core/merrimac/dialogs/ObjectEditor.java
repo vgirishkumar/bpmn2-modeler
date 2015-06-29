@@ -202,7 +202,18 @@ public abstract class ObjectEditor implements INotifyChangedListener {
 	}
 	
 	protected FeatureEditingDialog createFeatureEditingDialog(EObject value) {
-		return new FeatureEditingDialog(getDiagramEditor(), object, feature, value);
+		FeatureEditingDialog dialog = new FeatureEditingDialog(getDiagramEditor(), object, feature, value) {
+			public void aboutToOpen() {
+				// Pass the container object along to the dialog so that
+				// it can be set in its detail composites. This is used
+				// if a detail composite needs to display additional information
+				// depending on what type of referencing object created the
+				// feature editing dialog.
+				dialogContent.setData("container", object);
+				super.aboutToOpen();
+			}
+		};
+		return dialog;
 	}
 
 	/**
