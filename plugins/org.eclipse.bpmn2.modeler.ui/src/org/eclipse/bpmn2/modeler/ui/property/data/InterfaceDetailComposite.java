@@ -71,7 +71,6 @@ public class InterfaceDetailComposite extends DefaultDetailComposite {
 			if (parent==null)
 				parent = getAttributesParent();
 			
-			final Interface iface = (Interface)object;
 			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
 			
 			SchemaObjectEditor editor = new SchemaObjectEditor(this,object,reference);

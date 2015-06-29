@@ -1,17 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2012 Red Hat, Inc.
- *  All rights reserved.
- * This program is made available under the terms of the
- * Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- * Red Hat, Inc. - initial API and implementation
- *
- * @author Bob Brodt
- ******************************************************************************/
-
-package org.eclipse.bpmn2.modeler.ui.property.data;
+package org.eclipse.bpmn2.modeler.runtime.jboss.jbpm5.property;
 
 import org.eclipse.bpmn2.Activity;
 import org.eclipse.bpmn2.Interface;
@@ -22,30 +9,18 @@ import org.eclipse.bpmn2.modeler.core.merrimac.clad.AbstractPropertiesProvider;
 import org.eclipse.bpmn2.modeler.core.merrimac.clad.DefaultDetailComposite;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.ObjectEditor;
 import org.eclipse.bpmn2.modeler.core.merrimac.dialogs.TextObjectEditor;
-import org.eclipse.bpmn2.modeler.ui.property.editors.SchemaObjectEditor;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.swt.widgets.Composite;
 
-/**
- * @author Bob Brodt
- *
- */
-public class OperationDetailComposite extends DefaultDetailComposite {
+public class JbpmOperationDetailComposite extends DefaultDetailComposite {
 
-	/**
-	 * @param parent
-	 * @param style
-	 */
-	public OperationDetailComposite(Composite parent, int style) {
+	public JbpmOperationDetailComposite(Composite parent, int style) {
 		super(parent, style);
 	}
 
-	/**
-	 * @param section
-	 */
-	public OperationDetailComposite(AbstractBpmn2PropertySection section) {
+	public JbpmOperationDetailComposite(AbstractBpmn2PropertySection section) {
 		super(section);
 	}
 
@@ -83,33 +58,15 @@ public class OperationDetailComposite extends DefaultDetailComposite {
 				EReference implementationRef = PACKAGE.getInterface_ImplementationRef();
 				Composite parent = getAttributesParent();
 				
-				String displayName = ExtendedPropertiesProvider.getLabel(iface, name);
+				String displayName = "Interface"; ExtendedPropertiesProvider.getLabel(iface, name);
 				ObjectEditor editor = new TextObjectEditor(this,iface,name);
 				editor.createControl(parent,displayName);
 	
 				displayName = ExtendedPropertiesProvider.getLabel(iface, implementationRef);
-				editor = new SchemaObjectEditor(this,iface,implementationRef);
+				editor = new JbpmImportObjectEditor(this,iface,implementationRef);
 				editor.createControl(parent,displayName);
 			}
 		}
-		
 		super.createBindings(be);
-	}
-
-	@Override
-	protected void bindReference(Composite parent, EObject object, EReference reference) {
-		if ("implementationRef".equals(reference.getName()) && //$NON-NLS-1$
-				isModelObjectEnabled(object.eClass(), reference)) {
-			
-			if (parent==null)
-				parent = getAttributesParent();
-			
-			String displayName = ExtendedPropertiesProvider.getLabel(object, reference);
-			
-			SchemaObjectEditor editor = new SchemaObjectEditor(this,object,reference);
-			editor.createControl(parent,displayName);
-		}
-		else
-			super.bindReference(parent, object, reference);
 	}
 }

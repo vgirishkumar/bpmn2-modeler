@@ -155,6 +155,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				createButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						buttonClicked(ID_CREATE_BUTTON);
+						fillCombo();
 					}
 				});
 			}
@@ -164,6 +165,7 @@ public class ComboObjectEditor extends MultivalueObjectEditor {
 				editButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						buttonClicked(ID_EDIT_BUTTON);
+						fillCombo();
 					}
 				});
 				editButton.setEnabled(canEdit());
